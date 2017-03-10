@@ -275,6 +275,11 @@
     "failure": true
   },
   {
+    "input": "non-special://f:999999/c",
+    "base": "http://example.org/foo/bar",
+    "failure": true
+  },
+  {
     "input": "http://f: 21 / b ? d # e ",
     "base": "http://example.org/foo/bar",
     "failure": true

@@ -212,11 +212,6 @@ function make_test(raw_requests) {
   };
 }
 
-// TODO
-// generate an ETag
-// generate content
-// generate a date
-
 
 function run_tests(tests)
 {
@@ -227,4 +222,8 @@ function run_tests(tests)
 
 function http_date(delta) {
   return new Date(Date.now() + (delta * 1000)).toGMTString()
+}
+
+function http_content() {
+  btoa(Math.random() * Date.now())
 }

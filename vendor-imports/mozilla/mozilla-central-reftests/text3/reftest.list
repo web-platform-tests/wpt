@@ -12,6 +12,8 @@
 
 == text-word-spacing-001.html text-word-spacing-ref.html
 
+== hyphenation-control-1.html hyphenation-control-1-ref.html
+
 == segment-break-transformation-removable-1.html segment-break-transformation-removable-ref.html
 == segment-break-transformation-removable-2.html segment-break-transformation-removable-ref.html
 == segment-break-transformation-removable-3.html segment-break-transformation-removable-ref.html

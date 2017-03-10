@@ -191,8 +191,18 @@ function make_test(raw_requests) {
               assert_true(state.length > i, "cached response not used");
               // TODO: look for signs of validation
             }
+            var expected_request_headers = []
+            if (requests[i].expected_type === "etag_validated") {
+              expected_request_headers.push('if-none-match')
+            }
+            if (requests[i].expected_type === "lm_validated") {
+              expected_request_headers.push('if-modified-since')
+            }
           }
           if ("expected_request_headers" in requests[i]) {
+            for (var header in expected_request_headers) {
+              assert_equals(state[i].request_headers[header[0]], header[1]);
+            }
             for (var header in requests[i].expected_request_headers) {
               assert_equals(state[i].request_headers[header[0]], header[1]);
             }

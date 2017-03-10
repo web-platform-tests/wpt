@@ -29,7 +29,7 @@
               ["Last-Modified", http_date(-3000)],
               ["Test-Header", "B"]
             ],
-            expected_type: "validation",
+            expected_type: "lm_validated",
             expected_response_headers: [
               ["Test-Header", "B"]              
             ]
@@ -52,7 +52,7 @@
               ["Last-Modified", http_date(-3000)],
               ["Test-Header", "B"]
             ],
-            expected_type: "validation",
+            expected_type: "lm_validated",
             expected_response_headers: [
               ["Test-Header", "B"]              
             ]
@@ -81,7 +81,7 @@
               ["ETag", "ABC"],
               ["Test-Header", "B"]
             ],
-            expected_type: "validation",
+            expected_type: "etag_validated",
             expected_response_headers: [
               ["Test-Header", "B"]              
             ]
@@ -104,7 +104,7 @@
               ["ETag", "DEF"],
               ["Test-Header", "B"]
             ],
-            expected_type: "validation",
+            expected_type: "etag_validated",
             expected_response_headers: [
               ["Test-Header", "B"]              
             ]

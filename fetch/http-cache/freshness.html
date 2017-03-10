@@ -28,6 +28,20 @@
         ]
       },
       {
+        name: 'HTTP cache does not prefer Cache-Control: s-maxage over Cache-Control: max-age.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1, s-maxage=3600"]
+            ],
+            pause_after: true,
+          },
+          {
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
         name: 'HTTP cache honours the Age header with Cache-Control: max-age in the response.',
         requests: [
           {
@@ -42,7 +56,7 @@
         ]
       },
       {
-        name: 'RequestCache does not store a response with Cache-Control: no-store.',
+        name: 'HTTP cache does not store a response with Cache-Control: no-store.',
         requests: [
           {
             response_headers: [
@@ -54,8 +68,20 @@
           }
         ]
       },
-      // must-revalidate
-      // s-maxage
+      {
+        name: 'HTTP cache stores a response with Cache-Control: no-cache, but revalidates upon use.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "no-cache"],
+              ['ETag', 'abcd']
+            ]
+          },
+          {
+            expected_type: "etag_validated",
+          }
+        ]
+      }
     ];
     run_tests(tests);
     </script>

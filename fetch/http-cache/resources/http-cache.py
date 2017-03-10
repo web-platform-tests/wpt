@@ -40,7 +40,7 @@ def main(request, response):
     if request.headers.get("If-Modified-Since", False) == noted_headers.get('last-modified', True):
         code, phrase = [304, "Not Modified"]
 
-    response.status = (code, phrase)        
+    response.status = (code, phrase)
 
     content = config.get("response_body", uuid)
     if code in [204, 304]:

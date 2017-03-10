@@ -15,6 +15,10 @@
   // https://github.com/w3c/browser-payment-api/pull/219
   ["totalAmount", "PaymentResponse"],
 
+  // https://github.com/w3c/browser-payment-api/pull/426
+  ["paymentRequestId", "PaymentRequest"],
+  ["paymentRequestId", "PaymentResponse"],
+
 ].forEach(([member, interf]) => {
   test(() => {
     assert_false(member in window[interf].prototype);

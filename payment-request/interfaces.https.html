@@ -12,14 +12,14 @@ interface EventInit {};
 interface EventTarget {};
 </script>
 <script type=text/plain>
-[Constructor(sequence<PaymentMethodData> methodData, PaymentDetails details, optional PaymentOptions options),
+[Constructor(sequence<PaymentMethodData> methodData, PaymentDetailsInit details, optional PaymentOptions options),
  SecureContext]
 interface PaymentRequest : EventTarget {
     Promise<PaymentResponse> show();
     Promise<void>            abort();
     Promise<boolean>         canMakePayment();
 
-    readonly attribute DOMString?           paymentRequestId;
+    readonly attribute DOMString            id;
     readonly attribute PaymentAddress?      shippingAddress;
     readonly attribute DOMString?           shippingOption;
     readonly attribute PaymentShippingType? shippingType;
@@ -37,12 +37,18 @@ dictionary PaymentCurrencyAmount {
     required DOMString value;
              DOMString currencySystem = "urn:iso:std:iso:4217";
 };
-dictionary PaymentDetails {
-    PaymentItem                      total;
+dictionary PaymentDetailsBase {
     sequence<PaymentItem>            displayItems;
     sequence<PaymentShippingOption>  shippingOptions;
     sequence<PaymentDetailsModifier> modifiers;
-    DOMString                        error;
+};
+dictionary PaymentDetailsInit : PaymentDetailsBase {
+             DOMString   id;
+    required PaymentItem total;
+};
+dictionary PaymentDetailsUpdate : PaymentDetailsBase {
+    DOMString   error;
+    PaymentItem total;
 };
 dictionary PaymentDetailsModifier {
     required sequence<DOMString>   supportedMethods;
@@ -91,13 +97,13 @@ dictionary PaymentShippingOption {
 enum PaymentComplete {
     "fail",
     "success",
-    "unknown",
+    "unknown"
 };
 [SecureContext]
 interface PaymentResponse {
     serializer = {attribute};
 
-    readonly attribute DOMString       paymentRequestId;
+    readonly attribute DOMString       requestId;
     readonly attribute DOMString       methodName;
     readonly attribute object          details;
     readonly attribute PaymentAddress? shippingAddress;
@@ -111,7 +117,7 @@ interface PaymentResponse {
 [Constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict),
  SecureContext]
 interface PaymentRequestUpdateEvent : Event {
-    void updateWith(Promise<PaymentDetails> detailsPromise);
+    void updateWith(Promise<PaymentDetailsUpdate> detailsPromise);
 };
 dictionary PaymentRequestUpdateEventInit : EventInit {
 };

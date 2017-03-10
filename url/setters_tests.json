@@ -110,6 +110,31 @@
             }
         },
         {
+            "comment": "Can’t switch from URL containing username/password/port to file",
+            "href": "http://test@example.net",
+            "new_value": "file",
+            "expected": {
+                "href": "http://test@example.net/",
+                "protocol": "http:"
+            }
+        },
+        {
+            "href": "gopher://example.net:1234",
+            "new_value": "file",
+            "expected": {
+                "href": "gopher://example.net:1234/",
+                "protocol": "gopher:"
+            }
+        },
+        {
+            "href": "wss://x:x@example.net:1234",
+            "new_value": "file",
+            "expected": {
+                "href": "wss://x:x@example.net:1234/",
+                "protocol": "wss:"
+            }
+        },
+        {
             "comment": "Can’t switch from special scheme to non-special",
             "href": "http://example.net",
             "new_value": "b",
@@ -165,6 +190,14 @@
             "new_value": "file",
             "expected": {
                 "href": "ssh://me@example.net",
+                "protocol": "ssh:"
+            }
+        },
+        {
+            "href": "ssh://example.net",
+            "new_value": "file",
+            "expected": {
+                "href": "ssh://example.net",
                 "protocol": "ssh:"
             }
         },

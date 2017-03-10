@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTTP Cache - Heuristic Freshness</title>
+    <meta name="help" href="https://fetch.spec.whatwg.org/#request">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/utils.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <script src="http-cache.js"></script>
+    <meta name="timeout" content="long">
+  </head>
+  <body>
+    <script>
+    var tests = [
+      {
+        name: 'HTTP cache uses heuristic freshness based upon Last-Modified.',
+        requests: [
+          {
+            response_headers: [
+              ['Last-Modified', http_date(-3 * 100)]
+            ],
+            pause_after: true
+          },
+          {
+            expected_type: "cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache uses heuristic freshness based upon Last-Modified on unknown status code when Cache-Control: public is present.',
+        requests: [
+          {
+            response_status: [299, "Whatever"],
+            response_headers: [
+              ['Last-Modified', http_date(-3 * 100)],
+              ['Cache-Control', 'public']
+            ],
+            pause_after: true
+          },
+          {
+            expected_type: "cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache does not use heuristic freshness based upon Last-Modified on unknown status code when Cache-Control: public is not present.',
+        requests: [
+          {
+            response_status: [299, "Whatever"],
+            response_headers: [
+              ['Last-Modified', http_date(-3 * 100)],
+              ['Cache-Control', 'public']
+            ],
+            pause_after: true
+          },
+          {
+            expected_type: "not_cached",
+          }
+        ]
+      }
+    ];
+    run_tests(tests);
+    </script>
+  </body>
+</html>

@@ -152,7 +152,7 @@ function make_test(raw_requests) {
 
     function pause() {
       return new Promise(function(resolve, reject) {
-  	    setTimeout(function() {
+  	    step_timeout(function() {
           return resolve()
         }, 3000);
       });

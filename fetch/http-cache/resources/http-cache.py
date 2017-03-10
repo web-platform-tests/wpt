@@ -35,8 +35,6 @@ def main(request, response):
 
     code, phrase = config.get("response_status", [200, "OK"])
 
-    print request.headers.get("If-Modified-Since", False)
-    print noted_headers.get("last-modified", True)
     if request.headers.get("If-Modified-Since", False) == noted_headers.get('last-modified', True):
         code, phrase = [304, "Not Modified"]
 

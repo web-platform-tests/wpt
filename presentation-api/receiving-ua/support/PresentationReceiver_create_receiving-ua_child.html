@@ -27,7 +27,7 @@ window.addEventListener('message', event => {
 
         // Presentation and PresentationReceiver
         assert_true(navigator.presentation instanceof Presentation, 'navigator.presentation in a nested browsing context is an instanceof Presentation.');
-        //assert_equals(navigator.presentation.receiver, null, 'navigator.presentation.receiver in a nested browsing context is set to null.');
+        assert_equals(navigator.presentation.receiver, null, 'navigator.presentation.receiver in a nested browsing context is set to null.');
 
         // Session history
         assert_equals(window.history.length, 1, 'Session history consists of the current page only.');

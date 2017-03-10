@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<title>MediaStreamTrack GetSettings</title>
+<link rel="author" title="Harald Tveit Alvestrand" href="mailto:hta@google.com"/>
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrack-id">
+</head>
+<body>
+<p class="instructions">When prompted, accept to share your audio and video stream.</p>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that track.getSettings has expected results.</p>
+
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="/common/vendor-prefix.js" data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'></script>
+<script>
+
+promise_test(function() {
+  let settings1 = null;
+  let settings2 = null;
+  return navigator.mediaDevices.getUserMedia({video: true, audio: false})
+    .then(function(s) {
+      settings1 = s.getVideoTracks()[0].getSettings();
+      constraints = {deviceId: settings1.deviceId};
+      return navigator.mediaDevices.getUserMedia({video: constraints, audio: false});
+    }).then(function(s) {
+      settings2 = s.getVideoTracks()[0].getSettings();
+      assert_equals(settings1.deviceId, settings2.deviceId);
+    });
+}, 'A device can be opened twice and have the same device ID');
+
+promise_test(function() {
+  let settings1 = null;
+  let settings2 = null;
+  return navigator.mediaDevices.getUserMedia({video: true, audio: false})
+    .then(function(s) {
+      settings1 = s.getVideoTracks()[0].getSettings();
+      constraints = {deviceId: settings1.deviceId,
+                     width: { exact: settings1.width / 2 }};
+      return navigator.mediaDevices.getUserMedia({video: constraints, audio: false});
+    }).then(function(s) {
+      settings2 = s.getVideoTracks()[0].getSettings();
+      assert_equals(settings1.deviceId, settings2.deviceId);
+      assert_equals(settings1.width / 2, settings2.width);
+    });
+}, 'A device can be opened twice with different resolutions');
+</script>
+</body>
+</html>

@@ -474,7 +474,7 @@ class VTTCueParser(W3CParser):
                 # 2.
                 else:
                     linepos = value
-                    linealign = ""
+                    linealign = None
 
                 # 3.
                 if not re.search(r'\d', linepos):
@@ -519,7 +519,7 @@ class VTTCueParser(W3CParser):
                     self.cue.line_alignment = 'end'
 
                 # 8.
-                elif linealign != "":
+                elif linealign != None:
                     continue
 
                 # 9.
@@ -541,7 +541,7 @@ class VTTCueParser(W3CParser):
                 # 2.
                 else:
                     colpos = value
-                    colalign = ""
+                    colalign = None
 
                 # 3.
                 number = self.parse_percentage_string(colpos)
@@ -561,7 +561,7 @@ class VTTCueParser(W3CParser):
                     self.cue.line_alignment = 'line-right'
 
                 # 7.
-                elif colalign != "":
+                elif colalign != None:
                     continue
 
                 # 8.

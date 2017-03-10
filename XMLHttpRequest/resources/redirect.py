@@ -5,7 +5,7 @@ def main(request, response):
     location = request.GET.first("location", request.url_parts.path +"?followed")
 
     if "delay" in request.GET:
-        delay = float(request.GET.first("delay", 500))
+        delay = float(request.GET.first("delay"))
         time.sleep(delay / 1E3);
 
     if "followed" in request.GET:

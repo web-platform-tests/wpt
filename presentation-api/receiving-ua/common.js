@@ -13,34 +13,51 @@
     let r;
 
     // String
-    if (r = value.match(/^"(.*)"$/))
-      return r[1];
+    if (r = value.match(/^(\(string\)\s+)?"(.*)"$/))
+      return r[2];
     // Object
-    else if (r = value.match(/^object\s+"\[object\s+(.*)\]"$/))
-      return window[r[1]].prototype;
+    else if (r = value.match(/^(\(object\)\s+)?object\s+"\[object\s+(.*)\]"$/))
+      return window[r[2]].prototype;
     // Number, boolean, null, undefined
-    else
-      return JSON.parse(value);
+    else {
+      if (r = value.match(/^(\(\S+\)\s+)?(\S+)$/)) {
+        try {
+          return JSON.parse(r[2]);
+        } catch(e) {
+          return value;
+        }
+      }
+      else
+        return value;
+    }
   };
 
   window.parseResult = message => {
     let r = message.match(/^(assert_.*):\s+(.*)$/);
-    const assertion = r[1];
-    const body = r[2];
-    switch (assertion) {
-      case 'assert_equals':
-        r = body.match(/^(.*)\s+expected\s+(true|false|null|\d+|"(.*)")\s+but\s+got\s+(true|false|null|\d+|(object\s+)?"(.*)")$/);
-        window[assertion](parseValue(r[4]), parseValue(r[2]), r[1]);
-        break;
-      case 'assert_true':
-      case 'assert_false':
-        r = body.match(/^(.*)\s+expected\s+(true|false)\s+got\s+(true|false)$/);
-        window[assertion](parseValue(r[3]), r[1]);
-        break;
-      case 'assert_unreached':
-        r = body.match(/^(.*)\s+Reached\s+unreachable\s+code$/);
-        window[assertion](r[1]);
-        break;
+    if (r) {
+      const assertion = r[1];
+      const body = r[2];
+      let args;
+      switch (assertion) {
+        case 'assert_equals':
+          if (r = body.match(/^((.*)\s+)?expected\s+((\(\S*\)\s+)?(\S+|(\S+\s+)?\".*\"))\s+but\s+got\s+((\(\S*\)\s+)?(\S+|(\S+\s+)?\".*\"))$/))
+            args = [parseValue(r[7]), parseValue(r[3]), r[2]];
+          break;
+        case 'assert_true':
+          if (r = body.match(/^((.*)\s+)?expected\s+(true|false)\s+got\s+(\S+|(\S+\s+)?\".*\")$/))
+            args = [parseValue(r[4]), r[2]];
+          break;
+        case 'assert_unreached':
+          if (r = body.match(/^((.*)\s+)?Reached\s+unreachable\s+code$/))
+            args = [r[2]];
+          break;
+      }
+      if (args) {
+        window[assertion](args[0], args[1], args[2]);
+        return;
+      }
     }
+    // default
+    assert_unreached('Test result received from a receiving user agent: ' + message + ': ');
   };
 })(window);

@@ -106,9 +106,18 @@ function make_test(raw_requests) {
           }
           return fetch(url, init)
             .then(function(response) {
-              if ("expected_type" in config && config.expected_type === "error") {
-                assert_true(false, "fetch should have been an error");
-                return [response.text(), response_status];
+              var request_count = parseInt(response.headers.get("Server-Request-Count")) - 1;
+              if ("expected_type" in config) {
+                if (config.expected_type === "error") {
+                  assert_true(false, "fetch should have been an error");
+                  return [response.text(), response_status];
+                }
+                if (config.expected_type === "cached") {
+                  assert_true(request_count < idx, "Cached response used");
+                }
+                if (config.expected_type === "not_cached") {
+                  assert_true(request_count === idx, "Cached response not used");
+                }
               }
               if ("expected_status" in config) {
                 assert_equals(response.status, config.expected_status);
@@ -189,7 +198,6 @@ function make_test(raw_requests) {
             }
             if (requests[i].expected_type === "not_cached") {
               assert_true(state.length > i, "cached response not used");
-              // TODO: look for signs of validation
             }
             var expected_request_headers = []
             if (requests[i].expected_type === "etag_validated") {

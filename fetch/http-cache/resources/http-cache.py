@@ -16,7 +16,7 @@ def main(request, response):
 
     state = dict()
     state["request_method"] = request.method
-    state["request_headers"] = [h for h in request.headers]
+    state["request_headers"] = dict([[h.lower(), request.headers[h]] for h in request.headers])
     server_state.append(state)
     request.server.stash.put(uuid, server_state)
 

@@ -208,11 +208,14 @@ function make_test(raw_requests) {
             }
           }
           for (var header in expected_request_headers) {
-            assert_equals(state[i].request_headers[header[0]], header[1]);
+            assert_exists(state[i].request_headers, header[0], header[0] + "request header present");
           }
           if ("expected_request_headers" in requests[i]) {
-            for (var header in requests[i].expected_request_headers) {
-              assert_equals(state[i].request_headers[header[0]], header[1]);
+            var expected_request_headers = requests[i].expected_request_headers;
+            for (var j = 0; j < expected_request_headers.length; ++j) {
+              var expected_header = expected_request_headers[j];
+              assert_equals(state[i].request_headers[expected_header[0].toLowerCase()],
+                            expected_header[1]);
             }
           }
         }

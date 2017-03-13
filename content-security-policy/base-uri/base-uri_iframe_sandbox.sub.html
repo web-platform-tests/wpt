@@ -20,8 +20,10 @@
 
         async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
-                assert_equals(e.data, location.origin + '/');
-                t.done();
+                if (e.data.startsWith('SAME-ORIGIN,')) {
+                    assert_equals(e.data, 'SAME-ORIGIN,' + location.origin + '/');
+                    t.done();
+                }
             }));
             var e = document.createElement('iframe');
             e.sandbox = 'allow-scripts';
@@ -29,15 +31,46 @@
             e.srcdoc = `
             <script>
               window.addEventListener('securitypolicyviolation', function() {
-                top.postMessage('FAIL', '*');
+                top.postMessage('SAME-ORIGIN,FAIL', '*');
               });
-            </sc`+`ript>
+            </sc` + `ript>
             <base href="{{location[scheme]}}://{{domains[]}}:{{ports[http][0]}}/">
             <script>
-              top.postMessage(document.baseURI, '*');
-            </sc`+`ript>`;
+              top.postMessage('SAME-ORIGIN,' + document.baseURI, '*');
+            </sc` + `ript>`;
             document.body.appendChild(e);
-        }, 'base-uri \'self\' works with sandboxed iframes.');
+        }, 'base-uri \'self\' works with same-origin sandboxed iframes.');
+
+        async_test(function(t) {
+            window.addEventListener('message', t.step_func(function(e) {
+                console.log(e);
+                if (e.data.startsWith('FOREIGN-ORIGIN')) {
+                    assert_equals(e.data, 'FOREIGN-ORIGIN,' +
+                        location.origin + '/');
+                    t.done();
+                }
+            }));
+            var e = document.createElement('iframe');
+            e.sandbox = 'allow-scripts';
+            e.style.display = 'none';
+            e.srcdoc = `
+            <script>
+              window.addEventListener('securitypolicyviolation',
+                function(violation) {
+                  console.log(violation);
+                  if (violation.blockedURI !== '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/') {
+                      return;
+                  }
+                  assert_equals(violation.effectiveDirective, 'base-uri');
+                  top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
+              });
+            </sc` + `ript>
+            <base href="{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/">
+            <script>
+              top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
+            </sc` + `ript>`;
+            document.body.appendChild(e);
+        }, 'base-uri \'self\' blocks foreign-origin sandboxed iframes.');
     </script>
 
 </body>

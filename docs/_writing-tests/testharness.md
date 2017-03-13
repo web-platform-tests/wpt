@@ -70,6 +70,14 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
 This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
 as `FileAPI/Blob-constructor.any.html`.
 
+### Including other JavaScript resources in auto-generated boilerplate tests
+
+Use `// META script=link/to/resource.js` at the beginning of the resource.
+
+### Specifying a timeout of long in auto-generated boilerplate tests
+
+Use `// META timeout=long` at the beginning of the resource.
+
 
 [general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
 [testharness-api]: {{ site.baseurl }}{% link _writing-tests/testharness-api.html %}

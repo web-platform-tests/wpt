@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 promise_test(function() {
   return fetch(RESOURCES_DIR + "inspect-headers.py?headers=Accept").then(function(response) {
@@ -34,5 +31,3 @@ promise_test(function() {
     assert_equals(response.headers.get("x-request-accept-language"), "bzh", "Request has accept header with value 'bzh'");
   });
 }, "Request through fetch should have 'accept-language' header with value 'bzh'");
-
-done();

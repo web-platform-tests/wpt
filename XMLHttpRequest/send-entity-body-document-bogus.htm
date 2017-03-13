@@ -22,4 +22,6 @@ doc.appendChild(doc.createElement("test:test"))
 serialize(doc, "<test:test/>")
 doc.childNodes[0].setAttribute("test:test", "gee")
 serialize(doc, "<test:test test:test=\"gee\"/>")
+doc.childNodes[0].setAttribute("x", "\uD800")
+serialize(doc, "<test:test test:test=\"gee\" x=\"\uFFFD\"/>")
 </script>

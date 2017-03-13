@@ -55,7 +55,7 @@ worker scope.
 
 In this case, the test is a JavaScript file with extension `.any.js`.
 The test can then use all the usual APIs, and can be run from the path to the
-JavaScript file with the `.js` replaced by `.worker.js` or `.html`.
+JavaScript file with the `.js` replaced by `.worker.html` or `.html`.
 
 For example, one could write a test for the `Blob` constructor by
 creating a `FileAPI/Blob-constructor.any.js` as follows:
@@ -67,7 +67,7 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
       assert_false(blob.isClosed);
     }, "The Blob constructor.");
 
-This test could then be run from `FileAPI/Blob-constructor.any.worker.js` as well
+This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
 as `FileAPI/Blob-constructor.any.html`.
 
 

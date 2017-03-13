@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
     <title>base-uri works correctly inside a sandboxed iframe.</title>
     <script src='/resources/testharness.js'></script>
     <script src='/resources/testharnessreport.js'></script>
@@ -21,7 +22,7 @@
         async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
                 if (e.data.startsWith('SAME-ORIGIN,')) {
-                    assert_equals(e.data, 'SAME-ORIGIN,' + location.origin + '/');
+                    assert_equals(e.data, 'SAME-ORIGIN,' + location.origin + '/base/');
                     t.done();
                 }
             }));
@@ -34,7 +35,7 @@
                 top.postMessage('SAME-ORIGIN,FAIL', '*');
               });
             </sc` + `ript>
-            <base href="{{location[scheme]}}://{{domains[]}}:{{ports[http][0]}}/">
+            <base href="{{location[scheme]}}://{{domains[]}}:{{ports[http][0]}}/base/">
             <script>
               top.postMessage('SAME-ORIGIN,' + document.baseURI, '*');
             </sc` + `ript>`;
@@ -43,10 +44,8 @@
 
         async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
-                console.log(e);
                 if (e.data.startsWith('FOREIGN-ORIGIN')) {
-                    assert_equals(e.data, 'FOREIGN-ORIGIN,' +
-                        location.origin + '/');
+                    assert_equals(e.data, 'FOREIGN-ORIGIN,' + location.href);
                     t.done();
                 }
             }));
@@ -57,15 +56,14 @@
             <script>
               window.addEventListener('securitypolicyviolation',
                 function(violation) {
-                  console.log(violation);
-                  if (violation.blockedURI !== '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/') {
+                  if (violation.blockedURI !== '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/base/' || violation.effectiveDirective !== 'base-uri') {
+                      top.postMessage('FOREIGN-ORIGIN,FAIL');
                       return;
                   }
-                  assert_equals(violation.effectiveDirective, 'base-uri');
                   top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
               });
             </sc` + `ript>
-            <base href="{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/">
+            <base href="{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/base/">
             <script>
               top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
             </sc` + `ript>`;

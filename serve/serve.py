@@ -24,7 +24,7 @@ from manifest.sourcefile import read_script_metadata, js_meta_re
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve.logger import set_logger
-from wptserve.handlers import filesystem_path
+from wptserve.handlers import filesystem_path, wrap_pipeline
 from mod_pywebsocket import standalone as pywebsocket
 
 def replace_end(s, old, new):
@@ -51,7 +51,8 @@ class WrapperHandler(object):
     def handle_request(self, request, response):
         path = self._get_path(request.url_parts.path, True)
         meta = "\n".join(self._get_meta(request))
-        return self.wrapper % {"meta": meta, "path": path}
+        response.content = self.wrapper % {"meta": meta, "path": path}
+        wrap_pipeline(path, request, response)
 
     def _get_path(self, path, resource_path):
         """Convert the path from an incoming request into a path corresponding to an "unwrapped"

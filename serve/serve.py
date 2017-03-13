@@ -136,6 +136,19 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 </script>
 """
 
+
+class WindowHandler(HtmlWrapperHandler):
+    path_replace = [(".window.html", ".window.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script src="%(path)s"></script>
+"""
+
+
 class AnyHtmlHandler(HtmlWrapperHandler):
     path_replace = [(".any.html", ".any.js")]
     wrapper = """<!doctype html>
@@ -220,6 +233,7 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
+            ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),

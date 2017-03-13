@@ -19,17 +19,12 @@
     var style = getComputedStyle(child);
 
     test(function() {
-        assert_equals(style.getPropertyValue("place-content"),
-            "start end", "place-content computed value");
-    }, "Check place-content: inherit - resolved value");
-
-    test(function() {
         assert_equals(style.getPropertyValue("align-content"),
-            "start", "place-content specified value for align-content");
+            "start", "place-content resolved value for align-content");
     }, "Check place-content: inherit - align-content resolved value");
 
     test(function() {
         assert_equals(style.getPropertyValue("justify-content"),
-           "end", "place-content specified value for justify-content");
+           "end", "place-content resolved value for justify-content");
     }, "Check place-content: inherit - justify-content resolved value");
 </script>

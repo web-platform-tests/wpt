@@ -5,23 +5,12 @@
 <meta name="assert" content="Check that place-items's invalid values are properly detected at parsing time." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-    #test {
-        align-items: start;
-        justify-items: end;
-    }
-</style>
+<script src="/css-align-3/resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
-<div id="test"></div>
 <script>
-    function checkInvalidValues(value) {
-        var div = document.getElementById("test");
-        div.setAttribute("style", "place-items: " + value);
-        var style = getComputedStyle(div);
-        assert_equals(style.getPropertyValue("align-items"),
-            "start", "align-items computed value");
-        assert_equals(style.getPropertyValue("justify-items"),
-            "end", "justify-items computed value");
+    function checkInvalidValues(value)
+    {
+       checkPlaceShorthandInvalidValues("place-items", "align-items", "justify-items", value);
     }
 
     test(function() {
@@ -42,7 +31,7 @@
        checkInvalidValues("auto")
        checkInvalidValues("auto right")
        checkInvalidValues("auto auto")
-    }, "Verify 'auto' values are invalid");
+    }, "Verify 'auto' value is invalid as first longhand value.");
 
     test(function() {
         checkInvalidValues("")

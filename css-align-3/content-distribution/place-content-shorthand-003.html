@@ -5,31 +5,21 @@
 <meta name="assert" content="Check that place-content's 'initial' value expands to 'align-content' and 'justify-content'." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-    #test {
-        align-content: start;
-        justify-content: end;
-    }
-</style>
 <div id="log"></div>
-<div id="test"></div>
 <script>
-    var div = document.getElementById("test");
+    var div = document.createElement("div");
+    document.body.appendChild(div);
+    div.style["align-content"] = "start";
+    div.style["justify-content"] = "end";
     div.setAttribute("style", "place-content: initial");
-    var style = getComputedStyle(div);
 
     test(function() {
-        assert_equals(style.getPropertyValue("place-content"),
-            "normal normal", "place-content resolved value");
-    }, "Check place-content: initial - resolved value");
+        assert_equals(div.style["align-content"],
+            "initial", "place-content specified value for align-content");
+    }, "Check place-content: initial - align-content expanded value");
 
     test(function() {
-        assert_equals(style.getPropertyValue("align-content"),
-            "normal", "place-content specified value for align-content");
-    }, "Check place-content: initial - align-content resolved value");
-
-    test(function() {
-        assert_equals(style.getPropertyValue("justify-content"),
-            "normal", "place-content specified value for justify-content");
-    }, "Check place-content: initial - justify-content resolved value");
+        assert_equals(div.style["justify-content"],
+            "initial", "place-content specified value for justify-content");
+    }, "Check place-content: initial - justify-content expanded value");
 </script>

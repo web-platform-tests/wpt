@@ -36,9 +36,9 @@ function make_url(uuid, info, idx) {
   var arg = "";
   if ("query_arg" in info[idx]) {
     console.log("found query_arg " + info[idx].query_arg);
-    arg = "&arg=" + info[idx].query_arg;
+    arg = "&target=" + info[idx].query_arg;
   }
-  return "resources/http-cache.py?token=" + uuid + arg + "&info=" + btoa(JSON.stringify(info));
+  return "resources/http-cache.py?token=" + uuid + "&info=" + btoa(JSON.stringify(info)) + arg;
 }
 
 function server_state(uuid) {
@@ -81,7 +81,7 @@ templates = {
     ]
   },
   "content_location": {
-    "query_arg": "content_location_targets",
+    "query_arg": "content_location_target",
     "response_headers": [
       ['Expires', http_date(100000)],
       ['Last-Modified', http_date(0)]

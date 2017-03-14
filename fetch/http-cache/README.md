@@ -15,5 +15,8 @@ A few notes:
   cache that's ill-defined; see [this
   issue](https://github.com/whatwg/fetch/issues/354).
 
+* Some browser caches will behave differently when reloading / 
+  shift-reloading, despite the `cache mode` staying the same.
+
 * At the moment, Edge doesn't appear to using HTTP caching in conjunction
   with Fetch at all.

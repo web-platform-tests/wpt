@@ -3,16 +3,178 @@
 <title>Selection indices after content change</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+
+<input id="i1" type="text" value="hello">
+<textarea id="t1">hello</textarea>
+
 <script>
-  test(function() {
-    var input = document.createElement("input");
-    input.focus();
-    input.value = "something something something dark side";
-    input.setSelectionRange(4,20);
-    assert_equals(input.selectionStart, 4);
-    assert_equals(input.selectionEnd, 20);
-    input.value = "It's a trap!";
-    assert_equals(input.selectionStart, input.value.length);
-    assert_equals(input.selectionEnd, input.value.length);
+"use strict";
+test(function() {
+  var input = document.createElement("input");
+  input.focus();
+  input.value = "something something something dark side";
+  input.setSelectionRange(4,20);
+  assert_equals(input.selectionStart, 4);
+  assert_equals(input.selectionEnd, 20);
+  input.value = "It's a trap!";
+  assert_equals(input.selectionStart, input.value.length);
+  assert_equals(input.selectionEnd, input.value.length);
 }, "Selection indices after reseting content");
+
+test(() => {
+  const input = document.createElement("input");
+  input.value = "hello";
+  input.setSelectionRange(1, 3, "backward");
+
+  assert_equals(input.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(input.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(input.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  input.value = "hello";
+
+  assert_equals(input.selectionStart, 1, "selectionStart must not change");
+  assert_equals(input.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(input.selectionDirection, "backward", "selectionDirection must not change");
+}, "input out of document: selection must not change when setting the same value");
+
+test(() => {
+  const input = document.createElement("input");
+  input.value = "hello";
+  input.setSelectionRange(1, 3, "backward");
+
+  assert_equals(input.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(input.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(input.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  input.value = "hello2";
+
+  assert_equals(input.selectionStart, input.value.length, "selectionStart must be reset to the end");
+  assert_equals(input.selectionEnd, input.value.length, "selectionEnd must be reset to the end");
+  assert_equals(input.selectionDirection, "none", "selectionDirection must be set to none");
+}, "input out of document: selection must change when setting a different value");
+
+test(() => {
+  const input = document.querySelector("#i1");
+  input.setSelectionRange(1, 3, "backward");
+
+  assert_equals(input.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(input.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(input.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  input.value = "hello";
+
+  assert_equals(input.selectionStart, 1, "selectionStart must not change");
+  assert_equals(input.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(input.selectionDirection, "backward", "selectionDirection must not change");
+}, "input in document: selection must not change when setting the same value");
+
+test(() => {
+  const input = document.querySelector("#i1");
+  input.setSelectionRange(1, 3, "backward");
+
+  assert_equals(input.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(input.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(input.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  input.value = "hello2";
+
+  assert_equals(input.selectionStart, input.value.length, "selectionStart must be reset to the end");
+  assert_equals(input.selectionEnd, input.value.length, "selectionEnd must be reset to the end");
+  assert_equals(input.selectionDirection, "none", "selectionDirection must be set to none");
+}, "input in document: selection must change when setting a different value");
+
+test(() => {
+  const textarea = document.createElement("textarea");
+  textarea.value = "hello";
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hello";
+
+  assert_equals(textarea.selectionStart, 1, "selectionStart must not change");
+  assert_equals(textarea.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(textarea.selectionDirection, "backward", "selectionDirection must not change");
+}, "textarea out of document: selection must not change when setting the same value");
+
+test(() => {
+  const textarea = document.createElement("textarea");
+  textarea.value = "hello";
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hello2";
+
+  assert_equals(textarea.selectionStart, textarea.value.length, "selectionStart must be reset to the end");
+  assert_equals(textarea.selectionEnd, textarea.value.length, "selectionEnd must be reset to the end");
+  assert_equals(textarea.selectionDirection, "none", "selectionDirection must be set to none");
+}, "textarea out of document: selection must change when setting a different value");
+
+test(() => {
+  const textarea = document.createElement("textarea");
+  textarea.value = "hell\no";
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hell\r\no";
+
+  assert_equals(textarea.selectionStart, 1, "selectionStart must not change");
+  assert_equals(textarea.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(textarea.selectionDirection, "backward", "selectionDirection must not change");
+}, "textarea out of document: selection must not change when setting the same normalized value");
+
+test(() => {
+  const textarea = document.querySelector("#t1");
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hello";
+
+  assert_equals(textarea.selectionStart, 1, "selectionStart must not change");
+  assert_equals(textarea.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(textarea.selectionDirection, "backward", "selectionDirection must not change");
+}, "textarea in document: selection must not change when setting the same value");
+
+test(() => {
+  const textarea = document.querySelector("#t1");
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hello2";
+
+  assert_equals(textarea.selectionStart, textarea.value.length, "selectionStart must be reset to the end");
+  assert_equals(textarea.selectionEnd, textarea.value.length, "selectionEnd must be reset to the end");
+  assert_equals(textarea.selectionDirection, "none", "selectionDirection must be set to none");
+}, "textarea in document: selection must change when setting a different value");
+
+test(() => {
+  const textarea = document.querySelector("#t1");
+  textarea.value = "hell\no";
+  textarea.setSelectionRange(1, 3, "backward");
+
+  assert_equals(textarea.selectionStart, 1, "Sanity check: selectionStart was set correctly");
+  assert_equals(textarea.selectionEnd, 3, "Sanity check: selectionEnd was set correctly");
+  assert_equals(textarea.selectionDirection, "backward", "Sanity check: selectionDirection was set correctly");
+
+  textarea.value = "hell\r\no";
+
+  assert_equals(textarea.selectionStart, 1, "selectionStart must not change");
+  assert_equals(textarea.selectionEnd, 3, "selectionEnd must not change");
+  assert_equals(textarea.selectionDirection, "backward", "selectionDirection must not change");
+}, "textarea in document: selection must not change when setting the same normalized value");
+
 </script>

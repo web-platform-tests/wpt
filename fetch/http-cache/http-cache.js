@@ -191,7 +191,7 @@ function make_test(raw_requests) {
         return server_state(uuid);
       }).then(function(state) {
         for (var i = 0; i < requests.length; ++i) {
-          var expected_request_headers = []
+          var expected_validating_headers = []
           if ("expected_type" in requests[i]) {
             if (requests[i].expected_type === "cached") {
               assert_true(state.length <= i, "cached response used");
@@ -201,14 +201,15 @@ function make_test(raw_requests) {
               assert_true(state.length > i, "cached response not used");
             }
             if (requests[i].expected_type === "etag_validated") {
-              expected_request_headers.push('if-none-match')
+              expected_validating_headers.push('if-none-match')
             }
             if (requests[i].expected_type === "lm_validated") {
-              expected_request_headers.push('if-modified-since')
+              expected_validating_headers.push('if-modified-since')
             }
           }
-          for (var header in expected_request_headers) {
-            assert_exists(state[i].request_headers, header[0], header[0] + "request header present");
+          for (var j in expected_validating_headers) {
+              var vhdr = expected_validating_headers[j];
+            assert_own_property(state[i].request_headers, vhdr, "has" + vhdr + "request header");
           }
           if ("expected_request_headers" in requests[i]) {
             var expected_request_headers = requests[i].expected_request_headers;

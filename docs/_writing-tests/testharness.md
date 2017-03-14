@@ -72,11 +72,16 @@ as `FileAPI/Blob-constructor.any.html`.
 
 ### Including other JavaScript resources in auto-generated boilerplate tests
 
-Use `// META script=link/to/resource.js` at the beginning of the resource.
+Use `// META: script=link/to/resource.js` at the beginning of the resource. For example,
+
+    // META: script=/common/utils.js
+    // META: script=resources/utils.js
+
+can be used to include both the global and a local `utils.js` in a test.
 
 ### Specifying a timeout of long in auto-generated boilerplate tests
 
-Use `// META timeout=long` at the beginning of the resource.
+Use `// META: timeout=long` at the beginning of the resource.
 
 
 [general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}

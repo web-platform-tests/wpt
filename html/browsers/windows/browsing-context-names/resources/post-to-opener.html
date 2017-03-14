@@ -3,7 +3,10 @@
 <title>HTML Test: post window's name to top browsing context</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <script>
-
-top.postMessage({name: window.name}, "*");
-
+if (window.opener) {
+  window.opener.postMessage({
+    name: window.name,
+    isTop: (window.top === window)
+  }, "*");
+}
 </script>

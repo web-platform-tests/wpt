@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function basicAuth(desc, user, pass, mode, status) {
   promise_test(function(test) {
@@ -17,5 +14,3 @@ function basicAuth(desc, user, pass, mode, status) {
 basicAuth("User-added Authorization header with include mode", "user", "password", "include", 200);
 basicAuth("User-added Authorization header with same-origin mode", "user", "password", "same-origin", 200);
 basicAuth("User-added Authorization header with omit mode", "user", "password", "omit", 200);
-
-done();

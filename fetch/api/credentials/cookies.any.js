@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function cookies(desc, credentials1, credentials2 ,cookies) {
   var url = RESOURCES_DIR + "top.txt"
@@ -49,5 +46,3 @@ cookies("Omit mode: no cookie is stored", "omit", "include", ["e=5"]);
 cookies("Omit mode: no cookie is sent", "include", "omit", ["f=6"]);
 cookies("Same-origin mode: 1 cookie", "same-origin", "same-origin", ["a=1"]);
 cookies("Same-origin mode: 2 cookies", "same-origin", "same-origin", ["b=2", "c=3"]);
-
-done();

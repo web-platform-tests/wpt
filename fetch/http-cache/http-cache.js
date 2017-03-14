@@ -116,7 +116,7 @@ function make_test(raw_requests) {
                   assert_true(request_count < idx, "Cached response used");
                 }
                 if (config.expected_type === "not_cached") {
-                  assert_true(request_count === idx, "Cached response not used");
+                  assert_false(request_count < idx, "Cached response used");
                 }
               }
               if ("expected_status" in config) {
@@ -198,7 +198,7 @@ function make_test(raw_requests) {
               break;
             }
             if (requests[i].expected_type === "not_cached") {
-              assert_true(state.length > i, "cached response not used");
+              assert_false(state.length <= i, "cached response used");
             }
             if (requests[i].expected_type === "etag_validated") {
               expected_validating_headers.push('if-none-match')

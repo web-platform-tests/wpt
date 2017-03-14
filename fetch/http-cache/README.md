@@ -18,5 +18,8 @@ A few notes:
 * [Partial content tests](partial.html) (a.k.a. Range requests) are not specified
   in Fetch; tests are included here for interest only.
 
+* Some browser caches will behave differently when reloading / 
+  shift-reloading, despite the `cache mode` staying the same.
+
 * At the moment, Edge doesn't appear to using HTTP caching in conjunction
   with Fetch at all.

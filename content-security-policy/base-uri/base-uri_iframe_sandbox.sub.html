@@ -20,54 +20,58 @@
         });
 
         async_test(function(t) {
-            window.addEventListener('message', t.step_func(function(e) {
-                if (e.data.startsWith('SAME-ORIGIN,')) {
-                    assert_equals(e.data, 'SAME-ORIGIN,' + location.origin + '/base/');
-                    t.done();
-                }
-            }));
-            var e = document.createElement('iframe');
-            e.sandbox = 'allow-scripts';
-            e.style.display = 'none';
-            e.srcdoc = `
+            var i = document.createElement('iframe');
+            i.sandbox = 'allow-scripts';
+            i.style.display = 'none';
+            i.srcdoc = `
             <script>
               window.addEventListener('securitypolicyviolation', function() {
-                top.postMessage('SAME-ORIGIN,FAIL', '*');
+                top.postMessage('FAIL', '*');
               });
             </sc` + `ript>
             <base href="{{location[scheme]}}://{{domains[]}}:{{ports[http][0]}}/base/">
             <script>
-              top.postMessage('SAME-ORIGIN,' + document.baseURI, '*');
+              top.postMessage(document.baseURI, '*');
             </sc` + `ript>`;
-            document.body.appendChild(e);
-        }, 'base-uri \'self\' works with same-origin sandboxed iframes.');
 
-        async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
-                if (e.data.startsWith('FOREIGN-ORIGIN')) {
-                    assert_equals(e.data, 'FOREIGN-ORIGIN,' + location.href);
+                if (e.source === i.contentWindow) {
+                    assert_equals(e.data, location.origin + '/base/');
                     t.done();
                 }
             }));
-            var e = document.createElement('iframe');
-            e.sandbox = 'allow-scripts';
-            e.style.display = 'none';
-            e.srcdoc = `
+
+            document.body.appendChild(i);
+        }, 'base-uri \'self\' works with same-origin sandboxed iframes.');
+
+        async_test(function(t) {
+            var i = document.createElement('iframe');
+            i.sandbox = 'allow-scripts';
+            i.style.display = 'none';
+            i.srcdoc = `
             <script>
               window.addEventListener('securitypolicyviolation',
                 function(violation) {
                   if (violation.blockedURI !== '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/base/' || violation.effectiveDirective !== 'base-uri') {
-                      top.postMessage('FOREIGN-ORIGIN,FAIL');
+                      top.postMessage('FAIL');
                       return;
                   }
-                  top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
+                  top.postMessage(document.baseURI, '*');
               });
             </sc` + `ript>
             <base href="{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/base/">
             <script>
-              top.postMessage('FOREIGN-ORIGIN,' + document.baseURI, '*');
+              top.postMessage(document.baseURI, '*');
             </sc` + `ript>`;
-            document.body.appendChild(e);
+
+            window.addEventListener('message', t.step_func(function(e) {
+                if (e.source === i.contentWindow) {
+                    assert_equals(e.data, location.href);
+                    t.done();
+                }
+            }));
+
+            document.body.appendChild(i);
         }, 'base-uri \'self\' blocks foreign-origin sandboxed iframes.');
     </script>
 

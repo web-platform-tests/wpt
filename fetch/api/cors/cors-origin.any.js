@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/common/utils.js");
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js")
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 /* If origin is undefined, it is set to fetched url's origin*/
 function corsOrigin(desc, baseURL, method, origin, shouldPass) {
@@ -52,5 +49,3 @@ corsOrigin("Cross domain [HEAD] [origin KO]", host_info.HTTP_REMOTE_ORIGIN, "HEA
 corsOrigin("CORS preflight [PUT] [origin OK]", host_info.HTTP_REMOTE_ORIGIN, "PUT", origin, true);
 corsOrigin("CORS preflight [PUT] [origin KO]", host_info.HTTP_REMOTE_ORIGIN, "PUT", undefined, false);
 corsOrigin("Allowed origin: \"\" [origin KO]", host_info.HTTP_REMOTE_ORIGIN, "GET", "" , false);
-
-done();

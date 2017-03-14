@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("/common/utils.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function headerNames(headers)
 {
@@ -100,5 +97,3 @@ corsPreflight("CORS [PUT] [several headers], server allows", corsUrl, "PUT", tru
 corsPreflight("CORS [PUT] [several headers], server refuses", corsUrl, "PUT", false, headers, safeHeaders);
 
 corsPreflight("CORS [PUT] [only safe headers], server allows", corsUrl, "PUT", true, null, safeHeaders);
-
-done();

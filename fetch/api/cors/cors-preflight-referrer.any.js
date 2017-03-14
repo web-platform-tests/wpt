@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("/common/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsPreflightReferrer(desc, corsUrl, referrerPolicy, referrer, expectedReferrer) {
   var uuid_token = token();
@@ -49,5 +46,3 @@ corsPreflightReferrer("Referrer policy: origin-when-cross-origin", corsUrl, "ori
 
 corsPreflightReferrer("Referrer policy: unsafe-url", corsUrl, "unsafe-url", undefined, location.toString());
 corsPreflightReferrer("Referrer policy: unsafe-url", corsUrl, "unsafe-url", "myreferrer", new URL("myreferrer", location).toString());
-
-done();

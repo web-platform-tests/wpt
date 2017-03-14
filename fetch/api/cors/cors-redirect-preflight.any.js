@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("/common/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsRedirect(desc, redirectUrl, redirectLocation, redirectStatus, expectSuccess) {
   var urlBaseParameters = "&redirect_status=" + redirectStatus;
@@ -46,5 +43,3 @@ for (var code of [301, 302, 303, 307, 308]) {
   corsRedirect("Redirect " + code + ": cors to same origin", remoteRedirect, localLocation, code);
   corsRedirect("Redirect " + code + ": cors to another cors", remoteRedirect, remoteLocation2, code);
 }
-
-done();

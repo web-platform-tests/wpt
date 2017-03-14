@@ -1,8 +1,5 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-}
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function cors(desc, origin) {
   var url = origin + dirname(location.pathname);
@@ -38,5 +35,3 @@ cors("Same domain different protocol different port", host_info.HTTPS_ORIGIN);
 cors("Cross domain basic usage", host_info.HTTP_REMOTE_ORIGIN);
 cors("Cross domain different port", host_info.HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT);
 cors("Cross domain different protocol", host_info.HTTPS_REMOTE_ORIGIN);
-
-done();

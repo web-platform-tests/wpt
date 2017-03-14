@@ -1,8 +1,5 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js")
-}
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsCookies(desc, baseURL1, baseURL2, credentialsMode, cookies) {
   var urlSetCookie = baseURL1 + dirname(location.pathname) + RESOURCES_DIR + "top.txt";
@@ -57,5 +54,3 @@ corsCookies("Include mode: local cookies are not sent with remote request", loca
 corsCookies("Include mode: remote cookies are not sent with local request", remote, local, "include", ["d=4"]);
 corsCookies("Same-origin mode: cookies are discarded in cors request", remote, remote, "same-origin", ["f=6"]);
 corsCookies("Include mode: remote cookies are not sent with other remote request", remote, otherRemote, "include", ["e=5"]);
-
-done();

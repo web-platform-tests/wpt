@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 /* Check preflight is ok if status is ok status (200  to 299)*/
 function corsPreflightStatus(desc, corsUrl, preflightStatus) {
@@ -38,5 +35,3 @@ for (status of [200, 201, 202, 203, 204, 205, 206,
                 400, 401, 402, 403, 404, 405,
                 501, 502, 503, 504, 505])
   corsPreflightStatus("Preflight answered with status " + status, corsUrl, status);
-
-done();

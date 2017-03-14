@@ -1,8 +1,5 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js")
-}
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsRedirectCredentials(desc, redirectUrl, redirectLocation, redirectStatus, locationCredentials) {
   var url = redirectUrl
@@ -52,5 +49,3 @@ for (var code of [301, 302, 303, 307, 308]) {
   corsRedirectCredentials("Redirect " + code + " from remote to another remote with user", remoteRedirect, remoteLocation2, code, "user:");
   corsRedirectCredentials("Redirect " + code + " from remote to another remote with password", remoteRedirect, remoteLocation2, code, ":password");
 }
-
-done();

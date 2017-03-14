@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/common/utils.js");
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js")
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsNoPreflight(desc, baseURL, method, headerName, headerValue) {
 
@@ -42,5 +39,3 @@ corsNoPreflight("Cross domain [GET] [Content-Type: multipart/form-data]", host_i
 corsNoPreflight("Cross domain [GET] [Content-Type: text/plain]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "text/plain");
 corsNoPreflight("Cross domain [GET] [Content-Type: text/plain;charset=utf-8]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "text/plain;charset=utf-8");
 corsNoPreflight("Cross domain [GET] [Content-Type: Text/Plain;charset=utf-8]", host_info.HTTP_REMOTE_ORIGIN, "GET" , "Content-Type", "Text/Plain;charset=utf-8");
-
-done();

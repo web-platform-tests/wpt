@@ -1,9 +1,6 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/utils.js");
-  importScripts("/common/get-host-info.sub.js");
-}
+// META: script=/common/utils.js
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function corsPreflightRedirect(desc, redirectUrl, redirectLocation, redirectStatus, redirectPreflight) {
   var uuid_token = token();
@@ -37,5 +34,3 @@ for (var code of [301, 302, 303, 307, 308]) {
   /* preflight is done before redirection: preflight force redirect to error */
   corsPreflightRedirect("Redirection " + code + " after preflight failed", redirectUrl, locationUrl, code, false);
 }
-
-done();

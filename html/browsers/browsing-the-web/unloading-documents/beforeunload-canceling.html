@@ -71,25 +71,18 @@ promise_test(t => {
 }, "Returning false must cancel the event, because it's coerced to the DOMString \"false\" which does not cancel " +
    "CustomEvents: CustomEvent, cancelable");
 
-// This test can be removed if we update the DOM Standard to disallow createEvent("beforeunload"). Most browsers do not
-// implement that. https://github.com/whatwg/dom/issues/362
+// This test can be removed if we update the DOM Standard to disallow createEvent("beforeunloadevent"). Most browsers do
+// not implement that. https://github.com/whatwg/dom/issues/362
 promise_test(t => {
-  let onbeforeunloadHappened = false;
-  window.onbeforeunload = t.step_func(() => {
-    onbeforeunloadHappened = true;
-    return "cancel me";
-  });
-
-  const eventWatcher = new EventWatcher(t, window, "beforeunload");
-  const promise = eventWatcher.wait_for("beforeunload").then(e => {
-    assert_true(onbeforeunloadHappened, "The event handler must have been triggered");
+  const eventWatcher = new EventWatcher(t, window, "click");
+  const promise = eventWatcher.wait_for("click").then(e => {
     assert_false(e.defaultPrevented, "The event must not have been canceled");
     window.onbeforeunload = null;
     t.done();
   });
 
-  const ev = document.createEvent("beforeunload");
-  ev.initEvent("beforeunload", false, true);
+  const ev = document.createEvent("BeforeUnloadEvent");
+  ev.initEvent("click", false, true);
   window.dispatchEvent(ev);
 
   return promise;

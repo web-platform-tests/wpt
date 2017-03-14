@@ -185,6 +185,14 @@ The way to contribute is just as usual:
 * Commit locally and push that to your repo.
 * Send in a pull request based on the above.
 
+Issues with web-platform-tests
+------------------------------
+
+If you spot an issue with a test and are not comfortable providing a
+pull request per above to fix it, please
+[file a new issue](https://github.com/w3c/web-platform-tests/issues/new).
+Thank you!
+
 Lint tool
 ---------
 

@@ -35,7 +35,6 @@
 function make_url(uuid, info, idx) {
   var arg = "";
   if ("query_arg" in info[idx]) {
-    console.log("found query_arg " + info[idx].query_arg);
     arg = "&target=" + info[idx].query_arg;
   }
   return "resources/http-cache.py?token=" + uuid + "&info=" + btoa(JSON.stringify(info)) + arg;

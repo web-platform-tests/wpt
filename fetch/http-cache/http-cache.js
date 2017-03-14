@@ -32,8 +32,13 @@
  * - expected_response_text
  */
 
-function make_url(uuid, info) {
-    return "resources/http-cache.py?token=" + uuid + "&info=" + btoa(JSON.stringify(info));
+function make_url(uuid, info, idx) {
+  var arg = "";
+  if ("query_arg" in info[idx]) {
+    console.log("found query_arg " + info[idx].query_arg);
+    arg = "&arg=" + info[idx].query_arg;
+  }
+  return "resources/http-cache.py?token=" + uuid + arg + "&info=" + btoa(JSON.stringify(info));
 }
 
 function server_state(uuid) {
@@ -48,6 +53,7 @@ function server_state(uuid) {
     });
 }
 
+
 templates = {
   "fresh": {
     "response_headers": [
@@ -59,6 +65,26 @@ templates = {
     "response_headers": [
       ['Expires', http_date(-5000)],
       ['Last-Modified', http_date(-100000)]
+    ]
+  },
+  "lcl_response": {
+    "response_headers": [
+      ['Location', "location_target"],
+      ['Content-Location', "content_location_target"]
+    ]
+  },
+  "location": {
+    "query_arg": "location_target",
+    "response_headers": [
+      ['Expires', http_date(100000)],
+      ['Last-Modified', http_date(0)]
+    ]
+  },
+  "content_location": {
+    "query_arg": "content_location_targets",
+    "response_headers": [
+      ['Expires', http_date(100000)],
+      ['Last-Modified', http_date(0)]
     ]
   }
 }
@@ -79,12 +105,12 @@ function make_test(raw_requests) {
   }
   return function(test) {
     var uuid = token();
-    var url = make_url(uuid, requests);
     var fetch_functions = [];
     for (var i = 0; i < requests.length; ++i) {
       fetch_functions.push({
         code: function(idx) {
           var init = {};
+          var url = make_url(uuid, requests, idx);
           var config = requests[idx];
           if ("request_method" in config) {
             init.method = config["request_method"];
@@ -233,9 +259,9 @@ function run_tests(tests)
 }
 
 function http_date(delta) {
-  return new Date(Date.now() + (delta * 1000)).toGMTString()
+  return new Date(Date.now() + (delta * 1000)).toGMTString();
 }
 
 function http_content() {
-  btoa(Math.random() * Date.now())
+  btoa(Math.random() * Date.now());
 }

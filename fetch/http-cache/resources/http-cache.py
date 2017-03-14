@@ -23,6 +23,8 @@ def main(request, response):
     note_headers = ['content-type', 'access-control-allow-origin', 'last-modified', 'etag']
     noted_headers = {}
     for header in config.get('response_headers', []):
+        if header[0].lower() in ["location", "content-location"]: # magic!
+            header[1] = "%s&target=%s" % (request.url, header[1])
         response.headers.set(header[0], header[1])
         if header[0].lower() in note_headers:
             noted_headers[header[0].lower()] = header[1]

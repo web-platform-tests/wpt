@@ -105,7 +105,7 @@ def wrap_pipeline(path, request, response):
     pipeline = None
     if "pipe" in query:
         pipeline = Pipeline(query["pipe"][-1])
-    elif os.path.splitext(path)[0].endswith(".sub"):
+    elif ".sub." in path:
         ml_extensions = {".html", ".htm", ".xht", ".xhtml", ".xml", ".svg"}
         escape_type = "html" if os.path.splitext(path)[1] in ml_extensions else "none"
         pipeline = Pipeline("sub(%s)" % escape_type)

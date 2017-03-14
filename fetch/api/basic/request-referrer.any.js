@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function testReferrer(referrer, expected, desc) {
   promise_test(function(test) {
@@ -24,5 +21,3 @@ testReferrer("about:client", self.location.href, 'about:client referrer');
 
 var fooURL = new URL("./foo", self.location).href;
 testReferrer(fooURL, fooURL, 'url referrer');
-
-done();

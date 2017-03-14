@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function checkFetchResponse(url, data, mime, fetchMode, method) {
   var cut = (url.length >= 40) ? "[...]" : "";
@@ -43,5 +40,3 @@ function checkKoUrl(url, method, desc) {
 }
 
 checkKoUrl("data:notAdataUrl.com", "GET");
-
-done();

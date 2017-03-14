@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function testUpload(desc, url, method, createBody, expectedBody) {
   var requestInit = {"method": method}
@@ -123,5 +120,3 @@ testUploadFailure("Fetch with POST with ReadableStream containing Blob", url,
       controller.close();
     }})
   });
-
-done();

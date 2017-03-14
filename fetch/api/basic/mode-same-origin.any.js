@@ -1,8 +1,5 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-  importScripts("/common/get-host-info.sub.js")
-}
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function fetchSameOrigin(url, shouldPass) {
   promise_test(function(test) {
@@ -29,6 +26,3 @@ fetchSameOrigin(redirPath + RESOURCES_DIR + "top.txt", true);
 fetchSameOrigin(redirPath + host_info.HTTP_ORIGIN + "/fetch/api/resources/top.txt", true);
 fetchSameOrigin(redirPath + host_info.HTTPS_ORIGIN + "/fetch/api/resources/top.txt", false);
 fetchSameOrigin(redirPath + host_info.HTTP_REMOTE_ORIGIN + "/fetch/api/resources/top.txt", false);
-
-done();
-

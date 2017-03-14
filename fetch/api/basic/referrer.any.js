@@ -1,8 +1,5 @@
-if (this.document === undefined) {
-    importScripts("/resources/testharness.js");
-    importScripts("../resources/utils.js");
-    importScripts("/common/get-host-info.sub.js")
-}
+// META: script=../resources/utils.js
+// META: script=/common/get-host-info.sub.js
 
 function runTest(url, init, expectedReferrer, title) {
     promise_test(function(test) {
@@ -30,6 +27,3 @@ var referrerUrlWithCredentials = get_host_info().HTTP_ORIGIN.replace("http://", 
 runTest(fetchedUrl, {referrer: referrerUrlWithCredentials}, get_host_info().HTTP_ORIGIN + "/", "Referrer with credentials should be stripped");
 var referrerUrlWithFragmentIdentifier = get_host_info().HTTP_ORIGIN + "#fragmentIdentifier";
 runTest(fetchedUrl, {referrer: referrerUrlWithFragmentIdentifier}, get_host_info().HTTP_ORIGIN + "/", "Referrer with fragment ID should be stripped");
-
-done();
-

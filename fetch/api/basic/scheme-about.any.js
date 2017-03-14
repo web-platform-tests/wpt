@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function checkFetchResponse(url, method, desc) {
   if (!desc) {
@@ -35,5 +32,3 @@ function checkKoUrl(url, desc) {
 checkKoUrl("about:invalid.com");
 checkKoUrl("about:config");
 checkKoUrl("about:unicorn");
-
-done();

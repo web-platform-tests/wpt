@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function requestForbiddenHeaders(desc, forbiddenHeaders) {
   var url = RESOURCES_DIR + "inspect-headers.py";
@@ -43,6 +40,3 @@ requestForbiddenHeaders("Proxy- is a forbidden request header", {"Proxy-": "valu
 requestForbiddenHeaders("Proxy-Test is a forbidden request header", {"Proxy-Test": "value"});
 requestForbiddenHeaders("Sec- is a forbidden request header", {"Sec-": "value"});
 requestForbiddenHeaders("Sec-Test is a forbidden request header", {"Sec-Test": "value"});
-
-done();
-

@@ -1,7 +1,4 @@
-if (this.document === undefined) {
-  importScripts("/resources/testharness.js");
-  importScripts("../resources/utils.js");
-}
+// META: script=../resources/utils.js
 
 function streamBody(reader, test, count) {
   return reader.read().then(function(data) {
@@ -29,5 +26,3 @@ promise_test(function(test) {
       });
   });
 }, "Stream response's body");
-
-done();

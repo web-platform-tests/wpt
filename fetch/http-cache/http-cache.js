@@ -209,7 +209,7 @@ function make_test(raw_requests) {
           }
           for (var j in expected_validating_headers) {
               var vhdr = expected_validating_headers[j];
-            assert_own_property(state[i].request_headers, vhdr, "has" + vhdr + "request header");
+            assert_own_property(state[i].request_headers, vhdr, " has " + vhdr + " request header");
           }
           if ("expected_request_headers" in requests[i]) {
             var expected_request_headers = requests[i].expected_request_headers;

@@ -1,35 +1,38 @@
 /**
- * Each test run gets its own URL and randomized content and operates
- * independently.
+ * Each test run gets its own URL and randomized content and operates independently.
  *
- * The test steps are run with request_cache.length fetch requests issued
- * and their immediate results sanity-checked.  The cache.py server script
- * stashes an entry containing any If-None-Match, If-Modified-Since, Pragma,
- * and Cache-Control observed headers for each request it receives.  When
- * the test fetches have run, this state is retrieved from cache.py and the
- * expected_* lists are checked, including their length.
- *
- * This means that if a request_* fetch is expected to hit the cache and not
- * touch the network, then there will be no entry for it in the expect_*
- * lists.  AKA (request_cache.length - expected_validation_headers.length)
- * should equal the number of cache hits that didn't touch the network.
+ * Tests are an array of objects, each representing a request to make and check.
+ * The cache.py server script stashes an entry containing observed headers for
+ * each request it receives.  When the test fetches have run, this state is retrieved
+ * and the expected_* lists are checked, including their length.
  *
  * Request object keys:
- * - template
- * - request_method
- * - request_headers
- * - request_body
- * - mode
- * - credentials
- * - cache
- * - pause_after
- * - response_status
- * - response_headers
- * - response_body
- * - expected_type
- * - expected_status
- * - expected_response_headers
- * - expected_response_text
+ * - template - A template object for the request, by name -- see "templates" below.
+ * - request_method - A string containing the HTTP method to be used.
+ * - request_headers - An array of [header_name_string, header_value_string] arrays to
+ *                     emit in the request.
+ * - request_body - A string to use as the request body.
+ * - mode - The mode string to pass to fetch().
+ * - credentials - The credentials string to pass to fetch().
+ * - cache - The cache string to pass to fetch().
+ * - pause_after - Boolean controlling a 3-second pause after the request completes.
+ * - response_status - A [number, string] array containing the HTTP status code
+ *                     and phrase to return.
+ * - response_headers - An array of [header_name_string, header_value_string] arrays to
+ *                      emit in the response. These values will also be checked like
+ *                      expected_response_headers, unless there is a third value that is
+ *                      false.
+ * - response_body - String to send as the response body. If not set, it will contain
+ *                   the test identifier.
+ * - expected_type - One of ["cached", "not_cached", "lm_validate", "etag_validate", "error"]
+ * - expected_status - A number representing a HTTP status code to check the response for.
+ *                     If not set, the value of response_status[0] will be used; if that
+ *                     is not set, 200 will be used.
+ * - expected_request_headers - An array of [header_name_string, header_value_string] representing
+ *                               headers to check the request for.
+ * - expected_response_headers - An array of [header_name_string, header_value_string] representing
+ *                               headers to check the response for. See also response_headers.
+ * - expected_response_text - A string to check the response body against.
  */
 
 function make_url(uuid, info, idx) {

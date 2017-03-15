@@ -59,7 +59,10 @@ class SourceFile(object):
                         "support",
                         "tools"])
 
-    dir_path_non_test = {("css21", "archive")}
+    dir_path_non_test = {("css21", "archive"),
+                         ("css", "css21", "archive"),
+                         ("css", "common"),
+                         ("css", "work-in-progress")}
 
     def __init__(self, tests_root, rel_path, url_base, contents=None):
         """Object representing a file in a source tree.

@@ -39,6 +39,8 @@ def main(request, response):
 
     if request.headers.get("If-Modified-Since", False) == noted_headers.get('last-modified', True):
         code, phrase = [304, "Not Modified"]
+    if request.headers.get("If-None-Match", False) == noted_headers.get('etag', True):
+        code, phrase = [304, "Not Modified"]
 
     response.status = (code, phrase)
 

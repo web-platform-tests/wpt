@@ -275,6 +275,11 @@
     "failure": true
   },
   {
+    "input": "non-special://f:999999/c",
+    "base": "http://example.org/foo/bar",
+    "failure": true
+  },
+  {
     "input": "http://f: 21 / b ? d # e ",
     "base": "http://example.org/foo/bar",
     "failure": true
@@ -5131,6 +5136,78 @@
     "pathname": "/test",
     "search": "?test",
     "hash": "#x"
+  },
+  "# Windows drive letter quirk with not empty host",
+  {
+    "input": "file://example.net/C:/",
+    "base": "about:blank",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file://1.2.3.4/C:/",
+    "base": "about:blank",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file://[1::8]/C:/",
+    "base": "about:blank",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
+  },
+  "# Windows drive letter quirk (no host)",
+  {
+    "input": "file:/C|/",
+    "base": "about:blank",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file://C|/",
+    "base": "about:blank",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
   },
   "# file URLs without base URL by Rimas Misevičius",
   {

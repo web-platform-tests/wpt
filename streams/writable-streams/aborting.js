@@ -890,4 +890,52 @@ promise_test(t => {
   });
 }, 'releaseLock() during delayed async abort() should create a new rejected closed promise');
 
+promise_test(t => {
+  let writeReject;
+  let controller;
+  const ws = new WritableStream({
+    write(chunk, c) {
+      controller = c;
+      return new Promise((resolve, reject) => {
+        writeReject = reject;
+      });
+    }
+  });
+  const writer = ws.getWriter();
+  return writer.ready.then(() => {
+    const writePromise = writer.write('a');
+    const abortPromise = writer.abort();
+    controller.error(error1);
+    writeReject(error2);
+    return Promise.all([
+      promise_rejects(t, error2, writePromise, 'write() should reject with error2'),
+      promise_rejects(t, error1, abortPromise, 'abort() should reject with error1')
+    ]);
+  });
+}, 'abort() should be rejected with the error passed to controller.error() during pending write()');
+
+promise_test(t => {
+  let closeReject;
+  let controller;
+  const ws = new WritableStream({
+    close(c) {
+      controller = c;
+      return new Promise((resolve, reject) => {
+        closeReject = reject;
+      });
+    }
+  });
+  const writer = ws.getWriter();
+  return writer.ready.then(() => {
+    const closePromise = writer.close();
+    const abortPromise = writer.abort();
+    controller.error(error1);
+    closeReject(error2);
+    return Promise.all([
+      promise_rejects(t, error2, closePromise, 'close() should reject with error2'),
+      promise_rejects(t, error1, abortPromise, 'abort() should reject with error1')
+    ]);
+  });
+}, 'abort() should be rejected with the error passed to controller.error() during pending close()');
+
 done();

@@ -68,7 +68,7 @@ promise_test(t => {
   window.dispatchEvent(new CustomEvent("beforeunload", { cancelable: true }));
 
   return promise;
-}, "Returning false must cancel the event, because it's coerced to the DOMString \"false\" which does not cancel " +
+}, "Returning false must not cancel the event, because it's coerced to the DOMString \"false\" which does not cancel " +
    "CustomEvents: CustomEvent, cancelable");
 
 // This test can be removed if we update the DOM Standard to disallow createEvent("BeforeUnloadEvent"). Browser support

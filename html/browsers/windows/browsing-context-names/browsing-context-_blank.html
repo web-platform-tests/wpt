@@ -14,9 +14,9 @@ test(t => {
     window2.close();
     window3.close();
   });
-  assert_false(window1 === window2);
-  assert_false(window2 === window3);
-  assert_false(window1 === window3);
+  assert_not_equals(window1, window2);
+  assert_not_equals(window2, window3);
+  assert_not_equals(window1, window3);
 }, 'window.open into `_blank` should create a new browsing context each time');
 
 test(t => {
@@ -28,8 +28,8 @@ test(t => {
     window2.close();
     window3.close();
   });
-  assert_false(window1 === window2);
-  assert_false(window2 === window3);
-  assert_false(window1 === window3);
+  assert_not_equals(window1, window2);
+  assert_not_equals(window2, window3);
+  assert_not_equals(window1, window3);
 }, '`_blank` should be ASCII case-insensitive');
 </script>

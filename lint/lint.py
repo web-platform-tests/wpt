@@ -231,13 +231,15 @@ def parse_whitelist(f):
         else:
             parts[-1] = int(parts[-1])
 
-        error_type, file_match, line_number = parts
+        error_types, file_match, line_number = parts
+        error_types = {item.strip() for item in error_types.split(",")}
         file_match = os.path.normcase(file_match)
 
-        if error_type == "*":
+        if "*" in error_types:
             ignored_files.add(file_match)
         else:
-            data[error_type][file_match].add(line_number)
+            for error_type in error_types:
+                data[error_type][file_match].add(line_number)
 
     return data, ignored_files
 

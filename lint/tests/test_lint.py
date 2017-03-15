@@ -69,8 +69,14 @@ TRAILING WHITESPACE: app-uri/*
 
 CONSOLE:streams/resources/test-utils.js: 12
 
+CR AT EOL, INDENT TABS: html/test.js
+
+CR AT EOL, INDENT TABS: html/test2.js: 42
+
 *:*.pdf
 *:resources/*
+
+*, CR AT EOL: *.png
 """)
 
     expected_data = {
@@ -78,6 +84,8 @@ CONSOLE:streams/resources/test-utils.js: 12
             '.gitmodules': {None},
             'app-uri/*': {None},
             'svg/*': {None},
+            'html/test.js': {None},
+            'html/test2.js': {42},
         },
         'TRAILING WHITESPACE': {
             'app-uri/*': {None},
@@ -88,11 +96,13 @@ CONSOLE:streams/resources/test-utils.js: 12
         'CR AT EOL': {
             'streams/resources/test-utils.js': {None},
             'svg/import/*': {None},
-        },
+            'html/test.js': {None},
+            'html/test2.js': {42},
+        }
     }
     expected_data = {e: {os.path.normcase(k): v for k, v in p.items()}
                      for e, p in expected_data.items()}
-    expected_ignored = {os.path.normcase(x) for x in {"*.pdf", "resources/*"}}
+    expected_ignored = {os.path.normcase(x) for x in {"*.pdf", "resources/*", "*.png"}}
     data, ignored = parse_whitelist(input_buffer)
     assert data == expected_data
     assert ignored == expected_ignored

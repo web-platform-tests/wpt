@@ -7,19 +7,19 @@
 <script>
   indexeddb_test(
     function(t, db, txn) {
-      // Store 1 - No auto-increment
-      var store1 = db.createObjectStore("Store1", {keyPath: "id"});
-      store1.createIndex("CompoundKey", ["num", "id"]);
+      // No auto-increment
+      var store = db.createObjectStore("Store1", {keyPath: "id"});
+      store.createIndex("CompoundKey", ["num", "id"]);
 
       // Add data
-      store1.put({id: 1, num: 100});
+      store.put({id: 1, num: 100});
     },
     function(t, db) {
-      var store1 = db.transaction("Store1", "readwrite").objectStore("Store1");
+      var store = db.transaction("Store1", "readwrite").objectStore("Store1");
 
-      store1.openCursor().onsuccess = t.step_func(function(e) {
+      store.openCursor().onsuccess = t.step_func(function(e) {
         var item = event.target.result.value;
-        store1.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
+        store.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
           assert_equals(e.target.result ? e.target.result.num : null, 100, 'Expected 100.');
           t.done();
         });
@@ -30,18 +30,18 @@
 
   indexeddb_test(
     function(t, db, txn) {
-      // Store 2 - Auto-increment
-      var store2 = db.createObjectStore("Store2", {keyPath: "id", autoIncrement: true});
-      store2.createIndex("CompoundKey", ["num", "id"]);
+      // Auto-increment
+      var store = db.createObjectStore("Store2", {keyPath: "id", autoIncrement: true});
+      store.createIndex("CompoundKey", ["num", "id"]);
 
       // Add data
-      store2.put({num: 100});
+      store.put({num: 100});
     },
     function(t, db) {
-      var store2 = db.transaction("Store2", "readwrite").objectStore("Store2");
-      store2.openCursor().onsuccess = t.step_func(function(e) {
+      var store = db.transaction("Store2", "readwrite").objectStore("Store2");
+      store.openCursor().onsuccess = t.step_func(function(e) {
         var item = event.target.result.value;
-        store2.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
+        store.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
           assert_equals(e.target.result ? e.target.result.num : null, 100, 'Expected 100.');
           t.done();
         });
@@ -50,4 +50,3 @@
     "Auto-Increment Primary Key"
   );
 </script>
-<div id="log"></div>

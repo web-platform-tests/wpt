@@ -6,13 +6,18 @@ self.testSettingImmutablePrototypeToNewValueOnly =
     });
   }, `${prefix}: setting the prototype to ${newValueString} via Object.setPrototypeOf should throw a TypeError`);
 
-  const dunderProtoError = isSameOriginDomain ? { name: "TypeError" } : { name: "SecurityError" };
+  let dunderProtoError = "SecurityError";
+  let dunderProtoErrorName = "\"SecurityError\" DOMException";
+  if (isSameOriginDomain) {
+    dunderProtoError = new TypeError();
+    dunderProtoErrorName = "TypeError";
+  }
 
   test(() => {
     assert_throws(dunderProtoError, function() {
       target.__proto__ = newValue;
     });
-  }, `${prefix}: setting the prototype to ${newValueString} via __proto__ should throw a ${dunderProtoError.name}`);
+  }, `${prefix}: setting the prototype to ${newValueString} via __proto__ should throw a ${dunderProtoErrorName}`);
 
   test(() => {
     assert_false(Reflect.setPrototypeOf(target, newValue));

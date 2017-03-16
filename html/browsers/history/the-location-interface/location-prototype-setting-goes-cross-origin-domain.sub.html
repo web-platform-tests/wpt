@@ -28,11 +28,11 @@ window.onload = () => {
     assert_equals(Object.getPrototypeOf(targetLocation), null);
   }, "Became cross-origin via document.domain: the prototype is now null");
 
-  testSettingImmutablePrototype("Became cross-origin via document.domain", targetLocation, null);
+  testSettingImmutablePrototype("Became cross-origin via document.domain", targetLocation, null, { isSameOriginDomain: false });
 
   testSettingImmutablePrototypeToNewValueOnly(
     "Became cross-origin via document.domain", targetLocation, origProto,
-    "the original value from before going cross-origin");
+    "the original value from before going cross-origin", { isSameOriginDomain: false });
 
   done();
 };

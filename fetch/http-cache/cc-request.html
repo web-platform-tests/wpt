@@ -145,6 +145,40 @@
         ]
       },
       {
+        name: "HTTP cache validates fresh response with Last-Modified when request contains Cache-Control: no-cache.",
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=3600"],
+              ["Last-Modified", http_date(-10000)]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "no-cache"]
+            ],
+            expected_type: "lm_validate",
+          }
+        ]
+      },
+      {
+        name: "HTTP cache validates fresh response with ETag when request contains Cache-Control: no-cache.",
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=3600"],
+              ["ETag", http_content("abc")]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "no-cache"]
+            ],
+            expected_type: "etag_validate",
+          }
+        ]
+      },
+      {
         name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-store.",
         requests: [
           {

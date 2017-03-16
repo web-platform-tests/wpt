@@ -35,12 +35,12 @@
  * - expected_response_text - A string to check the response body against.
  */
 
-function make_url(uuid, info, idx) {
+function make_url(uuid, requests, idx) {
   var arg = "";
-  if ("query_arg" in info[idx]) {
-    arg = "&target=" + info[idx].query_arg;
+  if ("query_arg" in requests[idx]) {
+    arg = "&target=" + requests[idx].query_arg;
   }
-  return "resources/http-cache.py?token=" + uuid + "&info=" + btoa(JSON.stringify(info)) + arg;
+  return "resources/http-cache.py?token=" + uuid + "&info=" + btoa(JSON.stringify(requests)) + arg;
 }
 
 function server_state(uuid) {
@@ -134,46 +134,47 @@ function make_test(raw_requests) {
           }
           return fetch(url, init)
             .then(function(response) {
-              var request_count = parseInt(response.headers.get("Server-Request-Count")) - 1;
+              var res_num = parseInt(response.headers.get("Server-Request-Count"));
+              var req_num = idx + 1;
               if ("expected_type" in config) {
                 if (config.expected_type === "error") {
-                  assert_true(false, "fetch should have been an error");
+                  assert_true(false, "Request " + req_num + " should have been an error");
                   return [response.text(), response_status];
                 }
                 if (config.expected_type === "cached") {
-                  assert_true(request_count < idx, "Cached response used");
+                  assert_less_than(res_num, req_num, "Response used");
                 }
                 if (config.expected_type === "not_cached") {
-                  assert_false(request_count < idx, "Cached response used");
+                  assert_equals(res_num, req_num, "Response used");
                 }
               }
               if ("expected_status" in config) {
-                assert_equals(response.status, config.expected_status);
+                assert_equals(response.status, config.expected_status, "Response status");
               } else if ("response_status" in config) {
-                  assert_equals(response.status, config.response_status[0]);
+                  assert_equals(response.status, config.response_status[0], "Response status");
               } else {
-                assert_equals(response.status, 200)
+                assert_equals(response.status, 200, "Response status")
               }
               if ("response_headers" in config) {
                 config.response_headers.forEach(function(header) {
                   if (header.len < 3 || header[2] === true) {
-                    assert_equals(response.headers.get(header[0]), header[1])
+                    assert_equals(response.headers.get(header[0]), header[1], "Response header")
                   }
                 })
               }
               if ("expected_response_headers" in config) {
                 config.expected_response_headers.forEach(function(header) {
-                  assert_equals(response.headers.get(header[0]), header[1]);
+                  assert_equals(response.headers.get(header[0]), header[1], "Response header");
                 });
               }
-              return [response.text(), response.status];
-            }).then(function(text, response_status) {
+              return response.text();
+            }).then(function(res_body) {
               if ("expected_response_text" in config) {
-                assert_equals(text, config.expected_response_text);
+                assert_equals(res_body, config.expected_response_text, "Response body");
+              } else if ("response_body" in config) {
+                assert_equals(res_body, config.response_body, "Response body");
               } else {
-                if (! response_status in [204, 304]) {
-                  assert_equals(text, uuid);
-                }
+                assert_equals(res_body, uuid, "Response body");
               }
             }, function(reason) {
               if ("expected_type" in config && config.expected_type === "error") {
@@ -220,13 +221,14 @@ function make_test(raw_requests) {
       }).then(function(state) {
         for (var i = 0; i < requests.length; ++i) {
           var expected_validating_headers = []
+          var req_num = i + 1;
           if ("expected_type" in requests[i]) {
             if (requests[i].expected_type === "cached") {
-              assert_true(state.length <= i, "cached response used");
-              break;
+              assert_true(state.length <= i, "cached response used for request " + req_num);
+              continue; // the server will not see the request, so we can't check anything else.
             }
             if (requests[i].expected_type === "not_cached") {
-              assert_false(state.length <= i, "cached response used");
+              assert_false(state.length <= i, "cached response used for request " + req_num);
             }
             if (requests[i].expected_type === "etag_validated") {
               expected_validating_headers.push('if-none-match')
@@ -264,6 +266,13 @@ function http_date(delta) {
   return new Date(Date.now() + (delta * 1000)).toGMTString();
 }
 
-function http_content() {
-  btoa(Math.random() * Date.now());
+var content_store = {};
+function http_content(cs_key) {
+  if (cs_key in content_store) {
+    return content_store[cs_key];
+  } else {
+    var content = btoa(Math.random() * Date.now());
+    content_store[cs_key] = content;
+    return content;
+  }
 }

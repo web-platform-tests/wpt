@@ -15,7 +15,6 @@ function encode(n) {
   return "%" + (s.length === 2 ? s : '0' + s);
 }
 
-function run_test() {
   var tests = [];
   var overall_test = async_test("Overall fetch with URLSearchParams");
   for (var i = 0; i < NUM_TESTS; i++) {
@@ -45,4 +44,3 @@ function run_test() {
     usp.append("a" + i, String.fromCharCode(i));
   }
   x.send(usp)
-}

@@ -16,14 +16,20 @@
     function check_status(status) {
       var code = status[0];
       var phrase = status[1];
+      var body = status[2];
+      if (body === undefined) {
+        body = http_content(code);
+      }
       tests.push({
         name: 'HTTP cache goes to the network if it has a stale ' + code + ' response.',
         requests: [
           {
             template: "stale",
             response_status: [code, phrase],
+            response_body: body
           }, {
             expected_type: "not_cached",
+            response_body: body
           }
         ]
       })
@@ -33,9 +39,11 @@
           {
             template: "fresh",
             response_status: [code, phrase],
+            response_body: body
           }, {
             expected_type: "cached",
             response_status: [code, phrase],
+            response_body: body
           }
         ]
       })
@@ -43,7 +51,7 @@
     [
       [200, 'OK'],
       [203, "Non-Authoritative Information"],
-      [204, "No Content"],
+      [204, "No Content", ""],
       [299, "Whatever"],
       [400, "Bad Request"],
       [404, "Not Found"],

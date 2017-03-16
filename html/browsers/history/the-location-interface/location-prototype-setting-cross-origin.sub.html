@@ -21,7 +21,7 @@ window.onload = () => {
     assert_equals(Object.getPrototypeOf(targetLocation), null);
   }, "Cross-origin: the prototype is null");
 
-  testSettingImmutablePrototype("Cross-origin", targetLocation, null);
+  testSettingImmutablePrototype("Cross-origin", targetLocation, null, { isSameOriginDomain: false });
 
   done();
 };

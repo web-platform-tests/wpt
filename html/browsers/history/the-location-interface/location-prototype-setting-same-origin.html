@@ -17,5 +17,5 @@ test(() => {
   assert_not_equals(origProto, null);
 }, "Same-origin prerequisite check: the original prototype is accessible");
 
-testSettingImmutablePrototype("Same-origin", location, origProto);
+testSettingImmutablePrototype("Same-origin", location, origProto, { isSameOriginDomain: true });
 </script>

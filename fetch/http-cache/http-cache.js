@@ -103,6 +103,13 @@ function make_test(raw_requests) {
         }
       }
     }
+    if ("expected_type" in request && request.expected_type === "cached") {
+      // requests after one that's expected to be cached will get out of sync
+      // with the server; not currently supported.
+      if (raw_requests.length > i + 1) {
+        assert_unreached("Making requests after something is expected to be cached.");
+      }
+    }
     requests.push(request);
   }
   return function(test) {

@@ -74,6 +74,63 @@
         ]
       },
       {
+        name: "HTTP cache doesn't invalidate existing Vary response.",
+        requests: [
+          {
+            request_headers: [
+              ["Foo", "1"]
+            ],
+            response_headers: [
+              ["Expires", http_date(5000)],
+              ["Last-Modified", http_date(-3000)],
+              ["Vary", "Foo"]
+            ],
+            response_body: http_content('foo_1')
+          },
+          {
+            request_headers: [
+              ["Foo", "2"]
+            ],
+            response_headers: [
+              ["Expires", http_date(5000)],
+              ["Last-Modified", http_date(-3000)],
+              ["Vary", "Foo"]
+            ],
+            expected_type: "not_cached",
+            response_body: http_content('foo_2'),
+          },
+          {
+            request_headers: [
+              ["Foo", "1"]
+            ],
+            expected_type: "cached"
+          }
+        ]
+      },
+      {
+        name: "HTTP cache doesn't pay attention to headers not listed in Vary.",
+        requests: [
+          {
+            request_headers: [
+              ["Foo", "1"],
+              ["Other", "2"]
+            ],
+            response_headers: [
+              ["Expires", http_date(5000)],
+              ["Last-Modified", http_date(-3000)],
+              ["Vary", "Foo"]
+            ],
+          },
+          {
+            request_headers: [
+              ["Foo", "1"],
+              ["Other", "3"]
+            ],
+            expected_type: "cached",
+          }
+        ]
+      },
+      {
         name: 'HTTP cache reuses two-way Vary response when request matches.',
         requests: [
           {

@@ -15,21 +15,6 @@
     <script>
     var tests = [
       {
-        name: "HTTP cache does use aged but fresh response when request contains Cache-Control: max-age that's is smaller than remaining freshness.",
-        requests: [
-          {
-            template: "fresh",
-            pause_after: true
-          },
-          {
-            request_headers: [
-              ["Cache-Control", "max-age=30"]
-            ],
-            expected_type: "cached",
-          }
-        ]
-      },
-      {
         name: "HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=0.",
         requests: [
           {
@@ -56,23 +41,6 @@
               ["Cache-Control", "max-age=1"]
             ],
             expected_type: "not_cached",
-          }
-        ]
-      },
-      {
-        name: "HTTP cache does use fresh response with Age header when request contains Cache-Control: max-age that is smaller than remaining freshness.",
-        requests: [
-          {
-            response_headers: [
-              ["Cache-Control", "max-age=3600"],
-              ["Age", "1800"]
-            ]
-          },
-          {
-            request_headers: [
-              ["Cache-Control", "max-age=2400"]
-            ],
-            expected_type: "cached",
           }
         ]
       },

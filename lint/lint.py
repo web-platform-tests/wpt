@@ -357,6 +357,11 @@ def check_parsed(repo_root, path, f, css_mode):
             not source_file.name_is_reference):
             return [("SUPPORT-WRONG-DIR", "Support file not in support directory", path, None)]
 
+        if (source_file.type != "support" and
+            not source_file.name_is_reference and
+            not source_file.spec_links):
+            return [("MISSING-LINK", "Testcase file must have a link to a spec", path, None)]
+
     if source_file.name_is_non_test or source_file.name_is_manual:
         return []
 

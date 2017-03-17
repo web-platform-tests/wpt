@@ -152,14 +152,10 @@ def check_css_globally_unique(repo_root, paths, css_mode):
                 continue
 
             parts = source_file.dir_path.split(os.path.sep)
-            if parts[0] in source_file.root_dir_non_test:
+            if (parts[0] in source_file.root_dir_non_test or
+                any(item in source_file.dir_non_test - {"support"} for item in parts) or
+                any(parts[:len(non_test_path)] == list(non_test_path) for non_test_path in source_file.dir_path_non_test)):
                 continue
-            elif any(item in source_file.dir_non_test - {"support"} for item in parts):
-                continue
-            else:
-                for non_test_path in source_file.dir_path_non_test:
-                    if parts[:len(path)] == list(non_test_path):
-                        continue
 
             name = path[offset+1:]
             support_files[name].add(path)

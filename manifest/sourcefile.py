@@ -153,14 +153,10 @@ class SourceFile(object):
 
         parts = self.dir_path.split(os.path.sep)
 
-        if parts[0] in self.root_dir_non_test:
+        if (parts[0] in self.root_dir_non_test or
+            any(item in self.dir_non_test for item in parts) or
+            any(parts[:len(path)] == list(path) for path in self.dir_path_non_test)):
             return True
-        elif any(item in self.dir_non_test for item in parts):
-            return True
-        else:
-            for path in self.dir_path_non_test:
-                if parts[:len(path)] == list(path):
-                    return True
         return False
 
     def in_conformance_checker_dir(self):

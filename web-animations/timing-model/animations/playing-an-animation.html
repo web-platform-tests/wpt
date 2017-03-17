@@ -17,7 +17,7 @@ test(function(t) {
   assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
   animation.play();
   assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
-}, 'play() leaves currentTime unchanged on running animation');
+}, 'playing a running animation leaves the current time unchanged');
 
 test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -25,7 +25,7 @@ test(function(t) {
   assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
   animation.play();
   assert_times_equal(animation.currentTime, 0);
-}, 'play() seeks back to start on finished animation');
+}, 'playing a finished animation seeks back to the start');
 
 test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -34,7 +34,7 @@ test(function(t) {
   assert_times_equal(animation.currentTime, 0);
   animation.play();
   assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
-}, 'play() seeks to end on reverse finished animation');
+}, 'playing a finished and reversed animation seeks to end');
 
 </script>
 </body>

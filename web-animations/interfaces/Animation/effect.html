@@ -21,17 +21,22 @@ test(function(t) {
 
 test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({left: ['100px', '100px']}, {fill: 'forwards'});
+  var animation = div.animate({ left: ['100px', '100px'] },
+                              { fill: 'forwards' });
   var effect = animation.effect;
 
-  assert_equals(getComputedStyle(div).left, '100px', 'animation is initially having an effect');
+  assert_equals(getComputedStyle(div).left, '100px',
+                'animation is initially having an effect');
 
   animation.effect = null;
-  assert_equals(getComputedStyle(div).left, 'auto', 'animation no longer has an effect');
+  assert_equals(getComputedStyle(div).left, 'auto',
+                'animation no longer has an effect');
 
   animation.effect = effect;
-  assert_equals(getComputedStyle(div).left, '100px', 'animation has an effect again');
-}, 'Clearing and setting Animation.effect should update the effect of the animation');
+  assert_equals(getComputedStyle(div).left, '100px',
+                'animation has an effect again');
+}, 'Clearing and setting Animation.effect should update the effect of'
+   + ' the animation');
 
 </script>
 </body>

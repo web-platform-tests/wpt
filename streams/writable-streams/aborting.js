@@ -169,13 +169,13 @@ promise_test(t => {
 }, 'WritableStream if sink\'s abort throws, for an abort performed during a write, the promise returned by ' +
    'ws.abort() rejects');
 
-test(() => {
+promise_test(() => {
   const ws = recordingWritableStream();
   const writer = ws.getWriter();
 
-  writer.abort(error1);
-
-  assert_array_equals(ws.events, ['abort', error1]);
+  return writer.abort(error1).then(() => {
+    assert_array_equals(ws.events, ['abort', error1]);
+  });
 }, 'Aborting a WritableStream passes through the given reason');
 
 promise_test(t => {
@@ -889,6 +889,87 @@ promise_test(t => {
     });
   });
 }, 'releaseLock() during delayed async abort() should create a new rejected closed promise');
+
+promise_test(() => {
+  let resolveStart;
+  const ws = recordingWritableStream({
+    start() {
+      return new Promise(resolve => {
+        resolveStart = resolve;
+      });
+    }
+  });
+  const abortPromise = ws.abort('done');
+  return flushAsyncEvents().then(() => {
+    assert_array_equals(ws.events, [], 'abort() should not be called during start()');
+    resolveStart();
+    return abortPromise.then(() => {
+      assert_array_equals(ws.events, ['abort', 'done'], 'abort() should be called after start() is done');
+    });
+  });
+}, 'sink abort() should not be called until sink start() is done');
+
+promise_test(t => {
+  let resolveStart;
+  let controller;
+  const ws = recordingWritableStream({
+    start(c) {
+      controller = c;
+      return new Promise(resolve => {
+        resolveStart = resolve;
+      });
+    }
+  });
+  const abortPromise = ws.abort('done');
+  controller.error(error1);
+  resolveStart();
+  return promise_rejects(t, error1, abortPromise, 'abort() should reject if start() errors the controller')
+      .then(() =>
+      assert_array_equals(ws.events, [], 'abort() should be not be called if start() errors the controller'));
+}, 'abort() promise should reject if start() errors the controller');
+
+promise_test(t => {
+  const ws = recordingWritableStream({
+    start() {
+      return Promise.reject(error1);
+    }
+  });
+  return promise_rejects(t, error1, ws.abort('done'), 'abort() should reject if start() rejects')
+      .then(() =>
+      assert_array_equals(ws.events, [], 'abort() should be not be called if start() rejects'));
+}, 'stream abort() promise should reject if sink start() rejects');
+
+promise_test(t => {
+  const ws = new WritableStream();
+  const writer = ws.getWriter();
+  const writerReady1 = writer.ready;
+  writer.abort('a');
+  const writerReady2 = writer.ready;
+  assert_not_equals(writerReady1, writerReady2, 'abort() should replace the ready promise with a rejected one');
+  return Promise.all([writerReady1,
+                      promise_rejects(t, new TypeError(), writerReady2, 'writerReady2 should reject')]);
+}, 'writer abort() during sink start() should replace the writer.ready promise synchronously');
+
+promise_test(t => {
+  const promises = [];
+  const resolved = [];
+  const ws = recordingWritableStream();
+  const writer = ws.getWriter();
+  promises.push(promise_rejects(t, new TypeError(), writer.write(1), 'first write() should reject')
+      .then(() => resolved.push('write1')));
+  promises.push(writer.abort('a')
+      .then(() => resolved.push('abort')));
+  promises.push(promise_rejects(t, new TypeError(), writer.write(2), 'second write() should reject')
+      .then(() => resolved.push('write2')));
+  promises.push(promise_rejects(t, new TypeError(), writer.close(), 'close() should reject')
+      .then(() => resolved.push('close')));
+  return Promise.all(promises)
+  .then(() => {
+    assert_array_equals(resolved, ['write2', 'close', 'write1', 'abort'],
+                        'promises should resolve in the standard order');
+    assert_array_equals(ws.events, ['abort', 'a'], 'underlying sink write() should not be called');
+  });
+}, 'promises returned from other writer methods should be rejected when writer abort() happens during sink start()');
 
 promise_test(t => {
   let writeReject;

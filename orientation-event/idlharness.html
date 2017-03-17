@@ -7,14 +7,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
-<style>
-  pre {
-    display: none;
-  }
-</style>
-<div id="log"></div>
 
-<pre id="untested_idl">
+<script type="text/plain" id="untested_idl">
 interface Event {
 };
 
@@ -26,9 +20,9 @@ dictionary EventInit {
 
 interface Window {
 };
-</pre>
+</script>
 
-<pre id='idl'>
+<script type="text/plain" id="idl">
 partial interface Window {
     attribute EventHandler ondeviceorientation;
     attribute EventHandler ondevicemotion;
@@ -89,7 +83,7 @@ dictionary DeviceMotionEventInit : EventInit {
   DeviceRotationRate? rotationRate;
   double? interval = null;
 };
-</pre>
+</script>
 
 <script>
 "use strict";

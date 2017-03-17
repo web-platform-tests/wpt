@@ -1,15 +1,12 @@
-var result = null;
-
-self.addEventListener('message', function(event) {
-    event.data.port.postMessage(result);
-  });
+importScripts('./service-worker-recorder.js');
 
 self.addEventListener('fetch', function(event) {
-    if (!result)
-      result = 'PASS';
+    ServiceWorkerRecorder.worker.save('first handler invoked');
     event.respondWith(new Response());
   });
 
 self.addEventListener('fetch', function(event) {
-    result = 'FAIL: fetch event propagated';
+    event.waitUntil(
+      ServiceWorkerRecorder.worker.save('second handler invoked')
+    );
   });

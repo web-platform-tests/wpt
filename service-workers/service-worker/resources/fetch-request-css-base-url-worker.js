@@ -1,15 +1,6 @@
 importScripts('/common/get-host-info.sub.js');
 importScripts('test-helpers.sub.js');
-
-var port = undefined;
-
-self.onmessage = function(e) {
-  var message = e.data;
-  if ('port' in message) {
-    port = message.port;
-    port.postMessage({ready: true});
-  }
-};
+importScripts('./service-worker-recorder.js');
 
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
@@ -19,9 +10,9 @@ self.addEventListener('fetch', function(event) {
         'fetch-request-css-base-url-style.css',
         {mode: 'no-cors'}));
     } else if (url.indexOf('dummy.png') != -1) {
-      port.postMessage({
+      event.waitUntil(ServiceWorkerRecorder.worker.save({
           url: event.request.url,
           referrer: event.request.referrer
-        });
+        }));
     }
   });

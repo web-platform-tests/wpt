@@ -95,8 +95,6 @@ def respond(request,
     server_data = {"headers": json.dumps(request.headers, indent = 4)}
 
     payload = payload_generator(server_data)
-    if payload == None:
-        print content_type
     response.writer.write(payload)
 
 

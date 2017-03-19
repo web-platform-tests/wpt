@@ -230,6 +230,7 @@ var encodings_table =
       },
       {
         "labels": [
+          "koi8-ru",
           "koi8-u"
         ],
         "name": "koi8-u"

@@ -177,11 +177,40 @@
         ]
       },
       {
+        name: 'HTTP cache does not store a response with Cache-Control: no-store, even with max-age and Expires.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=10000, no-store"],
+              ['Expires', http_date(10000)]
+            ]
+          },
+          {
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
         name: 'HTTP cache stores a response with Cache-Control: no-cache, but revalidates upon use.',
         requests: [
           {
             response_headers: [
               ["Cache-Control", "no-cache"],
+              ['ETag', 'abcd']
+            ]
+          },
+          {
+            expected_type: "etag_validated",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache stores a response with Cache-Control: no-cache, but revalidates upon use, even with max-age and Expires.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=10000, no-cache"],
+              ['Expires', http_date(10000)],
               ['ETag', 'abcd']
             ]
           },

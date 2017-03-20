@@ -16,9 +16,6 @@ def main(request, response):
     elif tao == 'origin':
     # case-sensitive match for origin, pass
         response.headers.set('Timing-Allow-Origin', origin)
-    elif tao == 'comma':
-    # comma seperated list of origin and wildcard, pass
-        response.headers.set('Timing-Allow-Origin', ('*, ' + origin))
     elif tao == 'space':
     # space seperated list of origin and wildcard, fail
         response.headers.set('Timing-Allow-Origin', (origin + ' *'))

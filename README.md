@@ -115,17 +115,18 @@ Publication
 
 The master branch is automatically synced to http://w3c-test.org/.
 
-Pull requests are automatically mirrored to
-http://w3c-test.org/submissions/ a few minutes after someone with merge
-access has added a comment with "LGTM" (or "w3c-test:mirror") to indicate
-the PR has been checked.
+Pull requests are
+[automatically mirrored](http://w3c-test.org/submissions/) except those
+that modify sensitive resources (such as `.py`). The latter require
+someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
+indicate the pull request has been checked.
 
 Finding Things
 ==============
 
-Each top-level directory represents a W3C specification: the name
-matches the shortname used after the canonical address of the said
-specification under http://www.w3.org/TR/ .
+Each top-level directory matches the shortname used by a standard, with
+some exceptions. (Typically the shortname is from the standard's
+corresponding GitHub repository.)
 
 For some of the specifications, the tree under the top-level directory
 represents the sections of the respective documents, using the section

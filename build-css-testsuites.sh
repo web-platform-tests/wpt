@@ -30,7 +30,7 @@ if [ ! -d $VENV ]; then
         exit 1
     fi
 
-    $PYTHON -m virtualenv $VENV || { echo "Please ensure virtualenv is installed"; exit 2; }
+    virtualenv -p $PYTHON $VENV || { echo "Please ensure virtualenv is installed"; exit 2; }
 fi
 
 # Install dependencies

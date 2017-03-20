@@ -20,12 +20,10 @@ matrix:
   include:
     - os: linux
       python: "2.7"
-      env:
-        - SCRIPT=ci_lint.sh
+      env: SCRIPT=ci_lint.sh
     - os: linux
       python: "2.7"
-      env:
-        - SCRIPT=ci_built_diff.sh
+      env: SCRIPT=ci_built_diff.sh
     - os: linux
       python: "2.7"
       addons:
@@ -34,8 +32,7 @@ matrix:
             - libnss3-tools
       env:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
-        - SCRIPT=ci_stability.sh
-        - PRODUCT=firefox:nightly
+        - SCRIPT=ci_stability.sh PRODUCT=firefox:nightly
     - os: linux
       sudo: required
       python: "2.7"
@@ -46,8 +43,7 @@ matrix:
             - fonts-liberation
       env:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
-        - SCRIPT=ci_stability.sh
-        - PRODUCT=chrome:unstable
+        - SCRIPT=ci_stability.sh PRODUCT=chrome:unstable
 script:
   - bash $SCRIPT
 cache:

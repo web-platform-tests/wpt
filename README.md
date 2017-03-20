@@ -110,25 +110,6 @@ Alternatively, you may also use
 in the Windows 10 Anniversary Update build, then access your windows
 partition from there to launch wptserve.
 
-Test Runner
-===========
-
-There is a test runner that is designed to provide a
-convenient way to run the web-platform-tests in-browser. It will run
-testharness.js tests automatically but requires manual work for
-reftests and manual tests.
-
-The runner can be found at `/tools/runner/index.html` on the local
-server i.e.
-
-```
-http://web-platform.test:8000/tools/runner/index.html
-```
-
-in the default configuration. The first time you use this it has to
-generate a manifest of all tests. This may take some time, so please
-be patient.
-
 Publication
 ===========
 

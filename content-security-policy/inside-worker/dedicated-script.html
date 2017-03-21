@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<meta http-equiv="content-security-policy" content="script-src 'self' 'nonce-a' blob: filesystem:">
+<script nonce="a">
+  // The filesystem test takes some nesting to setup:
+  setup({explicit_done: true});
+
+  // External URLs inherit policy: the header delivered with the script resource is ignored.
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,script-src 'none')"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,script-src *)"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,default-src 'none')"));
+  fetch_tests_from_worker(new Worker("./support/script-src-self.sub.js?pipe=sub|header(Content-Security-Policy,default-src *)"));
+
+  fetch("./support/script-src-self.sub.js")
+    .then(r => r.blob())
+    .then(b => {
+      // 'blob:' URLs inherit policy.
+      var u = URL.createObjectURL(b);
+      fetch_tests_from_worker(new Worker(u));
+
+      // 'filesystem:' urls inherit policy.
+      if (window.webkitrequestfilesystem) {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024, fs => {
+          fs.root.getFile('worker.js', { create: true }, entry => {
+            entry.createWriter(w => {
+              w.onwriteend = _ => {
+                var u = entry.toURL();
+                fetch_tests_from_worker(new Worker(u));
+
+                // explicit_done: yay.
+                done();
+              };
+              w.onerror = _ => {assert_unreached() };
+              w.write(b);
+            });
+          });
+        });
+      } else {
+        done();
+      }
+    });
+</script>

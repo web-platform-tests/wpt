@@ -58,7 +58,7 @@ Guidelines for writing tests
       ```
 
       ```javascript
-        test(function(t) {
+      test(function(t) {
           assert_throws({ name: 'TypeError' }, function() {
           createDiv(t).animate(null, -1);
         });

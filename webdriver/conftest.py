@@ -12,13 +12,32 @@ default_host = "http://127.0.0.1"
 default_port = "4444"
 
 
+@pytest.fixture(scope="function")
+def _function_session(configuration, request):
+    return _session(configuration, request)
+
+
 @pytest.fixture(scope="session")
-def _session(request):
+def _session_session(configuration, request):
+    return _session(configuration, request)
+
+
+@pytest.fixture(scope="session")
+def configuration():
     host = os.environ.get("WD_HOST", default_host)
     port = int(os.environ.get("WD_PORT", default_port))
     capabilities = json.loads(os.environ.get("WD_CAPABILITIES", "{}"))
 
-    session = webdriver.Session(host, port, desired_capabilities=capabilities)
+    return {
+        "host": host,
+        "port": port,
+        "capabilities": capabilities
+    }
+
+def _session(configuration, request):
+    session = webdriver.Session(configuration["host"],
+                                configuration["port"],
+                                desired_capabilities=configuration["capabilities"])
 
     def destroy():
         if session.session_id is not None:
@@ -30,14 +49,14 @@ def _session(request):
 
 
 @pytest.fixture(scope="function")
-def session(_session, request):
+def session(_session_session, request):
     # finalisers are popped off a stack,
     # making their ordering reverse
-    request.addfinalizer(lambda: cleanup.switch_to_top_level_browsing_context(_session))
-    request.addfinalizer(lambda: cleanup.restore_windows(_session))
-    request.addfinalizer(lambda: cleanup.dismiss_user_prompts(_session))
+    request.addfinalizer(lambda: cleanup.switch_to_top_level_browsing_context(_session_session))
+    request.addfinalizer(lambda: cleanup.restore_windows(_session_session))
+    request.addfinalizer(lambda: cleanup.dismiss_user_prompts(_session_session))
 
-    return _session
+    return _session_session
 
 
 @pytest.fixture(scope="function")

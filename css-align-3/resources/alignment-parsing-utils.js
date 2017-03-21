@@ -6,17 +6,26 @@ var baselineValues = [ "baseline", "first baseline", "last baseline"];
 function checkPlaceShorhand(shorthand, alignValue, justifyValue)
 {
     var div = document.createElement("div");
-    var value = (alignValue + " " + justifyValue).trim();
-    div.style[shorthand] = value;
+    var specifiedValue = (alignValue + " " + justifyValue).trim();
+    div.style[shorthand] = specifiedValue;
     document.body.appendChild(div);
-    var specifiedValue = alignValue;
-    if (alignValue !== justifyValue)
-        specifiedValue = value;
+
+    if (alignValue === justifyValue)
+        specifiedValue = alignValue;
+
     var resolvedValue = getComputedStyle(div).getPropertyValue(shorthand);
+    if (alignValue === "first baseline")
+        alignValue = "baseline";
+    if (justifyValue === "first baseline")
+        justifyValue = "baseline";
+    if (justifyValue === "")
+        justifyValue = alignValue;
+    var expectedResolvedValue = (alignValue + " " + justifyValue).trim()
+
     assert_equals(div.style[shorthand], specifiedValue, shorthand + " specified value");
     // FIXME: We need https://github.com/w3c/csswg-drafts/issues/1041 to clarify which
     // value is expected for the shorthand's 'resolved value".
-    assert_true(resolvedValue === value || resolvedValue === "", shorthand + " resolved value");
+    assert_in_array(resolvedValue, ["", expectedResolvedValue], shorthand + " resolved value");
 }
 
 function checkPlaceShorhandLonghands(shorthand, alignLonghand, justifyLonghand, alignValue, justifyValue = "")

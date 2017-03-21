@@ -52,8 +52,8 @@ Guidelines for writing tests
 
       ```javascript
       test(function(t) {
-        const anim = createDiv(t).animate(null);
-        assert_class_string(anim, 'Animation', 'Returned object is an Animation');
+        const animation = createDiv(t).animate(null);
+        assert_class_string(animation, 'Animation', 'Returned object is an Animation');
       }, 'Element.animate() creates an Animation object');
       ```
 

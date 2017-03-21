@@ -41,22 +41,38 @@
         }
 
         test(function() {
-          var result = initialDOMMatrix().translate(1, 5, 3);
+          var tx = 1;
+          var ty = 5;
+          var tz = 3;
+          var result = initialDOMMatrix().translate(tx, ty, tz);
           var expected = update(initialMatrix(), function(m) {
-            m.m41 += 1;
-            m.m42 += 5;
-            m.m43 += 3;
+            m.m41 += tx * m.m11 + ty * m.m21 + tz * m.m31;
+            m.m42 += tx * m.m12 + ty * m.m22 + tz * m.m32;
+            m.m43 += tx * m.m13 + ty * m.m23 + tz * m.m33;
+            m.m44 += tx * m.m14 + ty * m.m24 + tz * m.m34;
           });
           checkDOMMatrix(result, expected);
         },"test translate()");
 
         test(function() {
-          var result = initialDOMMatrix().scale(2, 5, 3);
-          var expected = new DOMMatrix(
-              [2.0,  -2.5,  1.5,  0.0,
-               1.0,  10.0,  -1.5, 0.0,
-               0.0,  0.0,   3.0,  0.0,
-               20.0, 100.0, 30.0, 1.0 ]);
+          var sx = 2;
+          var sy = 5;
+          var sz = 3;
+          var result = initialDOMMatrix().scale(sx, sy, sz);
+          var expected = update(initialMatrix(), function(m) {
+            m.m11 *= sx;
+            m.m12 *= sx;
+            m.m13 *= sx;
+            m.m14 *= sx;
+            m.m21 *= sy;
+            m.m22 *= sy;
+            m.m23 *= sy;
+            m.m24 *= sy;
+            m.m31 *= sz;
+            m.m32 *= sz;
+            m.m33 *= sz;
+            m.m34 *= sz;
+          });
           checkDOMMatrix(result, expected);
         },"test scale() without offsets");
 

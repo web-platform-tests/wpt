@@ -39,7 +39,9 @@ preflightTest(true, false, "get", "x-test", "GET", ["X-Test", "1"])
 preflightTest(true, false, "*", "x-test", "SUPER", ["X-Test", "1"])
 preflightTest(true, false, "*", "*", "OK", ["X-Test", "1"])
 preflightTest(false, true, "*", "*", "OK", ["X-Test", "1"])
-preflightTest(false, true, "*", "", "GET", undefined)
-preflightTest(false, true, "*", "*", "GET", undefined)
+preflightTest(false, true, "*", "", "PUT", undefined)
+preflightTest(false, true, "put", "*", "PUT", undefined)
+preflightTest(false, true, "get", "*", "GET", ["X-Test", "1"])
+preflightTest(false, true, "*", "*", "GET", ["X-Test", "1"])
 
 done();

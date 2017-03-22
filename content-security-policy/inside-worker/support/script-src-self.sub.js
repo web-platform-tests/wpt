@@ -2,9 +2,11 @@ importScripts("{{location[server]}}/resources/testharness.js");
 importScripts("{{location[server]}}/content-security-policy/support/testharness-helper.js");
 
 test(t => {
+  self.a = false;
   assert_throws("NetworkError",
-                _ => importScripts("http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/fail.js"),
+                _ => importScripts("http://{{domains[www]}}:{{ports[http][1]}}/content-security-policy/support/var-a.js"),
                 "importScripts should throw `NetworkError`");
+  assert_false(self.a);
 }, "Cross-origin `importScripts()` blocked in " + self.location.protocol + self.location.search);
 
 test(t => {

@@ -1613,6 +1613,33 @@
                 "href": "sc://example.net/%23",
                 "pathname": "/%23"
             }
+        },
+        {
+            "comment": "File URLs and (back)slashes",
+            "href": "file://monkey/",
+            "new_value": "\\\\",
+            "expected": {
+                "href": "file://monkey/",
+                "pathname": "/"
+            }
+        },
+        {
+            "comment": "File URLs and (back)slashes",
+            "href": "file:///unicorn",
+            "new_value": "//\\/",
+            "expected": {
+                "href": "file:///",
+                "pathname": "/"
+            }
+        },
+        {
+            "comment": "File URLs and (back)slashes",
+            "href": "file:///unicorn",
+            "new_value": "//monkey/..//",
+            "expected": {
+                "href": "file:///",
+                "pathname": "/"
+            }
         }
     ],
     "search": [

@@ -1,12 +1,5 @@
-<!DOCTYPE HTML>
-<meta charset=utf-8>
-<title>PerformanceObservers: observe</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="performanceobservers.js"></script>
-<h1>PerformanceObservers: observe</h1>
-<div id="log"></div>
-<script>
+// META: script=performanceobservers.js
+
   test(function () {
     var obs = new PerformanceObserver(function () { return true; });
     assert_throws(new TypeError(), function () {
@@ -49,10 +42,9 @@
         t.done();
       })
     );
-    performance.clearMarks();
+    self.performance.clearMarks();
     observer.observe({entryTypes: ["mark"]});
     observer.observe({entryTypes: ["measure"]});
-    performance.mark("mark1");
-    performance.measure("measure1");
+    self.performance.mark("mark1");
+    self.performance.measure("measure1");
   }, "replace observer if already present");
-</script>

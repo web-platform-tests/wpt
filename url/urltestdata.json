@@ -5334,6 +5334,20 @@
     "search": "",
     "hash": ""
   },
+  {
+    "input": "file://",
+    "base": "file://ape/",
+    "href": "file:///",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
   "# File URLs with non-empty hosts",
   {
     "input": "/rooibos",

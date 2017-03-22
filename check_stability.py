@@ -408,6 +408,18 @@ def get_branch_point(user):
         commits = git("rev-list", "HEAD", *not_heads).split("\n")
         first_commit = commits[-1]
         branch_point = git("rev-parse", first_commit + "^")
+        # The above can produce a too-early commit if we are e.g. on master and there are
+        # preceding changes that were rebased and so aren't on any other branch. To avoid
+        # this issue we check for the later of the above branch point and the merge-base
+        # with master
+        merge_base = git("merge-base", "HEAD", "origin/master")
+        if (branch_point != merge_base and
+            not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip()):
+            logger.debug("Using merge-base as the branch point")
+            branch_point = merge_base
+        else:
+            logger.debug("Using first commit on another branch as the branch point")
+
     logger.debug("Branch point from master: %s" % branch_point)
     return branch_point
 

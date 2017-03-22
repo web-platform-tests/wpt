@@ -25,7 +25,7 @@
 
         // 'filesystem:' urls inherit policy.
         window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024, fs => {
-          fs.root.getFile('worker.js', { create: true }, entry => {
+          fs.root.getFile('dedicated-script-worker.js', { create: true }, entry => {
             entry.createWriter(w => {
               w.onwriteend = _ => {
                 var u = entry.toURL();

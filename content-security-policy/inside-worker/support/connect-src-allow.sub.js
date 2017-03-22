@@ -15,12 +15,9 @@ async_test(t => {
   assert_no_csp_event_for_url(t, url);
 
   var xhr = new XMLHttpRequest();
-  try {
-    xhr.open("GET", url);
-    t.done();
-  } catch (e) {
-    assert_unreached();
-  }
+  xhr.open("GET", url);
+  xhr.onload = t.step_func_done();
+  xhr.onerror = t.unreached_func();
   xhr.send();
 }, "Same-origin XHR in " + self.location.protocol + self.location.search);
 
@@ -38,12 +35,9 @@ async_test(t => {
   assert_no_csp_event_for_url(t, url);
 
   var xhr = new XMLHttpRequest();
-  try {
-    xhr.open("GET", url);
-    t.done();
-  } catch (e) {
-    assert_unreached();
-  }
+  xhr.open("GET", url);
+  xhr.onload = t.step_func_done();
+  xhr.onerror = t.unreached_func();
   xhr.send();
 }, "Cross-origin XHR in " + self.location.protocol + self.location.search);
 

@@ -11,7 +11,7 @@
   <meta content="image" name="flags" />
 
   <meta name="DC.date.created" content="2017-02-25T09:54:03+11:00" scheme="W3CDTF" />
-  <meta name="DC.date.modified" content="2017-02-28T09:54:03+11:00" scheme="W3CDTF" />
+  <meta name="DC.date.modified" content="2017-03-22T09:54:03+11:00" scheme="W3CDTF" />
 
   <style type="text/css"><![CDATA[
   html
@@ -21,13 +21,21 @@
 
   p
     {
-      margin: 8px;
+      position: absolute;
+      right: 16px;
+      top: -8px;
     }
 
-  div
+  img
     {
-      margin-right: 270px; /* 278px minus 8px */
-      margin-top: 40px; /* 8px + 40px + 8px + 40px == 88px */
+      vertical-align: top;
+    }
+
+  img + img
+    {
+      position: relative;
+      right: 16px;
+      top: 80px;
     }
   ]]></style>
 
@@ -35,15 +43,13 @@
 
  <body>
 
-  <p><img src="support/pass-cdts-abs-pos-non-replaced.png" width="246" height="36" alt="Image download support must be enabled" /></p>
+  <p><img src="support/pass-cdts-abs-pos-non-replaced.png" width="246" height="36" alt="Image download support must be enabled" /><img src="support/swatch-green.png" width="80" height="80" alt="Image download support must be enabled" /></p>
 
   <!--
   The image says:
   Test passes if there is a filled
   green square and <strong>no red</strong>.
   -->
-
-  <div><img src="support/swatch-green.png" width="80" height="80" alt="Image download support must be enabled" /></div>
 
  </body>
 </html>

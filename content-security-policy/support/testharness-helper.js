@@ -13,7 +13,6 @@ function assert_no_event(test, obj, name) {
 function waitUntilCSPEventForURL(test, url) {
   return new Promise((resolve, reject) => {
     self.addEventListener("securitypolicyviolation", test.step_func(e => {
-      console.log(e.blockedURI);
       if (e.blockedURI == url)
         resolve(e);
     }));

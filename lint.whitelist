@@ -556,6 +556,10 @@ CSS-COLLIDING-REF-NAME: css-pseudo-4/first-letter-001-ref.html
 CSS-COLLIDING-REF-NAME: css21/selectors/first-letter-001-ref.xht
 CSS-COLLIDING-REF-NAME: css21/text/text-transform-uppercase-001-ref.xht
 CSS-COLLIDING-REF-NAME: css-text-3/text-transform/reference/text-transform-uppercase-001-ref.xht
+CSS-COLLIDING-REF-NAME: css21/visufx/overflow-applies-to-001-ref.xht
+CSS-COLLIDING-REF-NAME: css21/ui/overflow-applies-to-001-ref.xht
+CSS-COLLIDING-REF-NAME: css21/visuren/inline-formatting-context-001-ref.xht
+CSS-COLLIDING-REF-NAME: css21/linebox/inline-formatting-context-001-ref.xht
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: compositing-1/mix-blend-mode/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: compositing-1/background-blending/support/red.png

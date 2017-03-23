@@ -33,3 +33,8 @@ AddCharset koi8-r .css
 <files ~ '^at-charset-07[1234567]\.css$'>
 RemoveCharset .css
 </files>
+
+<files character-encoding-041.css>
+AddCharset utf-16be .css
+</files>
+

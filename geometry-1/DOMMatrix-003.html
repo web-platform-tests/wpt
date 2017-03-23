@@ -40,6 +40,52 @@
           return matrix;
         }
 
+        function deg2rad(degrees) {
+          return degrees * Math.PI / 180;
+        }
+
+        function getRotationMatrix(x, y, z, alpha_in_degrees) {
+          // Vector normalizing
+          var nx = x;
+          var ny = y;
+          var nz = z;
+          var length = Math.sqrt(x * x + y * y + z * z);
+          if (length) {
+            nx = x / length;
+            ny = y / length;
+            nz = z / length;
+          }
+
+          // The 3D rotation matrix is described in CSS Transforms with alpha.
+          // Please see: https://drafts.csswg.org/css-transforms-1/#Rotate3dDefined
+          var alpha_in_radians = deg2rad(alpha_in_degrees / 2);
+          var sc = Math.sin(alpha_in_radians) * Math.cos(alpha_in_radians);
+          var sq = Math.sin(alpha_in_radians) * Math.sin(alpha_in_radians);
+
+          var m11 = 1 - 2 * (ny * ny + nz * nz) * sq;
+          var m12 = 2 * (nx * ny * sq + nz * sc);
+          var m13 = 2 * (nx * nz * sq - ny * sc);
+          var m14 = 0;
+          var m21 = 2 * (nx * ny * sq - nz * sc);
+          var m22 = 1 - 2 * (nx * nx + nz * nz) * sq;
+          var m23 = 2 * (ny * nz * sq + nx * sc);
+          var m24 = 0;
+          var m31 = 2 * (nx * nz * sq + ny * sc);
+          var m32 = 2 * (ny * nz * sq - nx * sc);
+          var m33 = 1 - 2 * (nx * nx + ny * ny) * sq;
+          var m34 = 0;
+          var m41 = 0;
+          var m42 = 0;
+          var m43 = 0;
+          var m44 = 1;
+
+          return new DOMMatrix([
+            m11, m12, m13, m14,
+            m21, m22, m23, m24,
+            m31, m32, m33, m34,
+            m41, m42, m43, m44]);
+        }
+
         test(function() {
           var tx = 1;
           var ty = 5;
@@ -96,11 +142,7 @@
 
         test(function() {
           var result = initialDOMMatrix().rotate(-90);
-          var expected = new DOMMatrix(
-              [ 0.5,   1.0, 0.5,  0.0,
-                -2.0,  0.5, -0.5, 0.0,
-                0.0,   0.0, 1.0,  0.0,
-                -20.0, 10,  10.0, 1.0 ]);
+          var expected = initialDOMMatrix().multiply(getRotationMatrix(0, 0, 1, -90));
           checkDOMMatrix(result, expected);
         },"test rotate() 2d");
 
@@ -117,14 +159,9 @@
         },"test rotateFromVector()");
 
         test(function() {
-          var swap = new DOMMatrix([
-            0,1,0,0,
-            0,0,1,0,
-            1,0,0,0,
-            0,0,0,1]);
-          var result = swap.multiply(
-                            initialDOMMatrix().rotateAxisAngle(3, 3, 3, 120));
-          checkDOMMatrix(result, initialMatrix());
+          var result = initialDOMMatrix().rotateAxisAngle(3, 3, 3, 120);
+          var expected = initialDOMMatrix().multiply(getRotationMatrix(3, 3, 3, 120));
+          checkDOMMatrix(result, expected);
         },"test rotateAxisAngle() ");
 
         test(function() {

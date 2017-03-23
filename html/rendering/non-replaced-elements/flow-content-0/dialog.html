@@ -29,15 +29,13 @@ setup(() => {
 
 onload = () => {
   for (let iframe of document.querySelectorAll('iframe')) {
+    const win = iframe.contentWindow;
     const styleAttr = iframe.getAttribute('style');
     const iframeWidth = parseInt(styleAttr.split(' ')[1]);
     const horizontalDistance = iframeWidth / 2 - dialogSize / 2;
     test(() => {
-      const win = iframe.contentWindow;
-      console.log(win.dialogClosed);
       const style = win.getComputedStyle(win.dialogClosed);
       assert_equals(style.display, 'none', 'display');
-      assert_equals(style.position, 'absolute', 'position');
       assert_equals(style.top, 'auto', 'top');
       assert_equals(style.right, '0px', 'right');
       assert_equals(style.bottom, 'auto', 'bottom');
@@ -48,23 +46,12 @@ onload = () => {
       assert_equals(style.marginRight, 'auto', 'marginRight');
       assert_equals(style.marginBottom, 'auto', 'marginBottom');
       assert_equals(style.marginLeft, 'auto', 'marginLeft');
-      assert_equals(style.borderTopStyle, 'solid', 'borderTopStyle');
-      assert_equals(style.borderRightStyle, 'solid', 'borderRightStyle');
-      assert_equals(style.borderBottomStyle, 'solid', 'borderBottomStyle');
-      assert_equals(style.borderLeftStyle, 'solid', 'borderLeftStyle');
-      assert_equals(style.paddingTop, ref1em, 'paddingTop');
-      assert_equals(style.paddingRight, ref1em, 'paddingRight');
-      assert_equals(style.paddingBottom, ref1em, 'paddingBottom');
-      assert_equals(style.paddingLeft, ref1em, 'paddingLeft');
-      assert_equals(style.backgroundColor, refWhite, 'backgroundColor');
-      assert_equals(style.color, refBlack, 'color');
+      assertCommon(style);
     }, `Closed dialog in ${styleAttr} iframe`);
 
     test(() => {
-      const win = iframe.contentWindow;
       const style = win.getComputedStyle(win.dialogOpen);
       assert_equals(style.display, 'block', 'display');
-      assert_equals(style.position, 'absolute', 'position');
       assert_equals(style.top, '8px', 'top');
       assert_equals(style.right, '0px', 'right');
       assert_equals(style.bottom, normalBottomDistance + 'px', 'bottom');
@@ -75,23 +62,12 @@ onload = () => {
       assert_equals(style.marginRight, horizontalDistance + 'px', 'marginRight');
       assert_equals(style.marginBottom, '0px', 'marginBottom');
       assert_equals(style.marginLeft, horizontalDistance + 'px', 'marginLeft');
-      assert_equals(style.borderTopStyle, 'solid', 'borderTopStyle');
-      assert_equals(style.borderRightStyle, 'solid', 'borderRightStyle');
-      assert_equals(style.borderBottomStyle, 'solid', 'borderBottomStyle');
-      assert_equals(style.borderLeftStyle, 'solid', 'borderLeftStyle');
-      assert_equals(style.paddingTop, ref1em, 'paddingTop');
-      assert_equals(style.paddingRight, ref1em, 'paddingRight');
-      assert_equals(style.paddingBottom, ref1em, 'paddingBottom');
-      assert_equals(style.paddingLeft, ref1em, 'paddingLeft');
-      assert_equals(style.backgroundColor, refWhite, 'backgroundColor');
-      assert_equals(style.color, refBlack, 'color');
+      assertCommon(style);
     }, `Open dialog in ${styleAttr} iframe`);
 
     test(() => {
-      const win = iframe.contentWindow;
       const style = win.getComputedStyle(win.dialogModal);
       assert_equals(style.display, 'block', 'display');
-      assert_equals(style.position, 'absolute', 'position');
       assert_equals(style.top, centeredVerticalDistance + 'px', 'top');
       assert_equals(style.right, '0px', 'right');
       assert_equals(style.bottom, centeredVerticalDistance + 'px', 'bottom');
@@ -102,18 +78,23 @@ onload = () => {
       assert_equals(style.marginRight, horizontalDistance + 'px', 'marginRight');
       assert_equals(style.marginBottom, '0px', 'marginBottom');
       assert_equals(style.marginLeft, horizontalDistance + 'px', 'marginLeft');
-      assert_equals(style.borderTopStyle, 'solid', 'borderTopStyle');
-      assert_equals(style.borderRightStyle, 'solid', 'borderRightStyle');
-      assert_equals(style.borderBottomStyle, 'solid', 'borderBottomStyle');
-      assert_equals(style.borderLeftStyle, 'solid', 'borderLeftStyle');
-      assert_equals(style.paddingTop, ref1em, 'paddingTop');
-      assert_equals(style.paddingRight, ref1em, 'paddingRight');
-      assert_equals(style.paddingBottom, ref1em, 'paddingBottom');
-      assert_equals(style.paddingLeft, ref1em, 'paddingLeft');
-      assert_equals(style.backgroundColor, refWhite, 'backgroundColor');
-      assert_equals(style.color, refBlack, 'color');
+      assertCommon(style);
     }, `Modal dialog in ${styleAttr} iframe`);
   }
   done();
 };
+
+function assertCommon(style) {
+  assert_equals(style.position, 'absolute', 'position');
+  assert_equals(style.borderTopStyle, 'solid', 'borderTopStyle');
+  assert_equals(style.borderRightStyle, 'solid', 'borderRightStyle');
+  assert_equals(style.borderBottomStyle, 'solid', 'borderBottomStyle');
+  assert_equals(style.borderLeftStyle, 'solid', 'borderLeftStyle');
+  assert_equals(style.paddingTop, ref1em, 'paddingTop');
+  assert_equals(style.paddingRight, ref1em, 'paddingRight');
+  assert_equals(style.paddingBottom, ref1em, 'paddingBottom');
+  assert_equals(style.paddingLeft, ref1em, 'paddingLeft');
+  assert_equals(style.backgroundColor, refWhite, 'backgroundColor');
+  assert_equals(style.color, refBlack, 'color');
+}
 </script>

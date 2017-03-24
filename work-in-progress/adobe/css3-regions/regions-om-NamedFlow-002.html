@@ -7,16 +7,16 @@
         <meta name="flags" content="dom">
         <meta name="assert" content="The namedFlows attribute returns a NamedFlowCollection.">
         <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>        
+        <script src="/resources/testharnessreport.js"></script>
     </head>
-    
+
     <style type="text/css">
         #flow1 {
             flow-into: flow1;
             display: none;
         }
         #flow2 {
-            flow-into: flow2;            
+            flow-into: flow2;
             display: none;
         }
     </style>
@@ -25,13 +25,13 @@
 
         <div id="flow1">foo</div>
         <div id="flow2">foo</div>
-        
+
         <script type="text/javascript">
             function testNamedFlowCollection(expected_length) {
                 var namedFlowCollection = document.namedFlows;
                 assert_equals (typeof (namedFlowCollection), "object",
                     "returned value is not an object");
-                assert_equals (String (namedFlowCollection), "[object NamedFlowCollection]", 
+                assert_equals (String (namedFlowCollection), "[object NamedFlowMap]",
                     "returned value is not a NamedFlowCollection");
                 assert_equals (namedFlowCollection.length, expected_length,
                     "length of collection different than expected.")
@@ -42,23 +42,20 @@
                 ele.setAttribute("style", "flow-into:none");
             }
 
-            function testRemovingFlowViaScript() {
+            test(function() {
+                testNamedFlowCollection(2);
+            }, "Test initial collection of named flows from style block.");
+
+            test(function() {
                 removeNamedFlow ("flow2");
                 testNamedFlowCollection (1);
-            }
+            }, "Test collection after removing a flow");
 
-            function testEmptyCollection() {
+            test(function() {
                 removeNamedFlow ("flow1");
                 removeNamedFlow ("flow2");
                 testNamedFlowCollection (0);
-            }
-
-            test( function() {testNamedFlowCollection(2);},
-                "Test initial collection of named flows from style block."); 
-            test( function() {testRemovingFlowViaScript();},
-                "Test collection after removing a flow"); 
-            test( function() {testEmptyCollection();},
-                "Test empty collection."); 
+            }, "Test empty collection.");
         </script>
     </body>
 </html>

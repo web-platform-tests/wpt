@@ -7,9 +7,9 @@
         <meta name="flags" content="dom">
         <meta name="assert" content="The NamedFlow interface works with no region chain.">
         <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>        
+        <script src="/resources/testharnessreport.js"></script>
     </head>
-    
+
     <style type="text/css">
         #flow1 {
             flow-into: flow1;
@@ -19,59 +19,52 @@
         <div id="log"></div>
 
         <div id="flow1">foo</div>
-        
+
         <script type="text/javascript">
-            function testNameAttribute(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
-                assert_equals (namedFlow.name, flow_name, 
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
+                assert_equals (namedFlow.name, flow_name,
                     "The name attribute should match the flow name.");
-            }
+            }, "Test name attribute.");
 
-            function testOversetAttribute(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
-                assert_equals (namedFlow.overset, true, 
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
+                assert_equals (namedFlow.overset, true,
                     "The overset attribute should be true for a flow with an empty region chain.");
-            }
+            }, "Test overset attribute.");
 
-            function testGetRegions(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
-                assert_equals (namedFlow.getRegions(), [], 
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
+                assert_array_equals (namedFlow.getRegions(), [],
                     "The getRegions method should return an empty sequence for a flow with an empty region chain.");
-            }
+            }, "Test getRegions method.");
 
-            function testfirstEmptyRegionIndexAttribute(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
-                assert_equals (namedFlow.firstEmptyRegionIndex, -1, 
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
+                assert_equals (namedFlow.firstEmptyRegionIndex, -1,
                     "The firstEmptyRegionIndex attribute should return -1 for a flow with an empty region chain.");
-            }
+            }, "Test firstEmptyRegionIndex attribute.");
 
-            function testgetContent(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
                 var flowContent = document.getElementById (flow_name);
 
-                assert_equals (namedFlow.getContent()[0], flowContent, 
+                assert_equals (namedFlow.getContent()[0], flowContent,
                     "For a single-element named flow, getContent should return a NodeList containing the Element");
-            }
+            }, "Test getContent method.");
 
-            function testGetRegionsByContent(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
+            test(function() {
+                var flow_name = "flow1";
+                var namedFlow = document.namedFlows.get(flow_name);
                 var flowContent = document.getElementById (flow_name);
-                assert_equals (namedFlow.getRegionsByContent(flowContent), [], 
+                assert_array_equals (namedFlow.getRegionsByContent(flowContent), [],
                     "The getRegionsByContent method should return an empty sequence for a flow with an empty region chain.");
-            }
-
-            test( function() {testNameAttribute("flow1");},
-                "Test name attribute."); 
-            test( function() {testOversetAttribute("flow1");},
-                "Test overset attribute."); 
-            test( function() {testGetRegions("flow1");},
-                "Test getRegions method."); 
-            test( function() {testfirstEmptyRegionIndexAttribute("flow1");},
-                "Test firstEmptyRegionIndex attribute."); 
-            test( function() {testgetContent("flow1");},
-                "Test getContent method."); 
-            test( function() {testGetRegionsByContent("flow1");},
-                "Test getRegionsByContent method."); 
+            }, "Test getRegionsByContent method.");
         </script>
     </body>
 </html>

@@ -337,7 +337,7 @@ promise_test(t => {
         events.push('closed');
       })
     ]).then(() => {
-      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'],
+      assert_array_equals(events, ['closePromise', 'closed', 'abortPromise'],
                           'promises must fulfill/reject in the expected order');
     });
   });

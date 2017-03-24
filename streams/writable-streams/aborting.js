@@ -613,7 +613,7 @@ promise_test(t => {
       flushAsyncEvents()
     ]);
   }).then(() => {
-    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
+    assert_array_equals(events, ['writePromise', 'closed', 'abortPromise'],
                         'writePromise, abortPromise and writer.closed must reject');
 
     const writePromise3 = writer.write('a');
@@ -965,7 +965,7 @@ promise_test(t => {
       .then(() => resolved.push('close')));
   return Promise.all(promises)
   .then(() => {
-    assert_array_equals(resolved, ['write2', 'close', 'abort', 'write1'],
+    assert_array_equals(resolved, ['write2', 'close', 'write1', 'abort'],
                         'promises should resolve in the standard order');
     assert_array_equals(ws.events, ['abort', 'a'], 'underlying sink write() should not be called');
   });

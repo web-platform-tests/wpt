@@ -37,7 +37,7 @@ def items(s):
     "foo/support/test.html",
     "foo/test-support.html",
     "css/common/test.html",
-    "css/css21/archive/test.html",
+    "css/CSS2/archive/test.html",
     "css/work-in-progress/test.html",
 ])
 def test_name_is_non_test(rel_path):
@@ -55,6 +55,8 @@ def test_name_is_non_test(rel_path):
     "foo/_certs/test.html",
     "foo/css21/archive/test.html",
     "foo/work-in-progress/test.html",
+    "foo/CSS2/archive/test.html",
+    "css/css21/archive/test.html",
 ])
 def test_not_name_is_non_test(rel_path):
     s = create(rel_path)

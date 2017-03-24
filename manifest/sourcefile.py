@@ -60,7 +60,7 @@ class SourceFile(object):
                         "tools"])
 
     dir_path_non_test = {("css21", "archive"),
-                         ("css", "css21", "archive"),
+                         ("css", "CSS2", "archive"),
                          ("css", "common"),
                          ("css", "work-in-progress")}
 

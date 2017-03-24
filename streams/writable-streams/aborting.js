@@ -245,12 +245,12 @@ promise_test(t => {
     const abortPromise = writer.abort(error1);
     resolveClose();
     return Promise.all([
-      promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'),
+      writer.closed,
       abortPromise,
       closePromise
     ]);
   });
-}, 'Closing a WritableStream and aborting it while it closes causes the stream to error');
+}, 'Closing a WritableStream and aborting it while it closes causes the stream to ignore the abort attempt');
 
 promise_test(() => {
   const ws = new WritableStream();
@@ -694,8 +694,8 @@ promise_test(t => {
     ]);
   }).then(() => {
     assert_array_equals(
-        events, [],
-        'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet even after ' +
+        events, ['abortPromise'],
+        'writePromise and writer.closed must not be fulfilled/rejected yet even after ' +
             'controller.error() call');
 
     resolveWrite();
@@ -709,7 +709,7 @@ promise_test(t => {
       flushAsyncEvents()
     ]);
   }).then(() => {
-    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
+    assert_array_equals(events, ['abortPromise', 'writePromise', 'closed'],
                         'writePromise, abortPromise and writer.closed must reject');
 
     const writePromise4 = writer.write('a');
@@ -965,7 +965,7 @@ promise_test(t => {
       .then(() => resolved.push('close')));
   return Promise.all(promises)
   .then(() => {
-    assert_array_equals(resolved, ['write2', 'close', 'write1', 'abort'],
+    assert_array_equals(resolved, ['write2', 'close', 'abort', 'write1'],
                         'promises should resolve in the standard order');
     assert_array_equals(ws.events, ['abort', 'a'], 'underlying sink write() should not be called');
   });

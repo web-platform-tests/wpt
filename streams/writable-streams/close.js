@@ -295,12 +295,11 @@ promise_test(t => {
       abortPromise.then(() => {
         events.push('abortPromise');
       }),
-      promise_rejects(t, new TypeError(), writer.closed, 'writer.closed must reject with an error indicating abort')
-      .then(() => {
+      writer.closed.then(() => {
         events.push('closed');
       })
     ]).then(() => {
-      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'],
+      assert_array_equals(events, ['closePromise', 'closed', 'abortPromise'],
                           'promises must fulfill/reject in the expected order');
     });
   });

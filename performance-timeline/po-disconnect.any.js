@@ -1,12 +1,5 @@
-<!DOCTYPE HTML>
-<meta charset=utf-8>
-<title>PerformanceObservers: disconnect</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="performanceobservers.js"></script>
-<h1>PerformanceObservers: disconnect</h1>
-<div id="log"></div>
-<script>
+// META: script=performanceobservers.js
+
   async_test(function (t) {
     var observer = new PerformanceObserver(
         t.step_func(function (entryList, obs) {
@@ -15,8 +8,8 @@
       );
     observer.observe({entryTypes: ["mark", "measure", "navigation"]});
     observer.disconnect();
-    performance.mark("mark1");
-    performance.measure("measure1");
+    self.performance.mark("mark1");
+    self.performance.measure("measure1");
     t.step_timeout(function () {
       t.done();
     }, 2000);
@@ -37,8 +30,7 @@
         })
       );
     observer.observe({entryTypes: ["mark"]});
-    performance.mark("mark1");
+    self.performance.mark("mark1");
     observer.disconnect();
-    performance.mark("mark2");
+    self.performance.mark("mark2");
   }, "An observer disconnected after a mark must receive the mark");
-</script>

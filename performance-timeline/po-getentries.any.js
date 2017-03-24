@@ -1,15 +1,5 @@
-<!DOCTYPE HTML>
-<meta charset=utf-8>
-<title>PerformanceObservers: getEntries*</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="performanceobservers.js"></script>
-<h1>PerformanceObservers: getEntries*</h1>
-<p>
-getEntries, getEntriesByType and getEntriesByName work
-</p>
-<div id="log"></div>
-<script>
+// META: script=performanceobservers.js
+
   async_test(function (t) {
     var observer = new PerformanceObserver(
         t.step_func(function (entryList, obs) {
@@ -44,7 +34,5 @@ getEntries, getEntriesByType and getEntriesByName work
         })
       );
     observer.observe({entryTypes: ["mark"]});
-    performance.mark("mark1");
+    self.performance.mark("mark1");
   }, "getEntries, getEntriesByType and getEntriesByName work");
-
-</script>

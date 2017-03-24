@@ -1,15 +1,5 @@
-<!DOCTYPE HTML>
-<meta charset=utf-8>
-<title>PerformanceObservers: mark and measure</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="performanceobservers.js"></script>
-<h1>PerformanceObservers: mark and measure</h1>
-<p>
-Performance.mark() and Performance.measure() will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
-</p>
-<div id="log"></div>
-<script>
+// META: script=performanceobservers.js
+
   async_test(function (t) {
     var stored_entries = [];
     var observer  = new PerformanceObserver(
@@ -46,8 +36,8 @@ Performance.mark() and Performance.measure() will <a href="https://w3c.github.io
         })
       );
     observer.observe({entryTypes: ["mark"]});
-    performance.mark("mark1");
-    performance.mark("mark2");
+    self.performance.mark("mark1");
+    self.performance.mark("mark2");
   }, "mark entries are observable");
 
   async_test(function (t) {
@@ -66,7 +56,6 @@ Performance.mark() and Performance.measure() will <a href="https://w3c.github.io
         })
       );
     observer.observe({entryTypes: ["measure"]});
-    performance.measure("measure1");
-    performance.measure("measure2");
+    self.performance.measure("measure1");
+    self.performance.measure("measure2");
   }, "measure entries are observable");
-</script>

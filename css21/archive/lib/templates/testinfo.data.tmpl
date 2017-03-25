@@ -1,4 +1,0 @@
-id	title	flags	links	assertion
-[% FOREACH test IN testdata -%]
-[% test.key %]	[% test.value.title FILTER collapse %]	[% test.value.flags.join(',') %]	[% test.value.links.join(',').replace('\.html\#','-') %]	[% test.value.assert FILTER collapse %]
-[% END -%]

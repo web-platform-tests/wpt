@@ -116,7 +116,7 @@ function buildTestCases(testCases, testType) {
 
         // expected
         if( type.indexOf('invalid') != -1 ){
-            oneTestCase.push(null)
+            oneTestCase.push("")
         } else if( type == 'inline' ) {
             oneTestCase.push(test['expected_inline']);
         } else if( type == 'computed' ){
@@ -174,7 +174,7 @@ function buildPositionTests(shape, valid, type, units) {
                 testCase = new Array();
                 testCase.push(testValue + ' is invalid');
                 testCase.push(testValue);
-                testCase.push(null);
+                testCase.push("");
                 results.push(testCase);
             });
         }

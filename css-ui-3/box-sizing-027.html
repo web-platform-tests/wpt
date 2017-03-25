@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<title>CSS Basic User Interface Test: box-sizing:border-box used values</title>
+<title>CSS Basic User Interface Test: box-sizing:border-box resolved values</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
 <link rel="help" href="https://drafts.csswg.org/css-ui-3/#box-sizing">
 <meta charset="utf-8">
@@ -23,12 +23,12 @@ test(
   function(){
    var test = document.getElementById("test");
    assert_equals(window.getComputedStyle(test)["width"], "100px");
-  }, "Check the used value of 'width' when box-sizing is  border-box.");
+  }, "Check the resolved value of 'width' when box-sizing is  border-box.");
 test(
   function(){
    var test = document.getElementById("test");
    assert_equals(window.getComputedStyle(test)["height"], "100px");
-  }, "Check the used value of 'height' when box-sizing is  border-box.");
+  }, "Check the resolved value of 'height' when box-sizing is  border-box.");
 </script>
 </body>
 </html>

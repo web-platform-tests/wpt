@@ -7,19 +7,25 @@
 <meta name="flags" content="ahem">
 <meta name="assert" content="Implementations must hide at the *end* (not right) of the line to make room for the ellipsis">
 <style>
-body > div {
-  width: 500px;
-  height: 100px;
-  background: linear-gradient(to right, red 100px, white 100px);
-  color: green;
+.test {
   white-space: pre;
   font-family: ahem;
+  color: green;
   line-height: 1;
   font-size: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 500px;
+}
+.red {
+  position: absolute;
+  z-index: -1;
+  background: red;
+  width: 100px;
+  height: 100px;
 }
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div dir=rtl>                   </div>
+<div class=red></div>
+<div class=test dir=rtl>                   </div>

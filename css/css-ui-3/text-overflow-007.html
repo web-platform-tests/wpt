@@ -7,18 +7,29 @@
 <meta name="flags" content="ahem">
 <meta name="assert" content="The ellipsis is placed immediately adjacent to then end edge of the remaining inline content.">
 <style>
-div {
+.test {
   white-space: pre;
   font-family: ahem;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 5.5em;
-  font-size: 20px;
+  font-size: 50px;
+  width: 2.5em;
   line-height: 1;
-  background: linear-gradient(to right, red 5em, white 5em);
   color: green;
+}
+.red {
+  position: absolute;
+  z-index: -1;
+  width: 100px;
+  height: 100px;
+  background: red;
+  /* This red box wich will show through the gap between the letter and the ellipsis if there's one
+     but not extend past the two characters if the ellipsis is adjacent to the character as it should be.
+   */
 }
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div>xxxxxxxxxxxxxxxxxxx<br>xxxxx<br>xxxxx<br>xxxxx<br>xxxxx</div>
+<div class=red></div>
+<div class=test>this line should render to a "t" followed by a "…", both of which are a 1em square in ahem, whithout any gap between them.
+this line also should render to a "t" followed by a "…", both of which are a 1em square in ahem, whithout any gap between them.</div>

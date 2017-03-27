@@ -7,12 +7,14 @@
 <meta name="flags" content="ahem">
 <meta name="assert" content="The first character on a line must be clipped rather than ellipsed.">
 <style>
-body > div {
+.green {
+  position: absolute;
+  z-index: -1;
   background: green;
   width: 100px;
   height: 100px;
 }
-div > div {
+.test {
   white-space: pre;
   font-family: ahem;
   text-overflow: ellipsis;
@@ -23,4 +25,5 @@ div > div {
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div><div>     </div></div>
+<div class=green></div>
+<div class=test>     </div>

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <meta charset="utf-8">
 <title>CSS Basic User Interface Test: ellipsis, revealing more text</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
@@ -23,6 +23,7 @@ div {
 <script>
 var test = document.getElementById("test");
 test.scrollBy(500,0);
+document.documentElement.className = "";
 </script>
 
 

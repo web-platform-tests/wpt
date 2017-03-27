@@ -7,27 +7,40 @@
 <meta name="flags" content="ahem">
 <meta name="assert" content="If there is insufficient space for the ellipsis, then clip the rendering of the ellipsis itself">
 <style>
-div {
+.test {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100px;
-  height: 50px;
   white-space: pre;
   line-height: 1;
   font-size: 50px;
   font-family: ahem;
   color: green;
-  background: red;
 }
 span {
-	vertical-align: bottom;
 	display: inline-block;
-	background: green;
 	width: 60px;
 	height: 1em;
+	vertical-align: bottom;
+	background: green;
+}
+.red {
+  position: absolute;
+  z-index: -1;
+  background: red;
+  width: 100px;
+  height: 50px;
+}
+.green {
+  position: absolute;
+  z-index: -2;
+  background: green;
+  width: 100px;
+  height: 100px;
 }
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div><span></span>pp</div>
-<div>xx</div>
+<div class=red></div>
+<div class=green></div>
+<div class=test><span></span>filler text to make things overflow</div>

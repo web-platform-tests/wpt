@@ -7,7 +7,7 @@
 <meta name="flags" content="ahem">
 <meta name="assert" content="The ellipsis is styled according to the block. ">
 <style>
-div {
+.test {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 2em;
@@ -17,7 +17,21 @@ div {
   font-size: 100px;
   font-family: ahem;
   color: green;
-  background: linear-gradient(to right, red, red) top left 1em / 1em 1em no-repeat;
+
+  /* 2em width and starting with a space
+     because the handling of the ellipsis of the first character on the line is special,
+     and therefore we need to have the thing we want to test in non first position.
+     Shifting 1em left to align with the usual green square.
+   */
+  width: 2em;
+  margin-left: -1em;
+}
+.red {
+  position: absolute;
+  z-index: -1;
+  width: 100px;
+  height: 100px;
+  background: red;
 }
 span {
 	font-family: serif;
@@ -26,4 +40,5 @@ span {
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div> <span>                    </span></div>
+<div class=red></div>
+<div class=test> <span>                    </span></div>

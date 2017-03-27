@@ -1,4 +1,5 @@
 ﻿<!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="utf-8">
 <title>CSS Basic User Interface Test: ellipsis and grapheme cluster</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
@@ -10,19 +11,65 @@
   which implementations are expected to tailor and tweak. -->
 <meta name="assert" content="Implementations must hide characters, i.e. entire garpheme clusters, not part of them, to make room for the ellipsis">
 <style>
-div {
+#test {
   font-size: 50px;
   line-height: 1;
   font-family: ahem;
-  width: 2.8em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre;
   color: green;
-  background: linear-gradient(to right, red 2em, white 2em);
+  /* width to be set by script, see below */
+}
+.red {
+  position: absolute;
+  background: red;
+  width: 100px;
+  height: 50px;
+  z-index: -1;
+}
+.green {
+  position: absolute;
+  background: green;
+  width: 100px;
+  height: 100px;
+  z-index: -2;
+}
+
+.size-ref {
+  position: absolute; /* shrinkwrap*/
+  visibility: hidden; /* measurable width but invisible*/
+
+  /* Same settings as the #test element for things that affect horizontal font-metrics*/
+  font-size: 50px;
+  font-family: ahem;
 }
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div lang=th>X&#x0E01;&#x0E33;XXXXXX</div>
-<div>XX</div>
+<div class=red></div>
+<div class=green></div>
+<div id=test lang=th>X&#x0E01;&#x0E33;filler text to make things overflow</div>
+<!--Starting the line with an X because the first character on the line is clipped rather than ellided, so we need the tested grapheme cluster to be non-first-->
+
+<!-- Invisible elements for glyph measuring purposes -->
+<div id=part-cluster class=size-ref>&#x0E01;<div>
+<div id=full-cluster class=size-ref>&#x0E01;&#x0E33;<div>
+
+<script>
+/* We want to set the width of the #test element to something that's enough to fit:
+   - the 1em (50px) ahem X at the beginning of the line
+   - the 1em (50px) ahem … at then end of the line
+   - Part of the &#x0E01;&#x0E33; grapheme cluster, but not all of it
+   As the third item is font dependent, we need to measure it.
+*/
+var p = document.getElementById("part-cluster");
+var wp = parseFloat(getComputedStyle(p).width);
+
+var f = document.getElementById("full-cluster");
+var wf = parseFloat(getComputedStyle(f).width);
+
+document.getElementById("test").style.width = 50 + 50 + (wp + wf) / 2 + "px";
+
+document.documentElement.className = "";
+</script>

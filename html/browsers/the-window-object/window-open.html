@@ -9,7 +9,6 @@ test(function() {
   assert_equals(w.location.href, 'about:blank');
 }, 'window.open() should have default url = "about:blank"');
 
-
 test(function() {
   window.addEventListener('message', function(e) {
     assert_equals(e.data.name, '_blank');

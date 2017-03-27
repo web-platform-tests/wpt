@@ -9,7 +9,7 @@
 canvas { resize: both; }
 </style>
 
-<p>Test passes if both <strong>width</strong> and <strong>height</strong> of the blue box below can be adjusted (for instance by dragging the bottom-right corner).</p>
+<p>Test passes if both <strong>width</strong> and <strong>height</strong> of the orange box below can be adjusted (for instance by dragging the bottom-right corner).</p>
 
 <canvas id="test" width="100" height="100">
   &lt;canvas&gt; is not supported. This test is non conclusive.
@@ -18,7 +18,7 @@ canvas { resize: both; }
 var canvas = document.getElementById('test');
 if (canvas.getContext) {
   var ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'rgb(0, 0, 255)';
+    ctx.fillStyle = '#FFA500';
     ctx.fillRect (0, 0, 100, 100);
 }
 </script>

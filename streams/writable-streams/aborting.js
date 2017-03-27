@@ -686,8 +686,6 @@ promise_test(t => {
     const writePromise3 = writer.write('a');
 
     return Promise.all([
-      promise_rejects(t, error2, abortPromise,
-                      'abortPromise must reject with the error passed to the controller\'s error method'),
       promise_rejects(t, new TypeError(), writePromise3,
                       'writePromise3 must reject with an error indicating the stream has already been errored'),
       promise_rejects(t, new TypeError(), writer.ready,
@@ -696,20 +694,22 @@ promise_test(t => {
     ]);
   }).then(() => {
     assert_array_equals(
-        events, ['abortPromise'],
-        'writePromise and writer.closed must not be fulfilled/rejected yet even after ' +
+        events, [],
+        'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet even after ' +
             'controller.error() call');
 
     resolveWrite();
 
     return Promise.all([
       writePromise,
+      promise_rejects(t, error2, abortPromise,
+                      'abortPromise must reject with the error passed to the controller\'s error method'),
       promise_rejects(t, error2, writer.closed,
                       'writer.closed must reject with the error passed to the controller\'s error method'),
       flushAsyncEvents()
     ]);
   }).then(() => {
-    assert_array_equals(events, ['abortPromise', 'writePromise', 'closed'],
+    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
                         'writePromise, abortPromise and writer.closed must reject');
 
     const writePromise4 = writer.write('a');

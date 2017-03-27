@@ -82,13 +82,11 @@ class IncludeManifest(ManifestItem):
     def _add_rule(self, test_manifests, url, direction):
         maybe_path = os.path.join(os.path.abspath(os.curdir), url)
         rest, last = os.path.split(maybe_path)
-        variant = ""
+        fragment = query = None
         if "#" in last:
             last, fragment = last.rsplit("#", 1)
-            variant += "#" + fragment
         if "?" in last:
             last, query = last.rsplit("?", 1)
-            variant += "?" + query
 
         maybe_path = os.path.join(rest, last)
         paths = glob.glob(maybe_path)
@@ -97,9 +95,18 @@ class IncludeManifest(ManifestItem):
             urls = []
             for path in paths:
                 for manifest, data in test_manifests.iteritems():
+                    found = False
                     rel_path = os.path.relpath(path, data["tests_path"])
-                    if ".." not in rel_path.split(os.sep):
-                        urls.append(data["url_base"] + rel_path.replace(os.path.sep, "/") + variant)
+                    for test in manifest.iterpath(rel_path):
+                        url = test.url
+                        if query or fragment:
+                            parsed = urlparse.urlparse(url)
+                            if ((query and query != parsed.query) or
+                                (fragment and fragment != parsed.fragment)):
+                                continue
+                        urls.append(url)
+                        found = True
+                    if found:
                         break
         else:
             urls = [url]

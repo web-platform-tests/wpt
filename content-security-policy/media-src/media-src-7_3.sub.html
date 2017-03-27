@@ -12,12 +12,7 @@
   <script>
     var source_test = async_test("In-policy track element");
 
-      var trackURL = location.protocol +
-        "//www." +
-        location.hostname +
-        ":" +
-        location.port +
-        "/media/foo.vtt";
+      var trackURL = location.protocol + "//{{domains[www]}}:{{ports[http][0]}}/media/foo.vtt";
 
     function media_loaded(t) {
       t.done();
@@ -34,8 +29,8 @@
     <video id="videoObject" width="320" height="240" controls
            onloadeddata="media_loaded(source_test)" crossorigin>
         <source id="audioSourceObject"
-                type="audio/mpeg"
-                src="/media/white.mp4">
+                type="audio/ogg"
+                src="/media/A4.ogv">
         <track id="trackObject"
                kind="subtitles"
                srclang="en"

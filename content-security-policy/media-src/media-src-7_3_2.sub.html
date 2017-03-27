@@ -13,12 +13,7 @@
     var source_test =
         async_test("Disallowed track element onerror handler fires.");
 
-      var trackURL = location.protocol +
-        "//www." +
-        location.hostname +
-        ":" +
-        location.port +
-        "/media/foo.vtt";
+      var trackURL = location.protocol + "//{{domains[www]}}:{{ports[http][0]}}/media/foo.vtt";
 
     function media_loaded(t) {
      t.step( function () {
@@ -36,8 +31,8 @@
            onerror="media_error_handler(source_test)"
            crossorigin>
         <source id="audioSourceObject"
-                type="audio/mpeg"
-                src="/media/white.mp4">
+                type="audio/ogg"
+                src="/media/A4.ogv">
         <track default
                id="trackObject"
                kind="subtitles"
@@ -53,7 +48,7 @@
             source_test.set_status(source_test.FAIL);
         });
 
-        setTimeout(function() { 
+        setTimeout(function() {
           if(source_test.phase != source_test.phases.COMPLETE) {
 		source_test.step( function () { assert_unreached("Onerror event never fired for track element."); });
 		source_test.done();

@@ -245,12 +245,12 @@ promise_test(t => {
     const abortPromise = writer.abort(error1);
     resolveClose();
     return Promise.all([
-      promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'),
+      writer.closed,
       abortPromise,
       closePromise
     ]);
   });
-}, 'Closing a WritableStream and aborting it while it closes causes the stream to error');
+}, 'Closing a WritableStream and aborting it while it closes causes the stream to ignore the abort attempt');
 
 promise_test(() => {
   const ws = new WritableStream();
@@ -613,7 +613,7 @@ promise_test(t => {
       flushAsyncEvents()
     ]);
   }).then(() => {
-    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
+    assert_array_equals(events, ['writePromise', 'closed', 'abortPromise'],
                         'writePromise, abortPromise and writer.closed must reject');
 
     const writePromise3 = writer.write('a');

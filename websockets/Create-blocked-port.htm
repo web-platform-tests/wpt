@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Create Secure WebSocket - blocked port</title>
+    <title>WebSocket API - blocked port</title>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.sub.js"></script>
@@ -10,10 +10,10 @@
     <div id="log"></div>
     <script>
             async_test(t => {
-                CreateWebSocketWithBlockedPort(__PORT)
-                wsocket.onerror = t.unreached_func()
-                wsocket.onopen = t.step_func_done()
-            }, 'Sanity check');
+              const ws = CreateWebSocketWithBlockedPort(__PORT)
+              ws.onerror = t.unreached_func()
+              ws.onopen = t.step_func_done()
+            }, 'Basic check');
             // list of bad ports according to
             // https://fetch.spec.whatwg.org/#port-blocking
             [
@@ -83,9 +83,9 @@
                 6669, // irc (alternate)
             ].forEach(blockedPort => {
               async_test(t => {
-                CreateWebSocketWithBlockedPort(blockedPort)
-                wsocket.onerror = t.step_func_done()
-                wsocket.onopen = t.unreached_func()
+                const ws = CreateWebSocketWithBlockedPort(blockedPort)
+                ws.onerror = t.step_func_done()
+                ws.onopen = t.unreached_func()
               }, "WebSocket blocked port test " + blockedPort)
             })
     </script>

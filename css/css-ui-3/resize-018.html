@@ -44,8 +44,8 @@ function verify() {
       assert_regexp_match(w, /px$/, "The width property of the style attribute should be set");
       assert_regexp_match(h, /px$/, "The height property of the style attribute should be set");
       document.styleSheets[0].cssRules[0].style.resize= "none";
-      assert_equal(test.style.width, w, "The width property of the style attribute should still be set after removing ability to resize");
-      assert_equal(test.style.height, h, "The height property of the style attribute should still be set after removing ability to resize");
+      assert_equals(test.style.width, w, "The width property of the style attribute should still be set after removing ability to resize");
+      assert_equals(test.style.height, h, "The height property of the style attribute should still be set after removing ability to resize");
     }, "Removing the ability to resize an element does not reset its size");
   done();
 }

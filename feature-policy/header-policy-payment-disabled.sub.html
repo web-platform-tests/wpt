@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script>
-  if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-  }
-</script>
 <iframe id="same-origin" src="resources/vibrate-disabled.html"></iframe>
 <iframe id="cross-origin" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-disabled.html"></iframe>
-<iframe id="same-origin" src="resources/vibrate-disabled.html"></iframe>
-<iframe id="cross-origin" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-disabled.html"></iframe>
+<iframe id="same-origin-allowpaymentrequest" src="resources/vibrate-disabled.html" allowpaymentrequest></iframe>
+<iframe id="cross-origin-allowpaymentrequest" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-disabled.html" allowpaymentrequest></iframe>

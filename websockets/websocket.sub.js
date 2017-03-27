@@ -39,7 +39,7 @@ function CreateWebSocketWithAsciiSep(asciiWithSep) {
 
 function CreateWebSocketWithBlockedPort(blockedPort) {
     IsWebSocket();
-    var url = "wss://" + __SERVER__NAME + ":" + blockedPort + "/" + __PATH;
+    var url = "ws://" + __SERVER__NAME + ":" + blockedPort + "/" + __PATH;
     wsocket = new WebSocket(url);
 }
 

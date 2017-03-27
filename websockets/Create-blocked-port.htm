@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>W3C WebSocket API - Create Secure WebSocket - blocked port</title>
+    <title>WebSocket API - blocked port</title>
     <script type="text/javascript" src="/resources/testharness.js"></script>
     <script type="text/javascript" src="/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="websocket.sub.js"></script>
@@ -9,10 +9,14 @@
 <body>
     <div id="log"></div>
     <script>
-        test(function () {
+            async_test(t => {
+              const ws = CreateWebSocketWithBlockedPort(__PORT)
+              ws.onerror = t.unreached_func()
+              ws.onopen = t.step_func_done()
+            }, 'Basic check');
             // list of bad ports according to
             // https://fetch.spec.whatwg.org/#port-blocking
-            var BLOCKED_PORTS_LIST = [
+            [
                 1,    // tcpmux
                 7,    // echo
                 9,    // discard
@@ -77,12 +81,13 @@
                 6667, // irc (default)
                 6668, // irc (alternate)
                 6669, // irc (alternate)
-            ];
-            for (var i = 0; i < BLOCKED_PORTS_LIST.length; i++) {
-                var blockedPort = BLOCKED_PORTS_LIST[i];
-                assert_throws("SECURITY_ERR", function () { CreateWebSocketWithBlockedPort(blockedPort) });
-            }
-        }, "W3C WebSocket API - Create Secure WebSocket - Pass a URL with a blocked port - SECURITY_ERR should be thrown")
+            ].forEach(blockedPort => {
+              async_test(t => {
+                const ws = CreateWebSocketWithBlockedPort(blockedPort)
+                ws.onerror = t.step_func_done()
+                ws.onopen = t.unreached_func()
+              }, "WebSocket blocked port test " + blockedPort)
+            })
     </script>
 </body>
 </html>

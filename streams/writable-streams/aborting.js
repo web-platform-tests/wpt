@@ -686,6 +686,8 @@ promise_test(t => {
     const writePromise3 = writer.write('a');
 
     return Promise.all([
+      promise_rejects(t, error2, abortPromise,
+                      'abortPromise must reject with the error passed to the controller\'s error method'),
       promise_rejects(t, new TypeError(), writePromise3,
                       'writePromise3 must reject with an error indicating the stream has already been errored'),
       promise_rejects(t, new TypeError(), writer.ready,
@@ -702,8 +704,6 @@ promise_test(t => {
 
     return Promise.all([
       writePromise,
-      promise_rejects(t, error2, abortPromise,
-                      'abortPromise must reject with the error passed to the controller\'s error method'),
       promise_rejects(t, error2, writer.closed,
                       'writer.closed must reject with the error passed to the controller\'s error method'),
       flushAsyncEvents()

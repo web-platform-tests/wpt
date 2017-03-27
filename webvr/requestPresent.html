@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>requestPresent</title>
+    <meta name="timeout" content="long" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="utils/VRSimulator.js"></script>
+    <script src="utils/WebVRHelpers.js"></script>
+    <script src="utils/requestPresent.js"></script>
+</head>
+<body id="body">
+    <canvas id="webglCanvas"></canvas>
+    <div id="testDiv"></div>
+    <script>
+        "use strict";
+        var vrDisplay;
+        var canvas = document.getElementById('webglCanvas');
+        var div = document.getElementById('testDiv');
+
+        // Successful requestPresent test. All subsequent tests expect rejections. 
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas }]);
+            }).then(() => {
+                validateDisplayIsPresenting(vrDisplay);
+                return vrDisplay.exitPresent();
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent fulfilled");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{}]));
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected with empty layers");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas, leftBounds: [0.0, 0.0] }]));
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected with incorrect bounds (bounds arrays must be 0 or 4 long)");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: div }]));
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected with invalid source (must be canvas element)");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas, leftBounds: [div] }]));
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected with invalid bounds data type (must be able to convert to float array)");
+
+        const invalidBounds = [
+            [2.0, 0.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0, 0.0],
+            [0.0, 0.0, 2.0, 0.0],
+            [0.0, 0.0, 0.0, 2.0],
+            [-1.0, 0.0, 0.0, 0.0],
+            [0.0, -1.0, 0.0, 0.0],
+            [0.0, 0.0, -1.0, 0.0],
+            [0.0, 0.0, 0.0, -1.0]];
+
+        invalidBounds.forEach((bound) => {
+            promise_test((test) => {
+                return setupVRDisplay(test).then(() => {
+                    return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas, leftBounds: bound }]));
+                }).then(() => {
+                    return validateDisplayNotPresenting(test, vrDisplay);
+                });
+            }, "WebVR requestPresent rejected with left bounds in invalid range: [" + bound + "]");
+
+            promise_test((test) => {
+                return setupVRDisplay(test).then(() => {
+                    return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas, rightBounds: bound }]));
+                }).then(() => {
+                    return validateDisplayNotPresenting(test, vrDisplay);
+                });
+            }, "WebVR requestPresent rejected with right bounds in invalid range: [" + bound + "]");
+        });
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                var promise = vrDisplay.requestPresent({ source: canvas });
+                return promise_rejects(test, null, promise);
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected without user initiated action");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                return promise_rejects(test, null, WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas }, { source: canvas }]));
+            }).then(() => {
+                return validateDisplayNotPresenting(test, vrDisplay);
+            });
+        }, "WebVR requestPresent rejected with more layers than max layers");
+
+        promise_test((test) => {
+            return setupVRDisplay(test).then(() => {
+                function requestAgain() {
+                    // Callback for immediate requestPresent call for further testing.
+                    // Cache this promise on global object since it seems to be the only object
+                    // in scope across calls.
+                    window.promiseSecond = vrDisplay.requestPresent([{ source: canvas }]);
+                }
+
+                return WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas }], requestAgain);
+            }).then(() => {
+                // First promise succeeded
+                assert_true(vrDisplay.isPresenting, "First promise should successfully fulfill");
+                // Now, validate that the subsequent requestPresent was rejected
+                return promise_rejects(test, null, window.promiseSecond);
+            }).then(() => {
+                delete window.promiseSecond;
+                assert_true(vrDisplay.isPresenting, "Should still be presenting after rejected second promise");
+                return vrDisplay.exitPresent();
+            });
+        }, "WebVR requestPresent fails while another one is in progress");
+    </script>
+</body>
+</html>

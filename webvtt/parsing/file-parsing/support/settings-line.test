@@ -1,7 +1,7 @@
 settings, line
 <link rel="help" href="https://w3c.github.io/webvtt/#collect-webvtt-cue-timings-and-settings">
 
-assert_equals(cues.length, 45);
+assert_equals(cues.length, 46);
 
 // Test starts with simple valid values
 var valid_values = [
@@ -27,7 +27,7 @@ valid_values.forEach(function(valid, index) {
 });
 
 // Then a set of invalid ones
-var invalid_length = 21;
+var invalid_length = 23;
 for (var i = 0; i < invalid_length; i++) {
     var index = valid_values.length + i;
 
@@ -60,15 +60,11 @@ assert_equals(cues[index + 5].line, 100);
 assert_false(cues[index + 5].snapToLines);
 assert_equals(cues[index + 5].lineAlign, 'end');
 
-assert_equals(cues[index + 6].line, 100);
+assert_equals(cues[index + 6].line, Number.MIN_VALUE);
 assert_false(cues[index + 6].snapToLines);
-assert_equals(cues[index + 6].lineAlign, 'start');
 
-assert_equals(cues[index + 7].line, Number.MIN_VALUE);
+assert_equals(cues[index + 7].line, 0);
 assert_false(cues[index + 7].snapToLines);
-
-assert_equals(cues[index + 8].line, 0);
-assert_false(cues[index + 8].snapToLines);
 
 ===
 WEBVTT
@@ -192,33 +188,36 @@ exponential notation
 00:00:00.000 --> 00:00:01.000 line:1e2
 invalid35
 
+00:00:00.000 --> 00:00:01.000 line:100%,middle
+invalid36
+
+00:00:00.000 --> 00:00:01.000 line:100%,
+invalid37
+
 NOTE extra
 
 00:00:00.000 --> 00:00:01.000 line:0%
-text36
-
-00:00:00.000 --> 00:00:01.000 line:00%
-text37
-
-00:00:00.000 --> 00:00:01.000 line:100%
 text38
 
-00:00:00.000 --> 00:00:01.000 line:100%,start
+00:00:00.000 --> 00:00:01.000 line:00%
 text39
 
-00:00:00.000 --> 00:00:01.000 line:100%,center
+00:00:00.000 --> 00:00:01.000 line:100%
 text40
 
-00:00:00.000 --> 00:00:01.000 line:100%,end
+00:00:00.000 --> 00:00:01.000 line:100%,start
 text41
 
-00:00:00.000 --> 00:00:01.000 line:100%,middle
+00:00:00.000 --> 00:00:01.000 line:100%,center
 text42
+
+00:00:00.000 --> 00:00:01.000 line:100%,end
+text43
 
 Number.MIN_VALUE %
 00:00:00.000 --> 00:00:01.000 line:0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005%
-text43
+text44
 
 Less than Number.MIN_VALUE %
 00:00:00.000 --> 00:00:01.000 line:0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002%
-text44
+text45

@@ -40,7 +40,9 @@ function verify() {
     function(){
       var test = document.getElementById("test");
       assert_regexp_match(test.style.width, /px$/, "The width property of the style attribute should be set in pixels");
+      assert_not_equals(test.style.width, "100px", "The width should be different from the initial one");
       assert_regexp_match(test.style.height, /px$/, "The height property of the style attribute should be set in pixels");
+      assert_not_equals(test.style.height, "100px", "The height should be different from the initial one");
     }, "resize works by setting the width and height properties on the style attrbute in pixels");
   test(
     function(){

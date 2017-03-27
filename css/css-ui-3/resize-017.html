@@ -30,6 +30,7 @@ function verify() {
       var test = document.getElementById("test");
       assert_equals(test.style.width, "", "The width property of the style attribute should not be set");
       assert_regexp_match(test.style.height, /px$/, "The height property of the style attribute should be set in pixels");
+      assert_not_equals(test.style.height, "100px", "The height should be different from the initial one");
     }, "horizontal resizing only affects the width properties on the style attrbute.");
   done();
 }

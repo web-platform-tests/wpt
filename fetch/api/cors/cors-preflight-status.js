@@ -18,7 +18,7 @@ function corsPreflightStatus(desc, corsUrl, preflightStatus) {
   urlParameters += "&preflight_status=" + preflightStatus;
 
   promise_test(function(test) {
-    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+    return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
       assert_equals(resp.status, 200, "Clean stash response's status is 200");
       if (200 <= preflightStatus && 299 >= preflightStatus) {
         return fetch(url + urlParameters, requestInit).then(function(resp) {

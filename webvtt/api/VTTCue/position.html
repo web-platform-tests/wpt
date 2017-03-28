@@ -7,6 +7,7 @@
 <script>
 test(function(){
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('position' in cue, 'position is not supported');
 
     cue.position = 'auto';
     assert_equals(cue.position, 'auto');
@@ -24,5 +25,8 @@ test(function(){
 
     cue.position = 1.5;
     assert_equals(cue.position, 1.5);
+
+    cue.position = 'auto';
+    assert_equals(cue.position, 'auto');
 }, document.title+', script-created cue');
 </script>

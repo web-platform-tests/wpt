@@ -9,11 +9,11 @@
 // Set script url and scope url relative to the iframe's document's url. Assert
 // the implementation parses the urls against the iframe's document's url.
 async_test(function(t) {
-  var url = 'resources/blank.html';
-  var scope = 'registration-for-iframe-from-parent-frame';
-  var expected_scope = normalizeURL('resources/' + scope);
-  var script = 'empty-worker.js';
-  var expected_script = normalizeURL('resources/' + script);
+  const url = 'resources/blank.html';
+  const iframe_scope = 'registration-with-valid-scope';
+  const scope = normalizeURL('resources/' + iframe_scope);
+  const iframe_script = 'empty-worker.js';
+  const script = normalizeURL('resources/' + iframe_script);
   var frame;
   var registration;
 
@@ -22,22 +22,25 @@ async_test(function(t) {
     .then(function(f) {
         frame = f;
         return frame.contentWindow.navigator.serviceWorker.register(
-            script,
-            { scope: scope });
+            iframe_script,
+            { scope: iframe_scope });
       })
     .then(function(r) {
         registration = r;
         return wait_for_state(t, r.installing, 'activated');
       })
     .then(function() {
-        assert_equals(registration.scope, expected_scope,
+        assert_equals(registration.scope, scope,
                       'registration\'s scope must be parsed against the ' +
                       '"relevant global object"');
-        assert_equals(registration.active.scriptURL, expected_script,
+        assert_equals(registration.active.scriptURL, script,
                       'worker\'s scriptURL must be parsed against the ' +
                       '"relevant global object"');
+        return registration.unregister();
+      })
+    .then(function() {
         frame.remove();
-        return service_worker_unregister_and_done(t, scope);
+        t.done();
       })
     .catch(unreached_rejection(t));
   }, 'register method should use the "relevant global object" to parse its ' +
@@ -46,9 +49,10 @@ async_test(function(t) {
 // Set script url and scope url relative to the parent frame's document's url.
 // Assert the implementation throws a TypeError exception.
 async_test(function(t) {
-  var url = 'resources/blank.html';
-  var scope = 'resources/registration-for-iframe-from-parent-frame';
-  var script = 'resources/empty-worker.js';
+  const url = 'resources/blank.html';
+  const iframe_scope = 'resources/registration-with-scope-to-non-existing-url';
+  const scope = normalizeURL('resources/' + iframe_scope);
+  const script = 'resources/empty-worker.js';
   var frame;
   var registration;
 
@@ -58,7 +62,7 @@ async_test(function(t) {
         frame = f;
         return frame.contentWindow.navigator.serviceWorker.register(
             script,
-            { scope: scope });
+            { scope: iframe_scope });
       })
     .then(
       function() {
@@ -69,7 +73,7 @@ async_test(function(t) {
                       'register method with scriptURL and scope parsed to ' +
                       'nonexistent location should reject with TypeError');
         frame.remove();
-        return service_worker_unregister_and_done(t, scope);
+        t.done();
       })
     .catch(unreached_rejection(t));
   }, 'register method should use the "relevant global object" to parse its ' +
@@ -78,9 +82,10 @@ async_test(function(t) {
 // Set the scope url to a non-subdirectory of the script url. Assert the
 // implementation throws a SecurityError exception.
 async_test(function(t) {
-  var url = 'resources/blank.html';
-  var scope = '../registration-for-iframe-from-parent-frame';
-  var script = 'empty-worker.js';
+  const url = 'resources/blank.html';
+  const scope = 'registration-with-disallowed-scope';
+  const iframe_scope = '../' + scope;
+  const script = 'empty-worker.js';
   var frame;
   var registration;
 
@@ -90,7 +95,7 @@ async_test(function(t) {
         frame = f;
         return frame.contentWindow.navigator.serviceWorker.register(
             script,
-            { scope: scope });
+            { scope: iframe_scope });
       })
     .then(
       function() {
@@ -101,7 +106,7 @@ async_test(function(t) {
                       'The scope set to a non-subdirectory of the scriptURL ' +
                       'should reject with SecurityError');
         frame.remove();
-        return service_worker_unregister_and_done(t, scope);
+        t.done();
       })
     .catch(unreached_rejection(t));
   }, 'A scope url should start with the given script url');

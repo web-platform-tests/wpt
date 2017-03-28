@@ -10,6 +10,7 @@ test(function(){
     document.body.appendChild(video);
 
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('lineAlign' in cue, 'lineAlign is not supported');
     assert_equals(cue.lineAlign, 'start');
 
     var track = document.createElement('track');

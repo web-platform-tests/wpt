@@ -1,6 +1,10 @@
 if (this.document === undefined) {
   importScripts("/resources/testharness.js");
   importScripts("../resources/utils.js");
+
+  // A nested importScripts() with a referrer-policy should have no effect
+  // on overall worker policy.
+  importScripts("nested-policy.js");
 }
 
 var referrerOrigin = (new URL("/", location.href)).href;
@@ -15,7 +19,7 @@ promise_test(function(test) {
 }, "Request's referrer is origin");
 
 promise_test(function(test) {
-  var referrerUrl = "http://{{domains[www]}}:{{ports[http][0]}}/";
+  var referrerUrl = "https://{{domains[www]}}:{{ports[https][0]}}/";
   return fetch(fetchedUrl, { "referrer": referrerUrl }).then(function(resp) {
     assert_equals(resp.status, 200, "HTTP status is 200");
     assert_equals(resp.type , "basic", "Response's type is basic");

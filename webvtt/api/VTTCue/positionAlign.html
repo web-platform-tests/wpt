@@ -7,6 +7,7 @@
 <script>
 test(function(){
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('positionAlign' in cue, 'positionAlign is not supported');
 
     ['line-left', 'center', 'line-right', 'auto'].forEach(function(valid) {
         cue.positionAlign = valid;

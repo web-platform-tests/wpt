@@ -12,6 +12,7 @@ setup(function(){
 });
 test(function(){
     var c1 = new VTTCue(0, 1, 'text1');
+    assert_true('snapToLines' in c1, 'snapToLines is not supported');
     assert_true(c1.snapToLines);
     c1.line = 101;
     c1.snapToLines = false;

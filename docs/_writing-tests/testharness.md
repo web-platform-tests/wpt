@@ -55,7 +55,7 @@ worker scope.
 
 In this case, the test is a JavaScript file with extension `.any.js`.
 The test can then use all the usual APIs, and can be run from the path to the
-JavaScript file with the `.js` replaced by `.worker.js` or `.html`.
+JavaScript file with the `.js` replaced by `.worker.html` or `.html`.
 
 For example, one could write a test for the `Blob` constructor by
 creating a `FileAPI/Blob-constructor.any.js` as follows:
@@ -67,8 +67,21 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
       assert_false(blob.isClosed);
     }, "The Blob constructor.");
 
-This test could then be run from `FileAPI/Blob-constructor.any.worker.js` as well
+This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
 as `FileAPI/Blob-constructor.any.html`.
+
+### Including other JavaScript resources in auto-generated boilerplate tests
+
+Use `// META: script=link/to/resource.js` at the beginning of the resource. For example,
+
+    // META: script=/common/utils.js
+    // META: script=resources/utils.js
+
+can be used to include both the global and a local `utils.js` in a test.
+
+### Specifying a timeout of long in auto-generated boilerplate tests
+
+Use `// META: timeout=long` at the beginning of the resource.
 
 
 [general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}

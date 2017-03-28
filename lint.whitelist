@@ -151,6 +151,8 @@ SET TIMEOUT: eventsource/eventsource-close.htm
 SET TIMEOUT: eventsource/eventsource-request-cancellation.htm
 SET TIMEOUT: html/*
 SET TIMEOUT: IndexedDB/*
+SET TIMEOUT: longtask-timing/longtask-in-parentiframe.html
+SET TIMEOUT: infrastructure/*
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
 SET TIMEOUT: mixed-content/generic/sanity-checker.js
@@ -194,6 +196,7 @@ SET TIMEOUT: streams/writable-streams/byte-length-queuing-strategy.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: webaudio/js/lodash.js
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
+SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
 SET TIMEOUT: websockets/*
 SET TIMEOUT: webstorage/eventTestHarness.js

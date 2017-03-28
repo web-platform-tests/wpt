@@ -20,8 +20,7 @@
       var css_test = async_test("Image from imported stylesheet (internal).");
       var id = token();
       var urlPrefix =  location.protocol + "//www1." + location.hostname + ":" + location.port + "/referrer-policy/generic/subresource/";
-      var cssUrlPrefix = urlPrefix + "stylesheet.py";
-      var cssUrl = cssUrlPrefix + "?id=" + id;
+      var cssUrl = urlPrefix + "stylesheet.py?id=" + id;
       var imgUrl = urlPrefix + "image.py?report-headers&id=" + id;
 
       var style = document.createElement("style");
@@ -34,7 +33,7 @@
                           css_test.step(function() {
                             assert_own_property(message, "headers");
                             assert_own_property(message, "referrer");
-                            assert_equals(message.referrer, cssUrlPrefix);
+                            assert_equals(message.referrer, cssUrl);
                           });
                           css_test.done();
                         }),

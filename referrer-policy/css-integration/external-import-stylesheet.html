@@ -22,7 +22,7 @@
       var crossOriginUrlPrefix = location.protocol + "//www1." + location.hostname + ":" + location.port;
       var cssUrl = crossOriginUrlPrefix + "/referrer-policy/generic/subresource/stylesheet.py?id=" + id + "&import-rule";
       var urlPrefix = location.protocol + "//" + location.hostname + ":" + location.port;
-      var cssUrlPrefix = urlPrefix + "/referrer-policy/generic/subresource/stylesheet.py";
+      var cssReferrer = urlPrefix + "/referrer-policy/generic/subresource/stylesheet.py?id=" + id;
       var imgUrl = urlPrefix + "/referrer-policy/generic/subresource/image.py" +
                    "?id=" + id + "&report-headers";
 
@@ -36,7 +36,7 @@
                             css_test.step(function() {
                               assert_own_property(message, "headers");
                               assert_own_property(message, "referrer");
-                              assert_equals(message.referrer, cssUrlPrefix);
+                              assert_equals(message.referrer, cssReferrer);
                             });
                             css_test.done();
                           }),

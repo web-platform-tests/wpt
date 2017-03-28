@@ -22,7 +22,8 @@ def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 def browser_kwargs(**kwargs):
-    return {"webdriver_binary": kwargs["webdriver_binary"]}
+    return {"webdriver_binary": kwargs["webdriver_binary"],
+            "webdriver_args": kwargs.get("webdriver_args")}
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
@@ -42,9 +43,11 @@ def env_options():
 class EdgeBrowser(Browser):
     used_ports = set()
 
-    def __init__(self, logger, webdriver_binary):
+    def __init__(self, logger, webdriver_binary, webdriver_args=None):
         Browser.__init__(self, logger)
-        self.server = EdgeDriverServer(self.logger, binary=webdriver_binary)
+        self.server = EdgeDriverServer(self.logger,
+                                       binary=webdriver_binary,
+                                       args=webdriver_args)
         self.webdriver_host = "localhost"
         self.webdriver_port = self.server.port
 

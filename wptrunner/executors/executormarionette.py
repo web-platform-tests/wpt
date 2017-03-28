@@ -270,6 +270,7 @@ class RemoteMarionetteProtocol(Protocol):
         do_delayed_imports()
         Protocol.__init__(self, executor, browser)
         self.webdriver_binary = executor.webdriver_binary
+        self.webdriver_args = executor.webdriver_args
         self.capabilities = self.executor.capabilities
         self.session_config = None
         self.server = None
@@ -278,7 +279,9 @@ class RemoteMarionetteProtocol(Protocol):
         """Connect to browser via the Marionette HTTP server."""
         try:
             self.server = GeckoDriverServer(
-                self.logger, binary=self.webdriver_binary)
+                self.logger,
+                binary=self.webdriver_binary,
+                args=self.webdriver_args)
             self.server.start(block=False)
             self.logger.info(
                 "WebDriver HTTP server listening at %s" % self.server.url)
@@ -553,12 +556,13 @@ class WdspecRun(object):
 class MarionetteWdspecExecutor(WdspecExecutor):
     def __init__(self, browser, server_config, webdriver_binary,
                  timeout_multiplier=1, close_after_done=True, debug_info=None,
-                 capabilities=None):
+                 capabilities=None, webdriver_args=None, binary=None):
         self.do_delayed_imports()
         WdspecExecutor.__init__(self, browser, server_config,
                                 timeout_multiplier=timeout_multiplier,
                                 debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
+        self.webdriver_args = webdriver_args + ["--binary", binary]
         self.capabilities = capabilities
         self.protocol = RemoteMarionetteProtocol(self, browser)
 

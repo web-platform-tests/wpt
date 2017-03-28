@@ -27,7 +27,7 @@ class WebDriverServer(object):
     _used_ports = set()
 
     def __init__(self, logger, binary, host="127.0.0.1", port=None,
-                 base_path="", env=None):
+                 base_path="", env=None, args=None):
         if binary is None:
             raise ValueError("WebDriver server binary must be given "
                              "to --webdriver-binary argument")
@@ -43,6 +43,7 @@ class WebDriverServer(object):
 
         self._port = port
         self._cmd = None
+        self._args = args if args is not None else []
         self._proc = None
 
     @abc.abstractmethod
@@ -124,47 +125,47 @@ class SeleniumServer(WebDriverServer):
     default_base_path = "/wd/hub"
 
     def make_command(self):
-        return ["java", "-jar", self.binary, "-port", str(self.port)]
+        return ["java", "-jar", self.binary, "-port", str(self.port)] + self._args
 
 
 class ChromeDriverServer(WebDriverServer):
     default_base_path = "/wd/hub"
 
     def __init__(self, logger, binary="chromedriver", port=None,
-                 base_path=""):
+                 base_path="", args=None):
         WebDriverServer.__init__(
-            self, logger, binary, port=port, base_path=base_path)
+            self, logger, binary, port=port, base_path=base_path, args=args)
 
     def make_command(self):
         return [self.binary,
                 cmd_arg("port", str(self.port)),
-                cmd_arg("url-base", self.base_path) if self.base_path else ""]
+                cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
 
 class EdgeDriverServer(WebDriverServer):
     def __init__(self, logger, binary="MicrosoftWebDriver.exe", port=None,
-                 base_path="", host="localhost"):
+                 base_path="", host="localhost", args=None):
         WebDriverServer.__init__(
-            self, logger, binary, host=host, port=port)
+            self, logger, binary, host=host, port=port, args=args)
 
     def make_command(self):
         return [self.binary,
-                "--port=%s" % str(self.port)]
+                "--port=%s" % str(self.port)] + self._args
 
 
 class GeckoDriverServer(WebDriverServer):
     def __init__(self, logger, marionette_port=2828, binary="geckodriver",
-                 host="127.0.0.1", port=None):
+                 host="127.0.0.1", port=None, args=None):
         env = os.environ.copy()
         env["RUST_BACKTRACE"] = "1"
-        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env)
+        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env, args=args)
         self.marionette_port = marionette_port
 
     def make_command(self):
         return [self.binary,
                 "--marionette-port", str(self.marionette_port),
                 "--host", self.host,
-                "--port", str(self.port)]
+                "--port", str(self.port)] + self._args
 
 
 class ServoDriverServer(WebDriverServer):
@@ -178,7 +179,7 @@ class ServoDriverServer(WebDriverServer):
         command = [self.binary,
                    "--webdriver", str(self.port),
                    "--hard-fail",
-                   "--headless"]
+                   "--headless"] + self._args
         if self.binary_args:
             command += self.binary_args
         return command

@@ -25,7 +25,8 @@ def check_args(**kwargs):
 
 def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
-            "webdriver_binary": kwargs["webdriver_binary"]}
+            "webdriver_binary": kwargs["webdriver_binary"],
+            "webdriver_args": kwargs.get("webdriver_args")}
 
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
@@ -60,12 +61,15 @@ class ChromeBrowser(Browser):
     ``wptrunner.webdriver.ChromeDriverServer``.
     """
 
-    def __init__(self, logger, binary, webdriver_binary="chromedriver"):
+    def __init__(self, logger, binary, webdriver_binary="chromedriver",
+                 webdriver_args=None):
         """Creates a new representation of Chrome.  The `binary` argument gives
         the browser binary to use for testing."""
         Browser.__init__(self, logger)
         self.binary = binary
-        self.server = ChromeDriverServer(self.logger, binary=webdriver_binary)
+        self.server = ChromeDriverServer(self.logger,
+                                         binary=webdriver_binary,
+                                         args=webdriver_args)
 
     def start(self):
         self.server.start(block=False)

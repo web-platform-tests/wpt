@@ -122,6 +122,9 @@ scheme host and port.""")
                               help="Extra argument for the binary")
     config_group.add_argument("--webdriver-binary", action="store", metavar="BINARY",
                               type=abs_path, help="WebDriver server binary to use")
+    config_group.add_argument('--webdriver-arg',
+                              default=[], action="append", dest="webdriver_args",
+                              help="Extra argument for the WebDriver binary")
 
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata"),

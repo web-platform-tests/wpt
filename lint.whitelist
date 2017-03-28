@@ -92,7 +92,7 @@ SUPPORT-WRONG-DIR: */OWNERS
 SUPPORT-WRONG-DIR: fonts/*
 
 # The selectors-3 testsuite has a weird build system
-SUPPORT-WRONG-DIR: selectors-3/*
+SUPPORT-WRONG-DIR: css3-selectors/*
 
 # Things we should fix
 SUPPORT-WRONG-DIR: css-animations-1/animationevent-interface.js
@@ -100,15 +100,15 @@ SUPPORT-WRONG-DIR: css-backgrounds-3/justfortest.html
 SUPPORT-WRONG-DIR: css-backgrounds-3/background-attachment-local/aqua-yellow-32x32.png
 SUPPORT-WRONG-DIR: css-backgrounds-3/background-clip/list.txt
 SUPPORT-WRONG-DIR: css-backgrounds-3/background-origin/list.txt
-SUPPORT-WRONG-DIR: css-color-3/htaccess
+SUPPORT-WRONG-DIR: css3-color/htaccess
 SUPPORT-WRONG-DIR: css-fonts-3/font-variant-debug.html
 SUPPORT-WRONG-DIR: css-masking-1/clip-path/svg-clipPath.svg
 SUPPORT-WRONG-DIR: css-multicol-1/multicol-red.png
-SUPPORT-WRONG-DIR: css21/section-index.xht
-SUPPORT-WRONG-DIR: css21/other-formats/xml/background-18.css
-SUPPORT-WRONG-DIR: css21/other-formats/xml/background-19-alt.xml
-SUPPORT-WRONG-DIR: css21/other-formats/xml/background-19.css
-SUPPORT-WRONG-DIR: filters-1/filter-external-002-filter.svg
+SUPPORT-WRONG-DIR: CSS2/section-index.xht
+SUPPORT-WRONG-DIR: CSS2/other-formats/xml/background-18.css
+SUPPORT-WRONG-DIR: CSS2/other-formats/xml/background-19-alt.xml
+SUPPORT-WRONG-DIR: CSS2/other-formats/xml/background-19.css
+SUPPORT-WRONG-DIR: filter-effects-1/filter-external-002-filter.svg
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/check-for-references.sh
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/sync-tests-filter
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/sync-tests.sh
@@ -127,8 +127,8 @@ SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/background/re
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/background/reticule.png
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/masking/blank.html
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/transforms/green.html
-SUPPORT-WRONG-DIR: WOFF2-UserAgent/manifest.txt
-SUPPORT-WRONG-DIR: WOFF2-UserAgent/Tests/xhtml1/testcaseindex.xht
+SUPPORT-WRONG-DIR: WOFF2/manifest.txt
+SUPPORT-WRONG-DIR: WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css-masking-1/clip-path-svg-content/clip-path-clip-rule-008.svg
 NON-EXISTENT-REF: css-masking-1/clip-path-svg-content/clip-path-precision-001.svg
 NON-EXISTENT-REF: css-shapes-1/spec-examples/shape-outside-012.html
@@ -146,7 +146,7 @@ NON-EXISTENT-REF: css-text-3/line-breaking/line-breaking-011.html
 NON-EXISTENT-REF: css-text-3/line-breaking/line-breaking-ic-001.html
 NON-EXISTENT-REF: css-text-3/line-breaking/line-breaking-ic-002.html
 NON-EXISTENT-REF: css-text-3/line-breaking/line-breaking-ic-003.html
-NON-EXISTENT-REF: css21/tables/border-collapse-005.html
+NON-EXISTENT-REF: CSS2/tables/border-collapse-005.html
 NON-EXISTENT-REF: mediaqueries-3/relative-units-002.html
 NON-EXISTENT-REF: mediaqueries-3/relative-units-003.html
 NON-EXISTENT-REF: mediaqueries-3/relative-units-004.html
@@ -156,10 +156,10 @@ SAME-FILE-REF: css-multicol-1/multicol-rule-shorthand-2.xht
 ## Whitespace rules that we can't enforce yet
 INDENT TABS: .gitmodules
 INDENT TABS: compositing-1/*
-INDENT TABS: css21/*
+INDENT TABS: CSS2/*
 INDENT TABS: css-align-3/*
 INDENT TABS: css-backgrounds-3/*
-INDENT TABS: css-color-3/*
+INDENT TABS: css3-color/*
 INDENT TABS: css-color-4/*
 INDENT TABS: css-conditional-3/*
 INDENT TABS: css-counter-styles-3/*
@@ -175,7 +175,7 @@ INDENT TABS: cssom-view-1/*
 INDENT TABS: css-page-3/*
 INDENT TABS: css-pseudo-4/*
 INDENT TABS: css-regions-1/*
-INDENT TABS: css-round-display/*
+INDENT TABS: css-round-display-1/*
 INDENT TABS: css-shapes-1/*
 INDENT TABS: css-speech-1/*
 INDENT TABS: css-tables-3/*
@@ -187,13 +187,13 @@ INDENT TABS: css-ui-3/*
 INDENT TABS: css-values-3/*
 INDENT TABS: css-variables-1/*
 INDENT TABS: css-writing-modes-3/*
-INDENT TABS: filters-1/*
+INDENT TABS: filter-effects-1/*
 INDENT TABS: fonts/*
 INDENT TABS: mediaqueries-3/*
-INDENT TABS: selectors-3/*
-INDENT TABS: selectors-4/*
+INDENT TABS: css3-selectors/*
+INDENT TABS: selectors4/*
 INDENT TABS: vendor-imports/*
-INDENT TABS: WOFF2-UserAgent/*
+INDENT TABS: WOFF2/*
 
 
 ## Things we're stopping from getting worse
@@ -213,9 +213,9 @@ CONSOLE: work-in-progress/mozilla/mochitest-simplified/packed.js
 CONSOLE: work-in-progress/ttwf_sf/divya/index-002.html
 CONSOLE: work-in-progress/ttwf_tokyo/hiromitsuuuuu/test_font_face_parser.html
 
-TRAILING WHITESPACE: css21/generated-content/before-after-positioned-002.html
-TRAILING WHITESPACE: css21/generated-content/before-after-positioned-003.html
-TRAILING WHITESPACE: css21/generated-content/before-after-positioned-004.html
+TRAILING WHITESPACE: CSS2/generated-content/before-after-positioned-002.html
+TRAILING WHITESPACE: CSS2/generated-content/before-after-positioned-003.html
+TRAILING WHITESPACE: CSS2/generated-content/before-after-positioned-004.html
 TRAILING WHITESPACE: css-color-4/lab-004.html
 TRAILING WHITESPACE: css-color-4/lab-005.html
 TRAILING WHITESPACE: css-color-4/lab-006.html
@@ -301,26 +301,26 @@ SET TIMEOUT: css-writing-modes-3/orthogonal-parent-shrink-to-fit-001v.html
 SET TIMEOUT: css-writing-modes-3/orthogonal-parent-shrink-to-fit-001w.html
 SET TIMEOUT: css-writing-modes-3/orthogonal-parent-shrink-to-fit-001x.html
 SET TIMEOUT: css-writing-modes-3/support/text-orientation.js
-SET TIMEOUT: css21/backgrounds/background-root-101.xht
-SET TIMEOUT: css21/backgrounds/background-root-102.xht
-SET TIMEOUT: css21/backgrounds/background-root-103.xht
-SET TIMEOUT: css21/floats-clear/floats-137.xht
-SET TIMEOUT: css21/generated-content/counter-increment-000.xht
-SET TIMEOUT: css21/generated-content/counter-increment-001.xht
-SET TIMEOUT: css21/generated-content/counter-increment-002.xht
-SET TIMEOUT: css21/generated-content/counter-reset-000.xht
-SET TIMEOUT: css21/generated-content/counter-reset-001.xht
-SET TIMEOUT: css21/generated-content/counter-reset-002.xht
-SET TIMEOUT: css21/selectors/dom-hover-001.xht
-SET TIMEOUT: css21/selectors/dom-hover-002.xht
-SET TIMEOUT: css21/tables/tables-102.xht
+SET TIMEOUT: CSS2/backgrounds/background-root-101.xht
+SET TIMEOUT: CSS2/backgrounds/background-root-102.xht
+SET TIMEOUT: CSS2/backgrounds/background-root-103.xht
+SET TIMEOUT: CSS2/floats-clear/floats-137.xht
+SET TIMEOUT: CSS2/generated-content/counter-increment-000.xht
+SET TIMEOUT: CSS2/generated-content/counter-increment-001.xht
+SET TIMEOUT: CSS2/generated-content/counter-increment-002.xht
+SET TIMEOUT: CSS2/generated-content/counter-reset-000.xht
+SET TIMEOUT: CSS2/generated-content/counter-reset-001.xht
+SET TIMEOUT: CSS2/generated-content/counter-reset-002.xht
+SET TIMEOUT: CSS2/selectors/dom-hover-001.xht
+SET TIMEOUT: CSS2/selectors/dom-hover-002.xht
+SET TIMEOUT: CSS2/tables/tables-102.xht
 SET TIMEOUT: cssom-view-1/matchMediaAddListener.html
 SET TIMEOUT: mediaqueries-3/min-width-tables-001.html
-SET TIMEOUT: selectors-4/focus-within-shadow-001.html
-SET TIMEOUT: selectors-4/focus-within-shadow-002.html
-SET TIMEOUT: selectors-4/focus-within-shadow-003.html
-SET TIMEOUT: selectors-4/focus-within-shadow-004.html
-SET TIMEOUT: selectors-4/focus-within-shadow-005.html
+SET TIMEOUT: selectors4/focus-within-shadow-001.html
+SET TIMEOUT: selectors4/focus-within-shadow-002.html
+SET TIMEOUT: selectors4/focus-within-shadow-003.html
+SET TIMEOUT: selectors4/focus-within-shadow-004.html
+SET TIMEOUT: selectors4/focus-within-shadow-005.html
 SET TIMEOUT: work-in-progress/apple/css-transforms/scripts/prefixfree.min.js
 SET TIMEOUT: work-in-progress/aryehgregor/transitions/test_transitions.html
 SET TIMEOUT: work-in-progress/aryehgregor/transitions/test_transitions_per_property.html
@@ -355,185 +355,185 @@ CSS-COLLIDING-SUPPORT-NAME: css-grid-1/grid-items/support/200x200-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/contentEditable/support/common.css
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/interactivity/full-screen/support/common.css
 CSS-COLLIDING-SUPPORT-NAME: css-writing-modes-3/support/pattern-gg-gr-100x100.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/pattern-gg-gr-100x100.png
-CSS-COLLIDING-SUPPORT-NAME: css21/visuren/support/pattern-gg-gr-100x100.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/pattern-gg-gr-100x100.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/visuren/support/pattern-gg-gr-100x100.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-multicol-1/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-transitions-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/backgrounds/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/backgrounds/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-fonts-3/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-multicol-1/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-page-3/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-transitions-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/backgrounds/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/backgrounds/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-flexbox-1/support/solidblue.png
 CSS-COLLIDING-SUPPORT-NAME: vendor-imports/mozilla/mozilla-central-reftests/flexbox/support/solidblue.png
 CSS-COLLIDING-SUPPORT-NAME: css-writing-modes-3/support/swatch-fuchsia.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/swatch-fuchsia.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/swatch-fuchsia.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/interactivity/full-screen/support/util.js
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/interactivity/resizing/support/util.js
 
 # More duplicated copies of the above
-CSS-COLLIDING-SUPPORT-NAME: css21/archive/raw-tests/css1tests/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/floats-clear/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/media/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/archive/raw-tests/css1tests/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/floats-clear/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/media/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-view-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/syntax/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/fonts/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/cascade/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/syntax/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/fonts/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/cascade/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-transforms-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css-style-attr-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/borders/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: css-style-attr/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/borders/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/zindex/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/text/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/zindex/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/text/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-values-3/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/margin-padding-clear/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/margin-padding-clear/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-text-3/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/box-display/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/colors/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/lists/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: filters-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/selectors/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/values/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/box-display/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/colors/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/lists/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: filter-effects-1/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/selectors/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/values/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-shapes-1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/tables/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/bidi-text/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/css1/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/ui/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/tables/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/bidi-text/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/css1/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/ui/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-images-3/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generated-content/support/pattern-rgr-grg-rgr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generated-content/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-flexbox-1/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css-fonts-3/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-transforms-1/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-view-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/fonts/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/fonts/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/selectors/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/selectors/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-shapes-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/ui/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/margin-padding-clear/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/archive/raw-tests/css1tests/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/syntax/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/zindex/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/colors/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/cascade/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/bidi-text/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css-style-attr-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/lists/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/ui/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/margin-padding-clear/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/archive/raw-tests/css1tests/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/syntax/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/zindex/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/colors/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/cascade/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/bidi-text/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: css-style-attr/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/lists/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-flexbox-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: filters-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/borders/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: filter-effects-1/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/borders/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-text-3/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/text/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/box-display/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/media/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/text/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/box-display/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/media/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-values-3/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-page-3/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/css1/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/floats-clear/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generated-content/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/css1/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/floats-clear/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generated-content/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css-images-3/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/tables/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css21/values/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/tables/support/pattern-grg-rgr-grg.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/values/support/pattern-grg-rgr-grg.png
 
 # These are thrown off by their support/support/ copies
 # https://github.com/w3c/csswg-test/issues/1235
-CSS-COLLIDING-SUPPORT-NAME: css21/bidi-text/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/tables/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/lists/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: filters-1/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/bidi-text/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/tables/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/lists/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: filter-effects-1/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-view-1/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-values-3/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css-style-attr-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/text/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: css-style-attr/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/text/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-multicol-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/values/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/archive/raw-tests/css1tests/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/box-display/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generated-content/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/values/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/archive/raw-tests/css1tests/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/box-display/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generated-content/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: support/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-fonts-3/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/pagination/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/pagination/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-flexbox-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/fonts/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/selectors/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/ui/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/zindex/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/csswg-issues/submitted/css2.1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/backgrounds/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/i18n/syndata/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/fonts/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/selectors/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/ui/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/zindex/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/csswg-issues/submitted/css2.1/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/backgrounds/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/i18n/syndata/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-text-3/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-transforms-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/syntax/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/syntax/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-images-3/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-transitions-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/cascade/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/floats-clear/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/css1/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/cascade/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/floats-clear/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/css1/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-shapes-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/colors/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/positioning/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/colors/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/positioning/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/borders/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/borders/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-1/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-page-3/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generate/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generate/support/swatch-red.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css-flexbox-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generated-content/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/backgrounds/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/text/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generated-content/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/backgrounds/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/text/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-values-3/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/csswg-issues/submitted/css2.1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/borders/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: filters-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/archive/raw-tests/css1tests/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/csswg-issues/submitted/css2.1/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/borders/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: filter-effects-1/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/archive/raw-tests/css1tests/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: support/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-1/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-writing-modes-3/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/positioning/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/positioning/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-fonts-3/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-images-3/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/box-display/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/colors/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/generate/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/box-display/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/colors/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/generate/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-transforms-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-text-3/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-page-3/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/bidi-text/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css-style-attr-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/zindex/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/bidi-text/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: css-style-attr/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/zindex/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-transitions-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/fonts/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/i18n/syndata/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/selectors/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/syntax/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/css1/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/fonts/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/i18n/syndata/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/selectors/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/syntax/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/css1/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-shapes-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/lists/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/ui/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/margin-padding-clear/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/lists/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/ui/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/margin-padding-clear/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/tables/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/cascade/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/tables/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/cascade/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-multicol-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/values/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/values/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-regions-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/floats-clear/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/floats-clear/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: cssom-view-1/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/pagination/support/swatch-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/pagination/support/swatch-green.png
 
 # Duplicate filename not picked up by the build system
 # https://github.com/w3c/csswg-test/issues/1236
@@ -544,36 +544,36 @@ CSS-COLLIDING-REF-NAME: css-masking-1/clip-path/reference/clip-path-square-002-r
 
 # Duplicate filename where there's no actual merging
 # (i.e., we're being more aggressive than the build system at forbidding it)
-CSS-COLLIDING-REF-NAME: css21/positioning/position-relative-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/positioning/position-relative-001-ref.xht
 CSS-COLLIDING-REF-NAME: css-regions-1/positioned-content/reference/position-relative-001-ref.html
-CSS-COLLIDING-REF-NAME: css21/text/text-transform-lowercase-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/text/text-transform-lowercase-001-ref.xht
 CSS-COLLIDING-REF-NAME: css-text-3/text-transform/reference/text-transform-lowercase-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/text/text-transform-capitalize-003-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/text/text-transform-capitalize-003-ref.xht
 CSS-COLLIDING-REF-NAME: css-text-3/text-transform/reference/text-transform-capitalize-003-ref.html
-CSS-COLLIDING-REF-NAME: css21/text/text-transform-capitalize-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/text/text-transform-capitalize-001-ref.xht
 CSS-COLLIDING-REF-NAME: css-text-3/text-transform/reference/text-transform-capitalize-001-ref.html
 CSS-COLLIDING-REF-NAME: css-pseudo-4/first-letter-001-ref.html
-CSS-COLLIDING-REF-NAME: css21/selectors/first-letter-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/text/text-transform-uppercase-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/selectors/first-letter-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/text/text-transform-uppercase-001-ref.xht
 CSS-COLLIDING-REF-NAME: css-text-3/text-transform/reference/text-transform-uppercase-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/visufx/overflow-applies-to-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/ui/overflow-applies-to-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/visuren/inline-formatting-context-001-ref.xht
-CSS-COLLIDING-REF-NAME: css21/linebox/inline-formatting-context-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/visufx/overflow-applies-to-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/ui/overflow-applies-to-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/visuren/inline-formatting-context-001-ref.xht
+CSS-COLLIDING-REF-NAME: CSS2/linebox/inline-formatting-context-001-ref.xht
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: compositing-1/mix-blend-mode/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: compositing-1/background-blending/support/red.png
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/replaced-min-max-3.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/replaced-min-max-3.png
 CSS-COLLIDING-SUPPORT-NAME: vendor-imports/mozilla/mozilla-central-reftests/ui3/support/replaced-min-max-3.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/background-size/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-backgrounds-3/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css-grid-1/grid-items/support/50x50-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/support/50x50-green.png
-CSS-COLLIDING-SUPPORT-NAME: css21/ui/support/animated.gif
-CSS-COLLIDING-SUPPORT-NAME: css21/backgrounds/support/animated.gif
+CSS-COLLIDING-SUPPORT-NAME: CSS2/support/50x50-green.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/ui/support/animated.gif
+CSS-COLLIDING-SUPPORT-NAME: CSS2/backgrounds/support/animated.gif
 CSS-COLLIDING-SUPPORT-NAME: css-shapes-1/shape-outside/shape-image/support/animated.gif
-CSS-COLLIDING-SUPPORT-NAME: css21/archive/raw-tests/css1tests/support/pattern-gg-gr.png
-CSS-COLLIDING-SUPPORT-NAME: css21/css1/support/pattern-gg-gr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/archive/raw-tests/css1tests/support/pattern-gg-gr.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/css1/support/pattern-gg-gr.png
 CSS-COLLIDING-SUPPORT-NAME: css-display-3/support/util.js
-CSS-COLLIDING-SUPPORT-NAME: css21/normal-flow/support/replaced-min-max-1.png
+CSS-COLLIDING-SUPPORT-NAME: CSS2/normal-flow/support/replaced-min-max-1.png
 CSS-COLLIDING-SUPPORT-NAME: vendor-imports/mozilla/mozilla-central-reftests/ui3/support/replaced-min-max-1.png

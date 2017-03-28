@@ -108,10 +108,10 @@ promise_test(t => {
 promise_test(t => {
   const ws = recordingWritableStream({
     start(controller) {
-      controller.error();
+      controller.error(error1);
     }
   });
-  return promise_rejects(t, new TypeError(), ws.getWriter().write('a'), 'write() should fail')
+  return promise_rejects(t, error1, ws.getWriter().write('a'), 'write() should reject with the error')
       .then(() => {
         assert_array_equals(ws.events, [], 'sink write() should not have been called');
       });

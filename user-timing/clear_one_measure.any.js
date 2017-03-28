@@ -14,7 +14,7 @@ test(function()
 
     // test that "measure1" was cleared
     entries = self.performance.getEntriesByName("measure1");
-    
+
     assert_equals(entries.length, 0,
               "After a call to self.performance.clearMeasures(\"measure1\"), " +
               "self.performance.getEntriesByName(\"measure1\") returns an empty object.");

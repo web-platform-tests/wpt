@@ -17,7 +17,7 @@ function test_exception(attrName) {
         })
     }, "window.performance.mark(\"" + attrName + "\") throws a SyntaxError exception.");
 }
-    
+
 // loop through mark scenarios
 for (var i in timingAttributes) {
     test_exception(timingAttributes[i]);

@@ -216,16 +216,19 @@ promise_test(t => {
 }, 'Aborting a WritableStream causes any outstanding write() promises to be rejected with a TypeError');
 
 promise_test(t => {
-  const ws = new WritableStream();
+  const ws = recordingWritableStream();
   const writer = ws.getWriter();
 
   const closePromise = writer.close();
-  writer.abort(error1);
+  const abortPromise = writer.abort(error1);
 
   return Promise.all([
     promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'),
-    promise_rejects(t, new TypeError(), closePromise, 'close() should reject with a TypeError')
-  ]);
+    promise_rejects(t, new TypeError(), closePromise, 'close() should reject with a TypeError'),
+    abortPromise
+  ]).then(() => {
+    assert_array_equals(ws.events, ['abort', error1]);
+  });
 }, 'Closing but then immediately aborting a WritableStream causes the stream to error');
 
 promise_test(t => {
@@ -399,41 +402,35 @@ promise_test(t => {
 
 promise_test(() => {
   let resolveWrite;
-  let abortCalled = false;
-  const ws = new WritableStream({
+  const ws = recordingWritableStream({
     write() {
       return new Promise(resolve => {
         resolveWrite = resolve;
       });
-    },
-    abort() {
-      abortCalled = true;
     }
   });
 
   const writer = ws.getWriter();
   return writer.ready.then(() => {
     writer.write('a');
-    const abortPromise = writer.abort();
+    const abortPromise = writer.abort('b');
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'abort should not be called while write is in-flight');
+      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is pending');
       resolveWrite();
-      return abortPromise.then(() => assert_true(abortCalled, 'abort should be called'));
+      return abortPromise.then(() => {
+        assert_array_equals(ws.events, ['write', 'a', 'abort', 'b'], 'abort should be called after the write finishes');
+      });
     });
   });
 }, 'underlying abort() should not be called until underlying write() completes');
 
 promise_test(() => {
   let resolveClose;
-  let abortCalled = false;
-  const ws = new WritableStream({
+  const ws = recordingWritableStream({
     close() {
       return new Promise(resolve => {
         resolveClose = resolve;
       });
-    },
-    abort() {
-      abortCalled = true;
     }
   });
 
@@ -442,10 +439,10 @@ promise_test(() => {
     writer.close();
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'underlying abort should not be called while close is in-flight');
+      assert_array_equals(ws.events, ['close'], 'abort should not be called while close is pending');
       resolveClose();
       return abortPromise.then(() => {
-        assert_false(abortCalled, 'underlying abort should not be called after close completes');
+        assert_array_equals(ws.events, ['close'], 'abort should not be called');
       });
     });
   });
@@ -484,15 +481,11 @@ promise_test(t => {
 
 promise_test(t => {
   let resolveWrite;
-  let abortCalled = false;
-  const ws = new WritableStream({
+  const ws = recordingWritableStream({
     write() {
       return new Promise(resolve => {
         resolveWrite = resolve;
       });
-    },
-    abort() {
-      abortCalled = true;
     }
   });
 
@@ -500,17 +493,18 @@ promise_test(t => {
   return writer.ready.then(() => {
     writer.write('a');
     const closePromise = writer.close();
-    const abortPromise = writer.abort();
+    const abortPromise = writer.abort('b');
+
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'abort should not be called while write is in-flight');
+      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is pending');
       resolveWrite();
       return abortPromise.then(() => {
-        assert_true(abortCalled, 'abort should be called after write completes');
+        assert_array_equals(ws.events, ['write', 'a', 'abort', 'b'], 'abort should be called after write completes');
         return promise_rejects(t, new TypeError(), closePromise, 'promise returned by close() should be rejected');
       });
     });
   });
-}, 'underlying abort() should be called while closing if underlying close() has not started yet');
+}, 'an abort() that happens during a write() should trigger the underlying abort() even with a close() queued');
 
 promise_test(t => {
   const ws = new WritableStream({
@@ -536,11 +530,13 @@ promise_test(() => {
   return writer.ready.then(() => {
     const closePromise = writer.close();
     const abortPromise = writer.abort();
-    let closeResolved = false;
-    Promise.all([
-      closePromise.then(() => { closeResolved = true; }),
-      abortPromise.then(() => { assert_true(closeResolved, 'close() promise should resolve before abort() promise'); })
-    ]);
+    const events = [];
+    return Promise.all([
+      closePromise.then(() => { events.push('close'); }),
+      abortPromise.then(() => { events.push('abort'); })
+    ]).then(() => {
+      assert_array_equals(events, ['close', 'abort']);
+    });
   });
 }, 'writer close() promise should resolve before abort() promise');
 

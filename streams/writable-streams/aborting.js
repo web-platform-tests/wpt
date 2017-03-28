@@ -442,7 +442,7 @@ promise_test(() => {
       assert_array_equals(ws.events, ['close'], 'abort should not be called while close is pending');
       resolveClose();
       return abortPromise.then(() => {
-        assert_array_equals(ws.events, ['close'], 'abort should not be called while close is pending');
+        assert_array_equals(ws.events, ['close'], 'abort should not be called');
       });
     });
   });

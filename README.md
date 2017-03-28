@@ -13,8 +13,9 @@ web-platform-tests and closed.
 
 If you have an existing pull request open here, feel free to push new changes
 to it until it is moved and closed. If you were about to open a pull request
-here, rebase it onto web-platform-tests (see `css/README.md` there) and open it
+here, [rebase it onto web-platform-tests][moving-old-branches]) and open it
 there.
 
 
 [web-platform-tests]: https://github.com/w3c/web-platform-tests
+[moving-old-branches]: https://github.com/w3c/web-platform-tests/blob/master/css/README.md#importing-old-branches

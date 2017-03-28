@@ -3,7 +3,7 @@ csswg-test has moved
 
 As of 28 March 2017, this repo is no more. RIP, csswg-test.
 
-It has now been merged into [web-platform-tests][] and all tests formally in
+It has now been merged into [web-platform-tests][] and all tests formerly in
 this repository can be found in the `css` subdirectory.
 
 Issues and pull requests on this repository are kept for historical interest

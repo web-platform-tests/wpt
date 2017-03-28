@@ -20,7 +20,7 @@ The [controlling-ua](./controlling-ua) and [receiving-ua](./receiving-ua) subfol
 
 ## Receiving User Agent Tests
 
-The [receiving-ua](./receiving-ua) subfolder contains receiving user agent tests to be initiated by _a controlling user agent_. When the controlling user agent starts running the test, it will ask a user to click a button and choose a presentation display. Once the presentation display is selected, the controlling user agent will request the receiving user agent to load and run the corresponding test placed in the [receiving-ua/support](./receiving-ua/support) subfolder. When the test ends, all results will appear on the controlling user agent's window.
+The [receiving-ua](./receiving-ua) subfolder contains receiving user agent tests to be initiated by _a controlling user agent_. When the controlling user agent starts the test, it will ask a user to click a button and choose a presentation display. Once the presentation display is selected, the controlling user agent will request the receiving user agent to load and run the corresponding test placed in the [receiving-ua/support](./receiving-ua/support) subfolder. When the test ends, all results will appear on the controlling user agent's window.
 
 [editor-draft]: http://w3c.github.io/presentation-api/
 [conformance-classes]: http://w3c.github.io/presentation-api/#conformance-classes

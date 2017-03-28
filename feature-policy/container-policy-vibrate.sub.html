@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<title>Vibrate allowed by container policy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="same-origin" src="resources/vibrate-enabled.html" allow="vibrate"></iframe>
+<iframe id="cross-origin" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-enabled.html" allow="vibrate"></iframe>
+
+

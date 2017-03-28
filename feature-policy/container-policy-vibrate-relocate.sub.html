@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<title>Vibrate allowed by container policy with relocation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="f1" allow="vibrate"></iframe>
+<iframe id="f2" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-relocate.html" allow="vibrate"></iframe>
+<script>
+document.getElementById("f1").src = "{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-disabled.html";
+</script>

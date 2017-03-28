@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Fullscreen Relocation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/respirces/testharnessreport.js"></script>
+<script>
+promise_test(function(t) {
+  document.location = "{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/fullscreen.html";
+  return new Promise(function(resolve, reject) {
+    window.addEventListener('message', function(e) {
+      resolve(e.data);
+    }. { once: true });
+  }).then(function(data) {
+    parent.postMessage(data, '*');
+  });
+}, 'Changing document.location without changing iframe.src should not update the container policy.');
+</script>

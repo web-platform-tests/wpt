@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Payment allowed by container policy with relocation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="f1" allow="payment"></iframe>
+<iframe id="f2" allowpaymentrequest allow="payment"></iframe>
+<iframe id="f3" allowpaymentrequest></iframe>
+<iframe id="f4" src="resources/payment-relocate-disabled.html" allow="payment"></iframe>
+<iframe id="f5" src="resources/payment-relocate-disabled.html" allowpaymentrequest allow="payment"></iframe>
+<iframe id="f6" src="resources/payment-relocate-disabled.html" allowpaymentrequest></iframe>
+<script>
+document.getElementById("f1").src = "{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/payment-enabled.html"
+document.getElementById("f2").src = "{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/payment-enabled.html"
+document.getElementById("f3").src = "{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/payment-enabled.html"
+</script>

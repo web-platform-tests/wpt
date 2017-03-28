@@ -98,6 +98,8 @@ class IncludeManifest(ManifestItem):
                     found = False
                     rel_path = os.path.relpath(path, data["tests_path"])
                     for test in manifest.iterpath(rel_path):
+                        if not hasattr(test, "url"):
+                            continue
                         url = test.url
                         if query or fragment:
                             parsed = urlparse.urlparse(url)

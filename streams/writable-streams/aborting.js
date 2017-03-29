@@ -415,7 +415,7 @@ promise_test(() => {
     writer.write('a');
     const abortPromise = writer.abort('b');
     return flushAsyncEvents().then(() => {
-      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is pending');
+      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is in-flight');
       resolveWrite();
       return abortPromise.then(() => {
         assert_array_equals(ws.events, ['write', 'a', 'abort', 'b'], 'abort should be called after the write finishes');
@@ -439,7 +439,7 @@ promise_test(() => {
     writer.close();
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_array_equals(ws.events, ['close'], 'abort should not be called while close is pending');
+      assert_array_equals(ws.events, ['close'], 'abort should not be called while close is in-flight');
       resolveClose();
       return abortPromise.then(() => {
         assert_array_equals(ws.events, ['close'], 'abort should not be called');
@@ -496,7 +496,7 @@ promise_test(t => {
     const abortPromise = writer.abort('b');
 
     return flushAsyncEvents().then(() => {
-      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is pending');
+      assert_array_equals(ws.events, ['write', 'a'], 'abort should not be called while write is in-flight');
       resolveWrite();
       return abortPromise.then(() => {
         assert_array_equals(ws.events, ['write', 'a', 'abort', 'b'], 'abort should be called after write completes');
@@ -970,11 +970,14 @@ promise_test(t => {
   }).then(() => {
     assert_array_equals(
         events, ['abortPromise'],
-        'writePromise and writer.closed must not be fulfilled/rejected yet even after writer.abort()');
+        'closePromise and writer.closed must not be fulfilled/rejected yet even after writer.abort()');
 
     resolveClose();
 
     return Promise.all([
+      closePromise,
+      promise_rejects(t, error2, writer.ready,
+                      'writer.ready must be still rejected with the error passed to the controller\'s error method'),
       promise_rejects(t, error2, writer.closed,
                       'writer.closed must reject with the error passed to the controller\'s error method'),
       flushAsyncEvents()
@@ -982,12 +985,6 @@ promise_test(t => {
   }).then(() => {
     assert_array_equals(events, ['abortPromise', 'closePromise', 'closed'],
                         'abortPromise, closePromise and writer.closed must fulfill/reject');
-
-    return Promise.all([
-      closePromise,
-      promise_rejects(t, error2, writer.ready,
-                      'writer.ready must be still rejected with the error passed to the controller\'s error method')
-    ]);
   }).then(() => {
     writer.releaseLock();
 

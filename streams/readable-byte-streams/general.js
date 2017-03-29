@@ -16,7 +16,16 @@ test(() => {
 test(() => {
   // Constructing ReadableStream with an empty underlying byte source object as parameter shouldn't throw.
   new ReadableStream({ type: 'bytes' });
+  // Constructor must perform ToString(type).
+  new ReadableStream({ type: { toString() {return 'bytes';} } });
+  new ReadableStream({ type: { toString: null, valueOf() {return 'bytes';} } });
 }, 'ReadableStream with byte source can be constructed with no errors');
+
+test(() => {
+  const rs = new ReadableStream({ type: 'bytes' });
+  assert_throws(new RangeError(), () => rs.getReader({ mode: { toString() {return 'byob';} } }));
+  rs.getReader({ mode: 'byob', notmode: 'ignored' });
+}, 'getReader({mode}) must only accept an actual string');
 
 promise_test(() => {
   let startCalled = false;

@@ -18,7 +18,7 @@
       var store = db.transaction("Store1", "readwrite").objectStore("Store1");
 
       store.openCursor().onsuccess = t.step_func(function(e) {
-        var item = event.target.result.value;
+        var item = e.target.result.value;
         store.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
           assert_equals(e.target.result ? e.target.result.num : null, 100, 'Expected 100.');
           t.done();
@@ -40,7 +40,7 @@
     function(t, db) {
       var store = db.transaction("Store2", "readwrite").objectStore("Store2");
       store.openCursor().onsuccess = t.step_func(function(e) {
-        var item = event.target.result.value;
+        var item = e.target.result.value;
         store.index("CompoundKey").get([item.num, item.id]).onsuccess = t.step_func(function(e) {
           assert_equals(e.target.result ? e.target.result.num : null, 100, 'Expected 100.');
           t.done();

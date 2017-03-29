@@ -74,7 +74,8 @@ promise_test(t => {
     promise_rejects(t, error1, writer.close(), 'close() must reject with the error'),
     promise_rejects(t, error1, writer.closed, 'closed must reject with the error')
   ]);
-}, 'when the sink throws and a write is queued up, the stream should become errored');
+}, 'when the sink throws during close, and the close is requested while a write is still in-flight, the stream should ' +
+   'become errored during the close');
 
 promise_test(() => {
   const ws = new WritableStream({

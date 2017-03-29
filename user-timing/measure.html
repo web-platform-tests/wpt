@@ -1,15 +1,16 @@
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
         <title>window.performance User Timing measure() method is working properly</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/user-timing/#dom-performance-measure"/>
+        <link rel="help" href="https://w3c.github.io/user-timing/#dom-performance-measure"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="resources/webperftestharness.js"></script>
 
-    <script type="text/javascript">
+    <script>
         // test data
         var startMarkName = "mark_start";
         var startMarkValue;
@@ -135,7 +136,7 @@
 
                     // when endMark isn't provided to the measure() call, a DOMHighResTimeStamp corresponding to
                     // the current time with a timebase of the navigationStart attribute is used
-                    scenario.duration = ((new Date()) - window.performance.timing.navigationStart) -
+                    scenario.duration = window.performance.now() -
                                                 startMarkValue;
                 }
                 else if (scenario.startMark != undefined && scenario.endMark != undefined)

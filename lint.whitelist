@@ -262,6 +262,7 @@ CONTENT-MANUAL: css/*
 SUPPORT-WRONG-DIR: css/requirements.txt
 SUPPORT-WRONG-DIR: css/README.md
 SUPPORT-WRONG-DIR: css/build-css-testsuites.sh
+SUPPORT-WRONG-DIR: css/OWNERS
 SUPPORT-WRONG-DIR: css/*/reftest.list
 SUPPORT-WRONG-DIR: css/*.headers
 SUPPORT-WRONG-DIR: css/*/README

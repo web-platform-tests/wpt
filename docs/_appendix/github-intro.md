@@ -56,7 +56,7 @@ Now that you have Git set up, you will need to fork the test repository. This
 will enable you to [submit][submit] your tests using a pull request (more on this
 [below][submit]).
 
-1.  In the browser, go the the GitHub page for the test repository: [github.com/w3c/web-platform-tests][main-repo]
+1.  In the browser, go to [web-platform-tests on GitHub][main-repo].
 
 2.  Click the ![fork][forkbtn] button in the upper right.
 

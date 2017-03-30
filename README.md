@@ -2,9 +2,7 @@ The web-platform-tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w
 ==============================
 
 The web-platform-tests Project is a W3C-coordinated attempt to build a
-cross-browser testsuite for the Web-platform stack.  However, for mainly
-historic reasons, the CSS WG testsuite is in a separate repository,
-[csswg-test](https://github.com/w3c/csswg-test). Writing tests in a way
+cross-browser testsuite for the Web-platform stack. Writing tests in a way
 that allows them to be run in all browsers gives browser projects
 confidence that they are shipping software that is compatible with other
 implementations, and that later implementations will be compatible with

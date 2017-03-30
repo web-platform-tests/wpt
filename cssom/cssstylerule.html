@@ -74,6 +74,17 @@
             assert_equals(rule.selectorText, "div");
             assert_true(rule.style instanceof CSSStyleDeclaration);
         }, "Values of CSSStyleRule attributes");
+
+        test(function() {
+            assert_equals(rule.style.margin, "10px");
+            assert_equals(rule.style.padding, "0px");
+
+            rule.style.padding = "5px";
+            rule.style.border = "1px solid";
+
+            assert_equals(rule.style.padding, "5px");
+            assert_equals(rule.style.border, "1px solid");
+        }, "Mutability of CSSStyleRule's style attribute");
     </script>
 </body>
 </html>

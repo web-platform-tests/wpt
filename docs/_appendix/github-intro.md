@@ -92,7 +92,7 @@ At the command prompt, cd into the directory where you want to keep the tests.
 
 * If you cloned the the test repo and did not use the `--recursive` option, you will likely have an empty `resources` directory at the root of your cloned repo. You can clone the submodules with these additional steps:
 
-        $ cd test-repo-root
+        $ cd web-platform-tests
         $ git submodule update --init --recursive
 
     _You should now see the submodules in the repository. For example,_ `testharness` _files in should be in the resources directory._

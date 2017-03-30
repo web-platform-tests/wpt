@@ -2204,7 +2204,7 @@ policies and contribution forms [3].
         }
 
         var harness_url = get_harness_url();
-        if (harness_url !== null) {
+        if (harness_url !== undefined) {
             var stylesheet = output_document.createElementNS(xhtml_ns, "link");
             stylesheet.setAttribute("rel", "stylesheet");
             stylesheet.setAttribute("href", harness_url + "testharness.css");

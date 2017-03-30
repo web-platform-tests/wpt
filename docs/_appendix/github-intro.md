@@ -46,13 +46,9 @@ If you are a first-time GitHub user, read on for more details of the workflow.
 ## Test Repositories
 
 The test repository that you contribute to will depend on the specification
-that you are testing.  Currently there are two test repositories, one for CSS
-specification tests and the main W3C repository that contains tests for all
-other specifications:
+that you are testing.
 
 **Main W3C test repository**: [github.com/w3c/web-platform-tests][main-repo]
-
-**CSS specification test repository**: [github.com/w3c/csswg-test][css-repo]
 
 ## Fork
 
@@ -61,8 +57,6 @@ will enable you to [submit][submit] your tests using a pull request (more on thi
 [below][submit]).
 
 1.  In the browser, go the the GitHub page for the test repository:
-
-    CSS test repository: [github.com/w3c/csswg-test][css-repo]
 
     Main W3C test repository: [github.com/w3c/web-platform-tests][main-repo]
 
@@ -82,16 +76,10 @@ If your [fork](#fork) was successful, the next step is to clone (download a copy
 ### Clone the test repo
 At the command prompt, cd into the directory where you want to keep the tests.
 
-* If you forked the W3C Web Platform tests:
-
         $ git clone --recursive https://github.com/username/web-platform-tests.git
 
-    If you forked the CSS tests:
-
-        $ git clone --recursive https://github.com/username/csswg-test.git
-
     _This will download the tests into a directory named for the repo:_
-    `./web-platform-tests` _or_ `./csswg-test`.
+    `web-platform-tests/`.
 
 * You should now have a full copy of the test repository on your local
   machine. Feel free to browse the directories on your hard drive. You can also
@@ -124,15 +112,9 @@ repository.
         $ git checkout master
 
 3.  Next, add the remote of the repository your forked.  This assigns the
-    original repository to a remote called "upstream"
-
-    If you forked the [Web Platform Tests repository][main-repo]:
+    original repository to a remote called "upstream":
 
         $ git remote add upstream https://github.com/w3c/web-platform-tests.git
-
-    If you forked the [CSSWG-test repository][css-repo]:
-
-        $ git remote add upstream https://github.com/w3c/csswg-test.git
 
 4.  To pull in changes in the original repository that are not present in your
     local repository first fetch them:
@@ -344,8 +326,8 @@ If it is possible to review the tests without a local copy,
 but the reviewer still wants to make some simple tweaks to the tests before merging,
 it is possible to do so via the Github web UI.
 
-1. Open the pull request. E.g. https://github.com/w3c/csswg-test/pull/1234
-2. Go to the ![Files changed][files-changed] view (e.g. https://github.com/w3c/csswg-test/pull/1234/files)
+1. Open the pull request. E.g. https://github.com/w3c/web-platform-tests/pull/1234
+2. Go to the ![Files changed][files-changed] view (e.g. https://github.com/w3c/web-platform-tests/pull/1234/files)
 3. Locate the files you wish to change, and click the ![pencil][pencil-icon] icon in the upper right corner
 4. Make the desired change
 5. Write a commit message (including a good title) at the bottom
@@ -406,7 +388,6 @@ you may also discard your connection to their repo:
 [branch]: #branch
 [commit]: #commit
 [clone]: #clone
-[css-repo]: https://github.com/w3c/csswg-test
 [forkbtn]: {{ site.baseurl }}{% link /assets/forkbtn.png %}
 [git]: https://git-scm.com/downloads
 [git-book]: https://git-scm.com/book

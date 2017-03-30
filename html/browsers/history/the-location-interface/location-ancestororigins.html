@@ -1,0 +1,22 @@
+<!doctype html>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<iframe src=/common/blank.html></iframe>
+<script>
+test(() => {
+  assert_equals(location.ancestorOrigins.length, 0)
+}, "location.ancestorOrigins basic check")
+
+async_test(t => {
+  document.querySelector("iframe").onload = t.step_func_done(() => {
+    assert_equals(self[0].location.ancestorOrigins[0], self.origin)
+    test(() => {
+      const rp = document.createElement("meta")
+      rp.name = "referrer"
+      rp.content = "no-referrer"
+      document.head.appendChild(rp)
+      assert_equals(self[0].location.ancestorOrigins[0], "null")
+    }, "location.ancestorOrigins can be masked by a referrer policy")
+  })
+}, "location.ancestorOrigins basic non-empty check")
+</script>

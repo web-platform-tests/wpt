@@ -56,9 +56,7 @@ Now that you have Git set up, you will need to fork the test repository. This
 will enable you to [submit][submit] your tests using a pull request (more on this
 [below][submit]).
 
-1.  In the browser, go the the GitHub page for the test repository:
-
-    Main W3C test repository: [github.com/w3c/web-platform-tests][main-repo]
+1.  In the browser, go the the GitHub page for the test repository: [github.com/w3c/web-platform-tests][main-repo]
 
 2.  Click the ![fork][forkbtn] button in the upper right.
 
@@ -78,8 +76,7 @@ At the command prompt, cd into the directory where you want to keep the tests.
 
         $ git clone --recursive https://github.com/username/web-platform-tests.git
 
-    _This will download the tests into a directory named for the repo:_
-    `web-platform-tests/`.
+_This will download the tests into a directory named for the repo:_ `web-platform-tests/`.
 
 * You should now have a full copy of the test repository on your local
   machine. Feel free to browse the directories on your hard drive. You can also

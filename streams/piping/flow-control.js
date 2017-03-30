@@ -130,8 +130,9 @@ promise_test(() => {
   const rs = recordingReadableStream({
     pull(controller) {
       controller.enqueue(unreadChunks.shift());
-      if (unreadChunks.length === 0)
+      if (unreadChunks.length === 0) {
         controller.close();
+      }
     }
   }, new CountQueuingStrategy({ highWaterMark: 0 }));
 
@@ -150,7 +151,7 @@ promise_test(() => {
 
   const writer = ws.getWriter();
   const firstWritePromise = writer.write('a');
-  assert_equals(writer.desiredSize, 2, 'after writing the writer\'s desiredSize must be 3');
+  assert_equals(writer.desiredSize, 2, 'after writing the writer\'s desiredSize must be 2');
   writer.releaseLock();
 
   // firstWritePromise won't settle until we call resolveWritePromise.

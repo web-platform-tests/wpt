@@ -157,33 +157,14 @@ policies and contribution forms [3].
             var w = self;
             var i = 0;
             var so;
-            var origins = location.ancestorOrigins;
             while (w != w.parent) {
                 w = w.parent;
-                // In WebKit, calls to parent windows' properties that aren't on the same
-                // origin cause an error message to be displayed in the error console but
-                // don't throw an exception. This is a deviation from the current HTML5
-                // spec. See: https://bugs.webkit.org/show_bug.cgi?id=43504
-                // The problem with WebKit's behavior is that it pollutes the error console
-                // with error messages that can't be caught.
-                //
-                // This issue can be mitigated by relying on the (for now) proprietary
-                // `location.ancestorOrigins` property which returns an ordered list of
-                // the origins of enclosing windows. See:
-                // http://trac.webkit.org/changeset/113945.
-                if (origins) {
-                    so = (location.origin == origins[i]);
-                } else {
-                    so = is_same_origin(w);
-                }
+                so = is_same_origin(w);
                 cache.push([w, so]);
                 i++;
             }
             w = window.opener;
             if (w) {
-                // window.opener isn't included in the `location.ancestorOrigins` prop.
-                // We'll just have to deal with a simple check and an error msg on WebKit
-                // browsers in this case.
                 cache.push([w, is_same_origin(w)]);
             }
             this.window_cache = cache;
@@ -1594,7 +1575,7 @@ policies and contribution forms [3].
      * as another window or a worker. These events are then used to construct
      * and maintain RemoteTest objects that mirror the tests running in the
      * remote context.
-     * 
+     *
      * An optional third parameter can be used as a predicate to filter incoming
      * MessageEvents.
      */

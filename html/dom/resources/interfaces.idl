@@ -1434,22 +1434,29 @@ interface History {
   void replaceState(any data, DOMString title, optional DOMString? url = null);
 };
 
-[Unforgeable] interface Location {
-  stringifier attribute USVString href;
-  readonly attribute USVString origin;
-           attribute USVString protocol;
-           attribute USVString host;
-           attribute USVString hostname;
-           attribute USVString port;
-           attribute USVString pathname;
-           attribute USVString search;
-           attribute USVString hash;
+[Exposed=(Window,Worker)]
+interface DOMStringList {
+  readonly attribute unsigned long length;
+  getter DOMString? item(unsigned long index);
+  boolean contains(DOMString string);
+};
 
-  void assign(USVString url);
-  void replace(USVString url);
-  void reload();
+interface Location {
+  [Unforgeable] stringifier attribute USVString href;
+  [Unforgeable] readonly attribute USVString origin;
+  [Unforgeable] attribute USVString protocol;
+  [Unforgeable] attribute USVString host;
+  [Unforgeable] attribute USVString hostname;
+  [Unforgeable] attribute USVString port;
+  [Unforgeable] attribute USVString pathname;
+  [Unforgeable] attribute USVString search;
+  [Unforgeable] attribute USVString hash;
 
-  [SameObject] readonly attribute USVString[] ancestorOrigins;
+  [Unforgeable] void assign(USVString url);
+  [Unforgeable] void replace(USVString url);
+  [Unforgeable] void reload();
+
+  [Unforgeable, SameObject] readonly attribute DOMStringList ancestorOrigins;
 };
 
 [Constructor(DOMString type, optional PopStateEventInit eventInitDict)]

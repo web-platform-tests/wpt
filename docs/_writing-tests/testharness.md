@@ -22,9 +22,19 @@ all test types.
 ## Auto-generated test boilerplate
 
 While most JavaScript tests require a certain amount of HTML
-boilerplate to include the test library, etc., tests for Web Workers
-can be written as JavaScript files which then have all the needed HTML
-and setup script auto-generated.
+boilerplate to include the test library, etc., tests which are
+expressible purely in script (e.g. tests for workers) can have all the
+needed HTML and script boilerplate auto-generated.
+
+### Standalone window tests
+
+Tests that only require a script file running in window scope can use
+standalone window tests. In this case the test is a javascript file
+with the extension `.window.js`. This is sourced from a generated
+document which sources `testharness.js`, `testharnessreport.js` and
+the test script. For a source script with the name
+`example.window.js`, the corresponding test resource will be
+`example.window.html`.
 
 ### Standalone workers tests
 

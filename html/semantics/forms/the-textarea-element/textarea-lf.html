@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>the textarea element - allow "LF" or "CR"</title>
+<link rel="help" href="http://w3c.github.io/html/sec-forms.html#the-textarea-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <h1>the textarea element allows "LF" or "CR" characters</h1>
+  <textarea placeholder='Blah, blah blah etc. &#x000A;placeholder breaks for LF' cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_lf_placeholder"></textarea>
+  <textarea placeholder='Blah, blah blah etc. &#x000D;placeholder breaks for CR' cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_cr_placeholder"></textarea>
+  <textarea placeholder='Blah, blah blah etc. &#x000D;&#x000A;placeholder breaks for CRLF' cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_crlf_placeholder"></textarea>
+  
+  <textarea cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_lf_value"></textarea>
+  <textarea cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_cr_value"></textarea>
+  <textarea cols='80' name='lf_test' maxlength='200' rows=5 id="textarea_crlf_value"></textarea>
+
+  <script type="text/javascript">
+    var elementLFPlaceholder = document.getElementById('textarea_lf_placeholder');
+    var elementCRPlaceholder = document.getElementById('textarea_cr_placeholder');
+    var elementCRLFPlaceholder = document.getElementById('textarea_crlf_placeholder');
+
+    var elementLFValue = document.getElementById('textarea_lf_value');
+    var elementCRValue = document.getElementById('textarea_cr_value');
+    var elementCRLFValue = document.getElementById('textarea_crlf_value');
+
+    elementLFValue.value = 'Blah, blah blah etc. \nplaceholder breaks for LF';
+    elementCRValue.value = 'Blah, blah blah etc. \rplaceholder breaks for CR';
+    elementCRLFValue.value = 'Blah, blah blah etc. \r\nplaceholder breaks for CRLF';
+    
+    test(function() {
+      assert_equals(elementLFPlaceholder.placeholder, 'Blah, blah blah etc. \nplaceholder breaks for LF', 'placeholder allows "LF" characters');
+
+      assert_equals(elementCRPlaceholder.placeholder, 'Blah, blah blah etc. \rplaceholder breaks for CR', 'placeholder allows "CR" characters');
+
+      assert_equals(elementCRLFPlaceholder.placeholder, 'Blah, blah blah etc. \r\nplaceholder breaks for CRLF', 'placeholder allows "CRLF" characters');
+    }, 'the placeholder attribute of textarea allows "CR" "LF" characters, please manually check if they are properly rendered');
+    test(function() {
+      assert_equals(elementLFValue.value, 'Blah, blah blah etc. \nplaceholder breaks for LF', 'placeholder allows "LF" characters');
+
+      assert_equals(elementCRValue.value, 'Blah, blah blah etc. \nplaceholder breaks for CR', 'placeholder allows "CR" characters');
+
+      assert_equals(elementCRLFValue.value, 'Blah, blah blah etc. \nplaceholder breaks for CRLF', 'placeholder allows "CRLF" characters');
+    }, 'the value attribute of textarea allows "CR" "LF" characters, please manually check if they are properly rendered');
+  </script>
+</body>
+

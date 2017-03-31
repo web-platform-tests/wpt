@@ -23,6 +23,7 @@ function MixedContentTestCase(scenario, description, sanityChecker) {
 
   var sameOriginHost = location.hostname;
   var crossOriginHost = "{{domains[www1]}}";
+  var localhostIPv4Host = "127.0.0.1";
 
   // These values can evaluate to either empty strings or a ":port" string.
   var httpPort = getNormalizedPort(parseInt("{{ports[http][0]}}", 10));
@@ -45,6 +46,8 @@ function MixedContentTestCase(scenario, description, sanityChecker) {
       httpsProtocol + "://" + crossOriginHost + httpsPort + resourcePath,
     "cross-origin-http":
       httpProtocol + "://" + crossOriginHost + httpPort + resourcePath,
+    "loopback-ipv4-http":
+      httpProtocol + "://" + localhostIPv4Host + httpPort + resourcePath,
     "same-host-wss":
       wssProtocol + "://" + sameOriginHost + wssPort + wsResourcePath,
     "same-host-ws":

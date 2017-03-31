@@ -107,6 +107,30 @@
           "expectation": "allowed"
         },
         {
+          "name": "loopback-allowed",
+          "expansion": "default",
+          "source_scheme": "https",
+          "opt_in_method": "*",
+          "context_nesting": "top-level",
+          "redirection": ["no-redirect", "keep-scheme-redirect"],
+          "subresource": {
+            "blockable": [
+              "iframe-tag",
+              "script-tag",
+              "link-css-tag",
+              "form-tag",
+              "xhr-request",
+              "fetch-request",
+              "a-tag",
+              "object-tag",
+              "picture-tag"
+            ],
+            "optionally-blockable": "*"
+          },
+          "origin": ["loopback-ipv4-http"],
+          "expectation": "allowed"
+        },
+        {
           "name": "websocket-allowed",
           "expansion": "default",
           "source_scheme": "https",
@@ -224,6 +248,7 @@
       "same-host-http",
       "cross-origin-https",
       "cross-origin-http",
+      "loopback-ipv4-http",
       "same-host-wss",
       "same-host-ws",
       "cross-origin-wss",

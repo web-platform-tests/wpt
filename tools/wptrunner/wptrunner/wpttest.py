@@ -1,6 +1,3 @@
-DEFAULT_TIMEOUT = 10  # seconds
-LONG_TIMEOUT = 60  # seconds
-
 import os
 
 import mozinfo
@@ -95,17 +92,21 @@ class RunInfo(dict):
 
 
 class Test(object):
+
     result_cls = None
     subtest_result_cls = None
     test_type = None
 
+    default_timeout = 10  # seconds
+    long_timeout = 60  # seconds
+
     def __init__(self, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=DEFAULT_TIMEOUT, path=None, protocol="http"):
+                 timeout=None, path=None, protocol="http"):
         self.tests_root = tests_root
         self.url = url
         self._inherit_metadata = inherit_metadata
         self._test_metadata = test_metadata
-        self.timeout = timeout
+        self.timeout = timeout if timeout is not None else self.default_timeout
         self.path = path
         self.environment = {"protocol": protocol, "prefs": self.prefs}
 
@@ -114,7 +115,7 @@ class Test(object):
 
     @classmethod
     def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
-        timeout = LONG_TIMEOUT if manifest_item.timeout == "long" else DEFAULT_TIMEOUT
+        timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         return cls(manifest_item.source_file.tests_root,
                    manifest_item.url,
@@ -245,8 +246,7 @@ class ReftestTest(Test):
     test_type = "reftest"
 
     def __init__(self, tests_root, url, inherit_metadata, test_metadata, references,
-                 timeout=DEFAULT_TIMEOUT, path=None, viewport_size=None,
-                 dpi=None, protocol="http"):
+                 timeout=None, path=None, viewport_size=None, dpi=None, protocol="http"):
         Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol)
 
@@ -266,7 +266,7 @@ class ReftestTest(Test):
                       nodes=None,
                       references_seen=None):
 
-        timeout = LONG_TIMEOUT if manifest_test.timeout == "long" else DEFAULT_TIMEOUT
+        timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
 
         if nodes is None:
             nodes = {}
@@ -330,9 +330,13 @@ class ReftestTest(Test):
 
 
 class WdspecTest(Test):
+
     result_cls = WdspecResult
     subtest_result_cls = WdspecSubtestResult
     test_type = "wdspec"
+
+    default_timeout = 10
+    long_timeout = 60
 
 
 manifest_test_cls = {"reftest": ReftestTest,

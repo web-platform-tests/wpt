@@ -98,5 +98,6 @@ def main(request, response):
     response.writer.write_status(200)
     response.writer.write_header("content-type", content_type)
     response.writer.write_header("cache-control", "no-cache; must-revalidate")
+    response.writer.write_header("access-control-allow-origin", "*")
     response.writer.end_headers()
     response.writer.write(response_data)

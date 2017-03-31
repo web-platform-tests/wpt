@@ -324,6 +324,21 @@ sub print_mini_xhtml {
     print FILE "
   <link rel=\"up\" href=\"./index.html\"/>
   <link rel=\"top\" href=\"../../index.html\"/>
+  <link rel=\"help\" href=\"https://www.w3.org/TR/css3-selectors/#selectors\"/> <!-- bogus link to make sure it gets found -->
+  <meta name=\"flags\" content=\"";
+    if (defined($data->{'interactive'})) {
+        print FILE " interact";
+    }
+    if (defined($data->{'historyneeded'})) {
+        print FILE " history";
+    }
+    if (defined($data->{'dynamic'})) {
+        print FILE " dom";
+    }
+    if (defined($data->{'namespaced'})) {
+        print FILE " namespace";
+    }
+    print FILE "\" />
  </head>
  <body$data->{'namespaces'}>$data->{'code-xhtml'}</body>
 </html>";

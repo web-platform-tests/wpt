@@ -7,27 +7,17 @@ use strict;
 # add code to the Makefile, the parser, the shortlist functions in
 # this file, and the generators in the generator.pm module.
 %utils::helpers::types = (
-                          'DESTINATION_TYPES' => 'xhtml html xml', # explicitly listed in Makefile, shortlister and generator
-                          'SHELL_TYPES' => 'xhtml_iframe xhtml_object xhtml_frames html_iframe html_object html_frames xlink_embed tng', # explicitly listed in generator and just below
+                          'DESTINATION_TYPES' => 'xhtml', # explicitly listed in Makefile, shortlister and generator
+                          'SHELL_TYPES' => '', # explicitly listed in generator and just below
                           'TEST_TYPES' => 'full static history interactive', # explicitly listed in shortlister, generator, and just below
                           'TEST_TYPES' => 'full static history interactive dynamic', # explicitly listed in shortlister, generator, and just below
                          );
 
 %utils::helpers::DestinationTypeTitles = (
                                    'xhtml' => 'XHTML',
-                                   'html' => 'HTML',
-                                   'xml' => 'XML',
                                   );
 
 %utils::helpers::ShellTypeTitles  = (
-                                     'xhtml_iframe' => 'XHTML <iframe>',
-                                     'xhtml_object' => 'XHTML <object>',
-                                     'xhtml_frames' => 'XHTML <frame>',
-                                     'html_iframe' => 'HTML <iframe>',
-                                     'html_object' => 'HTML <object>',
-                                     'html_frames' => 'HTML <frame>',
-                                     'xlink_embed' => 'XLink embed',
-                                     'tng' => 'TNG Format',
                                  );
 
 %utils::helpers::ShellTypeDescriptions  = (

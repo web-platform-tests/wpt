@@ -113,20 +113,6 @@ sub generateSubIndex { # points to mini test index and all indexes for this test
  <body>
   <h1>'.&utils::helpers::escape($utils::helpers::DestinationTypeTitles{$destinationType}).' Test Index</h1>
   <p>The '.&utils::helpers::escape($utils::helpers::DestinationTypeTitles{$destinationType}).' tests are available in several variants.</p>
-  <h2>Tests With Navigation Aids</h2>
-  <p>Each category of test is available using several different harnesses. The name of the harness describes how the test markup is contained within it, for example the Xlink embed case uses an XLink with the show axis set to embed.</p>
-  <ul>';
-    foreach my $category (split ' ', $utils::helpers::types{'TEST_TYPES'}) {
-        print FILE "\n   <li><a href=\"".&utils::helpers::escape($category).'/index.html" title="'.&utils::helpers::escape($utils::helpers::TestTypeDescriptions{$category}).'">'.&utils::helpers::escape($utils::helpers::TestTypeShortTitles{$category}).'</a>: ';
-        print FILE '<a href="'.&utils::helpers::escape("$category/flat/index.html").'">Self Contained</a>';
-        foreach my $type (split ' ', $utils::helpers::types{'SHELL_TYPES'}) {
-            print FILE ', <a href="'.&utils::helpers::escape("$category/$type/index.html").'" title="'.&utils::helpers::escape($utils::helpers::ShellTypeDescriptions{$type}).'">'.&utils::helpers::escape($utils::helpers::ShellTypeTitles{$type}).'</a>';
-        }
-        print FILE '</li>';
-    }
-    print FILE '
-  </ul>
-  <h2>Unadorned Tests</h2>
   <ul>';
     foreach my $test (@$testList) {
         print FILE "\n   <li><a href=\"".&utils::helpers::escape("tests/$test.".&extensions($destinationType)).'">'.&utils::helpers::escape($testDatabase->{$test}->{'def'})."</a> (#".&utils::helpers::escape($testDatabase->{$test}->{'number'}).")</li>";

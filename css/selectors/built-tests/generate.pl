@@ -76,26 +76,7 @@ foreach my $destinationType (split ' ', $utils::helpers::types{'DESTINATION_TYPE
         # generate mini test and CSS if needed
         &utils::generators::generateMiniTest($destinationType, \@destinationTests, \%cache, $testIndex);
     }
-    # generate flat tests and shells
-    foreach my $testType (split ' ', $utils::helpers::types{'TEST_TYPES'}) {
-        my @finalTestList = &utils::helpers::shortlistTestsForTypes($testType, \@destinationTests, \%cache);
-        # generate test type index
-        &utils::generators::generateTestTypeIndex($destinationType, $testType, \@finalTestList, \%cache); # points to flat test index and each shell index
-        # generate flat test index
-        &utils::generators::generateFlatTestIndex($destinationType, $testType, \@finalTestList, \%cache); # points to flat tests
-        foreach my $shell (split ' ', $utils::helpers::types{'SHELL_TYPES'}) {
-            # generate shell index
-            &utils::generators::generateShellTestIndex($destinationType, $testType, $shell, \@finalTestList, \%cache); # points to shell tests
-        }
-        foreach my $testIndex (0..$#finalTestList) {
-            # generate flat test
-            &utils::generators::generateFlatTest($destinationType, $testType, \@finalTestList, \%cache, $testIndex);
-            foreach my $shell (split ' ', $utils::helpers::types{'SHELL_TYPES'}) {
-                # generate shell
-                &utils::generators::generateShell($destinationType, $testType, $shell, \@finalTestList, \%cache, $testIndex);
-            }
-        }
-    }
+
 }
 # generate latest changes log
 foreach my $test (sort { $a->{date} cmp $b->{date} } values %cache) {

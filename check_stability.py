@@ -575,6 +575,8 @@ def err_string(results_dict, iterations):
                   (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
     if total_results < iterations:
         rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
+    elif total_results > iterations:
+        rv.append("EXCESS: %s" % (total_results - iterations))
     rv = ", ".join(rv)
     if is_inconsistent(results_dict, iterations):
         rv = "**%s**" % rv

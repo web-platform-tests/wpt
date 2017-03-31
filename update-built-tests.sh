@@ -5,3 +5,4 @@ set -ex
 infrastructure/assumptions/tools/build.sh
 html/tools/build.sh
 offscreen-canvas/tools/build.sh
+css/selectors/built-tests/build.sh

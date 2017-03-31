@@ -640,7 +640,21 @@ def table(headings, data, log):
 
 def write_inconsistent(inconsistent, iterations):
     """Output inconsistent tests to logger.error."""
-    logger.error("## Unstable results ##\n")
+    s = '' if iterations == 1 else 's'
+    logger.error("## Unstable results ##")
+    logger.error("")
+
+    logger.error(("The following table lists tests that exhibited " +
+        "inconsistent results after {total} iteration{s}. The label " +
+        "`MISSING` indicates that the referenced test ran fewer than " +
+        "{total} time{s}. This can occur if tests are generated via logic " +
+        "that is non-deterministic. The label `EXCESS` indicates that the " +
+        "referenced test ran more than {total} time{s}. This may also be " +
+        "due to non-determinism in test generation logic, but it is more " +
+        "likely the result of duplicated test names."
+        ).format(total=iterations, s=s))
+    logger.error("")
+
     strings = [(
         "`%s`" % markdown_adjust(test),
         ("`%s`" % markdown_adjust(subtest)) if subtest else "",

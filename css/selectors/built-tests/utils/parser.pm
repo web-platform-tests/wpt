@@ -225,7 +225,7 @@ sub Final {
     $data->{'escapedcode-html'} = &utils::helpers::escape($data->{'code-html'});
     $data->{'escapedcode-css'} = &utils::helpers::escape($data->{'cssrules'});
     $data->{'namespaces'} = '';
-    foreach my $prefix (keys %{$data->{'prefixes'}}) {
+    foreach my $prefix (sort keys %{$data->{'prefixes'}}) {
         if ($data->{'prefixesUsed'}->{$prefix}) {
             $data->{'namespaces'} .= " xmlns:${prefix}=\"$data->{'prefixes'}->{$prefix}\"";
         }

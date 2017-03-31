@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(function() {}, 'duplicate');
+test(function() {}, 'duplicate');
+Math.random() > 0.5 && test(function() {}, 'ghost');
+test(function() {
+  assert_true(Math.random() > 0.5);
+}, 'flakey');
+test(function() {}, 'always pass');
+test(function() { assert_true(false); }, 'always fail');
+</script>

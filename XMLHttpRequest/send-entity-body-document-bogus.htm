@@ -12,11 +12,10 @@ function serialize(input, output) {
     client.onload = t.step_func_done(() => {
       assert_equals(client.responseText, output)
     })
-  })
+  }, "Serializing documents through XMLHttpRequest: '" + output + "'")
 }
 
 var doc = document.implementation.createDocument(null, null, null)
-//assert_equals(doc.childNodes.length, 0)
 serialize(doc, "")
 doc.appendChild(doc.createElement("test:test"))
 serialize(doc, "<test:test/>")

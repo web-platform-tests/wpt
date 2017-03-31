@@ -1,0 +1,52 @@
+<!doctype html>
+<head>
+  <title>CSS OM: CSS Values</title>
+  <link rel="author" title="Divya Manian" href="mailto:manian@adobe.com">
+  <link rel="help" href="http://www.w3.org/TR/cssom-1/#css-values">
+  <meta name="flags" content="dom">
+  <meta name="assert" content="Testing Serialization of Shorthand Values">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <div id="cssomtestElm"></div>
+
+    <script>
+      "use strict";
+
+      var tests = [
+        {name: 'border', setCSS: 'border: 1px; border-top: 1px;', expected: 'border: 1px;'},
+        {name: 'border', setCSS: 'border: 1px solid red;', expected: 'border: 1px solid red;'},
+        {name: 'border', setCSS: 'border: 1px red;', expected: 'border: 1px red;'},
+        {name: 'border', setCSS: 'border: red;', expected: 'border: red;'},
+        {name: 'border', setCSS: 'border-top: 1px; border-right: 1px; border-bottom: 1px; border-left: 1px;', expected: 'border: 1px;'},
+        {name: 'border', setCSS: 'border-top: 1px; border-right: 2px; border-bottom: 3px; border-left: 4px;', expected: 'border-width: 1px 2px 3px 4px;'},
+        {name: 'border', setCSS: 'border-width: 1px;', expected: 'border-width: 1px;'},
+        {name: 'border', setCSS: 'border: solid; border-style: dotted', expected: 'border: dotted;'},
+        {name: 'border', setCSS: 'border: 1px; border-top-color: red;', expected: 'border-width: 1px; border-top-color: red;'},
+        {name: 'border', setCSS: 'border: 1px; border-top: 1px !important;', expected: 'border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-width: 1px !important;'},
+        {name: 'border', setCSS: 'border: 1px; border-top: 2px;', expected:'border-width: 2px 1px 1px;'},
+        {name: 'overflow', setCSS: 'overflow-x: scroll; overflow-y: hidden;', expected: 'overflow: scroll hidden;'},
+        {name: 'overflow', setCSS: 'overflow-x: scroll; overflow-y: scroll;', expected: 'overflow: scroll;'},
+        {name: 'outline', setCSS: 'outline-width: 2px; outline-style: dotted; outline-color: blue;', expected: 'outline: blue dotted 2px;'},
+        {name: 'margin', setCSS: 'margin-top: 1px; margin-right: 2px; margin-bottom: 3px; margin-left: 4px;', expected: 'margin: 1px 2px 3px 4px;'},
+        {name: 'list', setCSS: 'list-style-type: lower-alpha;', expected: 'list-style-type: lower-alpha;'},
+        {name: 'list', setCSS: 'list-style-type: circle; list-style-position: inside; list-style-image: initial;', expected: 'list-style: circle inside;'},
+        {name: 'font-family', setCSS: 'font-family: sans-serif; line-height: 2em; font-size: 3em; font-style: italic; font-weight: bold;', expected: 'font-family: sans-serif; line-height: 2em; font-size: 3em; font-style: italic; font-weight: bold;'},
+        {name: 'padding', setCSS: 'padding-top: 1px; padding-right: 2px; padding-bottom: 3px; padding-left: 4px;', expected: 'padding: 1px 2px 3px 4px;'}
+      ];
+
+      var testElm = document.getElementById('cssomtestElm');
+
+      tests.forEach(function (testcase) {
+        testElm.setAttribute('style', testcase.setCSS);
+        var specifiedValue = testElm.style.cssText;
+        var expectedText = testcase.name + ' was expected to be "' + testcase.expected + '"';
+          test( function () {
+              assert_equals(specifiedValue, testcase.expected);
+          }, expectedText);
+      });
+
+    </script>
+ </body>
+</html>

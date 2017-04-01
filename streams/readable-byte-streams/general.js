@@ -15,10 +15,12 @@ test(() => {
 
 test(() => {
   // Constructing ReadableStream with an empty underlying byte source object as parameter shouldn't throw.
-  new ReadableStream({ type: 'bytes' });
+  new ReadableStream({ type: 'bytes' }).getReader({ mode: 'byob' });
   // Constructor must perform ToString(type).
-  new ReadableStream({ type: { toString() {return 'bytes';} } });
-  new ReadableStream({ type: { toString: null, valueOf() {return 'bytes';} } });
+  new ReadableStream({ type: { toString() {return 'bytes';} } })
+    .getReader({ mode: 'byob' });
+  new ReadableStream({ type: { toString: null, valueOf() {return 'bytes';} } })
+    .getReader({ mode: 'byob' });
 }, 'ReadableStream with byte source can be constructed with no errors');
 
 test(() => {

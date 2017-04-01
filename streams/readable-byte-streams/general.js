@@ -24,10 +24,20 @@ test(() => {
 }, 'ReadableStream with byte source can be constructed with no errors');
 
 test(() => {
+  const ReadableStreamBYOBReader = new ReadableStream({ type: 'bytes' }).getReader({ mode: 'byob' }).constructor;
   const rs = new ReadableStream({ type: 'bytes' });
-  assert_throws(new RangeError(), () => rs.getReader({ mode: { toString() {return 'byob';} } }));
-  rs.getReader({ mode: 'byob', notmode: 'ignored' });
-}, 'getReader({mode}) must only accept an actual string');
+
+  let reader = rs.getReader({ mode: { toString() { return 'byob'; } } });
+  assert_true(reader instanceof ReadableStreamBYOBReader, 'must give a BYOB reader');
+  reader.releaseLock();
+
+  reader = rs.getReader({ mode: { toString: null, valueOf() {return 'byob';} } });
+  assert_true(reader instanceof ReadableStreamBYOBReader, 'must give a BYOB reader');
+  reader.releaseLock();
+
+  reader = rs.getReader({ mode: 'byob', notmode: 'ignored' });
+  assert_true(reader instanceof ReadableStreamBYOBReader, 'must give a BYOB reader');
+}, 'getReader({mode}) must perform ToString()');
 
 promise_test(() => {
   let startCalled = false;

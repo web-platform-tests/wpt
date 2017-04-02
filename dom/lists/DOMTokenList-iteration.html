@@ -5,46 +5,59 @@
 <script src=/resources/testharnessreport.js></script>
 <span class="   a  a b "></span>
 <script>
-  test(function() {
-    var list = document.querySelector("span").classList;
+  var list = document.querySelector("span").classList;
+  test(() => {
     assert_array_equals([...list], ["a", "b"]);
+  }, "classList");
 
-    var keys = list.keys();
-    assert_false(keys instanceof Array);
+  var keys = list.keys();
+  test(() => {
+    assert_false(keys instanceof Array, "must not be Array");
     keys = [...keys];
     assert_array_equals(keys, [0, 1]);
+  }, "classList.keys");
 
-    var values = list.values();
-    assert_false(values instanceof Array);
+  var values = list.values();
+  test(() => {
+    assert_false(values instanceof Array, "must not be Array");
     values = [...values];
     assert_array_equals(values, ["a", "b"]);
+  }, "classList.values");
 
-    var entries = list.entries();
-    assert_false(entries instanceof Array);
+  var entries = list.entries();
+  test(() => {
+    assert_false(entries instanceof Array, "must not be Array");
     entries = [...entries];
-    assert_equals(entries.length, keys.length);
-    assert_equals(entries.length, values.length);
+    assert_equals(entries.length, keys.length, "entries.length == keys.length");
+    assert_equals(entries.length, values.length,
+                  "entries.length == values.length");
     for (var i = 0; i < entries.length; ++i) {
-      assert_array_equals(entries[i], [keys[i], values[i]]);
+      assert_array_equals(entries[i], [keys[i], values[i]],
+                          "entries[" + i + "]");
     }
+  }, "classList.entries");
 
+  test(() => {
     var cur = 0;
     var thisObj = {};
     list.forEach(function(value, key, listObj) {
-      assert_equals(listObj, list);
-      assert_equals(this, thisObj);
-      assert_equals(value, values[cur]);
-      assert_equals(key, keys[cur]);
+      assert_equals(listObj, list, "Entry " + cur + " listObj");
+      assert_equals(this, thisObj, "Entry " + cur + " this");
+      assert_equals(value, values[cur], "Entry " + cur + " value");
+      assert_equals(key, keys[cur], "Entry " + cur + " key");
       cur++;
     }, thisObj);
-    assert_equals(cur, entries.length);
+    assert_equals(cur, entries.length, "length");
+  }, "classList.forEach");
 
-    assert_equals(list[Symbol.iterator], Array.prototype[Symbol.iterator]);
-    assert_equals(list.keys, Array.prototype.keys);
+  test(() => {
+    assert_equals(list[Symbol.iterator], Array.prototype[Symbol.iterator],
+                  "[Symbol.iterator]");
+    assert_equals(list.keys, Array.prototype.keys, ".keys");
     if (Array.prototype.values) {
-      assert_equals(list.values, Array.prototype.values);
+      assert_equals(list.values, Array.prototype.values, ".values");
     }
-    assert_equals(list.entries, Array.prototype.entries);
-    assert_equals(list.forEach, Array.prototype.forEach);
-  });
+    assert_equals(list.entries, Array.prototype.entries, ".entries");
+    assert_equals(list.forEach, Array.prototype.forEach, ".forEach");
+  }, "classList inheritance from Array.prototype");
 </script>

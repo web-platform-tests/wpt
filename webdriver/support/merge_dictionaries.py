@@ -1,3 +1,10 @@
+def iteritems(d):
+    """Create a key-value iterator for the given dict in both Python 2.x and
+    Python 3.x environments"""
+    if hasattr(d, "iteritems"):
+        return d.iteritems()
+    return d.items()
+
 def merge_dictionaries(first, second):
     """Given two dictionaries, create a third that defines all specified
     key/value pairs. This merge_dictionaries is performed "deeply" on any nested
@@ -5,12 +12,12 @@ def merge_dictionaries(first, second):
     an exception will be raised."""
     result = dict(first)
 
-    for key, value in second.iteritems():
+    for key, value in iteritems(second):
         if key in result and result[key] != value:
             if isinstance(result[key], dict) and isinstance(value, dict):
                 result[key] = merge_dictionaries(result[key], value)
             elif result[key] != value:
-                raise Exception("merge_dictionaries: refusing to overwrite " +
+                raise TypeError("merge_dictionaries: refusing to overwrite " +
                                   "attribute: `%s`" % key)
         else:
             result[key] = value
@@ -25,9 +32,9 @@ if __name__ == "__main__":
     e = None
     try:
         merge_dictionaries({"a": 23}, {"a": 45})
-    except Exception as e:
-        pass
-    assert isinstance(e, Exception)
+    except Exception as _e:
+        e = _e
+    assert isinstance(e, TypeError)
 
     assert merge_dictionaries({"a": 23}, {"a": 23}) == {"a": 23}
 
@@ -37,6 +44,6 @@ if __name__ == "__main__":
     e = None
     try:
         merge_dictionaries({"a": {"b": 23}}, {"a": {"b": 45}})
-    except Exception as e:
-        pass
-    assert isinstance(e, Exception)
+    except Exception as _e:
+        e = _e
+    assert isinstance(e, TypeError)

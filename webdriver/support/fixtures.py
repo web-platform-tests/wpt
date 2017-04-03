@@ -5,7 +5,7 @@ import urlparse
 import webdriver
 
 from support.http_request import HTTPRequest
-from support.merge_dictionaries import merge_dictionaries
+from support import merge_dictionaries
 
 default_host = "http://127.0.0.1"
 default_port = "4444"
@@ -89,14 +89,16 @@ def http(session):
 def server_config():
     return json.loads(os.environ.get("WD_SERVER_CONFIG"))
 
-# Provide a factory function that produces wdclient `Session` instances. If the
-# `WD_CAPABILITIES` environment variable is set, it will be parsed as JSON and
-# the resulting object will be included in the WebDriver "Create Session"
-# command. Additional capabilities may be specified as an optional argument to
-# this function, but the operation will fail if any values conflict with those
-# specified via the environment. If the session is still active at the
-# completion of the test, it will be destroyed automatically.
 def create_session(request):
+    """Provide a factory function that produces wdclient `Session` instances.
+    If the `WD_CAPABILITIES` environment variable is set, it will be parsed as
+    JSON and the resulting object will be included in the WebDriver "Create
+    Session" command. Additional capabilities may be specified as an optional
+    argument to this function, but the operation will fail if any values
+    conflict with those specified via the environment. If the session is still
+    active at the completion of the test, it will be destroyed
+    automatically."""
+
     def create_session(test_capabilities=None):
         host = os.environ.get("WD_HOST", default_host)
         port = int(os.environ.get("WD_PORT", default_port))

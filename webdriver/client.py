@@ -272,13 +272,11 @@ class UserPrompt(object):
 
 
 class Session(object):
-    def __init__(self, host, port, url_prefix="/", desired_capabilities=None,
-                 required_capabilities=None, timeout=transport.HTTP_TIMEOUT,
-                 extension=None):
+    def __init__(self, host, port, url_prefix="/", capabilities=None,
+                 timeout=transport.HTTP_TIMEOUT, extension=None):
         self.transport = transport.HTTPWireProtocol(
             host, port, url_prefix, timeout=timeout)
-        self.desired_capabilities = desired_capabilities
-        self.required_capabilities = required_capabilities
+        self.capabilities = capabilities
         self.session_id = None
         self.timeouts = None
         self.window = None
@@ -309,13 +307,8 @@ class Session(object):
 
         body = {}
 
-        caps = {}
-        if self.desired_capabilities is not None:
-            caps["desiredCapabilities"] = self.desired_capabilities
-        if self.required_capabilities is not None:
-            caps["requiredCapabilities"] = self.required_capabilities
-        #body["capabilities"] = caps
-        body = caps
+        if self.capabilities is not None:
+            body["capabilities"] = self.capabilities
 
         value = self.send_command("POST", "session", body=body)
         self.session_id = value["sessionId"]

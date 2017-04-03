@@ -106,10 +106,10 @@ def create_session(request):
             test_capabilities = {}
         env_capabilities = json.loads(os.environ.get("WD_CAPABILITIES", "{}"))
 
-        always_match = merge_dictionaries(env_capabilities.get("always_match", {}),
-                                          test_capabilities.get("always_match", {}))
-        first_match = merge_dictionaries(env_capabilities.get("first_match", {}),
-                                         test_capabilities.get("first_match", {}))
+        always_match = merge_dictionaries(env_capabilities.get("alwaysMatch", {}),
+                                          test_capabilities.get("alwaysMatch", {}))
+        first_match = merge_dictionaries(env_capabilities.get("firstMatch", {}),
+                                         test_capabilities.get("firstMatch", {}))
         session = webdriver.Session(host, port, required_capabilities=always_match,
                                     desired_capabilities=first_match)
 

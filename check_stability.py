@@ -589,7 +589,7 @@ def process_results(log, iterations):
     results = handler.results
     for test_name, test in results.iteritems():
         if is_inconsistent(test["status"], iterations):
-            inconsistent.append((test_name, None, test["status"], None))
+            inconsistent.append((test_name, None, test["status"], []))
         for subtest_name, subtest in test["subtests"].iteritems():
             if is_inconsistent(subtest["status"], iterations):
                 inconsistent.append((test_name, subtest_name, subtest["status"], subtest["messages"]))

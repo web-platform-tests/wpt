@@ -43,6 +43,7 @@ def load_product(config, product):
     browser_kwargs = getattr(module, data["browser_kwargs"])
     executor_kwargs = getattr(module, data["executor_kwargs"])
     env_options = getattr(module, data["env_options"])()
+    prerun = getattr(module, data.get("prerun", "prerun"), None)
     run_info_extras = (getattr(module, data["run_info_extras"])
                        if "run_info_extras" in data else lambda **kwargs:{})
 
@@ -54,7 +55,7 @@ def load_product(config, product):
     return (check_args,
             browser_cls, browser_kwargs,
             executor_classes, executor_kwargs,
-            env_options, run_info_extras)
+            env_options, prerun, run_info_extras)
 
 
 def load_product_update(config, product):

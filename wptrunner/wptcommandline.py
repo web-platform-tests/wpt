@@ -184,6 +184,24 @@ scheme host and port.""")
                              default=[], action="append", dest="user_stylesheets",
                              help="Inject a user CSS stylesheet into every test.")
 
+    sauce_group = parser.add_argument_group("Sauce Labs-specific")
+    sauce_group.add_argument("--sauce-browser", dest="sauce_browser",
+                             help="Sauce Labs browser name")
+    sauce_group.add_argument("--sauce-platform", dest="sauce_platform",
+                             help="Sauce Labs OS platform")
+    sauce_group.add_argument("--sauce-version", dest="sauce_version",
+                             help="Sauce Labs browser version")
+    sauce_group.add_argument("--sauce-build", dest="sauce_build",
+                             help="Sauce Labs build identifier")
+    sauce_group.add_argument("--sauce-tags", dest="sauce_tags", nargs="*",
+                             help="Sauce Labs identifying tag", default=[])
+    sauce_group.add_argument("--sauce-tunnel-id", dest="sauce_tunnel_id",
+                             help="Sauce Connect tunnel identifier")
+    sauce_group.add_argument("--sauce-user", dest="sauce_user",
+                             help="Sauce Labs user name")
+    sauce_group.add_argument("--sauce-key", dest="sauce_key",
+                             default=os.environ.get("SAUCE_ACCESS_KEY"),
+                             help="Sauce Labs access key")
 
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
@@ -283,6 +301,9 @@ def check_args(kwargs):
 
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
+
+    if "sauce" in kwargs["product"]:
+        kwargs["pause_after_test"] = False
 
     if kwargs["test_list"]:
         if kwargs["include"] is not None:

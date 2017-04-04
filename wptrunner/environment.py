@@ -81,7 +81,7 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
-    def __init__(self, test_paths, ssl_env, pause_after_test, debug_info, options):
+    def __init__(self, test_paths, ssl_env, pause_after_test, debug_info, options, prerun):
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
         self.test_paths = test_paths
@@ -96,6 +96,7 @@ class TestEnvironment(object):
 
         self.cache_manager = multiprocessing.Manager()
         self.stash = serve.stash.StashServer()
+        self.prerun = prerun
 
 
     def __enter__(self):
@@ -103,6 +104,7 @@ class TestEnvironment(object):
         self.ssl_env.__enter__()
         self.cache_manager.__enter__()
         self.setup_server_logging()
+        self.prerun()
         self.config = self.load_config()
         serve.set_computed_defaults(self.config)
         self.external_config, self.servers = serve.start(self.config, self.ssl_env,

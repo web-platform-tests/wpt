@@ -106,12 +106,8 @@ def create_session(request):
             test_capabilities = {}
         env_capabilities = json.loads(os.environ.get("WD_CAPABILITIES", "{}"))
 
-        always_match = merge_dictionaries(env_capabilities.get("alwaysMatch", {}),
-                                          test_capabilities.get("alwaysMatch", {}))
-        first_match = merge_dictionaries(env_capabilities.get("firstMatch", {}),
-                                         test_capabilities.get("firstMatch", {}))
-        session = webdriver.Session(host, port, required_capabilities=always_match,
-                                    desired_capabilities=first_match)
+        capabilities = merge_dictionaries(env_capabilities, test_capabilities)
+        session = webdriver.Session(host, port, capabilities=capabilities)
 
         def destroy():
             if session.session_id is not None:

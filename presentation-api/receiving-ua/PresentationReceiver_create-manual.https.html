@@ -31,7 +31,7 @@
         promise_test(t => {
             presentBtn.disabled = true;
             const stash = new Stash(stashIds.toController, stashIds.toReceiver);
-            const request = new PresentationRequest('support/PresentationReceiver_create_receiving-ua.html');
+            const request = new PresentationRequest('support/PresentationReceiver_create_receiving-ua.https.html');
 
             t.add_cleanup(() => {
                 const notice = document.getElementById('notice');

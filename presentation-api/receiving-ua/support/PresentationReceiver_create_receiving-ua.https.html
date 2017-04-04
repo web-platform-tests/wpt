@@ -13,9 +13,9 @@ a { visibility: hidden; }
 iframe { width: 100%; }
 </style>
 
-<iframe id="child" src="PresentationReceiver_create_receiving-ua_child.html"></iframe>
+<iframe id="child" src="PresentationReceiver_create_receiving-ua_child.https.html"></iframe>
 <p id="notice">Checking <code id="modal"></code>: if you see this message, please wait for test to time out.</p>
-<a href="PresentationReceiver_unreached_receiving-ua.html">do not navigate</a>
+<a href="PresentationReceiver_unreached_receiving-ua.https.html">do not navigate</a>
 <script>
 let finished = false;
 
@@ -65,12 +65,12 @@ child.addEventListener('load', () => {
         assert_equals(window.history.length, 1, 'Session history consists of the current page only.');
 
         // The Sandboxed auxiliary navigation browsing context flag
-        assert_equals(window.open('PresentationReceiver_unreached_receiving-ua.html'), null, 'Sandboxed auxiliary navigation browsing context flag is set.');
+        assert_equals(window.open('PresentationReceiver_unreached_receiving-ua.https.html'), null, 'Sandboxed auxiliary navigation browsing context flag is set.');
 
         // The sandboxed top-level navigation browsing context flag (codes below are expected to be ignored)
         window.close();
         document.querySelector('a').click();
-        location.href = 'PresentationReceiver_unreached_receiving-ua.html';
+        location.href = 'PresentationReceiver_unreached_receiving-ua.https.html';
 
         // The sandboxed modals flag (codes below are expected to be ignored):
         // If user agent prompts user, a timeout will occur and the test will eventually fail
@@ -194,7 +194,7 @@ child.addEventListener('load', () => {
                             resolve();
                     });
                 }) : Promise.resolve()).then(getClientUrls).then(urls => {
-                    assert_true(urls.every(url => { return url !== new Request('../PresentationReceiver_create-manual.html').url }),
+                    assert_true(urls.every(url => { return url !== new Request('../PresentationReceiver_create-manual.https.html').url }),
                                 'A window client in a controlling user agent is not accessible to a service worker on a receiving user agent.');
                 });
         };

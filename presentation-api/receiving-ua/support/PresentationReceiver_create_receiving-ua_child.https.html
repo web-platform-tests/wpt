@@ -33,7 +33,7 @@ window.addEventListener('message', event => {
         assert_equals(window.history.length, 1, 'Session history consists of the current page only.');
 
         // The Sandboxed auxiliary navigation browsing context flag (codes below are expected to be ignored)
-        assert_equals(window.open('./idlharness_receiving-ua.html'), null, 'Sandboxed auxiliary navigation browsing context flag is set.');
+        assert_equals(window.open('./idlharness_receiving-ua.https.html'), null, 'Sandboxed auxiliary navigation browsing context flag is set.');
 
         // The sandboxed modals flag (codes below are expected to be ignored):
         // If user agent prompts user, a timeout will occur and the test will eventually fail

@@ -9,6 +9,14 @@ from support.http_request import HTTPRequest
 default_host = "http://127.0.0.1"
 default_port = "4444"
 
+def _ensure_valid_window(session):
+    """If current window is not open anymore, ensure to have a valid one selected."""
+    try:
+        session.window_handle
+    except webdriver.NoSuchWindowException:
+        session.window_handle = session.handles[0]
+
+
 def _dismiss_user_prompts(session):
     """Dismisses any open user prompts in windows."""
     current_window = session.window_handle
@@ -86,6 +94,7 @@ def session(session_session, request):
     request.addfinalizer(lambda: _switch_to_top_level_browsing_context(session_session))
     request.addfinalizer(lambda: _restore_windows(session_session))
     request.addfinalizer(lambda: _dismiss_user_prompts(session_session))
+    request.addfinalizer(lambda: _ensure_valid_window(session_session))
 
     return session_session
 

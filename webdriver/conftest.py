@@ -1,5 +1,4 @@
 import pytest
-
 from support.fixtures import (
     create_frame, create_window, http, server_config, session, session_session,
     url)

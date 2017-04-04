@@ -91,16 +91,19 @@
             const openIndexedDB = () => {
                 if ('indexedDB' in window) {
                     const dbReq = indexedDB.open(dbName, 1);
-                    const eventWatcher = new EventWatcher(t, dbReq, ['upgradeneeded', 'success']);
-                    return eventWatcher.wait_for('upgradeneeded').then(() => {
-                        db = dbReq.result;
-                        const store = db.createObjectStore(storeName, { keyPath: 'id' });
-                        store.add(storeData);
-                        return eventWatcher.wait_for('success');
-                    }).then(() => {
-                        db = dbReq.result;
-                        db.close();
-                        db = null;
+                    return new Promise((resolve, reject) => {
+                        dbReq.onupgradeneeded = () => {
+                            db = dbReq.result;
+                            const store = db.createObjectStore(storeName, { keyPath: 'id' });
+                            store.add(storeData);
+                        };
+                        dbReq.onsuccess = () => {
+                            db = dbReq.result;
+                            db.close();
+                            db = null;
+                            resolve();
+                        };
+                        dbReq.onerror = reject;
                     });
                 }
                 else

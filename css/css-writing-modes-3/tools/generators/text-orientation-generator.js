@@ -47,7 +47,7 @@
     generateFile(vo, fileIndex, page, pages) {
       var path = "../../text-orientation-script-001";
       this.title = "Test orientation of characters";
-      this.flags = "dom font";
+      this.flags = "dom";
       // if (fileIndex)
       //     path += "-" + padZero(fileIndex, 3);
       if (fileIndex === undefined)

@@ -8,7 +8,6 @@ from support.inline import inline
 #    with error code no such window.
 def test_title_from_closed_context(session, switch_to_inactive):
     session.start()
-
     switch_to_inactive()
 
     result = session.transport.send("GET",
@@ -30,16 +29,16 @@ def test_title_from_closed_context(session, switch_to_inactive):
 #
 # 3. Return success.
 def test_title_handle_prompt_dismiss(session, create_dialog):
-    document = inline("<title>This is the document's title</title>")
-    session.required_capabilites = {"unhandledPromptBehavior":"dismiss"}
+    document = inline("<title>WD doc title</title>")
+    session.required_capabilites = {"unhandledPromptBehavior": "dismiss"}
     session.start()
-    session.send_session_command("POST", "url", dict(url=document))
+    session.url = document
     assert_alert_handled = create_dialog("alert")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_alert_handled(None)
 
     assert_confirm_handled = create_dialog("confirm")
@@ -47,7 +46,7 @@ def test_title_handle_prompt_dismiss(session, create_dialog):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_confirm_handled(False)
 
     assert_prompt_handled = create_dialog("prompt")
@@ -55,7 +54,7 @@ def test_title_handle_prompt_dismiss(session, create_dialog):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_prompt_handled(None)
 
 # [...]
@@ -72,16 +71,16 @@ def test_title_handle_prompt_dismiss(session, create_dialog):
 #
 # 3. Return success.
 def test_title_handle_prompt_accept(session, create_dialog):
-    document = inline("<title>This is the document's title</title>")
-    session.required_capabilites = {"unhandledPromptBehavior":"accept"}
+    document = inline("<title>WD doc title</title>")
+    session.required_capabilites = {"unhandledPromptBehavior": "accept"}
     session.start()
-    session.send_session_command("POST", "url", dict(url=document))
+    session.url = document
     assert_alert_handled = create_dialog("alert")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_alert_handled(None)
 
     assert_confirm_handled = create_dialog("confirm")
@@ -89,7 +88,7 @@ def test_title_handle_prompt_accept(session, create_dialog):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_confirm_handled(True)
 
     assert_prompt_handled = create_dialog("prompt")
@@ -97,7 +96,7 @@ def test_title_handle_prompt_accept(session, create_dialog):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "This is the document's title</title>")
+    assert_success(result, "WD doc title")
     assert_prompt_handled("")
 
 # [...]
@@ -113,7 +112,7 @@ def test_title_handle_prompt_accept(session, create_dialog):
 #      1. Dismiss the current user prompt.
 #      2. Return error with error code unexpected alert open.
 def test_title_handle_prompt_missing_value(session, create_dialog):
-    document = inline("<title>This is the document's title</title>")
+    document = inline("<title>WD doc title</title>")
     session.start()
     session.send_session_command("POST", "url", dict(url=document))
     assert_alert_handled = create_dialog("alert")
@@ -226,7 +225,7 @@ def test_title_without_element(session):
 # 4. Return success with data title.
 def test_title_after_modification(session):
     session.url = inline("<title>Initial</title><h2>Hello</h2>")
-    session.execute_script("document.title = 'updated';")
+    session.execute_script("document.title = 'updated'")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)

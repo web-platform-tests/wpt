@@ -26,10 +26,10 @@
 
   test(() => {
     var entries = document.querySelector("span").classList.entries();
-    var keys = document.querySelector("span").classList.keys();
-    var values = document.querySelector("span").classList.values();
     assert_false(entries instanceof Array, "must not be Array");
     entries = [...entries];
+    var keys = [...document.querySelector("span").classList.keys()];
+    var values = [...document.querySelector("span").classList.values()];
     assert_equals(entries.length, keys.length, "entries.length == keys.length");
     assert_equals(entries.length, values.length,
                   "entries.length == values.length");
@@ -41,9 +41,9 @@
 
   test(() => {
     var list = document.querySelector("span").classList;
-    var values = list.values();
-    var keys = list.keys();
-    var entries = list.entries();
+    var values = [...list.values()];
+    var keys = [...list.keys()];
+    var entries = [...list.entries()];
 
     var cur = 0;
     var thisObj = {};

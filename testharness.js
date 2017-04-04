@@ -2539,6 +2539,7 @@ policies and contribution forms [3].
         this.message = message;
         this.stack = this.get_stack();
     }
+    expose(AssertionError, "AssertionError");
 
     AssertionError.prototype = Object.create(Error.prototype);
 

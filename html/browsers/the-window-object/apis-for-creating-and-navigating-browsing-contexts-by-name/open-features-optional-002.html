@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML: window.open `features`: tokenization -- size features `width` and `height`</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
+
+<!-- user agents are not required to support open features other than `noopener`
+     and on some platforms position and size features don't make sense -->
+<meta name="flags" content="may" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/PrefixedPostMessage.js"></script>
+<script>
+var windowURL = 'resources/message-opener.html';
+
+[ 'width=142',
+  ' width = 142',
+  'width==142',
+  '\nwidth= 142',
+  ',width=142,,',
+  'WIDTH=142'
+].forEach((features, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_equals(data.width, 142);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', features);
+  }, `"${features}" (${idx + 1} of ${arr.length}) should set width of opened window`);
+});
+
+[ 'height=142',
+  ' height = 142',
+  'height==142',
+  '\nheight= 142',
+  ',height=142,,',
+  'HEIGHT=142'
+].forEach((features, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_equals(data.height, 142);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', features);
+  }, `"${features}" (${idx + 1} of ${arr.length}) should set height of opened window`);
+});
+
+[ 'height=137,width=134',
+  ' height = 137 , width = 134 ,',
+  'height==137 width = 134',
+  '\nheight= 137,,width=\n134',
+  ',height=137,,width==134',
+  'HEIGHT=137, WIDTH=134'
+].forEach((features, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_equals(data.height, 137);
+      assert_equals(data.width, 134)
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', features);
+  }, `"${features}" (${idx + 1} of ${arr.length}) should set height and width of opened window`);
+});
+
+</script>

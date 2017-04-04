@@ -6,8 +6,6 @@ import httplib
 import json
 import urlparse
 
-HTTP_TIMEOUT = 5
-
 class Response(object):
     """Describes an HTTP response received from a remote en"Describes an HTTP
     response received from a remote end whose body has been read and parsed as
@@ -52,7 +50,7 @@ class HTTPWireProtocol(object):
     wire protocol.
     """
 
-    def __init__(self, host, port, url_prefix="/", timeout=HTTP_TIMEOUT):
+    def __init__(self, host, port, url_prefix="/", timeout=None):
         """Construct interface for communicating with the remote server.
 
         :param url: URL of remote WebDriver server.
@@ -94,8 +92,12 @@ class HTTPWireProtocol(object):
 
         url = self.url_prefix + url
 
+        kwargs = {}
+        if self._timeout is not None:
+            kwargs["timeout"] = self._timeout
+
         conn = httplib.HTTPConnection(
-            self.host, self.port, strict=True, timeout=self._timeout)
+            self.host, self.port, strict=True, **kwargs)
         conn.request(method, url, body, headers)
 
         try:

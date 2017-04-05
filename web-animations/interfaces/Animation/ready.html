@@ -92,11 +92,6 @@ promise_test(function(t) {
 }, 'ready promise is rejected when a pause-pending animation is canceled by'
    + ' calling cancel()');
 
-test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  assert_true(animation.ready instanceof Promise);
-}, 'The ready attribute should be a Promise');
-
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();

@@ -92,22 +92,6 @@ promise_test(function(t) {
 }, 'ready promise is rejected when a pause-pending animation is canceled by'
    + ' calling cancel()');
 
-promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  animation.cancel();
-  return animation.ready.then(function(p) {
-    assert_equals(p, animation);
-  });
-}, 'The ready promise should be resolved when an animation is in the idle play'
-   + ' state');
-
-test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  var promise = animation.ready;
-  animation.cancel();
-  assert_not_equals(animation.ready, promise);
-}, 'The ready promise should be replaced when the animation is canceled');
-
 test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Canceling an animation</title>
+<link rel="help"
+    href="https://w3c.github.io/web-animations/#canceling-an-animation-section">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<body>
+<div id="log"></div>
+<script>
+"use strict";
+
+promise_test(function(t) {
+  const animation = createDiv(t).animate(null);
+  animation.cancel();
+  return animation.ready.then(function(p) {
+    assert_equals(p, animation);
+  });
+}, 'When an animation is canceled, it should create a resolved Promise');
+
+test(function(t) {
+  const animation = createDiv(t).animate(null);
+  const promise = animation.ready;
+  animation.cancel();
+  assert_not_equals(animation.ready, promise);
+}, 'The ready promise should be replaced when the animation is canceled');
+
+</script>
+</body>

@@ -71,7 +71,7 @@ promise_test(function(t) {
   animation.cancel();
 
   return retPromise;
-}, 'ready promise is rejected when a play-pending animation is cancelled by'
+}, 'ready promise is rejected when a play-pending animation is canceled by'
    + ' calling cancel()');
 
 promise_test(function(t) {
@@ -89,7 +89,7 @@ promise_test(function(t) {
     animation.cancel();
     return retPromise;
   });
-}, 'ready promise is rejected when a pause-pending animation is cancelled by'
+}, 'ready promise is rejected when a pause-pending animation is canceled by'
    + ' calling cancel()');
 
 test(function(t) {
@@ -110,7 +110,7 @@ test(function(t) {
   var promise = animation.ready;
   animation.cancel();
   assert_not_equals(animation.ready, promise);
-}, 'The ready promise should be replaced when the animation is cancelled');
+}, 'The ready promise should be replaced when the animation is canceled');
 
 test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -123,7 +123,7 @@ test(function(t) {
 async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.ready.then(
-      t.unreached_func('Promise should not resolve when animation cancelled'),
+      t.unreached_func('Promise should not resolve when animation canceled'),
       function(e) {
           t.step(function() {
             assert_equals(e.code, DOMException.ABORT_ERR);
@@ -131,7 +131,7 @@ async_test(function(t) {
           t.done();
       });
   animation.cancel();
-}, 'A pending ready promise should be rejected when the animation is cancelled');
+}, 'A pending ready promise should be rejected when the animation is canceled');
 
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);

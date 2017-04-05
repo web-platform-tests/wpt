@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>IndexedDB: Interleaved iteration of multiple cursors over disjoint data ranges</title>
+<title>IndexedDB: Parallel iteration of multiple overlapping cursors</title>
 <link rel="author" href="pwnall@chromium.org" title="Victor Costan">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,30 +11,48 @@
 'use strict';
 
 // Number of objects that each iterator goes over.
-const itemCount = 8;
+const itemCount = 2;
 
 // Ratio of small objects to large objects.
-const largeObjectRatio = 3;
+const largeObjectRatio = 5;
 
 function objectKey(cursorIndex, itemIndex) {
-  const cursorString = cursorIndex.toString().padStart(5, '0');
   const itemString = itemIndex.toString().padStart(5, '0');
-  return `${cursorString}-key-${itemString}`;
+  return `key-${itemString}`;
 }
 
 function objectValue(cursorIndex, itemIndex) {
-  if ((cursorIndex * itemCount + itemIndex) % largeObjectRatio === 0)
-    return largeObjectValue(cursorIndex, itemIndex);
-  return [cursorIndex, 'small', itemIndex];
+  if ((itemCount + itemIndex) % largeObjectRatio === 0)
+    return largeObjectValue(0, itemIndex);
+  return ['small', itemIndex];
 }
 
-for (let cursorCount of [1, 10, 100, 500]) {
+// Reads all the cursors in parallel. Returns a promise that resolves when the
+// reading is done.
+function parallelCursors(testCase, store, cursorCount) {
+  const promises = [];
+  const cursors = new CursorBank(testCase, store, cursorCount);
+
+  for (let cursorIndex = 0; cursorIndex < cursorCount; ++cursorIndex) {
+    const promise = new Promise((resolve, reject) => {
+      let callback = resolve;
+      for (let itemIndex = itemCount; itemIndex >= 1; --itemIndex) {
+        callback = cursors.continueCursor.bind(
+            cursors, cursorIndex, itemIndex, callback);
+      }
+      cursors.openCursor(cursorIndex, callback);
+    });
+    promises.push(promise);
+  }
+  return Promise.all(promises);
+}
+
+for (let cursorCount of [1, 10, 100, 1000, 10000]) {
   promise_test(testCase => {
     return createDatabase(testCase, (database, transaction) => {
       const store = database.createObjectStore('cache', { keyPath: 'key' });
     }).then(database => {
-      return populateTestStore(testCase, database, cursorCount).then(
-          () => database);
+      return populateTestStore(testCase, database, 1).then(() => database);
     }).then(database => {
       database.close();
     }).then(() => {
@@ -44,7 +62,7 @@ for (let cursorCount of [1, 10, 100, 500]) {
       transaction.onabort = () => { reject(transaction.error); };
 
       const store = transaction.objectStore('cache');
-      return interleaveCursors(testCase, store, cursorCount, itemCount).then(
+      return parallelCursors(testCase, store, cursorCount, itemCount).then(
           () => database);
     }).then(database => {
       database.close();

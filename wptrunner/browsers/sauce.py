@@ -147,7 +147,7 @@ class SauceBrowser(Browser):
     def start(self):
         pass
 
-    def stop(self):
+    def stop(self, force=False):
         pass
 
     def pid(self):

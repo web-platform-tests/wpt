@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="utf-8">
 <title>Selectors Level 4: focus-within with shadow DOM</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#focus-within-pseudo">
 <link rel="help" href="https://dom.spec.whatwg.org/#shadow-trees">
 <link rel="match" href="focus-within-shadow-001-ref.html">
-<meta name="flags" content="interact dom">
+<meta name="flags" content="dom">
 <meta name="assert" content="Checks that ':focus-within' is propagated to the flat tree ancestors, even if it comes from a slotted element.">
 <style>
   /* Suppress things that cannot be reproduced in the reference file */
@@ -39,4 +40,6 @@
     "</div>";
   var focusme = document.getElementById("focusme");
   focusme.focus();
+  document.documentElement.classList.remove("reftest-wait");
 </script>
+</html>

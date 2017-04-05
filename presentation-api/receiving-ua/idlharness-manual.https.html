@@ -16,7 +16,7 @@
     presentBtn.onclick = () => {
         presentBtn.disabled = true;
         const stash = new Stash(stashIds.toController, stashIds.toReceiver);
-        const request = new PresentationRequest('support/idlharness_receiving-ua.https.html');
+        const request = new PresentationRequest('support/idlharness_receiving-ua.html');
 
         return request.start().then(c => {
             connection = c;

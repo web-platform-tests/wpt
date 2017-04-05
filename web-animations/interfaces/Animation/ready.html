@@ -103,7 +103,8 @@ promise_test(function(t) {
   return animation.ready.then(function(p) {
     assert_equals(p, animation);
   });
-}, 'The ready promise should be resolved when an animation is in the idle play state');
+}, 'The ready promise should be resolved when an animation is in the idle play'
+   + ' state');
 
 test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -118,7 +119,8 @@ test(function(t) {
   var promise = animation.ready;
   animation.play();
   assert_not_equals(animation.ready, promise);
-}, 'The ready promise should be replaced when the animation enters the pending state');
+}, 'The ready promise should be replaced when the animation enters the pending'
+   + ' state');
 
 async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -140,7 +142,8 @@ promise_test(function(t) {
     assert_equals(p, animation);
     assert_equals(animation.ready, promise);
   });
-}, 'A pending ready promise should be resolved and not replaced when the animation enters the running state');
+}, 'A pending ready promise should be resolved and not replaced when the'
+   + ' animation enters the running state');
 
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -157,7 +160,8 @@ promise_test(function(t) {
     assert_equals(animation.ready, promise);
     assert_true(readyResolved);
   });
-}, 'A pending ready promise should be resolved and not replaced when the animation enters the finished state');
+}, 'A pending ready promise should be resolved and not replaced when the'
+   + ' animation enters the finished state');
 
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -168,7 +172,8 @@ promise_test(function(t) {
     assert_equals(animation.ready, promise);
     assert_equals(animation.playState, 'paused');
   });
-}, 'A pending ready promise should be resolved and not replaced when the animation enters the paused state');
+}, 'A pending ready promise should be resolved and not replaced when the'
+   + ' animation enters the paused state');
 
 </script>
 </body>

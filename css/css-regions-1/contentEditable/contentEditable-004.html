@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: element has contentEditable attribute set and both it and a child of it are
@@ -75,6 +75,7 @@
 		<script type="text/javascript">
 		insertText("#marked-parent", "foobar bazquux");
 		insertText("#marked-child", "foobar bazquux");
+		document.documentElement.classList.remove('reftest-wait');
 		</script>
 	</body>
 </html>

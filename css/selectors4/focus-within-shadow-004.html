@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang=en class="reftest-wait">
 <meta charset="utf-8">
 <title>Selectors Level 4: focus-within with shadow DOM</title>
 <link rel="author" title="Keyong Li" href="mailto:kli79@bloomberg.net">
@@ -32,7 +32,7 @@
   outline: none;
 }
 </style>
-<div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1"></div>
+<div id="focusme" tabindex="1"></div>
 </template>
 
 <script>
@@ -41,8 +41,9 @@ var template = document.getElementById('shadow-template');
 var instance = document.importNode(template.content, true);
 shadow.appendChild(instance);
 window.setTimeout(function() {
-var focusme = shadow.getElementById('focusme');
-focusme.focus();
+  var focusme = shadow.getElementById('focusme');
+  focusme.focus();
+  document.documentElement.classList.remove('reftest-wait');
 }, 0);
 </script>
 </body>

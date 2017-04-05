@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: region element has contentEditable attribute set</title>
@@ -61,6 +61,7 @@
 		<script type="text/javascript">
 		insertText("#marked-one", "foobar bazquux");
 		insertText("#marked-two", "foobar bazquux");
+		document.documentElement.classList.remove('reftest-wait');
 		</script>
 	</body>
 </html>

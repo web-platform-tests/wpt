@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait test">
   <head>
     <meta charset="utf-8">
     <title>CSS Test: :focus-within selector</title>
@@ -32,6 +32,7 @@
       var child2 = document.getElementById('child2');
       child2.focus();
       document.body.offsetWidth;
+      document.documentElement.classList.remove('reftest-wait');
     </script>
   </body>
 </html>

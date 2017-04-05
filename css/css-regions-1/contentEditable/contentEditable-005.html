@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: named flow content has contentEditable attribute set and is fragmented</title>
@@ -73,6 +73,7 @@
 		<script type="text/javascript">
 		insertText("#marked-one", "foobar bazquux");
 		insertText("#marked-two", "foobar bazquux");
+		document.documentElement.classList.remove('reftest-wait');
 		</script>
 	</body>
 </html>

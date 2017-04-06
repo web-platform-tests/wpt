@@ -18,8 +18,6 @@ import os
 import shutil
 import tempfile
 
-from . import fixtures
-
 
 pytest = None
 

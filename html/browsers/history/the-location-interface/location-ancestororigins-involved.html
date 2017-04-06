@@ -1,0 +1,149 @@
+<!doctype html>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/common/get-host-info.sub.js></script>
+<div id=log></div>
+<script>
+const embedPath = new URL("resources/ancestororigins-embed.py", location.href).pathname,
+      info = get_host_info(),
+      localOrigin = info.HTTP_ORIGIN,
+      localEmbed = localOrigin + embedPath,
+      remoteOrigin = info.HTTP_REMOTE_ORIGIN,
+      remoteEmbed = remoteOrigin + embedPath,
+      remoteOrigin2 = info.HTTP_REMOTE_ORIGIN_WITH_DIFFERENT_PORT
+      remoteEmbed2 = remoteOrigin2 + embedPath
+let id = 0
+
+async_test(t => {
+  const iframe = document.createElement("iframe"),
+        localId = ++id
+  iframe.sandbox = "allow-scripts"
+  iframe.src = localEmbed + "?iframe=|" + remoteEmbed + "?id=" + localId
+  document.body.appendChild(iframe)
+  t.add_cleanup(() => iframe.remove())
+
+
+  self.addEventListener("message", t.step_func(e => {
+    if(e.data.id === localId) {
+      assert_array_equals(e.data.output, ["null", self.location.origin])
+      t.done()
+    }
+  }))
+}, "Ensure sandboxed iframes show up as null")
+
+;[
+  {
+    outerPolicy: true,
+    desc: "A uses no-referrer -> B -> A",
+    results: [remoteOrigin, "null"]
+  },
+  {
+    outerPolicy: true,
+    innerEmbed: remoteEmbed2,
+    desc: "A uses no-referrer -> B -> C",
+    results: [remoteOrigin, "null"]
+  },
+  {
+    innerPolicy: true,
+    desc: "A -> B uses no-referrer -> A",
+    results: ["null", localOrigin]
+  },
+  {
+    innerPolicy: true,
+    innerEmbed: remoteEmbed2,
+    desc: "A -> B uses no-referrer -> C",
+    results: ["null", localOrigin]
+  },
+  {
+    innerPolicy: true,
+    outerEmbed: localEmbed,
+    innerEmbed: remoteEmbed,
+    desc: "A -> A uses no-referrer -> C",
+    results: ["null", "null"],
+    innerResults: [localOrigin]
+  },
+  {
+    innerPolicy: true,
+    outerEmbed: localEmbed,
+    desc: "A -> A uses no-referrer -> A",
+    results: ["null", "null"],
+    innerResults: [localOrigin]
+  }
+
+].forEach(val => {
+  async_test(t => {
+    if(!val.innerResults) {
+      val.innerResults = [val.results[1]]
+    }
+    if(!val.outerEmbed) {
+      val.outerEmbed = remoteEmbed
+    }
+    if(!val.innerEmbed) {
+      val.innerEmbed = localEmbed
+    }
+
+    const iframe = document.createElement("iframe"),
+          innerId = ++id,
+          innermostId = ++id
+    if(val.outerPolicy) {
+      iframe.referrerPolicy = "no-referrer"
+    }
+    let innerPolicy = ""
+    if(val.innerPolicy) {
+      innerPolicy = "no-referrer"
+    }
+    iframe.src = val.outerEmbed + "?id=" + innerId + "&iframe=" + innerPolicy + "|" + val.innerEmbed + "?id=" + innermostId
+    document.body.appendChild(iframe)
+    t.add_cleanup(() => iframe.remove())
+
+    let almostDone = false
+    function localDone () {
+      if(almostDone) {
+        t.done()
+      }
+      almostDone = true
+    }
+
+    self.addEventListener("message", t.step_func(e => {
+      if(e.data.id === innerId) {
+        assert_array_equals(e.data.output, val.innerResults)
+        localDone()
+      }
+      else if(e.data.id === innermostId) {
+        assert_array_equals(e.data.output, val.results)
+        localDone()
+      }
+    }))
+  }, val.desc)
+})
+
+;[
+  {
+    desc: "A -> B -> B uses no-referrer -> A",
+    innerinnerEmbed: localEmbed
+  },
+  {
+    desc: "A -> B -> B uses no-referrer -> B",
+    innerinnerEmbed: remoteEmbed
+  },
+  {
+    desc: "A -> B -> B uses no-referrer -> C",
+    innerinnerEmbed: remoteEmbed2
+  }
+].forEach(val => {
+  async_test(t => {
+    const iframe = document.createElement("iframe"),
+          localId = ++id
+    iframe.src = remoteEmbed + "?iframe=|" + remoteEmbed + "?iframe=no-referrer%257C" + val.innerinnerEmbed + "?id=" + localId
+    document.body.appendChild(iframe)
+    t.add_cleanup(() => iframe.remove())
+
+    self.addEventListener("message", t.step_func(e => {
+      if(e.data.id === localId) {
+        assert_array_equals(e.data.output, ["null", "null", localOrigin])
+        t.done()
+      }
+    }))
+  }, val.desc)
+})
+</script>

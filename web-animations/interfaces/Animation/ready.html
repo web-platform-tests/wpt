@@ -60,23 +60,6 @@ promise_test(function(t) {
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 100 * MS_PER_SEC);
-
-  var retPromise = animation.ready.then(function() {
-    assert_unreached('ready promise was fulfilled');
-  }).catch(function(err) {
-    assert_equals(err.name, 'AbortError',
-                  'ready promise is rejected with AbortError');
-  });
-
-  animation.cancel();
-
-  return retPromise;
-}, 'ready promise is rejected when a play-pending animation is canceled by'
-   + ' calling cancel()');
-
-promise_test(function(t) {
-  var div = createDiv(t);
-  var animation = div.animate(null, 100 * MS_PER_SEC);
   return animation.ready.then(function() {
     animation.pause();
     // Set up listeners on pause-pending ready promise
@@ -91,19 +74,6 @@ promise_test(function(t) {
   });
 }, 'ready promise is rejected when a pause-pending animation is canceled by'
    + ' calling cancel()');
-
-async_test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  animation.ready.then(
-    t.unreached_func('Promise should not resolve when animation canceled'),
-    function(e) {
-      t.step(function() {
-        assert_equals(e.code, DOMException.ABORT_ERR);
-      });
-      t.done();
-    });
-  animation.cancel();
-}, 'A pending ready promise should be rejected when the animation is canceled');
 
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);

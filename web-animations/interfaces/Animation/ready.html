@@ -92,15 +92,6 @@ promise_test(function(t) {
 }, 'ready promise is rejected when a pause-pending animation is canceled by'
    + ' calling cancel()');
 
-test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  animation.cancel();
-  var promise = animation.ready;
-  animation.play();
-  assert_not_equals(animation.ready, promise);
-}, 'The ready promise should be replaced when the animation enters the pending'
-   + ' state');
-
 async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.ready.then(

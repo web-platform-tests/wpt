@@ -36,5 +36,14 @@ test(function(t) {
   assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
 }, 'Playing a finished and reversed animation seeks to end');
 
+test(function(t) {
+  const animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
+  animation.cancel();
+  const promise = animation.ready;
+  animation.play();
+  assert_not_equals(animation.ready, promise);
+}, 'The ready promise should be replaced if the animation is not already'
+   + ' pending');
+
 </script>
 </body>

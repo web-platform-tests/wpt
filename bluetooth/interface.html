@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>The Bluetooth interface</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  assert_true('requestDevice' in navigator.bluetooth);
+  assert_equals(navigator.bluetooth.requestDevice.length, 0);
+}, 'Bluetooth interface prototype test')
+</script>

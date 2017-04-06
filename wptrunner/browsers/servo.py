@@ -36,6 +36,7 @@ def browser_kwargs(**kwargs):
         "debug_info": kwargs["debug_info"],
         "binary_args": kwargs["binary_args"],
         "user_stylesheets": kwargs.get("user_stylesheets"),
+        "ca_certificate_path": kwargs["ssl_env"].ca_cert_path(),
     }
 
 
@@ -61,12 +62,14 @@ def update_properties():
 
 class ServoBrowser(NullBrowser):
     def __init__(self, logger, binary, debug_info=None, binary_args=None,
-                 user_stylesheets=None):
+                 user_stylesheets=None, ca_certificate_path=None):
         NullBrowser.__init__(self, logger)
         self.binary = binary
         self.debug_info = debug_info
         self.binary_args = binary_args or []
         self.user_stylesheets = user_stylesheets or []
+        if ca_certificate_path is not None:
+            self.binary_args += ['--certificate-path', ca_certificate_path]
 
     def executor_browser(self):
         return ExecutorBrowser, {

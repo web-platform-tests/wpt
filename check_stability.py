@@ -402,7 +402,10 @@ def get_branch_point(user):
         # http://stackoverflow.com/questions/13460152/find-first-ancestor-commit-in-another-branch
         head = git("rev-parse", "HEAD")
         # To do this we need all the commits in the local copy
-        fetch_wpt(user, "--unshallow", "+refs/heads/*:refs/remotes/origin/*")
+        fetch_args = [user, "+refs/heads/*:refs/remotes/origin/*"]
+        if os.path.exists(os.path.join(wpt_root, ".git", "shallow")):
+            fetch_args.insert(1, "--unshallow")
+        fetch_wpt(*fetch_args)
         not_heads = [item for item in git("rev-parse", "--not", "--all").split("\n")
                      if item.strip() and not head in item]
         commits = git("rev-list", "HEAD", *not_heads).split("\n")

@@ -60,16 +60,6 @@ promise_test(function(t) {
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
-  return promise.then(function(p) {
-    assert_equals(p, animation);
-    assert_equals(animation.ready, promise);
-  });
-}, 'A pending ready promise should be resolved and not replaced when the'
-   + ' animation enters the running state');
-
-promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  var promise = animation.ready;
   var readyResolved = false;
 
   animation.finish();

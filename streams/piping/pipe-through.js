@@ -116,6 +116,6 @@ promise_test(() => {
   // The test harness should complain about unhandled rejections by then.
   return flushAsyncEvents();
 
-}, 'pipeThrough should correct mark a real promise from a fake readable as handled');
+}, 'pipeThrough should mark a real promise from a fake readable as handled');
 
 done();

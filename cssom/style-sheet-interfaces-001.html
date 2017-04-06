@@ -59,9 +59,9 @@
     }, "sheet_property",
     { help: "http://www.w3.org/TR/cssom-1/#the-linkstyle-interface",
       assert: [ "styleElement.sheet exists", "styleElement.sheet is a CSSStyleSheet",
-      			"linkElement.sheet exists", "linkElement.sheet is a CSSStyleSheet"] });
+                "linkElement.sheet exists", "linkElement.sheet is a CSSStyleSheet"] });
 
-	test(function() {
+    test(function() {
         assert_own_property(styleSheet, "ownerRule");
         assert_own_property(styleSheet, "cssRules");
         assert_inherits(styleSheet, "insertRule");
@@ -73,7 +73,7 @@
     { assert: [ "ownerRule, cssRules, insertRule and deleteRule properties exist on CSSStyleSheet",
                 "ownerRule, cssRules are read only"] });
 
-	var importSheet;
+    var importSheet;
     test(function() {
         assert_equals(styleSheet.ownerRule, null);
         assert_true(styleSheet.cssRules.length > 0);
@@ -81,7 +81,7 @@
         importSheet = styleSheet.cssRules.item(0).styleSheet;
     }, "CSSStyleSheet_property_values",
     { help: [ "http://www.w3.org/TR/cssom-1/#css-style-sheets",
-    		  "http://www.w3.org/TR/cssom-1/#cssimportrule" ],
+              "http://www.w3.org/TR/cssom-1/#cssimportrule" ],
       assert: "CSSStyleSheet initial property values are correct" });
 
     test(function() {
@@ -108,8 +108,8 @@
         assert_equals(styleSheet.disabled, false);
 
         assert_equals(styleSheet.ownerNode, styleElement);
-		assert_equals(linkSheet.ownerNode, linkElement);
-		assert_equals(importSheet.ownerNode, null);
+        assert_equals(linkSheet.ownerNode, linkElement);
+        assert_equals(importSheet.ownerNode, null);
 
         assert_equals(styleSheet.href, null);
         assert_regexp_match(linkSheet.href, /support\/b-green.css$/);

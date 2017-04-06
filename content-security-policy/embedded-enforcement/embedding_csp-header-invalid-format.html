@@ -8,16 +8,11 @@
 </head>
 <body>
   <script>
+    // When this test starts passing please merge with embedding_csp-header.html
     var tests = [
-      { "name": "Embedding-CSP is not sent if `csp` attribute is not set on <iframe>.", 
-        "csp": null,
-        "expected":  null },
-      { "name": "Send Embedding-CSP when `csp` attribute of <iframe> is not empty.", 
-        "csp": "script-src 'unsafe-inline'",
-        "expected":  "script-src 'unsafe-inline'" },
-      { "name": "Send Embedding-CSP Header on change of `src` attribute on iframe.", 
-        "csp": "script-src 'unsafe-inline'", 
-        "expected":  "script-src 'unsafe-inline'" },
+      { "name": "Wrong value of `csp` should not trigger sending Embedding-CSP Header.", 
+        "csp": "completely wrong csp", 
+        "expected": null},
     ];
 
     tests.forEach(test => {

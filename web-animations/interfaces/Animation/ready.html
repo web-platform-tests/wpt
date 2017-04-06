@@ -57,17 +57,5 @@ promise_test(function(t) {
   });
 }, 'The ready promise is fulfilled with its Animation');
 
-promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  var promise = animation.ready;
-  animation.pause();
-  return promise.then(function(p) {
-    assert_equals(p, animation);
-    assert_equals(animation.ready, promise);
-    assert_equals(animation.playState, 'paused');
-  });
-}, 'A pending ready promise should be resolved and not replaced when the'
-   + ' animation enters the paused state');
-
 </script>
 </body>

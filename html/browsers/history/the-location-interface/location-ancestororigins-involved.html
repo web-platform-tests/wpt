@@ -146,4 +146,24 @@ async_test(t => {
     }))
   }, val.desc)
 })
+
+async_test(t => {
+  const iframe = document.createElement("iframe"),
+        localId = ++id
+  document.body.appendChild(iframe)
+  t.add_cleanup(() => iframe.remove())
+
+  const a = document.createElement("a")
+  a.rel = "noreferrer"
+  a.href = localEmbed + "?id=" + localId
+  iframe.contentDocument.body.appendChild(a)
+  a.click()
+
+  self.addEventListener("message", t.step_func(e => {
+    if(e.data.id === localId) {
+      assert_array_equals(e.data.output, ["null"])
+      t.done()
+    }
+  }))
+}, "rel=noreferrer should redact")
 </script>

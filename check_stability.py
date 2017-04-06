@@ -394,9 +394,13 @@ def get_branch_point(user):
     git = get_git_cmd(wpt_root)
     if os.environ.get("TRAVIS_PULL_REQUEST", "false") != "false":
         # This is a PR, so the base branch is in TRAVIS_BRANCH
-        travis_branch = os.environ.get("TRAVIS_BRANCH")
-        assert travis_branch, "TRAVIS_BRANCH environment variable is defined"
-        branch_point = git("rev-parse", travis_branch)
+        if os.environ.get("WPT_OLD"):
+            branch_point = os.environ.get("TRAVIS_COMMIT_RANGE").split(".", 1)[0]
+            branch_point = git("rev-parse", branch_point)
+        else:
+            travis_branch = os.environ.get("TRAVIS_BRANCH")
+            assert travis_branch, "TRAVIS_BRANCH environment variable is defined"
+            branch_point = git("rev-parse", travis_branch)
     else:
         # Otherwise we aren't on a PR, so we try to find commits that are only in the
         # current branch c.f.
@@ -429,7 +433,10 @@ def get_files_changed(branch_point):
     """Get and return files changed since current branch diverged from master."""
     root = os.path.abspath(os.curdir)
     git = get_git_cmd(wpt_root)
-    files = git("diff", "--name-only", "-z", "%s..." % branch_point)
+    if os.environ.get("WPT_OLD"):
+        files = git("diff", "--name-only", "-z", "%s.." % branch_point)
+    else:
+        files = git("diff", "--name-only", "-z", "%s..." % branch_point)
     if not files:
         return []
     assert files[-1] == "\0"

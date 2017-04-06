@@ -213,6 +213,9 @@ SET TIMEOUT: XMLHttpRequest/xmlhttprequest-timeout-reused.html
 SET TIMEOUT: XMLHttpRequest/resources/init.htm
 SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 
+# Intentional use of setTimeout
+SET TIMEOUT: html/webappapis/timers/*
+
 # CI scripts
 PRINT STATEMENT:check_stability.py
 W3C-TEST.ORG:check_stability.py

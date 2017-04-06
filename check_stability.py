@@ -404,17 +404,22 @@ def get_branch_point(user):
         # To do this we need all the commits in the local copy
         fetch_wpt(user, "--unshallow", "+refs/heads/*:refs/remotes/origin/*")
         not_heads = [item for item in git("rev-parse", "--not", "--all").split("\n")
-                     if not head in item]
+                     if item.strip() and not head in item]
         commits = git("rev-list", "HEAD", *not_heads).split("\n")
-        first_commit = commits[-1]
-        branch_point = git("rev-parse", first_commit + "^")
+        branch_point = None
+        if len(commits):
+            first_commit = commits[-1]
+            if first_commit:
+                branch_point = git("rev-parse", first_commit + "^")
+
         # The above can produce a too-early commit if we are e.g. on master and there are
         # preceding changes that were rebased and so aren't on any other branch. To avoid
         # this issue we check for the later of the above branch point and the merge-base
         # with master
         merge_base = git("merge-base", "HEAD", "origin/master")
-        if (branch_point != merge_base and
-            not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip()):
+        if (branch_point is None or
+            (branch_point != merge_base and
+             not git("log", "--oneline", "%s..%s" % (merge_base, branch_point)).strip())):
             logger.debug("Using merge-base as the branch point")
             branch_point = merge_base
         else:

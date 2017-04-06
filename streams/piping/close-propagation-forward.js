@@ -447,7 +447,8 @@ promise_test(() => {
 
   // Flush async events and verify that no shutdown occurs.
   return flushAsyncEvents().then(() => {
-    assert_array_equals(ws.events, ['write', 'a']); // no 'close'
+    assert_array_equals(ws.events, ['write', 'a'],
+      'the chunk must have been written, but close must not have happened yet');
     assert_equals(pipeComplete, false, 'the pipe must not be complete');
 
     resolveWritePromise();

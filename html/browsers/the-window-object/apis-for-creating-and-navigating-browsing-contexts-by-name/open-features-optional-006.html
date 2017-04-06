@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML: window.open `features`: invalid values for feature `left`</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
+
+<!-- user agents are not required to support open features other than `noopener`
+     and on some platforms position and size features don't make sense -->
+<meta name="flags" content="may" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/PrefixedPostMessage.js"></script>
+<script>
+var windowURL = 'resources/message-opener.html';
+var width = 'width=401,';
+var height = 'height=402,';
+
+// https://html.spec.whatwg.org/multipage/infrastructure.html#rules-for-parsing-integers
+[
+  { features: 'left=200.5', not: 200 },
+  { features: 'left=178.56', not: 178 },
+  { features: 'left=82.1', not: 82 },
+  { features: 'left=122.93', not: 122 },
+  { features: 'left=210.415', not: 210 },
+  { features: 'left=278.9', not: 278 },
+  { features: 'left=41L', not: 41 },
+  { features: 'left=L45', not: 45 },
+  { features: 'left=0xff', not: 255 },
+  { features: 'left="222"', not: 222 },
+  { features: 'left=101/4,', not: 101 }
+].forEach((featureTest, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    var featureString = `${width}${height}${featureTest.features}`;
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_not_equals(data.left, featureTest.not, `"${featureString}" should not contain valid "left" value`);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+  }, `features "${featureTest.features}" should NOT set "left=${featureTest.not}"`);
+});
+
+// Last value for `left` is invalid
+[
+  { features: 'left=222,left=fff', not: 222 },
+  { features: 'screenx=211,left=-30', not: 211 },
+  { features: 'screenx=211,left=-30', not: 30 }
+].forEach((featureTest, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    var featureString = `${width}${height}${featureTest.features}`;
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_not_equals(data.left, featureTest.not, `"${featureString}" should not result in "left" value "${featureTest.not}"`);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+  }, `features "${featureTest.features}" should NOT set "left=${featureTest.not}"`);
+});
+
+// Last value for `left` is valid
+[
+  { features: 'left=fff,left=200', is: 200 },
+  { features: 'screenx=220,left=198', is: 198 }
+].forEach((featureTest, idx, arr) => {
+  async_test(t => {
+    var prefixedMessage = new PrefixedMessageTest();
+    var featureString = `${width}${height}${featureTest.features}`;
+    prefixedMessage.onMessage(t.step_func_done((data, e) => {
+      e.source.close();
+      assert_equals(data.left, featureTest.is, `"${featureString}"`);
+    }));
+    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+  }, `features "${featureTest.features}" should have a valid "left" value`);
+});
+
+
+</script>

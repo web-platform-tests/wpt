@@ -18,7 +18,7 @@
       ['border: 1px solid red;', 'border: 1px solid red;'],
       ['border: 1px red;', 'border: 1px red;'],
       ['border: red;', 'border: red;'],
-      ['border-top: 1px; border-right: 1px; border-bottom: 1px; border-left: 1px;', 'border: 1px;'],
+      ['border-top: 1px; border-right: 1px; border-bottom: 1px; border-left: 1px;', 'border: 1px;', ' (#2)'],
       ['border-top: 1px; border-right: 2px; border-bottom: 3px; border-left: 4px;', 'border-width: 1px 2px 3px 4px;'],
       ['border: 1px; border-top: 2px;', 'border-width: 2px 1px 1px;'],
       ['border: 1px; border-top: 1px !important;',
@@ -56,17 +56,15 @@
 
     var testElm = document.getElementById('cssomtestElm');
     for (var test in tests) {
-
-      console.log(test);
-
       if(tests.hasOwnProperty(test)) {
         results[test] = [];
         var propertyTests = tests[test];
 
         for (i = 0; i < propertyTests.length; i++) {
           document.getElementById('cssomtestElm').setAttribute('style', propertyTests[i][0]);
+          var titleSuffix = propertyTests[i][2] || "";
           results[test].push([
-            test + ' is expected to be ' + propertyTests[i][1],
+            test + ' is expected to be ' + propertyTests[i][1] + titleSuffix,
             document.getElementById('cssomtestElm').style.cssText,
             propertyTests[i][1]
           ]);
@@ -79,4 +77,3 @@
     </script>
  </body>
  </html>
-

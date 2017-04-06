@@ -44,13 +44,13 @@
                 totalCount = totalCount - 1;
                 if(totalCount > 0)
                 {
-                    setTimeout(function(){
+                    step_timeout(function(){
                         changeFrameWidth(width_list[i]);
                     }, 100);
                 }
                 else
                 {
-                    setTimeout(function(){
+                    step_timeout(function(){
                         equalAssert.step(function(){
                             assert_equals(divineCount, count, "this will be 10 times of event triggers by change width");
                         });

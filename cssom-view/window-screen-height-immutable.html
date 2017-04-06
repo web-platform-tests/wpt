@@ -13,15 +13,15 @@
     <div id="myDiv"></div>
     <div id="log"></div>
     <script>
-		var originalVal = window.screen.height;
+        var originalVal = window.screen.height;
 
-		// try to set window.screen.height
-		window.screen.height = 0;
+        // try to set window.screen.height
+        window.screen.height = 0;
 
-		// verify window.screen.height didn't change
+        // verify window.screen.height didn't change
         test(function() {
-			assert_equals(window.screen.height, originalVal,	"window.screen.height should be immutable")
-		}, "immutability test");
+            assert_equals(window.screen.height, originalVal, "window.screen.height should be immutable")
+        }, "immutability test");
     </script>
 </body>
 </html>

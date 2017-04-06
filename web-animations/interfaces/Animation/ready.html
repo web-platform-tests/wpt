@@ -60,24 +60,6 @@ promise_test(function(t) {
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
-  var readyResolved = false;
-
-  animation.finish();
-
-  animation.ready.then(function() {
-    readyResolved = true;
-  });
-  return animation.finished.then(function(p) {
-    assert_equals(p, animation);
-    assert_equals(animation.ready, promise);
-    assert_true(readyResolved);
-  });
-}, 'A pending ready promise should be resolved and not replaced when the'
-   + ' animation enters the finished state');
-
-promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  var promise = animation.ready;
   animation.pause();
   return promise.then(function(p) {
     assert_equals(p, animation);

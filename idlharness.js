@@ -437,6 +437,11 @@ IdlArray.prototype.test = function()
 IdlArray.prototype.assert_type_is = function(value, type)
 //@{
 {
+    if (type.idlType in this.members
+    && this.members[type.idlType] instanceof IdlTypedef) {
+        this.assert_type_is(value, this.members[type.idlType].idlType);
+        return;
+    }
     if (type.union) {
         for (var i = 0; i < type.idlType.length; i++) {
             try {
@@ -641,10 +646,6 @@ IdlArray.prototype.assert_type_is = function(value, type)
         assert_equals(typeof value, "string");
     }
     else if (this.members[type] instanceof IdlDictionary)
-    {
-        // TODO: Test when we actually have something to test this on
-    }
-    else if (this.members[type] instanceof IdlTypedef)
     {
         // TODO: Test when we actually have something to test this on
     }
@@ -2023,8 +2024,8 @@ function IdlTypedef(obj)
     /** Self-explanatory. */
     this.name = obj.name;
 
-    /** An array of values produced by the "typedef" production. */
-    this.values = obj.values;
+    /** The idlType that we are supposed to be typedeffing to. */
+    this.idlType = obj.idlType;
 
 }
 //@}

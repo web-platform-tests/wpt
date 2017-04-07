@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: named flow content has contentEditable attribute set and children of it get
@@ -8,7 +8,7 @@
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#flow-from">
 		<link rel="help" href="http://www.w3.org/TR/html5/editing.html#contenteditable">
-		<meta name="flags" content="dom interact">
+		<meta name="flags" content="dom">
 		<meta name="assert" content="Test checks that setting the contentEditable attribute on
 		an element does not interfere with its children being dinamically flowed into a region.">
 		<link rel="match" href="reference/contentEditable-007-ref.html">
@@ -82,6 +82,7 @@
 			insertText("#marked-outside", "foobar bazquux");
 			insertText("#marked-inside", "foobar bazquux");
 			insertText("#marked-inside-new", "foobar bazquux");
+			document.documentElement.classList.remove('reftest-wait');
 		})
 		</script>
 	</body>

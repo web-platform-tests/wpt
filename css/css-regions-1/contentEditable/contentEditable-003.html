@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: named flow content is child of an element that has contentEditable attribute set</title>
@@ -7,7 +7,7 @@
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#flow-from">
 		<link rel="help" href="http://www.w3.org/TR/html5/editing.html#contenteditable">
-		<meta name="flags" content="dom interact">
+		<meta name="flags" content="dom">
 		<meta name="assert" content="Test checks that setting the contentEditable attribute on the
 		parent of an element that gets flowed in a region does not affect its rendering in the regions.
 		Also, the element should be editable outside and inside the region without differences.">
@@ -81,6 +81,7 @@
 		<script type="text/javascript">
 		insertText("#marked-out", "foobar bazquux");
 		insertText("#marked-in", "foobar bazquux");
+		document.documentElement.classList.remove('reftest-wait');
 		</script>
 	</body>
 </html>

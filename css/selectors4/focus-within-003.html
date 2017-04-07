@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang=en class="reftest-wait">
 <meta charset="utf-8">
 <title>Selectors Level 4: focus-within</title>
 <link rel="author" title="Keyong Li" href="mailto:kli79@bloomberg.net">
 <link rel="author" title="Florian Rivoal" href="mailto:florian@rivoal.net">
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#focus-within-pseudo">
 <link rel="match" href="focus-within-001-ref.html">
-<meta name="flags" content="interact">
 <meta name="assert" content="Test that :focus-within applies to ancestors of an element with tabindex where :focus applies.">
 <style>
 /* Suppress things that cannot be reproduced in the reference file */
@@ -31,16 +30,14 @@ There must be no red or blue once it is focused.</p>
   <div>
     <div>
       <div>
-        <div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1">Focus this element</div>
+        <div id="focusme" tabindex="1">Focus this element</div>
       </div>
     </div>
   </div>
 </div>
 <script>
-/* This script is an optional convenience,
-   simply removing the need to manually focus the element.
-   The test is valid even if the script is not run. */
 var focusme = document.getElementById('focusme');
 focusme.focus();
+document.documentElement.classList.remove('reftest-wait');
 </script>
 </html>

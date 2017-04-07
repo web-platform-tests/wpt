@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 	<head>
 		<meta charset="utf-8">
 		<title>CSS Regions: element has contentEditable attribute set and both it and a child of it are
@@ -8,7 +8,7 @@
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#the-flow-into-property">
 		<link rel="help" href="http://www.w3.org/TR/css3-regions/#flow-from">
 		<link rel="help" href="http://www.w3.org/TR/html5/editing.html#contenteditable">
-		<meta name="flags" content="dom interact">
+		<meta name="flags" content="dom">
 		<meta name="assert" content="Test checks that flowing both and element and one of its
 		children in a region, when said element has the contentEditable attribute set does not
 		affect their rendering in the regions and the ability to edit it.">
@@ -75,6 +75,7 @@
 		<script type="text/javascript">
 		insertText("#marked-parent", "foobar bazquux");
 		insertText("#marked-child", "foobar bazquux");
+		document.documentElement.classList.remove('reftest-wait');
 		</script>
 	</body>
 </html>

@@ -67,7 +67,6 @@ function iframeLoaded(expectBlock) {
         var failed = true;
         var message = "";
         try {
-            console.log("IFrame load event fired: the IFrame's location is '" + ev.target.contentWindow.location.href + "'.");
             if (expectBlock) {
                 message = "The IFrame should have been blocked (or cross-origin). It wasn't.";
                 failed = true;
@@ -76,7 +75,6 @@ function iframeLoaded(expectBlock) {
                 failed = false;
             }
         } catch (ex) {
-            console.log("IFrame load event fired: the IFrame is cross-origin (or was blocked).");
             if (expectBlock) {
                 message = "The IFrame should have been blocked (or cross-origin). It was.";
                 failed = false;

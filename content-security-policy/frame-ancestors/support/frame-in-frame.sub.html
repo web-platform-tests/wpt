@@ -6,7 +6,6 @@
     <script src='/content-security-policy/frame-ancestors/support/frame-ancestors-test.sub.js'></script>
     <script>
         test = async_test("Testing a {{GET[child]}}-origin child with a policy of {{GET[policy]}} nested in a {{GET[parent]}}-origin parent");
-        console.log("Testing a {{GET[child]}}-origin child with a policy of {{GET[policy]}} nested in a {{GET[parent]}}-origin parent");
         originFrameShouldBe("{{GET[child]}}", "{{GET[expectation]}}", "{{GET[policy]]}}");
     </script>
 </body>

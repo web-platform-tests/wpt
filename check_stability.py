@@ -415,10 +415,16 @@ def get_branch_point(user):
             if first_commit:
                 branch_point = git("rev-parse", first_commit + "^")
 
-        # The above can produce a too-early commit if we are e.g. on master and there are
-        # preceding changes that were rebased and so aren't on any other branch. To avoid
-        # this issue we check for the later of the above branch point and the merge-base
-        # with master
+        # The above heuristic will fail in the following cases:
+        # 
+        # - The current branch has fallen behind the version retrieved via the above
+        #   `fetch` invocation
+        # - Changes on the current branch were rebased and therefore do not exist on any
+        #   other branch. This will result in the selection of a commit that is earlier
+        #   in the history than desired (as determined by calculating the later of the
+        #   branch point and the merge base)
+        # 
+        # In either case, fall back to using the merge base as the branch point.
         merge_base = git("merge-base", "HEAD", "origin/master")
         if (branch_point is None or
             (branch_point != merge_base and

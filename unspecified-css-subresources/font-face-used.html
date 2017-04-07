@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>used @font-face blocks load</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@font-face {
+  font-family: Ahem;
+  src: url("/css/fonts/ahem/ahem.ttf?pipe=trickle(d5)");
+}
+#foo {
+  font: 25px/1 Ahem;
+}
+</style>
+<div id=foo>XXX</div>
+<script>
+var t1 = performance.timing.responseStart;
+
+async_test(function(t) {
+window.addEventListener("load", t.step_func_done(function() {
+    var t2 = Date.now();
+    var diff = t2 - t1;
+    assert_greater_than(diff, 5000, "ms after style");
+  }));
+}, "load waits for used @font-face");
+</script>

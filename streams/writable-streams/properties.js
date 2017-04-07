@@ -149,6 +149,8 @@ const sinkMethods = {
 for (const method in sinkMethods) {
   const { length, trigger } = sinkMethods[method];
 
+  // Some semantic tests of how sink methods are called can be found in general.js, as well as in the test files
+  // specific to each method.
   promise_test(() => {
     let argCount;
     const ws = new WritableStream({
@@ -174,6 +176,29 @@ for (const method in sinkMethods) {
       assert_true(methodWasCalled, `${method} should be called`);
     });
   }, `sink method ${method} should be found via prototype chain`);
+
+  if (method !== 'start') {
+    promise_test(t => {
+      const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
+                              'getOwnPropertyDescriptor', 'defineProperty', 'has', 'set', 'deleteProperty', 'ownKeys',
+                              'apply', 'construct'];
+      const handler = {
+        get: t.step_func((target, property) => {
+          if (property === 'type') {
+            return undefined;
+          }
+          assert_in_array(property, ['start', method], `only start() and ${method}() should be called`);
+          return () => Promise.resolve();
+        })
+      };
+      for (const trap of unreachedTraps) {
+        handler[trap] = t.unreached_func(`${trap} should not be trapped`);
+      }
+      const sink = new Proxy({}, handler);
+      const ws = new WritableStream(sink);
+      return trigger(ws.getWriter());
+    }, `unexpected properties should not be accessed when calling sink method ${method}`);
+  }
 }
 
 done();

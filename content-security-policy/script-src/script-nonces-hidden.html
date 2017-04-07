@@ -105,10 +105,14 @@
     #cssTest[nonce=abc] { background: url(/security/resources/abe.png); }
 </style>
 <script nonce="abc" id="cssTest">
-    var css_test = async_test(t => {
-      document.addEventListener('securitypolicyviolation', e => {
-        assert_unreached("No image should be requested via CSS.");
-      });
+    async_test(t => {
+      document.addEventListener('securitypolicyviolation', t.unreached_func("No image should be requested via CSS."));
+
+      requestAnimationFrame(t.step_func_done(_ => {
+        var script = document.querySelector('#cssTest');
+        var style = getComputedStyle(script);
+        assert_equals(style['display'], 'block');
+        assert_equals(style['background-image'], 'none');
+      }));
     }, "Nonces don't leak via CSS side-channels.");
-    requestAnimationFrame(css_test.step_func_done());
 </script>

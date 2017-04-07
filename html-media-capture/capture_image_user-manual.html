@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
-<title>HTML Media Capture Test: capture image to produce one image file</title>
+<title>HTML Media Capture Test: capture image with 'user' facing mode to produce one image file</title>
 <link rel='author' title='Intel' href='http://www.intel.com'>
-<link rel='help' href='http://dev.w3.org/2009/dap/camera/#attributes'>
-<link rel='help' href='http://www.w3.org/TR/html5/forms.html#attr-input-accept'>
+<link rel='help' href='https://w3c.github.io/html-media-capture'>
+<link rel='help' href='https://www.w3.org/TR/html5/forms.html#attr-input-accept'>
 <meta name='flags' content='interact'>
 <meta name="timeout" content="long">
 <script src='/resources/testharness.js'></script>
@@ -11,11 +11,13 @@
 
 <p>Clear all camera permissions before running this test. If prompted for permission, please allow.</p>
 
-<p>After hitting the button below, capture an image and then confirm the capturing.</p>
+<p>After hitting the button below, the camera must be launched with self-view mode.</p>
+
+<p>Capture an image and then confirm the capturing.</p>
 
 <p>Note: All the actions need to be done in 60 seconds, otherwise it will get TIMEOUT.</p>
 
-<input type='file' accept='image/*' capture>
+<input type='file' accept='image/*' capture='user'>
 
 <div id='log'></div>
 

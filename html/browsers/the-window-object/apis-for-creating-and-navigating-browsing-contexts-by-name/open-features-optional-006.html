@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML: window.open `features`: invalid values for feature `left`</title>
+<title>HTML: window.open `features`: non-integer values for feature `left`</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
 
 <!-- user agents are not required to support open features other than `noopener`
@@ -12,66 +12,60 @@
 <script src="/common/PrefixedPostMessage.js"></script>
 <script>
 var windowURL = 'resources/message-opener.html';
-var width = 'width=401,';
-var height = 'height=402,';
+var featuresPrefix = `width=401,height=204,top=0,`;
 
 // https://html.spec.whatwg.org/multipage/infrastructure.html#rules-for-parsing-integers
-[
-  { features: 'left=200.5', not: 200 },
-  { features: 'left=178.56', not: 178 },
-  { features: 'left=82.1', not: 82 },
-  { features: 'left=122.93', not: 122 },
-  { features: 'left=210.415', not: 210 },
-  { features: 'left=278.9', not: 278 },
-  { features: 'left=41L', not: 41 },
-  { features: 'left=L45', not: 45 },
-  { features: 'left=0xff', not: 255 },
-  { features: 'left="222"', not: 222 },
-  { features: 'left=101/4,', not: 101 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_not_equals(data.left, featureTest.not, `"${featureString}" should not contain valid "left" value`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" should NOT set "left=${featureTest.not}"`);
+var baselineTop, baselineLeft;
+
+setup (() => {
+  var prefixedMessage = new PrefixedMessageTest();
+  var featureString = `${featuresPrefix}left=0`;
+  prefixedMessage.onMessage((data, e) => {
+    e.source.close();
+    baselineLeft = data.left;
+    baselineTop = data.top;
+    runWindowTests();
+  });
+  var win = window.open(prefixedMessage.url(windowURL), '', featureString);
 });
 
-// Last value for `left` is invalid
-[
-  { features: 'left=222,left=fff', not: 222 },
-  { features: 'screenx=211,left=-30', not: 211 },
-  { features: 'screenx=211,left=-30', not: 30 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_not_equals(data.left, featureTest.not, `"${featureString}" should not result in "left" value "${featureTest.not}"`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" should NOT set "left=${featureTest.not}"`);
-});
+function runWindowTests () {
+  // When code point in first position is not an ASCII digit, "+" or "-",
+  // that's an error and the value becomes 0
+  [ 'left=/104',
+    'left=_104',
+    'left=L104',
+    'left=0x68'
+  ].forEach(feature => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      var featureString = `${featuresPrefix}${feature}`;
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.left, baselineLeft, `"${feature} begins with an invalid character and should be ignored"`);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+    }, `features "${feature}" should NOT set "left=104"`);
+  });
 
-// Last value for `left` is valid
-[
-  { features: 'left=fff,left=200', is: 200 },
-  { features: 'screenx=220,left=198', is: 198 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_equals(data.left, featureTest.is, `"${featureString}"`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" should have a valid "left" value`);
-});
-
+  [ 'left=105.5',
+    'left=105.32',
+    'left=105LLl',
+    'left=105^4',
+    'left=105*3',
+    'left=105/5',
+    'left=105  '
+  ].forEach(feature => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      var featureString = `${featuresPrefix}${feature}`;
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.left, 105, `"${featureString} value after first non-digit will be ignored"`);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+    }, `features "${feature}" should set "left=105"`);
+  });
+}
 
 </script>

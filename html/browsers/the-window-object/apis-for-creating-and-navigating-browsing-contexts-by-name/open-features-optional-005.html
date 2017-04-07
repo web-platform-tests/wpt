@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML: window.open `features`: invalid values for feature `top`</title>
+<title>HTML: window.open `features`: non-integer values for feature `top`</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
 
 <!-- user agents are not required to support open features other than `noopener`
@@ -12,66 +12,60 @@
 <script src="/common/PrefixedPostMessage.js"></script>
 <script>
 var windowURL = 'resources/message-opener.html';
-var width = 'width=401,';
-var height = 'height=402,';
+var featuresPrefix = `width=401,height=204,left=0,`;
 
 // https://html.spec.whatwg.org/multipage/infrastructure.html#rules-for-parsing-integers
-[
-  { features: 'top=200.5', not: 200 },
-  { features: 'top=178.56', not: 178 },
-  { features: 'top=82.1', not: 82 },
-  { features: 'top=122.93', not: 122 },
-  { features: 'top=210.415', not: 210 },
-  { features: 'top=278.9', not: 278 },
-  { features: 'top=41L', not: 41 },
-  { features: 'top=L45', not: 45 },
-  { features: 'top=0xff', not: 255 },
-  { features: 'top="222"', not: 222 },
-  { features: 'top=101/4,', not: 101 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_not_equals(data.top, featureTest.not, `"${featureString}" should not contain valid "top" value`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" should NOT set "top=${featureTest.not}"`);
+var baselineTop, baselineLeft;
+
+setup (() => {
+  var prefixedMessage = new PrefixedMessageTest();
+  var featureString = `${featuresPrefix}top=0`;
+  prefixedMessage.onMessage((data, e) => {
+    e.source.close();
+    baselineLeft = data.left;
+    baselineTop = data.top;
+    runWindowTests();
+  });
+  var win = window.open(prefixedMessage.url(windowURL), '', featureString);
 });
 
-// Last value for `top` is invalid
-[
-  { features: 'top=222,top=fff', not: 222 },
-  { features: 'screeny=211,top=-30', not: 211 },
-  { features: 'screeny=211,top=-30', not: 30 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_not_equals(data.top, featureTest.not, `"${featureString}" should not result in "top" value "${featureTest.not}"`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" should NOT set "top=${featureTest.not}"`);
-});
+function runWindowTests () {
+  // When code point in first position is not an ASCII digit, "+" or "-",
+  // that's an error and the value becomes 0
+  [ 'top=/104',
+    'top=_104',
+    'top=L104',
+    'top=0x68'
+  ].forEach(feature => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      var featureString = `${featuresPrefix}${feature}`;
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.top, baselineTop, `"${feature} begins with an invalid character and should be ignored"`);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+    }, `features "${feature}" should NOT set "top=104"`);
+  });
 
-// Last value for `top` is valid
-[
-  { features: 'top=fff,top=200', is: 200 },
-  { features: 'screeny=220,top=198', is: 198 }
-].forEach((featureTest, idx, arr) => {
-  async_test(t => {
-    var prefixedMessage = new PrefixedMessageTest();
-    var featureString = `${width}${height}${featureTest.features}`;
-    prefixedMessage.onMessage(t.step_func_done((data, e) => {
-      e.source.close();
-      assert_equals(data.top, featureTest.is, `"${featureString}"`);
-    }));
-    var win = window.open(prefixedMessage.url(windowURL), '', featureString);
-  }, `features "${featureTest.features}" "top" combinations"`);
-});
-
+  [ 'top=105.5',
+    'top=105.32',
+    'top=105LLl',
+    'top=105^4',
+    'top=105*3',
+    'top=105/5',
+    'top=105  '
+  ].forEach(feature => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      var featureString = `${featuresPrefix}${feature}`;
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.top, 105, `"${feature} value after first non-digit will be ignored"`);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+    }, `features "${feature}" should set "top=105"`);
+  });
+}
 
 </script>

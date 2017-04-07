@@ -1250,7 +1250,8 @@ policies and contribution forms [3].
                 ReadOnlyError: 0,
                 VersionError: 0,
                 OperationError: 0,
-                NotAllowedError: 0
+                NotAllowedError: 0,
+                CancelationError: 0,
             };
 
             if (!(name in name_code_map)) {

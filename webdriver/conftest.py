@@ -1,10 +1,11 @@
 import pytest
 from support.fixtures import (
-    create_frame, create_session, create_window, http, server_config, session,
+    configuration, create_frame, create_window, http, new_session, server_config, session,
     url)
 
+pytest.fixture(scope="session")(configuration)
 pytest.fixture()(create_frame)
-pytest.fixture()(create_session)
+pytest.fixture(scope="function")(new_session)
 pytest.fixture()(create_window)
 pytest.fixture()(http)
 pytest.fixture()(server_config)

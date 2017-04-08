@@ -112,7 +112,7 @@
         const sw = reg.installing;
         await waitForActivated(sw);
         const values = await getScriptTimes(sw, testName);
-        
+
         opts = {scope};
         if (updateViaCache2) opts.updateViaCache = updateViaCache2;
 

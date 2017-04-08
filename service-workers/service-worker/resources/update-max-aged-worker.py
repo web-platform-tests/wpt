@@ -7,7 +7,7 @@ def main(request, response):
                ('Last-Modified', time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))]
 
     test = request.GET['test'];
-  
+
     body = '''
         const mainTime = {time};
         const testName = {test};

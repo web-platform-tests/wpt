@@ -30,6 +30,22 @@ setup (() => {
 });
 
 function runWindowTests (baselineDimensions) {
+
+  // The absence of the sizing feature should have the same behavior
+  // as that feature set to 0
+  [ featuresPrefix,
+    'top=0,left=0',
+  ].forEach(feature => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.width, baselineDimensions.width);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', feature);
+    }, `${feature}: absence of feature "width" should be treated same as "width=0"`);
+  });
+
   // When code point in first position is not an ASCII digit, "+" or "-",
   // that's an error and the value becomes 0
   [ 'width=/404',

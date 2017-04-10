@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MOZTREE="$HOME/builds/clean-mozilla-central/"
+MOZTREE="$HOME/builds/clean-mozilla-central/mozilla/"
 
 cd "$(dirname "$0")"
 

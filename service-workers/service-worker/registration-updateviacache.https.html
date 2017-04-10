@@ -74,10 +74,10 @@
       await reg.update();
 
       if (updateViaCache == 'all') {
-        assert_equals(sw.installing, undefined, "No new service worker");
+        assert_equals(reg.installing, null, "No new service worker");
       }
       else {
-        const newWorker = sw.installing;
+        const newWorker = reg.installing;
         assert_true(!!newWorker, "New worker installing");
         const newValues = await getScriptTimes(newWorker, testName);
 
@@ -121,10 +121,10 @@
         // If there's no change, register should be a no-op.
         // The default value should behave as 'imports'.
         if ((updateViaCache1 || 'imports') == (updateViaCache2 || 'imports')) {
-          assert_equals(sw.installing, undefined, "No new service worker");
+          assert_equals(reg.installing, null, "No new service worker");
         }
         else {
-          const newWorker = sw.installing;
+          const newWorker = reg.installing;
           assert_true(!!newWorker, "New worker installing");
           const newValues = await getScriptTimes(newWorker, testName);
 

@@ -50,7 +50,7 @@ dictionary AudioConfiguration {
   unsigned long samplerate;
 };
 
-interface MediaDecodingAbility {
+interface MediaCapabilitiesInfo {
   readonly attribute boolean supported;
   readonly attribute boolean smooth;
   readonly attribute boolean powerEfficient;
@@ -68,7 +68,7 @@ partial interface WorkerNavigator {
 
 [Exposed=(Window, Worker)]
 interface MediaCapabilities {
-  Promise<MediaDecodingAbility> query(MediaConfiguration configuration);
+  Promise<MediaCapabilitiesInfo> decodingInfo(MediaConfiguration configuration);
 };
 </pre>
 <script>

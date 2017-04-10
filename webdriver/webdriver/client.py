@@ -16,7 +16,7 @@ def command(func):
 
         if session.session_id is None:
             session.start()
-        assert session.session_id != None
+        assert session.session_id is not None
 
         return func(self, *args, **kwargs)
 
@@ -212,6 +212,7 @@ class Actions(object):
         """
         return ActionSequence(self.session, *args, **kwargs)
 
+
 class Window(object):
     def __init__(self, session):
         self.session = session
@@ -224,7 +225,8 @@ class Window(object):
 
     @size.setter
     @command
-    def size(self, (width, height)):
+    def size(self, data):
+        width, height = data
         body = {"width": width, "height": height}
         self.session.send_session_command("POST", "window/rect", body)
 
@@ -236,7 +238,8 @@ class Window(object):
 
     @position.setter
     @command
-    def position(self, (x, y)):
+    def position(self, data):
+        data = x, y
         body = {"x": x, "y": y}
         self.session.send_session_command("POST", "window/rect", body)
 

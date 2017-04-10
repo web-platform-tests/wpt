@@ -118,4 +118,28 @@ promise_test(() => {
 
 }, 'pipeThrough should mark a real promise from a fake readable as handled');
 
+test(() => {
+  let thenCalled = false
+  let catchCalled = false;
+  const dummy = {
+    pipeTo() {
+      const fakePromise = Object.create(Promise.prototype);
+      fakePromise.then = () => {
+        thenCalled = true;
+      };
+      fakePromise.catch = () => {
+        catchCalled = true;
+      };
+      assert_true(fakePromise instanceof Promise, 'fakePromise fools instanceof');
+      return fakePromise;
+    }
+  };
+
+  ReadableStream.prototype.pipeThrough.call(dummy, { });
+
+  assert_false(thenCalled, 'then should not be called');
+  assert_false(catchCalled, 'catch should not be called');
+  // pipeThrough could also fail with a crash or exception.
+}, 'pipeThrough should not be fooled by an object whose instanceof Promise returns true');
+
 done();

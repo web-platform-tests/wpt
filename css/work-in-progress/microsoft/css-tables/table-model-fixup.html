@@ -1,5 +1,4 @@
 <!doctype html>
-<!--------------------------------------------------------------------------------------->
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <link rel='stylesheet' href='/resources/testharness.css'>
@@ -25,7 +24,7 @@
 	<x-table><x-td id="target3" style="width: 50%; height: 0px; background: blue;"></x-td> <x-td style="width: 50px; height: 100px; background: blue;"></x-td></x-table>
 	
 	<hr/>
-	<p>This should read as "1\t2\t3 x":</p>
+	<p>This should read as "1\t2\t3\n&nbsp;&nbsp;&nbsp;x":</p>
 	<p>2.2. An anonymous table-row box must be generated around each sequence of consecutive children of a table-row-grouping box which are not table-row boxes.</p>
 	<x-table><x-tbody>
 		<span id="target4a">1</span>
@@ -98,8 +97,8 @@
 		],
 		[
 			"2.2. An anonymous table-row box must be generated around each sequence of consecutive children of a table-row-grouping box which are not table-row boxes. (3/3)", 
-			document.querySelector("#target"+(i-1)+"d").offsetLeft - document.querySelector("#target"+(i-1)+"a").offsetLeft > 100, 
-			true
+			document.querySelector("#target"+(i-1)+"d").offsetLeft, 
+			document.querySelector("#target"+(i-1)+"c").offsetLeft
 		],
 		[
 			"2.3 happens after 2.1. and 2.2. (1/2)", 

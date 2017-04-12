@@ -20,7 +20,7 @@ def main(request, response):
     # space seperated list of origin and wildcard, fail
         response.headers.set('Timing-Allow-Origin', (origin + ' *'))
     elif tao == 'multi':
-    # more than one TAO values, fail
+    # more than one TAO values, seperated by common, pass
         response.headers.set('Timing-Allow-Origin', origin)
         response.headers.append('Timing-Allow-Origin', '*')
     elif tao == 'uppercase':

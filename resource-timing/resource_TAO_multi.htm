@@ -38,7 +38,7 @@ function onload_test() {
     if(entries.length > 0) {
         entry = entries[0];
 
-        test_equals((entry.redirectStart + entry.redirectEnd + entry.domainLookupStart + entry.domainLookupEnd + entry.connectStart + entry.connectEnd + entry.secureConnectionStart + entry.requestStart + entry.responseStart), 0, 'redirectStart, redirectEnd, domainLookupStart, domainLookupEnd, connectStart, connectEnd, secureConnectionStart, requestStart, and responseStart -- should be all returned as 0 when the HTTP response includes more than one Timing-Allow-Origin header value and TAO algorithm fails, if not overwrite any existing TAO values when appending the new value');
+        test_equals((entry.redirectStart + entry.redirectEnd + entry.domainLookupStart + entry.domainLookupEnd + entry.connectStart + entry.connectEnd + entry.secureConnectionStart + entry.requestStart + entry.responseStart), 0, 'redirectStart, redirectEnd, domainLookupStart, domainLookupEnd, connectStart, connectEnd, secureConnectionStart, requestStart, and responseStart -- should not be all returned as 0 when the HTTP response has multiple Timing-Allow-Origin header fields and the subsequent field value is separated by a comma, i.e. TAO algorithm passes');
     }
 
     done();
@@ -48,7 +48,7 @@ window.setup_iframe = setup_iframe;
 </head>
 <body>
 <h1>Description</h1>
-<p>This test validates that for a cross origin resource, the timing allow check algorithm will fail when the HTTP response includes more than one Timing-Allow-Origin header value (not overwrite any existing TAO values when appending the new value).</p>
+<p>This test validates that for a cross origin resource, the timing allow check algorithm will pass when the HTTP response has multiple Timing-Allow-Origin header fields and the subsequent field value is separated by a comma.</p>
 <div id="log"></div>
 <iframe id="frameContext" src="resources/iframe_TAO_multi.html"></iframe>
 </body>

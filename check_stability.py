@@ -632,6 +632,7 @@ def markdown_adjust(s):
     s = s.replace('\n', u'\\n')
     s = s.replace('\r', u'\\r')
     s = s.replace('`',  u'')
+    s = s.replace('|', u'\\|')
     return s
 
 

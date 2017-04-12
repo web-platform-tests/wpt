@@ -16,10 +16,6 @@ before_install:
 install:
   - pip install -U setuptools
   - pip install -U requests
-  - gem install haste
-  - echo 'test from travis' | haste
-after_failure:
-  - cat chromedriver.log | haste
 env:  # required at the top-level for allow_failures to work below
 matrix:
   include:
@@ -38,10 +34,6 @@ matrix:
     - env:  # exclude empty env from the top-level above
 script:
   - bash $SCRIPT
-  # Force a job timeout by waiting more than 10 minutes without producing
-  # output. This is intended to initially determine whether the "after_failure"
-  # lifecycle event occurs following a timeout.
-  - sleep $((60 * 11))
 cache:
   directories:
     - $HOME/.cache/pip

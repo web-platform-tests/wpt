@@ -279,7 +279,7 @@ class Chrome(Browser):
             "product": "chrome",
             "binary": self.binary,
             "webdriver_binary": "%s/chromedriver" % root,
-            "webdriver_args": ["--log-path=chromedriver.log"],
+            "webdriver_args": ["--verbose"],
             "test_types": ["testharness", "reftest"]
         }
 

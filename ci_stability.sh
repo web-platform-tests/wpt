@@ -53,6 +53,9 @@ main() {
        install_chrome $(echo $PRODUCT | grep --only-matching '\w\+$')
     fi
     test_stability
+
+	echo DBUS_SESSION_BUS_ADDRESS following successful execution:
+	echo $DBUS_SESSION_BUS_ADDRESS
 }
 
 main

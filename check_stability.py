@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+from ConfigParser import SafeConfigParser
 import logging
 import os
 import re
@@ -16,6 +17,8 @@ from ConfigParser import RawConfigParser
 from io import BytesIO, StringIO
 
 import requests
+
+_CONFIG_FILE = "check_stability.ini"
 
 BaseHandler = None
 LogActionFilter = None
@@ -439,24 +442,34 @@ def get_branch_point(user):
     return branch_point
 
 
-def get_files_changed(branch_point):
-    """Get and return files changed since current branch diverged from master."""
+def get_files_changed(branch_point, ignore_changes):
+    """Get and return files changed since current branch diverged from master,
+    excluding those that are located within any directory specifed by
+    `ignore_changes`."""
     root = os.path.abspath(os.curdir)
     git = get_git_cmd(wpt_root)
     files = git("diff", "--name-only", "-z", "%s..." % branch_point)
     if not files:
-        return []
+        return [], []
     assert files[-1] == "\0"
-    return [os.path.join(wpt_root, item)
-            for item in files[:-1].split("\0")]
 
+    changed = []
+    ignored = []
+    for item in files[:-1].split("\0"):
+        fullpath = os.path.join(wpt_root, item)
+        topmost_dir = item.split(os.sep, 1)[0]
+        if topmost_dir in ignore_changes:
+            ignored.append(fullpath)
+        else:
+            changed.append(fullpath)
 
-def get_affected_testfiles(files_changed):
+    return changed, ignored
+
+def get_affected_testfiles(files_changed, skip_tests):
     """Determine and return list of test files that reference changed files."""
     affected_testfiles = set()
     nontests_changed = set(files_changed)
     manifest_file = os.path.join(wpt_root, "MANIFEST.json")
-    skip_dirs = ["conformance-checkers", "docs", "tools"]
     test_types = ["testharness", "reftest", "wdspec"]
 
     wpt_manifest = manifest.load(wpt_root, manifest_file)
@@ -477,7 +490,7 @@ def get_affected_testfiles(files_changed):
             # (because it's not part of any test).
             continue
         top_level_subdir = path_components[0]
-        if top_level_subdir in skip_dirs:
+        if top_level_subdir in skip_tests:
             continue
         repo_path = "/" + os.path.relpath(full_path, wpt_root).replace(os.path.sep, "/")
         nontest_changed_paths.add((full_path, repo_path))
@@ -486,7 +499,7 @@ def get_affected_testfiles(files_changed):
         # Walk top_level_subdir looking for test files containing either the
         # relative filepath or absolute filepatch to the changed files.
         if root == wpt_root:
-            for dir_name in skip_dirs:
+            for dir_name in skip_tests:
                 dirs.remove(dir_name)
         for fname in fnames:
             test_full_path = os.path.join(root, fname)
@@ -706,7 +719,10 @@ def write_results(results, iterations, comment_pr):
 
 def get_parser():
     """Create and return script-specific argument parser."""
-    parser = argparse.ArgumentParser()
+    description = """Detect instabilities in new tests by executing tests
+    repeatedly and comparing results between executions. In addition to the
+    arguments listed below, behavior may be modified by a file named `%s`.""" % _CONFIG_FILE
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--root",
                         action="store",
                         default=os.path.join(os.path.expanduser("~"), "build"),
@@ -746,6 +762,12 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
+    with open(_CONFIG_FILE, 'r') as config_fp:
+        config = SafeConfigParser()
+        config.readfp(config_fp)
+        skip_tests = config.get("file detection", "skip_tests").split()
+        ignore_changes = set(config.get("file detection", "ignore_changes").split())
+
     if args.output_bytes is not None:
         replace_streams(args.output_bytes,
                         "Log reached capacity (%s bytes); output disabled." % args.output_bytes)
@@ -782,7 +804,13 @@ def main():
 
         # For now just pass the whole list of changed files to wptrunner and
         # assume that it will run everything that's actually a test
-        files_changed = get_files_changed(branch_point)
+        files_changed, files_ignored = get_files_changed(branch_point, ignore_changes)
+
+        if files_ignored:
+            logger.info("Ignoring %s changed files:\n%s" % (len(files_ignored),
+                                                            "".join(" * %s\n" % item for item in files_ignored)))
+        else:
+            logger.info("Not ignoring any changed files.")
 
         if not files_changed:
             logger.info("No files changed")
@@ -804,7 +832,7 @@ def main():
 
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 
-        affected_testfiles = get_affected_testfiles(files_changed)
+        affected_testfiles = get_affected_testfiles(files_changed, skip_tests)
 
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 

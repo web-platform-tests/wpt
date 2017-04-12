@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<title>Example with file_is_test</title>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
+<script>
+onload = function() {
+  assert_true(true);
+  done();
+}
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 0,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": null,
+    "stack": null
+  },
+  "tests": [
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Example with file_is_test",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    }
+  ],
+  "type": "complete"
+}
+</script>

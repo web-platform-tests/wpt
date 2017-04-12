@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Harness Handling Uncaught Exception</title>
+</head>
+<script src="../../testharness.js"></script>
+
+<body>
+<h1>Harness Handling Uncaught Exception</h1>
+<div id="log"></div>
+<script>
+var t = async_test("This should show a harness status of 'Error' and a test status of 'Not Run'");
+throw new Error("Example Error");
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 1,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": "Error: Example Error",
+    "stack": "(implementation-defined)"
+  },
+  "tests": [
+    {
+      "status": 3,
+      "index": "(non-deterministic)",
+      "name": "This should show a harness status of 'Error' and a test status of 'Not Run'",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

@@ -43,11 +43,11 @@ runTestCycle(function() {
 function step0() {
   document.scrollingElement.scrollTop = 300;
   runTestCycle(step1, "document.scrollingElement.scrollTop = 300");
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  assert_equals(entries.length, 1, "One notification.");
 }
 
 function step1() {
   document.scrollingElement.scrollTop = 0;
-  assert_equals(entries.length, 1, "One notification.");
+  assert_equals(entries.length, 2, "Two notifications.");
 }
 </script>

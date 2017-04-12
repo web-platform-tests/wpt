@@ -57,29 +57,29 @@ runTestCycle(function() {
 function step0() {
   root.scrollTop = 150;
   runTestCycle(step1, "root.scrollTop = 150");
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  checkLastEntry(entries, 0, [11, 111, 311, 411, 0, 0, 0, 0, 11, 111, 11, 211, false]);
 }
 
 function step1() {
   root.removeChild(target);
   runTestCycle(step2, "root.removeChild(target).");
-  checkEntry(entries, 0, [11, 111, 161, 261, 11, 111, 161, 211, 11, 111, 11, 211, target]);
+  checkLastEntry(entries, 1, [11, 111, 161, 261, 11, 111, 161, 211, 11, 111, 11, 211, true]);
 }
 
 function step2() {
   root.scrollTop = 0;
   root.insertBefore(target, trailingSpace);
   runTestCycle(step3, "root.insertBefore(target, trailingSpace).");
-  checkEntry(entries, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, target]);
+  checkLastEntry(entries, 2, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false]);
 }
 
 function step3() {
   root.scrollTop = 150;
   runTestCycle(step4, "root.scrollTop = 150 after reinserting target.");
-  checkEntry(entries, 1);
+  checkLastEntry(entries, 2);
 }
 
 function step4() {
-  checkEntry(entries, 2, [11, 111, 161, 261, 11, 111, 161, 211, 11, 111, 11, 211, target]);
+  checkLastEntry(entries, 3, [11, 111, 161, 261, 11, 111, 161, 211, 11, 111, 11, 211, true]);
 }
 </script>

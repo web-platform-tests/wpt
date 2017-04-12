@@ -52,7 +52,7 @@ async_test(function(t) {
       // Callback created here, observer created in iframe.  Timestamps should be
       // from iframe window.
       observer = targetIframe.contentDocument.createObserver(function(newEntries) {
-        iframeWindowEntries = iframeWindowEntries.concat(newEntries);
+	iframeWindowEntries = iframeWindowEntries.concat(newEntries);
       });
       observer.observe(target);
       runTestCycle(step1, "First rAF after iframe is loaded.");
@@ -67,8 +67,8 @@ function step1() {
   topWindowTimeBeforeNotification = performance.now();
   iframeWindowTimeBeforeNotification = targetIframe.contentWindow.performance.now();
   runTestCycle(step2, "Generate notifications.");
-  assert_equals(topWindowEntries.length, 0, "No notifications to top window observer.");
-  assert_equals(iframeWindowEntries.length, 0, "No notifications to iframe observer.");
+  assert_equals(topWindowEntries.length, 1, "One notification to top window observer.");
+  assert_equals(iframeWindowEntries.length, 1, "One notification to iframe observer.");
 }
 
 function step2() {
@@ -79,18 +79,18 @@ function step2() {
   // Test results are only significant if there's a gap between
   // top window time and iframe window time.
   assert_greater_than(topWindowTimeBeforeNotification, iframeWindowTimeAfterNotification,
-                      "Time ranges for top and iframe windows are disjoint.");
+		      "Time ranges for top and iframe windows are disjoint.");
 
-  assert_equals(topWindowEntries.length, 1, "Top window observer has one notification.");
+  assert_equals(topWindowEntries.length, 2, "Top window observer has two notifications.");
   assert_between_inclusive(
-      topWindowEntries[0].time,
+      topWindowEntries[1].time,
       topWindowTimeBeforeNotification,
       topWindowTimeAfterNotification,
       "Notification to top window observer is within the expected range.");
 
-  assert_equals(iframeWindowEntries.length, 1, "Iframe observer has one notification.");
+  assert_equals(iframeWindowEntries.length, 2, "Iframe observer has two notifications.");
   assert_between_inclusive(
-      iframeWindowEntries[0].time,
+      iframeWindowEntries[1].time,
       iframeWindowTimeBeforeNotification,
       iframeWindowTimeAfterNotification,
       "Notification to iframe observer is within the expected range.");

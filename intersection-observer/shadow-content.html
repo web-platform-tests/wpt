@@ -39,6 +39,6 @@ runTestCycle(function() {
 }, "Observing a target inside shadow DOM.");
 
 function step0() {
-  checkEntry(entries, 0, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, target]);
+  checkLastEntry(entries, 0, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, true]);
 }
 </script>

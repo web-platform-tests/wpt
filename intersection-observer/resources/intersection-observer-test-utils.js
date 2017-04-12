@@ -16,24 +16,28 @@
 //   - IntersectionObserver callbacks run
 // - Second setTimeout handler runs
 //   - myTestFunction1()
-//     - waitForNotification(myTestFunction2)
+//     - [optional] waitForNotification(myTestFunction2)
 //       - requestAnimationFrame()
 //     - Verify newly-arrived IntersectionObserver notifications
-//     - Modify DOM to trigger new notifications
-function waitForNotification(f, description) {
+//     - [optional] Modify DOM to trigger new notifications
+function waitForNotification(f) {
   requestAnimationFrame(function() {
-    setTimeout(function() {
-      setTimeout(f);
-    });
+    setTimeout(function() { setTimeout(f); });
   });
 }
 
+// The timing of when runTestCycle is called is important.  It should be
+// called:
+//
+//   - Before or during the window load event, or
+//   - Inside of a prior runTestCycle callback, *before* any assert_* methods
+//     are called.
+//
+// Following these rules will ensure that the test suite will not abort before
+// all test steps have run.
 function runTestCycle(f, description) {
   async_test(function(t) {
-    waitForNotification(t.step_func(function() {
-      f();
-      t.done();
-    }));
+    waitForNotification(t.step_func_done(f));
   }, description);
 }
 
@@ -62,64 +66,45 @@ function rectArea(rect) {
 }
 
 function checkRect(actual, expected, description) {
-  if (expected.length > 0)
-    assert_equals(actual.left, expected[0], description + ".left == " + expected[0]);
-  if (expected.length > 1)
-    assert_equals(actual.right, expected[1], description + ".right == " + expected[1]);
-  if (expected.length > 2)
-    assert_equals(actual.top, expected[2], description + ".top == " + expected[2]);
-  if (expected.length > 3)
-    assert_equals(actual.bottom, expected[3], description + ".bottom == " + expected[3]);
+  if (!expected.length)
+    return;
+  assert_equals(actual.left, expected[0], description + '.left');
+  assert_equals(actual.right, expected[1], description + '.right');
+  assert_equals(actual.top, expected[2], description + '.top');
+  assert_equals(actual.bottom, expected[3], description + '.bottom');
 }
 
-function checkEntry(entries, i, expected) {
-  assert_equals(entries.length, i+1, String(i+1) + " notification(s).");
+function checkLastEntry(entries, i, expected) {
+  assert_equals(entries.length, i + 1, 'entries.length');
   if (expected) {
-    checkRect(entries[i].boundingClientRect, expected.slice(0, 4),
-              "entries[" + i + "].boundingClientRect");
-    checkRect(entries[i].intersectionRect, expected.slice(4, 8),
-              "entries[" + i + "].intersectionRect");
-    checkRect(entries[i].rootBounds, expected.slice(8, 12),
-              "entries[" + i + "].rootBounds");
+    checkRect(
+        entries[i].boundingClientRect, expected.slice(0, 4),
+        'entries[' + i + '].boundingClientRect');
+    checkRect(
+        entries[i].intersectionRect, expected.slice(4, 8),
+        'entries[' + i + '].intersectionRect');
+    checkRect(
+        entries[i].rootBounds, expected.slice(8, 12),
+        'entries[' + i + '].rootBounds');
+    if (expected.length > 12) {
+      assert_equals(
+          entries[i].isIntersecting, expected[12],
+          'entries[' + i + '].isIntersecting');
+    }
   }
 }
 
-function coordinatesToClientRectJson(top, right, bottom, left) {
-  return {
-    top: top,
-    right: right,
-    bottom: bottom,
-    left: left
-  };
-}
-
-function clientRectToJson(rect) {
-  if (!rect)
-    return "null";
-  return {
-    top: rect.top,
-    right: rect.right,
-    bottom: rect.bottom,
-    left: rect.left
-  };
-}
-
-function entryToJson(entry) {
-  return {
-    boundingClientRect: clientRectToJson(entry.boundingClientRect),
-    intersectionRect: clientRectToJson(entry.intersectionRect),
-    rootBounds: clientRectToJson(entry.rootBounds),
-    target: entry.target.id
-  };
-}
-
 function checkJsonEntry(actual, expected) {
-  checkRect(actual.boundingClientRect, expected.boundingClientRect, "entry.boundingClientRect");
-  checkRect(actual.intersectionRect, expected.intersectionRect, "entry.intersectionRect");
-  if (actual.rootBounds == "null")
-    assert_equals(expected.rootBounds, "null", "rootBounds is null");
+  checkRect(
+      actual.boundingClientRect, expected.boundingClientRect,
+      'entry.boundingClientRect');
+  checkRect(
+      actual.intersectionRect, expected.intersectionRect,
+      'entry.intersectionRect');
+  if (actual.rootBounds == 'null')
+    assert_equals(expected.rootBounds, 'null', 'rootBounds is null');
   else
-    checkRect(actual.rootBounds, expected.rootBounds, "entry.rootBounds");
+    checkRect(actual.rootBounds, expected.rootBounds, 'entry.rootBounds');
   assert_equals(actual.target, expected.target);
 }
 

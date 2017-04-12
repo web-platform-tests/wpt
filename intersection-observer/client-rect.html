@@ -43,6 +43,6 @@ iframe.onload = function() {
 function test0() {
   assert_equals(entries.length, 1, "One notification.");
   var bcr = target.getBoundingClientRect();
-  checkEntry(entries, 0, [bcr.left, bcr.right, bcr.top, bcr.bottom]);
+  checkLastEntry(entries, 0, [bcr.left, bcr.right, bcr.top, bcr.bottom]);
 }
 </script>

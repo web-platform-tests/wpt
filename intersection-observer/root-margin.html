@@ -54,24 +54,24 @@ runTestCycle(function() {
 function step0() {
   document.scrollingElement.scrollLeft = 100;
   runTestCycle(step1, "document.scrollingElement.scrollLeft = 100");
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  checkLastEntry(entries, 0, [1012, 1112, 708, 808, 0, 0, 0, 0, -30, 942, -10, 819, false]);
 }
 
 function step1() {
   document.scrollingElement.scrollTop = 800;
   runTestCycle(step2, "document.scrollingElement.scrollTop = 800");
-  checkEntry(entries, 0, [912, 1012, 708, 808, 912, 942, 708, 808, -30, 942, -10, 819, target]);
+  checkLastEntry(entries, 1, [912, 1012, 708, 808, 912, 942, 708, 808, -30, 942, -10, 819, true]);
 }
 
 function step2() {
   document.scrollingElement.scrollTop = 900;
   runTestCycle(step3, "document.scrollingElement.scrollTop = 900");
-  checkEntry(entries, 0);
+  checkLastEntry(entries, 1);
 }
 
 function step3() {
   document.scrollingElement.scrollLeft = 0;
   document.scrollingElement.scrollTop = 0;
-  checkEntry(entries, 1, [912, 1012, -192, -92, 0, 0, 0, 0, -30, 942, -10, 819, target]);
+  checkLastEntry(entries, 2, [912, 1012, -192, -92, 0, 0, 0, 0, -30, 942, -10, 819, false]);
 }
 </script>

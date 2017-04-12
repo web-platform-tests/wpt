@@ -41,30 +41,30 @@ iframe.onload = function() {
     observer.observe(target);
     entries = entries.concat(observer.takeRecords());
     assert_equals(entries.length, 0, "No initial notifications.");
-    runTestCycle(step0, "No notifications after first rAF.");
+    runTestCycle(step0, "First rAF.");
   }, "Observer with the implicit root; target in a same-origin iframe.");
 };
 
 function step0() {
   document.scrollingElement.scrollTop = 200;
   runTestCycle(step1, "document.scrollingElement.scrollTop = 200");
-  assert_equals(entries.length, 0, "entries.length == 0");
+  checkLastEntry(entries, 0, [8, 108, 208, 308, 0, 0, 0, 0, 0, 785, 0, 600, false]);
 }
 
 function step1() {
   iframe.contentDocument.scrollingElement.scrollTop = 250;
   runTestCycle(step2, "iframe.contentDocument.scrollingElement.scrollTop = 250");
-  assert_equals(entries.length, 0, "entries.length == 0");
+  assert_equals(entries.length, 1, "entries.length == 1");
 }
 
 function step2() {
   document.scrollingElement.scrollTop = 100;
   runTestCycle(step3, "document.scrollingElement.scrollTop = 100");
-  checkEntry(entries, 0, [8, 108, -42, 58, 8, 108, 0, 58, 0, 785, 0, 600, target]);
+  checkLastEntry(entries, 1, [8, 108, -42, 58, 8, 108, 0, 58, 0, 785, 0, 600, true]);
 }
 
 function step3() {
-  checkEntry(entries, 1, [8, 108, -42, 58, 0, 0, 0, 0, 0, 785, 0, 600, target]);
+  checkLastEntry(entries, 2, [8, 108, -42, 58, 0, 0, 0, 0, 0, 785, 0, 600, false]);
   document.scrollingElement.scrollTop = 0;
 }
 </script>

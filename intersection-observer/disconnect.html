@@ -25,6 +25,7 @@ pre, #log {
 
 <script>
 var entries = [];
+var observer;
 var target;
 
 runTestCycle(function() {
@@ -33,29 +34,23 @@ runTestCycle(function() {
 
   target = document.getElementById("target");
   assert_true(!!target, "target exists");
-  var observer = new IntersectionObserver(function(changes) {
+  observer = new IntersectionObserver(function(changes) {
     entries = entries.concat(changes)
   });
   observer.observe(target);
   entries = entries.concat(observer.takeRecords());
   assert_equals(entries.length, 0, "No initial notifications.");
   runTestCycle(step0, "First rAF.");
-}, "IntersectionObserver in a single document using the implicit root.");
+}, "IntersectionObserver should not deliver pending notifications after disconnect().");
 
 function step0() {
+  runTestCycle(step1, "observer.disconnect()");
   document.scrollingElement.scrollTop = 300;
-  runTestCycle(step1, "document.scrollingElement.scrollTop = 300");
-  checkLastEntry(entries, 0, [8, 108, 708, 808, 0, 0, 0, 0, 0, 785, 0, 600, false]);
+  observer.disconnect();
+  assert_equals(entries.length, 1, "Initial notification.");
 }
 
 function step1() {
-  document.scrollingElement.scrollTop = 100;
-  runTestCycle(step2, "document.scrollingElement.scrollTop = 100");
-  checkLastEntry(entries, 1, [8, 108, 408, 508, 8, 108, 408, 508, 0, 785, 0, 600, true]);
-}
-
-function step2() {
-  document.scrollingElement.scrollTop = 0;
-  checkLastEntry(entries, 2, [8, 108, 608, 708, 0, 0, 0, 0, 0, 785, 0, 600, false]);
+  assert_equals(entries.length, 1, "No new notifications.");
 }
 </script>

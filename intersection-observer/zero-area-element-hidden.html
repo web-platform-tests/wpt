@@ -34,10 +34,10 @@ runTestCycle(function() {
   observer.observe(target);
   entries = entries.concat(observer.takeRecords());
   assert_equals(entries.length, 0, "No initial notifications.");
-  runTestCycle(step0, "First rAF should not generate a notification.");
-}, "No intersecting observations should be sent for a zero-area hidden target.");
+  runTestCycle(step0, "First rAF.");
+}, "A zero-area hidden target should not be intersecting.");
 
 function step0() {
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  checkLastEntry(entries, 0, [8, 8, -1000, -1000, 0, 0, 0, 0, 0, 800, 0, 600, false]);
 }
 </script>

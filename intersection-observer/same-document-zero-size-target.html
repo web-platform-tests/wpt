@@ -45,17 +45,17 @@ runTestCycle(function() {
 function step0() {
   document.scrollingElement.scrollTop = 300;
   runTestCycle(step1, "document.scrollingElement.scrollTop = 300");
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  checkLastEntry(entries, 0, [8, 8, 708, 708, 0, 0, 0, 0, 0, 785, 0, 600, false]);
 }
 
 function step1() {
   document.scrollingElement.scrollTop = 100;
   runTestCycle(step2, "document.scrollingElement.scrollTop = 100");
-  checkEntry(entries, 0, [8, 8, 408, 408, 8, 8, 408, 408, 0, 785, 0, 600, target]);
+  checkLastEntry(entries, 1, [8, 8, 408, 408, 8, 8, 408, 408, 0, 785, 0, 600, true]);
 }
 
 function step2() {
   document.scrollingElement.scrollTop = 0;
-  checkEntry(entries, 1, [8, 8, 608, 608, 0, 0, 0, 0, 0, 785, 0, 600, target]);
+  checkLastEntry(entries, 2, [8, 8, 608, 608, 0, 0, 0, 0, 0, 785, 0, 600, false]);
 }
 </script>

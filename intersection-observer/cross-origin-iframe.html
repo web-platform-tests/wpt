@@ -34,7 +34,7 @@ async_test(function(t) {
     if (event.data.hasOwnProperty('scrollTo')) {
       document.scrollingElement.scrollTop = event.data.scrollTo;
       waitForNotification(function() { iframe.contentWindow.postMessage("", "*"); },
-                          "document.scrollingElement.scrollTop = " + event.data.scrollTo);
+			  "document.scrollingElement.scrollTop = " + event.data.scrollTo);
     } else if (event.data.hasOwnProperty('actual')) {
       checkJsonEntries(event.data.actual, event.data.expected, event.data.description);
     } else if (event.data.hasOwnProperty('DONE')) {
@@ -46,10 +46,10 @@ async_test(function(t) {
     }
   }
 
-  window.addEventListener("message", handleMessage);
+  window.addEventListener("message", t.step_func(handleMessage));
 
-  iframe.onload = function() {
+  iframe.onload = t.step_func(function() {
     waitForNotification(function() { iframe.contentWindow.postMessage("", "*") }, "setup");
-  };
+  });
 }, "Intersection observer test with no explicit root and target in a cross-origin iframe.");
 </script>

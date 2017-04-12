@@ -56,10 +56,10 @@ runTestCycle(function() {
 function step1() {
   scroller.scrollTop = 250;
   runTestCycle(step2, "scroller.scrollTop = 250");
-  assert_equals(entries.length, 0, "No notifications after first rAF.");
+  checkLastEntry(entries, 0, [8, 108, 308, 408, 0, 0, 0, 0, 8, 208, 8, 208, false]);
 }
 
 function step2() {
-  checkEntry(entries, 0, [8, 108, 58, 158, 8, 108, 58, 158, 8, 208, 8, 208, target]);
+  checkLastEntry(entries, 1, [8, 108, 58, 158, 8, 108, 58, 158, 8, 208, 8, 208, true]);
 }
 </script>

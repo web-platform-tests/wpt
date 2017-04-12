@@ -38,17 +38,17 @@ runTestCycle(function() {
 
 function step0() {
   runTestCycle(step1, "Not-intersecting notification after setting display:none on target.");
-  checkEntry(entries, 0, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, target]);
+  checkLastEntry(entries, 0, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, true]);
   target.style.display = "none";
 }
 
 function step1() {
   runTestCycle(step2, "Intersecting notification after removing display:none on target.");
-  checkEntry(entries, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, target]);
+  checkLastEntry(entries, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false]);
   target.style.display = "";
 }
 
 function step2() {
-  checkEntry(entries, 2, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, target]);
+  checkLastEntry(entries, 2, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, true]);
 }
 </script>

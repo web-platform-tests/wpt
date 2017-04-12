@@ -47,34 +47,37 @@ runTestCycle(function() {
   observer.observe(target3);
   entries = entries.concat(observer.takeRecords());
   assert_equals(entries.length, 0, "No initial notifications.");
-  runTestCycle(step0, "No notifications after first rAF.");
+  runTestCycle(step0, "First rAF.");
 }, "One observer with multiple targets.");
 
 function step0() {
   document.scrollingElement.scrollTop = 150;
   runTestCycle(step1, "document.scrollingElement.scrollTop = 150");
-  assert_equals(entries.length, 0, "No notifications.");
+  assert_equals(entries.length, 3, "Three initial notifications.");
+  assert_equals(entries[0].target, target1, "entries[0].target === target1");
+  assert_equals(entries[1].target, target2, "entries[1].target === target2");
+  assert_equals(entries[2].target, target3, "entries[2].target === target3");
 }
 
 function step1() {
   document.scrollingElement.scrollTop = 10000;
   runTestCycle(step2, "document.scrollingElement.scrollTop = 10000");
-  assert_equals(entries.length, 1, "One notification.");
-  assert_equals(entries[0].target, target1, "entries[0].target === target1");
+  assert_equals(entries.length, 4, "Four notifications.");
+  assert_equals(entries[3].target, target1, "entries[3].target === target1");
 }
 
 function step2() {
   document.scrollingElement.scrollTop = 0;
   runTestCycle(step3, "document.scrollingElement.scrollTop = 0");
-  assert_equals(entries.length, 3, "Three notifications.");
-  assert_equals(entries[1].target, target2, "entries[1].target === target2");
-  assert_equals(entries[2].target, target3, "entries[2].target === target3");
+  assert_equals(entries.length, 6, "Six notifications.");
+  assert_equals(entries[4].target, target2, "entries[4].target === target2");
+  assert_equals(entries[5].target, target3, "entries[5].target === target3");
 }
 
 function step3() {
-  assert_equals(entries.length, 6, "Six notifications.");
-  assert_equals(entries[3].target, target1, "entries[3].target === target1");
-  assert_equals(entries[4].target, target2, "entries[4].target === target2");
-  assert_equals(entries[5].target, target3, "entries[5].target === target3");
+  assert_equals(entries.length, 9, "Nine notifications.");
+  assert_equals(entries[6].target, target1, "entries[6].target === target1");
+  assert_equals(entries[7].target, target2, "entries[7].target === target2");
+  assert_equals(entries[8].target, target3, "entries[8].target === target3");
 }
 </script>

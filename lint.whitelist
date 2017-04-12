@@ -145,6 +145,7 @@ TRAILING WHITESPACE:webgl/tools/*.patch
 SET TIMEOUT: *-manual.*
 SET TIMEOUT: 2dcontext/*
 SET TIMEOUT: annotation-model/scripts/ajv.min.js
+SET TIMEOUT: apng/animated-png-timeout.html
 SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Sample HTML5 API Tests</title>
+</head>
+<body onload="load_test_attr.done()">
+<h1>Sample HTML5 API Tests</h1>
+<p>There should be two results</p>
+<div id="log"></div>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
+<script>
+setup({explicit_done:true})
+test(function() {assert_true(true)}, "Test defined before onload");
+
+onload = function() {test(function (){assert_true(true)}, "Test defined after onload");
+done();
+}
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 0,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": null,
+    "stack": null
+  },
+  "tests": [
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Test defined after onload",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Test defined before onload",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

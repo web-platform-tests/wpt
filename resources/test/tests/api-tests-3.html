@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Sample HTML5 API Tests</title>
+</head>
+<script src="../../testharness.js"></script>
+
+<body onload="load_test_attr.done()">
+<h1>Sample HTML5 API Tests</h1>
+<div id="log"></div>
+<script>
+setup({explicit_timeout:true});
+var t = async_test("This test should give a status of 'Not Run' without a delay");
+timeout();
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 2,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": null,
+    "stack": null
+  },
+  "tests": [
+    {
+      "status": 3,
+      "index": "(non-deterministic)",
+      "name": "This test should give a status of 'Not Run' without a delay",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>

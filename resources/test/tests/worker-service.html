@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Example with a service worker</title>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
+</head>
+<body>
+<h1>Service Worker Tests</h1>
+<p>Demonstrates running <tt>testharness</tt> based tests inside a service worker.
+<p>The test harness should time out due to one of the tests inside the worker timing out.
+<p>This test assumes that the browser supports <a href="http://www.w3.org/TR/service-workers/">ServiceWorkers</a>.
+<div id="log"></div>
+
+<script>
+test(
+    function(t) {
+        assert_true("serviceWorker" in navigator,
+                    "navigator.serviceWorker exists");
+    },
+    "Browser supports ServiceWorker");
+
+promise_test(
+    function() {
+        // Since the service worker registration could be in an indeterminate
+        // state (due to, for example, a previous test run failing), we start by
+        // unregstering our service worker and then registering it again.
+        var scope = "service-worker-scope";
+        var worker_url = "worker.js";
+
+        return navigator.serviceWorker.register(worker_url, {scope: scope})
+            .then(
+                function(registration) {
+                    return registration.unregister();
+                })
+            .then(
+                function() {
+                    return navigator.serviceWorker.register(worker_url, {scope: scope});
+                })
+            .then(
+                function(registration) {
+                    add_completion_callback(
+                        function() {
+                            registration.unregister();
+                        });
+
+                    return new Promise(
+                        function(resolve) {
+                            registration.addEventListener("updatefound",
+                                function() {
+                                    resolve(registration.installing);
+                                });
+                        });
+                })
+            .then(
+                function(worker) {
+                    fetch_tests_from_worker(worker);
+                });
+    },
+    "Register ServiceWorker");
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 2,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": null,
+    "stack": null
+  },
+  "tests": [
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Browser supports ServiceWorker",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Register ServiceWorker",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker async_test that completes successfully",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that completes successfully",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 3,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that doesn't run ('NOT RUN')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 1,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that fails ('FAIL')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": "assert_true: Failing test expected true got false",
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 2,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that times out ('TIMEOUT')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": "Test timed out",
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>

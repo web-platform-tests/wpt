@@ -2,8 +2,8 @@
 <html>
 <head>
 <title>Example with iframe that notifies containing document via callbacks</title>
-<script src="../testharness.js"></script>
-<script src="../testharnessreport.js"></script>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
 </head>
 <body onload="start_test_in_iframe()">
 <h1>Callbacks From Tests Running In An IFRAME</h1>
@@ -87,8 +87,8 @@ function start_test_in_iframe() {
     // completion_callback() will then complete the testing on this document.
     callbacks.length = 0;
     var iframe = document.createElement("iframe");
-    // apisample6.html has a single test.
-    iframe.src = "apisample6.html";
+    // single-page-test-pass.html has a single test.
+    iframe.src = "single-page-test-pass.html";
     iframe.style.setProperty("display", "none");
     document.getElementById("target").appendChild(iframe);
 }
@@ -96,4 +96,31 @@ function start_test_in_iframe() {
 
 <div id="target">
 </div>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 0,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": null,
+    "stack": null
+  },
+  "tests": [
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Example with iframe that notifies containing document via callbacks",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
 </body>

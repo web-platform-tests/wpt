@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Dedicated Worker Tests</title>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
+</head>
+<body>
+<h1>Dedicated Web Worker Tests</h1>
+<p>Demonstrates running <tt>testharness</tt> based tests inside a dedicated web worker.
+<p>The test harness is expected to fail due to an uncaught exception in one worker.</p>
+<div id="log"></div>
+
+<script>
+test(function(t) {
+        assert_true("Worker" in self, "Browser should support Workers");
+    },
+    "Browser supports Workers");
+
+fetch_tests_from_worker(new Worker("worker.js"));
+
+fetch_tests_from_worker(new Worker("worker-error.js"));
+
+test(function(t) {
+        assert_false(false, "False is false");
+    },
+    "Test running on main document.");
+</script>
+<script type="text/json" id="expected">
+{
+  "status": {
+    "status": 1,
+    "OK": 0,
+    "TIMEOUT": 2,
+    "ERROR": 1,
+    "message": "Error: This failure is expected.",
+    "stack": "(implementation-defined)"
+  },
+  "tests": [
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Browser supports Workers",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "name": "Test running on main document.",
+      "properties": {},
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "FAIL": 1,
+      "message": null,
+      "NOTRUN": 3,
+      "stack": null
+    },
+    {
+      "status": 1,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Untitled",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": "Error: This failure is expected.",
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker async_test that completes successfully",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 0,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that completes successfully",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 3,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that doesn't run ('NOT RUN')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": {},
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 1,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that fails ('FAIL')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": "assert_true: Failing test expected true got false",
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status": 2,
+      "index": "(non-deterministic)",
+      "phases": {
+        "STARTED": 1,
+        "INITIAL": 0,
+        "COMPLETE": 3,
+        "HAS_RESULT": 2
+      },
+      "name": "Worker test that times out ('TIMEOUT')",
+      "properties": {},
+      "FAIL": 1,
+      "TIMEOUT": 2,
+      "PASS": 0,
+      "phase": 3,
+      "message": "Test timed out",
+      "NOTRUN": 3,
+      "stack": "(implementation-defined)"
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>

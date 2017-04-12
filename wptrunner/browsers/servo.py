@@ -68,8 +68,7 @@ class ServoBrowser(NullBrowser):
         self.debug_info = debug_info
         self.binary_args = binary_args or []
         self.user_stylesheets = user_stylesheets or []
-        if ca_certificate_path is not None:
-            self.binary_args += ['--certificate-path', ca_certificate_path]
+        self.ca_certificate_path = ca_certificate_path
 
     def executor_browser(self):
         return ExecutorBrowser, {
@@ -77,4 +76,5 @@ class ServoBrowser(NullBrowser):
             "debug_info": self.debug_info,
             "binary_args": self.binary_args,
             "user_stylesheets": self.user_stylesheets,
+            "ca_certificate_path": self.ca_certificate_path,
         }

@@ -1,0 +1,13 @@
+﻿.test div.ýäè {
+	width: 100px;
+	}
+
+/* for debugging line */
+p.ýäè { color: white; }
+span#debug:after { content: 'ýäè'; }
+	
+/* the second selector uses the following sequence of bytes 0xC3 0xBD 0xC3 0xA4 0xC3 0xA8, which is read as different characters by the application, depending on the encoding used, ie.
+	iso 8859-1: Atilde, half, Atilde, box, Atilde, diaeresis
+	iso 8859-15: Atilde, oe, Atilde, euro, Atilde, shacek
+	utf-8: yacute, adiaeresis, egrave
+	*/

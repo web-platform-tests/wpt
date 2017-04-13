@@ -9,10 +9,8 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript">
-  // tests that onaddstream is called and parses the msid information from the SDP and creates
+  // tests that ontrack is called and parses the msid information from the SDP and creates
   // the streams and tracks with matching identifiers.
-  // TODO: onaddstream is no longer part of the spec but is more widely implemented than ontrack
-  //       as of Feb. 2017. This test should be deprecated once ontrack is more widely implemented.
   async_test(function(test) {
     const sdp = 'v=0\r\n' +
         'o=- 166855176514521964 2 IN IP4 127.0.0.1\r\n' +
@@ -35,13 +33,12 @@
 
     var pc = new RTCPeerConnection(null);
 
-    pc.onaddstream = test.step_func(function(event) {
-      assert_equals(event.stream.getTracks().length, 1, 'the stream contains one track');
-      assert_equals(event.stream.getAudioTracks().length, 1, 'the stream contains one audio track');
-      assert_equals(event.stream.getVideoTracks().length, 0, 'the stream contains no video tracks');
+    pc.ontrack = test.step_func(function(event) {
+      assert_equals(event.track.kind, 'audio', 'ontrack fires with an audio track');
+      assert_equals(event.track.id, 'track1', 'the track name is parsed from the MSID line');
 
-      assert_equals(event.stream.id, 'stream1', 'the stream name is parsed from the MSID line');
-      assert_equals(event.stream.getTracks()[0].id, 'track1', 'the track name is parsed from the MSID line');
+      assert_equals(event.streams.length, 1, 'the track belongs to one MediaStream');
+      assert_equals(event.streams[0].id, 'stream1', 'the stream name is parsed from the MSID line');
       test.done();
     });
 
@@ -49,7 +46,7 @@
     .catch(test.step_func(function(e) {
       assert_unreached('Error ' + e.name + ': ' + e.message);
     }));
-  }, 'Triggers onaddstream when called with a remote description and the MSID is parsed.');
+  }, 'Triggers ontrack when called with a remote description and the MSID is parsed.');
 </script>
 
 </body>

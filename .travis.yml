@@ -48,6 +48,14 @@ matrix:
       env:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
         - SCRIPT=ci_stability.sh PRODUCT=chrome:unstable
+    - python: 2.7
+      env: TOXENV=py27 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
+    - python: 3.5
+      env: TOXENV=py35 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
+    - python: 3.6
+      env: TOXENV=py36 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
+    - python: pypy
+      env: TOXENV=pypy HYPOTHESIS_PROFILE=ci_pypy SCRIPT=ci_unittest.sh
   exclude:
     - env:  # exclude empty env from the top-level above
   allow_failures:

@@ -14,31 +14,22 @@
 var t = async_test('User allows access, check that success callback is called or error callback is called with correct code.'),
     onSuccess, onError, hasMethodReturned = false;
 
-onSuccess = t.step_func(function(pos) {
+onSuccess = t.step_func_done(function(pos) {
   // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00031
-  test(function() {
-    assert_true(hasMethodReturned);
-  }, 'Check that getCurrentPosition returns synchronously before any callbacks are invoked.');
-
-  done();
+  assert_true(hasMethodReturned);
 });
 
-onError = t.step_func(function(err) {
+onError = t.step_func_done(function(err) {
   // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00031
-  test(function() {
-    assert_true(hasMethodReturned);
-  }, 'Check that getCurrentPosition returns synchronously before any callbacks are invoked.');
-
-  assert_true(!isUsingPreemptivePermission && err.code === err.POSITION_UNAVAILABLE);
-  done();
+  assert_true(hasMethodReturned);
+  assert_false(isUsingPreemptivePermission);
+  assert_equals(err.code, err.POSITION_UNAVAILABLE, errorToString(err));
 });
 
 try {
   geo.getCurrentPosition(onSuccess, onError);
   hasMethodReturned = true;
 } catch(e) {
-  t.step(function() {
-    assert_unreached('An exception was thrown unexpectedly: ' + e.message);
-  });
+  t.unreached_func('An exception was thrown unexpectedly: ' + e.message);
 }
 </script>

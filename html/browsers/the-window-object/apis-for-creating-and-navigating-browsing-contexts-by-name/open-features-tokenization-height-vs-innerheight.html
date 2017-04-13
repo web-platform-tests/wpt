@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML: window.open `features`: tokenization -- size features `height` vs `innerheight`</title>
+<meta name=timeout content=long>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
+
+<!-- user agents are not required to support open features other than `noopener`
+     and on some platforms position and size features don't make sense -->
+<meta name="flags" content="may" />
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/PrefixedPostMessage.js"></script>
+<script>
+var windowURL = 'resources/message-opener.html';
+var featuresPrefix = `top=0,left=0,width=401,`;
+
+setup (() => {
+  // Before running tests, open a window using features that mimic
+  // what would happen if the feature tested here were set to 0
+  // for comparison later.
+  var featureString = `${featuresPrefix}height=0`;
+  var prefixedMessage = new PrefixedMessageTest();
+  prefixedMessage.onMessage((data, e) => {
+    e.source.close();
+    runWindowTests(data);
+  });
+  var win = window.open(prefixedMessage.url(windowURL), '', featureString);
+});
+
+function runWindowTests (baselineDimensions) {
+
+  // The last specified feature is used
+  [ 'height=401,height=402',
+    'height=401,innerheight=402',
+    'innerheight=401,height=402',
+    'innerheight=401,innerheight=402',
+  ].forEach((features, idx, arr) => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.height, 402);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featuresPrefix + features);
+    }, `${format_value(features)} repeated height/innerheight features`);
+  });
+
+  // The last specified feature is used even if the value is 0 or error
+  [ 'height=401,height=0',
+    'height=401,innerheight=0',
+    'innerheight=401,height=0',
+    'innerheight=401,innerheight=0',
+    'height=401,height=error',
+    'height=401,innerheight=error',
+    'innerheight=401,height=error',
+    'innerheight=401,innerheight=error',
+  ].forEach((features, idx, arr) => {
+    async_test(t => {
+      var prefixedMessage = new PrefixedMessageTest();
+      prefixedMessage.onMessage(t.step_func_done((data, e) => {
+        e.source.close();
+        assert_equals(data.height, baselineDimensions.height);
+      }));
+      var win = window.open(prefixedMessage.url(windowURL), '', featuresPrefix + features);
+    }, `${format_value(features)} repeated height/innerheight features where the last one is 0 or error`);
+  });
+}
+
+</script>

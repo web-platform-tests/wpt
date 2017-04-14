@@ -9,12 +9,12 @@ if (self.importScripts) {
 
 // Courtesy of André Bargull. Source is https://esdiscuss.org/topic/isconstructor#content-11.
 function IsConstructor(o) {
-   try {
-     new (new Proxy(o, {construct: () => ({})}));
-     return true;
-   } catch(e) {
-     return false;
-   }
+  try {
+    new new Proxy(o, { construct: () => ({}) })();
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 for (const func of ['WritableStreamDefaultController', 'WritableStreamDefaultWriter']) {
@@ -38,7 +38,7 @@ self.WritableStreamDefaultWriter = new WritableStream().getWriter().constructor;
 const expected = {
   WritableStream: {
     constructor: {
-      type: 'method',
+      type: 'constructor',
       length: 0
     },
     locked: {
@@ -55,7 +55,7 @@ const expected = {
   },
   WritableStreamDefaultController: {
     constructor: {
-      type: 'method',
+      type: 'constructor',
       length: 4
     },
     error: {
@@ -65,7 +65,7 @@ const expected = {
   },
   WritableStreamDefaultWriter: {
     constructor: {
-      type: 'method',
+      type: 'constructor',
       length: 1
     },
     closed: {
@@ -118,14 +118,19 @@ for (const c in expected) {
         }, `${fullName} should be a getter`);
         break;
 
+      case 'constructor':
       case 'method':
         test(() => {
           assert_true(descriptor.writable, `${name} should be writable`);
           assert_equals(typeof prototype[name], 'function', `${name} should be a function`);
           assert_equals(prototype[name].length, properties[name].length,
                         `${name} should take ${properties[name].length} arguments`);
-          assert_false(IsConstructor(prototype[name], `${name} should not be a constructor`);
-        }, `${fullName} should be a method`);
+          if (type === 'constructor') {
+            assert_true(IsConstructor(prototype[name]), `${name} should be a constructor`);
+          } else {
+            assert_false(IsConstructor(prototype[name]), `${name} should not be a constructor`);
+          }
+        }, `${fullName} should be a ${type}`);
         break;
     }
   }

@@ -311,11 +311,11 @@ promise_test(t => {
   return writer.ready.then(() => {
     const writePromise = writer.write('a');
     writer.abort(error1);
-    let closedResolved = false;
+    let closedRejected = false;
     return Promise.all([
-      writePromise.then(() => assert_false(closedResolved, '.closed should not resolve before write()')),
+      writePromise.then(() => assert_false(closedRejected, '.closed should not resolve before write()')),
       promise_rejects(t, new TypeError(), writer.closed, '.closed should reject').then(() => {
-        closedResolved = true;
+        closedRejected = true;
       })
     ]);
   });
@@ -331,13 +331,13 @@ promise_test(t => {
   return writer.ready.then(() => {
     const writePromise = writer.write('a');
     const abortPromise = writer.abort(error2);
-    let closedResolved = false;
+    let closedRejected = false;
     return Promise.all([
       promise_rejects(t, error1, writePromise, 'write() should reject')
-          .then(() => assert_false(closedResolved, '.closed should not resolve before write()')),
+          .then(() => assert_false(closedRejected, '.closed should not resolve before write()')),
       promise_rejects(t, new TypeError(), writer.closed, '.closed should reject')
           .then(() => {
-            closedResolved = true;
+            closedRejected = true;
           }),
       abortPromise
     ]);
@@ -380,7 +380,7 @@ promise_test(t => {
           .then(() => settlementOrder.push(2)),
       promise_rejects(t, new TypeError(), writer.write('3'), 'second queued write should be rejected')
           .then(() => settlementOrder.push(3)),
-      writer.abort(error1)
+      writer.abort(error2)
     ]).then(() => assert_array_equals([1, 2, 3], settlementOrder, 'writes should be satisfied in order'));
   });
 }, 'writes should be satisfied in order after rejected write when aborting');
@@ -611,7 +611,7 @@ promise_test(t => {
     ]);
   }).then(() => {
     assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
-                        'writePromise, abortPromise and writer.closed must fulfill');
+                        'writePromise, abortPromise and writer.closed must settle');
 
     const writePromise3 = writer.write('a');
 
@@ -707,7 +707,7 @@ promise_test(t => {
     ]);
   }).then(() => {
     assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
-                        'writePromise, abortPromise and writer.closed must reject');
+                        'writePromise, abortPromise and writer.closed must settle');
 
     const writePromise4 = writer.write('a');
 

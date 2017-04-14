@@ -1621,19 +1621,22 @@ interface DocumentAndElementEventHandlers {
 
 [NoInterfaceObject]
 interface WindowEventHandlers {
-           attribute EventHandler onafterprint;
-           attribute EventHandler onbeforeprint;
-           attribute OnBeforeUnloadEventHandler onbeforeunload;
-           attribute EventHandler onhashchange;
-           attribute EventHandler onlanguagechange;
-           attribute EventHandler onmessage;
-           attribute EventHandler onoffline;
-           attribute EventHandler ononline;
-           attribute EventHandler onpagehide;
-           attribute EventHandler onpageshow;
-           attribute EventHandler onpopstate;
-           attribute EventHandler onstorage;
-           attribute EventHandler onunload;
+  attribute EventHandler onafterprint;
+  attribute EventHandler onbeforeprint;
+  attribute OnBeforeUnloadEventHandler onbeforeunload;
+  attribute EventHandler onhashchange;
+  attribute EventHandler onlanguagechange;
+  attribute EventHandler onmessage;
+  attribute EventHandler onmessageerror;
+  attribute EventHandler onoffline;
+  attribute EventHandler ononline;
+  attribute EventHandler onpagehide;
+  attribute EventHandler onpageshow;
+  attribute EventHandler onpopstate;
+  attribute EventHandler onrejectionhandled;
+  attribute EventHandler onstorage;
+  attribute EventHandler onunhandledrejection;
+  attribute EventHandler onunload;
 };
 
 typedef (DOMString or Function) TimerHandler;
@@ -1871,23 +1874,24 @@ interface MessageChannel {
   readonly attribute MessagePort port2;
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker), Transferable]
 interface MessagePort : EventTarget {
-  void postMessage(any message, optional sequence<Transferable> transfer);
+  void postMessage(any message, optional sequence<object> transfer = []);
   void start();
   void close();
 
   // event handlers
-           attribute EventHandler onmessage;
+  attribute EventHandler onmessage;
+  attribute EventHandler onmessageerror;
 };
-// MessagePort implements Transferable;
 
-[Constructor(DOMString channel), Exposed=(Window,Worker)]
+[Constructor(DOMString name), Exposed=(Window,Worker)]
 interface BroadcastChannel : EventTarget {
   readonly attribute DOMString name;
   void postMessage(any message);
   void close();
-           attribute EventHandler onmessage;
+  attribute EventHandler onmessage;
+  attribute EventHandler onmessageerror;
 };
 
 [Exposed=Worker]
@@ -1906,9 +1910,13 @@ interface WorkerGlobalScope : EventTarget {
 };
 
 [Global=(Worker,DedicatedWorker),Exposed=DedicatedWorker]
-/*sealed*/ interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
-  void postMessage(any message, optional sequence<Transferable> transfer);
-           attribute EventHandler onmessage;
+interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
+  void postMessage(any message, optional sequence<object> transfer = []);
+
+  void close();
+
+  attribute EventHandler onmessage;
+  attribute EventHandler onmessageerror;
 };
 
 [Global=(Worker,SharedWorker),Exposed=SharedWorker]

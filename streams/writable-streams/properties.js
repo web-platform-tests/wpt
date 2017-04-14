@@ -6,7 +6,16 @@ if (self.importScripts) {
 
 // The purpose of this file is to test for objects, attributes and arguments that should not exist.
 // The test cases are generated from data tables to reduce duplication.
-// TODO(ricea): This file can be deleted when automatic IDL checking has advanced to cover these.
+
+// Courtesy of André Bargull. Source is https://esdiscuss.org/topic/isconstructor#content-11.
+function IsConstructor(o) {
+   try {
+     new (new Proxy(o, {construct: () => ({})}));
+     return true;
+   } catch(e) {
+     return false;
+   }
+}
 
 for (const func of ['WritableStreamDefaultController', 'WritableStreamDefaultWriter']) {
   test(() => {
@@ -115,6 +124,7 @@ for (const c in expected) {
           assert_equals(typeof prototype[name], 'function', `${name} should be a function`);
           assert_equals(prototype[name].length, properties[name].length,
                         `${name} should take ${properties[name].length} arguments`);
+          assert_false(IsConstructor(prototype[name], `${name} should not be a constructor`);
         }, `${fullName} should be a method`);
         break;
     }
@@ -124,7 +134,7 @@ for (const c in expected) {
     const actualPropertyNames = Object.getOwnPropertyNames(prototype).sort();
     assert_array_equals(actualPropertyNames, expectedPropertyNames,
                         `${c} properties should match expected properties`);
-  }, `${c}.prototype should have no unexpected properties`);
+  }, `${c}.prototype should have exactly the expected properties`);
 }
 
 const sinkMethods = {
@@ -175,7 +185,7 @@ for (const method in sinkMethods) {
     return Promise.resolve(trigger(ws.getWriter())).then(() => {
       assert_true(methodWasCalled, `${method} should be called`);
     });
-  }, `sink method ${method} should be found via prototype chain`);
+  }, `sink method ${method} should be called even when it's located on the prototype chain`);
 
   if (method !== 'start') {
     promise_test(t => {

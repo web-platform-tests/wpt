@@ -38,13 +38,13 @@
 a&lrm;b
 #errors
 #document-fragment
-| "a‎b"
+| "a\u200Eb"
 
 #data
 a&rlm;b
 #errors
 #document-fragment
-| "a‏b"
+| "a\u200Fb"
 
 #data
 &quot;
@@ -56,7 +56,7 @@ a&rlm;b
 &nbsp;
 #errors
 #document-fragment
-| " "
+| "\u00A0"
 
 #data
 &copy;

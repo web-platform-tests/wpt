@@ -1980,6 +1980,7 @@ policies and contribution forms [3].
             }
         } else if (is_shared_worker(worker)) {
             message_port = worker.port;
+            message_port.start();
         } else {
             message_port = worker;
         }

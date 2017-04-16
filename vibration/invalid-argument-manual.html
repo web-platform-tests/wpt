@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<title>Vibration API: test vibrate() method with an invalid argument</title>
+<link rel="author" title="Intel" href="www.intel.com"/>
+<link rel="help" href="http://www.w3.org/TR/vibration/#vibration-interface"/>
+<meta name="flags" content='interact'/>
+<meta name="assert" content="The device should not vibrate if the vibrate method with an invalid value."/>
+<h1>Description</h1>
+<p>
+After hitting the button below, your device must vibrate one time for one second only.
+</p>
+<button id='vib'>Vibrate!</button>
+<script src='/common/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["navigator"], "name":"vibrate"}]'></script>
+<script>
+
+if (undefined !== navigator.vibrate) {
+  document.getElementById("vib").onclick = function () {
+    var args = [
+                // invalid values
+                NaN, null, undefined, "one", {}, -1000, 1000.2, Infinity, -Infinity, 
+                [-1000, 1000, 1000], [5000, 1000, -1000],
+                false, true,
+                // normal value
+                1000
+               ];
+    for (var i = 0; i < args.length; i++) {
+      try {
+        navigator.vibrate(args[i]);
+      } catch (e) {
+        // do nothing
+      }
+    }             
+  };
+}
+
+</script>

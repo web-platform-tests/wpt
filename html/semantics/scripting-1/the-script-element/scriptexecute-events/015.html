@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <title>no onbeforescriptexecute IDL attribute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    var t = async_test();
+
+    script_ran = false;
+    script = document.createElement("script");
+    script.onbeforescriptexecute = t.step_func(function(){assert_unreached()});
+    script.textContent = "script_ran = true"
+    document.body.appendChild(script);
+ </script>
+ <script>
+t.step(function(){assert_true(script_ran)});
+t.done();
+ </script>

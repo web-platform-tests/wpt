@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <title>Cancelling synthetic beforescriptexecute event</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    var t = async_test();
+    var script = document.createElement("script");
+    script.textContent = "t.done()";
+
+    var e = new Event("beforescriptexecute");
+
+    var handler = t.step_func(function (event) {
+      event.preventDefault();
+      script.removeEventListener("beforescriptexecute", handler);
+    })
+
+    script.addEventListener("beforescriptexecute", handler, false);
+
+    script.dispatchEvent(e);
+    document.body.appendChild(script);
+
+ </script>

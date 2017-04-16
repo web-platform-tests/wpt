@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <title>beforescriptexecute DOM-inserted inline script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    target = null;
+    type = null;
+    isTrusted = null;
+    document.addEventListener("beforescriptexecute", function(e) {target = e.target; type=e.type; isTrusted=e.isTrusted}, false);
+    var t = async_test();
+    var script = document.createElement("script");
+    script.textContent = "t.step(function() {assert_equals(type, 'beforescriptexecute'); assert_equals(target, script); assert_equals(isTrusted, true); }); t.done();"
+    document.body.appendChild(script);
+ </script>

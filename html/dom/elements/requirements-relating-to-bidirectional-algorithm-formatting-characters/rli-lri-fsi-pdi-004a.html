@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RLI,LRI: numbers isolated from preceding text, opposite direction</title>
+<meta name='assert' content='Plain text numeric content content surrounded by RLI/LRI...PDI is treated as a neutral character and directionally isolated from preceding text.'>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://www.w3.org/TR/html5/dom.html#requirements-relating-to-the-bidirectional-algorithm'>
+<link rel='match' href='/reference/dir-isolation-004-ref.html'>
+<style type="text/css">
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 150%; border: 1px solid orange; margin: 10px; margin-right: 200px; padding: 5px; clear: both; }
+</style>
+</head>
+<body>
+<p class="instructions" dir="ltr">Test passes if the two boxes are identical.</p>
+<div class="test">
+      <div dir="ltr">&#x5d0; &#x2067;3&#x2069;</div>
+      <div dir="ltr">a &#x2067;3&#x2069;</div>
+      <div dir="rtl">&#x5d0; &#x2066;3&#x2069;</div>
+      <div dir="rtl">a &#x2066;3&#x2069;</div>
+    </div>
+<div class="ref">
+      <div dir="ltr">&#x202d;&#x5d0; 3&#x202c;</div>
+      <div dir="ltr">&#x202d;a 3&#x202c;</div>
+      <div dir="rtl">&#x202d;3 &#x5d0;&#x202c;</div>
+      <div dir="rtl">&#x202d;3 a&#x202c;</div>
+    </div>
+<!--Notes:
+Key to entities used in these tests:
+        &#x5d0; ... &#x5d5; - The first six Hebrew letters (strongly RTL).
+        &#x2067; - The RLI (right-to-left-isolate) formatting character.
+        &#x2066; - The LRI (left-to-right-isolate) formatting character.
+        &#x2068; - The FSI (first-strong-isolate) formatting character.
+        &#x2069; - The PDI (pop directional isolate) formatting character; closes RLI/LRI/FSI.
+The punctuation is moved around in the source to make it easier to do visual comparisons when the test is run.
+-->
+</body></html>

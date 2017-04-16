@@ -21,6 +21,7 @@
                 {
                     if (xhr.readyState == 1)
                     {
+                        xhr.send();
                         xhr.abort();
                     }
                 });
@@ -37,7 +38,6 @@
             };
 
             xhr.open("GET", "resources/content.py", true);
-            xhr.send();
         });
     </script>
 </body>

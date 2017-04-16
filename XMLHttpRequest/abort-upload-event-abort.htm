@@ -23,6 +23,7 @@
                 {
                     if (xhr.readyState == 1)
                     {
+                        xhr.send("Test Message");
                         xhr.abort();
                     }
                 });
@@ -40,7 +41,6 @@
             };
 
             xhr.open("POST", "./resources/content.py", true);
-            xhr.send("Test Message");
         });
     </script>
 </body>

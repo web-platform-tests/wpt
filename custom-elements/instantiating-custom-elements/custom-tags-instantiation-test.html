@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom tags instantiation</title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="As the local name of the custom element. These types of custom element types are called custom tags.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+	var Tag = document.registerElement( 'custom-tags' );
+	var instance = document.createElement( 'custom-tags' );
+	document.body.appendChild( instance );
+	var element = document.querySelector( 'custom-tags' );
+
+	assert_true( element instanceof Tag, 'A instance created using local name is of a custom tag type' )
+
+}, 'As the local name of the custom element. These types of custom element types are called custom tags. ');
+</script>
+</body>
+</html>

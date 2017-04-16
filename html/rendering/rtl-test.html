@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>the dir attribute</title>
+	<link rel="author" title="nebu" href="mailto:nebupookins@gmail.com" />
+	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-dir-attribute" />
+	<link rel="match" href="rtl-reference.html" />
+</head>
+<body>
+	<h1>Description</h1>
+	<p>This test validates the various specs of the <code>dir</code> attribute, as specified at <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-dir-attribute">http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-dir-attribute</a></p>
+	<table border="1">
+	<tr>
+		<th>If the element's dir attribute is in the ltr state, the directionality of the element is 'ltr'.</th>
+		<td>ABC!? = <span dir="ltr">ABC!?</span></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone state, and the dir attribute is not in a defined state (it is not present), then the directionality of the element is 'ltr'.</th>
+		<td>ABC!? = <input type="tel" value="ABC!?"></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone state, and the dir attribute is not in a defined state (it has an invalid value), then The directionality of the element is 'ltr'.</th>
+		<td>ABC!? = <input type="tel" value="ABC!?" dir="abc"></td>
+	</tr>
+	<tr>
+		<th>If the element's dir attribute is in the rtl state</th>
+		<td>?!ABC = <span dir="rtl">ABC!?</span></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Text, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[ARABIC LETTER REH] = <input type="text" dir="auto" value="&#x0631;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Text, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[ARABIC LETTER REH]!? = <input type="text" dir="auto" value="ABC&#x0631;!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Text, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[HEBREW PUNCTUATION MAQAF] = <input type="text" dir="auto" value="&#x05be;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Text, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[HEBREW PUNCTUATION MAQAF]!? = <input type="text" dir="auto" value="ABC&#x05be;!?"/></td>
+	</tr>
+
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Search, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[ARABIC LETTER REH] = <input type="search" dir="auto" value="&#x0631;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Search, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[ARABIC LETTER REH]!? = <input type="search" dir="auto" value="ABC&#x0631;!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Search, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[HEBREW PUNCTUATION MAQAF] = <input type="search" dir="auto" value="&#x05be;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Search, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[HEBREW PUNCTUATION MAQAF]!? = <input type="search" dir="auto" value="ABC&#x05be;!?"/></td>
+	</tr>
+
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[ARABIC LETTER REH] = <input type="tel" dir="auto" value="&#x0631;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[ARABIC LETTER REH]!? = <input type="tel" dir="auto" value="ABC&#x0631;!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[HEBREW PUNCTUATION MAQAF] = <input type="tel" dir="auto" value="&#x05be;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the Telephone, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[HEBREW PUNCTUATION MAQAF]!? = <input type="tel" dir="auto" value="ABC&#x05be;!?"/></td>
+	</tr>
+
+	<tr>
+		<th>If the element is an input element whose type attribute is in the URL, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[ARABIC LETTER REH] = <input type="url" dir="auto" value="&#x0631;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the URL, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[ARABIC LETTER REH]!? = <input type="url" dir="auto" value="ABC&#x0631;!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the URL, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[HEBREW PUNCTUATION MAQAF] = <input type="url" dir="auto" value="&#x05be;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the URL, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[HEBREW PUNCTUATION MAQAF]!? = <input type="url" dir="auto" value="ABC&#x05be;!?"/></td>
+	</tr>
+
+	<tr>
+		<th>If the element is an input element whose type attribute is in the E-mail, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[ARABIC LETTER REH] = <input type="email" dir="auto" value="&#x0631;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the E-mail, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type AL and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[ARABIC LETTER REH]!? = <input type="email" dir="auto" value="ABC&#x0631;!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the E-mail, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there is no character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'rtl'</th>
+		<td>?!ABC[HEBREW PUNCTUATION MAQAF] = <input type="email" dir="auto" value="&#x05be;ABC!?"/></td>
+	</tr>
+	<tr>
+		<th>If the element is an input element whose type attribute is in the E-mail, and the dir attribute is in the auto state, if the element's value contains a character of bidirectional character type R and there <b>is</b> a character of bidirectional character type L anywhere before it in the element's value, then the directionality of the element is 'ltr'</th>
+		<td>ABC[HEBREW PUNCTUATION MAQAF]!? = <input type="email" dir="auto" value="ABC&#x05be;!?"/></td>
+	</tr>
+
+	<tr>
+		<th>If the attribute is a directionality-capable attribute and the element's dir attribute is in the auto state, and the first character (in logical order) of the attribute's value that is of bidirectional character type L, AL, or R, is of bidirectional character type AL or R, the directionality of the attribute is 'rtl'.</th>
+		<td>
+		<ul>
+			<li>alt on img: ?!ABC[ARABIC LETTER REH] = <img alt="&#x05be;ABC!?"/></li>
+			<li>label on optgroup: ?!ABC[ARABIC LETTER REH] = <select><optgroup label="&#x05be;ABC!?" /><option>Fake option</option></select></li>
+			<li>label on option: ?!ABC[ARABIC LETTER REH] = <select><option label="&#x05be;ABC!?" /></select></li>
+			<li>placeholder on input: ?!ABC[ARABIC LETTER REH] = <input placeholder="&#x05be;ABC!?" /></li>
+			<li>placeholder on textarea: ?!ABC[ARABIC LETTER REH] = <textarea placeholder="&#x05be;ABC!?"></textarea></li>
+			<li>title on all HTML elements: ?!ABC[ARABIC LETTER REH] = <span title="&#x05be;ABC!?">Check my title attribute</span></li>
+		</ul>
+		</td>
+	</tr>
+	</table>
+</body>
+</html>

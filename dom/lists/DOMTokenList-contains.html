@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>DOMTokenList contains</title>
+<link rel=help href="http://dom.spec.whatwg.org/#dom-domtokenlist-contains">
+<link rel=author title="hazz" href="mailto:harryjmaclean@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<span class="   a  a b"></span>
+<script>
+test(function() {
+  var span = document.querySelector("span");
+  assert_true(span.classList.contains("a"),
+    ".contains should return true for tokens in the list");
+  assert_false(span.classList.contains("c"),
+    ".contains should return false for tokens not in the list");
+  assert_throws("SyntaxError", function() {
+    return span.classList.contains("");
+  }, ".contains should throw SyntaxError if passed the empty string");
+  assert_throws("InvalidCharacterError", function() {
+    return span.classList.contains(" a ");
+  }, ".contains should throw InvalidCharacterError if the argument contains whitespace");
+});
+</script>

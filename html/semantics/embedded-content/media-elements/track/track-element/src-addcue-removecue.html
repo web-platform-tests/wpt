@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Video and Audio text tracks API test</title>
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#text-track-api">
+<link rel="author" title="Yongsoo An">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<h1>Media sample</h1>
+<div id="log"></div>
+<script>
+var sfx = new Audio('/media/sound_5.mp3');
+var sounds
+var cue
+
+function checkTracks(Object) {
+	if(Object) return true;
+}
+
+test(function() {
+	assert_not_equals(sfx.addTextTrack , undefined, "support addTextTrack Method");
+}, "support addTextTrack Method");
+test(function(){
+	sounds = sfx.addTextTrack('metadata');
+	assert_not_equals(sounds , undefined, "Test for textTrack addTextTrack API");
+},"Test for textTrack addTextTrack API");
+test(function() {
+	cue = new VTTCue(0, 10, '');
+	cue.id = "testCue";
+
+	sounds.addCue(cue);
+	assert_equals(1,sounds.cues.length);
+}, "Test for textTrack addCue API");
+
+test(function() {
+	sounds.removeCue(cue);
+	assert_equals(0,sounds.cues.length);
+}, "Test for textTrack removeCue API");
+</script>
+</body>
+</html>

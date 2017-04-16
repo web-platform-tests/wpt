@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Check the fired event sequence after calling SourceBuffer#remove(start, end)</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/segmented-3s.mp4' : 'video/mp4'};
+
+function GET(url, processBody) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.send();
+    xhr.onload = function(e) {
+        if (xhr.status != 200) {
+            alert("Unexpected status code " + xhr.status + " for " + url);
+            return false;
+        }
+        processBody(new Uint8Array(xhr.response));
+    };
+}
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function testMedia(file, mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var num_updateend = 0;
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updatestart', function(e) {
+                    events.push('updatestart');
+                });
+                sourceBuffer.addEventListener('update', function(e) {
+                    events.push('update');
+                    t.step(function() {
+                        assert_equals(sourceBuffer.updating, false);
+                    });
+                });
+                sourceBuffer.addEventListener('updateend', function(e) {
+                    events.push('updateend');
+                    if(!num_updateend) {
+                        this.remove(1,2);
+                    } else {
+                        mediaSource.endOfStream();
+                    }
+                    num_updateend++;
+                });
+                sourceBuffer.appendBuffer(data);
+            });
+            mediaSource.addEventListener('sourceended', function(e) {
+                t.step(function() {
+                    assert_array_equals(events,
+                                        ['updatestart','update','updateend',
+                                         'updatestart','update','updateend']);
+                });
+                t.done();
+            });
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'SourceBuffer#remove(start, end) (' + mime + ') : ' +
+       'Check the fired event sequence for sourceBuffer after calling SourceBuffer#remove function.');
+}
+for(var file in contents) {
+    testMedia(file, contents[file]);
+}
+</script>
+</body>
+</html>

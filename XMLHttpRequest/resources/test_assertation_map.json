@@ -1,0 +1,3146 @@
+[
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-receive.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[1]", 
+            "following-sibling::ol/li[3]", 
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[4]/ol/li[1]", 
+            "following-sibling::ol/li[4]/ol/li[3]", 
+            "following-sibling::ol/li[4]/ol/li[4]", 
+            "following-sibling::ol/li[4]/ol/li[5]", 
+            "following-sibling::ol/li[4]/ol/li[6]", 
+            "following-sibling::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getallresponseheaders", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-send.htm", 
+        "xpaths": [
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-stop.htm", 
+        "xpaths": [
+            "following::dt[3]", 
+            "following::dt[3]/following::dd[1]/p"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-timeout.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-after-timeout.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-done.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-open.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-open.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-unsent.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-upload.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[7]", 
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[2]", 
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[3]", 
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-upload-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-during-upload.htm", 
+        "xpaths": [
+            "following::ul[1]/li[1]", 
+            "following::ul[1]/li[2]/ol[1]/li[2]", 
+            "following::ul[1]/li[2]/ol[1]/li[3]", 
+            "following::ul[1]/li[2]/ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-event-abort.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-event-listeners.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[6]", 
+            "following-sibling::ol/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-event-loadend.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[3]", 
+            "following-sibling::ol/li[4]/ol/li[5]", 
+            "following-sibling::ol/li[4]/ol/li[6]", 
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[3]", 
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[4]", 
+            "following-sibling::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-upload-event-abort.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/abort-upload-event-loadend.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[4]/ol/li[7]/ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#data:-urls-and-http", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/data-uri.htm", 
+        "xpaths": [
+            "following::ul/li[1]", 
+            "following::ul/li[2]", 
+            "following::ul/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/data-uri.htm", 
+        "xpaths": [
+            "following::ul/li[10]/dl/dt[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onabort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-abort.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-abort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-abort.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-abort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-abort.htm", 
+        "xpaths": [
+            "following::ol//ol//ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onload", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-load.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-load", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-load.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-load.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-load.htm", 
+        "xpaths": [
+            "following::ol/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadend.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadend.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadend.htm", 
+        "xpaths": [
+            "/following-sibling::ol/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadend.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadend.htm", 
+        "xpaths": [
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadstart.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadstart.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-loadstart.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[9]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onprogress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-progress.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-progress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-progress.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-progress.htm", 
+        "xpaths": [
+            "following::*//a[contains(@href,'#make-progress-notifications')]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#make-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-progress.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-progress.htm", 
+        "xpaths": [
+            "following::li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-readystatechange-loaded.htm", 
+        "xpaths": [
+            "following::ol[1]/li[10]/dt[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-readystatechange-loaded.htm", 
+        "xpaths": [
+            "following::dt[7]", 
+            "following::a[contains(@href,'#switch-loading')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-loading", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-readystatechange-loaded.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-timeout.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-timeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-timeout.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-timeout.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-timeout.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-timeout.htm", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onprogress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-upload-progress.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-upload-progress.htm", 
+        "xpaths": [
+            "following::*//a[contains(@href,'#make-upload-progress-notifications')]", 
+            "following::ol[1]/li[8]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#make-upload-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-upload-progress.htm", 
+        "xpaths": [
+            "..", 
+            "../following::ul/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#dom-xmlhttprequest-upload", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/event-upload-progress.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata-blob.htm", 
+        "xpaths": [
+            "following::P[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata-blob.htm", 
+        "xpaths": [
+            "following::P[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata-append", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata-blob.htm", 
+        "xpaths": [
+            "..", 
+            "following::P[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata-append", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata-blob.htm", 
+        "xpaths": [
+            "following::P[2]", 
+            "following::UL[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-FormData", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata-blob.htm", 
+        "xpaths": [
+            "following::DD[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata.htm", 
+        "xpaths": [
+            "following::P[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata.htm", 
+        "xpaths": [
+            "..", 
+            "following::P[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata-append", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata.htm", 
+        "xpaths": [
+            "..", 
+            "following::UL[1]/LI[1]", 
+            "following::UL[1]/LI[2]", 
+            "following::UL[1]/LI[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-FormData", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/formdata.htm", 
+        "xpaths": [
+            "following::DD[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getallresponseheaders", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getallresponseheaders-cookies.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[1]", 
+            "/following::OL[1]/LI[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getallresponseheaders", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getallresponseheaders-status.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[1]", 
+            "/following::OL[1]/LI[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-case-insensitive.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[4]", 
+            "following::OL[1]/LI[5]", 
+            "following::OL[1]/LI[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-chunked-trailer.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[4]", 
+            "/following::OL[1]/LI[5]", 
+            "/following::OL[1]/LI[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-cookies-and-more.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[3]", 
+            "following::OL[1]/LI[5]", 
+            "following::OL[1]/LI[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-error-state.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-server-date.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[4]", 
+            "/following::OL[1]/LI[5]", 
+            "/following::OL[1]/LI[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-special-characters.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[5]", 
+            "/following::OL[1]/LI[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-getresponseheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/getresponseheader-unsent-opened-state.htm", 
+        "xpaths": [
+            "/following::OL[1]/LI[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-after-abort.htm", 
+        "xpaths": [
+            "following::ol/li[15]", 
+            "following::ol/li[15]/ol/li[1]", 
+            "following::ol/li[15]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-after-setrequestheader.htm", 
+        "xpaths": [
+            "following::ol/li[14]/ul/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-method-bogus.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-method-case-insensitive.htm", 
+        "xpaths": [
+            "following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-method-case-sensitive.htm", 
+        "xpaths": [
+            "following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-method-insecure.htm", 
+        "xpaths": [
+            "following::ol/li[5]", 
+            "following::ol/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-method-responsetype-set-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-open-send.htm", 
+        "xpaths": [
+            "following::ol/li[14]/ul/li[1]", 
+            "following::ol/li[14]/ul/li[2]", 
+            "following::ol/li[15]/ol/li[1]", 
+            "following::ol/li[15]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-open-sync-send.htm", 
+        "xpaths": [
+            "following::ol/li[14]/ul/li[1]", 
+            "following::ol/li[14]/ul/li[2]", 
+            "following::ol/li[14]/ul/li[3]", 
+            "following::ol/li[15]/ol/li[1]", 
+            "following::ol/li[15]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-referer.htm", 
+        "xpaths": [
+            "/following::ol[1]/li[2]/ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-send-open.htm", 
+        "xpaths": [
+            "following::ol/li[14]/ul/li[1]", 
+            "following::ol/li[14]/ul/li[2]", 
+            "following::ol/li[15]/ol/li[1]", 
+            "following::ol/li[15]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[14]/ul/li[1]", 
+            "following::ol[1]/li[14]/ul/li[2]", 
+            "following::ol[1]/li[14]/ul/li[3]", 
+            "following::ol[1]/li[15]/ol/li[1]", 
+            "following::ol[1]/li[15]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getallresponseheaders()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-sync-open-send.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-about-blank-window.htm", 
+        "xpaths": [
+            "following::ol/li[2]/ol/li[2]", 
+            "following::ol/li[7]", 
+            "following::ol/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-about-blank-window.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#concept-xmlhttprequest-document", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-about-blank-window.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base-inserted-after-open.htm", 
+        "xpaths": [
+            "following::ol/li[2]/ol/li[2]", 
+            "following::ol/li[7]", 
+            "following::ol/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base-inserted-after-open.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base-inserted.htm", 
+        "xpaths": [
+            "following::ol/li[2]/ol/li[2]", 
+            "following::ol/li[7]", 
+            "following::ol/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base-inserted.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base.htm", 
+        "xpaths": [
+            "following::ol/li[2]/ol/li[2]", 
+            "following::ol/li[7]", 
+            "following::ol/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-base.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-bogus.htm", 
+        "xpaths": [
+            "following::ol/li[7]", 
+            "following::ol/li[8]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-encoding.htm", 
+        "xpaths": [
+            "following::ol/li[7]", 
+            "following::ol/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-fragment.htm", 
+        "xpaths": [
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-javascript-window-2.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[2]", 
+            "following::ol[1]/li[7]", 
+            "following::ol[1]/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-javascript-window.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[2]", 
+            "following::ol[1]/li[7]", 
+            "following::ol[1]/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-multi-window-2.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-multi-window-5.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-multi-window.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[2]", 
+            "following::ol[1]/li[7]", 
+            "following::ol[1]/li[14]/ul/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-worker-origin.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[3]", 
+            "following::OL[1]/LI[3]/ol[1]/li[1]", 
+            "following::OL[1]/LI[3]/ol[1]/li[2]", 
+            "following::OL[1]/LI[3]/ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-url-worker-simple.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[3]", 
+            "following::OL[1]/LI[3]/ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/open-user-password-non-same-origin.htm", 
+        "xpaths": [
+            "following::ol/li[9]/ol/li[1]", 
+            "following::ol/li[9]/ol/li[2]", 
+            "following::ol/li[15]/ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-done-state.htm", 
+        "xpaths": [
+            "/following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-headers-received-state-force-shiftjis.htm", 
+        "xpaths": [
+            "/following::ol/li[1]", 
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-invalid-mime-type.htm", 
+        "xpaths": [
+            "/following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-loading-state.htm", 
+        "xpaths": [
+            "/following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-open-state-force-utf-8.htm", 
+        "xpaths": [
+            "/following::ol/li[3]", 
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-open-state-force-xml.htm", 
+        "xpaths": [
+            "/following::ol/li[3]", 
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-overridemimetype()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/overridemimetype-unsent-state-force-shiftjis.htm", 
+        "xpaths": [
+            "/following::ol/li[3]", 
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/progress-events/#firing-events-using-the-progressevent-interface-for-http", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/progress-events-response-data-gzip.htm", 
+        "xpaths": [
+            "following::p[contains(text(),'content-encodings')]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-arraybuffer.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-arraybuffer.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#arraybuffer-response-entity-body')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-blob.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-blob.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#blob-response-entity-body')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-deflate.htm", 
+        "xpaths": [
+            "following::p[contains(text(),'content-encodings')]"
+        ]
+    }, 
+    {
+        "linkhref": "https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-gzip.htm", 
+        "xpaths": [
+            "following::p[contains(text(),'content-encodings')]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-progress.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#make-progress-notifications')]/..", 
+            "following::a[contains(@href,'#make-progress-notifications')]/../following:p[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-progress.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onprogress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-progress.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-progress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-data-progress.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-invalid-responsetype.htm", 
+        "xpaths": [
+            "following::dd[2]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-invalid-responsetype.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-json.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-json.htm", 
+        "xpaths": [
+            "following::dt[2]/dt[4]", 
+            "following::dt[2]/dt[4]/following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#json-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/response-json.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsetext-decoding.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#text-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsetext-decoding.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-basic.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#document-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-basic.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-document-properties.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#document-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-document-properties.htm", 
+        "xpaths": [
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]", 
+            "following::ol[1]/li[8]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-media-type.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#document-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-media-type.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-non-document-types.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-non-document-types.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-non-document-types.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-non-well-formed.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#document-response-entity-body", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/responsexml-non-well-formed.htm", 
+        "xpaths": [
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-accept-language.htm", 
+        "xpaths": [
+            "following::code[contains(text(),'Accept-Language')]/..", 
+            "following::code[contains(text(),'Accept-Language')]/../following::ul[1]/li[1]", 
+            "following::code[contains(text(),'Accept-Language')]/../following::ul[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-accept.htm", 
+        "xpaths": [
+            "following::code[contains(text(),'*/*')]/..", 
+            "following::code[contains(text(),'Accept')]/..", 
+            "following::code[contains(text(),'Accept')]/../following::ul[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-after-setting-document-domain.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]/ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-cors-not-enabled.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol[1]/li[1]", 
+            "following::ol[1]/li[9]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-cors-not-enabled.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-cors.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol[1]/li[1]", 
+            "following::ol[1]/li[9]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-cors.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-repeat-no-args.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol[1]/li[1]", 
+            "following::ol[1]/li[9]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-repeat-no-args.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-setrequestheader-existing-session.htm", 
+        "xpaths": [
+            "following::ol[1]/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-setrequestheader-existing-session.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-setrequestheader.htm", 
+        "xpaths": [
+            "following::ol[1]/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic-setrequestheader.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol[1]/li[1]", 
+            "following::ol[1]/li[9]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-basic.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-competing-names-passwords.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol[1]/li[1]", 
+            "following::ol[1]/li[9]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-competing-names-passwords.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-cors-basic-setrequestheader.htm", 
+        "xpaths": [
+            "following::ol[1]/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-cors-basic-setrequestheader.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-existing-session-manual.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-prompt-2-manual.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-authentication-prompt-manual.htm", 
+        "xpaths": [
+            "following::code[contains(@title,'http-authorization')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-conditional.htm", 
+        "xpaths": [
+            "following::code[contains(text(),'Modified')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-content-type-charset.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]/p/code[contains(text(),'Content-Type')]/..", 
+            "following::ol[1]/li[4]/p/code[contains(text(),'Content-Type')]/../following-sibling::p"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-a-string", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-content-type-charset.htm", 
+        "xpaths": [
+            "following::p[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-document", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-content-type-string.htm", 
+        "xpaths": [
+            "following::p[1]", 
+            "following::p[2]", 
+            "following::p[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-arraybuffer.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[4]/dl[1]/dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-arraybuffer.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-arraybuffer.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-blob.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[4]/dl[1]/dd[2]/p[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-blob.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetype-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-blob.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-blob.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#blob-response-entity-body')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-formdata.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[4]/dl[1]/dd[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-formdata.htm", 
+        "xpaths": [
+            "following::*[contains(@id,'dom-formdata')]/following::ol[1]/li[1]", 
+            "following::*[contains(@id,'dom-formdata')]/following::ol[1]/li[3]", 
+            "following::*[contains(@id,'dom-formdata-append')]/following::ul[1]/li[1]", 
+            "following::*[contains(@id,'dom-formdata-append')]/following::ul[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-data-formdata.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-basic.htm", 
+        "xpaths": [
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-a-string", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-basic.htm", 
+        "xpaths": [
+            "/following::dd"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-document", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-document-bogus.htm", 
+        "xpaths": [
+            "following::p[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-document.htm", 
+        "xpaths": [
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-document", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-document.htm", 
+        "xpaths": [
+            "/following::dd"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-empty.htm", 
+        "xpaths": [
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-a-string", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-empty.htm", 
+        "xpaths": [
+            "following::p[1]", 
+            "following::p[2]", 
+            "following::p[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-get-head-async.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[3]", 
+            "following::OL[1]/LI[7]", 
+            "following::OL[1]/LI[8]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-get-head.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[3]", 
+            "following::OL[1]/LI[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-entity-body-none.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onerror", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-async-events.sub.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-async-events.sub.htm", 
+        "xpaths": [
+            "following::ol[1]/li[9]/ol/li[2]", 
+            "following::ol[1]/li[9]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-async-events.sub.htm", 
+        "xpaths": [
+            "following::dt[4]", 
+            "following::dd[4]/p"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-async-events.sub.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-async-events.sub.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]", 
+            "following::ol[1]/li[7]/ol/li[3]", 
+            "following::ol[1]/li[7]/ol/li[4]", 
+            "following::ol[1]/li[9]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-sync-events.sub.htm", 
+        "xpaths": [
+            "following::dt[4]", 
+            "following::dd[4]/p"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-sync-events.sub.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-network-error-sync-events.sub.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadend.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadend.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadend.htm", 
+        "xpaths": [
+            "following::dt[10]", 
+            "/following-sibling::ol/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadstart.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadstart.htm", 
+        "xpaths": [
+            "/../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadstart.htm", 
+        "xpaths": [
+            "/following-sibling::ol/li[9]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-loadstart.htm", 
+        "xpaths": [
+            "/following-sibling::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[9]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "following::dt[10]", 
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-no-response-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#cross-origin-request-steps", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-non-same-origin.sub.htm", 
+        "xpaths": [
+            "/following::DL[2]/DT[1]", 
+            "/following::DL[2]/DD[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#cross-origin-request-event-rules", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-non-same-origin.sub.htm", 
+        "xpaths": [
+            "/following::DL[1]/DT[2]", 
+            "/following::DL[1]/DD[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-bogus-sync.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-bogus.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite-sync.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/p[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite-sync.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onerror", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/p[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[9]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-infinite.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-no-location.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-to-cors.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect-to-non-cors.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-redirect.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[9]/ol/li[2]", 
+            "following-sibling::ol/li[9]/ol/li[3]", 
+            "following::a[contains(@href,'#make-upload-progress-notifications')]/..", 
+            "following::a[contains(@href,'#make-progress-notifications')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-upload-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "following::ul[1]/li[1]", 
+            "following::ul[1]/li[2]/ol[1]/li[2]", 
+            "following::ul[1]/li[2]/ol[1]/li[3]", 
+            "following::ul[1]/li[2]/ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-event-order.htm", 
+        "xpaths": [
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[5]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadend.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadend.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadend.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#make-upload-progress-notifications')]/..", 
+            "following::ol[1]/li[8]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-upload-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadend.htm", 
+        "xpaths": [
+            "following::ul[1]/li[2]/ol[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadstart.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadstart.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-loadstart.htm", 
+        "xpaths": [
+            "following::ol[1]/li[8]", 
+            "following-sibling::ol/li[9]/ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onprogress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-progress.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-progress", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-progress.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-progress.htm", 
+        "xpaths": [
+            "following::a[contains(@href,'#make-upload-progress-notifications')]/..", 
+            "following::ol[1]/li[8]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#make-upload-progress-notifications", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-response-upload-event-progress.htm", 
+        "xpaths": [
+            "following::ul[1]/li[2]/ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-send.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-blocks-async.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[10]/dl/dd/dl/dd[2]/p[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onload", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-load.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-load", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-load.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-load.htm", 
+        "xpaths": [
+            "following::dt[11]", 
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-load.htm", 
+        "xpaths": [
+            "following::ol/li[1]", 
+            "following::ol/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-load.htm", 
+        "xpaths": [
+            "/following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-loadend.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-loadend.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-loadend.htm", 
+        "xpaths": [
+            "following::dt[11]", 
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-loadend.htm", 
+        "xpaths": [
+            "following::ol/li[1]", 
+            "following::ol/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-loadend.htm", 
+        "xpaths": [
+            "/following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#same-origin-request-steps", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "following::DL[1]/DT[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "following::dt[11]", 
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-no-response-event-order.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onloadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadstart", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-loadend", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "following-sibling::ol/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#same-origin-request-steps", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "following::DL[1]/DT[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "following::dt[11]", 
+            "following::a[contains(@href,'#switch-done')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[3]", 
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-response-event-order.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#same-origin-request-steps", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-sync-timeout.htm", 
+        "xpaths": [
+            "following::DL[1]/DT[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-timeout-events.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-timeout-events.htm", 
+        "xpaths": [
+            "following::dt[5]", 
+            "following::a[contains(@href,'#timeout-error')]/.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-timeout-events.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/send-timeout-events.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[6]", 
+            "following::ol[1]/li[7]/ol/li[3]", 
+            "following::ol[1]/li[7]/ol/li[4]", 
+            "following::ol[1]/li[9]", 
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-after-send.htm", 
+        "xpaths": [
+            "/following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-allow-empty-value.htm", 
+        "xpaths": [
+            "/following::ol/li[4]/p[contains(@class,'note')]", 
+            "/following::ol/li[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-before-open.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-bogus-name.htm", 
+        "xpaths": [
+            "/following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-bogus-value.htm", 
+        "xpaths": [
+            "/following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-case-insensitive.htm", 
+        "xpaths": [
+            "/following::ol/li[6]", 
+            "/following::ol/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-header-allowed.htm", 
+        "xpaths": [
+            "/following::ol/li[6]", 
+            "/following::ol/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-header-forbidden.htm", 
+        "xpaths": [
+            "/following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-open-setrequestheader.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[14]/ul[1]/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/setrequestheader-open-setrequestheader.htm", 
+        "xpaths": [
+            "following::OL[1]/LI[6]", 
+            "following::ol[1]/li[7]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-async.htm", 
+        "xpaths": [
+            "following::ol/li[1]", 
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-async.htm", 
+        "xpaths": [
+            "following::ol/li[1]", 
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-async.htm", 
+        "xpaths": [
+            "following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-async.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-basic.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-basic.htm", 
+        "xpaths": [
+            "following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-basic.htm", 
+        "xpaths": [
+            "following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-basic.htm", 
+        "xpaths": [
+            "following::ol/li[4]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#handler-xhr-onerror", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-error.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/status-error.htm", 
+        "xpaths": [
+            "/following::ol/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-cors-async.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-cors-async.htm", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-cors-async.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-cors-async.htm", 
+        "xpaths": [
+            "following::ol[1]/li[4]", 
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#cross-origin-request-event-rules", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-cors-async.htm", 
+        "xpaths": [
+            "following::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-sync.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/timeout-sync.htm", 
+        "xpaths": [
+            "following::ol/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-withcredentials-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/withcredentials-set.htm", 
+        "xpaths": [
+            "following::ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-withcredentials-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/withcredentials-wrong-state.htm", 
+        "xpaths": [
+            "following::ol/li[1]", 
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-basic.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#xmlhttprequest", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-basic.htm", 
+        "xpaths": [
+            "."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#states", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-basic.htm", 
+        "xpaths": [
+            "following::dfn[2]", 
+            "following::dfn[3]", 
+            "following::dfn[4]", 
+            "following::dfn[5]", 
+            "following::dfn[6]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#xmlhttprequesteventtarget", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-eventtarget.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/p[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#network-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getallresponseheaders()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error-sync.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::dl[1]/dt[2]", 
+            "following::dl[1]/dd[2]/ol/li[1]", 
+            "following::dl[1]/dd[2]/ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getallresponseheaders()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[1]", 
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-network-error.htm", 
+        "xpaths": [
+            "following::ol[1]/li[2]", 
+            "following::ol[1]/li[3]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[4]/ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "following-sibling::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#abort-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-abort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-timeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "following::ol/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-aborted.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-abortedonmain.html", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[4]/ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#abort-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-abortedonmain.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-abort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-abortedonmain.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-abortedonmain.html", 
+        "xpaths": [
+            "following::ol/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overrides.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overrides.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overrides.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overrides.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overridesexpires.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overridesexpires.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overridesexpires.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overridesexpires.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-overridesexpires.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-simple.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-simple.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-simple.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-simple.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-simple.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-synconmain.html", 
+        "xpaths": [
+            "following::ol[1]/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-synconmain.html", 
+        "xpaths": [
+            "following::ol[1]/li[10]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-twice.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-twice.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-twice.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-twice.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-twice.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "following-sibling::ol/li[4]", 
+            "following-sibling::ol/li[4]/ol/li[5]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "following-sibling::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#abort-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-abort", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#event-xhr-timeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "following::ol/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-aborted.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overrides.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overrides.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overrides.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overrides.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overridesexpires.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overridesexpires.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overridesexpires.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overridesexpires.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-overridesexpires.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-simple.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-simple.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-simple.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-simple.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-simple.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-synconworker.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-synconworker.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-synconworker.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-synconworker.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-synconworker.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html", 
+        "xpaths": [
+            "following::ol[1]/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#handler-xhr-ontimeout", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html", 
+        "xpaths": [
+            "../.."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#timeout-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html", 
+        "xpaths": [
+            ".."
+        ]
+    }, 
+    {
+        "linkhref": "http://www.w3.org/TR/XMLHttpRequest/#request-error", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html", 
+        "xpaths": [
+            "following::ol[1]/li[9]"
+        ]
+    }, 
+    {
+        "linkhref": "http://xhr.spec.whatwg.org/#infrastructure-for-the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-timeout-worker-twice.html", 
+        "xpaths": [
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/..", 
+            "following-sibling::dl//code[contains(@title,'dom-XMLHttpRequest-timeout')]/../following-sibling::dd", 
+            "following::dt[1]", 
+            "following::dd[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-unsent", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "..", 
+            "following::dd"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-setrequestheader", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-status-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-statustext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getresponseheader()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-getallresponseheaders()-method", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[1]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsetext-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }, 
+    {
+        "linkhref": "http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-responsexml-attribute", 
+        "testURL": "http://w3c-test.org/XMLHttpRequest/xmlhttprequest-unsent.htm", 
+        "xpaths": [
+            "following::ol/li[2]"
+        ]
+    }
+]

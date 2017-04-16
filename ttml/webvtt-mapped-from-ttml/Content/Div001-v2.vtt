@@ -1,0 +1,15 @@
+WEBVTT
+lang:en
+title:Content Test - div - 001
+desc:Test nested div elements.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+0:00:00.000 --> 0:00:05.000 color:red
+This text must be red.
+
+0:00:05.000 --> 0:00:10.000 color:green
+This text must be green.
+
+0:00:10.000 --> 0:00:20.000
+This test is over.
+

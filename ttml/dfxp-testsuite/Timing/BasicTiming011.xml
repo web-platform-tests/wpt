@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Basic 011</ttm:title>
+      <ttm:desc>Using basic time expressions to simulate rollup</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#displayAlign</ttp:feature>
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="rollup">
+        <style tts:displayAlign="after"/>
+        <style tts:backgroundColor="black"/>
+        <style tts:color="white"/>
+        <style tts:origin="0px 0px"/>
+        <style tts:extent="20em 3em"/>
+      </region>	   
+    </layout>
+  </head>
+  <body region="rollup" timeContainer="par">
+    <div region="rollup" timeContainer="par">
+      <p timeContainer="par">
+        <span begin="0.1875s" >This </span>
+        <span begin="0.375s" >text </span>
+        <span begin="0.5625s" >should </span>
+        <span begin="0.75s" ><br/>appear </span>
+        <span begin="0.9375s" >one </span>
+        <span begin="1.125s" >word </span>
+        <span begin="1.3125s" ><br/>At </span>
+        <span begin="1.5s" >a  </span>
+        <span begin="1.6875s" >time </span>
+        <span begin="1.875s" ><br/>spread </span>
+        <span begin="2.0625s" >over </span>
+        <span begin="2.25s" >three </span>
+        <span begin="2.4375s" >lines<br/></span>
+        <span begin="2.625s" ><br/></span>
+        <span begin="2.8125s" ><br/></span>
+        <span begin="3s" ><br/></span>
+      </p>
+    </div>
+  </body>
+</tt>

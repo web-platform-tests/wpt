@@ -1,0 +1,10 @@
+WEBVTT
+language: en
+title: Timing Test - Basic 006
+description: Testing default sequential timing on anonymous spans in par context
+copyright: Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+
+00:00:00.000 --> 00:00:15.000
+This text must appear at 0 seconds and disappear at 15 seconds
+This text must also appear at 0 seconds and disappear at 15 seconds

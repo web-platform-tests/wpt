@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - LineHeight - 007</ttm:title>
+      <ttm:desc>Test tts:lineHeight attribute using a c value.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#lineHeight</ttp:feature>
+        <ttp:feature>#length-cell</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div>
+    	<p begin="0s" end="10s" tts:lineHeight="2c">The line height of this<br />two-row caption is 2c.</p>
+    </div>
+  </body>
+</tt>

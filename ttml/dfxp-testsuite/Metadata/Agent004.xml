@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Metadata Test - agent - 004</ttm:title>
+      <ttm:desc>Test ttm:agent element</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio)</ttm:copyright>
+      <ttm:agent xml:id="holmes" type="character"/>
+      <ttm:agent xml:id="watson" type="character"/>
+    </metadata>
+    <ttp:profile use="dfxp-transformation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#metadata</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div>
+      <p begin="0s" end="5s" ttm:agent="holmes">This text must be attributed to the agent identified as holmes.</p>
+      <p begin="5s" end="10s" ttm:agent="watson">This text must be attributed to the agent identified as watson.</p>
+    </div>
+  </body>
+</tt>

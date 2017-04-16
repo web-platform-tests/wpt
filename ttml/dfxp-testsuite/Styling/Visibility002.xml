@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - Visibility - 002</ttm:title>
+      <ttm:desc>Test tts:visibility attribute using the visible value.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#visibility-block</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <styling>
+      <style xml:id="s1" tts:visibility="hidden"/>
+    </styling>
+  </head>
+  <body>
+    <div style="s1">
+    	<p begin="0s" end="10s"><span tts:visibility="visible">All the words in this caption are visible.</span></p>
+    </div>
+  </body>
+</tt>

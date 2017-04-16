@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    ttp:pixelAspectRatio="118 81">
+  <head>
+    <metadata> 
+      <ttm:title>Parameter Test - pixelAspectRatio - 001</ttm:title>
+      <ttm:desc>Test ttp:pixelAspectRatio attribute to match Rec. 601 Widescreen (16:9) PAL </ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-transformation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#pixelAspectRatio</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1" tts:origin="0px 0px" tts:extent="100px 146px" tts:backgroundColor="blue"/>
+    </layout>
+  </head>
+  <body>
+    <div>
+      <p region="r1" tts:color="white" begin="0s" end="10s">The region containing this text should appear square on 16:9 PAL TV</p>
+    </div>
+  </body>
+</tt>

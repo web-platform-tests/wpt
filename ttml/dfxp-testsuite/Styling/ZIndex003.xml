@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - ZIndex - 003</ttm:title>
+      <ttm:desc>Test tts:zIndex attribute with the auto value.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+        <ttp:feature>#zIndex</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1">
+	<style tts:origin="0px 0px"/>
+	<style tts:extent="240px 200px"/>
+	<style tts:backgroundColor="black"/>
+	<style tts:color="white"/>
+	<style tts:textAlign="start"/>
+	<style tts:fontSize="12px"/>
+	<style tts:zIndex="auto"/>
+      </region>
+      <region xml:id="r2">
+	<style tts:origin="60px 60px"/>
+	<style tts:extent="170px 120px"/>
+	<style tts:backgroundColor="red"/>
+	<style tts:color="white"/>
+	<style tts:textAlign="start"/>
+	<style tts:fontSize="12px"/>
+	<style tts:zIndex="auto"/>
+      </region>
+      <region xml:id="r3">
+	<style tts:origin="10px 140px"/>
+	<style tts:extent="190px 50px"/>
+	<style tts:backgroundColor="blue"/>
+	<style tts:color="white"/>
+	<style tts:textAlign="start"/>
+	<style tts:fontSize="12px"/>
+	<style tts:zIndex="auto"/>
+      </region>
+    </layout>
+  </head>
+  <body>
+    <div>
+      <p begin="0s" end="10s" region="r1">The black region lies<br />
+       under the red and blue regions.</p>
+      <p begin="0s" end="10s" region="r2">The red region lies<br />
+      over only the black region.</p>
+      <p begin="0s" end="10s" region="r3">The blue region lies<br />
+      over the black and red regions.</p>
+    </div>
+  </body>
+</tt>

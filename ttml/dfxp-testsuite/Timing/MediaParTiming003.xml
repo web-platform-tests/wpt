@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Par - 003</ttm:title>
+      <ttm:desc>Testing par in seq and default timing attributes</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#time-clock-with-frames</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body timeContainer="par">
+    <div timeContainer="seq" dur="40s">
+      <div timeContainer="par" dur="10s">
+        <metadata>
+          <ttm:desc>default duration for par in this context is 0</ttm:desc>
+        </metadata>
+        <p  dur="5s">This text must appear at 0 seconds<br/>and be remain visible to 5 seconds,</p>
+        <p begin="5s" >This text must appear at 5 seconds<br/>and be remain visible to 10 seconds,</p>
+      </div>
+      <div timeContainer="par" dur="10s">
+        <p begin="00:00:05:00" dur="5s">This text must appear at 15 seconds<br/>and be remain visible to 20 seconds.</p>
+        <p >This text must appear at 10 seconds<br/>and be remain visible to 20 seconds.</p>
+      </div>
+    </div>
+  </body>
+</tt>

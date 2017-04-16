@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Animation Test - Basic 005</ttm:title>
+      <ttm:desc>Testing multiple set expressions in par context</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#animation</ttp:feature>
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#opacity</ttp:feature>
+	<ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+        <ttp:feature>#timing-clock-with-frames</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1">
+        <set begin="1s" dur="00:00:01:00" tts:opacity="0.05" />
+        <set begin="2s" dur="00:00:01:00" tts:opacity="0.1" />
+        <set begin="3s" dur="00:00:01:00" tts:opacity="0.2" />
+        <set begin="4s" dur="00:00:01:00" tts:opacity="0.3" />
+        <set begin="5s" dur="00:00:01:00" tts:opacity="0.4" />
+        <set begin="6s" dur="00:00:01:00" tts:opacity="0.5" />
+        <set begin="7s" dur="00:00:01:00" tts:opacity="0.6" />
+        <set begin="8s" dur="00:00:01:00" tts:opacity="0.7" />
+        <set begin="9s" dur="00:00:01:00" tts:opacity="0.8" />
+        <set begin="10s" dur="00:00:01:00" tts:opacity="0.9" />
+        <set begin="11s" dur="00:00:01:00" tts:opacity="1" />
+        <set begin="12s" dur="00:00:01:00" tts:opacity="0.75" />
+        <set begin="13s" dur="00:00:01:00" tts:opacity="0.5" />
+        <set begin="14s" dur="00:00:01:00" tts:opacity="0.25" />
+	<style tts:origin="0px 0px"/>
+	<style tts:opacity="0" />
+	<style tts:extent="240px 200px"/>
+	<style tts:backgroundColor="black"/>
+	<style tts:color="white"/>
+        <style tts:textAlign="start"/>
+        <style tts:fontSize="12px"/>
+        <style tts:zIndex="1"/>
+      </region>
+    </layout>
+  </head>
+  <body timeContainer="par">
+    <div timeContainer="seq">
+      <p region="r1" begin="0s" dur="00:00:15:00">
+        This text must start to appear at 1 seconds<br/>
+        and fade in to 10 seconds then fade out to 15 seconds</p>
+    </div>
+  </body>
+</tt>

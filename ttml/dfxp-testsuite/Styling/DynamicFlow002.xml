@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - dynamicFlow - 002</ttm:title>
+      <ttm:desc>Test tts:dynamicFlow attribute with value of
+	'in(word,jump) fill(1.0s) out(line,smooth) clear(break,0.3s)', which
+	is the example shown in Section 8.2.7 of the specification.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#dynamicFlow-clear</ttp:feature>
+        <ttp:feature>#dynamicFlow-fill</ttp:feature>
+        <ttp:feature>#dynamicFlow-in</ttp:feature>
+        <ttp:feature>#dynamicFlow-jump</ttp:feature>
+        <ttp:feature>#dynamicFlow-line</ttp:feature>
+        <ttp:feature>#dynamicFlow-out</ttp:feature>
+        <ttp:feature>#dynamicFlow-smooth</ttp:feature>
+        <ttp:feature>#dynamicFlow-word</ttp:feature>
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#overflow-dynamic</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1">
+	<style tts:origin="0px 0px"/>
+	<style tts:extent="140px 70px"/>
+	<style tts:displayAlign="after"/>
+    	<style tts:backgroundColor="transparent"/>
+    	<style tts:fontFamily="proportionalSansSerif"/>
+    	<style tts:fontSize="18px"/>
+    	<style tts:overflow="dynamic"/>
+    	<style tts:dynamicFlow="in(word,jump)fill(1.0s)out(line,smooth)clear(break,0.3s)"/>
+      </region>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p>
+	<span tts:backgroundColor="black" tts:color="white">
+	  Five o'clock tea!<br/>
+	  Ever to thee,<br/>
+	  Faithful I'll be,<br/>
+	  Five o'clock tea!<br/>
+	  <br/>
+	  <br/>
+	  <br/>
+	</span>
+      </p>
+    </div>
+  </body>
+</tt>

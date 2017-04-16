@@ -1,0 +1,9 @@
+WEBVTT
+lang:en
+title:Content Test - Paragraph - 002
+desc:Test the p element with no timing attributes (nothing is displayed).
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+
+This text must not be visible.
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xml:lang="en">
+  <head>
+    <metadata> 
+      <ttm:title>Content Test - Paragraph - 004</ttm:title>
+      <ttm:desc>Test the p element with xml:space default.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <p xml:space='default' begin="0s" end="10s">This text
+ must appear on one line.</p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,31 @@
+<tt xml:lang="en"
+    xmlns:ttf="http://www.w3.org/ns/ttml#feature"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ms="http://www.microsoft.com/enable/timedtext"
+    xmlns="http://www.w3.org/ns/ttml">
+  <head>
+    <metadata> 
+      <ttm:title>Parameter Test - Parameters - 006</ttm:title>
+      <ttm:desc>Test profile element</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="http://www.w3.org/ns/ttml/profile/dfxp-presentation">
+      <ttp:features>
+        <ttp:feature value="required">#rollUp</ttp:feature>
+        <ttp:feature value="optional">#fontStyle-italic</ttp:feature>
+      </ttp:features>
+      <ttp:extensions>
+        <ttp:extension value="required">#x-prefilter-by-language</ttp:extension>
+      </ttp:extensions>
+      <ttp:extensions xml:base="http://foo.bar.example.org/ttaf1/extension">
+        <ttp:extension value="required">#private-extension-1</ttp:extension>
+      </ttp:extensions>
+    </ttp:profile>
+  </head>
+  <body>
+    <div>
+      <p>This test reserved for the profile/feature test</p>
+    </div>
+  </body>
+</tt>

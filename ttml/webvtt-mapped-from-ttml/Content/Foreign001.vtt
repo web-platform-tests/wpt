@@ -1,0 +1,10 @@
+WEBVTT
+lang:en
+title:Content Test - Foreign - 001
+desc:Test the non-TT namespaces.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+0:00:00.000 --> 0:00:05.000
+This text must be visible.
+
+This text must not be visible.

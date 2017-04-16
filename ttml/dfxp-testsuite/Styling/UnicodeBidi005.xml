@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - UnicodeBidi - 003</ttm:title>
+      <ttm:desc>Test tts:unicodeBidi attribute with the embed value.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#direction</ttp:feature>
+        <ttp:feature>#unicodeBidi</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#styling-inheritance-content</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div>
+      <p begin="0s" end="5s">This text is displayed left to right.</p>
+      <p begin="5s" end="10s" tts:unicodeBidi="embed" tts:direction="rtl">This text is displayed right to left.</p>
+    </div>
+  </body>
+</tt>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - Color - 005</ttm:title>
+      <ttm:desc>Test tts:color attribute using a rgba() color function.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#color</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div>
+      <p begin="0s" end="10s"><span tts:color="rgb(0,128,0)">This is the green color as a reference.</span><br/><span tts:color="rgba(0,128,0,128)">This text must be semi-transparent green.</span></p>
+    </div>
+  </body>
+</tt>
+

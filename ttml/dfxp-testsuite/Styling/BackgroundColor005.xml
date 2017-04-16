@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - BackgroundColor - 005</ttm:title>
+      <ttm:desc>Test tts:backgroundColor attribute using a rgba() color function using a span.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#backgroundColor-block</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body tts:backgroundColor="rgba(255,0,255,50)">
+    <div>
+      <p begin="0s" end="10s">The background is magenta with 50% opacity.<br/><span tts:color="rgb(255,0,255)">This text is 100% magenta.</span></p>
+    </div>
+  </body>
+</tt>
+

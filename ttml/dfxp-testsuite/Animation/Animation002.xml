@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Animation Test - Animate 002</ttm:title>
+      <ttm:desc>Set color</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#animation</ttp:feature>
+        <ttp:feature>#color</ttp:feature>
+	<ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div timeContainer="seq" dur="20s">
+      <p  dur="10s" tts:backgroundColor="red" tts:color="white">
+        <set tts:color="yellow" begin="5s" />This text of this sentence should change from white to yellow at 5s</p>
+    </div>
+  </body>
+</tt>

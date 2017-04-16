@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>html5: the-button-element test</title>
+<link rel="author" title="Hmoon" href="mailto:airgundamkid@163.com">
+<link rel="help" href="http://www.w3.org/TR/html5/forms.html#the-button-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<div>
+	<button name="ButtonTest" id="ButtonTest" type="button"
+		onclick="return true">This is button</button>
+</div>
+<div id="log"></div>
+
+<script>
+	test(function() {
+		assert_equals(document.getElementById("ButtonTest").innerHTML,
+				"This is button")
+	}, "Test button element's innerHTML");
+
+	test(function() {
+		assert_equals(document.getElementById("ButtonTest").innerText,
+				"This is button")
+	}, "Test button element's innerText");
+
+	test(function() {
+		assert_true(document.getElementById("ButtonTest").onclick(),
+				"It should return true")
+	}, "Test button element's onclick");
+
+	test(function() {
+		assert_equals(document.getElementById("ButtonTest").name, "ButtonTest")
+	}, "Test button element's name");
+
+	test(function() {
+		assert_equals(document.getElementById("ButtonTest").type, "button")
+	}, "Test button element's type");
+</script>

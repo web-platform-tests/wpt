@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Check the number of created SourceBuffer objects in the list</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
+
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            t.step(function() {
+                assert_equals(mediaSource.sourceBuffers.length, 0);
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                assert_equals(mediaSource.sourceBuffers.length, 1);
+            });
+            t.done();
+        });
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBufferList#length (' + mime + ') : ' +
+       'Check the number of created SourceBuffer objects in the list.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
+</script>
+</body>
+</html>

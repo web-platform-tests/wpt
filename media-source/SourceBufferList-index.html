@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Test for SourceBufferList#SourceBuffer</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
+
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function testMedia(mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            t.step(function() {
+                assert_equals(mediaSource.sourceBuffers[0], undefined,
+                              'If index is equal to the length attribute then return undefined.');
+                assert_equals(mediaSource.sourceBuffers[1], undefined,
+                              'If index is greater than the length attribute then return undefined.');
+
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                assert_equals(mediaSource.sourceBuffers[0], sourceBuffer,
+                              'Should return the index\'th SourceBuffer object in the list.');
+                assert_equals(mediaSource.sourceBuffers[1], undefined,
+                              'If index is equal to the length attribute then return undefined.');
+                assert_equals(mediaSource.sourceBuffers[2], undefined,
+                              'If index is greater than the length attribute then return undefined.');
+            });
+            t.done();
+        });
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBufferList#SourceBuffer (' + mime + '): Check the behavior with the specified index parameter.');
+}
+mimes.forEach(function(mime) {
+    testMedia(mime);
+});
+</script>
+</body>
+</html>

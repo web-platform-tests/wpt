@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>SourceBuffer : Check "Detaching from a media element" algorithm</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4' : 'video/mp4'};
+
+function GET(url, processBody) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.send();
+    xhr.onload = function(e) {
+        if (xhr.status != 200) {
+            alert("Unexpected status code " + xhr.status + " for " + url);
+            return false;
+        }
+        processBody(xhr.response);
+    };
+}
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(file, mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                this.sourceBuffer = mediaSource.addSourceBuffer(mime);
+                this.sourceBuffer.addEventListener('updateend', function() {
+                    mediaSource.endOfStream();
+                });
+                this.sourceBuffer.appendBuffer(data);
+            });
+            mediaSource.addEventListener('sourceended', function(e) {
+                t.step(function() {
+                    assert_equals(this.readyState, 'ended');
+                    video.src = null;//transition to 'sourceclose'
+                    assert_equals(this.readyState, 'closed');
+                    assert_equals(this.duration, NaN);
+                }.bind(this));
+            });
+            mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e) {
+                events.push('removesourcebuffer at activeSourceBuffers');
+                t.step(function() {
+                    assert_equals(mediaSource.activeSourceBuffers.length, 0);
+                });
+            });
+            mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e) {
+                events.push('removesourcebuffer at sourceBuffers');
+                t.step(function() {
+                    assert_equals(mediaSource.sourceBuffers.length, 0);
+                });
+            });
+            mediaSource.addEventListener('sourceclose', function(e) {
+                events.push('sourceclose');
+            });
+            video.addEventListener('emptied', function(e) {
+                t.step(function() {
+                    assert_array_equals(events,
+                                        ['removesourcebuffer at activeSourceBuffers',
+                                         'removesourcebuffer at sourceBuffers',
+                                         'sourceclose']);
+                });
+                t.done();
+            });
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'SourceBuffer (' + mime + ') : Check "Detaching from a media element" algorithm');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
+</script>
+</body>
+</html>

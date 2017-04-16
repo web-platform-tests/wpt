@@ -1,0 +1,7 @@
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "connect-src http://127.0.0.1:8000/security/contentSecurityPolicy/resources/redir.php".
+
+PASS XMLHttpRequest.send() did not follow the disallowed redirect.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

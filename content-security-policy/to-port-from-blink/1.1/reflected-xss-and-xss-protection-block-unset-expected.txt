@@ -1,0 +1,8 @@
+CONSOLE ERROR: line 4: The XSS Auditor blocked access to 'http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E&csp=block' because the source code of a script was found within the request. The server sent a 'Content-Security-Policy' header requesting this behavior.
+ALERT: Loaded http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E&csp=block into the IFrame.
+Testing behavior when "reflected-xss" is set to block, and "X-XSS-Protection" is set to unset.
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+

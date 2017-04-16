@@ -1,0 +1,4 @@
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/contentSecurityPolicy/echo-report.php' because it violates the following Content Security Policy directive: "connect-src http://localhost:8000".
+
+Pass
+

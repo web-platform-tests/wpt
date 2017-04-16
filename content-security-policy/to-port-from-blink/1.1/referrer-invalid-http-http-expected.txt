@@ -1,0 +1,11 @@
+CONSOLE ERROR: The 'referrer' Content Security Policy directive has the invalid value "invalid". Valid values are "no-referrer", "no-referrer-when-downgrade", "origin", and "unsafe-url". Note that "origin-when-cross-origin" is not yet supported.
+Test that invalid === never from HTTP to HTTP.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS ReferrerTest.referrerResult is ""
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,3 @@
+CONSOLE INFO: line 11: The Content-Security-Policy directive 'manifest-src' is implemented behind a flag which is currently disabled.
+
+This page disables CSP2, but uses a CSP2 manifest directive. It should log an informative message to the console: not an error, showing that the directive is parsed correctly but experimental.

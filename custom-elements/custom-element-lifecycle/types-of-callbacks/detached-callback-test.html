@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Detached callback of a custom element should be called </title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="detached callback ... must be enqueued whenever custom element is removed from the document and this document has a browsing context.">
+<link rel="help" href="http://w3c.github.io/webcomponents/spec/custom/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+
+test(function() {
+    var doc = newHTMLDocument();
+    var proto = newHTMLElementPrototype();
+    var GeneratedConstructor = doc.registerElement('x-a', {prototype: proto});
+    var customElement = new GeneratedConstructor();
+    doc.body.appendChild( customElement );
+    assert_equals(proto.detachedCallbackCalledCounter, 0, 'Callback detached should not be called if in documents' );
+    doc.body.removeChild( customElement );
+    assert_equals(proto.detachedCallbackCalledCounter, 1, 'Callback detached should be called if disappeared in documents');
+}, 'Test detached callback if custom element is destroyed. ' );
+
+</script>
+</body>
+</html>

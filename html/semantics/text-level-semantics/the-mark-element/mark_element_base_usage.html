@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Text-level semantics Test: mark_element_base_usage</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/text-level-semantics.html#the-mark-element">
+<link rel="match" href="mark_element_base_usage-ref.html">
+<meta name="flags" content="interact">
+<meta name="assert" content="Check if the mark element represents a run of text in one document marked or highlighted for reference purposes">
+<body>
+  <p>Test passes if the highlighted part below is 1.1.</p>
+    <pre>
+      <code>
+        var i: Integer;
+        begin
+        i := <mark>1.1</mark>;
+        end.
+      </code>
+    </pre>
+</body>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Setting SourceBuffer#timestampOffset when readyState is 'ended'</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var contents  = {'/media/white.webm' : 'video/webm; codecs="vorbis,vp8"',
+                 '/media/segmented-3s.mp4'  : 'video/mp4'};
+
+function GET(url, processBody) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.send();
+    xhr.onload = function(e) {
+        if (xhr.status != 200) {
+            alert("Unexpected status code " + xhr.status + " for " + url);
+            return false;
+        }
+        processBody(new Uint8Array(xhr.response));
+    };
+}
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function testMedia(file, mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            console.log(file + ' ' + mime);
+            var mediaSource = new MediaSource();
+            var num_sourceopen = 0;
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                events.push('sourceopen');
+                num_sourceopen++;
+                if(num_sourceopen > 1) {
+                    t.step(function() {
+                        assert_array_equals(events,
+                                            ['sourceopen','updateend',
+                                             'sourceended','sourceopen']);
+                    });
+                    t.done();
+                    return;
+                }
+                this.sourceBuffer = mediaSource.addSourceBuffer(mime);
+                this.sourceBuffer.addEventListener('updateend', function(e) {
+                    events.push('updateend');
+                    mediaSource.endOfStream();
+                });
+                this.sourceBuffer.appendBuffer(data);
+            });
+            mediaSource.addEventListener('sourceended', function(e) {
+                events.push('sourceended');
+                this.sourceBuffer.timestampOffset = 1;
+                t.step(function() {
+                    assert_equals(mediaSource.readyState, 'open');
+                });
+            });
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'Setting SourceBuffer#timestampOffset ('+ mime + '): ' +
+       'If the readyState attribute of the parent media source is in the "ended" state then run the following steps:' +
+       '1. Set the readyState attribute of the parent media source to "open".' +
+       '2. Queue a task to fire a simple event named sourceopen at the parent media source.');
+}
+for(var file in contents) {
+    testMedia(file, contents[file]);
+}
+</script>
+</body>
+</html>

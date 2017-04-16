@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Type extension instantiation</title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="As the value of the is attribute of the custom element. custom element types given this way are called type extensions.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+	var Extension= document.registerElement( 'type-extensions', {
+		prototype: Object.create( HTMLButtonElement.prototype ),
+		extends: 'button'
+	} );
+	var instance = document.createElement( 'button', 'type-extensions' );
+
+	document.body.appendChild( instance );
+	var element = document.querySelector( 'button' );
+
+	assert_true( element instanceof Extension, 'A instance created using local name is of a custom tag type' )
+
+}, 'As the value of the is attribute of the custom element. custom element types given this way are called type extensions.');
+</script>
+</body>
+</html>

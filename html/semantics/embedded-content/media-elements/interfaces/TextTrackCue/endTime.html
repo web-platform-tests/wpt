@@ -31,8 +31,7 @@ t_parsed.step(function(){
     t.onerror = this.step_func(function() {
       assert_unreached('got error event');
     });
-    t.src = 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:00.001\ntest'+
-                                                      '\n\nfoobar\n01:00:00.000 --> 01:00:00.001\ntest');
+    t.src = 'resources/hour.vtt';
     t.track.mode = 'showing';
     video.appendChild(t);
 });

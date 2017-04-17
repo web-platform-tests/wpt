@@ -12,18 +12,28 @@
 "use strict";
 
 async_test(t => {
-  const sab = new SharedArrayBuffer();
+  const sab = new SharedArrayBuffer(1);
   window.addEventListener("message", t.step_func(({ data }) => {
     if (data.testId !== 1) {
       return;
     }
 
     assert_not_equals(data.sab, sab);
+
+    const originalView = new Uint8Array(sab);
+    const receivedView = new Uint8Array(data.sab);
+    assert_equals(originalView[0], 0, "originalView[0] starts 0");
+    assert_equals(receivedView[0], 0, "receivedView[0] starts 0");
+
+    originalView[0] = 5;
+    assert_equals(originalView[0], 5, "originalView[0] ends up 5");
+    assert_equals(receivedView[0], 5, "receivedView[0] ends up 5");
+
     t.done();
   }));
 
   window.postMessage({ sab, testId: 1 }, "*");
-}, "postMessaging to this window does not give back the same SharedArrayBuffer");
+}, "postMessaging to this window does not give back the same SharedArrayBuffer (but does use the same backing block)");
 
 async_test(t => {
   const sab = new SharedArrayBuffer();

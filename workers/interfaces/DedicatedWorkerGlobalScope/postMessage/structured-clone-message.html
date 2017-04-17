@@ -35,7 +35,7 @@ var tests = [
       {test:async_test('regexp'), check:function(e) { assert_equals('' + e.data, '/foo/'); assert_equals(e.data instanceof RegExp, true, 'e.data instanceof RegExp'); }},
       {test:async_test('self'), check:function(e) { assert_equals(e.data, null); }},
       {test:async_test('array'), check:function(e) { assert_array_equals(e.data, [undefined, null, false, true, 1, NaN, Infinity, 'foo', null, null]); }},
-      {test:async_test('object'), check:function(e) { assert_object_equals(e.data, {a:undefined, b:null, c:false, d:true, e:1, f:NaN, g:Infinity, h:'foo', k:null, n:null}); }},
+      {test:async_test('object'), check:function(e) { assert_equals(JSON.stringify(e.data), JSON.stringify({a:undefined, b:null, c:false, d:true, e:1, f:NaN, g:Infinity, h:'foo', k:null, n:null})); }},
       {test:async_test('error'), check:function(e) { assert_equals(e.data, null, 'new Error()'); }},
       {test:wrapper_test, check:function(e) { assert_unreached(); }}
 ];

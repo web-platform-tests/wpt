@@ -49,7 +49,7 @@ txt2 = window.frames[1].document.getElementById("nbsp").firstChild.nodeValue;
 txt2=null;
 }
 test(function() {
-assert_object_equals(txt2,null);
+assert_equals(txt2,null);
 },"nbsp should not be recognised without known PUBLIC identifier");
 }
 

@@ -309,6 +309,8 @@ SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: resources/chromium/*
 SET TIMEOUT: resources/test/tests/add_cleanup.html
+SET TIMEOUT: resources/test/tests/add_cleanup_async.html
+SET TIMEOUT: resources/test/tests/add_cleanup_async_rejection.html
 SET TIMEOUT: resources/test/tests/api-tests-1.html
 SET TIMEOUT: resources/test/tests/worker.js
 SET TIMEOUT: resources/testharness.js
@@ -966,6 +968,7 @@ WEB-PLATFORM.TEST: longtask-timing/longtask-in-childiframe-crossorigin.html
 WEB-PLATFORM.TEST: longtask-timing/longtask-in-sibling-iframe-crossorigin.html
 WEB-PLATFORM.TEST: navigation-timing/nav2_test_attributes_values.html
 WEB-PLATFORM.TEST: navigation-timing/nav2_test_instance_accessors.html
+WEB-PLATFORM.TEST: resources/test/tests/worker-dedicated.html
 WEB-PLATFORM.TEST: service-workers/service-worker/update-bytecheck.https.html
 WEB-PLATFORM.TEST: webdriver/tests/cookies/add_cookie.py
 WEB-PLATFORM.TEST: webdriver/tests/cookies/get_named_cookie.py

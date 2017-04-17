@@ -502,7 +502,6 @@ policies and contribution forms [3].
     /*
      * API functions
      */
-
     function test(func, name, properties)
     {
         var test_name = name ? name : test_environment.next_default_test_name();
@@ -532,22 +531,23 @@ policies and contribution forms [3].
 
     function promise_test(func, name, properties) {
         var test = async_test(name, properties);
+        test._is_promise_test = true;
+
         // If there is no promise tests queue make one.
         if (!tests.promise_tests) {
             tests.promise_tests = Promise.resolve();
         }
         tests.promise_tests = tests.promise_tests.then(function() {
             var donePromise = new Promise(function(resolve) {
-                test._add_cleanup(resolve);
+                test._add_done_callback(resolve);
             });
             var promise = test.step(func, test, test);
+
             test.step(function() {
                 assert_not_equals(promise, undefined);
             });
-            Promise.resolve(promise).then(
-                    function() {
-                        test.done();
-                    })
+
+            Promise.resolve(promise)
                 .catch(test.step_func(
                     function(value) {
                         if (value instanceof AssertionError) {
@@ -555,7 +555,10 @@ policies and contribution forms [3].
                         }
                         assert(false, "promise_test", null,
                                "Unhandled rejection with value: ${value}", {value:value});
-                    }));
+                    }))
+                .then(function() {
+                    test.done();
+                });
             return donePromise;
         });
     }
@@ -688,10 +691,13 @@ policies and contribution forms [3].
         if (tests.tests.length === 0) {
             tests.set_file_is_test();
         }
+        var end_wait = function() { tests.end_wait(); };
         if (tests.file_is_test) {
+            tests.tests[0]._add_done_callback(end_wait);
             tests.tests[0].done();
+        } else {
+            end_wait();
         }
-        tests.end_wait();
     }
 
     function generate_tests(func, args, properties) {
@@ -1421,9 +1427,12 @@ policies and contribution forms [3].
         this.stack = null;
 
         this.steps = [];
+        this._is_promise_test = false;
 
         this.cleanup_callbacks = [];
         this._user_defined_cleanup_count = 0;
+        this._cleanup_done_callbacks = [];
+        this._done_callbacks = [];
 
         tests.push(this);
     }
@@ -1441,7 +1450,8 @@ policies and contribution forms [3].
         INITIAL:0,
         STARTED:1,
         HAS_RESULT:2,
-        COMPLETE:3
+        CLEANING:3,
+        COMPLETE:4
     };
 
     Test.prototype.structured_clone = function()
@@ -1597,9 +1607,13 @@ policies and contribution forms [3].
 
     Test.prototype.force_timeout = Test.prototype.timeout;
 
+    Test.prototype._add_done_callback = function(callback) {
+        this._done_callbacks.push(callback);
+    };
+
     Test.prototype.done = function()
     {
-        if (this.phase == this.phases.COMPLETE) {
+        if (this.phase >= this.phases.CLEANING) {
             return;
         }
 
@@ -1607,10 +1621,7 @@ policies and contribution forms [3].
             this.set_status(this.PASS, null);
         }
 
-        this.phase = this.phases.COMPLETE;
-
         clearTimeout(this.timeout_id);
-        tests.result(this);
         this.cleanup();
     };
 
@@ -1621,29 +1632,76 @@ policies and contribution forms [3].
      */
     Test.prototype.cleanup = function() {
         var error_count = 0;
-        var total;
+        function on_error() {
+            error_count += 1;
+            // Set test phase immediately so that tests declared within
+            // subsequent cleanup functions are not run.
+            tests.phase = tests.phases.ABORTED;
+        }
+        var this_obj = this;
+        var results = [];
+
+        this.phase = this.phases.CLEANING;
 
         forEach(this.cleanup_callbacks,
                 function(cleanup_callback) {
+                    var result;
+
                     try {
-                        cleanup_callback();
+                        result = cleanup_callback();
                     } catch (e) {
-                        // Set test phase immediately so that tests declared
-                        // within subsequent cleanup functions are not run.
-                        tests.phase = tests.phases.ABORTED;
-                        error_count += 1;
+                        on_error();
+                        return;
                     }
+
+                    results.push(result);
                 });
 
-        if (error_count > 0) {
-            total = this._user_defined_cleanup_count;
-            tests.status.status = tests.status.ERROR;
-            tests.status.message = "Test named '" + this.name +
-                "' specified " + total + " 'cleanup' function" +
-                (total > 1 ? "s" : "") + ", and " + error_count + " failed.";
-            tests.status.stack = null;
+        if (!this._is_promise_test) {
+            cleanup_done(this_obj, error_count);
+        } else {
+            all_async(results,
+                      function(result, done) {
+                          if (result && typeof result.then === "function") {
+                              result
+                                  .then(null, on_error)
+                                  .then(done);
+                          } else {
+                              done();
+                          }
+                      },
+                      function() {
+                          cleanup_done(this_obj, error_count);
+                      });
         }
     };
+
+    function cleanup_done(test, error_count) {
+        if (error_count) {
+            var total = test._user_defined_cleanup_count;
+
+            tests.phase = tests.phases.ABORTED;
+            forEach(tests.tests,
+                    function(test) {
+                        test.phase = test.phases.COMPLETE
+                    });
+
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = "Test named '" + test.name +
+                "' specified " + total +
+                " 'cleanup' function" + (total > 1 ? "s" : "") +
+                ", and " + error_count + " failed.";
+            tests.status.stack = null;
+        }
+
+        test.phase = test.phases.COMPLETE;
+        tests.result(test);
+        forEach(test._done_callbacks,
+                function(cb) {
+                    cb();
+                });
+        test._done_callbacks.length = 0;
+    }
 
     /*
      * A RemoteTest object mirrors a Test object on a remote worker. The
@@ -1661,6 +1719,7 @@ policies and contribution forms [3].
         this.index = null;
         this.phase = this.phases.INITIAL;
         this.update_state_from(clone);
+        this._done_callbacks = [];
         tests.push(this);
     }
 
@@ -1669,6 +1728,7 @@ policies and contribution forms [3].
         Object.keys(this).forEach(
                 (function(key) {
                     var value = this[key];
+                    if (key === '_done_callbacks' ) { return; }
 
                     if (typeof value === "object" && value !== null) {
                         clone[key] = merge({}, value);
@@ -1680,7 +1740,9 @@ policies and contribution forms [3].
         return clone;
     };
 
-    RemoteTest.prototype.cleanup = function() {};
+    RemoteTest.prototype.cleanup = function() {
+        this.done();
+    };
     RemoteTest.prototype.phases = Test.prototype.phases;
     RemoteTest.prototype.update_state_from = function(clone) {
         this.status = clone.status;
@@ -1690,8 +1752,16 @@ policies and contribution forms [3].
             this.phase = this.phases.STARTED;
         }
     };
+    RemoteTest.prototype._add_done_callback = function(callback) {
+        this._done_callbacks.push(callback);
+    };
     RemoteTest.prototype.done = function() {
         this.phase = this.phases.COMPLETE;
+
+        forEach(this._done_callbacks,
+                function(callback) {
+                    callback();
+                });
     }
 
     /*
@@ -1723,7 +1793,7 @@ policies and contribution forms [3].
         this.message_target = message_target;
         this.message_handler = function(message) {
             var passesFilter = !message_filter || message_filter(message);
-            if (this_obj.running && message.data && passesFilter &&
+            if (message.data && passesFilter &&
                 (message.data.type in this_obj.message_handlers)) {
                 this_obj.message_handlers[message.data.type].call(this_obj, message.data);
             }
@@ -1737,13 +1807,9 @@ policies and contribution forms [3].
         var filename = (error.filename ? " " + error.filename: "");
         // FIXME: Display remote error states separately from main document
         // error state.
-        this.remote_done({
-            status: {
-                status: tests.status.ERROR,
-                message: "Error in remote" + filename + ": " + message,
-                stack: error.stack
-            }
-        });
+        tests.set_status(tests.status.ERROR,
+                         "Error in remote" + filename + ": " + message,
+                         error.stack);
 
         if (error.preventDefault) {
             error.preventDefault();
@@ -1763,21 +1829,23 @@ policies and contribution forms [3].
     RemoteContext.prototype.test_done = function(data) {
         var remote_test = this.tests[data.test.index];
         remote_test.update_state_from(data.test);
+        remote_test._add_done_callback(function() {
+            tests.result(remote_test);
+        });
         remote_test.done();
-        tests.result(remote_test);
     };
 
     RemoteContext.prototype.remote_done = function(data) {
         if (tests.status.status === null &&
             data.status.status !== data.status.OK) {
-            tests.status.status = data.status.status;
-            tests.status.message = data.status.message;
-            tests.status.stack = data.status.stack;
+            tests.set_status(data.status.status, data.status.message, data.status.sack);
         }
+
         this.message_target.removeEventListener("message", this.message_handler);
         this.running = false;
         this.remote = null;
         this.message_target = null;
+
         if (tests.all_done()) {
             tests.complete();
         }
@@ -1923,6 +1991,13 @@ policies and contribution forms [3].
         async_test();
     };
 
+    Tests.prototype.set_status = function(status, message, stack)
+    {
+        this.status.status = status;
+        this.status.message = message;
+        this.status.stack = stack ? stack : null;
+    };
+
     Tests.prototype.set_timeout = function() {
         var this_obj = this;
         clearTimeout(this.timeout_id);
@@ -1934,9 +2009,33 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.timeout = function() {
+        var cleaningTest = null;
+
         if (this.status.status === null) {
-            this.status.status = this.status.TIMEOUT;
+            forEach(this.tests,
+                    function(test) {
+                        if (test.phase === test.phases.CLEANING) {
+                            cleaningTest = test;
+                        }
+
+                        test.phase = test.phases.COMPLETE;
+                    });
+
+            // Timeouts that occur while a sub-test is in the "cleanup" phase
+            // indicate that some global state was not properly reverted. This
+            // invalidates the overall test execution, so the timeout should be
+            // reported as an error and cancel the execution of any remaining
+            // sub-tests.
+            if (cleaningTest) {
+                this.status.status = this.status.ERROR;
+                this.status.message = "Cleanup function for test named \"" +
+                    cleaningTest.name + "\" timed out.";
+                tests.status.stack = null;
+            } else {
+                this.status.status = this.status.TIMEOUT;
+            }
         }
+
         this.complete();
     };
 
@@ -2016,19 +2115,29 @@ policies and contribution forms [3].
         if (this.phase === this.phases.COMPLETE) {
             return;
         }
-        this.phase = this.phases.COMPLETE;
         var this_obj = this;
-        this.tests.forEach(
-            function(x)
-            {
-                if (x.phase < x.phases.COMPLETE) {
-                    this_obj.notify_result(x);
-                    x.cleanup();
-                    x.phase = x.phases.COMPLETE;
-                }
-            }
-        );
-        this.notify_complete();
+
+        all_async(this.tests,
+                  function(test, testDone)
+                  {
+                      if (test.phase === test.phases.COMPLETE) {
+                          testDone();
+                          return;
+                      }
+
+                      test._add_done_callback(testDone);
+
+                      if (test.phase < test.phases.CLEANING) {
+                          test.cleanup();
+                      }
+                  },
+                  function() {
+                      if (this_obj.phase !== this_obj.phases.ABORTED) {
+                          this_obj.phase = this_obj.phases.COMPLETE;
+                      }
+
+                      this_obj.notify_complete();
+                  });
     };
 
     /*
@@ -2788,6 +2897,50 @@ policies and contribution forms [3].
         }
     }
 
+    /**
+     * Immediately invoke a "predicate" function with a series of values in
+     * parallel and invoke a final "done" function when all of the "predicates"
+     * invocations have signaled completion.
+     *
+     * @param {array} value Zero or more values to use in the invocation of
+     *                      `predicate`
+     * @param {function} predicate A function that will be invoked once for
+     *                             each of the provided `values`. Two arguments
+     *                             will be available in each invocation: the
+     *                             value from `values` and a function that must
+     *                             be invoked to signal completion
+     * @param {function} allDone A function that will be invoked after all
+     *                           operations initiated by the `predicate`
+     *                           function have signaled completion
+     */
+    function all_async(values, predicate, allDone)
+    {
+        var remaining = values.length;
+
+        if (remaining === 0) {
+            setTimeout(allDone, 0);
+        }
+
+        forEach(values,
+                function(element) {
+                    var invoked = false;
+                    var elDone = function() {
+                        if (invoked) {
+                            return;
+                        }
+
+                        invoked = true;
+                        remaining -= 1;
+
+                        if (remaining === 0) {
+                            setTimeout(allDone, 0);
+                        }
+                    };
+
+                    predicate(element, elDone);
+                });
+    }
+
     function merge(a,b)
     {
         var rv = {};
@@ -2920,12 +3073,10 @@ policies and contribution forms [3].
             }
             test.set_status(test.FAIL, e.message, stack);
             test.phase = test.phases.HAS_RESULT;
-            test.done();
         } else if (!tests.allow_uncaught_exception) {
-            tests.status.status = tests.status.ERROR;
-            tests.status.message = e.message;
-            tests.status.stack = stack;
+            tests.set_status(tests.status.ERROR, e.message, stack);
         }
+
         done();
     };
 

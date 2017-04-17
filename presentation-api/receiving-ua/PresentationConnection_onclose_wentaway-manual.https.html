@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Closing a PresentationConnection</title>
+<title>[Optional] Closing a PresentationConnection by discarding a presentation connection object</title>
 <link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs">
 <link rel="help" href="https://w3c.github.io/presentation-api/#closing-a-presentationconnection">
 <link rel="stylesheet" href="/resources/testharness.css">
@@ -24,7 +24,7 @@ iframe { display: none; }
   presentBtn.onclick = () => {
     presentBtn.disabled = true;
     const stash = new Stash(stashIds.toController, stashIds.toReceiver);
-    const request = new PresentationRequest('support/PresentationConnection_onclose_receiving-ua.html');
+    const request = new PresentationRequest('support/PresentationConnection_onclose_wentaway_receiving-ua.html');
 
     return request.start().then(c => {
       connection = c;
@@ -34,15 +34,15 @@ iframe { display: none; }
     }).then(data => {
       const result = JSON.parse(data);
       if (result.type === 'ok') {
-        return request.reconnect(connection.id).then(() => data);
+        child.contentWindow.postMessage({ type: 'connect', id: connection.id, url: connection.url }, '*');
+        return stash.receive();
       }
       else
         return data;
     }).then(data => {
       const result = JSON.parse(data);
       if (result.type === 'ok') {
-        connection.onclose = null;
-        connection.close();
+        child.parentNode.removeChild(child);
         return stash.receive();
       }
       else

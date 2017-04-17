@@ -17,8 +17,7 @@
     list.onconnectionavailable = evt => {
       connection.terminate();
 
-      // the following code must not be invoked since the presentation is terminated
-      stash.send({ type: 'error' });
+      stash.sendBeacon({ type: (window.closed ? 'ok' : 'error') });
     };
   });
 </script>

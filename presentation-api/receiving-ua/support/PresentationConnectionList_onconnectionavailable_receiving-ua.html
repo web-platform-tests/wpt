@@ -53,8 +53,6 @@
         return checkConnectionList(evt.connection, 'connect');
       };
 
-      let eventNotFired = false;
-
       // Step 1: check the first connection in "connected" state
       let connection = list.connections[0];
       assert_equals(number, 1, 'A presentation connection list is populated with a first presentation connection.');
@@ -76,8 +74,6 @@
       }).then(checkEvent)
       // Step 4: check the second connection (with <iframe>) in "connected" state
       .then(() => {
-        eventNotFired = true;
-        stash.send(JSON.stringify({ type: 'ok' }));
         return eventWatcher.wait_for('connectionavailable');
       }).then(checkEvent);
     });

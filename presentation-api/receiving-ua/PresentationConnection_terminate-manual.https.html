@@ -59,8 +59,9 @@ iframe { display: none; }
         return Promise.all([ eventWatcher1.wait_for('terminate'), eventWatcher2.wait_for('message') ]);
       }).then(() => {
         return Promise.race([
-          stash.receive().then(() => {
-            assert_unreached('The presentation is not terminated successfully.');
+          stash.receive().then(data => {
+            if (data.type === 'error')
+              assert_unreached('The presentation is not terminated successfully.');
           }),
           new Promise(resolve => { t.step_timeout(resolve, 2000); })
         ]);

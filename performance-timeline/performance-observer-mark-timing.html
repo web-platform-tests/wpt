@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>PerformanceObserver tests</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/performance-timeline-2"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+
+        function onload_test()
+        {
+            if (window.PerformanceObserver == undefined)
+            {
+                test_true(false,
+                          "The Performance Observer and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                var observedEntries = [];
+
+                var observer = new window.PerformanceObserver(function(list) {
+                    var entries = list.getEntries();
+                    for (var i = 0; i < entries.length; i++) {
+                        var entry = entries[i];
+                        test_equals("mark", entry.entryType, "Entry \"" + entry.name + "\" is of type mark");
+                    }
+                    observedEntries = observedEntries.concat(entries);
+                });
+
+                var done_cb = function() {
+                    test_equals(0, observedEntries.length, "No events observed after disconnecting the observer.");
+                    done();
+                }
+
+                var disconnect_cb = function() {
+                    observer.disconnect();
+                    test_equals(3, observedEntries.length, "Three mark entries observed.");
+                    test_equals("mark2", observedEntries[0].name, "mark2 successfully added to the timeline");
+                    test_equals("mark3", observedEntries[1].name, "mark3 successfully added to the timeline");
+                    test_equals("mark4", observedEntries[2].name, "mark4 successfully added to the timeline");
+
+                    observedEntries = []
+
+                    // observer disconnected. mark5 should not be observed.
+                    window.performance.mark("mark5");
+
+                    setTimeout(done_cb, 200);
+                }
+
+                var pre_observe_cb = function() {
+                    test_equals(0, observedEntries.length, "No entries observed before calling observe.")
+                    observer.observe({entryTypes: ["mark"]});
+
+                    // mark entries should be observed
+                    window.performance.mark("mark2");
+                    window.performance.mark("mark3");
+                    // measure should not be observed
+                    window.performance.measure("measure1", "mark1", "mark2");
+                    window.performance.mark("mark4");
+
+                    setTimeout(disconnect_cb, 200);
+                }
+
+                // observer.observer not called yet. mark1 should not be observed.
+                window.performance.mark("mark1");
+
+                setTimeout(pre_observe_cb, 200);
+            }
+        }
+
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>Test that the PerformanceObserver successfully observes events it is filtering on.
+        </p>
+
+        <div id="log"></div>
+    </body>
+</html>

@@ -23,68 +23,64 @@ expectedIframe.style.display = "none";
 document.body.appendChild(expectedIframe);
 
 function myCloneContents(range) {
-  // "Let frag be a new DocumentFragment whose ownerDocument is the same as
-  // the ownerDocument of the context object's start node."
-  var ownerDoc = range.startContainer.nodeType == Node.DOCUMENT_NODE
-    ? range.startContainer
-    : range.startContainer.ownerDocument;
-  var frag = ownerDoc.createDocumentFragment();
+  var ownerDoc = ownerDocument(range.startContainer);
 
-  // "If the context object's start and end are the same, abort this method,
-  // returning frag."
+  // "Let fragment be a new DocumentFragment node whose node document is
+  // range's start node's node document."
+  var fragment = ownerDoc.createDocumentFragment();
+
+  // "If range's start is its end, return fragment."
   if (range.startContainer == range.endContainer
   && range.startOffset == range.endOffset) {
-    return frag;
+    return fragment;
   }
 
   // "Let original start node, original start offset, original end node, and
-  // original end offset be the context object's start and end nodes and
-  // offsets, respectively."
+  // original end offset be range's start node, start offset, end node, and end
+  // offset, respectively."
   var originalStartNode = range.startContainer;
   var originalStartOffset = range.startOffset;
   var originalEndNode = range.endContainer;
   var originalEndOffset = range.endOffset;
 
-  // "If original start node and original end node are the same, and they are
-  // a Text, ProcessingInstruction, or Comment node:"
+  // "If original start node is original end node, and they are a Text,
+  // ProcessingInstruction, or Comment node:"
   if (range.startContainer == range.endContainer
   && (range.startContainer.nodeType == Node.TEXT_NODE
   || range.startContainer.nodeType == Node.COMMENT_NODE
   || range.startContainer.nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
-    // "Let clone be the result of calling cloneNode(false) on original
-    // start node."
+    // "Let clone be a clone of original start node."
     var clone = originalStartNode.cloneNode(false);
 
-    // "Set the data of clone to the result of calling
-    // substringData(original start offset, original end offset − original
-    // start offset) on original start node."
+    // "Set the data of clone to the result of substringing data with node
+    // original start node, offset original start offset, and count original
+    // end offset minus original start offset)."
     clone.data = originalStartNode.substringData(originalStartOffset,
       originalEndOffset - originalStartOffset);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
 
-    // "Abort this method, returning frag."
-    return frag;
+    // "Return fragment."
+    return fragment;
   }
 
-  // "Let common ancestor equal original start node."
+  // "Let common ancestor be original start node."
   var commonAncestor = originalStartNode;
 
-  // "While common ancestor is not an ancestor container of original end
-  // node, set common ancestor to its own parent."
+  // "While common ancestor is not an inclusive ancestor of original end node,
+  // set common ancestor to its own parent."
   while (!isAncestorContainer(commonAncestor, originalEndNode)) {
     commonAncestor = commonAncestor.parentNode;
   }
 
-  // "If original start node is an ancestor container of original end node,
-  // let first partially contained child be null."
-  var firstPartiallyContainedChild;
-  if (isAncestorContainer(originalStartNode, originalEndNode)) {
-    firstPartiallyContainedChild = null;
-  // "Otherwise, let first partially contained child be the first child of
-  // common ancestor that is partially contained in the context object."
-  } else {
+  // "Let first partially contained child be null."
+  var firstPartiallyContainedChild = null;
+
+  // "If original start node is not an inclusive ancestor of original end node,
+  // set first partially contained child to the first child of common ancestor
+  // that is partially contained in range."
+  if (!isAncestorContainer(originalStartNode, originalEndNode)) {
     for (var i = 0; i < commonAncestor.childNodes.length; i++) {
       if (isPartiallyContained(commonAncestor.childNodes[i], range)) {
         firstPartiallyContainedChild = commonAncestor.childNodes[i];
@@ -94,16 +90,16 @@ function myCloneContents(range) {
     if (!firstPartiallyContainedChild) {
       throw "Spec bug: no first partially contained child!";
     }
+    firstPartiallyContainedChild = null;
   }
 
-  // "If original end node is an ancestor container of original start node,
-  // let last partially contained child be null."
-  var lastPartiallyContainedChild;
-  if (isAncestorContainer(originalEndNode, originalStartNode)) {
-    lastPartiallyContainedChild = null;
-  // "Otherwise, let last partially contained child be the last child of
-  // common ancestor that is partially contained in the context object."
-  } else {
+  // "Let last partially contained child be null."
+  var lastPartiallyContainedChild = null;
+
+  // "If original end node is not an inclusive ancestor of original start node,
+  // set last partially contained child to the last child of common ancestor
+  // that is partially contained in range."
+  if (!isAncestorContainer(originalEndNode, originalStartNode)) {
     for (var i = commonAncestor.childNodes.length - 1; i >= 0; i--) {
       if (isPartiallyContained(commonAncestor.childNodes[i], range)) {
         lastPartiallyContainedChild = commonAncestor.childNodes[i];
@@ -116,19 +112,15 @@ function myCloneContents(range) {
   }
 
   // "Let contained children be a list of all children of common ancestor
-  // that are contained in the context object, in tree order."
-  //
-  // "If any member of contained children is a DocumentType, raise a
-  // HIERARCHY_REQUEST_ERR exception and abort these steps."
-  var containedChildren = [];
-  for (var i = 0; i < commonAncestor.childNodes.length; i++) {
-    if (isContained(commonAncestor.childNodes[i], range)) {
-      if (commonAncestor.childNodes[i].nodeType
-      == Node.DOCUMENT_TYPE_NODE) {
-        return "HIERARCHY_REQUEST_ERR";
-      }
-      containedChildren.push(commonAncestor.childNodes[i]);
-    }
+  // that are contained in range, in tree order."
+  var containedChildren = [].filter.call(commonAncestor.childNodes,
+      function(node) { return isContained(node, range) });
+
+  // "If any member of contained children is a doctype, throw a
+  // HierarchyRequestError exception."
+  if (containedChildren.some(
+        function(node) { return node.nodeType == Node.DOCUMENT_TYPE_NODE })) {
+    return "HIERARCHY_REQUEST_ERR";
   }
 
   // "If first partially contained child is a Text, ProcessingInstruction, or Comment node:"
@@ -136,101 +128,90 @@ function myCloneContents(range) {
   && (firstPartiallyContainedChild.nodeType == Node.TEXT_NODE
   || firstPartiallyContainedChild.nodeType == Node.COMMENT_NODE
   || firstPartiallyContainedChild.nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
-    // "Let clone be the result of calling cloneNode(false) on original
-    // start node."
+    // "Let clone be a clone of original start node."
     var clone = originalStartNode.cloneNode(false);
 
-    // "Set the data of clone to the result of calling substringData() on
-    // original start node, with original start offset as the first
-    // argument and (length of original start node − original start offset)
-    // as the second."
+    // "Set the data of clone to the result of substringing data with node
+    // original start node, offset original start offset, and count original
+    // start node's length minus original start offset."
     clone.data = originalStartNode.substringData(originalStartOffset,
       nodeLength(originalStartNode) - originalStartOffset);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
+
   // "Otherwise, if first partially contained child is not null:"
   } else if (firstPartiallyContainedChild) {
-    // "Let clone be the result of calling cloneNode(false) on first
-    // partially contained child."
+    // "Let clone be a clone of first partially contained child."
     var clone = firstPartiallyContainedChild.cloneNode(false);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
 
-    // "Let subrange be a new Range whose start is (original start node,
+    // "Let subrange be a new range whose start is (original start node,
     // original start offset) and whose end is (first partially contained
-    // child, length of first partially contained child)."
+    // child, first partially contained child's length)."
     var subrange = ownerDoc.createRange();
     subrange.setStart(originalStartNode, originalStartOffset);
     subrange.setEnd(firstPartiallyContainedChild,
       nodeLength(firstPartiallyContainedChild));
 
-    // "Let subfrag be the result of calling cloneContents() on
-    // subrange."
-    var subfrag = myCloneContents(subrange);
+    // "Let subfragment be the result of cloning subrange."
+    var subfragment = myCloneContents(subrange);
 
-    // "For each child of subfrag, in order, append that child to clone as
-    // its last child."
-    for (var i = 0; i < subfrag.childNodes.length; i++) {
-      clone.appendChild(subfrag.childNodes[i]);
-    }
+    // "Append subfragment to clone."
+    clone.appendChild(subfragment);
   }
 
   // "For each contained child in contained children:"
   for (var i = 0; i < containedChildren.length; i++) {
-    // "Let clone be the result of calling cloneNode(true) of contained
-    // child."
+    // "Let clone be a clone of contained child with the clone children flag
+    // set"
     var clone = containedChildren[i].cloneNode(true);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
   }
 
-  // "If last partially contained child is a Text, ProcessingInstruction, or Comment node:"
+  // "If last partially contained child is a Text, ProcessingInstruction, or
+  // Comment node:"
   if (lastPartiallyContainedChild
   && (lastPartiallyContainedChild.nodeType == Node.TEXT_NODE
   || lastPartiallyContainedChild.nodeType == Node.COMMENT_NODE
   || lastPartiallyContainedChild.nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
-    // "Let clone be the result of calling cloneNode(false) on original
-    // end node."
+    // "Let clone be a clone of original end node."
     var clone = originalEndNode.cloneNode(false);
 
-    // "Set the data of clone to the result of calling substringData(0,
-    // original end offset) on original end node."
+    // "Set the data of clone to the result of substringing data with node
+    // original end node, offset 0, and count original end offset."
     clone.data = originalEndNode.substringData(0, originalEndOffset);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
+
   // "Otherwise, if last partially contained child is not null:"
   } else if (lastPartiallyContainedChild) {
-    // "Let clone be the result of calling cloneNode(false) on last
-    // partially contained child."
+    // "Let clone be a clone of last partially contained child."
     var clone = lastPartiallyContainedChild.cloneNode(false);
 
-    // "Append clone as the last child of frag."
-    frag.appendChild(clone);
+    // "Append clone to fragment."
+    fragment.appendChild(clone);
 
-    // "Let subrange be a new Range whose start is (last partially
-    // contained child, 0) and whose end is (original end node, original
-    // end offset)."
+    // "Let subrange be a new range whose start is (last partially contained
+    // child, 0) and whose end is (original end node, original end offset)."
     var subrange = ownerDoc.createRange();
     subrange.setStart(lastPartiallyContainedChild, 0);
     subrange.setEnd(originalEndNode, originalEndOffset);
 
-    // "Let subfrag be the result of calling cloneContents() on
-    // subrange."
-    var subfrag = myCloneContents(subrange);
+    // "Let subfragment be the result of cloning subrange."
+    var subfragment = myCloneContents(subrange);
 
-    // "For each child of subfrag, in order, append that child to clone as
-    // its last child."
-    for (var i = 0; i < subfrag.childNodes.length; i++) {
-      clone.appendChild(subfrag.childNodes[i]);
-    }
+    // "Append subfragment to clone."
+    clone.appendChild(subfragment);
   }
 
-  // "Return frag."
-  return frag;
+  // "Return fragment."
+  return fragment;
 }
 
 function restoreIframe(iframe, i) {

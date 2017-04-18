@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SharedArrayBuffers cloning via history's methods invoking StructuredSerialize</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#structuredserialize">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-sab.js"></script>
+
+<script>
+"use strict";
+
+test(() => {
+  const originalSAB = new SharedArrayBuffer(1);
+  history.pushState(originalSAB, "dummy title");
+  assertSABsHaveSameBackingBlock(originalSAB, history.state);
+}, "history.pushState()");
+
+test(() => {
+  const originalSAB = new SharedArrayBuffer(1);
+  history.replaceState(originalSAB, "dummy title");
+  assertSABsHaveSameBackingBlock(originalSAB, history.state);
+}, "history.replaceState()");
+</script>

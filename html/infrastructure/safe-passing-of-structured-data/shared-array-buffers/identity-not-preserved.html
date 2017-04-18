@@ -5,6 +5,7 @@
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-sab.js"></script>
 
 <div id="log"></div>
 
@@ -18,16 +19,7 @@ async_test(t => {
       return;
     }
 
-    assert_not_equals(data.sab, sab);
-
-    const originalView = new Uint8Array(sab);
-    const receivedView = new Uint8Array(data.sab);
-    assert_equals(originalView[0], 0, "originalView[0] starts 0");
-    assert_equals(receivedView[0], 0, "receivedView[0] starts 0");
-
-    originalView[0] = 5;
-    assert_equals(originalView[0], 5, "originalView[0] ends up 5");
-    assert_equals(receivedView[0], 5, "receivedView[0] ends up 5");
+    assertSABsHaveSameBackingBlock(sab, data.sab);
 
     t.done();
   }));

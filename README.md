@@ -257,8 +257,8 @@ is [archived][ircarchive].
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
 [ircw3org]: https://www.w3.org/wiki/IRC
-[ircarchive]: http://krijnhoetmer.nl/irc-logs/testing/
-[mailarchive]: http://lists.w3.org/Archives/Public/public-test-infra/
+[ircarchive]: http://logs.glob.uno/?c=w3%23testing
+[mailarchive]: https://lists.w3.org/Archives/Public/public-test-infra/
 
 Documentation
 =============

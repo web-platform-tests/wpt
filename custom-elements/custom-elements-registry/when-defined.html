@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Custom Elements: CustomElementsRegistry.whenDefined</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="log"></div>
+<iframe id="iframe"></iframe>
+<script>
+'use strict';
+(() => {
+  // https://html.spec.whatwg.org/multipage/scripting.html#dom-customelementsregistry-whendefined
+
+  // Use window from iframe to isolate the test.
+  const testWindow = iframe.contentDocument.defaultView;
+  const customElements = testWindow.customElements;
+
+  let testable = false;
+  test(() =>  {
+    assert_true('customElements' in testWindow, '"window.customElements" exists');
+    assert_true('whenDefined' in customElements, '"window.customElements.whenDefined" exists');
+    testable = true;
+  }, '"window.customElements.whenDefined" should exist');
+  if (!testable)
+    return;
+
+  // 1. If name is not a valid custom element name,
+  // then return a new promise rejected with a "SyntaxError" DOMException and abort these steps.
+  // TODO: should share invalidCustomElementNames from defined.html.
+
+  // 2. If this CustomElementsRegistry contains an entry with name name,
+  // then return a new promise resolved with undefined and abort these steps.
+  test(() => {
+    const name = 'test-when-defined-existing';
+    customElements.define(name, class {});
+    let resolved, resolvedWith;
+    customElements.whenDefined(name)
+      .then(result => { resolved = true; resolvedWith = result; });
+    assert_true(resolved, 'whenDefined for existing name should resolve immediately');
+    assert_equals(resolvedWith, undefined, 'whenDefined should resolve with undefined');
+  }, 'whenDefined for existing name');
+
+  // Return a promise that will be resolved in Element definition step 20.
+  // https://html.spec.whatwg.org/multipage/scripting.html#element-definition
+  test(() => {
+    const name = 'test-when-defined-non-existing';
+    let resolved = false, resolvedWith;
+    customElements.whenDefined(name)
+      .then(result => { resolved = true; resolvedWith = result; });
+    assert_false(resolved, 'whenDefined should not resolve until defined');
+
+    customElements.define(name, class {});
+    assert_true(resolved, 'whenDefined should resolve when defined');
+    assert_equals(resolvedWith, undefined, 'whenDefined should resolve with undefined');
+  }, 'whenDefined before defined');
+
+  test(() => {
+    const name = 'test-when-defined-multiple';
+    let list = [];
+    for (let i = 0; i < 2; i++) {
+      let data = { resolved: false, resolvedWith: undefined };
+      list.push(data);
+      customElements.whenDefined(name)
+        .then(result => { data.resolved = true; data.resolvedWith = result; });
+      assert_false(data.resolved, `[${i}] should not resolve until defined`);
+    }
+
+    customElements.define(name, class {});
+    for (let i = 0; i < list.length; i++) {
+      let data = list[i];
+      assert_true(data.resolved, `[${i}] should resolve when defined`);
+      assert_equals(data.resolvedWith, undefined, `[${i}] should resolve with undefined`);
+    }
+  }, 'Multiple whenDefined before defined');
+})();
+</script>
+</body>

@@ -18,7 +18,10 @@ async_test(t => {
   })
   sw.port.onmessageerror = t.step_func(e => {
     if(state === "send-window-failure") {
-      assert_equals(e.data, null)
+      assert_equals(e.data, null, "data")
+      assert_equals(e.origin, "", "origin")
+      assert_equals(e.source, null, "source")
+      assert_equals(e.ports.length, 0, "ports length")
       t.done()
     } else {
       assert_unreached()

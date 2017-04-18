@@ -50,7 +50,9 @@ test(function() {
         {timeout: 0, maximumAge: 0}
     );
   } catch(e) {
-    t86.unreached_func('An exception was thrown unexpectedly: ' + e.message);
+    t86.step(function() {
+      assert_unreached('An exception was thrown unexpectedly: ' + e.message);
+    });
   }
 
   try {
@@ -62,7 +64,9 @@ test(function() {
         {timeout: 0, maximumAge: 0}
     );
   } catch(e) {
-    t88.unreached_func('An exception was thrown unexpectedly: ' + e.message);
+    t88.step(function() {
+      assert_unreached('An exception was thrown unexpectedly: ' + e.message);
+    });
   }
 
   try {
@@ -74,7 +78,9 @@ test(function() {
         {timeout:-1, maximumAge: 0}
     );
   } catch(e) {
-    t91.unreached_func('An exception was thrown unexpectedly: ' + e.message);
+    t91.step(function() {
+      assert_unreached('An exception was thrown unexpectedly: ' + e.message);
+    });
   }
 
   try {
@@ -86,7 +92,9 @@ test(function() {
         {timeout: -1, maximumAge: 0}
     );
   } catch(e) {
-    t92.unreached_func('An exception was thrown unexpectedly: ' + e.message);
+    t92.step(function() {
+      assert_unreached('An exception was thrown unexpectedly: ' + e.message);
+    });
   }
 }, 'PositionOptions tests');
 </script>

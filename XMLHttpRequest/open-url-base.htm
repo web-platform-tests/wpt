@@ -13,7 +13,7 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest()
-        client.open("GET", "folder.txt", false)
+        client.open("GET", "resources/folder.txt", false)
         client.send(null)
         assert_equals(client.responseText, "bottom\n")
       })

@@ -23,6 +23,7 @@ test(function() {
   assert_throws(new TypeError(), function() {
     window[0] = "foo";
   });
+  assert_throws(new TypeError(), () => Object.defineProperty(window, 0, { value: "bar" }))
   assert_equals(window[0],
                 document.getElementsByTagName("iframe")[0].contentWindow);
 });
@@ -31,7 +32,10 @@ test(function() {
   assert_throws(new TypeError(), function() {
     window[1] = "foo";
   });
+  assert_throws(new TypeError(), () => Object.defineProperty(window, 1, { value: "bar" }))
   assert_equals(window[1], undefined);
+  assert_equals(Object.getOwnPropertyDescriptor(window, 1), undefined);
+  assert_equals(delete window[1], true);
 });
 test(function() {
   "use strict";

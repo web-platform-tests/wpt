@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML time element API examples</title>
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-time-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      #time { visibility: hidden; }
+    </style>
+  </head>
+  <body>
+    <div id="log"></div>
+    <p id="time"><time></time></p>
+    <script type="text/javascript">
+      function makeTime(datetimeAttr, contents, dateTimeProp) {
+        var timeEl = document.createElement('time');
+        if (datetimeAttr) {
+          timeEl.setAttribute('datetime', datetimeAttr);
+        }
+        if (contents) {
+          timeEl.innerHTML = contents;
+        }
+        if (dateTimeProp) {
+          timeEl.dateTime = dateTimeProp;
+        }
+
+        return timeEl;
+      }
+
+      var timep = document.getElementById('time');
+      var times = timep.getElementsByTagName('time');
+
+      var testCases = {
+        time: [
+          { dateTimeAttr: null, expectedAttr: null, contents: "2016-11", expectedContents: "2016-11", dateTimeProp: null, expectedProp: "", testName: "The time element with only text content" },
+          { dateTimeAttr: "2016-11", expectedAttr: "2016-11", contents: "2016-11", expectedContents: "2016-11", dateTimeProp: null, expectedProp: "2016-11", testName: "The time element with datetime attribute and content" },
+          { dateTimeAttr: null, expectedAttr: null, contents: "<b>2016-11</b>", expectedContents: "2016-11", dateTimeProp: null, expectedProp: "", testName: "The time element with only HTML content" },
+          { dateTimeAttr: "2016-11", expectedAttr: "2016-11", contents: "2016-11", expectedContents: "2016-11", dateTimeProp: null, expectedProp: "2016-11", testName: "The time element with datetime attribute and text content" },
+          { dateTimeAttr: "2016-11", expectedAttr: "2016-11", contents: "<b>2016-11</b>", expectedContents: "2016-11", dateTimeProp: null, expectedProp: "2016-11", testName: "The time element with datetime attribute and HTML content" },
+          { dateTimeAttr: "2016-11", expectedAttr: "2016-11", contents: null, expectedContents: "", dateTimeProp: null, expectedProp: "2016-11", testName: "The time element with datetime attribute and no content" },
+          { dateTimeAttr: null, expectedAttr: "2016-11", contents: null, expectedContents: "", dateTimeProp: "2016-11", expectedProp: "2016-11", testName: "The time element with no datetime attribute and no content, setting the dateTime property" },
+          { dateTimeAttr: "2016-11", expectedAttr: "2016-12", contents: "2016-11", expectedContents: "2016-11", dateTimeProp: "2016-12", expectedProp: "2016-12", testName: null, testName: "The time element with datetime value and setting different property value" },
+          { dateTimeAttr: "2016-invalid", expectedAttr: "2016-invalid", contents: "2016-invalid", expectedContents: "2016-invalid", dateTimeProp: null, expectedProp: "2016-invalid", testName: "The time elemenet with invalid datatime attribute" },
+          { dateTimeAttr: null, expectedAttr: "2016-invalid", contents: "2016-invalid", expectedContents: "2016-invalid", dateTimeProp: "2016-invalid", expectedProp: "2016-invalid", testName: "The time element setting the dateTime property to invalid datetime" },
+
+          { dateTimeAttr: "2016-11-12", expectedAttr: "2016-11-12", contents: "2016-11-12", expectedContents: "2016-11-12", dateTimeProp: null, expectedProp: "2016-11-12", testName: "The time element format (2016-11-12)" },
+          { dateTimeAttr: "11-12", expectedAttr: "11-12", contents: "11-12", expectedContents: "11-12", dateTimeProp: null, expectedProp: "11-12", testName: "The time element format (11-12)" },
+          { dateTimeAttr: "14:54", expectedAttr: "14:54", contents: "14:54", expectedContents: "14:54", dateTimeProp: null, expectedProp: "14:54", testName: "The time element format (14:54)" },
+          { dateTimeAttr: "14:54:39", expectedAttr: "14:54:39", contents: "14:54:39", expectedContents: "14:54:39", dateTimeProp: null, expectedProp: "14:54:39", testName: "The time element format (14:54:39)" },
+          { dateTimeAttr: "14:54:39.929", expectedAttr: "14:54:39.929", contents: "14:54:39.929", expectedContents: "14:54:39.929", dateTimeProp: null, expectedProp: "14:54:39.929", testName: "The time element format (14:54:39.929)" },
+          { dateTimeAttr: "2016-11-18T14:54", expectedAttr: "2016-11-18T14:54", contents: "2016-11-18T14:54", expectedContents: "2016-11-18T14:54", dateTimeProp: null, expectedProp: "2016-11-18T14:54", testName: "The time element format (2016-11-18T14:54)" },
+          { dateTimeAttr: "2016-11-18T14:54:39", expectedAttr: "2016-11-18T14:54:39", contents: "2016-11-18T14:54:39", expectedContents: "2016-11-18T14:54:39", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39", testName: "The time element format (2016-11-18T14:54:39)" },
+          { dateTimeAttr: "2016-11-18T14:54:39.929", expectedAttr: "2016-11-18T14:54:39.929", contents: "2016-11-18T14:54:39.929", expectedContents: "2016-11-18T14:54:39.929", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39.929", testName: "The time element format (2016-11-18T14:54:39.929)" },
+          { dateTimeAttr: "2016-11-18 14:54", expectedAttr: "2016-11-18 14:54", contents: "2016-11-18 14:54", expectedContents: "2016-11-18 14:54", dateTimeProp: null, expectedProp: "2016-11-18 14:54", testName: "The time element format (2016-11-18 14:54)" },
+          { dateTimeAttr: "2016-11-18 14:54:39", expectedAttr: "2016-11-18 14:54:39", contents: "2016-11-18 14:54:39", expectedContents: "2016-11-18 14:54:39", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39", testName: "The time element format (2016-11-18 14:54:39)" },
+          { dateTimeAttr: "2016-11-18 14:54:39.929", expectedAttr: "2016-11-18 14:54:39.929", contents: "2016-11-18 14:54:39.929", expectedContents: "2016-11-18 14:54:39.929", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39.929", testName: "The time element format (2016-11-18 14:54:39.929)" },
+          { dateTimeAttr: "Z", expectedAttr: "Z", contents: "Z", expectedContents: "Z", dateTimeProp: null, expectedProp: "Z", testName: "The time element format (Z)" },
+          { dateTimeAttr: "+0000", expectedAttr: "+0000", contents: "+0000", expectedContents: "+0000", dateTimeProp: null, expectedProp: "+0000", testName: "The time element format (+0000)" },
+          { dateTimeAttr: "+00:00", expectedAttr: "+00:00", contents: "+00:00", expectedContents: "+00:00", dateTimeProp: null, expectedProp: "+00:00", testName: "The time element format (+00:00)" },
+          { dateTimeAttr: "-0800", expectedAttr: "-0800", contents: "-0800", expectedContents: "-0800", dateTimeProp: null, expectedProp: "-0800", testName: "The time element format (-0800)" },
+          { dateTimeAttr: "-08:00", expectedAttr: "-08:00", contents: "-08:00", expectedContents: "-08:00", dateTimeProp: null, expectedProp: "-08:00", testName: "The time element format (-08:00)" },
+          { dateTimeAttr: "2016-11-18T14:54Z", expectedAttr: "2016-11-18T14:54Z", contents: "2016-11-18T14:54Z", expectedContents: "2016-11-18T14:54Z", dateTimeProp: null, expectedProp: "2016-11-18T14:54Z", testName: "The time element format (2016-11-18T14:54Z)" },
+          { dateTimeAttr: "2016-11-18T14:54:39Z", expectedAttr: "2016-11-18T14:54:39Z", contents: "2016-11-18T14:54:39Z", expectedContents: "2016-11-18T14:54:39Z", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39Z", testName: "The time element format (2016-11-18T14:54:39Z)" },
+          { dateTimeAttr: "2016-11-18T14:54:39.929Z", expectedAttr: "2016-11-18T14:54:39.929Z", contents: "2016-11-18T14:54:39.929Z", expectedContents: "2016-11-18T14:54:39.929Z", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39.929Z", testName: "The time element format (2016-11-18T14:54:39.929Z)" },
+          { dateTimeAttr: "2016-11-18T14:54+0000", expectedAttr: "2016-11-18T14:54+0000", contents: "2016-11-18T14:54+0000", expectedContents: "2016-11-18T14:54+0000", dateTimeProp: null, expectedProp: "2016-11-18T14:54+0000", testName: "The time element format (2016-11-18T14:54+0000)" },
+          { dateTimeAttr: "2016-11-18T14:54:39+0000", expectedAttr: "2016-11-18T14:54:39+0000", contents: "2016-11-18T14:54:39+0000", expectedContents: "2016-11-18T14:54:39+0000", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39+0000", testName: "The time element format (2016-11-18T14:54:39+0000)" },
+          { dateTimeAttr: "2016-11-18T14:54:39.929+0000", expectedAttr: "2016-11-18T14:54:39.929+0000", contents: "2016-11-18T14:54:39.929+0000", expectedContents: "2016-11-18T14:54:39.929+0000", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39.929+0000", testName: "The time element format (2016-11-18T14:54:39.929+0000)" },
+          { dateTimeAttr: "2016-11-18T14:54+00:00", expectedAttr: "2016-11-18T14:54+00:00", contents: "2016-11-18T14:54+00:00", expectedContents: "2016-11-18T14:54+00:00", dateTimeProp: null, expectedProp: "2016-11-18T14:54+00:00", testName: "The time element format (2016-11-18T14:54+00:00)" },
+          { dateTimeAttr: "2016-11-18T14:54:39+00:00", expectedAttr: "2016-11-18T14:54:39+00:00", contents: "2016-11-18T14:54:39+00:00", expectedContents: "2016-11-18T14:54:39+00:00", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39+00:00", testName: "The time element format (2016-11-18T14:54:39+00:00)" },
+          { dateTimeAttr: "2016-11-18T14:54:39.929+00:00", expectedAttr: "2016-11-18T14:54:39.929+00:00", contents: "2016-11-18T14:54:39.929+00:00", expectedContents: "2016-11-18T14:54:39.929+00:00", dateTimeProp: null, expectedProp: "2016-11-18T14:54:39.929+00:00", testName: "The time element format (2016-11-18T14:54:39.929+00:00)" },
+          { dateTimeAttr: "2016-11-18T06:54-0800", expectedAttr: "2016-11-18T06:54-0800", contents: "2016-11-18T06:54-0800", expectedContents: "2016-11-18T06:54-0800", dateTimeProp: null, expectedProp: "2016-11-18T06:54-0800", testName: "The time element format (2016-11-18T06:54-0800)" },
+          { dateTimeAttr: "2016-11-18T06:54:39-0800", expectedAttr: "2016-11-18T06:54:39-0800", contents: "2016-11-18T06:54:39-0800", expectedContents: "2016-11-18T06:54:39-0800", dateTimeProp: null, expectedProp: "2016-11-18T06:54:39-0800", testName: "The time element format (2016-11-18T06:54:39-0800)" },
+          { dateTimeAttr: "2016-11-18T06:54:39.929-0800", expectedAttr: "2016-11-18T06:54:39.929-0800", contents: "2016-11-18T06:54:39.929-0800", expectedContents: "2016-11-18T06:54:39.929-0800", dateTimeProp: null, expectedProp: "2016-11-18T06:54:39.929-0800", testName: "The time element format (2016-11-18T06:54:39.929-0800)" },
+          { dateTimeAttr: "2016-11-18T06:54-08:00", expectedAttr: "2016-11-18T06:54-08:00", contents: "2016-11-18T06:54-08:00", expectedContents: "2016-11-18T06:54-08:00", dateTimeProp: null, expectedProp: "2016-11-18T06:54-08:00", testName: "The time element format (2016-11-18T06:54-08:00)" },
+          { dateTimeAttr: "2016-11-18T06:54:39-08:00", expectedAttr: "2016-11-18T06:54:39-08:00", contents: "2016-11-18T06:54:39-08:00", expectedContents: "2016-11-18T06:54:39-08:00", dateTimeProp: null, expectedProp: "2016-11-18T06:54:39-08:00", testName: "The time element format (2016-11-18T06:54:39-08:00)" },
+          { dateTimeAttr: "2016-11-18T06:54:39.929-08:00", expectedAttr: "2016-11-18T06:54:39.929-08:00", contents: "2016-11-18T06:54:39.929-08:00", expectedContents: "2016-11-18T06:54:39.929-08:00", dateTimeProp: null, expectedProp: "2016-11-18T06:54:39.929-08:00", testName: "The time element format (2016-11-18T06:54:39.929-08:00)" },
+          { dateTimeAttr: "2016-11-18 14:54Z", expectedAttr: "2016-11-18 14:54Z", contents: "2016-11-18 14:54Z", expectedContents: "2016-11-18 14:54Z", dateTimeProp: null, expectedProp: "2016-11-18 14:54Z", testName: "The time element format (2016-11-18 14:54Z)" },
+          { dateTimeAttr: "2016-11-18 14:54:39Z", expectedAttr: "2016-11-18 14:54:39Z", contents: "2016-11-18 14:54:39Z", expectedContents: "2016-11-18 14:54:39Z", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39Z", testName: "The time element format (2016-11-18 14:54:39Z)" },
+          { dateTimeAttr: "2016-11-18 14:54:39.929Z", expectedAttr: "2016-11-18 14:54:39.929Z", contents: "2016-11-18 14:54:39.929Z", expectedContents: "2016-11-18 14:54:39.929Z", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39.929Z", testName: "The time element format (2016-11-18 14:54:39.929Z)" },
+          { dateTimeAttr: "2016-11-18 14:54+0000", expectedAttr: "2016-11-18 14:54+0000", contents: "2016-11-18 14:54+0000", expectedContents: "2016-11-18 14:54+0000", dateTimeProp: null, expectedProp: "2016-11-18 14:54+0000", testName: "The time element format (2016-11-18 14:54+0000)" },
+          { dateTimeAttr: "2016-11-18 14:54:39+0000", expectedAttr: "2016-11-18 14:54:39+0000", contents: "2016-11-18 14:54:39+0000", expectedContents: "2016-11-18 14:54:39+0000", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39+0000", testName: "The time element format (2016-11-18 14:54:39+0000)" },
+          { dateTimeAttr: "2016-11-18 14:54:39.929+0000", expectedAttr: "2016-11-18 14:54:39.929+0000", contents: "2016-11-18 14:54:39.929+0000", expectedContents: "2016-11-18 14:54:39.929+0000", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39.929+0000", testName: "The time element format (2016-11-18 14:54:39.929+0000)" },
+          { dateTimeAttr: "2016-11-18 14:54+00:00", expectedAttr: "2016-11-18 14:54+00:00", contents: "2016-11-18 14:54+00:00", expectedContents: "2016-11-18 14:54+00:00", dateTimeProp: null, expectedProp: "2016-11-18 14:54+00:00", testName: "The time element format (2016-11-18 14:54+00:00)" },
+          { dateTimeAttr: "2016-11-18 14:54:39+00:00", expectedAttr: "2016-11-18 14:54:39+00:00", contents: "2016-11-18 14:54:39+00:00", expectedContents: "2016-11-18 14:54:39+00:00", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39+00:00", testName: "The time element format (2016-11-18 14:54:39+00:00)" },
+          { dateTimeAttr: "2016-11-18 14:54:39.929+00:00", expectedAttr: "2016-11-18 14:54:39.929+00:00", contents: "2016-11-18 14:54:39.929+00:00", expectedContents: "2016-11-18 14:54:39.929+00:00", dateTimeProp: null, expectedProp: "2016-11-18 14:54:39.929+00:00", testName: "The time element format (2016-11-18 14:54:39.929+00:00)" },
+          { dateTimeAttr: "2016-11-18 06:54-0800", expectedAttr: "2016-11-18 06:54-0800", contents: "2016-11-18 06:54-0800", expectedContents: "2016-11-18 06:54-0800", dateTimeProp: null, expectedProp: "2016-11-18 06:54-0800", testName: "The time element format (2016-11-18 06:54-0800)" },
+          { dateTimeAttr: "2016-11-18 06:54:39-0800", expectedAttr: "2016-11-18 06:54:39-0800", contents: "2016-11-18 06:54:39-0800", expectedContents: "2016-11-18 06:54:39-0800", dateTimeProp: null, expectedProp: "2016-11-18 06:54:39-0800", testName: "The time element format (2016-11-18 06:54:39-0800)" },
+          { dateTimeAttr: "2016-11-18 06:54:39.929-0800", expectedAttr: "2016-11-18 06:54:39.929-0800", contents: "2016-11-18 06:54:39.929-0800", expectedContents: "2016-11-18 06:54:39.929-0800", dateTimeProp: null, expectedProp: "2016-11-18 06:54:39.929-0800", testName: "The time element format (2016-11-18 06:54:39.929-0800)" },
+          { dateTimeAttr: "2016-11-18 06:54-08:00", expectedAttr: "2016-11-18 06:54-08:00", contents: "2016-11-18 06:54-08:00", expectedContents: "2016-11-18 06:54-08:00", dateTimeProp: null, expectedProp: "2016-11-18 06:54-08:00", testName: "The time element format (2016-11-18 06:54-08:00)" },
+          { dateTimeAttr: "2016-11-18 06:54:39-08:00", expectedAttr: "2016-11-18 06:54:39-08:00", contents: "2016-11-18 06:54:39-08:00", expectedContents: "2016-11-18 06:54:39-08:00", dateTimeProp: null, expectedProp: "2016-11-18 06:54:39-08:00", testName: "The time element format (2016-11-18 06:54:39-08:00)" },
+          { dateTimeAttr: "2016-11-18 06:54:39.929-08:00", expectedAttr: "2016-11-18 06:54:39.929-08:00", contents: "2016-11-18 06:54:39.929-08:00", expectedContents: "2016-11-18 06:54:39.929-08:00", dateTimeProp: null, expectedProp: "2016-11-18 06:54:39.929-08:00", testName: "The time element format (2016-11-18 06:54:39.929-08:00)" },
+          { dateTimeAttr: "2016-W47", expectedAttr: "2016-W47", contents: "2016-W47", expectedContents: "2016-W47", dateTimeProp: null, expectedProp: "2016-W47", testName: "The time element format (2016-W47)" },
+          { dateTimeAttr: "2016", expectedAttr: "2016", contents: "2016", expectedContents: "2016", dateTimeProp: null, expectedProp: "2016", testName: "The time element format (2016)" },
+          { dateTimeAttr: "0001", expectedAttr: "0001", contents: "0001", expectedContents: "0001", dateTimeProp: null, expectedProp: "0001", testName: "The time element format (0001)" },
+          { dateTimeAttr: "PT4H18M3S", expectedAttr: "PT4H18M3S", contents: "PT4H18M3S", expectedContents: "PT4H18M3S", dateTimeProp: null, expectedProp: "PT4H18M3S", testName: "The time element format (PT4H18M3S)" },
+          { dateTimeAttr: "4h 18m 3s", expectedAttr: "4h 18m 3s", contents: "4h 18m 3s", expectedContents: "4h 18m 3s", dateTimeProp: null, expectedProp: "4h 18m 3s", testName: "The time element format (4h 18m 3s)" }
+        ]
+      }
+
+      //TIME elements
+      test(function () {
+        assert_equals(times.length, 1);
+      }, 'HTML parsing should locate the initial time element in this document');
+      test(function () {
+        assert_true(!!window.HTMLTimeElement);
+      }, 'HTMLTimeElement should be exposed for prototyping');
+      test(function () {
+        assert_true(makeTime() instanceof window.HTMLTimeElement, 'createElement variant');
+        assert_true(times[0] instanceof window.HTMLTimeElement, 'HTML parsing variant');
+      }, 'The time elements should be instanceof HTMLTimeElement');
+
+
+      for (var i = 0; i < testCases.time.length; i++) {
+        var item = testCases.time[i];
+        test(function () {
+          assert_equals(makeTime(item.dateTimeAttr, item.contents, item.dateTimeProp).getAttribute("datetime"), item.expectedAttr, "getAttribute");
+          assert_equals(makeTime(item.dateTimeAttr, item.contents, item.dateTimeProp).textContent, item.expectedContents, "textContent");
+          assert_equals(makeTime(item.dateTimeAttr, item.contents, item.dateTimeProp).dateTime, item.expectedProp, "dateTime");
+        }, item.testName);
+      }
+    </script>
+  </body>
+</html>

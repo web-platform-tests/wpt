@@ -37,4 +37,4 @@ async_test(t => {
     assert_false(getter2Called, "The getter after the SAB must not have been called");
     t.done();
   };
-}, "SharedArrayBuffer cloning via the Notifications API's data member: is interleaved correctly");
+}, "SharedArrayBuffer cloning via the IndexedDB: is interleaved correctly");

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Content Distribution 'space-between' with collapsed tracks</title>
+<link rel="author" title="Javier Fernandez Garcia-Boente" href="mailto:jfernandez@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#content-distribution">
+<link rel="help" href="https://drafts.csswg.org/css-grid/#collapsed-track">
+<link rel="match" href="../reference/grid-content-alignment-space-between-2x2-ref.html">
+<meta name="assert" content="Content Distribution alignment properties don't consider collapsed grid tracks as alignment subject.">
+<style>
+.grid {
+  display: grid;
+  background: grey;
+  width: 200px;
+  height: 200px;
+  grid-template-columns: repeat(auto-fit, 20px);
+  grid-template-rows: repeat(auto-fit, 20px);
+  align-content: space-between;
+  justify-content: space-between;
+}
+.grid > :nth-child(1) { background: blue; }
+.grid > :nth-child(2) { background: orange; }
+</style>
+<div class="grid">
+    <div style="grid-row: 1; grid-column: 1;"></div>
+    <div style="grid-row: 3; grid-column: 6;"></div>
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Content Distribution 'space-evenly' reference file</title>
+<link rel="author" title="Javier Fernandez Garcia-Boente" href="mailto:jfernandez@igalia.com">
+<style>
+.grid {
+  position: relative;
+  background: grey;
+  width: 200px;
+  height: 200px;
+}
+.grid > div {
+   position: absolute;
+   width: 25px;
+   height: 25px;
+}
+.item1 {
+   background: blue;
+   top: 50px;
+   left: 50px;
+}
+.item2 {
+   background: orange;
+   top: 125px;
+   left: 125px;
+}
+</style>
+<div class="grid">
+  <div class="item1"></div>
+  <div class="item2"></div>
+</div>

@@ -40,7 +40,7 @@ Stash.prototype.sendBeacon = function(result) {
       xhr.open('POST', this.stashPath + this.outbound, false);
       xhr.send(JSON.stringify({ type: 'data', data: result }));
     });
-  }  
+  }
 };
 
 // wait until a test result is uploaded to a stash on wptserve

@@ -25,11 +25,8 @@ t.step(function() {
     assert_equals(err.code, err.PERMISSION_DENIED, errorToString(err));
   });
 
-try {
   geo.getCurrentPosition(onSuccess, onError);
   hasMethodReturned = true;
-} catch(e) {
-  t.unreached_func('An exception was thrown unexpectedly: ' + e.message);
-}
-</script>
+});
 
+</script>

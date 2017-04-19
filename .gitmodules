@@ -8,9 +8,6 @@
 [submodule "css/tools/w3ctestlib"]
 	path = css/tools/w3ctestlib
 	url = https://github.com/w3c/csswg-w3ctestlib.git
-[submodule "tools/six"]
-	path = tools/six
-	url = https://github.com/jgraham/six.git
 [submodule "tools/html5lib/html5lib/tests/testdata"]
 	path = tools/html5lib/html5lib/tests/testdata
 	url = https://github.com/html5lib/html5lib-tests.git

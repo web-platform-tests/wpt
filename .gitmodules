@@ -7,7 +7,3 @@
 [submodule "tools/html5lib/html5lib/tests/testdata"]
 	path = tools/html5lib/html5lib/tests/testdata
 	url = https://github.com/html5lib/html5lib-tests.git
-[submodule "webidl2"]
-	path = resources/webidl2
-	url = https://github.com/darobin/webidl2.js.git
-

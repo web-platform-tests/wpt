@@ -17,3 +17,6 @@
 [submodule "tools/pytest"]
 	path = tools/pytest
 	url = https://github.com/pytest-dev/pytest.git
+[submodule "tools/html5lib/html5lib/tests/testdata"]
+	path = tools/html5lib/html5lib/tests/testdata
+	url = https://github.com/html5lib/html5lib-tests.git

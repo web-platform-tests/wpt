@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Custom Elements: create an element inside a template </title>
+<link rel="help" href="https://dom.spec.whatwg.org/#concept-create-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/custom-elements-helpers.js"></script>
+<iframe id="iframe"></iframe>
+<script>
+'use strict';
+
+// Setup iframe to test the parser.
+iframe.srcdoc = `<template id="test"><a-a>innerHTML</a-a></template>`;
+setup({ explicit_done: true });
+iframe.onload = () => {
+  let doc = iframe.contentDocument;
+  let tmpl = doc.querySelector('#test');
+  let element = tmpl.content.querySelector('a-a');
+  assert_equals(element.matches(':defined'), true, 'matches(":defined")');
+  done();
+};
+</script>

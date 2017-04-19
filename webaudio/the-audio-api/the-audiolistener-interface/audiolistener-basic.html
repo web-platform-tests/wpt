@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Basic test for AudioListener Attributes</title>
+<link rel="author" title="Chenglei Ren" href="mailto:chenglei.ren@intel.com">
+<link rel="help" href="https://webaudio.github.io/web-audio-api/#AudioListener">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    test(function (t) {
+        var context = new AudioContext();
+        var listener = context.listener;
+        assert_true("positionX" in listener, "Check if listener.positionX attribute exists");
+        assert_true(listener.positionX instanceof AudioParam, "Check if listener.positionX attribute is AudioParam type");
+        assert_equals(listener.positionX.defaultValue, 0, "Check if listener.positionX default value is 0");
+        assert_true("positionY" in listener, "Check if listener.positionY attribute exists");
+        assert_true(listener.positionY instanceof AudioParam, "Check if listener.positionY attribute is AudioParam type");
+        assert_equals(listener.positionY.defaultValue, 0, "Check if listener.positionY default value is 0");
+        assert_true("positionZ" in listener, "Check if listener.positionZ attribute exists");
+        assert_true(listener.positionZ instanceof AudioParam, "Check if listener.positionZ attribute is AudioParam type");
+        assert_equals(listener.positionZ.defaultValue, 0, "Check if listener.positionZ default value is 0");
+    }, "Check if listener.position attribute is supported");
+    test(function (t) {
+        var context = new AudioContext();
+        var listener = context.listener;
+        assert_true("forwardX" in listener, "Check if listener.forwardX attribute exists");
+        assert_true(listener.forwardX instanceof AudioParam, "Check if listener.forwardX attribute is AudioParam type");
+        assert_equals(listener.forwardX.defaultValue, 0, "Check if listener.forwardX default value is 0");
+        assert_true("forwardY" in listener, "Check if listener.forwardY attribute exists");
+        assert_true(listener.forwardY instanceof AudioParam, "Check if listener.forwardY attribute is AudioParam type");
+        assert_equals(listener.forwardY.defaultValue, 0, "Check if listener.forwardY default value is 0");
+        assert_true("forwardZ" in listener, "Check if listener.forwardZ attribute exists");
+        assert_true(listener.forwardZ instanceof AudioParam, "Check if listener.forwardZ attribute is AudioParam type");
+        assert_equals(listener.forwardZ.defaultValue, -1, "Check if listener.forwardZ default value is 0");
+    }, "Check if listener.forward attribute is supported");
+    test(function (t) {
+        var context = new AudioContext();
+        var listener = context.listener;
+        assert_true("upX" in listener, "Check if listener.upX attribute exists");
+        assert_true(listener.upX instanceof AudioParam, "Check if listener.upX attribute is AudioParam type");
+        assert_equals(listener.upX.defaultValue, 0, "Check if listener.upX default value is 0");
+        assert_true("upY" in listener, "Check if listener.upY attribute exists");
+        assert_true(listener.upY instanceof AudioParam, "Check if listener.upY attribute is AudioParam type");
+        assert_equals(listener.upY.defaultValue, 1, "Check if listener.upY default value is 0");
+        assert_true("upZ" in listener, "Check if listener.upZ attribute exists");
+        assert_true(listener.upZ instanceof AudioParam, "Check if listener.upZ attribute is AudioParam type");
+        assert_equals(listener.upZ.defaultValue, 0, "Check if listener.upZ default value is 0");
+    }, "Check if listener.up attribute is supported");
+</script>

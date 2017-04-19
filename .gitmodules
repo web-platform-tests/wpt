@@ -8,9 +8,6 @@
 [submodule "css/tools/w3ctestlib"]
 	path = css/tools/w3ctestlib
 	url = https://github.com/w3c/csswg-w3ctestlib.git
-[submodule "tools/pywebsocket"]
-	path = tools/pywebsocket
-	url = https://github.com/w3c/pywebsocket.git
 [submodule "tools/six"]
 	path = tools/six
 	url = https://github.com/jgraham/six.git

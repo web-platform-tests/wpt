@@ -27,7 +27,9 @@ def expand_pattern(expansion_pattern, test_expansion_schema):
     return expansion
 
 
-def permute_expansion(expansion, artifact_order, selection = {}, artifact_index = 0):
+def permute_expansion(expansion, artifact_order, selection = None, artifact_index = 0):
+    if selection is None:
+        selection = {}
     assert isinstance(artifact_order, list), "artifact_order should be a list"
 
     if artifact_index >= len(artifact_order):

@@ -16,7 +16,7 @@ promise_test(t => {
   return Promise.all([
     createIFrame("resources/broadcastchannel-iframe.html"),
     createIFrame("resources/broadcastchannel-iframe.html"),
-    createIFrame("//{{domains[www1]}}:{{location[port]}}/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/resources/broadcastchannel-iframe.html")
+    createIFrame("resources/broadcastchannel-iframe.html")
   ]).then(() => {
     const sab = new SharedArrayBuffer(3);
     const view = new Uint8Array(sab);

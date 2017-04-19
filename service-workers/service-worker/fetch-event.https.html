@@ -516,6 +516,7 @@ async_test(function(t) {
         })
       .catch(unreached_rejection(t));
   }, 'Service Worker should expose FetchEvent URL fragments.');
+
 async_test(function(t) {
     var scope = 'resources/simple.html?cache';
     var frame;
@@ -549,6 +550,7 @@ async_test(function(t) {
                   .catch(reject);
               });
           });
+          return Promise.all(tests);
         })
       .then(function() {
           return new Promise(function(resolve, reject) {
@@ -639,25 +641,16 @@ async_test(function(t) {
           assert_equals(
             frame.contentDocument.body.textContent, '');
 
-          return new Promise(function(resolve, reject) {
-              return frame.contentWindow.fetch(scope,
-                {'integrity': integrity_metadata})
-                .then(function(response) {
-                    return response.text();
-                })
-                .then(function(response_text) {
-                    // Should get the same integrity metadata.
-                    assert_equals(response_text, integrity_metadata,
-                                  'Service Worker should respond to fetch with the correct integrity');
-                })
-                .then(resolve())
-                .catch(reject());
-          });
+          return frame.contentWindow.fetch(scope, {'integrity': integrity_metadata});
         })
-      .then(function() {
+      .then(response => {
+          return response.text();
+        })
+      .then(response_text => {
+          assert_equals(response_text, integrity_metadata, 'integrity');
           frame.remove();
           return service_worker_unregister_and_done(t, scope);
-      })
+        })
       .catch(unreached_rejection(t));
   }, 'Service Worker responds to fetch event with the correct integrity_metadata');
 

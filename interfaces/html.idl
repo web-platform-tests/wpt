@@ -1408,7 +1408,6 @@ typedef Window WindowProxy;
   boolean confirm(optional DOMString message = "");
   DOMString? prompt(optional DOMString message = "", optional DOMString default = "");
   void print();
-  any showModalDialog(DOMString url, optional any argument);
 
   void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
 

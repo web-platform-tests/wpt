@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import argparse
-from ConfigParser import SafeConfigParser
 import logging
 import os
 import re
@@ -10,10 +9,11 @@ import subprocess
 import sys
 import tarfile
 import zipfile
+from ConfigParser import RawConfigParser, SafeConfigParser
 from abc import ABCMeta, abstractmethod
 from cStringIO import StringIO as CStringIO
 from collections import defaultdict, OrderedDict
-from ConfigParser import RawConfigParser
+from distutils.spawn import find_executable
 from io import BytesIO, StringIO
 
 import requests
@@ -172,6 +172,12 @@ class Browser(object):
     def wptrunner_args(self):
         return NotImplemented
 
+    def prepare_environment(self):
+        """Do any additional setup of the environment required to start the
+           browser successfully
+        """
+        pass
+
 
 class Firefox(Browser):
     """Firefox-specific interface.
@@ -282,6 +288,17 @@ class Chrome(Browser):
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }
+
+    def prepare_environment(self):
+        # https://bugs.chromium.org/p/chromium/issues/detail?id=713947
+        logger.debug("DBUS_SESSION_BUS_ADDRESS %s" % os.environ.get("DBUS_SESSION_BUS_ADDRESS"))
+        if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
+            if find_executable("dbus-launch"):
+                logger.debug("Attempting to start dbus")
+                logger.debug(subprocess.check_output(["dbus-launch"]))
+            else:
+                logger.critical("dbus not running and can't be started")
+                sys.exit(1)
 
 
 def get(url):
@@ -843,6 +860,8 @@ def main():
                                 files_changed,
                                 args.iterations,
                                 browser)
+
+        browser.prepare_environment()
 
     with TravisFold("running_tests"):
         logger.info("Starting %i test iterations" % args.iterations)

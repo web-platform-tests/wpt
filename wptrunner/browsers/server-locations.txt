@@ -1,10 +1,3 @@
-#
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-# See /build/pgo/server-locations.txt for documentation on the format
-
 http://localhost:8000    primary
 
 http://web-platform.test:8000

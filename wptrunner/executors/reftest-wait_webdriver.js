@@ -1,13 +1,9 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 var callback = arguments[arguments.length - 1];
 
 function test(x) {
   if (!root.classList.contains("reftest-wait")) {
     observer.disconnect();
-    
+
     // As of 2017-04-05, the Chromium web browser exhibits a rendering bug
     // (https://bugs.chromium.org/p/chromium/issues/detail?id=708757) that
     // produces instability during screen capture. The following use of
@@ -16,10 +12,10 @@ function test(x) {
     //
     // For further detail, see:
     // https://github.com/jugglinmike/chrome-screenshot-race/issues/1
-    
+
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
-	callback();
+        callback();
       });
     });
   }

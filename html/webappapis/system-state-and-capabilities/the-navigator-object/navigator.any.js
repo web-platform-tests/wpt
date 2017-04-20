@@ -1,4 +1,3 @@
-function run_test() {
   var compatibilityMode;
   if (navigator.userAgent.includes("Chrome")) {
     compatibilityMode = "Chrome";
@@ -50,7 +49,7 @@ function run_test() {
   async_test(function() {
     var request = new XMLHttpRequest();
     request.onload = this.step_func_done(function() {
-      assert_equals("user-agent: " + navigator.userAgent + "\n",
+      assert_equals("User-Agent: " + navigator.userAgent + "\n",
                     request.response,
                     "userAgent should return the value sent in the " +
                     "User-Agent header");
@@ -103,4 +102,5 @@ function run_test() {
       assert_false("oscpu" in navigator);
     }
   }, "oscpu");
-}
+
+done()

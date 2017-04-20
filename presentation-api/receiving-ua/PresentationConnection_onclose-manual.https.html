@@ -47,6 +47,22 @@ iframe { display: none; }
       }
       else
         return data;
+    }).then(data => {
+      const result = JSON.parse(data);
+      if (result.type === 'ok') {
+        child.contentWindow.postMessage({ type: 'connect', id: connection.id, url: connection.url }, '*');
+        return stash.receive();
+      }
+      else
+        return data;
+    }).then(data => {
+      const result = JSON.parse(data);
+      if (result.type === 'ok') {
+        child.parentNode.removeChild(child);
+        return stash.receive();
+      }
+      else
+        return data;
     }).then(result => {
       const json = JSON.parse(result);
       // notify receiver's results of a parent window (e.g. test runner)

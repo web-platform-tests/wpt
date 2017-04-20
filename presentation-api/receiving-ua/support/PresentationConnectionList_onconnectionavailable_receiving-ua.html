@@ -74,6 +74,7 @@
       }).then(checkEvent)
       // Step 4: check the second connection (with <iframe>) in "connected" state
       .then(() => {
+        stash.send(JSON.stringify({ type: 'ok' }));
         return eventWatcher.wait_for('connectionavailable');
       }).then(checkEvent);
     });

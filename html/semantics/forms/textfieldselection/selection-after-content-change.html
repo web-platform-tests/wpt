@@ -33,7 +33,9 @@ runInputTest("input out of document", () => {
 });
 
 runInputTest("input in document", () => {
-  return document.querySelector("#i1");
+  const input = document.querySelector("#i1");
+  input.value = "hello";
+  return input;
 });
 
 runInputTest("input in document, with focus", () => {
@@ -50,7 +52,9 @@ runTextareaTest("textarea out of document", () => {
 });
 
 runTextareaTest("textarea in document", () => {
-  return document.querySelector("#t1");
+  const textarea = document.querySelector("#t1");
+  textarea.value = "hello";
+  return textarea;
 });
 
 runTextareaTest("textarea in document, with focus", () => {

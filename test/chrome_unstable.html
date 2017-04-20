@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta name=timeout content=long>
+<title>Example test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  if (navigator.userAgent.indexOf("Chrome") > -1 && Math.random() > 0.5) {
+    assert_true(false);
+  }
+})
+</script>

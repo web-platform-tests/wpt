@@ -26,7 +26,7 @@ var createElementNS_tests = [
   [null, "-foo", "INVALID_CHARACTER_ERR"],
   [null, ".foo", "INVALID_CHARACTER_ERR"],
   [null, ":foo", "INVALID_CHARACTER_ERR"],
-  [null, "f:oo", "INVALID_CHARACTER_ERR"],
+  [null, "f:oo", "NAMESPACE_ERR"],
   [null, "foo:", "INVALID_CHARACTER_ERR"],
   [null, "f:o:o", "INVALID_CHARACTER_ERR"],
   [null, ":", "INVALID_CHARACTER_ERR"],

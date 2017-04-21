@@ -201,6 +201,9 @@ scheme host and port.""")
     sauce_group.add_argument("--sauce-key", dest="sauce_key",
                              default=os.environ.get("SAUCE_ACCESS_KEY"),
                              help="Sauce Labs access key")
+    sauce_group.add_argument("--sauce-connect-binary",
+                             dest="sauce_connect_binary",
+                             help="Path to Sauce Connect binary")
 
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "

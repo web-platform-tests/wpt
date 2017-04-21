@@ -92,7 +92,7 @@ class TestEnvironment(object):
 
         self.cache_manager = multiprocessing.Manager()
         self.stash = serve.stash.StashServer()
-        self.prerun = prerun
+        self.prerun_process = prerun()
 
 
     def __enter__(self):
@@ -100,7 +100,6 @@ class TestEnvironment(object):
         self.ssl_env.__enter__()
         self.cache_manager.__enter__()
         self.setup_server_logging()
-        self.prerun()
         self.config = self.load_config()
         serve.set_computed_defaults(self.config)
         self.external_config, self.servers = serve.start(self.config, self.ssl_env,
@@ -111,6 +110,12 @@ class TestEnvironment(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.process_interrupts()
+
+        try:
+            self.prerun_process.terminate()
+        except AttributeError:
+            pass
+
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
                 server.kill()

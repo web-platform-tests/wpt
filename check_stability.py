@@ -903,6 +903,8 @@ if __name__ == "__main__":
     try:
         retcode = main()
     except:
-        raise
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
     else:
         sys.exit(retcode)

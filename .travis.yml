@@ -18,6 +18,7 @@ install:
   - pip install -U requests
 env:  # required at the top-level for allow_failures to work below
 matrix:
+  fast_finish: true
   include:
     - os: linux
       python: "2.7"

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>cssom-view - scrolling quirks VS nonquirks mode</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+    iframe {
+        width: 300px;
+        height: 500px;
+    }
+</style>
+<iframe id="quirksframe"></iframe>
+<iframe id="nonquirksframe"></iframe>
+<div id="log"></div>
+<script>
+function setBodyContent(body)  {
+  body.style.margin = 0;
+  body.innerHTML = "<div id='content' style='width: 700px; height: 900px; background: linear-gradient(135deg, red, blue);'></div>";
+}
+
+async_test(function() {
+  var quirksFrame = document.getElementById("quirksframe");
+  quirksFrame.onload = this.step_func_done(function() {
+    var doc = quirksFrame.contentDocument;
+    assert_equals(doc.compatMode, "BackCompat", "Should be in quirks mode.");
+    assert_not_equals(doc.body, null, "Should have a body element");
+
+    setBodyContent(doc.body);
+
+    doc.documentElement.scroll(50, 60);
+    assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0")
+    assert_equals(doc.documentElement.scrollTop, 0, "scrollTop should be 0")
+
+    doc.documentElement.scrollLeft = 70;
+    doc.documentElement.scrollTop = 80;
+    assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0")
+    assert_equals(doc.documentElement.scrollTop, 0, "scrollTop should be 0")
+
+    doc.body.scroll(90, 100);
+    assert_equals(doc.body.scrollLeft, 90, "scrollLeft should be 90")
+    assert_equals(doc.body.scrollTop, 100, "scrollTop should be 100")
+
+    doc.body.scrollLeft = 120;
+    doc.body.scrollTop = 110;
+    assert_equals(doc.body.scrollLeft, 120, "scrollLeft should be 120")
+    assert_equals(doc.body.scrollTop, 110, "scrollTop should be 110")
+  });
+  quirksFrame.src =
+    URL.createObjectURL(new Blob([""], { type: "text/html" }));
+}, "scrolling in quirks mode");
+
+async_test(function() {
+  var nonQuirksFrame = document.getElementById("nonquirksframe");
+  nonQuirksFrame.onload = this.step_func_done(function() {
+    var doc = nonQuirksFrame.contentDocument;
+    assert_equals(doc.compatMode, "CSS1Compat", "Should be in standards mode.");
+    assert_not_equals(doc.body, null, "Should have a body element");
+
+    setBodyContent(doc.body);
+
+    doc.documentElement.scroll(50, 60);
+    assert_equals(doc.documentElement.scrollLeft, 50, "scrollLeft should be 50")
+    assert_equals(doc.documentElement.scrollTop, 60, "scrollTop should be 60")
+
+    doc.documentElement.scrollLeft = 70;
+    doc.documentElement.scrollTop = 80;
+    assert_equals(doc.documentElement.scrollLeft, 70, "scrollLeft should be 70")
+    assert_equals(doc.documentElement.scrollTop, 80, "scrollTop should be 80")
+
+    doc.body.scroll(90, 100);
+    assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0")
+    assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0")
+
+    doc.body.scrollLeft = 120;
+    doc.body.scrollTop = 110;
+    assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0")
+    assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0")
+  });
+  nonQuirksFrame.src =
+    URL.createObjectURL(new Blob(["<!doctype html>"], { type: "text/html" }));
+}, "scrolling in no-quirks mode");
+</script>

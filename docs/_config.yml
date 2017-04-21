@@ -29,7 +29,7 @@ collections:
 
 # Build settings
 markdown: kramdown
-theme: minima
+theme: jekyll-theme-merlot
 gems:
   - jekyll-optional-front-matter
   - jekyll-readme-index

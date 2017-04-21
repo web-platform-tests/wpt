@@ -54,9 +54,31 @@
         test(function () {
             section.scroll(50, 60);
 
-            assert_equals(section.scrollLeft, 50, "changed scrollLeft should be 60");
-            assert_equals(section.scrollTop, 60, "changed scrollTop should be 50");
+            assert_equals(section.scrollLeft, 50, "changed scrollLeft should be 50");
+            assert_equals(section.scrollTop, 60, "changed scrollTop should be 60");
         },  "Element scroll test");
+
+        test(function () {
+            section.scroll({left: 55, top: 65});
+
+            assert_equals(section.scrollLeft, 55, "changed scrollLeft should be 55");
+            assert_equals(section.scrollTop, 65, "changed scrollTop should be 65");
+
+            section.scroll({left: 85});
+
+            assert_equals(section.scrollLeft, 85, "changed scrollLeft should be 85");
+            assert_equals(section.scrollTop, 65, "scrollTop should stay at 65");
+
+            section.scroll({top: 75});
+
+            assert_equals(section.scrollLeft, 85, "scrollLeft should stay at 85");
+            assert_equals(section.scrollTop, 75, "changed scrollLeft should be 75");
+
+            section.scroll({});
+
+            assert_equals(section.scrollLeft, 85, "scrollLeft should stay at 85");
+            assert_equals(section.scrollTop, 75, "scrollTop should stay at 75");
+        },  "Element scroll test (one argument)");
 
         test(function () {
             section.scrollTo(80, 70);

@@ -56,7 +56,7 @@
 
             assert_equals(section.scrollLeft, 50, "changed scrollLeft should be 50");
             assert_equals(section.scrollTop, 60, "changed scrollTop should be 60");
-        },  "Element scroll test");
+        },  "Element scroll test (two arguments)");
 
         test(function () {
             section.scroll({left: 55, top: 65});
@@ -72,9 +72,14 @@
             section.scroll({top: 75});
 
             assert_equals(section.scrollLeft, 85, "scrollLeft should stay at 85");
-            assert_equals(section.scrollTop, 75, "changed scrollLeft should be 75");
+            assert_equals(section.scrollTop, 75, "changed scrollTop should be 75");
 
             section.scroll({});
+
+            assert_equals(section.scrollLeft, 85, "scrollLeft should stay at 85");
+            assert_equals(section.scrollTop, 75, "scrollTop should stay at 75");
+
+            section.scroll();
 
             assert_equals(section.scrollLeft, 85, "scrollLeft should stay at 85");
             assert_equals(section.scrollTop, 75, "scrollTop should stay at 75");
@@ -85,7 +90,34 @@
 
             assert_equals(section.scrollLeft, 80, "changed scrollLeft should be 70");
             assert_equals(section.scrollTop, 70, "changed scrollTop should be 80");
-        }, "Element scrollTo test");
+        }, "Element scrollTo test (two arguments)");
+
+        test(function () {
+            section.scrollTo({left: 75, top: 85});
+
+            assert_equals(section.scrollLeft, 75, "changed scrollLeft should be 75");
+            assert_equals(section.scrollTop, 85, "changed scrollTop should be 85");
+
+            section.scrollTo({left: 65});
+
+            assert_equals(section.scrollLeft, 65, "changed scrollLeft should be 65");
+            assert_equals(section.scrollTop, 85, "scrollTop should stay at 85");
+
+            section.scrollTo({top: 55});
+
+            assert_equals(section.scrollLeft, 65, "scrollLeft should stay at 65");
+            assert_equals(section.scrollTop, 55, "changed scrollTop should be 55");
+
+            section.scrollTo({});
+
+            assert_equals(section.scrollLeft, 65, "scrollLeft should stay at 65");
+            assert_equals(section.scrollTop, 55, "scrollTop should stay at 55");
+
+            section.scrollTo();
+
+            assert_equals(section.scrollLeft, 65, "scrollLeft should stay at 55");
+            assert_equals(section.scrollTop, 55, "scrollTop should stay at 55");
+        },  "Element scrollTo test (one argument)");
 
         test(function () {
             var left = section.scrollLeft;
@@ -95,7 +127,41 @@
 
             assert_equals(section.scrollLeft, left + 10, "increment of scrollLeft should be 10")
             assert_equals(section.scrollTop, top + 20, "increment of scrollTop should be 20")
-        })
+        }, "Element scrollBy test (two arguments)");
+
+        test(function () {
+            var left = section.scrollLeft;
+            var top = section.scrollTop;
+
+            section.scrollBy({left: 5, top: 15});
+            left += 5
+            top += 15
+
+            assert_equals(section.scrollLeft, left, "increment of scrollLeft should be 5")
+            assert_equals(section.scrollTop, top, "increment of scrollTop should be 15")
+
+            section.scrollBy({left: -15});
+            left -= 15
+
+            assert_equals(section.scrollLeft, left, "decrement of scrollLeft should be 15")
+            assert_equals(section.scrollTop, top, "scrollTop should not be modified")
+
+            section.scrollBy({top: -5});
+            top -= 5;
+
+            assert_equals(section.scrollLeft, left, "scrollLeft should not be modified")
+            assert_equals(section.scrollTop, top, "decrement of scrollTop should be 5")
+
+            section.scrollBy({});
+
+            assert_equals(section.scrollLeft, left, "scrollLeft should not be modified")
+            assert_equals(section.scrollTop, top, "scrollTop should not be modified")
+
+            section.scrollBy();
+
+            assert_equals(section.scrollLeft, left, "scrollLeft should not be modified")
+            assert_equals(section.scrollTop, top, "scrollTop should not be modified")
+        }, "Element scrollBy test (one argument)");
 
         test(function () {
             section.scrollTop  = 1000;

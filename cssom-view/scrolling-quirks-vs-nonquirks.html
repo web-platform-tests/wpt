@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>cssom-view - scrolling quirks VS nonquirks mode</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  iframe {
+    width: 300px;
+    height: 500px;
+  }
+</style>
+<iframe id="quirksframe"></iframe>
+<iframe id="nonquirksframe"></iframe>
+<div id="log"></div>
+<script>
+function setBodyContent(body)  {
+  body.style.margin = 0;
+  body.innerHTML = "<div id='content' style='width: 700px; height: 900px; background: linear-gradient(135deg, red, blue);'></div>";
+}
+
+var quirksModeTest = async_test("Execution of tests in quirks mode");
+var quirksFrame = document.getElementById("quirksframe");
+quirksFrame.onload = function() {
+  var doc = quirksFrame.contentDocument;
+  setBodyContent(doc.body);
+
+  quirksModeTest.step(function () {
+    assert_equals(doc.compatMode, "BackCompat", "Should be in quirks mode.");
+  });
+
+  test(function () {
+    doc.documentElement.scroll(50, 60);
+    assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.documentElement.scrollTop, 0, "scrollTop should be 0");
+  }, "scroll() on the root element in quirks mode");
+
+  test(function () {
+    doc.documentElement.scrollLeft = 70;
+    doc.documentElement.scrollTop = 80;
+    assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.documentElement.scrollTop, 0, "scrollTop should be 0");
+  }, "scrollLeft/scrollTop on the root element in quirks mode");
+
+  test(function () {
+    doc.body.scroll(90, 100);
+    assert_equals(doc.body.scrollLeft, 90, "scrollLeft should be 90");
+    assert_equals(doc.body.scrollTop, 100, "scrollTop should be 100");
+  }, "scroll() on the HTML body element in quirks mode");
+
+  test(function () {
+    doc.body.scrollLeft = 120;
+    doc.body.scrollTop = 110;
+    assert_equals(doc.body.scrollLeft, 120, "scrollLeft should be 120");
+    assert_equals(doc.body.scrollTop, 110, "scrollTop should be 110");
+  }, "scrollLeft/scrollTop on the HTML body element in quirks mode");
+
+  quirksModeTest.done();
+}
+quirksFrame.src = URL.createObjectURL(new Blob([""], { type: "text/html" }));
+
+var nonQuirksModeTest = async_test("Execution of tests in non-quirks mode");
+var nonQuirksFrame = document.getElementById("nonquirksframe");
+nonQuirksFrame.onload = function() {
+  var doc = nonQuirksFrame.contentDocument;
+  setBodyContent(doc.body);
+
+  nonQuirksModeTest.step(function() {
+    assert_equals(doc.compatMode, "CSS1Compat", "Should be in standards mode.");
+  });
+
+  test(function () {
+    doc.documentElement.scroll(50, 60);
+    assert_equals(doc.documentElement.scrollLeft, 50, "scrollLeft should be 50");
+    assert_equals(doc.documentElement.scrollTop, 60, "scrollTop should be 60");
+  }, "scroll() on the root element in non-quirks mode");
+
+  test(function () {
+    doc.documentElement.scrollLeft = 70;
+    doc.documentElement.scrollTop = 80;
+    assert_equals(doc.documentElement.scrollLeft, 70, "scrollLeft should be 70");
+    assert_equals(doc.documentElement.scrollTop, 80, "scrollTop should be 80");
+  }, "scrollLeft/scrollTop on the root element in non-quirks mode");
+
+  test(function () {
+    doc.body.scroll(90, 100);
+    assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0");
+  }, "scroll() on the HTML body element in non-quirks mode");
+
+  test(function () {
+    doc.body.scrollLeft = 120;
+    doc.body.scrollTop = 110;
+    assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0");
+  }, "scrollLeft/scrollTop on the HTML body element in non-quirks mode");
+
+  nonQuirksModeTest.done();
+}
+nonQuirksFrame.src = URL.createObjectURL(new Blob(["<!doctype html>"], { type: "text/html" }));
+
+</script>

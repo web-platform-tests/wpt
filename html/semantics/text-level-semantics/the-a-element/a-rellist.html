@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+<title>HTMLAnchorElement.relList</title>
+<script type="text/javascript" src="/resources/testharness.js"></script>
+<script type="text/javascript" src="/resources/testharnessreport.js"></script>
+<style type="text/css">
+.foo { font-style: italic; }
+</style>
+	      </head>
+	      <body>
+	      <a style="display:none" href="#" rel=" "></a>
+	      <a style="display:none" href="#" rel="test test"></a>
+		<div id="log"></div>
+<script type="text/javascript">
+var elem = document.getElementsByTagName('a')[0], secondelem = document.getElementsByTagName('a')[1];
+test(function () {
+	      assert_equals( typeof elem.relList, 'object', 'critical test; ignore any results after this' );
+}, 'HTMLAnchorElement.relList must exist as an object');
+test(function () {
+	      assert_true( !!window.DOMTokenList );
+}, 'DOMTokenList should be exposed for prototyping');
+test(function () {
+	      DOMTokenList.prototype.customProperty = true;
+	      assert_true( elem.relList.customProperty );
+}, 'prototyping DOMTokenList should work');
+test(function () {
+	      assert_true( elem.relList instanceof window.DOMTokenList );
+	      assert_equals( elem.relList.constructor, window.DOMTokenList );
+}, 'HTMLAnchorElement.relList must implement DOMTokenList');
+test(function () {
+	      assert_equals( secondelem.relList.length, 2, 'duplicates in initial string should be preserved' );
+	      assert_equals( secondelem.relList.item(0), 'test' );
+	      assert_true( secondelem.relList.contains('test') );
+}, 'relList must be correct for an element that has rel tokens');
+test(function () {
+	      assert_equals( elem.relList.length, 0 );
+}, 'relList.length must be 0 for an element that has no rel tokens');
+test(function () {
+	      assert_false( elem.relList.contains('foo') );
+}, 'relList must not contain an undefined class');
+test(function () {
+	      assert_equals( elem.relList.item(0), null );
+}, 'relList.item() must return null for out-of-range index');
+test(function () {
+	      assert_equals( elem.relList.item(-1), null );
+}, 'relList.item() must return null for negative index');
+test(function () {
+	      /* the normative part of the spec states that:
+	      "unless the length is zero, in which case there are no supported property indices"
+	      ...
+	      "The term[...] supported property indices [is] used as defined in the WebIDL specification."
+	      WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+	      assert_equals( elem.relList[0], window.undefined );
+}, 'relList[index] must be undefined for out-of-range index');
+test(function () {
+	      assert_equals( elem.relList[-1], window.undefined );
+}, 'relList[index] must be undefined for negative index');
+test(function () {
+	      assert_equals( elem.relList + '', ' ', 'implicit' );
+	      assert_equals( elem.relList.toString(), ' ', 'explicit' );
+}, 'empty relList should stringify to contain initial markup whitespace');
+test(function () {
+	      assert_throws( 'SYNTAX_ERR', function () { elem.relList.contains(''); } );
+}, '.contains(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	      assert_throws( 'SYNTAX_ERR', function () { elem.relList.add(''); } );
+}, '.add(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	      assert_throws( 'SYNTAX_ERR', function () { elem.relList.remove(''); } );
+}, '.remove(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	      assert_throws( 'SYNTAX_ERR', function () { elem.relList.toggle(''); } );
+}, '.toggle(empty_string) must throw a SYNTAX_ERR');
+test(function () {
+	      assert_throws( 'INVALID_CHARACTER_ERR', function () { elem.relList.contains('a b'); } );
+}, '.contains(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	      assert_throws( 'INVALID_CHARACTER_ERR', function () { elem.relList.add('a b'); } );
+}, '.add(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	      assert_throws( 'INVALID_CHARACTER_ERR', function () { elem.relList.remove('a b'); } );
+}, '.remove(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+test(function () {
+	      assert_throws( 'INVALID_CHARACTER_ERR', function () { elem.relList.toggle('a b'); } );
+}, '.toggle(string_with_spaces) must throw an INVALID_CHARACTER_ERR');
+elem.rel = 'foo';
+test(function () {
+	      assert_true( elem.relList.contains('foo') );
+}, 'relList.contains must update when .rel is changed');
+test(function () {
+	      assert_false( elem.relList.contains('FOO') );
+}, 'relList.contains must be case sensitive');
+test(function () {
+	      assert_false( elem.relList.contains('foo.') );
+	      assert_false( elem.relList.contains('foo)') );
+	      assert_false( elem.relList.contains('foo\'') );
+	      assert_false( elem.relList.contains('foo$') );
+	      assert_false( elem.relList.contains('foo~') );
+	      assert_false( elem.relList.contains('foo?') );
+	      assert_false( elem.relList.contains('foo\\') );
+}, 'relList.contains must not match when punctuation characters are added');
+test(function () {
+	      elem.relList.add('FOO');
+	      assert_true( elem.relList.contains('foo') );
+}, 'relList.add must not remove existing tokens');
+test(function () {
+	      assert_true( elem.relList.contains('FOO') );
+}, 'relList.contains case sensitivity must match a case-specific string');
+test(function () {
+	      assert_equals( elem.relList.length, 2 );
+}, 'relList.length must correctly reflect the number of tokens');
+test(function () {
+	      assert_equals( elem.relList.item(0), 'foo' );
+}, 'relList.item(0) must return the first token');
+test(function () {
+	      assert_equals( elem.relList.item(1), 'FOO' );
+}, 'relList.item must return case-sensitive strings and preserve token order');
+test(function () {
+	      assert_equals( elem.relList[0], 'foo' );
+}, 'relList[0] must return the first token');
+test(function () {
+	      assert_equals( elem.relList[1], 'FOO' );
+}, 'relList[index] must return case-sensitive strings and preserve token order');
+test(function () {
+	      /* the normative part of the spec states that:
+	      "unless the length is zero, in which case there are no supported property indices"
+	      ...
+	      "The term[...] supported property indices [is] used as defined in the WebIDL specification."
+	      WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+	      assert_equals( elem.relList[2], window.undefined );
+}, 'relList[index] must still be undefined for out-of-range index when earlier indexes exist');
+test(function () {
+	      assert_equals( elem.rel, 'foo FOO' );
+}, 'rel must update correctly when items have been added through relList');
+test(function () {
+	      assert_equals( elem.relList + '', 'foo FOO', 'implicit' );
+	      assert_equals( elem.relList.toString(), 'foo FOO', 'explicit' );
+}, 'relList must stringify correctly when items have been added');
+test(function () {
+	      elem.relList.add('foo');
+	      assert_equals( elem.relList.length, 2 );
+	      assert_equals( elem.relList + '', 'foo FOO', 'implicit' );
+	      assert_equals( elem.relList.toString(), 'foo FOO', 'explicit' );
+}, 'relList.add must not make any changes if an existing token is added');
+test(function () {
+	      elem.relList.remove('bar');
+	      assert_equals( elem.relList.length, 2 );
+	      assert_equals( elem.relList + '', 'foo FOO', 'implicit' );
+	      assert_equals( elem.relList.toString(), 'foo FOO', 'explicit' );
+}, 'relList.remove must not make any changes if a non-existing token is removed');
+test(function () {
+	      elem.relList.remove('foo');
+	      assert_equals( elem.relList.length, 1 );
+	      assert_equals( elem.relList + '', 'FOO', 'implicit' );
+	      assert_equals( elem.relList.toString(), 'FOO', 'explicit' );
+	      assert_false( elem.relList.contains('foo') );
+	      assert_true( elem.relList.contains('FOO') );
+}, 'relList.remove must remove existing tokens');
+test(function () {
+	      secondelem.relList.remove('test');
+	      assert_equals( secondelem.relList.length, 0 );
+	      assert_false( secondelem.relList.contains('test') );
+}, 'relList.remove must remove duplicated tokens');
+test(function () {
+	      secondelem.rel = 'token1 token2 token3';
+	      secondelem.relList.remove('token2');
+	      assert_equals( secondelem.relList + '', 'token1 token3', 'implicit' );
+	      assert_equals( secondelem.relList.toString(), 'token1 token3', 'explicit' );
+}, 'relList.remove must collapse whitespace around removed tokens');
+test(function () {
+	      secondelem.rel = ' token1 token2  ';
+	      secondelem.relList.remove('token2');
+	      assert_equals( secondelem.relList + '', ' token1', 'implicit' );
+	      assert_equals( secondelem.relList.toString(), ' token1', 'explicit' );
+}, 'relList.remove must only remove whitespace around removed tokens');
+test(function () {
+	      secondelem.rel = '  token1  token2  token1  ';
+	      secondelem.relList.remove('token2');
+	      assert_equals( secondelem.relList + '', '  token1 token1  ', 'implicit' );
+	      assert_equals( secondelem.relList.toString(), '  token1 token1  ', 'explicit' );
+}, 'relList.remove must collapse multiple whitespace around removed tokens');
+test(function () {
+	      secondelem.rel = '  token1  token2  token1  ';
+	      secondelem.relList.remove('token1');
+	      assert_equals( secondelem.relList + '', 'token2', 'implicit' );
+	      assert_equals( secondelem.relList.toString(), 'token2', 'explicit' );
+}, 'relList.remove must collapse whitespace when removing multiple tokens');
+test(function () {
+	      secondelem.rel = '  token1  token1  ';
+	      secondelem.relList.add('token1');
+	      assert_equals( secondelem.relList + '', '  token1  token1  ', 'implicit' );
+	      assert_equals( secondelem.relList.toString(), '  token1  token1  ', 'explicit' );
+}, 'relList.add must not affect whitespace when the token already exists');
+test(function () {
+	      assert_true(elem.relList.toggle('foo'));
+	      assert_equals( elem.relList.length, 2 );
+	      assert_true( elem.relList.contains('foo') );
+	      assert_true( elem.relList.contains('FOO') );
+}, 'relList.toggle must toggle tokens case-sensitively when adding');
+test(function () {
+	      assert_false(elem.relList.toggle('foo'));
+}, 'relList.toggle must be able to remove tokens');
+test(function () {
+	      //will return true if the last test incorrectly removed both
+	      assert_false(elem.relList.toggle('FOO'));
+	      assert_false( elem.relList.contains('foo') );
+	      assert_false( elem.relList.contains('FOO') );
+}, 'relList.toggle must be case-sensitive when removing tokens');
+test(function () {
+	      assert_equals( elem.rel, '' );
+}, 'rel must be empty when all tokens have been removed');
+test(function () {
+	      assert_equals( elem.relList + '', '', 'implicit' );
+	      assert_equals( elem.relList.toString(), '', 'explicit' );
+}, 'relList must stringify to an empty string when all tokens have been removed');
+test(function () {
+	      assert_equals( elem.relList.item(0), null );
+}, 'relList.item(0) must return null when all tokens have been removed');
+test(function () {
+	      /* the normative part of the spec states that:
+	      "unless the length is zero, in which case there are no supported property indices"
+	      ...
+	      "The term[...] supported property indices [is] used as defined in the WebIDL specification."
+	      WebIDL creates actual OwnProperties and then [] just acts as a normal property lookup */
+	      assert_equals( elem.relList[0], window.undefined );
+}, 'relList[0] must be undefined when all tokens have been removed');
+//if the last character of DOMTokenSting underlying character is not a space character, append U+0020", where "space character" is from " \t\r\n\f"
+test(function () {
+	      var foo = document.createElement('a');
+	      foo.rel = 'a ';
+	      foo.relList.add('b');
+	      assert_equals(foo.rel,'a b');
+}, 'relList.add should treat " " as a space');
+test(function () {
+	      var foo = document.createElement('a');
+	      foo.rel = 'a\t';
+	      foo.relList.add('b');
+	      assert_equals(foo.rel,'a\tb');
+}, 'relList.add should treat \\t as a space');
+test(function () {
+	      var foo = document.createElement('a');
+	      foo.rel = 'a\r';
+	      foo.relList.add('b');
+	      assert_equals(foo.rel,'a\rb');
+}, 'relList.add should treat \\r as a space');
+test(function () {
+	      var foo = document.createElement('a');
+	      foo.rel = 'a\n';
+	      foo.relList.add('b');
+	      assert_equals(foo.rel,'a\nb');
+}, 'relList.add should treat \\n as a space');
+test(function () {
+	      var foo = document.createElement('a');
+	      foo.rel = 'a\f';
+	      foo.relList.add('b');
+	      assert_equals(foo.rel,'a\fb');
+}, 'relList.add should treat \\f as a space');
+test(function () {
+	      //WebIDL and ECMAScript 5 - a readonly property has a getter but not a setter
+	      //ES5 makes [[Put]] fail but not throw
+	      var failed = false;
+	      secondelem.rel = 'token1';
+	      try {
+	      	  secondelem.relList.length = 0;
+		  } catch(e) {
+		    failed = e;
+		    }
+		    assert_equals(secondelem.relList.length,1);
+		    assert_false(failed,'an error was thrown');
+}, 'relList.length must be read-only');
+test(function () {
+	      var failed = false, realList = secondelem.relList;
+	      try {
+	      	  secondelem.relList = '';
+		  } catch(e) {
+		    failed = e;
+		    }
+		    assert_equals(secondelem.relList,realList);
+		    assert_false(failed,'an error was thrown');
+}, 'relList must be read-only');
+   	      </script>
+		</body>
+</html>

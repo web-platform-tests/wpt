@@ -179,7 +179,10 @@ function doTest([untested, tested]) {
     PopStateEvent: ['new PopStateEvent("popstate", { data: {} })'],
     HashChangeEvent: [],
     PageTransitionEvent: [],
-    BeforeUnloadEvent: [],
+    BeforeUnloadEvent: [
+      'new BeforeUnloadEvent("foo")',
+      'new BeforeUnloadEvent("foo", {bubbles: true, cancelable: true})'
+    ],
     ApplicationCache: ['window.applicationCache'],
     WindowModal: [],
     Navigator: ['window.navigator'],

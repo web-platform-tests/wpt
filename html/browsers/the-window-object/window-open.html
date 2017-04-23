@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Window#open</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var w = window.open();
+  assert_equals(w.location.href, 'about:blank');
+}, 'window.open() should have default url = "about:blank"');
+
+test(function() {
+  window.addEventListener('message', function(e) {
+    assert_equals(e.data.name, '_blank');
+  });
+  var w = window.open("window-open-blank.html");
+}, 'window.open() should have default target = "_blank"');
+</script>
+

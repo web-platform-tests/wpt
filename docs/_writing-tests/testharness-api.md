@@ -1,3 +1,9 @@
+---
+layout: page
+title: testharness.js API
+order: 5
+---
+
 ## Introduction ##
 
 testharness.js provides a framework for writing testcases. It is intended to

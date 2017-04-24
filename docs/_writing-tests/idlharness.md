@@ -1,3 +1,9 @@
+---
+layout: page
+title: idlharness.js API
+order: 6
+---
+
 ## Introduction ##
 
 `idlharness.js` automatically generates browser tests for WebIDL interfaces, using

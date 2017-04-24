@@ -49,6 +49,12 @@ quirksFrame.onload = function() {
   }, "scroll() on the root element in quirks mode");
 
   test(function () {
+    doc.documentElement.scrollBy(10, 20);
+    assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.documentElement.scrollTop, 0, "scrollTop should be 0");
+  }, "scrollBy() on the root element in quirks mode");
+
+  test(function () {
     doc.documentElement.scrollLeft = 70;
     doc.documentElement.scrollTop = 80;
     assert_equals(doc.documentElement.scrollLeft, 0, "scrollLeft should be 0");
@@ -70,6 +76,12 @@ quirksFrame.onload = function() {
     assert_equals(doc.body.scrollLeft, 90, "scrollLeft should be 90");
     assert_equals(doc.body.scrollTop, 100, "scrollTop should be 100");
   }, "scroll() on the HTML body element in quirks mode");
+
+  test(function () {
+    doc.body.scrollBy(10, 20);
+    assert_equals(doc.body.scrollLeft, 100, "scrollLeft should be 100");
+    assert_equals(doc.body.scrollTop, 120, "scrollTop should be 120");
+  }, "scrollBy() on the HTML body element in quirks mode");
 
   test(function () {
     doc.body.scrollLeft = 120;
@@ -132,6 +144,12 @@ nonQuirksFrame.onload = function() {
   }, "scroll() on the root element in non-quirks mode");
 
   test(function () {
+    doc.documentElement.scrollBy(10, 20);
+    assert_equals(doc.documentElement.scrollLeft, 60, "scrollLeft should be 60");
+    assert_equals(doc.documentElement.scrollTop, 80, "scrollTop should be 80");
+  }, "scrollBy() on the root element in non-quirks mode");
+
+  test(function () {
     doc.documentElement.scrollLeft = 70;
     doc.documentElement.scrollTop = 80;
     assert_equals(doc.documentElement.scrollLeft, 70, "scrollLeft should be 70");
@@ -153,6 +171,12 @@ nonQuirksFrame.onload = function() {
     assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0");
     assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0");
   }, "scroll() on the HTML body element in non-quirks mode");
+
+  test(function () {
+    doc.body.scrollBy(10, 20);
+    assert_equals(doc.body.scrollLeft, 0, "scrollLeft should be 0");
+    assert_equals(doc.body.scrollTop, 0, "scrollTop should be 0");
+  }, "scrollBy() on the HTML body element in non-quirks mode");
 
   test(function () {
     doc.body.scrollLeft = 120;

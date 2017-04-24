@@ -95,5 +95,5 @@ Use `// META: timeout=long` at the beginning of the resource.
 
 
 [general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
-[testharness-api]: {{ site.baseurl }}{% link _writing-tests/testharness-api.html %}
-[idlharness]: {{ site.baseurl }}{% link _writing-tests/idlharness.html %}
+[testharness-api]: {{ site.baseurl }}{% link _writing-tests/testharness-api.md %}
+[idlharness]: {{ site.baseurl }}{% link _writing-tests/idlharness.md %}

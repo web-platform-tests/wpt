@@ -20,10 +20,9 @@
             assert_equals(el.offsetWidth, 0, "new element has offset width not equal to zero");
             assert_not_equals(document.getElementById("myDiv"), 0, "element with content has offset width equal to zero");
             var html = document.removeChild(document.documentElement);
-            assert_equals(el.offsetWidth, 0, "new element has offset width not equal to zero after removing documentElement");
-
             // Put back the root element, so that testharnessreport.js can append the result.
-            document.appendChild(html);
+            this.add_cleanup(function() { document.appendChild(html); });
+            assert_equals(el.offsetWidth, 0, "new element has offset width not equal to zero after removing documentElement");
         });
     </script>
 </body>

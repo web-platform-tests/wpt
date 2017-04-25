@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>IDL check of RTCIceCandidate</title>
+<link rel="author" title="Soares Chen" href="mailto:soares.chen@gmail.com"/>
+<link rel="help" href="http://w3c.github.io/webrtc-pc/#dom-rtcicecandidate">
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies the availability of the RTCIceCandidate interface.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<!-- This IDL is copied from the 13 March 2017 editors' draft. -->
+<script type="text/plain">
+[Constructor(RTCIceCandidateInit candidateInitDict)]
+interface RTCIceCandidate {
+    readonly attribute DOMString               candidate;
+    readonly attribute DOMString?              sdpMid;
+    readonly attribute unsigned short?         sdpMLineIndex;
+    readonly attribute DOMString?              foundation;
+    readonly attribute unsigned long?          priority;
+    readonly attribute DOMString?              ip;
+    readonly attribute RTCIceProtocol?         protocol;
+    readonly attribute unsigned short?         port;
+    readonly attribute RTCIceCandidateType?    type;
+    readonly attribute RTCIceTcpCandidateType? tcpType;
+    readonly attribute DOMString?              relatedAddress;
+    readonly attribute unsigned short?         relatedPort;
+    readonly attribute DOMString?              ufrag;
+    serializer = {candidate, sdpMid, sdpMLineIndex, ufrag};
+};
+</script>
+
+<script>
+(() => {
+  const idl_array = new IdlArray();
+
+  for(const node of document.querySelectorAll("script[type=text\\/plain]")) {
+    idl_array.add_idls(node.textContent);
+  }
+
+  window.iceCandidate = new RTCIceCandidate({
+    candidate: "candidate:1467250027 1 udp 2122260223 192.168.0.196 46243 typ host generation 0"
+  })
+
+  idl_array.add_objects({"RTCIceCandidate": ["iceCandidate"]});
+  idl_array.test();
+  done();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>IDL check of RTCPeerConnectionIceEvent</title>
+<link rel="author" title="Soares Chen" href="mailto:soares.chen@gmail.com"/>
+<link rel="help" href="http://w3c.github.io/webrtc-pc/#idl-def-rtcpeerconnectioniceevent">
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies the availability of the RTCPeerConnectionIceEvent interface.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<!-- This IDL is copied from the 13 March 2017 editors' draft. -->
+<script type="text/plain">
+[Constructor(DOMString type, optional RTCPeerConnectionIceEventInit eventInitDict)]
+interface RTCPeerConnectionIceEvent : Event {
+    readonly attribute RTCIceCandidate? candidate;
+    readonly attribute DOMString?       url;
+};
+</script>
+
+<script>
+(() => {
+  const idl_array = new IdlArray();
+
+  for(const node of document.querySelectorAll("script[type=text\\/plain]")) {
+    idl_array.add_idls(node.textContent);
+  }
+
+  window.iceEvent = new RTCPeerConnectionIceEvent("ice-event", { })
+
+  idl_array.add_objects({"RTCPeerConnectionIceEvent": ["iceEvent"]});
+  idl_array.test();
+  done();
+})();
+</script>
+</body>
+</html>

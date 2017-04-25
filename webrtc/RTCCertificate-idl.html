@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>IDL check of RTCCertificate</title>
+<link rel="author" title="Soares Chen" href="mailto:soares.chen@gmail.com"/>
+<link rel="help" href="http://w3c.github.io/webrtc-pc/#dom-rtccertificate">
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies the availability of the RTCCertificate interface.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<!-- This IDL is copied from the 13 March 2017 editors' draft. -->
+<script type="text/plain">
+interface RTCCertificate {
+    readonly attribute DOMTimeStamp                    expires;
+    readonly attribute FrozenArray<RTCDtlsFingerprint> fingerprints;
+    AlgorithmIdentifier getAlgorithm();
+};
+</script>
+
+<script>
+(() => {
+  const idl_array = new IdlArray();
+
+  for(const node of document.querySelectorAll("script[type=text\\/plain]")) {
+    idl_array.add_idls(node.textContent);
+  }
+
+  async_test(t => {
+    // The given parameter must be supported by generateCertifiate()
+    RTCPeerConnection.generateCertificate({
+      name: "RSASSA-PKCS1-v1_5",
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: "SHA-256"
+    })
+    .then(t.step_func_done(cert => {
+      window.rtcCert = cert;
+      idl_array.add_objects({"RTCCertificate": ["rtcCert"]});
+      idl_array.test();
+    }));
+  }, "RTCCertificate IDL Test");
+})();
+</script>
+</body>
+</html>

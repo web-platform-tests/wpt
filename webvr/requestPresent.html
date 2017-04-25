@@ -18,7 +18,7 @@
         var canvas = document.getElementById('webglCanvas');
         var div = document.getElementById('testDiv');
 
-        // Successful requestPresent test. All subsequent tests expect rejections. 
+        // Successful requestPresent test. All subsequent tests expect rejections.
         promise_test((test) => {
             return setupVRDisplay(test).then(() => {
                 return WebVRHelpers.RequestPresentOnVRDisplay(vrDisplay, [{ source: canvas }]);

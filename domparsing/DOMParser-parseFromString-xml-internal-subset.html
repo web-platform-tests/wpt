@@ -19,6 +19,6 @@ test(function () {
   // does not have any notion of the internal subset, so also check that it
   // isn't serialized by XMLSerializer.
   var doctypeString = new XMLSerializer().serializeToString(doctype);
-  assert_equals(doctypeString, '<!DOCTYPE foo>');
+  assert_equals(doctypeString, '<!DOCTYPE foo>', 'serialized doctype');
 });
 </script>

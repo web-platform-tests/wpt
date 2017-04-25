@@ -168,7 +168,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute USVString href;
   [CEReactions] attribute DOMString? crossOrigin;
   [CEReactions] attribute DOMString rel;
-  // [CEReactions] attribute RequestDestination as; // (default "") XXX TODO
+  [CEReactions] attribute DOMString as; // (default "")
   [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
   [CEReactions] attribute DOMString media;
   [CEReactions] attribute DOMString nonce;

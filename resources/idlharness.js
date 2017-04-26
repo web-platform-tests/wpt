@@ -1069,13 +1069,19 @@ IdlInterface.prototype.test_self = function()
         // "The class string of an interface prototype object is the
         // concatenation of the interface’s identifier and the string
         // “Prototype”."
-        assert_class_string(self[this.name].prototype, this.name + "Prototype",
-                            "class string of " + this.name + ".prototype");
+
+        // Skip these tests for now due to a specification issue about
+        // prototype name.
+        // https://www.w3.org/Bugs/Public/show_bug.cgi?id=28244
+
+        // assert_class_string(self[this.name].prototype, this.name + "Prototype",
+        //                     "class string of " + this.name + ".prototype");
+
         // String() should end up calling {}.toString if nothing defines a
         // stringifier.
         if (!this.has_stringifier()) {
-            assert_equals(String(self[this.name].prototype), "[object " + this.name + "Prototype]",
-                    "String(" + this.name + ".prototype)");
+            // assert_equals(String(self[this.name].prototype), "[object " + this.name + "Prototype]",
+            //         "String(" + this.name + ".prototype)");
         }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 

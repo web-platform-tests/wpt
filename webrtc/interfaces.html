@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>IDL check of RTCPeerConnection</title>
+    <link rel="author" title="Soares Chen" href="mailto:soares.chen@gmail.com"/>
+    <link rel="help" href="http://w3c.github.io/webrtc-pc/">
+  </head>
+  <body>
+    <h1 class="instructions">Description</h1>
+    <p class="instructions">This test verifies the conformance of WebIDLs defined in WebRTC</p>
+    <div id="log"></div>
+    <script src=/resources/testharness.js></script>
+    <script src=/resources/testharnessreport.js></script>
+    <script src=/resources/WebIDLParser.js></script>
+    <script src=/resources/idlharness.js></script>
+    <script>
+     (() => {
+       'use strict'
+
+       function initRTCPeerConnection(idlArray) {
+         window.pc = new RTCPeerConnection(null);
+         idlArray.add_objects({'RTCPeerConnection': ['pc']});
+       }
+
+       function initRTCIceCandidate(idlArray) {
+         window.iceCandidate = new RTCIceCandidate({
+           candidate: 'candidate:1467250027 1 udp 2122260223 192.168.0.196 46243 typ host generation 0'
+         });
+         idlArray.add_objects({'RTCIceCandidate': ['iceCandidate']});
+       }
+
+       function initRTCSessionDescription(idlArray) {
+         window.sessionDesc = new RTCSessionDescription({ type: 'offer' });
+         idlArray.add_objects({'RTCSessionDescription': ['sessionDesc']});
+       }
+
+       function initRTCIceEvent(idlArray) {
+         window.iceEvent = new RTCPeerConnectionIceEvent('ice-event', { });
+         idlArray.add_objects({'RTCPeerConnectionIceEvent': ['iceEvent']});
+       }
+
+       function initRTCIceErrorEvent(idlArray) {
+         window.iceErrorEvent = new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 });
+         idlArray.add_objects({'RTCPeerConnectionIceErrorEvent': ['iceErrorEvent']});
+       }
+
+       function initRTCCertificate(idlArray) {
+         return RTCPeerConnection.generateCertificate({
+           name: 'RSASSA-PKCS1-v1_5',
+           modulusLength: 2048,
+           publicExponent: new Uint8Array([1, 0, 1]),
+           hash: 'SHA-256'
+         })
+         .then(cert => {
+           window.rtcCert = cert;
+           idlArray.add_objects({'RTCCertificate': ['rtcCert']});
+         });
+       }
+
+       const syncInits = [
+         ['Init RTCPeerConnection', initRTCPeerConnection],
+         ['Init RTCIceCandidate', initRTCIceCandidate],
+         ['Init RTCSessionDescription', initRTCSessionDescription],
+         ['Init RTCPeerConnectionIceEvent', initRTCIceEvent],
+         ['Init RTCPeerConnectionIceErrorEvent', initRTCIceErrorEvent],
+       ];
+
+       const asyncInits = [
+         ['Init RTCCertificate', initRTCCertificate],
+       ];
+
+       function initIdlArray(idlText) {
+         const idlArray = new IdlArray();
+
+         idlArray.add_untested_idls('interface EventHandler {};');
+         idlArray.add_untested_idls('interface MediaStreamTrack {};');
+         idlArray.add_idls(idlText);
+
+         return idlArray;
+       }
+
+       function doIdlTests(idlArray) {
+         for(const [taskName, initIdl] of syncInits) {
+           test(t => {
+             initIdl(idlArray);
+             t.done();
+           }, taskName)
+         }
+
+         return Promise.all(
+           asyncInits.map(([taskName, initIdl]) =>
+             promise_test(
+               () => initIdl(idlArray),
+               taskName)))
+         .then(() => idlArray.test())
+       }
+
+       promise_test(() => {
+         return fetch('/interfaces/webrtc.idl')
+           .then(response => response.text())
+           .then(initIdlArray)
+           .then(doIdlTests);
+
+       }, 'WebRTC IDL Tests');
+
+     })();
+    </script>
+  </body>
+</html>

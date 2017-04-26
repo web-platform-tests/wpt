@@ -483,7 +483,6 @@ ReflectionTests.typeMap = {
                      {toString:function() {return 2;}, valueOf: null},
                      {valueOf:function() {return 3;}}],
         "idlTests": [0, 1, 257, maxInt, "-0", maxInt + 1, maxUnsigned],
-        "idlIdlExpected": [0, 1, 257, maxInt, 0, null, null],
         "idlDomExpected": [0, 1, 257, maxInt, 0, null, null],
     },
     /**
@@ -719,6 +718,13 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
           if (domTests.indexOf(val) == -1) {
             domTests.push(val);
           }
+          if (idlTests.indexOf(val) == -1 && 0 <= val && val <= maxUnsigned) {
+            idlTests.push(val);
+            if (typeof val != "number") {
+              val = ReflectionTests.parseNonneg(val);
+            }
+            idlDomExpected.push(val > maxInt ? null : val);
+          }
         });
 
         // Rewrite expected values
@@ -734,6 +740,24 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
               return data.max;
             }
             return parsed;
+        });
+        idlIdlExpected = idlTests.map(function(val) {
+            if (typeof val != "number") {
+              val = ReflectionTests.parseNonneg(val);
+            }
+            if (val < 0 || val > maxUnsigned) {
+              throw "Test bug: val should be an unsigned long";
+            }
+            if (val > maxInt) {
+              return defaultVal;
+            }
+            if (val < data.min) {
+              return data.min;
+            }
+            if (val > data.max) {
+              return data.max;
+            }
+            return val;
         });
         break;
     }

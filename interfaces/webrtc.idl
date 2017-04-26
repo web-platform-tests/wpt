@@ -44,6 +44,8 @@ dictionary RTCOfferAnswerOptions {
 
 dictionary RTCOfferOptions : RTCOfferAnswerOptions {
     boolean iceRestart = false;
+    boolean offerToReceiveAudio;
+    boolean offerToReceiveVideo;
 };
 
 dictionary RTCAnswerOptions : RTCOfferAnswerOptions {
@@ -96,11 +98,6 @@ partial interface RTCPeerConnection {
     Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate,
                                   VoidFunction successCallback,
                                   RTCPeerConnectionErrorCallback failureCallback);
-};
-
-partial dictionary RTCOfferOptions {
-    boolean offerToReceiveAudio;
-    boolean offerToReceiveVideo;
 };
 
 enum RTCSignalingState {

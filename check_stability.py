@@ -295,7 +295,16 @@ class Chrome(Browser):
         if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
             if find_executable("dbus-launch"):
                 logger.debug("Attempting to start dbus")
-                logger.debug(subprocess.check_output(["dbus-launch"]))
+                dbus_conf = subprocess.check_output(["dbus-launch"])
+                logger.debug(dbus_conf)
+
+                # From dbus-launch(1):
+                #
+                # > When dbus-launch prints bus information to standard output,
+                # > by default it is in a simple key-value pairs format.
+                for line in dbus_conf.strip().split("\n"):
+                    key, _, value = line.partition("=")
+                    os.environ[key] = value
             else:
                 logger.critical("dbus not running and can't be started")
                 sys.exit(1)

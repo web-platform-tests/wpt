@@ -1481,6 +1481,7 @@ dictionary PageTransitionEventInit : EventInit {
   boolean persisted;
 };
 
+[Constructor(DOMString type, optional EventInit eventInitDict)]
 interface BeforeUnloadEvent : Event {
            attribute DOMString returnValue;
 };

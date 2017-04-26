@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shadow DOM: slotchange customelements</title>
+<meta name="author" title="Surma" href="mailto:surma@google.com">
+<link rel="help" href="https://dom.spec.whatwg.org/#signaling-slot-change">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<my-custom-element id="upgrade"><div></div></my-custom-element>
+<script>
+var calls = [];
+class MyCustomElement extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        this.attachShadow({mode: 'open'});
+        this.shadowRoot.innerHTML = '<slot></slot>';
+        var slot = this.shadowRoot.children[0];
+        slot.addEventListener('slotchange', function() {
+            calls.push(this);
+        }.bind(this));
+    }
+}
+customElements.define('my-custom-element', MyCustomElement);
+</script>
+<my-custom-element id="parser"><div></div></my-custom-element>
+<script>
+test(function () {
+    var call = calls.filter(function (call) {return call.id === 'upgrade'});
+    assert_equals(call.length, 1);
+}, 'slotchange must fire when a parser creates an custom element with slotted children');
+
+test(function () {
+    var call = calls.filter(function (call) {return call.id === 'parser'});
+    assert_equals(call.length, 1);
+}, 'slotchange must fire when an custom element with slotted children is upgraded');
+done();
+</script>
+</body>
+</html>

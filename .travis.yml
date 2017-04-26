@@ -1,6 +1,9 @@
 dist: trusty
 sudo: required
 language: python
+branches:
+  only:
+    - master
 addons:
   hosts:
     - web-platform.test

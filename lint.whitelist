@@ -385,7 +385,7 @@ INDENT TABS: css/WOFF2/*
 
 
 ## Things we're stopping from getting worse
-CONSOLE: css/css-flexbox-1/support/check-layout-th.js
+CONSOLE: css/support/check-layout-th.js
 CONSOLE: css/css-regions-1/elements/support/Three.js
 CONSOLE: css/css-regions-1/interactivity/selection/support/js/selection-test-helper.js
 CONSOLE: css/css-regions-1/stacking-context/javascript-stacking-context-002.html

@@ -26,7 +26,7 @@
       window.requestAnimationFrame(() => {
         t.step(() => assert_false(input.matches(":focus"),
                                   "Check input doesn't match ':focus' after getting 'display: none'"));
-        input.style.display = "inline-block";
+        input.style.display = "inline";
         t.done();
       });
     });

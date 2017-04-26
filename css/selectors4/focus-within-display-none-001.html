@@ -30,7 +30,7 @@
                                   "Check input doesn't match ':focus-within' after getting 'display: none'"));
         t.step(() => assert_false(wrapper.matches(":focus-within"),
                                  "Check wrapper doesn't match ':focus-within' after child got 'display: none'"));
-        input.style.display = "inline-block";
+        input.style.display = "inline";
         t.done();
       });
     });

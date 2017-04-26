@@ -510,6 +510,20 @@ def get_affected_testfiles(files_changed, skip_tests):
         repo_path = "/" + os.path.relpath(full_path, wpt_root).replace(os.path.sep, "/")
         nontest_changed_paths.add((full_path, repo_path))
 
+    # JavaScript files named with a `.any.js` suffix are interpreted in a
+    # number of different contexts, but they are all interpreted using a
+    # document that does not have without a corresponding file on disk. Changes
+    # to these test files should trigger stability checking using those
+    # "virtual" documents.
+    multiglobal_re = re.compile(r'^(.*)\.any\.js$')
+    multiglobal_suffixes = [".any.html", ".any.worker.html"]
+    for changed in files_changed:
+        match = multiglobal_re.match(changed)
+        if match is None:
+            continue
+        for suffix in multiglobal_suffixes:
+            affected_testfiles.add(os.path.relpath(match.expand("\\1" + suffix), wpt_root))
+
     for root, dirs, fnames in os.walk(wpt_root):
         # Walk top_level_subdir looking for test files containing either the
         # relative filepath or absolute filepatch to the changed files.

@@ -109,6 +109,8 @@ test(function () {
   assert_false( foo.classList.contains('token1') );
   assert_true( foo.classList.contains('token2') );
   assert_true( foo.classList.contains('token3') );
+  assert_equals( foo.classList.item(0), 'token3' );
+  assert_equals( foo.classList.item(1), 'token2' );
 }, '.replace with an already existing token')
 elem.className = 'foo';
 test(function () {

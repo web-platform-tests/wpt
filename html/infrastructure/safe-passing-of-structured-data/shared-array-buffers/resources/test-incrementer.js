@@ -1,10 +1,24 @@
 "use strict";
 
+self.getViewValue = (view, index) => {
+  if(view instanceof DataView) {
+    return view.getInt8(index);
+  }
+  return view[index];
+};
+
+self.setViewValue = (view, index, value) => {
+  if(view instanceof DataView) {
+    view.setInt8(index, value);
+  }
+  view[index] = value;
+};
+
 self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, whereToSend, whereToSendLabel, origin, type = "Int32Array") => {
   return new Promise(resolve => {
     const sab = new SharedArrayBuffer(8);
     const view = new self[type](sab);
-    view[0] = 1;
+    setViewValue(view, 0, 1);
 
     whereToListen.onmessage = t.step_func(({ data }) => {
       switch (data.message) {
@@ -14,9 +28,9 @@ self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, wh
         }
 
         case "changed to 2": {
-          assert_equals(view[0], 2, `The ${whereToListenLabel} must see changes made in the ${whereToSendLabel}`);
+          assert_equals(getViewValue(view, 0), 2, `The ${whereToListenLabel} must see changes made in the ${whereToSendLabel}`);
 
-          view[0] = 3;
+          setViewValue(view, 0, 3);
           whereToSend.postMessage({ message: "changed to 3" }, origin);
 
           break;
@@ -40,16 +54,16 @@ self.setupDestinationIncrementer = (whereToListen, whereToSendBackTo, origin) =>
     switch (data.message) {
       case "initial payload": {
         view = data.view;
-        whereToSendBackTo.postMessage({ message: "initial payload received", value: view[0] }, origin);
+        whereToSendBackTo.postMessage({ message: "initial payload received", value: getViewValue(view, 0) }, origin);
 
-        view[0] = 2;
+        setViewValue(view, 0, 2);
         whereToSendBackTo.postMessage({ message: "changed to 2" }, origin);
 
         break;
       }
 
       case "changed to 3": {
-        whereToSendBackTo.postMessage({ message: "changed to 3 received", value: view[0] }, origin);
+        whereToSendBackTo.postMessage({ message: "changed to 3 received", value: getViewValue(view, 0) }, origin);
 
         break;
       }

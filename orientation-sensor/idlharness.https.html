@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Ambient Light Sensor IDL tests</title>
+<title>Orientation Sensor IDL tests</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/ambient-light/">
+<link rel="help" href="https://w3c.github.io/orientation-sensor/">
 <link rel="help" href="https://w3c.github.io/sensors/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -58,10 +58,15 @@ dictionary SensorErrorEventInit : EventInit {
 };
 </pre>
 
-<pre id="ambient-light-idl">
+<pre id="orientation-idl">
+typedef (Float32Array or Float64Array or DOMMatrix) RotationMatrixType;
+interface OrientationSensor : Sensor {
+  readonly attribute FrozenArray<double>? quaternion;
+  void populateMatrix(RotationMatrixType targetMatrix);
+};
+
 [Constructor(optional SensorOptions sensorOptions)]
-interface AmbientLightSensor : Sensor {
-  readonly attribute unrestricted double? illuminance;
+interface AbsoluteOrientationSensor : OrientationSensor {
 };
 </pre>
 
@@ -72,10 +77,10 @@ interface AmbientLightSensor : Sensor {
   let idl_array = new IdlArray();
   idl_array.add_untested_idls(document.getElementById('idl').textContent);
   idl_array.add_untested_idls(document.getElementById('generic-idl').textContent);
-  idl_array.add_idls(document.getElementById('ambient-light-idl').textContent);
+  idl_array.add_idls(document.getElementById('orientation-idl').textContent);
 
   idl_array.add_objects({
-    AmbientLightSensor: ['new AmbientLightSensor();']
+    AbsoluteOrientationSensor: ['new AbsoluteOrientationSensor();']
   });
 
   idl_array.test();

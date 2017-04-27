@@ -49,14 +49,13 @@
                 assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
 
                 const eventWatcher = new EventWatcher(t, request, 'connectionavailable');
-                const timeout = new Promise(resolve => { t.step_timeout(resolve, 5000); });
+                const timeout = new Promise((_, reject) => {
+                    // This test fails if request.onconnectionavailable is not invoked although the presentation is started successfully
+                    // or the presentation fails to be started.
+                    t.step_timeout(() => { reject('The connectionavailable event was not fired (timeout).'); }, 5000);}
+                );
                 return Promise.race([ eventWatcher.wait_for('connectionavailable'), timeout ]);
             }).then(evt => {
-                // This test fails if request.onconnectionavailable is not invoked although the presentation is started successfully
-                // or the presentation fails to be started.
-                if (!evt)
-                    assert_unreached('The connectionavailable event was not fired.');
-
                 assert_true(evt instanceof PresentationConnectionAvailableEvent, 'An event using PresentationConnectionAvailableEvent is fired.');
                 assert_true(evt.isTrusted, 'The event is a trusted event.');
                 assert_false(evt.bubbles, 'The event does not bubbles.');

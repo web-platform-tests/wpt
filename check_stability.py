@@ -410,10 +410,7 @@ def build_manifest():
 
 
 def install_wptrunner():
-    """Clone and install wptrunner."""
-    call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", wptrunner_root)
-    git = get_git_cmd(wptrunner_root)
-    git("submodule", "update", "--init", "--recursive")
+    """Install wptrunner."""
     call("pip", "install", wptrunner_root)
 
 
@@ -805,7 +802,7 @@ def main():
     setup_logging()
 
     wpt_root = os.path.abspath(os.curdir)
-    wptrunner_root = os.path.normpath(os.path.join(wpt_root, "..", "wptrunner"))
+    wptrunner_root = os.path.normpath(os.path.join(wpt_root, "tools", "wptrunner"))
 
     if not os.path.exists(args.root):
         logger.critical("Root directory %s does not exist" % args.root)

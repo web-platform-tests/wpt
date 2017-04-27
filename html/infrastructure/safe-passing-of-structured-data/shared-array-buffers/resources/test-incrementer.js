@@ -10,8 +10,9 @@ self.getViewValue = (view, index) => {
 self.setViewValue = (view, index, value) => {
   if(view instanceof DataView) {
     view.setInt8(index, value);
+  } else {
+    view[index] = value;
   }
-  view[index] = value;
 };
 
 self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, whereToSend, whereToSendLabel, origin, type = "Int32Array") => {

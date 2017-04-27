@@ -1,9 +1,9 @@
 "use strict";
 
-self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, whereToSend, whereToSendLabel, origin) => {
+self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, whereToSend, whereToSendLabel, origin, type = "Int32Array") => {
   return new Promise(resolve => {
-    const sab = new SharedArrayBuffer(4);
-    const view = new Int32Array(sab);
+    const sab = new SharedArrayBuffer(8);
+    const view = new self[type](sab);
     view[0] = 1;
 
     whereToListen.onmessage = t.step_func(({ data }) => {
@@ -30,7 +30,7 @@ self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, wh
       }
     });
 
-    whereToSend.postMessage({ message: "initial payload", sab }, origin);
+    whereToSend.postMessage({ message: "initial payload", view }, origin);
   });
 };
 
@@ -39,7 +39,7 @@ self.setupDestinationIncrementer = (whereToListen, whereToSendBackTo, origin) =>
   whereToListen.onmessage = ({ data }) => {
     switch (data.message) {
       case "initial payload": {
-        view = new Int32Array(data.sab);
+        view = data.view;
         whereToSendBackTo.postMessage({ message: "initial payload received", value: view[0] }, origin);
 
         view[0] = 2;

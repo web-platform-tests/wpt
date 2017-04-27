@@ -12,11 +12,23 @@
 <script>
 "use strict";
 
-promise_test(t => {
-  const worker = new Worker("resources/incrementer-worker.js");
+[
+  "Int8Array",
+  "Uint8Array",
+  "Uint8ClampedArray",
+  "Int16Array",
+  "Uint16Array",
+  "Int32Array",
+  "Uint32Array",
+  "Float32Array",
+  "Float64Array"
+].forEach(type => {
+  promise_test(t => {
+    const worker = new Worker("resources/incrementer-worker.js");
 
-  return testSharingViaIncrementerScript(t, worker, "window", worker, "worker");
-}, "postMessaging to a dedicated worker allows them to see each others' modifications");
+    return testSharingViaIncrementerScript(t, worker, "window", worker, "worker", undefined, type);
+  }, "postMessaging to a dedicated worker allows them to see each others' modifications with " + type);
+});
 
 promise_test(t => {
   return new Promise(resolve => {

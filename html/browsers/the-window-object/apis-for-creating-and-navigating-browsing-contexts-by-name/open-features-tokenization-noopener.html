@@ -139,7 +139,7 @@ test (t => {
     'no\nopener', //    => ('no', ''), ('opener', '')
     'no,opener', //     => ('no', ''), ('opener', '')
     '\0noopener', //    => ('\0noopener', '')
-    'noopener\u0000=yes' // => ('noopener\0', 'yes')
+    'noopener\u0000=yes', // => ('noopener\0', 'yes')
     'foo=\u000Cnoopener' // => ('foo', 'noopener')
   ];
   invalidFeatureVariants.forEach(feature => {

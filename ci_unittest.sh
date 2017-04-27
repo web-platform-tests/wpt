@@ -1,8 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
+ROOT=$PWD
 pip install -U tox codecov
 cd tools
 tox
-coverage combine
+
+if [ $TOXENV == "py27" ] || [ $TOXENV == "pypy" ]; then
+  cd wptrunner
+  tox
+fi
+
+cd $ROOT
+
+coverage combine tools tools/wptrunner
 codecov

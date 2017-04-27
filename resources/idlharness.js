@@ -208,7 +208,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
      */
     parsed_idls.forEach(function(parsed_idl)
     {
-        if (parsed_idl.type == "interface" && parsed_idl.partial)
+        if ((parsed_idl.type == "interface" || parsed_idl.type == "dictionary") && parsed_idl.partial)
         {
             this.partials.push(parsed_idl);
             return;

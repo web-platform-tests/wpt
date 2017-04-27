@@ -85,15 +85,23 @@
            test(t => {
              initIdl(idlArray);
              t.done();
-           }, taskName)
+           }, taskName);
          }
 
+         // Async initialize all IDL instances in parallel
          return Promise.all(
-           asyncInits.map(([taskName, initIdl]) =>
-             promise_test(
+           asyncInits.map(([taskName, initIdl]) => {
+             // TODO: fix promise_test so that it return a promise
+             // Otherwise there might be race condition when IDL test starts
+             return promise_test(
                () => initIdl(idlArray),
-               taskName)))
-         .then(() => idlArray.test())
+               taskName);
+           }))
+           .then(() => {
+             // Run the IDL array test regardless of whether
+             // any of the IDL  initialization failed
+             idlArray.test();
+           });
        }
 
        promise_test(() => {

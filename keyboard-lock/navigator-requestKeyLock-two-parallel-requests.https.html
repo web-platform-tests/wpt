@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test((t) => {
+  const p1 = navigator.requestKeyLock(['a', 'b']);
+  const p2 = navigator.requestKeyLock(['c', 'd']);
+  return promise_rejects(t, null, p2,
+      'requestKeyLock() should only be ' +
+      'executed if another request has finished.');
+}, 'Keyboard Lock requestKeyLock twice in parallel');
+
+</script>

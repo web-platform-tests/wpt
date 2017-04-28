@@ -5,8 +5,7 @@ function dirname(path) {
 }
 
 function request() {
-  var dirName = dirname(location.href);
-  var origin = dirName.slice(0, dirName.indexOf('/resource-timing'));
+  var origin = location.origin;
   var client = new XMLHttpRequest,
   // create a cross-origin request
     url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=null';

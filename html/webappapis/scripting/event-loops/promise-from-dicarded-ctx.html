@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+<meta charset=utf-8>
+<link rel=help href="https://html.spec.whatwg.org/multipage/webappapis.html#event-loops">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+// 8.1.4.1 Definitions
+//
+// > [...]
+// >
+// > There must be at least one browsing context event loop per user agent, and
+// > at most one per unit of related similar-origin browsing contexts.
+
+async_test(function(t) {
+  var child = window.open('/common/blank.html');
+  child.onload = function() {
+      var fulfilled = child.Promise.resolve();
+
+      child.close();
+
+      // Create a new Promise (rather than invoke `fulfilled.then` directly) in
+      // order to append to the list stored in the "orphaned" Promise's
+      // [[PromiseFulfilledReactions]] slot.
+      Promise.resolve(fulfilled).then(function() {
+          t.done();
+        });
+    };
+}, 'closing a window does not preclude execution of further tasks');
+
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+  iframe.onload = function() {
+      var fulfilled = iframe.contentWindow.Promise.resolve();
+
+      iframe.remove();
+
+      // Create a new Promise (rather than invoke `fulfilled.then` directly) in
+      // order to append to the list stored in the "orphaned" Promise's
+      // [[PromiseFulfilledReactions]] slot.
+      Promise.resolve(fulfilled).then(function() {
+          t.done();
+        });
+    };
+
+  iframe.src = '/common/blank.html';
+  document.body.appendChild(iframe);
+}, 'removing an iframe does not preclude execution of further tasks');
+</script>
+</body>
+</html>

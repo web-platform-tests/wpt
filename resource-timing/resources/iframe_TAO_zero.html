@@ -9,7 +9,7 @@ function request() {
   var client = new XMLHttpRequest,
   // create a cross-origin request
     url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=zero';
-    client.open("GET", url, false);
+    client.open("GET", url);
     client.send(null);
 }
 

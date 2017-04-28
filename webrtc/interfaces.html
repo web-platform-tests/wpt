@@ -11,13 +11,43 @@
     <script>
       'use strict';
 
-      function initRTCCertificate() {
+      function initRTCCertificate(idlArray) {
         return RTCPeerConnection.generateCertificate({
           name: 'RSASSA-PKCS1-v1_5',
           modulusLength: 2048,
           publicExponent: new Uint8Array([1, 0, 1]),
           hash: 'SHA-256'
         })
+        .then(cert => {
+          window.rtcCert = cert;
+          idlArray.add_objects({'RTCCertificate': ['rtcCert']});
+         });
+      }
+
+      // A customized version of test_harness that returns
+      // promise of the test completing as well as allow
+      // other promise tests to run in parallel.
+      function promise_test(func, name) {
+        return new Promise(resolve => {
+          async_test(t => {
+            Promise.resolve()
+            .then(func)
+            .then(
+              t.step_func_done(() => {
+                resolve();
+              }),
+              t.step_func(err => {
+                // The final promise is always resolved regardless of error
+                resolve();
+
+                // Let the browser unhandled rejection handler catch the error
+                Promise.reject(err);
+
+                // Report error to testharness
+                assert_unreached(`Unhandled rejection: ${err.toString()}`);
+              }));
+          }, name);
+        });
       }
 
       function doIdlTest(idlText) {
@@ -36,13 +66,12 @@
           'RTCPeerConnectionIceErrorEvent': ['new RTCPeerConnectionIceErrorEvent("ice-error", { errorCode: 701 });'],
         });
 
-        return initRTCCertificate()
-          .then(cert => {
-            window.rtcCert = cert;
-            idlArray.add_objects({'RTCCertificate': ['rtcCert']});
-
-            idlArray.test()
-          })
+        return promise_test(
+          () => initRTCCertificate(idlArray),
+          'Test Driver for RTCCertificate')
+        .then(() => {
+          idlArray.test();
+        })
       }
 
       promise_test(() => {

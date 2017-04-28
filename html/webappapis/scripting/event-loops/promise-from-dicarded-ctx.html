@@ -21,9 +21,8 @@ async_test(function(t) {
 
       child.close();
 
-      // Create a new Promise (rather than invoke `fulfilled.then` directly) in
-      // order to append to the list stored in the "orphaned" Promise's
-      // [[PromiseFulfilledReactions]] slot.
+      // The use of Promise.resolve is necessary to trigger incorrect behavior
+      // in some browsers at the time of this writing"
       Promise.resolve(fulfilled).then(function() {
           t.done();
         });
@@ -37,9 +36,8 @@ async_test(function(t) {
 
       iframe.remove();
 
-      // Create a new Promise (rather than invoke `fulfilled.then` directly) in
-      // order to append to the list stored in the "orphaned" Promise's
-      // [[PromiseFulfilledReactions]] slot.
+      // The use of Promise.resolve is necessary to trigger incorrect behavior
+      // in some browsers at the time of this writing"
       Promise.resolve(fulfilled).then(function() {
           t.done();
         });

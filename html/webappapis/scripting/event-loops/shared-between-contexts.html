@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+<meta charset=utf-8>
+<link rel=help href="https://html.spec.whatwg.org/multipage/webappapis.html#event-loops">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+// 8.1.4.1 Definitions
+//
+// > [...]
+// >
+// > There must be at least one browsing context event loop per user agent, and
+// > at most one per unit of related similar-origin browsing contexts.
+
+async_test(function(t) {
+    new Promise(function(resolve) {
+        var child = window.open('/common/blank.html');
+        child.onload = function() {
+            resolve(child);
+          };
+      })
+      .then(function(child) {
+          var fulfilled = child.Promise.resolve();
+
+          child.close();
+
+          Promise.resolve(fulfilled).then(function() {
+              t.done();
+            });
+        });
+  }, 'closing a window does not preclude execution of further tasks');
+
+async_test(function(t) {
+    new Promise(function(resolve) {
+        var iframe = document.createElement('iframe');
+        iframe.onload = function() {
+            resolve(iframe);
+          };
+        iframe.src = '/common/blank.html';
+        document.body.appendChild(iframe);
+      })
+      .then(function(iframe) {
+          var fulfilled = iframe.contentWindow.Promise.resolve();
+
+          iframe.remove();
+
+          Promise.resolve(fulfilled).then(function() {
+              t.done();
+            });
+        });
+  }, 'removing an iframe does not preclude execution of further tasks');
+</script>
+</body>
+</html>

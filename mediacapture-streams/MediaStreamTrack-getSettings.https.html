@@ -19,7 +19,7 @@
   promise_test(function() {
     const constraints = {video: true, audio: false};
 
-    return navigator.mediaDevices.getUserMedia()
+    return navigator.mediaDevices.getUserMedia(constraints)
       .then(function(s) {
         const settings1 = s.getVideoTracks()[0].getSettings();
         const videoConstraints = {deviceId: settings1.deviceId};

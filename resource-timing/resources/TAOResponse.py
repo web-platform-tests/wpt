@@ -1,5 +1,5 @@
 def main(request, response):
-    origin = request.GET.first('origin', request.headers['origin'])
+    origin = request.headers['origin']
     response.headers.set('Access-Control-Allow-Origin', origin)
 
     tao = request.GET.first('tao')

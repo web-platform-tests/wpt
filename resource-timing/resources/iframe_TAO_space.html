@@ -5,10 +5,10 @@ function dirname(path) {
 }
 
 function request() {
-  var origin = location.origin;
+  var dirName = dirname(location.href);
   var client = new XMLHttpRequest,
   // create a cross-origin request
-    url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=space&origin=' + origin;
+    url = dirName.replace('://', '://www.') + 'TAOResponse.py?tao=space';
     client.open("GET", url, false);
     client.send(null);
 }

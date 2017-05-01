@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  		<meta charset="utf-8">
+    	<title>Color Attribute</title>
+		<link rel="author" title="Dongwon Lee" href="mailto:envy2dj@daumcorp.com">
+    	<script src="/resources/testharness.js"></script>
+    	<script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+
+  
+  		<h1>Color Attribute</h1>
+  		<div style="display:none;">
+  			<input type="color" value="#000000" autocomplete="autocomplete" list="colorList" />
+  			<datalist id="colorList">
+  				<option value="#000000">
+  				<option value="#ff0000"> 
+  			</datalist>
+		</div>
+		
+	    <div id="log">
+	    </div>
+	
+		<script type="text/javascript">
+			test(
+				function() {
+					assert_equals(document.getElementsByTagName("input")[0].type, "color")
+				},
+				"color attribute support on input element"
+			);
+
+			test(
+				function() {
+					assert_equals(document.getElementsByTagName("input")[0].value, "#000000")
+				},
+				"value attribute support on input element"
+			);
+
+			test(
+				function() {
+					assert_equals(document.getElementsByTagName("input")[0].autocomplete, "autocomplete")
+				},
+				"autocomplete attribute support on input element"
+			);
+
+			test(
+				function() {
+					var el = document.getElementsByTagName("input")[0];
+					assert_equals(document.getElementsByTagName("input")[0].list.ELEMENT_NODE, 1)
+				},
+				"list attribute support on input element"
+			);
+		</script>
+  </body>
+</html>

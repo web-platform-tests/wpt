@@ -70,7 +70,7 @@ promise_test(function(t) {
   assert_equals(iframeTimeline.currentTime, valueAtStart,
     'iframe document.timeline.currentTime does not change within a '
     + ' script block');
-  return waitForAnimationFrames(1).then(function() {
+  return waitForAnimationFrames(1, iframe.contentWindow).then(function() {
     assert_greater_than(iframeTimeline.currentTime, valueAtStart,
       'iframe document.timeline.currentTime increases between script blocks');
   });

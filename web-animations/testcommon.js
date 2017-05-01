@@ -148,16 +148,17 @@ function framesTiming(nframes) {
   }
 }
 
-function waitForAnimationFrames(frameCount) {
+function waitForAnimationFrames(frameCount, windowObj) {
+  const windowObj = windowObj || window;
   return new Promise(function(resolve, reject) {
     function handleFrame() {
       if (--frameCount <= 0) {
         resolve();
       } else {
-        window.requestAnimationFrame(handleFrame); // wait another frame
+        windowObj.requestAnimationFrame(handleFrame); // wait another frame
       }
     }
-    window.requestAnimationFrame(handleFrame);
+    windowObj.requestAnimationFrame(handleFrame);
   });
 }
 

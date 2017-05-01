@@ -37,16 +37,6 @@ test(t => {
 
   document.body.setAttribute("onmessageerror", "window.messageErrorHappened = true;")
 
-  document.body.dispatchEvent(new Event("messageerror"));
-
-  assert_true(window.messageErrorHappened, "Dispatching the event must run the code");
-}, "The onmessageerror content attribute must execute when an event is dispatched on the body");
-
-test(t => {
-  t.add_cleanup(cleanup);
-
-  document.body.setAttribute("onmessageerror", "window.messageErrorHappened = true;")
-
   window.dispatchEvent(new Event("messageerror"));
 
   assert_true(window.messageErrorHappened, "Dispatching the event must run the code");

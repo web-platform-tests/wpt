@@ -5,50 +5,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#custom-elements-api">
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/common/object-association.js"></script>
 
 <iframe id="blank-iframe"></iframe>
 
 <script>
 "use strict";
-
-async_test(t => {
-  const iframe = document.querySelector("#blank-iframe");
-  const frame = iframe.contentWindow;
-
-  const ceBefore = frame.customElements;
-  assert_true(typeof ceBefore === "object" && ceBefore !== null, "window.customElements must be implemented");
-
-  iframe.onload = t.step_func(() => {
-    if (frame.location.href === "about:blank") {
-      // Browsers are not reliable on whether about:blank fires the load event; see
-      // https://github.com/whatwg/html/issues/490
-      return;
-    }
-
-    const ceAfter = frame.customElements;
-    assert_equals(ceAfter, ceBefore);
-    t.done();
-  });
-
-  iframe.src = "/common/blank.html";
-}, "Navigating from the initial about:blank must not replace the CustomElementRegistry");
-
-async_test(t => {
-  const iframe = document.createElement("iframe");
-
-  iframe.onload = t.step_func(() => {
-    const frame = iframe.contentWindow;
-    const ceBefore = frame.customElements;
-    assert_true(typeof ceBefore === "object" && ceBefore !== null, "window.customElements must be implemented");
-
-    frame.document.open();
-
-    const ceAfter = frame.customElements;
-    assert_not_equals(ceAfter, ceBefore);
-    t.done();
-  });
-
-  iframe.src = "/common/blank.html";
-  document.body.appendChild(iframe);
-}, "document.open() must replace the CustomElementRegistry");
+testIsPerWindow("customElements");
 </script>

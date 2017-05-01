@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Service Worker: Fetch event network error</title>
+<title>Service Worker: FetchEvent.respondWith() argument type test.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
@@ -16,8 +16,8 @@ function notify_test_done(result) {
 }
 
 promise_test(function(t) {
-    var scope = 'resources/fetch-event-network-error-controllee-iframe.html';
-    var script = 'resources/fetch-event-network-error-worker.js';
+    var scope = 'resources/fetch-event-respond-with-argument-iframe.html';
+    var script = 'resources/fetch-event-respond-with-argument-worker.js';
     var frame;
 
     return service_worker_unregister_and_register(t, script, scope)
@@ -36,6 +36,6 @@ promise_test(function(t) {
           assert_equals(result, 'PASS');
           return service_worker_unregister_and_done(t, scope);
         });
-  }, 'Rejecting the fetch event or using preventDefault() causes a network ' +
-     'error');
+  }, 'respondWith() takes either a Response or a promise that resolves ' +
+     'with a Response. Other values should raise a network error.');
 </script>

@@ -49,8 +49,8 @@ async_test(function(t) {
 promise_test(function(t) {
   var valueAtStart = document.timeline.currentTime;
   var timeAtStart = window.performance.now();
-  while (window.performance.now() - timeAtStart < 100) {
-    // Wait 100ms
+  while (window.performance.now() - timeAtStart < 50) {
+    // Wait 50ms
   }
   assert_equals(document.timeline.currentTime, valueAtStart,
     'document.timeline.currentTime does not change within a script block');
@@ -64,8 +64,8 @@ promise_test(function(t) {
   var iframeTimeline = iframe.contentDocument.timeline;
   var valueAtStart = iframeTimeline.currentTime;
   var timeAtStart = window.performance.now();
-  while (window.performance.now() - timeAtStart < 100) {
-    // Wait 100ms
+  while (window.performance.now() - timeAtStart < 50) {
+    // Wait 50ms
   }
   assert_equals(iframeTimeline.currentTime, valueAtStart,
     'iframe document.timeline.currentTime does not change within a script block');

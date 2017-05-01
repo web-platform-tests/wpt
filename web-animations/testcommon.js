@@ -149,7 +149,7 @@ function framesTiming(nframes) {
 }
 
 function waitForAnimationFrames(frameCount, windowObj) {
-  const windowObj = windowObj || window;
+  windowObj = windowObj || window;
   return new Promise(function(resolve, reject) {
     function handleFrame() {
       if (--frameCount <= 0) {

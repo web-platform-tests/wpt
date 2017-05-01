@@ -20,18 +20,6 @@ test(function() {
     'document.timeline on an iframe is not null');
 }, 'document.timeline identity tests');
 
-promise_test(function(t) {
-  var baseTime = document.timeline.currentTime;
-  var iframe = document.getElementById('iframe');
-  var iframeBaseTime = iframe.contentDocument.timeline.currentTime;
-  return waitForAnimationFrames(4).then(function() {
-    var delta = document.timeline.currentTime - baseTime;
-    var iframeDelta = iframe.contentDocument.timeline.currentTime - iframeBaseTime;
-    assert_greater_than(delta, 0);
-    assert_times_equal(delta, iframeDelta, 'different document timelines should progress at the same rate');
-  });
-}, 'document.timeline should tick consistently across frames');
-
 async_test(function(t) {
   assert_true(document.timeline.currentTime > 0,
     'document.timeline.currentTime is positive');

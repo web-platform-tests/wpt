@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Test pending promises behavior when RTCPeerConnection object is closed</title>
+</head>
+<body>
+  <!-- These files are in place when executing on W3C. -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script type="text/javascript">
+    'use strict'
+
+    function test_never_resolved(test_func, testName) {
+      async_test(t => {
+        const pc = new RTCPeerConnection();
+
+        test_func(pc).then(
+          t.step_func(result => {
+            assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`)
+          }),
+          t.step_func(err => {
+           assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`)
+          }));
+
+        // Close the PeerConnection before enqueued operation is executed.
+        pc.close();
+
+        t.step_timeout(() => {
+          t.done();
+        }, 2000);
+
+      }, testName);
+    }
+
+    test_never_resolved(pc =>
+      pc.createOffer(),
+      'pending createOffer() should never resolve if closed');
+
+    test_never_resolved(pc =>
+      pc.setLocalDescription({ type: 'offer' }),
+      'pending setLocalDescription() should never resolve if closed');
+
+    test_never_resolved(pc =>
+      pc.setRemoteDescription({ type: 'offer' }),
+      'pending setRemoteDescription() should never resolve if closed');
+
+    test_never_resolved(pc =>
+      pc.addIceCandidate(new RTCIceCandidate()),
+      'pending addIceCandidate() should never resolve if closed');
+
+    test_never_resolved(pc =>
+      pc.createOffer(),
+      'pending createOffer() should never resolve if closed');
+
+    test_never_resolved(pc =>
+      pc.createAnswer(),
+      'pending createAnswer() should never resolve if closed');
+
+    // TODO: Add test on methods on other classes as well
+
+  </script>
+</body>
+</html>

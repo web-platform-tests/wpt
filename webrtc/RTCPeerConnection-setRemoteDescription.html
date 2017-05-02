@@ -44,6 +44,42 @@
       assert_unreached('Error ' + e.name + ': ' + e.message);
     }));
   }, 'Triggers ontrack when called with a remote description and the MSID of the stream is is parsed.');
+
+  promise_test(() => {
+    const pc = new RTCPeerConnection(null);
+    return pc.setRemoteDescription(
+      {'type': 'offer', 'sdp': 'bogus'})
+    .then(() => {
+      assert_unreached('Bogus SDP should not be accepted');
+    })
+    .catch(e => {
+      assert_equals(e.name, 'InvalidAccessError');
+    });
+  }, 'Bogus SDP');
+
+  promise_test(() => {
+    const pc = new RTCPeerConnection(null);
+    return pc.setRemoteDescription(
+      {'type': 'bogus', 'sdp': 'bogus'})
+    .then(() => {
+      assert_unreached('Bogus operation types should not be accepted');
+    })
+    .catch(e => {
+      assert_equals(e.name, 'TypeError');
+    });
+  }, 'Bogus Operation');
+
+  promise_test(() => {
+    const pc = new RTCPeerConnection(null);
+    return pc.setRemoteDescription(
+      {'type': 'answer', 'sdp': 'bogus'})
+    .then(() => {
+      assert_unreached('Answer in "new" state should not be accepted');
+    })
+    .catch(e => {
+      assert_equals(e.name, 'InvalidStateError');
+    });
+  }, 'Bogus operation for state');
 </script>
 
 </body>

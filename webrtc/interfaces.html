@@ -27,27 +27,17 @@
       // A customized version of test_harness that returns
       // promise of the test completing as well as allow
       // other promise tests to run in parallel.
-      function promise_test(func, name) {
-        return new Promise(resolve => {
-          async_test(t => {
-            Promise.resolve()
-            .then(func)
-            .then(
-              t.step_func_done(() => {
-                resolve();
-              }),
-              t.step_func(err => {
-                // The final promise is always resolved regardless of error
-                resolve();
+      function promise_test(testFunc, testName, properties) {
+        const t = async_test(testName, properties);
 
-                // Let the browser unhandled rejection handler catch the error
-                Promise.reject(err);
-
-                // Report error to testharness
-                assert_unreached(`Unhandled rejection: ${err.toString()}`);
-              }));
-          }, name);
-        });
+        return Promise.resolve()
+          .then(testFunc)
+          .then(
+            t.step_func_done(() => {}),
+            t.step_func(err => {
+              assert_unreached(`Unhandled rejection: ${err.toString()}`);
+            }))
+          .catch(() => {}); // ignore error since promise is always fulfilled
       }
 
       function doIdlTest(idlText) {

@@ -5,10 +5,10 @@
 'use strict';
 
 promise_test(() => {
-  return navigator.requestKeyLock(['a', 'b'])
+  return navigator.requestKeyboardLock(['a', 'b'])
       .then(() => {
-        return navigator.requestKeyLock(['c', 'd']);
+        return navigator.requestKeyboardLock(['c', 'd']);
       });
-}, 'Keyboard Lock requestKeyLock twice sequentially');
+}, 'Keyboard Lock requestKeyboardLock twice sequentially');
 
 </script>

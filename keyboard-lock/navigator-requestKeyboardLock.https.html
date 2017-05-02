@@ -5,9 +5,9 @@
 'use strict';
 
 promise_test(() => {
-  const p = navigator.requestKeyLock(['a', 'b']);
+  const p = navigator.requestKeyboardLock(['a', 'b']);
   assert_true(p instanceof Promise);
   return p;
-}, 'Keyboard Lock requestKeyLock');
+}, 'Keyboard Lock requestKeyboardLock');
 
 </script>

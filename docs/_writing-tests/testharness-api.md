@@ -666,11 +666,13 @@ asserts that `actual` is strictly true
 asserts that `actual` is strictly false
 
 ### `assert_equals(actual, expected, description)`
-asserts that `actual` is the same value as `expected`
+asserts that `actual` is the same value as `expected`.
+Relies on `===`, distinguishes between `-0` and `+0`, and has a specific check for `NaN`.
 
 ### `assert_not_equals(actual, expected, description)`
 asserts that `actual` is a different value to `expected`.
 This means that `expected` is a misnomer.
+Relies on `===`, distinguishes between `-0` and `+0`, and has a specific check for `NaN`.
 
 ### `assert_in_array(actual, expected, description)`
 asserts that `expected` is an Array, and `actual` is equal to one of the

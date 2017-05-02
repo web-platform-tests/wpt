@@ -7,7 +7,7 @@ def main(request, response):
     if tao == 'zero':
     # zero TAO value, fail
         pass
-    elif tao == '*':
+    elif tao == 'wildcard':
     # wildcard, pass
         response.headers.set('Timing-Allow-Origin', '*')
     elif tao == 'null':
@@ -22,6 +22,14 @@ def main(request, response):
     elif tao == 'multi':
     # more than one TAO values, seperated by common, pass
         response.headers.set('Timing-Allow-Origin', origin)
+        response.headers.append('Timing-Allow-Origin', '*')
+    elif tao == 'match_origin':
+    # contains a match of origin, seperated by common, pass
+        response.headers.set('Timing-Allow-Origin', origin)
+        response.headers.append('Timing-Allow-Origin', "fake")
+    elif tao == 'match_wildcard':
+    # contains a wildcard, seperated by common, pass
+        response.headers.set('Timing-Allow-Origin', "fake")
         response.headers.append('Timing-Allow-Origin', '*')
     elif tao == 'uppercase':
     # non-case-sensitive match for origin, fail

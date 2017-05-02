@@ -20,6 +20,8 @@ install:
   - pip install -U setuptools
   - pip install -U requests
 env:  # required at the top-level for allow_failures to work below
+  global:
+    - SAUCE_USERNAME=w3c_sauce_username
 matrix:
   fast_finish: true
   include:
@@ -52,6 +54,16 @@ matrix:
       env:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
         - SCRIPT=ci_stability.sh PRODUCT=chrome:unstable
+    - os: linux
+      python: "2.7"
+      env:
+        - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
+        - SCRIPT=ci_stability.sh PRODUCT=sauce:safari:10.0 PLATFORM='macOS 10.12'
+    - os: linux
+      python: "2.7"
+      env:
+        - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
+        - SCRIPT=ci_stability.sh PRODUCT=sauce:MicrosoftEdge:14.14393 PLATFORM='Windows 10'
     - python: 2.7
       env: TOXENV=py27 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
     - python: 3.5

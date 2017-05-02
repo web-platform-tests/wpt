@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- There are two elements with id="foo" because this affects the behavior
+     in Gecko for the event handler attribute case. -->
+<button id="foo" onclick="window.fooInClick = foo">x</button>
+<object id="foo"></object>
+<script>
+function foo() { return "unique value"; }
+const fooButton = document.querySelector('button');
+const fooObject = document.querySelector('object');
+test(function() {
+  // assert_equals(foo, foo) would not be meaninful, so instead
+  // invoke and check return value to test what foo is.
+  assert_equals(foo(), "unique value");
+}, "Lookup of `foo` inside a plain script");
+test(function() {
+  // The click event handler synchronously sets fooInClick.
+  assert_false(window.hasOwnProperty('fooInClick'));
+  fooButton.click();
+  assert_true(window.hasOwnProperty('fooInClick'));
+  assert_equals(fooInClick, fooObject);
+}, "Lookup of `foo` inside an event handler attribute");
+</script>

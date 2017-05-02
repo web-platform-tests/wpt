@@ -8,6 +8,7 @@
       USVString id;
     };
 
+    [Exposed=Window, SecureContext]
     interface Credential {
       readonly attribute USVString id;
       readonly attribute DOMString type;
@@ -18,10 +19,8 @@
       USVString iconURL;
     };
 
-    [
-        NoInterfaceObject,
-        SecureContext
-    ] interface CredentialUserData {
+    [NoInterfaceObject, SecureContext]
+    interface CredentialUserData {
       readonly attribute USVString name;
       readonly attribute USVString iconURL;
     };
@@ -60,7 +59,8 @@
 
     [Constructor(PasswordCredentialData data),
      Constructor(HTMLFormElement form),
-     Exposed=Window]
+     Exposed=Window,
+     SecureContext]
     interface PasswordCredential : Credential {
       attribute USVString idName;
       attribute USVString passwordName;
@@ -69,7 +69,9 @@
     };
     PasswordCredential implements CredentialUserData;
 
-    [Constructor(FederatedCredentialData data), Exposed=Window]
+    [Constructor(FederatedCredentialData data),
+     Exposed=Window,
+     SecureContext]
     interface FederatedCredential : Credential {
       readonly attribute USVString provider;
       readonly attribute DOMString? protocol;

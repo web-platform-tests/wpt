@@ -25,6 +25,7 @@ window.testIsPerWindow = propertyName => {
     const before = frame[propertyName];
     assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
 
+    // Note: cannot use step_func_done for this because it might be called twice, per the below comment.
     iframe.onload = t.step_func(() => {
       if (frame.location.href === "about:blank") {
         // Browsers are not reliable on whether about:blank fires the load event; see
@@ -40,10 +41,13 @@ window.testIsPerWindow = propertyName => {
     iframe.src = "/common/blank.html";
   }, `Navigating from the initial about:blank must not replace window.${propertyName}`);
 
+  // Note: document.open()'s spec doesn't match most browsers; see https://github.com/whatwg/html/issues/1698.
+  // However, as explained in https://github.com/whatwg/html/issues/1698#issuecomment-298748641, even an updated spec
+  // will probably still reset Window-associated properties.
   async_test(t => {
     const iframe = document.createElement("iframe");
 
-    iframe.onload = t.step_func(() => {
+    iframe.onload = t.step_func_done(() => {
       const frame = iframe.contentWindow;
       const before = frame[propertyName];
       assert_true(before !== undefined && before !== null, `window.${propertyName} must be implemented`);
@@ -52,7 +56,6 @@ window.testIsPerWindow = propertyName => {
 
       const after = frame[propertyName];
       assert_not_equals(after, before);
-      t.done();
     });
 
     iframe.src = "/common/blank.html";

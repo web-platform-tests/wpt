@@ -46,7 +46,7 @@
   }, 'Triggers ontrack when called with a remote description and the MSID of the stream is is parsed.');
 
   promise_test(() => {
-    const pc = new RTCPeerConnection(null);
+    const pc = new RTCPeerConnection();
     return pc.setRemoteDescription(
       {'type': 'offer', 'sdp': 'bogus'})
     .then(() => {
@@ -58,7 +58,7 @@
   }, 'Bogus SDP');
 
   promise_test(() => {
-    const pc = new RTCPeerConnection(null);
+    const pc = new RTCPeerConnection();
     return pc.setRemoteDescription(
       {'type': 'bogus', 'sdp': 'bogus'})
     .then(() => {
@@ -70,7 +70,7 @@
   }, 'Bogus Operation');
 
   promise_test(() => {
-    const pc = new RTCPeerConnection(null);
+    const pc = new RTCPeerConnection();
     return pc.setRemoteDescription(
       {'type': 'answer', 'sdp': 'bogus'})
     .then(() => {

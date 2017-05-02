@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Grid Layout Test: Content Distribution 'space-evenly' on 2x2 grid</title>
+<title>CSS Grid Layout Test: Content Distribution 'space-evenly' on 4x4 grid with collapsed tracks</title>
 <link rel="author" title="Javier Fernandez Garcia-Boente" href="mailto:jfernandez@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#content-distribution">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#valdef-align-content-space-evenly">
@@ -25,8 +25,8 @@
   display: grid;
   width: 200px;
   height: 200px;
-  grid-template-columns: 25px 25px;
-  grid-template-rows: 25px 25px;
+  grid-template-columns: repeat(auto-fit, 25px);
+  grid-template-rows: repeat(auto-fit, 25px);
   align-content: space-evenly;
   justify-content: space-evenly;
 }
@@ -34,10 +34,18 @@
 </style>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class="block">
-    <div style="top: 50px; left: 50px;"></div>
-    <div style="top: 125px; left: 125px;"></div>
+    <div style="top: 20px; left: 65px;"></div>
+    <div style="top: 20px; left: 110px;"></div>
+    <div style="top: 65px; left: 110px;"></div>
+    <div style="top: 110px; left: 110px;"></div>
+    <div style="top: 155px; left: 20px;"></div>
+    <div style="top: 155px; left: 155px;"></div>
 </div>
 <div class="grid">
-    <div style="grid-row: 1; grid-column: 1;"></div>
-    <div style="grid-row: 2; grid-column: 2;"></div>
+    <div class="item" style="grid-row: 1; grid-column: 2;"></div>
+    <div class="item" style="grid-row: 1; grid-column: 5;"></div>
+    <div class="item" style="grid-row: 3; grid-column: 5;"></div>
+    <div class="item" style="grid-row: 4; grid-column: 5;"></div>
+    <div class="item" style="grid-row: 6; grid-column: 1;"></div>
+    <div class="item" style="grid-row: 6; grid-column: 7;"></div>
 </div>

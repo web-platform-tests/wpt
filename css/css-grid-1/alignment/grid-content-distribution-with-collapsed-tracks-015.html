@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Grid Layout Test: Content Distribution 'space-evenly' with collapsed tracks on 2x2 grid</title>
+<title>CSS Grid Layout Test: Content Distribution 'space-around' and gaps on 2x2 grid with collapsed tracks</title>
 <link rel="author" title="Javier Fernandez Garcia-Boente" href="mailto:jfernandez@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-align-3/#content-distribution">
-<link rel="help" href="https://drafts.csswg.org/css-align-3/#distribution-values">
-<link rel="help" href="https://drafts.csswg.org/css-grid/#collapsed-track">
+<link rel="help" href="https://drafts.csswg.org/css-align-3/#valdef-align-content-space-around">
 <link rel="match" href="../../reference/ref-filled-green-200px-square.html">
-<meta name="assert" content="Content Distribution alignment ignore collapsed grid tracks and render correctly with a value of 'space-evenly'.">
+<meta name="assert" content="Content Distribution properties with 'space-around' value render correcly.">
 <style>
 .block {
   position: absolute;
@@ -28,17 +27,19 @@
   height: 200px;
   grid-template-columns: repeat(auto-fit, 25px);
   grid-template-rows: repeat(auto-fit, 25px);
-  align-content: space-evenly;
-  justify-content: space-evenly;
+  grid-row-gap: 10px;
+  grid-column-gap: 10px;
+  align-content: space-around;
+  justify-content: space-around;
 }
 .grid > div { background: green; }
 </style>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class="block">
-    <div style="top: 50px; left: 50px;"></div>
-    <div style="top: 125px; left: 125px;"></div>
+    <div style="top: 35px; left: 35px;"></div>
+    <div style="top: 140px; left: 140px;"></div>
 </div>
 <div class="grid">
-    <div style="grid-row: 2; grid-column: 3;"></div>
-    <div style="grid-row: 3; grid-column: 4;"></div>
+    <div style="grid-row: 1; grid-column: 1;"></div>
+    <div style="grid-row: 2; grid-column: 2;"></div>
 </div>

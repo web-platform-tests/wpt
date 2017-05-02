@@ -888,6 +888,10 @@ def main():
     os.chdir(args.root)
     browser_name = args.product.split(":")[0]
 
+    if browser_name == "sauce" and not args.sauce_key:
+        logger.warning("Cannot run tests on Sauce Labs. No access key.")
+        return retcode
+
     with TravisFold("browser_setup"):
         logger.info(format_comment_title(args.product))
 

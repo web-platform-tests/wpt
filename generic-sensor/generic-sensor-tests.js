@@ -1,12 +1,12 @@
-var unreached = event => {
+let unreached = event => {
     assert_unreached(event.error.name + ":" + event.error.message);
 };
 
-var properties={
-    'AmbientLightSensor':['timestamp', 'illuminance'],
-    'Accelerometer':['timestamp', 'x', 'y', 'z'],
-    'Gyroscope':['timestamp', 'x', 'y', 'z'],
-    'Magnetometer':['timestamp', 'x', 'y', 'z']
+let properties = {
+    'AmbientLightSensor' : ['timestamp', 'illuminance'],
+    'Accelerometer' : ['timestamp', 'x', 'y', 'z'],
+    'Gyroscope' : ['timestamp', 'x', 'y', 'z'],
+    'Magnetometer' : ['timestamp', 'x', 'y', 'z']
 };
 
 function assert_reading_not_null(sensor) {
@@ -43,12 +43,12 @@ function runGenericSensorTests(sensorType) {
     let sensor = new sensorType();
     sensor.onchange = t.step_func_done(() => {
       assert_true(assert_reading_not_null(sensor));
-      assert_equals(sensor.state, "activated");
       sensor.stop();
+      assert_true(assert_reading_null(sensor));
     });
     sensor.onerror = t.step_func_done(unreached);
     sensor.start();
-  }, "event change fired");
+  }, "Test that 'onchange' is called and sensor reading is valid");
 
   async_test(t => {
     let sensor1 = new sensorType();
@@ -90,19 +90,18 @@ function runGenericSensorTests(sensorType) {
     }, 1000);
   }, "sensor timestamp is updated when time passes");
 
-  test(() => {
+  async_test(t => {
     let sensor = new sensorType();
-    sensor.onerror = unreached;
-    assert_equals(sensor.state, "unconnected");
-  }, "default sensor.state is 'unconnected'");
-
-  test(() => {
-    let sensor = new sensorType();
-    sensor.onerror = unreached;
+    sensor.onerror = t.step_func_done(unreached);
+    assert_false(sensor.activated);
+    sensor.onchange = t.step_func_done(() => {
+      assert_true(sensor.activated);
+      sensor.stop();
+      assert_false(sensor.activated);
+    });
     sensor.start();
-    assert_equals(sensor.state, "activating");
-    sensor.stop();
-  }, "sensor.state changes to 'activating' after sensor.start()");
+    assert_false(sensor.activated);
+  }, "Test that sensor can be successfully created and its states are correct.");
 
   test(() => {
     let sensor, start_return;
@@ -119,20 +118,12 @@ function runGenericSensorTests(sensorType) {
       sensor.onerror = unreached;
       sensor.start();
       sensor.start();
-      assert_equals(sensor.state, "activating");
+      assert_false(sensor.activated);
       sensor.stop();
     } catch (e) {
        assert_unreached(e.name + ": " + e.message);
     }
   }, "no exception is thrown when calling start() on already started sensor");
-
-  test(() => {
-    let sensor = new sensorType();
-    sensor.onerror = unreached;
-    sensor.start();
-    sensor.stop();
-    assert_equals(sensor.state, "idle");
-  }, "sensor.state changes to 'idle' after sensor.stop()");
 
   test(() => {
     let sensor, stop_return;
@@ -150,7 +141,7 @@ function runGenericSensorTests(sensorType) {
       sensor.start();
       sensor.stop();
       sensor.stop();
-      assert_equals(sensor.state, "idle");
+      assert_false(sensor.activated);
     } catch (e) {
        assert_unreached(e.name + ": " + e.message);
     }
@@ -193,7 +184,7 @@ function runGenericSensorOnerror(sensorType) {
     let sensor = new sensorType();
     sensor.onactivate = t.step_func_done(assert_unreached);
     sensor.onerror = t.step_func_done(event => {
-      assert_equals(sensor.state, 'errored');
+      assert_false(sensor.activated);
       assert_equals(event.error.name, 'NotReadableError');
     });
     sensor.start();

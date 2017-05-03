@@ -200,6 +200,12 @@ class BrowserManager(object):
         return succeeded
 
     def send_message(self, command, *args):
+        if not hasattr(self, 'command_queue'):
+            self.logger.error('BrowserManager.send_message cannot send message because no command_queue exists')
+            self.logger.error('Command, args:')
+            self.logger.error((command, args))
+            self.cleanup()
+            return
         self.command_queue.put((command, args))
 
     def init_timeout(self):

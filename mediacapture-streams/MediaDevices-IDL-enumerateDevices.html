@@ -18,51 +18,45 @@
 <script src=/resources/WebIDLParser.js></script>
 <script src=/resources/idlharness.js></script>
 <script>
-"use strict";
+  "use strict";
 
-var _mediaInfo = null;
+  function doIdlTest(idlText) {
+    const MDI_idl = new IdlArray();
 
-var MDI_idl = new IdlArray();
+    MDI_idl.add_untested_idls("interface Navigator {};");
+    MDI_idl.add_idls(idlText);
 
-MDI_idl.add_idls("[Exposed=Window]\
-  interface MediaDeviceInfo {\
-    readonly        attribute DOMString       deviceId;\
-    readonly        attribute MediaDeviceKind kind;\
-    readonly        attribute DOMString       label;\
-    readonly        attribute DOMString       groupId;\
-    serializer = {attribute};\
-};");
+    assert_true(undefined !== navigator.mediaDevices.enumerateDevices,
+      "navigator.mediaDevices.enumerateDevices exists");
 
-MDI_idl.add_idls('\
-  enum MediaDeviceKind {\
-    "audioinput",\
-    "audiooutput",\
-    "videoinput"\
-};');
-
-test(function(){
-  assert_true(undefined !== navigator.mediaDevices.enumerateDevices, "navigator.mediaDevices.enumerateDevices exists");
-  promise_test(function() {
     return navigator.mediaDevices.enumerateDevices()
-      .then(function(list) {
-        if( list.length > 0 ) {
-          _mediaInfo = list[0];
-          MDI_idl.add_objects({MediaDeviceInfo: ["_mediaInfo"]});
+    .then(function(list) {
+      if( list.length > 0 ) {
+        window._mediaInfo = list[0];
+        MDI_idl.add_objects({MediaDeviceInfo: ["_mediaInfo"]});
+      }
+
+      for(const media of list) {
+        if( media.kind == "audioinput" ||
+            media.kind == "videoinput") {
+          // TODO -- Check InputDeviceInfo IDL, getCapabilities()
+        } else if ( media.kind == "audiooutput" ) {
+          // TODO -- pass
+        } else {
+          assert_unreached("media.kind should be one of 'audioinput', 'videoinput', or 'audiooutput'.")
         }
-        for(let media of list) {
-          if( media.kind == "audioinput" ||
-              media.kind == "videoinput") {
-            // TODO -- Check InputDeviceInfo IDL, getCapabilities()
-          } else if ( media.kind == "audiooutput" ) {
-            // TODO -- pass
-          } else {
-            assert_unreached("media.kind should be one of 'audioinput', 'videoinput', or 'audiooutput'.")
-          }
-        }
-        MDI_idl.test();
-      })
-  }, "Test that the calls resolves");
-}, "Test MediaDevices.enumerateDevices call and result. Types only.");
+      }
+
+      MDI_idl.test();
+    });
+  }
+
+  promise_test(() => {
+    return fetch('/interfaces/mediacapture-main.idl')
+      .then(response => response.text())
+      .then(doIdlTest);
+
+  }, "Test MediaDevices.enumerateDevices call and result. Types only.");
 </script>
 </body>
 </html>

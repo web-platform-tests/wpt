@@ -17,48 +17,29 @@
     <script src=/resources/WebIDLParser.js></script>
     <script src=/resources/idlharness.js></script>
     <script>
-      var idl_array = new IdlArray();
+      'use strict';
 
-      // dummies
-      idl_array.add_untested_idls("interface EventTarget {};");
-      idl_array.add_untested_idls("interface Navigator {};");
+      function doIdlTest(idlText) {
+        var idl_array = new IdlArray();
 
-      idl_array.add_untested_idls("\
-        [exposed=Window, NoInterfaceObject]\
-        interface NavigatorUserMedia {\
-          [SameObject]\
-          readonly attribute MediaDevices mediaDevices;\
-      };");
+        // dummies
+        idl_array.add_untested_idls("interface Navigator {};");
+        idl_array.add_untested_idls("interface EventTarget {};");
+        idl_array.add_untested_idls("interface EventHandler {};");
 
-      idl_array.add_idls("\
-        Navigator implements NavigatorUserMedia;\
-      ")
+        idl_array.add_untested_idls(idlText);
 
-      idl_array.add_idls("\
-        [Exposed=Window]\
-        interface MediaDevices : EventTarget {\
-          attribute EventHandler ondevicechange;\
-          Promise<sequence<MediaDeviceInfo>> enumerateDevices ();\
-      };");
+        idl_array.add_objects({"Navigator": ["navigator"]});
+        idl_array.add_objects({"MediaDevices":["navigator.mediaDevices"]});
+        idl_array.test();
+      }
 
-      // NOTE ALEX: slightly simplified to avoid bringing in too much
-      idl_array.add_idls("\
-        dictionary MediaStreamConstraints {\
-          boolean video = false;\
-          boolean audio = false;\
-      };")
+      promise_test(() => {
+        return fetch('/interfaces/mediacapture-main.idl')
+          .then(response => response.text())
+          .then(doIdlTest);
 
-      idl_array.add_idls("\
-        partial interface MediaDevices {\
-          MediaTrackSupportedConstraints getSupportedConstraints ();\
-          Promise<MediaStream> getUserMedia (MediaStreamConstraints constraints);\
-      };");
-
-      idl_array.add_objects({"Navigator": ["navigator"]});
-      idl_array.add_objects({"MediaDevices":["navigator.mediaDevices"]});
-      idl_array.test();
-      done();
-
+      }, 'Test driver')
     </script>
   </body>
 </html>

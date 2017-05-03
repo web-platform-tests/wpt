@@ -33,6 +33,7 @@ wptrunner_root = None
 
 logger = None
 
+
 def do_delayed_imports():
     """Import and set up modules only needed if execution gets to this point."""
     global BaseHandler
@@ -486,9 +487,19 @@ def get_files_changed(branch_point, ignore_changes):
 
     return changed, ignored
 
+
+def _in_repo_root(full_path):
+    rel_path = os.path.relpath(full_path, wpt_root)
+    path_components = rel_path.split(os.sep)
+    return len(path_components) < 2
+
+
 def get_affected_testfiles(files_changed, skip_tests):
     """Determine and return list of test files that reference changed files."""
     affected_testfiles = set()
+    # Exclude files that are in the repo root, because
+    # they are not part of any test.
+    files_changed = [f for f in files_changed if not _in_repo_root(f)]
     nontests_changed = set(files_changed)
     manifest_file = os.path.join(wpt_root, "MANIFEST.json")
     test_types = ["testharness", "reftest", "wdspec"]
@@ -497,6 +508,8 @@ def get_affected_testfiles(files_changed, skip_tests):
 
     support_files = {os.path.join(wpt_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
+    wdspec_test_files = {os.path.join(wpt_root, path)
+                         for _, path, _ in wpt_manifest.itertypes("wdspec")}
     test_files = {os.path.join(wpt_root, path)
                   for _, path, _ in wpt_manifest.itertypes(*test_types)}
 
@@ -506,19 +519,30 @@ def get_affected_testfiles(files_changed, skip_tests):
     for full_path in nontests_changed:
         rel_path = os.path.relpath(full_path, wpt_root)
         path_components = rel_path.split(os.sep)
-        if len(path_components) < 2:
-            # This changed file is in the repo root, so skip it
-            # (because it's not part of any test).
-            continue
         top_level_subdir = path_components[0]
         if top_level_subdir in skip_tests:
             continue
         repo_path = "/" + os.path.relpath(full_path, wpt_root).replace(os.path.sep, "/")
         nontest_changed_paths.add((full_path, repo_path))
 
+    def affected_by_wdspec(test):
+        affected = False
+        if test in wdspec_test_files:
+            for support_full_path, _ in nontest_changed_paths:
+                # parent of support file or of "support" directory
+                parent = os.path.dirname(support_full_path)
+                if os.path.basename(parent) == "support":
+                    parent = os.path.dirname(parent)
+                relpath = os.path.relpath(test, parent)
+                if not relpath.startswith(os.pardir):
+                    # testfile is in subtree of support file
+                    affected = True
+                    break
+        return affected
+
     for root, dirs, fnames in os.walk(wpt_root):
         # Walk top_level_subdir looking for test files containing either the
-        # relative filepath or absolute filepatch to the changed files.
+        # relative filepath or absolute filepath to the changed files.
         if root == wpt_root:
             for dir_name in skip_tests:
                 dirs.remove(dir_name)
@@ -527,6 +551,10 @@ def get_affected_testfiles(files_changed, skip_tests):
             # Skip any file that's not a test file.
             if test_full_path not in test_files:
                 continue
+            if affected_by_wdspec(test_full_path):
+                affected_testfiles.add(test_full_path)
+                continue
+
             with open(test_full_path, "rb") as fh:
                 file_contents = fh.read()
                 if file_contents.startswith("\xfe\xff"):
@@ -685,6 +713,7 @@ def table(headings, data, log):
     for row in data:
         log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
     log("")
+
 
 def write_inconsistent(inconsistent, iterations):
     """Output inconsistent tests to logger.error."""

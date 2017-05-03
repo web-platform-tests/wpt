@@ -11,6 +11,7 @@ __wptrunner__ = {"product": "edge",
                               "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
+                 "env_extras": "env_extras",
                  "env_options": "env_options"}
 
 
@@ -30,6 +31,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = dict(DesiredCapabilities.EDGE.items())
     return executor_kwargs
+
+def env_extras(**kwargs):
+    return []
 
 def env_options():
     return {"host": "web-platform.test",

@@ -77,7 +77,7 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
-    def __init__(self, test_paths, ssl_env, pause_after_test, debug_info, options, prerun):
+    def __init__(self, test_paths, ssl_env, pause_after_test, debug_info, options, env_extras):
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
         self.test_paths = test_paths
@@ -92,10 +92,12 @@ class TestEnvironment(object):
 
         self.cache_manager = multiprocessing.Manager()
         self.stash = serve.stash.StashServer()
-        self.prerun_process = prerun()
+        self.env_extras = env_extras
 
 
     def __enter__(self):
+        for cm in self.env_extras:
+            cm.__enter__(self.options)
         self.stash.__enter__()
         self.ssl_env.__enter__()
         self.cache_manager.__enter__()
@@ -111,17 +113,14 @@ class TestEnvironment(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.process_interrupts()
 
-        try:
-            self.prerun_process.terminate()
-        except AttributeError:
-            pass
-
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
                 server.kill()
         self.cache_manager.__exit__(exc_type, exc_val, exc_tb)
         self.ssl_env.__exit__(exc_type, exc_val, exc_tb)
         self.stash.__exit__()
+        for cm in self.env_extras:
+            cm.__exit__()
 
     def ignore_interrupts(self):
         signal.signal(signal.SIGINT, signal.SIG_IGN)

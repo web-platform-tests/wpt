@@ -17,6 +17,7 @@ __wptrunner__ = {
     },
     "browser_kwargs": "browser_kwargs",
     "executor_kwargs": "executor_kwargs",
+    "env_extras": "env_extras",
     "env_options": "env_options",
     "update_properties": "update_properties",
 }
@@ -42,6 +43,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                               cache_manager, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
     return rv
+
+
+def env_extras(**kwargs):
+    return []
 
 
 def env_options():

@@ -12,6 +12,7 @@ __wptrunner__ = {"product": "chrome",
                               "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
+                 "env_extras": "env_extras",
                  "env_options": "env_options"}
 
 
@@ -45,6 +46,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
             capabilities["chromeOptions"][capability] = kwargs[kwarg]
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
+
+
+def env_extras(**kwargs):
+    return []
 
 
 def env_options():

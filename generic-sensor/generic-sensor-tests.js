@@ -12,21 +12,15 @@ let properties = {
 function assert_reading_not_null(sensor) {
   for (let property in properties[sensor.constructor.name]) {
     let propertyName = properties[sensor.constructor.name][property];
-    if (sensor[propertyName] == null) {
-      return false;
-    }
+    assert_not_equals(sensor[propertyName], null);
   }
-  return true;
 }
 
 function assert_reading_null(sensor) {
   for (let property in properties[sensor.constructor.name]) {
     let propertyName = properties[sensor.constructor.name][property];
-    if (sensor[propertyName] != null) {
-      return false;
-    }
+    assert_equals(sensor[propertyName], null);
   }
-  return true;
 }
 
 function reading_to_array(sensor) {
@@ -42,9 +36,9 @@ function runGenericSensorTests(sensorType) {
   async_test(t => {
     let sensor = new sensorType();
     sensor.onchange = t.step_func_done(() => {
-      assert_true(assert_reading_not_null(sensor));
+      assert_reading_not_null(sensor);
       sensor.stop();
-      assert_true(assert_reading_null(sensor));
+      assert_reading_null(sensor);
     });
     sensor.onerror = t.step_func_done(unreached);
     sensor.start();
@@ -55,16 +49,16 @@ function runGenericSensorTests(sensorType) {
     let sensor2 = new sensorType();
     sensor1.onactivate = t.step_func_done(() => {
       // Reading values are correct for both sensors.
-      assert_true(assert_reading_not_null(sensor1));
-      assert_true(assert_reading_not_null(sensor2));
+      assert_reading_not_null(sensor1);
+      assert_reading_not_null(sensor2);
 
       //After first sensor stops its reading values are null,
       //reading values for the second sensor remains
       sensor1.stop();
-      assert_true(assert_reading_null(sensor1));
-      assert_true(assert_reading_not_null(sensor2));
+      assert_reading_null(sensor1);
+      assert_reading_not_null(sensor2);
       sensor2.stop();
-      assert_true(assert_reading_null(sensor2));
+      assert_reading_null(sensor2);
     });
     sensor1.onerror = t.step_func_done(unreached);
     sensor2.onerror = t.step_func_done(unreached);
@@ -157,7 +151,7 @@ function runGenericSensorTests(sensorType) {
   async_test(t => {
     let sensor = new sensorType();
     sensor.onactivate = t.step_func(() => {
-      assert_true(assert_reading_not_null(sensor));
+      assert_reading_not_null(sensor);
       let cachedSensor1 = reading_to_array(sensor);
       let win = window.open('', '_blank');
       t.step_timeout(() => {

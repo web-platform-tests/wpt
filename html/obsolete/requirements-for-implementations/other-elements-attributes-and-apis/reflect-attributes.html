@@ -1,0 +1,269 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>obsolete IDL attributes that reflect content attributes</title>
+<link rel="author" title="Corey Farwell" href="mailto:coreyf@rwell.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#other-elements,-attributes-and-apis">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+var testData = [
+
+  // [<element_name>, [
+  //   [<type>, <IDL_attribute_name>, <content_attribute_name>],
+  // ]],
+
+  ["a", [
+    ["string", "coords", "coords"],
+    ["string", "charset", "charset"],
+    ["string", "name", "name"],
+    ["string", "rev", "rev"],
+    ["string", "shape", "shape"],
+  ]],
+  ["area", [
+    ["boolean", "noHref", "nohref"],
+  ]],
+  ["body", [
+    ["string", "text", "text"],
+    ["string", "link", "link"],
+    ["string", "aLink", "alink"],
+    ["string", "vLink", "vlink"],
+    ["string", "bgColor", "bgcolor"],
+    ["string", "background", "background"],
+  ]],
+  ["br", [
+    ["string", "clear", "clear"],
+  ]],
+  ["caption", [
+    ["string", "align", "align"],
+  ]],
+  ["col", [
+    ["string", "align", "align"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charOff"],
+    ["string", "vAlign", "valign"],
+    ["string", "width", "width"],
+  ]],
+  ["dir", [
+    ["boolean", "compact", "compact"],
+  ]],
+  ["div", [
+    ["string", "align", "align"],
+  ]],
+  ["dl", [
+    ["boolean", "compact", "compact"],
+  ]],
+  ["embed", [
+    ["string", "align", "align"],
+    ["string", "name", "name"],
+  ]],
+  ["font", [
+    ["string", "color", "color"],
+    ["string", "face", "face"],
+    ["string", "size", "size"],
+  ]],
+  ["h1", [
+    ["string", "align", "align"],
+  ]],
+  ["h2", [
+    ["string", "align", "align"],
+  ]],
+  ["h3", [
+    ["string", "align", "align"],
+  ]],
+  ["h4", [
+    ["string", "align", "align"],
+  ]],
+  ["h5", [
+    ["string", "align", "align"],
+  ]],
+  ["h6", [
+    ["string", "align", "align"],
+  ]],
+  ["hr", [
+    ["string", "align", "align"],
+    ["string", "color", "color"],
+    ["boolean", "noShade", "noshade"],
+    ["string", "size", "size"],
+    ["string", "width", "width"],
+  ]],
+  ["html", [
+    ["string", "version", "version"],
+  ]],
+  ["iframe", [
+    ["string", "align", "align"],
+    ["string", "scrolling", "scrolling"],
+    ["string", "frameBorder", "frameborder"],
+    ["url", "longDesc", "longdesc"],
+    ["string", "marginHeight", "marginheight"],
+    ["string", "marginWidth", "marginwidth"],
+  ]],
+  ["img", [
+    ["string", "name", "name"],
+    ["url", "lowsrc", "lowsrc"],
+    ["string", "align", "align"],
+    ["long", "hspace", "hspace"],
+    ["long", "vspace", "vspace"],
+    ["url", "longDesc", "longdesc"],
+    ["string", "border", "border"],
+  ]],
+  ["input", [
+    ["string", "align", "align"],
+    ["string", "useMap", "usemap"],
+  ]],
+  ["legend", [
+    ["string", "align", "align"],
+  ]],
+  ["li", [
+    ["string", "type", "type"],
+  ]],
+  ["link", [
+    ["string", "charset", "charset"],
+    ["string", "rev", "rev"],
+    ["string", "target", "target"],
+  ]],
+  ["menu", [
+    ["boolean", "compact", "compact"],
+  ]],
+  ["meta", [
+    ["string", "scheme", "scheme"],
+  ]],
+  ["object", [
+    ["string", "align", "align"],
+    ["string", "archive", "archive"],
+    ["string", "border", "border"],
+    ["string", "code", "code"],
+    ["boolean", "declare", "declare"],
+    ["long", "hspace", "hspace"],
+    ["string", "standby", "standby"],
+    ["long", "vspace", "vspace"],
+    ["url", "codeBase", "codebase"],
+    ["string", "codeType", "codetype"],
+  ]],
+  ["ol", [
+    ["boolean", "compact", "compact"],
+  ]],
+  ["p", [
+    ["string", "align", "align"],
+  ]],
+  ["param", [
+    ["string", "type", "type"],
+    ["string", "valueType", "valuetype"],
+  ]],
+  ["pre", [
+    ["long", "width", "width"],
+  ]],
+  ["table", [
+    ["string", "align", "align"],
+    ["string", "border", "border"],
+    ["string", "frame", "frame"],
+    ["string", "rules", "rules"],
+    ["string", "summary", "summary"],
+    ["string", "width", "width"],
+    ["string", "bgColor", "bgcolor"],
+    ["string", "cellPadding", "cellpadding"],
+    ["string", "cellSpacing", "cellspacing"],
+  ]],
+  ["tbody", [
+    ["string", "align", "align"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["string", "vAlign", "valign"],
+  ]],
+  ["thead", [
+    ["string", "align", "align"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["string", "vAlign", "valign"],
+  ]],
+  ["tfoot", [
+    ["string", "align", "align"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["string", "vAlign", "valign"],
+  ]],
+  ["td", [
+    ["string", "align", "align"],
+    ["string", "axis", "axis"],
+    ["string", "height", "height"],
+    ["string", "width", "width"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["boolean", "noWrap", "nowrap"],
+    ["string", "vAlign", "valign"],
+    ["string", "bgColor", "bgcolor"],
+    ["string", "abbr", "abbr"],
+  ]],
+  ["th", [
+    ["string", "align", "align"],
+    ["string", "axis", "axis"],
+    ["string", "height", "height"],
+    ["string", "width", "width"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["boolean", "noWrap", "nowrap"],
+    ["string", "vAlign", "valign"],
+    ["string", "bgColor", "bgcolor"],
+  ]],
+  ["tr", [
+    ["string", "align", "align"],
+    ["string", "ch", "char"],
+    ["string", "chOff", "charoff"],
+    ["string", "vAlign", "valign"],
+    ["string", "bgColor", "bgcolor"],
+  ]],
+  ["ul", [
+    ["boolean", "compact", "compact"],
+    ["string", "type", "type"],
+  ]],
+];
+
+var newAttrValueMap = {
+  "string": "foobar",
+  "boolean": true,
+  "url": "https://foobar.com/",
+  "long": 27,
+};
+
+function test(elementName, type, idlAttrName, contentAttrName) {
+  var element = document.createElement(elementName);
+  var newAttrValue = newAttrValueMap[type];
+
+  // Make sure attribute is initialized
+  assert_false(element.hasAttribute(contentAttrName));
+  assert_not_equals(element[idlAttrName], undefined);
+
+  // Set attribute through IDL attribute setter
+  element[idlAttrName] = newAttrValue;
+  assert_true(element.hasAttribute(contentAttrName));
+  if (type !== "boolean") {
+    assert_equals(element.getAttribute(contentAttrName), "" + newAttrValue);
+  }
+  assert_equals(element[idlAttrName], newAttrValue);
+
+  // Remove attribute through content attribute deleter, check value
+  element.removeAttribute(contentAttrName);
+  assert_false(element.hasAttribute(contentAttrName));
+  assert_not_equals(element[idlAttrName], undefined);
+
+  // Set attribute through content attribute setter, check value
+  element.setAttribute(contentAttrName, newAttrValue);
+  assert_true(element.hasAttribute(contentAttrName));
+  if (type !== "boolean") {
+    assert_equals(element.getAttribute(contentAttrName), "" + newAttrValue);
+  }
+  assert_equals(element[idlAttrName], newAttrValue);
+}
+
+var testParams = [];
+testData.forEach(function (elemData) {
+  var elementName = elemData[0];
+  elemData[1].forEach(function (params) {
+    params.unshift(elementName + "." + params[1], elementName);
+    testParams.push(params);
+  });
+});
+
+generate_tests(test, testParams);
+</script>

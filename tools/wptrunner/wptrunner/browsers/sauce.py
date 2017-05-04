@@ -165,10 +165,12 @@ class SauceConnect():
 
     def __exit__(self, *args):
         self.sc_process.terminate()
-        try:
-            os.remove(glob.glob(os.path.join(temp_path, "sc-*-linux")))
-        except:
-            pass
+        sc_path = glob.glob(os.path.join(tempfile.gettempdir(), "sc-*-linux"))
+        if os.path.exists(sc_path):
+            try:
+                os.remove(sc_path)
+            except OSError:
+                pass
 
     def upload_prerun_exec(self, file_name):
         auth = (self.sauce_user, self.sauce_key)

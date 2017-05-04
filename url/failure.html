@@ -35,7 +35,7 @@ function runTests(testData) {
     }, "Location's href: " + name)
 
     self.test(() => {
-      assert_throws("SyntaxError", () => self.open(test.input))
+      assert_throws("SyntaxError", () => self.open(test.input).close())
     }, "window.open(): " + name)
   }
 }

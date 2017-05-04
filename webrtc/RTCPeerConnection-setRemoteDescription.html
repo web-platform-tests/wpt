@@ -9,6 +9,8 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script type="text/javascript">
+  'use strict';
+
   // tests that ontrack is called and parses the msid information from the SDP and creates
   // the streams with matching identifiers.
   async_test(function(test) {
@@ -44,6 +46,42 @@
       assert_unreached('Error ' + e.name + ': ' + e.message);
     }));
   }, 'Triggers ontrack when called with a remote description and the MSID of the stream is is parsed.');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return promise_rejects(t, new RTCError(),
+      pc.setRemoteDescription({
+        // valid SDP type
+        type: 'offer',
+        // malformed SDP description
+        sdp: 'bogus'
+      }));
+  }, 'Malformed SDP description should be rejected with RTCError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription({
+        // invalid enum value is caught at IDL level before
+        // method is executed
+        type: 'bogus',
+        // bogus SDP should never be validated before type
+        sdp: 'bogus'
+      }));
+  }, 'Invalid SDP type should be rejected with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new InvalidStateError(),
+      pc.setRemoteDescription({
+        // a new connection with stable state cannot accept answer type SDP
+        type: 'answer',
+        // bogus SDP should never be validated before validating type
+        sdp: 'bogus'
+      }));
+  }, 'SDP type that is invalid for current signaling state should be rejected with InvalidStateError');
+
 </script>
 
 </body>

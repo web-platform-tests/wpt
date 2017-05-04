@@ -42,6 +42,19 @@
                 checkDOMMatrix(new self[constr](new self[constr]()), initial);
             }, `new ${constr}(new ${constr}())`);
 
+            ['none',
+             ' none',
+             'none ',
+             'NONE',
+             'none/**/',
+             '/**/none',
+             '',
+            ].forEach(function(string) {
+                test(function() {
+                    checkDOMMatrix(new self[constr](string), initial);
+                }, `new ${constr}(${format_value(string)})`);
+            });
+
             test(function() {
                 var float32Array = new Float32Array(
                     2.0, 0.0, 0.0, 0.0,
@@ -102,6 +115,17 @@
              'translateX(5vmin)',
              'translateX(5vmax)',
              'translateX(5%)',
+             ' ',
+             '/**/',
+             '\0',
+             ';',
+             'none;',
+             'null',
+             null, // is converted to 'null' by IDL
+             'undefined',
+             'inherit',
+             'initial',
+             'unset',
             ].forEach(function(string) {
                 test(function() {
                     assert_throws('SyntaxError', function() { new self[constr](string); });

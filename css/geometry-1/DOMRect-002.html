@@ -102,66 +102,66 @@
             test(function() {
                 checkDOMRect(new constructor(),
                     { x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0 });
-            }, prefix + '0');
+            }, prefix + ' Constructor without parameter');
             test(function() {
                 checkDOMRect(new constructor(1),
                     { x: 1, y: 0, width: 0, height: 0, top: 0, right: 1, bottom: 0, left: 1 });
-            }, prefix + '1');
+            }, prefix + ' Constructor with one parameter');
             test(function() {
                 checkDOMRect(new constructor(1, 2),
                     { x: 1, y: 2, width: 0, height: 0, top: 2, right: 1, bottom: 2, left: 1 });
-            }, prefix + '2');
+            }, prefix + ' Constructor with two parameters');
             test(function() {
                 checkDOMRect(new constructor(1, 2, 3),
                     { x: 1, y: 2, width: 3, height: 0, top: 2, right: 4, bottom: 2, left: 1 });
-            }, prefix + '3');
+            }, prefix + ' Constructor with three parameters');
             test(function() {
                 checkDOMRect(new constructor(1, 2, 3, 4),
                     { x: 1, y: 2, width: 3, height: 4, top: 2, right: 4, bottom: 6, left: 1 });
-            }, prefix + '4');
+            }, prefix + ' Constructor with four parameters');
             test(function() {
                 checkDOMRect(new constructor(1, 2, 3, 4, 5),
                     { x: 1, y: 2, width: 3, height: 4, top: 2, right: 4, bottom: 6, left: 1 });
-            }, prefix + '5');
+            }, prefix + ' Constructor with five parameters');
             test(function() {
                 checkDOMRect(new constructor(2, 2, -4, 4),
                     { x: 2, y: 2, width: -4, height: 4, top: 2, right: 2, bottom: 6, left: -2 });
-            }, prefix + 'NegativeWidth');
+            }, prefix + ' Constructor with negative width');
             test(function() {
                 checkDOMRect(new constructor(2, 2, 4, -4),
                     { x: 2, y: 2, width: 4, height: -4, top: -2, right: 6, bottom: 2, left: 2 });
-            }, prefix + 'NegativeHeight');
+            }, prefix + ' Constructor with negative height');
             test(function() {
                 checkDOMRect(new constructor(2, 2, -4, -4),
                     { x: 2, y: 2, width: -4, height: -4, top: -2, right: 2, bottom: 2, left: -2 });
-            }, prefix + 'NegativeWidthHeight');
+            }, prefix + ' Constructor with negative width and height');
             test(function() {
                 checkDOMRect(new constructor(0, 0, undefined, 4),
                     { x: 0, y: 0, width: 0, height: 4, top: 0, right: 0, bottom: 4, left: 0 });
-            }, prefix + 'Undefined1');
+            }, prefix + ' Constructor with undefined');
             test(function() {
                 checkDOMRect(new constructor(NaN, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, null),
                     { x: NaN, y: -Infinity, width: Infinity, height: 0, top: -Infinity, right: NaN, bottom: -Infinity, left: NaN });
-            }, prefix + 'Undefined2');
+            }, prefix + ' Constructor with NaN and infinity and null');
             test(function() {
                 checkDOMRect(new constructor("1", "2", "3", "4"),
                     { x: 1, y: 2, width: 3, height: 4, top: 2, right: 4, bottom: 6, left: 1 });
-            }, prefix + 'String1');
+            }, prefix + ' Constructor with number string');
             test(function() {
                 checkDOMRect(new constructor("a", "b", "c", "d"),
                     { x: NaN, y: NaN, width: NaN, height: NaN, top: NaN, right: NaN, bottom: NaN, left: NaN });
-            }, prefix + 'String2');
+            }, prefix + ' Constructor with character string');
         }
 
         function checkDOMRect(r, exp) {
-            assert_equals(r.x, exp.x, "Expected value for x is " + exp.x);
-            assert_equals(r.y, exp.y, "Expected value for y is " + exp.y);
-            assert_equals(r.width, exp.width, "Expected value for width is " + exp.width);
-            assert_equals(r.height, exp.height, "Expected value for height is " + exp.height);
-            assert_equals(r.top, exp.top, "Expected value for top is " + exp.top);
-            assert_equals(r.left, exp.left, "Expected value for left is " + exp.left);
-            assert_equals(r.bottom, exp.bottom, "Expected value for bottom is " + exp.bottom);
-            assert_equals(r.right, exp.right, "Expected value for right is " + exp.right);
+            assert_equals(r.x, exp.x, "x is not matched");
+            assert_equals(r.y, exp.y, "y is not matched");
+            assert_equals(r.width, exp.width, "width is not matched");
+            assert_equals(r.height, exp.height, "height is not matched");
+            assert_equals(r.top, exp.top, "top is not matched");
+            assert_equals(r.left, exp.left, "left is not matched");
+            assert_equals(r.bottom, exp.bottom, "bottom is not matched");
+            assert_equals(r.right, exp.right, "right is not matched");
         }
     </script>
 </body>

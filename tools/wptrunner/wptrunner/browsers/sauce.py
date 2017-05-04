@@ -136,6 +136,8 @@ class SauceConnect():
         self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
         self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
 
+    def __enter__(self, options):
+
         if not self.sauce_connect_binary:
             temp_path = tempfile.gettempdir()
             get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", temp_path)
@@ -143,8 +145,6 @@ class SauceConnect():
 
         self.upload_prerun_exec('edge-prerun.bat')
         self.upload_prerun_exec('safari-prerun.sh')
-
-    def __enter__(self, options):
 
         self.sc_process = subprocess.Popen([
             self.sauce_connect_binary,
@@ -165,6 +165,10 @@ class SauceConnect():
 
     def __exit__(self, *args):
         self.sc_process.terminate()
+        try:
+            os.remove(glob.glob(os.path.join(temp_path, "sc-*-linux")))
+        except:
+            pass
 
     def upload_prerun_exec(self, file_name):
         auth = (self.sauce_user, self.sauce_key)

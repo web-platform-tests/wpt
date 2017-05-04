@@ -1085,6 +1085,36 @@ IdlInterface.prototype.test_self = function()
         }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
+    if (this.is_global() && typeof Object.setPrototypeOf === "function") {
+        // This function tests WebIDL as of 2017-05-04.
+        // https://heycam.github.io/webidl/#named-properties-object-setprototypeof
+        test(function() {
+            var proto = Object.getPrototypeOf(self[this.name].prototype);
+            var error = null;
+            var set;
+
+            try {
+                Object.setPrototypeOf(self[this.name].prototype, proto);
+            } catch (err) {
+                error = err;
+            }
+
+            assert_equals(error, null, "Supports assignment of current value");
+
+            try {
+                Object.setPrototypeOf(self[this.name].prototype, null);
+            } catch (err) {
+                error = err;
+            }
+
+            if (error === null) {
+                Object.setPrototypeOf(self[this.name].prototype, proto);
+            }
+
+            assert_true(error instanceof TypeError, "Rejects re-assignment with a TypeError");
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method of named properties object");
+    }
+
     test(function()
     {
         if (this.is_callback() && !this.has_constants()) {

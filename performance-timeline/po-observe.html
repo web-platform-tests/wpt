@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>PerformanceObservers: PerformanceObserverInit.buffered</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="performanceobservers.js"></script>
+<h1>PerformanceObservers: PerformanceObserverInit.buffered</h1>
+<p>
+PerformanceObserverInit.buffered should retrieve previously buffered entries
+</p>
+<div id="log"></div>
+<script>
+  async_test(function (t) {
+
+    function runTest() {
+      // this PerformanceObserver is a nop because we've already been notified about the `navigation` entry
+      var po_nop = new PerformanceObserver(function (entryList, observer) {
+        assert_unreached("this PerformanceObserver callback should never be called");
+      });
+      po_nop.observe({entryTypes: ["navigation"]});
+
+      // this PerformanceObserver should be notified about the previously buffered `navigation` entry
+      var po = new PerformanceObserver(function (entryList, observer) {
+        po.disconnect();
+        po_nop.disconnect();
+
+        assert_equals(entryList.getEntries().length, 1, "our buffered `navigation` entry");
+        t.done();
+      })
+      po.observe({entryTypes: ["navigation"], buffered: true});
+    }
+
+    new PerformanceObserver(function (entryList, observer) {
+      observer.disconnect();
+      runTest(); // start the test after we've been notified about the `navigation` entry
+    }).observe({entryTypes: ["navigation"]});
+
+  }, "PerformanceObserverInit.buffered should retrieve previously buffered entries");
+
+</script>

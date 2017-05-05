@@ -3559,6 +3559,22 @@
     "search": "",
     "hash": ""
   },
+  "Leading and trailing C0 control or space",
+  {
+    "input": "\x00\x1b\x04\x12 http://example.com/\x1f \x0d ",
+    "base": "about:blank",
+    "href": "http://example.com/",
+    "origin": "http://example.com",
+    "protocol": "http:",
+    "username": "",
+    "password": "",
+    "host": "example.com",
+    "hostname": "example.com",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
   "Ideographic full stop (full-width period for Chinese, etc.) should be treated as a dot. U+3002 is mapped to U+002E (dot)",
   {
     "input": "http://www.foo。bar.com",
@@ -5468,6 +5484,20 @@
   },
   {
     "input": "C|/",
+    "base": "file://host/dir/file",
+    "href": "file:///C:/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C:/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "C|\n/",
     "base": "file://host/dir/file",
     "href": "file:///C:/",
     "protocol": "file:",

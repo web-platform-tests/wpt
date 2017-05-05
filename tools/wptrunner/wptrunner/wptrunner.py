@@ -114,9 +114,10 @@ def run_tests(config, test_paths, product, **kwargs):
         (check_args,
          target_browser_cls, get_browser_kwargs,
          executor_classes, get_executor_kwargs,
-         env_options, prerun, run_info_extras) = products.load_product(config, product)
+         env_options, get_env_extras, run_info_extras) = products.load_product(config, product)
 
         ssl_env = env.ssl_env(logger, **kwargs)
+        env_extras = get_env_extras(**kwargs)
 
         check_args(**kwargs)
 
@@ -150,7 +151,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  kwargs["pause_after_test"],
                                  kwargs["debug_info"],
                                  env_options,
-                                 lambda: prerun(**kwargs) if prerun else lambda: None) as test_environment:
+                                 env_extras) as test_environment:
             try:
                 test_environment.ensure_started()
             except env.TestEnvironmentError as e:

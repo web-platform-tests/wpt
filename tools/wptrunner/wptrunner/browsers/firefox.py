@@ -35,6 +35,7 @@ __wptrunner__ = {"product": "firefox",
                               "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
+                 "env_extras": "env_extras",
                  "env_options": "env_options",
                  "run_info_extras": "run_info_extras",
                  "update_properties": "update_properties"}
@@ -88,6 +89,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities = {"moz:firefoxOptions": fxOptions}
         executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
+
+
+def env_extras(**kwargs):
+    return []
 
 
 def env_options():

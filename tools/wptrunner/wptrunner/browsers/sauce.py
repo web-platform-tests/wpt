@@ -4,15 +4,12 @@
 
 import glob
 import os
+import shutil
 import subprocess
-import sys
 import tarfile
 import tempfile
 import time
-import urlparse
 from cStringIO import StringIO as CStringIO
-from ConfigParser import SafeConfigParser
-from urlparse import urljoin
 
 import requests
 
@@ -23,8 +20,6 @@ from ..executors.executorselenium import (SeleniumTestharnessExecutor,
 
 here = os.path.split(__file__)[0]
 
-sc_process = None
-
 
 __wptrunner__ = {"product": "sauce",
                  "check_args": "check_args",
@@ -33,7 +28,7 @@ __wptrunner__ = {"product": "sauce",
                               "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
-                 "prerun": "prerun",
+                 "env_extras": "env_extras",
                  "env_options": "env_options"}
 
 
@@ -113,6 +108,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     return executor_kwargs
 
 
+def env_extras(**kwargs):
+    return [SauceConnect(**kwargs)]
+
+
 def env_options():
     return {"host": "web-platform.test",
             "bind_hostname": "true",
@@ -126,55 +125,56 @@ def get_tar(url, dest):
         f.extractall(path=dest)
 
 
-def prerun(**kwargs):
-    global sc_process
+class SauceConnect():
 
-    sauce_user = kwargs["sauce_user"]
-    sauce_key = kwargs["sauce_key"]
-    sauce_tunnel_id = kwargs["sauce_tunnel_id"]
-    sauce_connect_binary = kwargs.get("sauce_connect_binary")
-    sauce_config = get_sauce_config(**kwargs)
-    url = urljoin(sauce_config["url"], "hub/status")
+    def __init__(self, **kwargs):
+        self.sauce_user = kwargs["sauce_user"]
+        self.sauce_key = kwargs["sauce_key"]
+        self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
+        self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
+        self.sc_process = None
+        self.temp_dir = None
 
-    if not sauce_connect_binary:
-        temp_path = tempfile.gettempdir()
-        get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", temp_path)
-        sauce_connect_binary = glob.glob(os.path.join(temp_path, "sc-*-linux/bin/sc"))[0]
+    def __enter__(self, options):
+        if not self.sauce_connect_binary:
+            self.temp_dir = tempfile.mkdtemp()
+            get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", self.temp_dir)
+            self.sauce_connect_binary = glob.glob(os.path.join(self.temp_dir, "sc-*-linux/bin/sc"))[0]
 
-    sc_process = subprocess.Popen([
-        sauce_connect_binary,
-        "--user=%s" % sauce_user,
-        "--api-key=%s" % sauce_key,
-        "--no-remove-colliding-tunnels",
-        "--tunnel-identifier=%s" % sauce_tunnel_id,
-        "--readyfile=./sauce_is_ready",
-        "--tunnel-domains",
-        "web-platform.test",
-        "*.web-platform.test"
-    ])
-    while not os.path.exists('./sauce_is_ready') and not sc_process.poll():
-        time.sleep(5)
+        self.upload_prerun_exec('edge-prerun.bat')
+        self.upload_prerun_exec('safari-prerun.sh')
 
-    if sc_process.returncode is not None and sc_process.returncode > 0:
-        raise SauceException("Unable to start Sauce Connect Proxy. Process exited with code %s", sc_process.returncode)
+        self.sc_process = subprocess.Popen([
+            self.sauce_connect_binary,
+            "--user=%s" % self.sauce_user,
+            "--api-key=%s" % self.sauce_key,
+            "--no-remove-colliding-tunnels",
+            "--tunnel-identifier=%s" % self.sauce_tunnel_id,
+            "--readyfile=./sauce_is_ready",
+            "--tunnel-domains",
+            "web-platform.test",
+            "*.web-platform.test"
+        ])
+        while not os.path.exists('./sauce_is_ready') and not self.sc_process.poll():
+            time.sleep(5)
 
-    try:
-        tunnel_request = requests.get(url)
-    except requests.RequestException as e:
-        raise SauceException("Unable to connect to Sauce Labs webdriver server.")
+        if self.sc_process.returncode is not None and self.sc_process.returncode > 0:
+            raise SauceException("Unable to start Sauce Connect Proxy. Process exited with code %s", self.sc_process.returncode)
 
-    upload_prerun_exec('edge-prerun.bat', sauce_user, sauce_key)
-    upload_prerun_exec('safari-prerun.sh', sauce_user, sauce_key)
+    def __exit__(self, *args):
+        self.sc_process.terminate()
+        if os.path.exists(self.temp_dir):
+            try:
+                shutil.rmtree(self.temp_dir)
+            except OSError:
+                pass
 
-    return sc_process
+    def upload_prerun_exec(self, file_name):
+        auth = (self.sauce_user, self.sauce_key)
+        url = "https://saucelabs.com/rest/v1/storage/%s/%s?overwrite=true" % (self.sauce_user, file_name)
 
-
-def upload_prerun_exec(file_name, sauce_user, sauce_key):
-    auth = (sauce_user, sauce_key)
-    url = "https://saucelabs.com/rest/v1/storage/%s/%s?overwrite=true" % (sauce_user, file_name)
-
-    with open(os.path.join(here, 'sauce_setup', file_name), 'rb') as f:
-        requests.post(url, data=f, auth=auth)
+        with open(os.path.join(here, 'sauce_setup', file_name), 'rb') as f:
+            requests.post(url, data=f, auth=auth)
 
 
 class SauceException(Exception):

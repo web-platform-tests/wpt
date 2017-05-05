@@ -135,13 +135,14 @@ class SauceConnect():
         self.sauce_key = kwargs["sauce_key"]
         self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
         self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
+        self.temp_dir = None
 
     def __enter__(self, options):
 
         if not self.sauce_connect_binary:
-            temp_path = tempfile.gettempdir()
-            get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", temp_path)
-            self.sauce_connect_binary = glob.glob(os.path.join(temp_path, "sc-*-linux/bin/sc"))[0]
+            self.temp_dir = tempfile.mkdtemp()
+            get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", self.temp_dir)
+            self.sauce_connect_binary = glob.glob(os.path.join(self.temp_dir, "sc-*-linux/bin/sc"))[0]
 
         self.upload_prerun_exec('edge-prerun.bat')
         self.upload_prerun_exec('safari-prerun.sh')
@@ -165,10 +166,9 @@ class SauceConnect():
 
     def __exit__(self, *args):
         self.sc_process.terminate()
-        sc_path = glob.glob(os.path.join(tempfile.gettempdir(), "sc-*-linux"))
-        if os.path.exists(sc_path):
+        if os.path.exists(self.temp_dir):
             try:
-                os.remove(sc_path)
+                os.remove(self.temp_dir)
             except OSError:
                 pass
 

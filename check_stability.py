@@ -190,7 +190,7 @@ class Firefox(Browser):
     binary = "%s/firefox/firefox"
     platform_ini = "%s/firefox/platform.ini"
 
-    def __init__(self, kwargs):
+    def __init__(self, **kwargs):
         pass
 
     def install(self):
@@ -263,7 +263,7 @@ class Chrome(Browser):
     product = "chrome"
     binary = "/usr/bin/google-chrome"
 
-    def __init__(self, kwargs):
+    def __init__(self, **kwargs):
         pass
 
     def install(self):
@@ -325,7 +325,7 @@ class Sauce(Browser):
 
     product = "sauce"
 
-    def __init__(self, kwargs):
+    def __init__(self, **kwargs):
         browser = kwargs["product"].split(":")
         self.browser_name = browser[1]
         self.browser_version = browser[2]
@@ -349,7 +349,7 @@ class Sauce(Browser):
         return self.browser_version
 
     def wptrunner_args(self, root):
-        """Return Sauce-specific wpt-runner arguments."""
+        """Return Sauce-specific wptrunner arguments."""
         return {
             "product": "sauce",
             "sauce_browser": self.browser_name,
@@ -954,7 +954,7 @@ def main():
         install_wptrunner()
         do_delayed_imports()
 
-        browser = browser_cls(vars(args))
+        browser = browser_cls(**vars(args))
         browser.install()
         browser.install_webdriver()
 

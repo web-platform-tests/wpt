@@ -1,0 +1,17 @@
+{
+    "DOMCore": "domcore",
+    "WebMessaging": "webmessaging",
+    "DOMEvents": "DOM-Level-3-Events",
+    "WebSockets": "websockets",
+    "html": "html5",
+    "WebStorage": "webstorage",
+    "Workers": "workers",
+    "PointerEvents": "pointerevents",
+    "canvas2d": "2dcontext",
+    "ProgressEvents": "progress-events",
+    "crypto-api": "WebCryptoAPI",
+    "SelectorsAPI": "selectors-api",
+    "ServerSentEvents": "eventsource",
+    "ShadowDOM": "shadow-dom",
+    "ext-xhtml-pubid": "xhtml-pubid"
+}

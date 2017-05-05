@@ -1,87 +1,81 @@
 <!doctype html>
-<html>
-<head>
-  <title>Test pending promises behavior when RTCPeerConnection object is closed</title>
-</head>
-<body>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script type="text/javascript">
-    'use strict';
+<title>Test pending promises behavior when RTCPeerConnection object is closed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="text/javascript">
+  'use strict';
 
-    function test_never_resolved(test_func, testName) {
-      async_test(t => {
-        const pc1 = new RTCPeerConnection();
-        const closePc1 = () => pc1.close();
+  function test_never_resolved(test_func, testName) {
+    async_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const closePc1 = () => pc1.close();
 
-        test_func(pc1, closePc1)
-        .then(
-          t.step_func(result => {
-            assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`);
-          }),
-          t.step_func(err => {
-           assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`);
-          }));
+      test_func(pc1, closePc1)
+      .then(
+        t.step_func(result => {
+          assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`);
+        }),
+        t.step_func(err => {
+         assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`);
+        }));
 
-        t.step_timeout(() => {
-          t.done();
-        }, 1000);
+      t.step_timeout(() => {
+        t.done();
+      }, 1000);
 
-        const pc2 = new RTCPeerConnection();
-        const closePc2 = () => {}; // noop (don't close)
+      const pc2 = new RTCPeerConnection();
+      const closePc2 = () => {}; // noop (don't close)
 
-        test_func(pc2, closePc2)
-        .then(
-          t.step_func_done(),
-          t.step_func(err => {
-            assert_unreached(`Operating on unclosed peer connection should succeed. Instead it is rejected with: ${err}`);
-          }));
+      test_func(pc2, closePc2)
+      .then(
+        t.step_func_done(),
+        t.step_func(err => {
+          assert_unreached(`Operating on unclosed peer connection should succeed. Instead it is rejected with: ${err}`);
+        }));
 
-       }, testName);
-    }
+     }, testName);
+  }
 
-    test_never_resolved((pc, closePc) => {
-      const p = pc.createOffer();
+  test_never_resolved((pc, closePc) => {
+    const p = pc.createOffer();
+    closePc();
+    return p;
+  }, 'pending createOffer() should never resolve if closed');
+
+  test_never_resolved((pc, closePc) => {
+    return pc.createOffer()
+    .then(offer => {
+      const p = pc.setLocalDescription(offer);
       closePc();
       return p;
-    }, 'pending createOffer() should never resolve if closed');
+    });
+  }, 'pending setLocalDescription should never resolve if closed');
 
-    test_never_resolved((pc, closePc) => {
-      return pc.createOffer()
-      .then(offer => {
-        const p = pc.setLocalDescription(offer);
-        closePc();
-        return p;
-      });
-    }, 'pending setLocalDescription should never resolve if closed');
-
-    test_never_resolved((pc, closePc) => {
-      return pc.createOffer()
-      .then(offer => {
-        const p = pc.setRemoteDescription(offer);
-        closePc();
-        return p;
-      });
-    }, 'pending setRemoteDescription should never resolve if closed');
-
-    test_never_resolved((pc, closePc) => {
-      const p = pc.addIceCandidate(new RTCIceCandidate({}));
+  test_never_resolved((pc, closePc) => {
+    return pc.createOffer()
+    .then(offer => {
+      const p = pc.setRemoteDescription(offer);
       closePc();
       return p;
-    }, 'pending addIceCandidate() should never resolve if closed');
+    });
+  }, 'pending setRemoteDescription should never resolve if closed');
 
-    test_never_resolved(pc => {
-      return pc.createOffer()
-      .then(offer => pc.setLocalDescription(offer))
-      .then(() => {
-        const p = pc.createAnswer();
-        pc.close();
-        return p;
-      });
-    }, 'pending createAnswer() should never resolve if closed');
+  test_never_resolved((pc, closePc) => {
+    const p = pc.addIceCandidate(new RTCIceCandidate({}));
+    closePc();
+    return p;
+  }, 'pending addIceCandidate() should never resolve if closed');
 
-    // TODO: Add test on methods on other classes as well
+  test_never_resolved(pc => {
+    return pc.createOffer()
+    .then(offer => pc.setLocalDescription(offer))
+    .then(() => {
+      const p = pc.createAnswer();
+      pc.close();
+      return p;
+    });
+  }, 'pending createAnswer() should never resolve if closed');
 
-  </script>
-</body>
-</html>
+  // TODO: Add test on methods on other classes as well
+
+</script>

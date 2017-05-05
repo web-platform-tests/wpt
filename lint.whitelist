@@ -341,16 +341,6 @@ NON-EXISTENT-REF: css/mediaqueries-3/relative-units-003.html
 NON-EXISTENT-REF: css/mediaqueries-3/relative-units-004.html
 SAME-FILE-REF: css/css-multicol-1/multicol-rule-shorthand-2.xht
 
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-001.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-003.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-006.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-007.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-008.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-009.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-010.html
 
 ## Whitespace rules that we can't enforce yet
 INDENT TABS: css/.gitmodules

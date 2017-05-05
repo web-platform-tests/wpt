@@ -4,15 +4,12 @@
 
 import glob
 import os
+import shutil
 import subprocess
-import sys
 import tarfile
 import tempfile
 import time
-import urlparse
 from cStringIO import StringIO as CStringIO
-from ConfigParser import SafeConfigParser
-from urlparse import urljoin
 
 import requests
 
@@ -135,10 +132,10 @@ class SauceConnect():
         self.sauce_key = kwargs["sauce_key"]
         self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
         self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
+        self.sc_process = None
         self.temp_dir = None
 
     def __enter__(self, options):
-
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()
             get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", self.temp_dir)
@@ -168,7 +165,7 @@ class SauceConnect():
         self.sc_process.terminate()
         if os.path.exists(self.temp_dir):
             try:
-                os.remove(self.temp_dir)
+                shutil.rmtree(self.temp_dir)
             except OSError:
                 pass
 

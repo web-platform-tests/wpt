@@ -4,8 +4,8 @@
     const target = document.createElement("iframe"),
           link = document.createElement(type);
     t.add_cleanup(() => target.remove());
-    target.name = "certifiedrandom";
-    link.target = "certifiedrandom";
+    target.name = "certifiedrandom" + type;
+    link.target = "certifiedrandom" + type;
     link.href = "/";
     document.body.appendChild(target);
     target.onload = t.step_func(() => {
@@ -22,8 +22,8 @@
           doc = document.implementation.createDocument("", ""),
           link = doc.createElementNS("http://www.w3.org/1999/xhtml", type);
     t.add_cleanup(() => target.remove());
-    target.name = "certifiedrandom2";
-    link.target = "certifiedrandom2";
+    target.name = "certifiedrandom2" + type;
+    link.target = "certifiedrandom2" + type;
     link.href = "/";
     document.body.appendChild(target);
     target.onload = t.step_func(() => {

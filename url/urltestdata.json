@@ -3561,7 +3561,7 @@
   },
   "Leading and trailing C0 control or space",
   {
-    "input": "\x00\x1b\x04\x12 http://example.com/\x1f \x0d ",
+    "input": "\u0000\u001b\u0004\u0012 http://example.com/\u001f \u000d ",
     "base": "about:blank",
     "href": "http://example.com/",
     "origin": "http://example.com",

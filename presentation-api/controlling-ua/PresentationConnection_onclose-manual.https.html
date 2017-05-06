@@ -18,7 +18,7 @@
 </p>
 <br/>
 <p>Click the button below to start the test.</p>
-<button id="presentBtn">Start Presentation Test</button>
+<button id="presentBtn" >Start Presentation Test</button>
 
 <script>
   setup({explicit_timeout: true});
@@ -53,9 +53,11 @@
       assert_equals(evt.reason, 'closed', 'The reason for closing the presentation connection is "closed".');
     };
 
-    return clickWatcher.wait_for('click').then(() => {
+    return Promise.all([
+      clickWatcher.wait_for('click'),
+      stash.init()
+    ]).then(() => {
       presentBtn.disabled = true;
-
       return request.start();
     }).then(c => {
       // Enable timeout again, cause no user action is needed from here.
@@ -65,13 +67,11 @@
       }, 10000);
 
       connection = c;
-      return stash.init();
-    }).then(() => {
-      // Step 1: close the presentation connection in "connecting" state
-      eventWatcher = new EventWatcher(t, connection, ['close', 'connect', 'terminate']);
+      eventWatcher = new EventWatcher(t, connection, ['connect', 'close', 'terminate']);
 
+      // Step 1: close the presentation connection in "connecting" state
       connection.close();
-      return Promise.all([
+      return Promise.race([
         new Promise((_, reject) => {
           t.step_timeout(() => { reject('The presentation connection in "connecting" state was not closed successfully.'); }, 3000);
         }),

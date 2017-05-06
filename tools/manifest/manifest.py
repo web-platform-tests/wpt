@@ -141,7 +141,7 @@ class Manifest(object):
                                                                  item.item_type)
                 references[item.source_file.rel_path].add(item)
                 self._reftest_nodes_by_url[item.url] = item
-            else:
+            elif not item.source_file.name_is_reference:
                 if isinstance(item, RefTestNode):
                     item = item.to_RefTest()
                     changed_hashes[item.source_file.rel_path] = (item.source_file.hash,

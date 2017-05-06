@@ -414,12 +414,19 @@ def check_parsed(repo_root, path, f, css_mode):
 
         assert ref_parts.path != ""
 
-        reference_file = os.path.join(repo_root, ref_parts.path[1:])
+        reference_sourcefile = SourceFile(repo_root, ref_parts.path[1:], "/")
+        reference_file = reference_sourcefile.path
         reference_rel = reftest_node.attrib.get("rel", "")
 
         if not os.path.isfile(reference_file):
             errors.append(("NON-EXISTENT-REF",
                      "Reference test with a non-existent '%s' relationship reference: '%s'" % (reference_rel, href), path, None))
+
+        if not reference_sourcefile.name_is_reference:
+            errors.append(("REF-IS-NOT-REF-NAMED",
+                           "Reference test points at '%s' which isn't a reference filename" % href,
+                           path,
+                           None))
 
     if len(source_file.timeout_nodes) > 1:
         errors.append(("MULTIPLE-TIMEOUT", "More than one meta name='timeout'", path, None))

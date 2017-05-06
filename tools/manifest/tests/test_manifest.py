@@ -269,6 +269,17 @@ def test_reftest_computation_chain_update_node_change():
                        ("support", test3.path, {test3})]
 
 
+def test_reftest_computation_ref_name():
+    m = manifest.Manifest()
+
+    s = SourceFileWithTest("foobar-ref.html", "0"*40, item.RefTestNode, [("/other.html", "==")])
+    test = s.manifest_items()[1][0]
+
+    assert m.update([(s, True)]) is True
+
+    assert list(m) == [("reftest_node", test.path, {test})]
+
+
 def test_iterpath():
     m = manifest.Manifest()
 

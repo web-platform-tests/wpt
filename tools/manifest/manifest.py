@@ -346,7 +346,7 @@ class Manifest(object):
         changed_hashes = {}
 
         for item in reftest_nodes:
-            if item.url in has_inbound:
+            if item.url in has_inbound or item.source_file.name_is_reference:
                 # This is a reference
                 if isinstance(item, RefTest):
                     item = item.to_RefTestNode()
@@ -360,6 +360,9 @@ class Manifest(object):
                                                                  item.item_type)
                 reftests[item.source_file.rel_path].add(item)
             self._reftest_nodes_by_url[item.url] = item
+
+        # while currently obvious from the if/else, this is part of the API contract, so check!
+        assert len(reftest_nodes) == len(references) + len(reftests)
 
         return reftests, references, changed_hashes
 

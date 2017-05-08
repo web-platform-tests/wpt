@@ -497,9 +497,12 @@ def get_affected_testfiles(files_changed, skip_tests):
 
     support_files = {os.path.join(wpt_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
-    test_files = {os.path.join(wpt_root, path)
-                  for _, path, _ in wpt_manifest.itertypes(*test_types)}
-
+    test_files = {os.path.join(wpt_root, path): tests
+                  for _, path, tests in wpt_manifest.itertypes(*test_types)}
+    for t in files_changed:
+        files = test_files.get(t)
+        if files:
+            affected_testfiles.update(f.url for f in files)
     nontests_changed = nontests_changed.intersection(support_files)
 
     nontest_changed_paths = set()
@@ -860,10 +863,8 @@ def main():
 
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 
-        files_changed.extend(affected_testfiles)
-
         kwargs = wptrunner_args(args.root,
-                                files_changed,
+                                affected_testfiles,
                                 args.iterations,
                                 browser)
 

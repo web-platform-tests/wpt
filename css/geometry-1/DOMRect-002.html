@@ -88,12 +88,16 @@
             var actual = DOMRect.fromRect({x: 1, y: 2, width: 3, height: 4});
             var expected = new DOMRect(1, 2, 3, 4);
             checkDOMRect(actual, expected);
+            assert_true(actual instanceof DOMRectReadOnly, "actual instanceof DOMRectReadOnly");
+            assert_true(actual instanceof DOMRect, "actual instanceof DOMRect");
         }, 'DOMRect.fromRect');
 
         test(function() {
             var actual = DOMRectReadOnly.fromRect({x: 1, y: 2, width: 3, height: 4});
             var expected = new DOMRectReadOnly(1, 2, 3, 4);
             checkDOMRect(actual, expected);
+            assert_true(actual instanceof DOMRectReadOnly, "actual instanceof DOMRectReadOnly");
+            assert_false(actual instanceof DOMRect, "actual instanceof DOMRect");
         }, 'DOMRectReadOnly.fromRect');
 
         function testConstructor(constructorString) {

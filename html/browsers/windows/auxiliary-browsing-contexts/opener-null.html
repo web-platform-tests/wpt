@@ -1,0 +1,15 @@
+<h1>Manual tests for setting <code>window.opener</code> to null</h1>
+
+<p>This resource contains various tests; when in doubt, start a fresh session for each
+
+<ol>
+ <li>Click "same-origin", then "example.com". Observe that there's a single opened window (besides this one) navigated to "example.com".
+ <li>Click "same-origin", then the link in the opened window, then "example.com". Observe that there's two opened windows (besides this one) one navigated to "example.com" and to "example.org".
+ <li>Click "cross-origin", then "example.com". Observe that there's two opened windows (besides this one).
+</ol>
+
+<ul>
+ <li><a href=resources/opener-null.html target=whatisthetime>same-origin</a>
+ <li><a href=http://www1.web-platform.test:8000/html/browsers/windows/auxiliary-browsing-contexts/resources/opener-null.html target=whatisthetime>cross-origin</a>
+ <li><a href=https://example.com/ target=whatisthetime>example.com</a>
+</ul>

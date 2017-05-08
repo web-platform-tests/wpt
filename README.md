@@ -231,13 +231,14 @@ request, and reviewers will not merge branches with tests that have
 lint errors, so you must fix any errors the lint tool reports. For
 details on doing that, see the [lint-tool documentation][lint-tool].
 
-But in the unusual case of error reports for things essential to a
+In the unusual case of error reports for things essential to a
 certain test or that for other exceptional reasons shouldn't prevent
 a merge of a test, update and commit the `lint.whitelist` file in the
-web-platform-tests root directory to suppress the error reports. For
-details on doing that, see the [lint-tool documentation][lint-tool].
+web-platform-tests root directory to suppress the error reports. 
 
-[lint-tool]: https://github.com/w3c/web-platform-tests/blob/master/docs/lint-tool.md
+For more details, see the [lint-tool documentation][lint-tool].
+
+[lint-tool]: /docs/_writing-tests/lint-tool.md
 
 Adding command-line scripts ("tools" subdirs)
 ---------------------------------------------
@@ -305,5 +306,5 @@ is [archived][ircarchive].
 Documentation
 =============
 
-* [How to write and review tests](http://testthewebforward.org/docs/)
+* [How to write and review tests](http://web-platform-tests.org/)
 * [Documentation for the wptserve server](http://wptserve.readthedocs.org/en/latest/)

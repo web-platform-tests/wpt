@@ -59,7 +59,7 @@ matrix:
     - python: 3.6
       env: TOXENV=py36 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
     - python: pypy
-      env: TOXENV=pypy HYPOTHESIS_PROFILE=ci_pypy SCRIPT=ci_unittest.sh
+      env: TOXENV=pypy HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
   exclude:
     - env:  # exclude empty env from the top-level above
   allow_failures:

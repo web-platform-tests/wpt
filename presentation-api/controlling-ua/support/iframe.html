@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <title>Presentation API - controlling ua - sandboxing</title>
 <link rel="author" title="Francois Daoust" href="https://www.w3.org/People/#fd">
+<link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs/">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dom-presentationrequest-start">
 <script src="../common.js"></script>
 <script>
@@ -66,6 +67,25 @@
               parent.window.postMessage(result, '*');
               c.onterminate = function() {
                 parent.window.postMessage('terminated', '*');
+              };
+            })
+            .catch(function (err) {
+              parent.window.postMessage(err.name, '*');
+            });
+        }
+        else if (ev.data.match(/^terminate\?id=(.*)$/)) {
+          var presentationId = RegExp.$1;
+          request = new PresentationRequest(urls);
+          request.reconnect(presentationId)
+            .then(function (c) {
+              parent.window.postMessage('reconnected', '*');
+              c.onterminate = function(evt) {
+                parent.window.postMessage({
+                  isSimpleEvent: evt.isTrusted && !evt.bubbles && !evt.cancelable && evt instanceof Event,
+                  type: evt.type,
+                  checkConnection: evt.target === c,
+                  state: c.state
+                }, '*');
               };
             })
             .catch(function (err) {

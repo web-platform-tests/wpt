@@ -8,10 +8,10 @@ from selenium import webdriver
 
 from wptserver import WPTServer
 
-_ENC = 'utf8'
-_HERE = os.path.dirname(os.path.abspath(__file__))
-_WPT_ROOT = os.path.normpath(os.path.join(_HERE, '..', '..'))
-_HARNESS = os.path.join(_HERE, 'harness.html')
+ENC = 'utf8'
+HERE = os.path.dirname(os.path.abspath(__file__))
+WPT_ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+HARNESS = os.path.join(HERE, 'harness.html')
 
 def pytest_collect_file(path, parent):
     if path.ext.lower() == '.html':
@@ -19,7 +19,7 @@ def pytest_collect_file(path, parent):
 
 def pytest_configure(config):
     config.driver = webdriver.Firefox()
-    config.server = WPTServer(_WPT_ROOT)
+    config.server = WPTServer(WPT_ROOT)
     config.server.start()
     config.add_cleanup(lambda: config.server.stop())
     config.add_cleanup(lambda: config.driver.quit())
@@ -27,7 +27,7 @@ def pytest_configure(config):
 class HTMLItem(pytest.Item, pytest.Collector):
     def __init__(self, filename, parent):
         self.filename = filename
-        with io.open(filename, encoding=_ENC) as f:
+        with io.open(filename, encoding=ENC) as f:
             markup = f.read()
 
         parsed = html5lib.parse(markup, namespaceHTMLElements=False)
@@ -39,8 +39,14 @@ class HTMLItem(pytest.Item, pytest.Collector):
                 name = element.text
                 continue
             if element.attrib.get('id') == 'expected':
-                self.expected = element.text
+                self.expected = json.loads(unicode(element.text))
                 continue
+
+        if not name:
+            raise ValueError('No name found in file: %s' % filename)
+
+        if not self.expected:
+            raise ValueError('Expected JSON not found in file: %s' % filename)
 
         super(HTMLItem, self).__init__(name, parent)
 
@@ -55,27 +61,22 @@ class HTMLItem(pytest.Item, pytest.Collector):
         driver = self.session.config.driver
         server = self.session.config.server
 
-        driver.get(server.url(_HARNESS))
-
-        if self.expected is None:
-            raise Exception('Expected value not declared')
-
-        expected = json.loads(unicode(self.expected))
+        driver.get(server.url(HARNESS))
 
         actual = driver.execute_async_script('runTest("%s", "foo", arguments[0])' % server.url(str(self.filename)))
 
         # Test object ordering is not guaranteed. This weak assertion verifies
         # that the indices are unique and sequential
-        indices = map(lambda test_obj: test_obj.get('index'), actual["tests"])
+        indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
         # Stack traces are implementation-defined
         actual['status'] = self._scrub_stack(actual['status'])
-        actual['tests'] = map(self._scrub_stack, actual['tests'])
-        actual['tests'] = map(self._scrub_index, actual['tests'])
+        actual['tests'] = [self._scrub_stack(test) for test in actual['tests']]
+        actual['tests'] = [self._scrub_index(test) for test in actual['tests']]
         actual['tests'].sort(key=lambda test_obj: test_obj.get('name'))
 
-        assert actual == expected
+        assert actual == self.expected
 
     @staticmethod
     def _assert_sequence(nums):

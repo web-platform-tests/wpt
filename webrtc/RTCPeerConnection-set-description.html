@@ -229,6 +229,27 @@
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
 
+    return createOfferAndGetAnswer(pc1, pc2)
+    .then(([offer, answer]) => {
+      return pc2.setLocalDescription({ type: 'answer' })
+      .then(() => {
+        assert_equals(pc2.signalingState, 'stable');
+        assert_true(isSimilarSdp(pc2.localDescription, answer));
+        assert_true(isSimilarSdp(pc2.remoteDescription, offer));
+
+        assert_true(isSimilarSdp(pc2.currentLocalDescription, answer));
+        assert_true(isSimilarSdp(pc2.currentRemoteDescription, offer));
+
+        assert_equals(pc2.pendingLocalDescription, null);
+        assert_equals(pc2.pendingRemoteDescription, null);
+      });
+    });
+  }, 'Create and set default local answer');
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection;
+    const pc2 = new RTCPeerConnection;
+
     return createAnswerAndSetRemote(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc1.signalingState, 'stable');

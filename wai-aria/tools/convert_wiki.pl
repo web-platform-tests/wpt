@@ -116,7 +116,7 @@ while (<$io>) {
   if (m/^\{\|/) {
     # table started
     $state = 4;
-		$theAPI = "";
+    $theAPI = "";
   }
   if ($state == 4) {
     if (m/^\|-/) {

@@ -1,4 +1,0 @@
-Access-Control-Allow-Headers: Content-Type
-Access-Control-Allow-Methods: GET,HEAD,POST
-Access-Control-Allow-Origin: *
-Access-Control-Expose-Headers: Allow, Content-Type

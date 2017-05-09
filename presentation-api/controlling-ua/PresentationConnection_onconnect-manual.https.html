@@ -38,6 +38,16 @@
       }
     });
 
+    const watchEvent = (obj, watcher, type) => {
+      const watchHandler = new Promise(resolve => {
+        obj['on' + type] = evt => { resolve(evt); };
+      });
+      return Promise.all([ watchHandler, watcher.wait_for(type) ]).then(results => {
+        assert_equals(results[0], results[1], 'Both on' + type + ' and addEventListener pass the same event object.');
+        return results[0];
+      });
+    };
+
     return clickWatcher.wait_for('click').then(() => {
       presentBtn.disabled = true;
 
@@ -51,7 +61,7 @@
 
       connection = c;
       const eventWatcher = new EventWatcher(t, connection, 'connect');
-      return eventWatcher.wait_for('connect');
+      return watchEvent(connection, eventWatcher, 'connect');
     }).then(evt => {
       assert_true(evt.isTrusted && !evt.bubbles && !evt.cancelable && evt instanceof Event, 'A simple event is fired.');
       assert_equals(evt.type, 'connect', 'The event name is "connect".');

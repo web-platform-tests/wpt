@@ -52,6 +52,23 @@
       assert_equals(connection.state, 'terminated', 'State of the presentation connection is "terminated".');
     };
 
+    const watchEvent = (obj, watcher, type) => {
+      const watchHandler = new Promise(resolve => {
+        obj['on' + type] = evt => { resolve(evt); };
+      });
+      return Promise.all([ watchHandler, watcher.wait_for(type) ]).then(results => {
+        assert_equals(results[0], results[1], 'Both on' + type + ' and addEventListener pass the same event object.');
+        return results[0];
+      });
+    };
+
+    const waitForEvent = (obj, watcher, type) => {
+      const watchHandler = new Promise(resolve => {
+        obj['on' + type] = evt => { resolve(evt); };
+      });
+      return Promise.race([ watchHandler, watcher.wait_for(type) ]);
+    };
+
     return Promise.all([
       clickWatcher.wait_for('click'),
       messageWatcher.wait_for('message')
@@ -71,7 +88,7 @@
         new Promise((_, reject) => {
           t.step_timeout(() => { reject('The presentation is not terminated successfully when the presentation connection in "connecting" state.'); }, 3000);
         }),
-        eventWatcher.wait_for('terminate')
+        watchEvent(connection, eventWatcher, 'terminate')
       ]);
     }).then(evt => {
       checkTerminateEvent(evt);
@@ -96,7 +113,7 @@
       connection.terminate();
       return Promise.race([
         new Promise(resolve => { t.step_timeout(resolve, 1000); }),
-        terminateWatcher.wait_for('terminate').then(() => {
+        waitForEvent(connection, terminateWatcher, 'terminate').then(() => {
           assert_unreached('Invoking PresentationConnection.terminate() in the "closed" state causes nothing.'); })
       ]);
     }).then(() => {
@@ -115,7 +132,7 @@
           t.step_timeout(() => { reject('The presentation is not terminated successfully when the presentation connection in "connected" state.'); }, 3000);
         }),
         Promise.all([
-          eventWatcher.wait_for('terminate'),
+          watchEvent(connection, eventWatcher, 'terminate'),
           messageWatcher.wait_for('message')
         ])
       ]);
@@ -132,7 +149,7 @@
       connection.terminate();
       return Promise.race([
         new Promise(resolve => { t.step_timeout(resolve, 1000); }),
-        terminateWatcher.wait_for('terminate').then(() => {
+        waitForEvent(connection, terminateWatcher, 'terminate').then(() => {
           assert_unreached('Invoking PresentationConnection.terminate() in the "terminated" state causes nothing.'); })
       ]);
     });

@@ -53,6 +53,23 @@
       assert_equals(evt.reason, 'closed', 'The reason for closing the presentation connection is "closed".');
     };
 
+    const watchEvent = (obj, watcher, type) => {
+      const watchHandler = new Promise(resolve => {
+        obj['on' + type] = evt => { resolve(evt); };
+      });
+      return Promise.all([ watchHandler, watcher.wait_for(type) ]).then(results => {
+        assert_equals(results[0], results[1], 'Both on' + type + ' and addEventListener pass the same event object.');
+        return results[0];
+      });
+    };
+
+    const waitForEvent = (obj, watcher, type) => {
+      const watchHandler = new Promise(resolve => {
+        obj['on' + type] = evt => { resolve(evt); };
+      });
+      return Promise.race([ watchHandler, watcher.wait_for(type) ]);
+    };
+
     return Promise.all([
       clickWatcher.wait_for('click'),
       stash.init()
@@ -75,7 +92,7 @@
         new Promise((_, reject) => {
           t.step_timeout(() => { reject('The presentation connection in "connecting" state was not closed successfully.'); }, 3000);
         }),
-        eventWatcher.wait_for('close')
+        watchEvent(connection, eventWatcher, 'close')
       ]);
     }).then(evt => {
       checkCloseEvent(evt);
@@ -86,7 +103,7 @@
       return eventWatcher.wait_for('connect');
     }).then(() => {
       connection.close();
-      return eventWatcher.wait_for('close');
+      return watchEvent(connection, eventWatcher, 'close');
     }).then(evt => {
       checkCloseEvent(evt);
 
@@ -95,7 +112,7 @@
     }).then(() => {
       return eventWatcher.wait_for('connect');
     }).then(() => {
-      return Promise.all([ stash.send('close'), eventWatcher.wait_for('close') ]);
+      return Promise.all([ stash.send('close'), watchEvent(connection, eventWatcher, 'close') ]);
     }).then(results => {
       checkCloseEvent(results[1]);
 
@@ -104,7 +121,7 @@
       connection.close();
       return Promise.race([
         new Promise(resolve => { t.step_timeout(resolve, 1000); }),
-        closeWatcher.wait_for('close').then(() => {
+        waitForEvent(connection, closeWatcher, 'close').then(() => {
           assert_unreached('Invoking PresentationConnection.close() in the "closed" state causes nothing.'); })
       ]);
     }).then(() => {
@@ -120,7 +137,7 @@
       connection.close();
       return Promise.race([
         new Promise(resolve => { t.step_timeout(resolve, 1000); }),
-        closeWatcher.wait_for('close').then(() => {
+        waitForEvent(connection, closeWatcher, 'close').then(() => {
           assert_unreached('Invoking PresentationConnection.close() in the "terminated" state causes nothing.'); })
       ]);
     });

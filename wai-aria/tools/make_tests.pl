@@ -43,12 +43,14 @@ my $wiki_title = undef ;
 my $dir = undef;
 my $theSpecFragment = "%code%";
 my $preserveWiki = "";
+my $fake = 0;
 
 my $result = GetOptions(
     "f|file=s"   => \$file,
     "p=s" => \$preserveWiki,
     "w|wiki=s"   => \$wiki_title,
     "s|spec=s"   => \$spec,
+    "f|fake"    => \$fake,
     "d|dir=s"   => \$dir) || usage();
 
 my $wiki_config = {
@@ -404,9 +406,10 @@ sub build_test() {
       # everything in the block is about testing an element
       $step->{"element"} = ( $asserts->{"element"} || "test" );
 
-      my $tests = {
-        WAIFAKE => [ [ "property", "role", "is", "ROLE_TABLE_CELL" ], [ "property", "interfaces", "contains", "TableCell" ] ]
-      };
+      my $tests = {};
+      if ($fake) {
+        $tests->{"WAIFAKE"} = [ [ "property", "role", "is", "ROLE_TABLE_CELL" ], [ "property", "interfaces", "contains", "TableCell" ] ];
+      }
       foreach my $name (@apiNames) {
         if (exists $asserts->{$name}) {
           $tests->{$name} = $asserts->{$name};

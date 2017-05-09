@@ -43,19 +43,22 @@
       assert_unreached('object must not be undefined or null');
   }
 
-  function assert_similar_sdp(sdp1, sdp2) {
+  function isSimilarSdp(sdp1, sdp2) {
     assert_defined(sdp1);
     assert_defined(sdp2);
-    assert_equals(sdp1.type, sdp2.type);
 
-    // We can't do string comparison to the SDP content,
-    // because RTCPeerConnection may return SDP that is
-    // slightly modified from what is given to it due to
-    // ice candidate events or serialization.
-    // To hack around this, if the SDP strings are not
-    // equal, we simply count the media description lines
-    // and if they are the same, we assume it is the same.
-    assert_true(similarMediaDescriptions(sdp1.sdp, sdp2.sdp));
+    if(sdp1.type !== sdp2.type) {
+      return false;
+    } else {
+      // We can't do string comparison to the SDP content,
+      // because RTCPeerConnection may return SDP that is
+      // slightly modified from what is given to it due to
+      // ice candidate events or serialization.
+      // To hack around this, if the SDP strings are not
+      // equal, we simply count the media description lines
+      // and if they are the same, we assume it is the same.
+      return similarMediaDescriptions(sdp1.sdp, sdp2.sdp);
+    }
   }
 
   function createOfferAndSetLocal(pc, options) {
@@ -110,8 +113,8 @@
     return createOfferAndSetLocal(pc)
     .then(offer => {
       assert_equals(pc.signalingState, 'have-local-offer');
-      assert_similar_sdp(pc.localDescription, offer);
-      assert_similar_sdp(pc.pendingLocalDescription, offer);
+      assert_true(isSimilarSdp(pc.localDescription, offer));
+      assert_true(isSimilarSdp(pc.pendingLocalDescription, offer));
       assert_equals(pc.currentLocalDescription, null);
     });
   }, 'Create and set offer');
@@ -123,8 +126,8 @@
       pc.setLocalDescription({ type: 'offer' })
       .then(() => {
         assert_equals(pc.signalingState, 'have-local-offer');
-        assert_similar_sdp(pc.localDescription, offer);
-        assert_similar_sdp(pc.pendingLocalDescription, offer);
+        assert_true(isSimilarSdp(pc.localDescription, offer));
+        assert_true(isSimilarSdp(pc.pendingLocalDescription, offer));
         assert_equals(pc.currentLocalDescription, null);
       }));
   }, 'Create and set default offer');
@@ -149,8 +152,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc.signalingState, 'have-local-offer');
-        assert_similar_sdp(pc.localDescription, offer2);
-        assert_similar_sdp(pc.pendingLocalDescription, offer2);
+        assert_true(isSimilarSdp(pc.localDescription, offer2));
+        assert_true(isSimilarSdp(pc.pendingLocalDescription, offer2));
         assert_equals(pc.currentLocalDescription, null);
       }));
   }, 'Can create and set offer multiple times');
@@ -162,8 +165,8 @@
     return createOfferAndSetRemote(pc1, pc2)
     .then(offer => {
       assert_equals(pc2.signalingState, 'have-remote-offer');
-      assert_similar_sdp(pc2.remoteDescription, offer);
-      assert_similar_sdp(pc2.pendingRemoteDescription, offer);
+      assert_true(isSimilarSdp(pc2.remoteDescription, offer));
+      assert_true(isSimilarSdp(pc2.pendingRemoteDescription, offer));
       assert_equals(pc2.localRemoteDescription, null);
     });
   }, 'Create and set remote offer');
@@ -178,8 +181,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc2.signalingState, 'have-remote-offer');
-        assert_similar_sdp(pc2.remoteDescription, offer2);
-        assert_similar_sdp(pc2.pendingRemoteDescription, offer2);
+        assert_true(isSimilarSdp(pc2.remoteDescription, offer2));
+        assert_true(isSimilarSdp(pc2.pendingRemoteDescription, offer2));
         assert_equals(pc2.currentRemoteDescription, null);
       }));
   }, 'Can set remote description multiple times');
@@ -211,11 +214,11 @@
     return createAnswerAndSetLocal(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc2.signalingState, 'stable');
-      assert_similar_sdp(pc2.localDescription, answer);
-      assert_similar_sdp(pc2.remoteDescription, offer);
+      assert_true(isSimilarSdp(pc2.localDescription, answer));
+      assert_true(isSimilarSdp(pc2.remoteDescription, offer));
 
-      assert_similar_sdp(pc2.currentLocalDescription, answer);
-      assert_similar_sdp(pc2.currentRemoteDescription, offer);
+      assert_true(isSimilarSdp(pc2.currentLocalDescription, answer));
+      assert_true(isSimilarSdp(pc2.currentRemoteDescription, offer));
 
       assert_equals(pc2.pendingLocalDescription, null);
       assert_equals(pc2.pendingRemoteDescription, null);
@@ -229,16 +232,45 @@
     return createAnswerAndSetRemote(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc1.signalingState, 'stable');
-      assert_similar_sdp(pc1.localDescription, offer);
-      assert_similar_sdp(pc1.remoteDescription, answer);
+      assert_true(isSimilarSdp(pc1.localDescription, offer));
+      assert_true(isSimilarSdp(pc1.remoteDescription, answer));
 
-      assert_similar_sdp(pc1.currentLocalDescription, offer);
-      assert_similar_sdp(pc1.currentRemoteDescription, answer);
+      assert_true(isSimilarSdp(pc1.currentLocalDescription, offer));
+      assert_true(isSimilarSdp(pc1.currentRemoteDescription, answer));
 
       assert_equals(pc1.pendingLocalDescription, null);
       assert_equals(pc1.pendingRemoteDescription, null);
     });
   }, 'Create and set remote answer');
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection;
+    const pc2 = new RTCPeerConnection;
+
+    return createAnswerAndSetRemote(pc1, pc2, {
+      offerToReceiveAudio: true
+    }).then(([offer1, answer1]) => {
+      return createOfferAndSetLocal(pc1, {
+        offerToReceiveVideo: true
+      }).then(offer2 => {
+        assert_equals(pc1.signalingState, 'have-local-offer');
+        assert_false(isSimilarSdp(offer1, offer2));
+        assert_true(isSimilarSdp(pc1.localDescription, offer1));
+        assert_true(isSimilarSdp(pc1.currentLocalDescription, offer1));
+        assert_true(isSimilarSdp(pc1.pendingLocalDescription, offer2));
+
+        return pc2.setRemoteDescription(offer2)
+        .then(() => pc2.createAnswer())
+        .then(answer2 => {
+          assert_equals(pc2.signalingState, 'have-remote-offer');
+          assert_false(isSimilarSdp(answer1, answer2));
+          assert_true(isSimilarSdp(pc2.remoteDescription, answer1));
+          assert_true(isSimilarSdp(pc2.currentRemoteDescription, answer1));
+          assert_true(isSimilarSdp(pc2.pendingRemoteDescription, answer2));
+        });
+      });
+    });
+  }, 'Create offer again after go back to stable state');
 
   promise_test(t => {
     const pc = new RTCPeerConnection;

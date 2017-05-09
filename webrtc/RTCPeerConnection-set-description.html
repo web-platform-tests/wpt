@@ -5,16 +5,57 @@
 <script type="text/javascript">
   'use strict';
 
+  const audioLineRegex = /\r\nm=audio.+\r\n/g
+  const videoLineRegex = /\r\nm=video.+\r\n/g
+
+  function countAudioLine(sdp) {
+    const matches = sdp.match(audioLineRegex);
+    if(matches === null) {
+      return 0;
+    } else {
+      return matches.length;
+    }
+  }
+
+  function countVideoLine(sdp) {
+    const matches = sdp.match(videoLineRegex);
+    if(matches === null) {
+      return 0;
+    } else {
+      return matches.length;
+    }
+  }
+
+  function similarMediaDescriptions(sdp1, sdp2) {
+    if(sdp1 === sdp2) {
+      return true;
+    } else if(countAudioLine(sdp1) !== countAudioLine(sdp2)) {
+      return false;
+    } else if(countVideoLine(sdp1) !== countVideoLine(sdp2)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   function assert_defined(object) {
     if(object === undefined || object === null)
       assert_unreached('object must not be undefined or null');
   }
 
-  function assert_equal_sdp(sdp1, sdp2) {
+  function assert_similar_sdp(sdp1, sdp2) {
     assert_defined(sdp1);
     assert_defined(sdp2);
     assert_equals(sdp1.type, sdp2.type);
-    assert_equals(sdp1.sdp, sdp2.sdp);
+
+    // We can't do string comparison to the SDP content,
+    // because RTCPeerConnection may return SDP that is
+    // slightly modified from what is given to it due to
+    // ice candidate events or serialization.
+    // To hack around this, if the SDP strings are not
+    // equal, we simply count the media description lines
+    // and if they are the same, we assume it is the same.
+    assert_true(similarMediaDescriptions(sdp1.sdp, sdp2.sdp));
   }
 
   function createOfferAndSetLocal(pc, options) {
@@ -69,8 +110,8 @@
     return createOfferAndSetLocal(pc)
     .then(offer => {
       assert_equals(pc.signalingState, 'have-local-offer');
-      assert_equal_sdp(pc.localDescription, offer);
-      assert_equal_sdp(pc.pendingLocalDescription, offer);
+      assert_similar_sdp(pc.localDescription, offer);
+      assert_similar_sdp(pc.pendingLocalDescription, offer);
       assert_equals(pc.currentLocalDescription, null);
     });
   }, 'Create and set offer');
@@ -82,8 +123,8 @@
       pc.setLocalDescription({ type: 'offer' })
       .then(() => {
         assert_equals(pc.signalingState, 'have-local-offer');
-        assert_equal_sdp(pc.localDescription, offer);
-        assert_equal_sdp(pc.pendingLocalDescription, offer);
+        assert_similar_sdp(pc.localDescription, offer);
+        assert_similar_sdp(pc.pendingLocalDescription, offer);
         assert_equals(pc.currentLocalDescription, null);
       }));
   }, 'Create and set default offer');
@@ -108,13 +149,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc.signalingState, 'have-local-offer');
-
-        // TODO: Fix race condition when comparing
-        // as pc will trigger ice candidate gathering on
-        // setLocalDescription and modify its sdp when
-        // ice candidates become available
-        assert_equal_sdp(pc.localDescription, offer2);
-        assert_equal_sdp(pc.pendingLocalDescription, offer2);
+        assert_similar_sdp(pc.localDescription, offer2);
+        assert_similar_sdp(pc.pendingLocalDescription, offer2);
         assert_equals(pc.currentLocalDescription, null);
       }));
   }, 'Can create and set offer multiple times');
@@ -126,8 +162,8 @@
     return createOfferAndSetRemote(pc1, pc2)
     .then(offer => {
       assert_equals(pc2.signalingState, 'have-remote-offer');
-      assert_equal_sdp(pc2.remoteDescription, offer);
-      assert_equal_sdp(pc2.pendingRemoteDescription, offer);
+      assert_similar_sdp(pc2.remoteDescription, offer);
+      assert_similar_sdp(pc2.pendingRemoteDescription, offer);
       assert_equals(pc2.localRemoteDescription, null);
     });
   }, 'Create and set remote offer');
@@ -142,8 +178,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc2.signalingState, 'have-remote-offer');
-        assert_equal_sdp(pc2.remoteDescription, offer2);
-        assert_equal_sdp(pc2.pendingRemoteDescription, offer2);
+        assert_similar_sdp(pc2.remoteDescription, offer2);
+        assert_similar_sdp(pc2.pendingRemoteDescription, offer2);
         assert_equals(pc2.currentRemoteDescription, null);
       }));
   }, 'Can set remote description multiple times');
@@ -175,11 +211,11 @@
     return createAnswerAndSetLocal(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc2.signalingState, 'stable');
-      assert_equal_sdp(pc2.localDescription, answer);
-      assert_equal_sdp(pc2.remoteDescription, offer);
+      assert_similar_sdp(pc2.localDescription, answer);
+      assert_similar_sdp(pc2.remoteDescription, offer);
 
-      assert_equal_sdp(pc2.currentLocalDescription, answer);
-      assert_equal_sdp(pc2.currentRemoteDescription, offer);
+      assert_similar_sdp(pc2.currentLocalDescription, answer);
+      assert_similar_sdp(pc2.currentRemoteDescription, offer);
 
       assert_equals(pc2.pendingLocalDescription, null);
       assert_equals(pc2.pendingRemoteDescription, null);
@@ -193,11 +229,11 @@
     return createAnswerAndSetRemote(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc1.signalingState, 'stable');
-      assert_equal_sdp(pc1.localDescription, offer);
-      assert_equal_sdp(pc1.remoteDescription, answer);
+      assert_similar_sdp(pc1.localDescription, offer);
+      assert_similar_sdp(pc1.remoteDescription, answer);
 
-      assert_equal_sdp(pc1.currentLocalDescription, offer);
-      assert_equal_sdp(pc1.currentRemoteDescription, answer);
+      assert_similar_sdp(pc1.currentLocalDescription, offer);
+      assert_similar_sdp(pc1.currentRemoteDescription, answer);
 
       assert_equals(pc1.pendingLocalDescription, null);
       assert_equals(pc1.pendingRemoteDescription, null);
@@ -250,6 +286,56 @@
       promise_rejects(t, 'InvalidStateError',
         pc2.setRemoteDescription({ type: 'answer', sdp: offer.sdp })));
   }, 'Cannot set remote answer from have-remote-offer state');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection;
+
+    return pc.createOffer({ offerToReceiveAudio: true })
+    .then(offer1 => {
+      assert_greater_than(countAudioLine(offer1.sdp), 0);
+
+      // The first createOffer implicitly calls addTransceiver('audio'),
+      // so all following offers will also have audio media section
+      // in their SDP.
+      return pc.createOffer({ offerToReceiveAudio: false })
+      .then(offer2 => {
+        assert_greater_than(countAudioLine(offer2.sdp), 0);
+      })
+    });
+  }, 'Create with offer to receive audio');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection;
+
+    return pc.createOffer({ offerToReceiveVideo: true })
+    .then(offer1 => {
+      assert_greater_than(countVideoLine(offer1.sdp), 0);
+
+      return pc.createOffer({ offerToReceiveVideo: false })
+      .then(offer2 => {
+        assert_greater_than(countVideoLine(offer2.sdp), 0);
+      })
+    });
+  }, 'Create with offer to receive video');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection;
+
+    return pc.createOffer({
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: false
+    }).then(offer1 => {
+      assert_greater_than(countAudioLine(offer1.sdp), 0);
+
+      return pc.createOffer({
+        offerToReceiveAudio: false,
+        offerToReceiveVideo: true
+      }).then(offer2 => {
+        assert_greater_than(countAudioLine(offer2.sdp), 0);
+        assert_greater_than(countVideoLine(offer2.sdp), 0);
+      })
+    });
+  }, 'Create with offer to receive audio then video');
 
   // TODO: Add tests for rollback, provisional offer/answer, etc
 

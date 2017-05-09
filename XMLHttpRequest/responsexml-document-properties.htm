@@ -58,8 +58,20 @@
         client.open("GET", "resources/redirect.py?location=base.xml");
         client.send();
         client.onload = t.step_func_done(() => {
-          assert_equals(client.responseXML.URL, new URL('resources/base.xml', location.href).href);
+          const localResponseURL = new URL('resources/base.xml', location.href).href;
+          assert_equals(client.responseXML.URL, localResponseURL);
           assert_equals(client.responseXML.baseURI, 'https://example.com/');
+          client.responseXML.documentElement.remove();
+          assert_equals(client.responseXML.baseURI, localResponseURL);
+          const newBase = document.createElement("base"),
+                newBaseURL = "https://elsewhere.example/";
+          newBase.href = "https://elsewhere.example/";
+          client.responseXML.appendChild(newBase);
+          assert_equals(client.responseXML.baseURI, newBaseURL);
+          newBase.remove();
+          document.head.appendChild(newBase);
+          assert_equals(client.responseXML.baseURI, localResponseURL);
+          newBase.remove();
         });
       }, "Test document URL properties of document with <base> after redirect");
 

@@ -164,6 +164,8 @@ ATTAcomm.prototype = {
         this.setupManualTest("No response from ATTA at " + this.ATTAuri);
       } else if (res.status === 200 ) {
         this.setupManualTest(res.message);
+      } else if (res.statusText === "No response from ATTA") {
+        this.setupManualTest("");
       } else {
         this.setupManualTest("Error from ATTA: " + res.status + ": " + res.statusText);
       }

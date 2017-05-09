@@ -20,27 +20,31 @@
 <script>
   setup({explicit_timeout: true});
   var startPresentation = function () {
+
     document.getElementById('presentBtn').disabled = true;
-    async_test(function(t) {
+
+    promise_test(function (t) {
       var request = new PresentationRequest(presentationUrls);
-      request.start()
-        .then(function(connection) {
+
+      return request.start()
+        .then(function (connection) {
 
           // Enable timeout again, cause no user action is needed from here.
-          t.step_timeout(function() {
+          t.step_timeout(function () {
               t.force_timeout();
               t.done();
           }, 5000);
 
           assert_true(connection instanceof PresentationConnection);
-          connection.onconnect = t.step_func_done(function() {
+
+          connection.onconnect = function () {
             assert_equals(connection.state, "connected");
             connection.terminate();
-          });
-      })
-      .catch(function(ex) {
-        assert_unreached(ex.name + ":" + ex.message);
+          };
+
       });
+
     }, "the onconnect is fired and the connection state is connected");
+
   }
 </script>

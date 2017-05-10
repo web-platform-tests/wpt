@@ -70,27 +70,18 @@ class HTMLItem(pytest.Item, pytest.Collector):
         indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
-        # Stack traces are implementation-defined
-        actual['status'] = self._scrub_stack(actual['status'])
-        actual['tests'] = [self._scrub_stack(test) for test in actual['tests']]
-        actual['tests'] = [self._scrub_index(test) for test in actual['tests']]
-        actual['tests'].sort(key=lambda test_obj: test_obj.get('name'))
+        summarized = {}
+        summarized[u'summarized_status'] = self._summarize_status(actual['status'])
+        summarized[u'summarized_tests'] = [
+            self._summarize_test(test) for test in actual['tests']]
+        summarized[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
+        summarized[u'type'] = actual['type']
 
-        assert actual == self.expected
+        assert summarized == self.expected
 
     @staticmethod
     def _assert_sequence(nums):
         assert nums == range(1, nums[-1] + 1)
-
-    @staticmethod
-    def _scrub_index(test_obj):
-        copy = dict(test_obj)
-
-        assert isinstance(copy.get('index'), int)
-
-        copy['index'] = u'(non-deterministic)'
-
-        return copy
 
     @staticmethod
     def _scrub_stack(test_obj):
@@ -102,3 +93,39 @@ class HTMLItem(pytest.Item, pytest.Collector):
             copy['stack'] = u'(implementation-defined)'
 
         return copy
+
+    @staticmethod
+    def _expand_status(full):
+        summarized = dict(full)
+
+        del summarized['status']
+
+        for key, value in full.iteritems():
+            if key != key.upper() or not isinstance(value, int):
+                continue
+
+            del summarized[key]
+
+            if full['status'] == value:
+                summarized[u'status_string'] = key
+
+        return summarized
+
+    @staticmethod
+    def _summarize_test(test_obj):
+        summarized = dict(test_obj)
+
+        del summarized['index']
+
+        if 'phases' in test_obj:
+            for key, value in test_obj['phases'].iteritems():
+                if test_obj['phase'] == value:
+                    summarized['phase_string'] = key
+            del summarized['phases']
+            del summarized['phase']
+
+        return HTMLItem._expand_status(HTMLItem._scrub_stack(summarized))
+
+    @staticmethod
+    def _summarize_status(status_obj):
+        return HTMLItem._expand_status(HTMLItem._scrub_stack(status_obj))

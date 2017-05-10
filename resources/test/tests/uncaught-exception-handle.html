@@ -14,25 +14,17 @@ throw new Error("Example Error");
 </script>
 <script type="text/json" id="expected">
 {
-  "status": {
-    "status": 1,
-    "OK": 0,
-    "TIMEOUT": 2,
-    "ERROR": 1,
+  "summarized_status": {
+    "status_string": "ERROR",
     "message": "Error: Example Error",
     "stack": "(implementation-defined)"
   },
-  "tests": [
+  "summarized_tests": [
     {
-      "status": 3,
-      "index": "(non-deterministic)",
+      "status_string": "NOTRUN",
       "name": "This should show a harness status of 'Error' and a test status of 'Not Run'",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     }
   ],

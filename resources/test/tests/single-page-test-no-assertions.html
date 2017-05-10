@@ -7,25 +7,17 @@ done();
 </script>
 <script type="text/json" id="expected">
 {
-  "status": {
-    "status": 0,
-    "OK": 0,
-    "TIMEOUT": 2,
-    "ERROR": 1,
+  "summarized_status": {
+    "status_string": "OK",
     "message": null,
     "stack": null
   },
-  "tests": [
+  "summarized_tests": [
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Example single page test with no asserts",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     }
   ],

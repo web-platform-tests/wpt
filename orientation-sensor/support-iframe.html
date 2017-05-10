@@ -1,0 +1,10 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<script>
+try {
+  let sensor = new AbsoluteOrientationSensor();
+  parent.postMessage("sensor can be constructed within iframes", '*');
+} catch (e) {
+  parent.postMessage(e.name, '*');
+}
+</script>

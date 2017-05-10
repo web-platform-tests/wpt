@@ -1,0 +1,121 @@
+ <!DOCTYPE html>
+<meta charset="utf-8">
+<title>AbsoluteOrientationSensor Test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://w3c.github.io/orientation-sensor/">
+<link rel="help" href="https://w3c.github.io/sensors/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/generic-sensor/generic-sensor-tests.js"></script>
+<div id="log"></div>
+<iframe src="support-iframe.html" id="frame" style="display:none" sandbox="allow-scripts">
+</iframe>
+<script>
+
+function create_matrix(quat) {
+  let X = quat[0];
+  let Y = quat[1];
+  let Z = quat[2];
+  let W = quat[3];
+  let mat = new Array(
+    1-2*Y*Y-2*Z*Z, 2*X*Y-2*Z*W, 2*X*Z+2*W*Y, 0,
+    2*X*Y+2*W*Z, 1-2*X*X-2*Z*Z, 2*Y*Z-2*W*X, 0,
+    2*X*Z-2*W*Y, 2*Y*Z+2*W*X, 1-2*X*X-2*Y*Y, 0,
+    0, 0, 0, 1
+  );
+  return mat;
+}
+
+//IEEE 754(4 bytes float) only supports 7 decimal places
+//restrict Float32Array to 7 decimal digits precision
+function array_to_7_decimal(arr) {
+  let accurate_arr = new Array();
+  for (let i = 0; i < arr.length; i++) {
+    accurate_arr[i] = arr[i].toFixed(7);
+  }
+  return accurate_arr;
+}
+
+async_test(t => {
+  let sensor = new AbsoluteOrientationSensor();
+  sensor.onchange = t.step_func_done(() => {
+    assert_equals(sensor.quaternion.length, 4);
+    assert_true(sensor.quaternion instanceof Array);
+    sensor.stop();
+  });
+  sensor.onerror = t.step_func_done(unreached);
+  sensor.start();
+}, "sensor.quaternion return a four-element FrozenArray");
+
+async_test(t => {
+  let sensor = new AbsoluteOrientationSensor();
+  sensor.onerror = t.step_func_done(unreached);
+  //Throws if no orientation data available.
+  assert_throws({ name: 'NotReadableError' }, () => sensor.populateMatrix(new Float32Array(16)));
+  //Throws with insufficient buffer space.
+  assert_throws({ name: 'TypeError' }, () => sensor.populateMatrix(new Float32Array(15)));
+  //Throws with invalid parameter.
+  assert_throws({ name: 'TypeError' }, () => sensor.populateMatrix("not RotationMatrixType parameter"));
+  t.done();
+}, "Test exceptions when invoking sensor.populateMatrix");
+
+async_test(t => {
+  let sensor = new AbsoluteOrientationSensor();
+  let mat_32 = new Float32Array(16);
+  sensor.onchange = t.step_func_done(() => {
+    let quat = sensor.quaternion;
+    sensor.populateMatrix(mat_32);
+    let mat_expect = create_matrix(quat);
+    assert_array_equals(array_to_7_decimal(mat_32), array_to_7_decimal(mat_expect));
+    sensor.stop();
+  });
+  sensor.onerror = t.step_func_done(unreached);
+  sensor.start();
+}, "the data produced from Float32Array populateMatrix function is correct");
+
+async_test(t => {
+  let sensor = new AbsoluteOrientationSensor();
+  let mat_64 = new Float64Array(16);
+  sensor.onchange = t.step_func_done(() => {
+    let quat = sensor.quaternion;
+    sensor.populateMatrix(mat_64);
+    let mat_expect = create_matrix(quat);
+    assert_array_equals(mat_64, mat_expect);
+    sensor.stop();
+  });
+  sensor.onerror = t.step_func_done(unreached);
+  sensor.start();
+}, "the data produced from Float64Array populateMatrix function is correct");
+
+async_test(t => {
+  let sensor = new AbsoluteOrientationSensor();
+  let mat_dom = new DOMMatrix();
+  sensor.onchange = t.step_func_done(() => {
+    let quat = sensor.quaternion;
+    sensor.populateMatrix(mat_dom);
+    let mat_expect = create_matrix(quat);
+    assert_equals(mat_dom.m11, mat_expect[0]);
+    assert_equals(mat_dom.m12, mat_expect[1]);
+    assert_equals(mat_dom.m13, mat_expect[2]);
+    assert_equals(mat_dom.m14, mat_expect[3]);
+    assert_equals(mat_dom.m21, mat_expect[4]);
+    assert_equals(mat_dom.m22, mat_expect[5]);
+    assert_equals(mat_dom.m23, mat_expect[6]);
+    assert_equals(mat_dom.m24, mat_expect[7]);
+    assert_equals(mat_dom.m31, mat_expect[8]);
+    assert_equals(mat_dom.m32, mat_expect[9]);
+    assert_equals(mat_dom.m33, mat_expect[10]);
+    assert_equals(mat_dom.m34, mat_expect[11]);
+    assert_equals(mat_dom.m41, mat_expect[12]);
+    assert_equals(mat_dom.m42, mat_expect[13]);
+    assert_equals(mat_dom.m43, mat_expect[14]);
+    assert_equals(mat_dom.m44, mat_expect[15]);
+    sensor.stop();
+  });
+  sensor.onerror = t.step_func_done(unreached);
+  sensor.start();
+}, "the data produced from DOMMatrix populateMatrix function is correct");
+
+runGenericSensorTests(AbsoluteOrientationSensor);
+
+</script>

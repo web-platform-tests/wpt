@@ -1,12 +1,13 @@
 let unreached = event => {
-    assert_unreached(event.error.name + ":" + event.error.message);
+  assert_unreached(event.error.name + ":" + event.error.message);
 };
 
 let properties = {
-    'AmbientLightSensor' : ['timestamp', 'illuminance'],
-    'Accelerometer' : ['timestamp', 'x', 'y', 'z'],
-    'Gyroscope' : ['timestamp', 'x', 'y', 'z'],
-    'Magnetometer' : ['timestamp', 'x', 'y', 'z']
+  'AmbientLightSensor' : ['timestamp', 'illuminance'],
+  'Accelerometer' : ['timestamp', 'x', 'y', 'z'],
+  'Gyroscope' : ['timestamp', 'x', 'y', 'z'],
+  'Magnetometer' : ['timestamp', 'x', 'y', 'z'],
+  'AbsoluteOrientationSensor' : ['timestamp', 'quaternion']
 };
 
 function assert_reading_not_null(sensor) {

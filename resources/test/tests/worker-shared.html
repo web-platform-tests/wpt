@@ -25,121 +25,58 @@ fetch_tests_from_worker(new SharedWorker("worker.js",
 </script>
 <script type="text/json" id="expected">
 {
-  "status": {
-    "status": 2,
-    "OK": 0,
-    "TIMEOUT": 2,
-    "ERROR": 1,
+  "summarized_status": {
+    "status_string": "TIMEOUT",
     "message": null,
     "stack": null
   },
-  "tests": [
+  "summarized_tests": [
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Browser supports SharedWorkers",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "FAIL": 1,
-      "NOTRUN": 3,
-      "PASS": 0,
-      "TIMEOUT": 2,
-      "index": "(non-deterministic)",
       "message": {},
       "name": "Worker async_test that completes successfully",
-      "phase": 3,
-      "phases": {
-        "COMPLETE": 3,
-        "HAS_RESULT": 2,
-        "INITIAL": 0,
-        "STARTED": 1
-      },
+      "phase_string": "COMPLETE",
       "properties": {},
       "stack": "(implementation-defined)",
-      "status": 0
+      "status_string": "PASS"
     },
     {
-      "FAIL": 1,
-      "NOTRUN": 3,
-      "PASS": 0,
-      "TIMEOUT": 2,
-      "index": "(non-deterministic)",
       "message": {},
       "name": "Worker test that completes successfully",
-      "phase": 3,
-      "phases": {
-        "COMPLETE": 3,
-        "HAS_RESULT": 2,
-        "INITIAL": 0,
-        "STARTED": 1
-      },
+      "phase_string": "COMPLETE",
       "properties": {},
       "stack": "(implementation-defined)",
-      "status": 0
+      "status_string": "PASS"
     },
     {
-      "FAIL": 1,
-      "NOTRUN": 3,
-      "PASS": 0,
-      "TIMEOUT": 2,
-      "index": "(non-deterministic)",
       "message": {},
       "name": "Worker test that doesn't run ('NOT RUN')",
-      "phase": 3,
-      "phases": {
-        "COMPLETE": 3,
-        "HAS_RESULT": 2,
-        "INITIAL": 0,
-        "STARTED": 1
-       },
+      "phase_string": "COMPLETE",
       "properties": {},
       "stack": "(implementation-defined)",
-      "status": 3
+      "status_string": "NOTRUN"
     },
     {
-      "FAIL": 1,
-      "NOTRUN": 3,
-      "PASS": 0,
-      "TIMEOUT": 2,
-      "index": "(non-deterministic)",
       "message": "assert_true: Failing test expected true got false",
       "name": "Worker test that fails ('FAIL')",
-      "phase": 3,
-      "phases": {
-        "COMPLETE": 3,
-        "HAS_RESULT": 2,
-        "INITIAL": 0,
-        "STARTED": 1
-      },
+      "phase_string": "COMPLETE",
       "properties": {},
       "stack": "(implementation-defined)",
-      "status": 1
+      "status_string": "FAIL"
     },
     {
-      "FAIL": 1,
-      "NOTRUN": 3,
-      "PASS": 0,
-      "TIMEOUT": 2,
-      "index": "(non-deterministic)",
       "message": "Test timed out",
       "name": "Worker test that times out ('TIMEOUT')",
-      "phase": 3,
-      "phases": {
-        "COMPLETE": 3,
-        "HAS_RESULT": 2,
-        "INITIAL": 0,
-        "STARTED": 1
-      },
+      "phase_string": "COMPLETE",
       "properties": {},
       "stack": "(implementation-defined)",
-      "status": 2
+      "status_string": "TIMEOUT"
     }
   ],
   "type": "complete"

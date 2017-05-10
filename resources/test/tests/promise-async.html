@@ -119,97 +119,59 @@ test(function() {
 </script>
 <script type="text/json" id="expected">
 {
-  "status": {
-    "status": 0,
-    "OK": 0,
-    "TIMEOUT": 2,
-    "ERROR": 1,
+  "summarized_status": {
+    "status_string": "OK",
     "message": null,
     "stack": null
   },
-  "tests": [
+  "summarized_tests": [
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Promise rejection",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Promise resolution",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "status": 1,
-      "index": "(non-deterministic)",
+      "status_string": "FAIL",
       "name": "Promises and test assertion failures (should fail)",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": "assert_true: This failure is expected expected true got false",
-      "NOTRUN": 3,
       "stack": "(implementation-defined)"
     },
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Promises are supported in your browser",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Promises resolution chaining",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Use of step_func with Promises",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     },
     {
-      "status": 1,
-      "index": "(non-deterministic)",
+      "status_string": "FAIL",
       "name": "Use of unreached_func with Promises (should fail)",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": "assert_unreached: This failure is expected Reached unreachable code",
-      "NOTRUN": 3,
       "stack": null
     }
   ],

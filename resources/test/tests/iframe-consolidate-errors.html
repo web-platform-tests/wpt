@@ -25,25 +25,17 @@ child context.</p>
 </script>
 <script type="text/json" id="expected">
 {
-  "status": {
-    "status": 1,
-    "OK": 0,
-    "TIMEOUT": 2,
-    "ERROR": 1,
+  "summarized_status": {
+    "status_string": "ERROR",
     "message": "Error in remote: Error: Example Error",
     "stack": null
   },
-  "tests": [
+  "summarized_tests": [
     {
-      "status": 0,
-      "index": "(non-deterministic)",
+      "status_string": "PASS",
       "name": "Test executing in parent context",
       "properties": {},
-      "TIMEOUT": 2,
-      "PASS": 0,
-      "FAIL": 1,
       "message": null,
-      "NOTRUN": 3,
       "stack": null
     }
   ],

@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Download a cross origin URL (that redirects to that origin) that replies without a Content-Disposition header from an a element.</title>
+<link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#downloading-resources">
+<link rel="help" href="https://github.com/whatwg/html/issues/2622">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+setup({explicit_timeout: true});
+
+if (location.search != "?pipe=sub")
+  location = location.href + "?pipe=sub";
+</script>
+
+<p>Download a cross origin URL (that redirects to that origin) that replies without a Content-Disposition header from an a element.</p>
+
+<form>
+  <ol>
+    <li>
+      <a href="http://{{domains[www1]}}:{{location[port]}}/html/semantics/downloading-resources/resources/regular.html?pipe=status(302)|header(Location,http://{{domains[www1]}}:{{location[port]}}/html/semantics/downloading-resources/resources/regular.html)" download="foo.html">Click this link</a>
+    </li>
+    <li>
+        Did a file get downloaded?
+        <input type="radio" id="yes" name="downloaded" value="yes">
+        <label for="yes">Yes</label>
+        <input type="radio" id="no" name="downloaded" value="no">
+        <label for="yes">No</label>
+    </li>
+    <li>
+      <button type="submit">Check test result</button>
+    </li>
+  </ol>
+</form>
+
+<script>
+"use strict";
+
+const link = document.querySelector("a");
+link.addEventListener("click", () => {
+  link.setAttribute("clicked", "true");
+});
+
+const button = document.querySelector("button");
+
+button.addEventListener("click", (event) => {
+  event.preventDefault();
+  const clicked = link.hasAttribute("clicked");
+  assert_true(clicked, "Please click on the link first.");
+  const yes = document.querySelector("input#yes").checked;
+  const no = document.querySelector("input#no").checked;
+  assert_true(yes || no, "Please indicate whether a file was downloaded.");
+  assert_true(no, "Download should not work");
+  done();
+});
+</script>

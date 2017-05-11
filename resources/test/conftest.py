@@ -95,36 +95,36 @@ class HTMLItem(pytest.Item, pytest.Collector):
         return copy
 
     @staticmethod
-    def _expand_status(full):
-        summarized = dict(full)
-
-        del summarized['status']
-
-        for key, value in full.iteritems():
+    def _expand_status(status_obj):
+        for key, value in [item for item in status_obj.items()]:
+            # In "status" and "test" objects, the "status" value enum
+            # definitions are interspersed with properties for unrelated
+            # metadata. The following condition is a best-effort attempt to
+            # ignore non-enum properties.
             if key != key.upper() or not isinstance(value, int):
                 continue
 
-            del summarized[key]
+            del status_obj[key]
 
-            if full['status'] == value:
-                summarized[u'status_string'] = key
+            if status_obj['status'] == value:
+                status_obj[u'status_string'] = key
 
-        return summarized
+        del status_obj['status']
+
+        return status_obj
 
     @staticmethod
     def _summarize_test(test_obj):
-        summarized = dict(test_obj)
-
-        del summarized['index']
+        del test_obj['index']
 
         if 'phases' in test_obj:
-            for key, value in test_obj['phases'].iteritems():
+            for key, value in [item for item in test_obj['phases'].items()]:
                 if test_obj['phase'] == value:
-                    summarized['phase_string'] = key
-            del summarized['phases']
-            del summarized['phase']
+                    test_obj['phase_string'] = key
+            del test_obj['phases']
+            del test_obj['phase']
 
-        return HTMLItem._expand_status(HTMLItem._scrub_stack(summarized))
+        return HTMLItem._expand_status(HTMLItem._scrub_stack(test_obj))
 
     @staticmethod
     def _summarize_status(status_obj):

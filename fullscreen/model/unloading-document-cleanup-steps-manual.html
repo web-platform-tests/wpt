@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Unloading a document in nested fullscreen</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../trusted-click.js"></script>
+<script>
+async_test(t => {
+  // Open a new window, we can't navigate this one while the test is running.
+  const win = window.open();
+  t.add_cleanup(() => win.close());
+  const doc = win.document;
+  doc.body.innerHTML = '<div><div></div></div>';
+  const outer = doc.body.firstChild;
+  const inner = outer.firstChild;
+  trusted_request(t, outer);
+  doc.onfullscreenchange = t.step_func(() => {
+    assert_equals(doc.fullscreenElement, outer);
+    trusted_request(t, inner);
+    doc.onfullscreenchange = t.step_func(() => {
+      // Expect no further fullscreenchange events.
+      doc.onfullscreenchange = t.unreached_func("fullscreenchange event");
+      assert_equals(doc.fullscreenElement, inner);
+      // |doc| is now in nested fullscreen. Navigating |win| should cause |doc|
+      // to be unloaded, exiting fullscreen, and a new document to be loaded.
+      win.location = 'about:blank';
+      // The fullscreen element should not change synchronusly.
+      assert_equals(doc.fullscreenElement, inner);
+      win.onload = t.step_func(() => {
+        assert_not_equals(doc, win.document);
+        assert_equals(doc.fullscreenElement, null);
+        t.done();
+      });
+    });
+  });
+  doc.onfullscreenerror = t.unreached_func("fullscreenerror event");
+});
+</script>

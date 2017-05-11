@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<title>Geometry Interfaces: DOMMatrixInit validate and fixup</title>
+<link rel="help" href="https://drafts.fxtf.org/geometry/#dommatrixinit-dictionary">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// This formats dict as a string suitable as test name.
+// format_value() is provided by testharness.js,
+// which also preserves sign for -0.
+function format_dict(dict) {
+  const props = [];
+  for (let prop in dict) {
+    props.push(`${prop}: ${format_value(dict[prop])}`);
+  }
+  return `{${props.join(', ')}}`;
+}
+
+[
+  {a: 1, m11: 2},
+  {b: 0, m12: -0},
+  {c: Infinity, m21: -Infinity},
+  {d: 0, m22: NaN},
+  {e: 1, m41: 1.00000001},
+  {f: 0, m42: Number.MIN_VALUE},
+  {m13: 1, is2D: true},
+  {m14: 1, is2D: true},
+  {m23: 1, is2D: true},
+  {m24: 1, is2D: true},
+  {m31: 1, is2D: true},
+  {m32: 1, is2D: true},
+  {m33: 0, is2D: true},
+  {m34: 1, is2D: true},
+  {m43: 1, is2D: true},
+  {m44: 0, is2D: true},
+].forEach(dict => {
+  test(() => {
+    assert_true('fromMatrix' in DOMMatrix, 'fromMatrix should exist');
+    assert_throws(new TypeError(), () => DOMMatrix.fromMatrix(dict));
+  }, `${format_dict(dict)} (invalid)`);
+});
+
+[
+  {},
+  {is2D: undefined}, // undefined means the dictionary member is not present
+  {a: 1, m11: 1},
+  {b: 0, m12: undefined},
+  {c: -0, m21: -0},
+  {d: Infinity, m22: Infinity},
+  {e: -Infinity, m41: -Infinity},
+  {f: NaN, m42: NaN},
+  {f: 0, m42: null}, // null is converted to 0
+  {a:2},
+  {b:2},
+  {c:2},
+  {d:2},
+  {e:2},
+  {f:2},
+  {m11:2},
+  {m12:2},
+  {m21:2},
+  {m22:2},
+  {m41:2},
+  {m42:2},
+  {m13: 0, is2D: true},
+  {m14: 0, is2D: true},
+  {m23: 0, is2D: true},
+  {m24: 0, is2D: true},
+  {m31: 0, is2D: true},
+  {m32: 0, is2D: true},
+  {m33: 1, is2D: true},
+  {m34: 0, is2D: true},
+  {m43: 0, is2D: true},
+  {m44: 1, is2D: true},
+  {is2D: true},
+].forEach(dict => {
+  test(() => {
+    const matrix = DOMMatrix.fromMatrix(dict);
+    for (let prop in dict) {
+      if (dict[prop] !== undefined && dict[prop] !== null) {
+        assert_equals(matrix[prop], dict[prop], prop);
+      }
+      assert_true(matrix.is2D, 'is2D');
+    }
+  }, `${format_dict(dict)} (2d)`);
+});
+
+[
+  {m13: 1, is2D: false},
+  {m14: 1, is2D: false},
+  {m23: 1, is2D: false},
+  {m24: 1, is2D: false},
+  {m31: 1, is2D: false},
+  {m32: 1, is2D: false},
+  {m33: 0, is2D: false},
+  {m34: 1, is2D: false},
+  {m43: 1, is2D: false},
+  {m44: 0, is2D: false},
+  {m13: 1},
+  {m14: 1},
+  {m23: 1},
+  {m24: 1},
+  {m31: 1},
+  {m32: 1},
+  {m33: 0},
+  {m34: 1},
+  {m43: 1},
+  {m44: 0},
+  {is2D: false},
+  {is2D: null}, // null is converted to false
+].forEach(dict => {
+  test(() => {
+    const matrix = DOMMatrix.fromMatrix(dict);
+    for (let prop in dict) {
+      if (dict[prop] !== undefined && dict[prop] !== null) {
+        assert_equals(matrix[prop], dict[prop], prop);
+      }
+      assert_false(matrix.is2D, 'is2D');
+    }
+  }, `${format_dict(dict)} (3d)`);
+});
+</script>

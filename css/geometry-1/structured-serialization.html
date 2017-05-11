@@ -11,10 +11,10 @@ function clone(obj) {
     channel.port1.postMessage(obj);
   });
 }
-function defineThrowingGetters(object, attrs, message) {
+function defineThrowingGetters(object, attrs) {
   for (let attr of attrs) {
     Object.defineProperty(object, attr, {
-      get: () => assert_unreached(`getter for ${attr} ${message}`)
+      get: () => assert_unreached(`getter for ${attr}`)
     });
   }
 }
@@ -62,9 +62,12 @@ function defineThrowingGetters(object, attrs, message) {
 
   promise_test(t => {
     const object = new self[constr]();
-    defineThrowingGetters(object, attrs, 'should not be copied');
+    // The custom throwing getter on object should not be copied to other.
+    defineThrowingGetters(object, attrs);
     return clone(object).then(other => {
       for (let attr of attrs) {
+        // This should call the standard getter, and therefore not throw.
+        // If this were to call the throwing getter defined on object, the test would fail.
         other[attr];
       }
       t.done();

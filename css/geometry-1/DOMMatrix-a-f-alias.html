@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Geometry Interfaces: DOMMatrix and DOMMatrixReadOnly a-f alias attributes</title>
+<link rel="help" href="https://drafts.fxtf.org/geometry/#DOMMatrix">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function defineThrowingGetter(object, attribute) {
+   Object.defineProperty(object, attribute, {
+     get: () => assert_unreached(`getter for ${attribute}`)
+   });
+}
+
+["DOMMatrix", "DOMMatrixReadOnly"].forEach((constr) => {
+  [
+    ["a", "m11"],
+    ["b", "m12"],
+    ["c", "m21"],
+    ["d", "m22"],
+    ["e", "m41"],
+    ["f", "m42"],
+  ].forEach(([aliasAttribute, mAttribute]) => {
+     test(() => {
+       const matrix = new self[constr]([0, 0, 0, 0, 0, 0]);
+       defineThrowingGetter(matrix, mAttribute);
+       assert_equals(matrix[aliasAttribute], 0);
+     }, `${constr} getting ${aliasAttribute} with throwing getter for ${mAttribute}`);
+
+     test(() => {
+       const matrix = new self[constr]([0, 0, 0, 0, 0, 0]);
+       defineThrowingGetter(matrix, aliasAttribute);
+       assert_equals(matrix[mAttribute], 0);
+     }, `${constr} getting ${mAttribute} with throwing getter for ${aliasAttribute}`);
+   });
+});
+</script>

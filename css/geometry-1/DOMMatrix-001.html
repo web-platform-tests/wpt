@@ -26,7 +26,7 @@
             m12: 0, m22: 2, m32: 0, m42: 10,
             m13: 0, m23: 0, m33: 1, m43: 0,
             m14: 0, m24: 0, m34: 0, m44: 1,
-            is2D: false,
+            is2D: true,
             isIdentity: false
         };
         ["DOMMatrix", "DOMMatrixReadOnly"].forEach(function(constr) {
@@ -56,16 +56,16 @@
             });
 
             test(function() {
-                var float32Array = new Float32Array(
+                var float32Array = new Float32Array([
                     2.0, 0.0, 0.0, 0.0,
                     0.0, 2.0, 0.0, 0.0,
                     0.0, 0.0, 1.0, 0.0,
-                    10.0, 10.0, 0.0, 1.0);
+                    10.0, 10.0, 0.0, 1.0]);
                 checkDOMMatrix(new self[constr](float32Array), scaleTranslate2D, false);
             }, `new ${constr}(float32Array) 16 elements`);
 
             test(function() {
-                var float32Array = new Float32Array(2.0, 0.0, 0.0, 2.0, 10.0, 10.0);
+                var float32Array = new Float32Array([2.0, 0.0, 0.0, 2.0, 10.0, 10.0]);
                 checkDOMMatrix(new self[constr](float32Array), scaleTranslate2D);
             }, `new ${constr}(float32Array) 6 elements`);
 
@@ -79,7 +79,7 @@
             }, `new ${constr}(float64Array) 16 elements`);
 
             test(function() {
-                var float64Array = new Float64Array(2.0, 0.0, 0.0, 2.0, 10.0, 10.0);
+                var float64Array = new Float64Array([2.0, 0.0, 0.0, 2.0, 10.0, 10.0]);
                 checkDOMMatrix(new self[constr](float64Array), scaleTranslate2D);
             }, `new ${constr}((float64Array) 6 elements`);
 
@@ -91,7 +91,8 @@
                 [2.0, 0.0, 0.0, 2.0, 10.0, 10.0],
             ].forEach(function(sequence) {
                 test(function() {
-                    checkDOMMatrix(new self[constr](sequence), scaleTranslate2D, false);
+                    checkDOMMatrix(new self[constr](sequence), scaleTranslate2D,
+                                   sequence.length == 6);
                 }, `new ${constr}(sequence) ${sequence.length} elements`);
             });
 

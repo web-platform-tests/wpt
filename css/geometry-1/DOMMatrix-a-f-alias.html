@@ -10,6 +10,12 @@ function defineThrowingGetter(object, attribute) {
    });
 }
 
+function defineThrowingSetter(object, attribute) {
+   Object.defineProperty(object, attribute, {
+     set: () => assert_unreached(`setter for ${attribute}`)
+   });
+}
+
 ["DOMMatrix", "DOMMatrixReadOnly"].forEach((constr) => {
   [
     ["a", "m11"],
@@ -30,6 +36,22 @@ function defineThrowingGetter(object, attribute) {
        defineThrowingGetter(matrix, aliasAttribute);
        assert_equals(matrix[mAttribute], 0);
      }, `${constr} getting ${mAttribute} with throwing getter for ${aliasAttribute}`);
+
+     if (constr === "DOMMatrix") {
+       test(() => {
+         const matrix = new self[constr]([0, 0, 0, 0, 0, 0]);
+         defineThrowingSetter(matrix, mAttribute);
+         matrix[aliasAttribute] = 1;
+         assert_equals(matrix[aliasAttribute], 1);
+       }, `${constr} setting ${aliasAttribute} with throwing setter for ${mAttribute}`);
+
+       test(() => {
+         const matrix = new self[constr]([0, 0, 0, 0, 0, 0]);
+         defineThrowingSetter(matrix, aliasAttribute);
+         matrix[mAttribute] = 1;
+         assert_equals(matrix[mAttribute], 1);
+       }, `${constr} setting ${mAttribute} with throwing setter for ${aliasAttribute}`);
+     }
    });
 });
 </script>

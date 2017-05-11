@@ -54,6 +54,8 @@ matrix:
         - SCRIPT=ci_stability.sh PRODUCT=chrome:unstable
     - python: 2.7
       env: TOXENV=py27 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
+      addons:
+        firefox: "55"
     - python: 3.5
       env: TOXENV=py35 HYPOTHESIS_PROFILE=ci SCRIPT=ci_unittest.sh
     - python: 3.6

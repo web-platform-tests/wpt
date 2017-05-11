@@ -2,11 +2,11 @@
 <title>RTCPeerConnection Set Description tests</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="text/javascript">
+<script>
   'use strict';
 
-  const audioLineRegex = /\r\nm=audio.+\r\n/g
-  const videoLineRegex = /\r\nm=video.+\r\n/g
+  const audioLineRegex = /\r\nm=audio.+\r\n/g;
+  const videoLineRegex = /\r\nm=video.+\r\n/g;
 
   function countAudioLine(sdp) {
     const matches = sdp.match(audioLineRegex);
@@ -38,16 +38,28 @@
     }
   }
 
-  function assert_defined(object) {
-    if(object === undefined || object === null)
-      assert_unreached('object must not be undefined or null');
+  // Assert that given object is either an
+  // RTCSessionDescription or RTCSessionDescriptionInit
+  function assert_is_session_description(sessionDesc) {
+    if(sessionDesc instanceof RTCSessionDescription) {
+      return;
+    }
+
+    assert_true(typeof(sessionDesc) === 'object',
+      'Expect sessionDescription to be either a RTCSessionDescription or an object');
+
+    assert_true(typeof(sessionDesc.type) === 'string',
+      'Expect sessionDescription.type to be a string');
+
+    assert_true(typeof(sessionDesc.type) === 'string',
+      'Expect sessionDescription.sdp to be a string');
   }
 
-  function isSimilarSdp(sdp1, sdp2) {
-    assert_defined(sdp1);
-    assert_defined(sdp2);
+  function isSimilarSessionDescription(sessionDesc1, sessionDesc2) {
+    assert_is_session_description(sessionDesc1);
+    assert_is_session_description(sessionDesc2);
 
-    if(sdp1.type !== sdp2.type) {
+    if(sessionDesc1.type !== sessionDesc2.type) {
       return false;
     } else {
       // We can't do string comparison to the SDP content,
@@ -57,16 +69,25 @@
       // To hack around this, if the SDP strings are not
       // equal, we simply count the media description lines
       // and if they are the same, we assume it is the same.
-      return similarMediaDescriptions(sdp1.sdp, sdp2.sdp);
+      return similarMediaDescriptions(sessionDesc1.sdp, sessionDesc2.sdp);
     }
+  }
+
+  function assert_session_desc_equals(sessionDesc1, sessionDesc2) {
+    assert_true(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
+      'Expect essential content in both session descriptions to be the same');
+  }
+
+  function assert_session_desc_not_equals(sessionDesc1, sessionDesc2) {
+    assert_false(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
+      'Expect essential content in both session descriptions to be different');
   }
 
   function createOfferAndSetLocal(pc, options) {
     return pc.createOffer(options)
-    .then(offer => {
-      return pc.setLocalDescription(offer)
-      .then(() => offer)
-    });
+    .then(offer =>
+      pc.setLocalDescription(offer)
+      .then(() => offer));
   }
 
   function createOfferAndSetRemote(pc1, pc2, options) {
@@ -97,24 +118,13 @@
       .then(() => [offer, answer]));
   }
 
-  test(t => {
-    const pc = new RTCPeerConnection;
-    assert_equals(pc.signalingState, 'stable');
-    assert_equals(pc.localDescription, null);
-    assert_equals(pc.currentLocalDescription, null);
-    assert_equals(pc.pendingLocalDescription, null);
-    assert_equals(pc.remoteDescription, null);
-    assert_equals(pc.currentRemoteDescription, null);
-    assert_equals(pc.pendingRemoteDescription, null);
-  }, 'Initial peer connection state');
-
   promise_test(t => {
     const pc = new RTCPeerConnection;
     return createOfferAndSetLocal(pc)
     .then(offer => {
       assert_equals(pc.signalingState, 'have-local-offer');
-      assert_true(isSimilarSdp(pc.localDescription, offer));
-      assert_true(isSimilarSdp(pc.pendingLocalDescription, offer));
+      assert_session_desc_equals(pc.localDescription, offer);
+      assert_session_desc_equals(pc.pendingLocalDescription, offer);
       assert_equals(pc.currentLocalDescription, null);
     });
   }, 'Create and set offer');
@@ -126,11 +136,11 @@
       pc.setLocalDescription({ type: 'offer' })
       .then(() => {
         assert_equals(pc.signalingState, 'have-local-offer');
-        assert_true(isSimilarSdp(pc.localDescription, offer));
-        assert_true(isSimilarSdp(pc.pendingLocalDescription, offer));
+        assert_session_desc_equals(pc.localDescription, offer);
+        assert_session_desc_equals(pc.pendingLocalDescription, offer);
         assert_equals(pc.currentLocalDescription, null);
       }));
-  }, 'Create and set default offer');
+  }, 'setLocalDescription with type offer and empty sdp should use lastOffer generated from createOffer');
 
   promise_test(t => {
     const pc = new RTCPeerConnection;
@@ -152,8 +162,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc.signalingState, 'have-local-offer');
-        assert_true(isSimilarSdp(pc.localDescription, offer2));
-        assert_true(isSimilarSdp(pc.pendingLocalDescription, offer2));
+        assert_session_desc_equals(pc.localDescription, offer2);
+        assert_session_desc_equals(pc.pendingLocalDescription, offer2);
         assert_equals(pc.currentLocalDescription, null);
       }));
   }, 'Can create and set offer multiple times');
@@ -165,8 +175,8 @@
     return createOfferAndSetRemote(pc1, pc2)
     .then(offer => {
       assert_equals(pc2.signalingState, 'have-remote-offer');
-      assert_true(isSimilarSdp(pc2.remoteDescription, offer));
-      assert_true(isSimilarSdp(pc2.pendingRemoteDescription, offer));
+      assert_session_desc_equals(pc2.remoteDescription, offer);
+      assert_session_desc_equals(pc2.pendingRemoteDescription, offer);
       assert_equals(pc2.localRemoteDescription, null);
     });
   }, 'Create and set remote offer');
@@ -181,8 +191,8 @@
       .then(offer2 => {
         assert_not_equals(offer1.sdp, offer2.sdp);
         assert_equals(pc2.signalingState, 'have-remote-offer');
-        assert_true(isSimilarSdp(pc2.remoteDescription, offer2));
-        assert_true(isSimilarSdp(pc2.pendingRemoteDescription, offer2));
+        assert_session_desc_equals(pc2.remoteDescription, offer2);
+        assert_session_desc_equals(pc2.pendingRemoteDescription, offer2);
         assert_equals(pc2.currentRemoteDescription, null);
       }));
   }, 'Can set remote description multiple times');
@@ -214,11 +224,11 @@
     return createAnswerAndSetLocal(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc2.signalingState, 'stable');
-      assert_true(isSimilarSdp(pc2.localDescription, answer));
-      assert_true(isSimilarSdp(pc2.remoteDescription, offer));
+      assert_session_desc_equals(pc2.localDescription, answer);
+      assert_session_desc_equals(pc2.remoteDescription, offer);
 
-      assert_true(isSimilarSdp(pc2.currentLocalDescription, answer));
-      assert_true(isSimilarSdp(pc2.currentRemoteDescription, offer));
+      assert_session_desc_equals(pc2.currentLocalDescription, answer);
+      assert_session_desc_equals(pc2.currentRemoteDescription, offer);
 
       assert_equals(pc2.pendingLocalDescription, null);
       assert_equals(pc2.pendingRemoteDescription, null);
@@ -234,17 +244,17 @@
       return pc2.setLocalDescription({ type: 'answer' })
       .then(() => {
         assert_equals(pc2.signalingState, 'stable');
-        assert_true(isSimilarSdp(pc2.localDescription, answer));
-        assert_true(isSimilarSdp(pc2.remoteDescription, offer));
+        assert_session_desc_equals(pc2.localDescription, answer);
+        assert_session_desc_equals(pc2.remoteDescription, offer);
 
-        assert_true(isSimilarSdp(pc2.currentLocalDescription, answer));
-        assert_true(isSimilarSdp(pc2.currentRemoteDescription, offer));
+        assert_session_desc_equals(pc2.currentLocalDescription, answer);
+        assert_session_desc_equals(pc2.currentRemoteDescription, offer);
 
         assert_equals(pc2.pendingLocalDescription, null);
         assert_equals(pc2.pendingRemoteDescription, null);
       });
     });
-  }, 'Create and set default local answer');
+  }, 'setLocalDescription with type answer and empty sdp should use lastAnswer generated from createAnswer');
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection;
@@ -253,11 +263,11 @@
     return createAnswerAndSetRemote(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc1.signalingState, 'stable');
-      assert_true(isSimilarSdp(pc1.localDescription, offer));
-      assert_true(isSimilarSdp(pc1.remoteDescription, answer));
+      assert_session_desc_equals(pc1.localDescription, offer);
+      assert_session_desc_equals(pc1.remoteDescription, answer);
 
-      assert_true(isSimilarSdp(pc1.currentLocalDescription, offer));
-      assert_true(isSimilarSdp(pc1.currentRemoteDescription, answer));
+      assert_session_desc_equals(pc1.currentLocalDescription, offer);
+      assert_session_desc_equals(pc1.currentRemoteDescription, answer);
 
       assert_equals(pc1.pendingLocalDescription, null);
       assert_equals(pc1.pendingRemoteDescription, null);
@@ -275,19 +285,19 @@
         offerToReceiveVideo: true
       }).then(offer2 => {
         assert_equals(pc1.signalingState, 'have-local-offer');
-        assert_false(isSimilarSdp(offer1, offer2));
-        assert_true(isSimilarSdp(pc1.localDescription, offer1));
-        assert_true(isSimilarSdp(pc1.currentLocalDescription, offer1));
-        assert_true(isSimilarSdp(pc1.pendingLocalDescription, offer2));
+        assert_session_desc_not_equals(offer1, offer2);
+        assert_session_desc_equals(pc1.localDescription, offer1);
+        assert_session_desc_equals(pc1.currentLocalDescription, offer1);
+        assert_session_desc_equals(pc1.pendingLocalDescription, offer2);
 
         return pc2.setRemoteDescription(offer2)
         .then(() => pc2.createAnswer())
         .then(answer2 => {
           assert_equals(pc2.signalingState, 'have-remote-offer');
-          assert_false(isSimilarSdp(answer1, answer2));
-          assert_true(isSimilarSdp(pc2.remoteDescription, answer1));
-          assert_true(isSimilarSdp(pc2.currentRemoteDescription, answer1));
-          assert_true(isSimilarSdp(pc2.pendingRemoteDescription, answer2));
+          assert_session_desc_not_equals(answer1, answer2);
+          assert_session_desc_equals(pc2.remoteDescription, answer1);
+          assert_session_desc_equals(pc2.currentRemoteDescription, answer1);
+          assert_session_desc_equals(pc2.pendingRemoteDescription, answer2);
         });
       });
     });

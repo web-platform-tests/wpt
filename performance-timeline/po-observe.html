@@ -74,9 +74,9 @@ PerformanceObserverInit.buffered should retrieve previously buffered entries
         buffered: true
       });
 
-      const timeout = setTimeout(function() {
+      const timeout = step_timeout(function() {
         assert_unreached("the buffered entries were not observed within 1 second of registration");
-      }, 1000)
+      }, 1000);
     }
 
     const entryTypes = ["navigation", "resource", "mark", "measure"];

@@ -14,7 +14,6 @@
     function checkBodyText(test, request) {
       return request.text().then(function(bodyAsText) {
         assert_equals(bodyAsText, "", "Resolved value should be empty");
-        assert_false(request.bodyUsed);
       });
     }
 
@@ -32,7 +31,6 @@
         });
         return promise.then(function(body) {
           assert_equals(body, "", "Resolved value should be empty");
-          assert_false(request.bodyUsed);
         });
       });
     }
@@ -40,7 +38,6 @@
     function checkBodyArrayBuffer(test, request) {
       return request.arrayBuffer().then(function(bodyAsArrayBuffer) {
         assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
-        assert_false(request.bodyUsed);
       });
     }
 
@@ -50,28 +47,26 @@
           assert_unreached("JSON parsing should fail");
         },
         function() {
-          assert_false(request.bodyUsed);
         });
     }
 
     function checkBodyFormData(test, request) {
       return request.formData().then(function(bodyAsFormData) {
         assert_true(bodyAsFormData instanceof FormData, "Should receive a FormData");
-        assert_false(request.bodyUsed);
      });
     }
 
     function checkBodyFormDataError(test, request) {
-      return promise_rejects(test, new TypeError(), request.formData()).then(function() {
-        assert_false(request.bodyUsed);
-      });
+      return promise_rejects(test, new TypeError(), request.formData());
     }
 
     function checkRequestWithNoBody(bodyType, checkFunction, headers = []) {
       promise_test(function(test) {
         var request = new Request("", {"method": "POST", "headers": headers});
         assert_false(request.bodyUsed);
-        return checkFunction(test, request);
+        return checkFunction(test, request).then(function() {
+          assert_false(request.bodyUsed);
+        });
       }, "Consume request's body as " + bodyType);
     }
 
@@ -83,32 +78,24 @@
     checkRequestWithNoBody("formData with correct urlencoded type", checkBodyFormData, [["Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"]]);
     checkRequestWithNoBody("formData without correct type (error case)", checkBodyFormDataError);
 
-    function checkRequestWithEmptyBody(bodyType, body, asText) {
+    function checkRequestWithEmptyBody(bodyType, body, checkFunction) {
       promise_test(function(test) {
         var request = new Request("", {"method": "POST", "body": body});
         assert_false(request.bodyUsed, "bodyUsed is false at init");
-        if (asText) {
-          return request.text().then(function(bodyAsString) {
-            assert_equals(bodyAsString.length, 0, "Resolved value should be empty");
-            assert_true(request.bodyUsed, "bodyUsed is true after being consumed");
-          });
-        }
-        return request.arrayBuffer().then(function(bodyAsArrayBuffer) {
-          assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
+        return checkFunction(test, request).then(function() {
           assert_true(request.bodyUsed, "bodyUsed is true after being consumed");
         });
-      }, "Consume empty " + bodyType + " request body as " + (asText ? "text" : "arrayBuffer"));
+      }, "Consume empty " + bodyType + " request body as " + (checkFunction == checkBodyArrayBuffer ? "arrayBuffer" : "text"));
     }
 
-    // FIXME: Add BufferSource, FormData and URLSearchParams.
-    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), false);
-    checkRequestWithEmptyBody("text", "", false);
-    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), true);
-    checkRequestWithEmptyBody("text", "", true);
-    checkRequestWithEmptyBody("URLSearchParams", new URLSearchParams(""), true);
-    // FIXME: This test assumes that the empty string be returned but it is not clear whether that is right. See https://github.com/w3c/web-platform-tests/pull/3950.
-    checkRequestWithEmptyBody("FormData", new FormData(), true);
-    checkRequestWithEmptyBody("ArrayBuffer", new ArrayBuffer(), true);
+    // FIXME: Add BufferSource.
+    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), checkBodyArrayBuffer);
+    checkRequestWithEmptyBody("text", "", checkBodyArrayBuffer);
+    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), checkBodyText);
+    checkRequestWithEmptyBody("text", "", checkBodyText);
+    checkRequestWithEmptyBody("URLSearchParams", new URLSearchParams(""), checkBodyText);
+    checkRequestWithEmptyBody("FormData", new FormData(), checkBodyText);
+    checkRequestWithEmptyBody("ArrayBuffer", new ArrayBuffer(), checkBodyText);
     </script>
   </body>
 </html>

@@ -14,7 +14,6 @@
     function checkBodyText(test, response) {
       return response.text().then(function(bodyAsText) {
         assert_equals(bodyAsText, "", "Resolved value should be empty");
-        assert_false(response.bodyUsed);
       });
     }
 
@@ -32,7 +31,6 @@
         });
         return promise.then(function(body) {
           assert_equals(body, "", "Resolved value should be empty");
-          assert_false(response.bodyUsed);
         });
       });
     }
@@ -40,7 +38,6 @@
     function checkBodyArrayBuffer(test, response) {
       return response.arrayBuffer().then(function(bodyAsArrayBuffer) {
         assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
-        assert_false(response.bodyUsed);
       });
     }
 
@@ -50,28 +47,26 @@
           assert_unreached("JSON parsing should fail");
         },
         function() {
-          assert_false(response.bodyUsed);
         });
     }
 
     function checkBodyFormData(test, response) {
       return response.formData().then(function(bodyAsFormData) {
         assert_true(bodyAsFormData instanceof FormData, "Should receive a FormData");
-        assert_false(response.bodyUsed);
      });
     }
 
     function checkBodyFormDataError(test, response) {
-      return promise_rejects(test, new TypeError(), response.formData()).then(function() {
-        assert_false(response.bodyUsed);
-      });
+      return promise_rejects(test, new TypeError(), response.formData());
     }
 
     function checkResponseWithNoBody(bodyType, checkFunction, headers = []) {
       promise_test(function(test) {
         var response = new Response(undefined, { "headers": headers });
         assert_false(response.bodyUsed);
-        return checkFunction(test, response);
+        return checkFunction(test, response).then(function() {
+          assert_false(response.bodyUsed);
+        });
       }, "Consume response's body as " + bodyType);
     }
 
@@ -83,30 +78,23 @@
     checkResponseWithNoBody("formData with correct urlencoded type", checkBodyFormData, [["Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"]]);
     checkResponseWithNoBody("formData without correct type (error case)", checkBodyFormDataError);
 
-    function checkResponseWithEmptyBody(bodyType, body, asText) {
+    function checkResponseWithEmptyBody(bodyType, body, checkFunction) {
       promise_test(function(test) {
         var response = new Response(body);
         assert_false(response.bodyUsed, "bodyUsed is false at init");
-        if (asText) {
-          return response.text().then(function(bodyAsString) {
-            assert_equals(bodyAsString.length, 0, "Resolved value should be empty");
-            assert_true(response.bodyUsed, "bodyUsed is true after being consumed");
-          });
-        }
-        return response.arrayBuffer().then(function(bodyAsArrayBuffer) {
-          assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
+        return checkFunction(test, response).then(function() {
           assert_true(response.bodyUsed, "bodyUsed is true after being consumed");
         });
-      }, "Consume empty " + bodyType + " response body as " + (asText ? "text" : "arrayBuffer"));
+      }, "Consume empty " + bodyType + " response body as " + (checkFunction == checkBodyArrayBuffer ? "arrayBuffer" : "text"));
     }
 
-    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), false);
-    checkResponseWithEmptyBody("text", "", false);
-    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), true);
-    checkResponseWithEmptyBody("text", "", true);
-    checkResponseWithEmptyBody("URLSearchParams", new URLSearchParams(""), true);
-    checkResponseWithEmptyBody("FormData", new FormData(), true);
-    checkResponseWithEmptyBody("ArrayBuffer", new ArrayBuffer(), true);
+    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), checkBodyArrayBuffer);
+    checkResponseWithEmptyBody("text", "", checkBodyArrayBuffer);
+    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), checkBodyText);
+    checkResponseWithEmptyBody("text", "", checkBodyText);
+    checkResponseWithEmptyBody("URLSearchParams", new URLSearchParams(""), checkBodyText);
+    checkResponseWithEmptyBody("FormData", new FormData(), checkBodyText);
+    checkResponseWithEmptyBody("ArrayBuffer", new ArrayBuffer(), checkBodyText);
     </script>
   </body>
 </html>

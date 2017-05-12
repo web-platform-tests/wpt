@@ -70,6 +70,42 @@ like:
 "ssl": {"openssl": {"binary": "/path/to/openssl"}}
 ```
 
+Running Tests Automatically
+---------------------------
+
+Tests can be run automatically in a browser using the `wptrun` script
+in the root of the checkout. This requires the hosts file and OpenSSL
+setup documented above, but you must *not* have the test server
+already running when calling `wptrun`. The basic command line syntax
+is:
+
+```
+./wptrun product [tests]
+```
+
+where `product` is currently `firefox` or `chrome` and `[tests]` is a
+list of paths to tests. This will attempt to automatically locate a
+browser instance and install required dependencies. The command is
+very configurable; for examaple to specify a particular binary use
+`wptrun --binary=path product`. The full range of options can be see
+with `wptrun --help` and `wptrun --wptrunner-help`.
+
+Not all dependencies can be automatically installed; in particular the
+`certutil` tool required to run https tests with Firefox must be
+installed using a system package manager or similar.
+
+On Debian/Ubuntu certutil may be installed using:
+
+```
+sudo apt install libnss3-tools
+```
+
+And on macOS with homebrew using:
+
+```
+brew install nss
+```
+
 <span id="submodules">Submodules</span>
 =======================================
 

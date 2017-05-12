@@ -87,6 +87,7 @@ W3C-TEST.ORG:tools/*
 PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
+PRINT STATEMENT:wptrun.py
 
 ### Test exclusions ##
 

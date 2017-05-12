@@ -60,6 +60,16 @@
       return promise_rejects(test, new TypeError(), response.formData());
     }
 
+    function checkBodyFormDataText(test, response) {
+      return response.text().then(function(bodyAsText) {
+        assert_true(response.headers.has("Content-Type"), "Response contains Content-Type header");
+        var boundaryMatches = response.headers.get("Content-Type").match(/;\s*boundary=("?)([^";\s]*)\1/);
+        assert_true(!!boundaryMatches, "Response contains boundary parameter");
+        var boundary = boundaryMatches[2];
+        assert_equals(bodyAsText, "--" + boundary + "--\r\n");
+     });
+    }
+
     function checkResponseWithNoBody(bodyType, checkFunction, headers = []) {
       promise_test(function(test) {
         var response = new Response(undefined, { "headers": headers });
@@ -93,7 +103,7 @@
     checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), checkBodyText);
     checkResponseWithEmptyBody("text", "", checkBodyText);
     checkResponseWithEmptyBody("URLSearchParams", new URLSearchParams(""), checkBodyText);
-    checkResponseWithEmptyBody("FormData", new FormData(), checkBodyText);
+    checkResponseWithEmptyBody("FormData", new FormData(), checkBodyFormDataText);
     checkResponseWithEmptyBody("ArrayBuffer", new ArrayBuffer(), checkBodyText);
     </script>
   </body>

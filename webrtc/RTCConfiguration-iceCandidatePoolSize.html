@@ -13,75 +13,97 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  function initializeWithValidPoolSize(iceCandidatePoolSize, expectedSize) {
-    test(() => {
-      const pc = new RTCPeerConnection({
-        iceCandidatePoolSize
-      });
-      assert_equals(pc.getConfiguration().iceCandidatePoolSize, expectedSize);
 
-    }, `new RTCPeerConnection({ iceCandidatePoolSize }) with valid value: ${iceCandidatePoolSize}`);
-  }
+/*
 
-  function initializeWithInvalidPoolSize(iceCandidatePoolSize) {
-    test(() => {
-      assert_throws(new TypeError(), () => {
-        new RTCPeerConnection({
-          iceCandidatePoolSize
-        });
-      });
-    }, `new RTCPeerConnection({ iceCandidatePoolSize }) with invalid value: ${iceCandidatePoolSize}`);
-  }
+dictionary RTCConfiguration {
+    ...
+    [EnforceRange]
+    octet                    iceCandidatePoolSize = 0;
+};
 
-  function reconfigureWithValidPoolSize(iceCandidatePoolSize) {
-    test(() => {
-      const pc = new RTCPeerConnection();
-      pc.setConfiguration({ iceCandidatePoolSize });
-      assert_equals(pc.getConfiguration().iceCandidatePoolSize, expectedSize);
+... of type octet
+*/
+test(() => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.getConfiguration().iceCandidatePoolSize, 0);
+}, "Initialize a new RTCPeerConnection with no iceCandidatePoolSize");
 
-    }, `setConfiguration({ iceCandidatePoolSize }) to a valid value: ${iceCandidatePoolSize}`);
-  }
+test(() => {
+  const pc = new RTCPeerConnection({
+    iceCandidatePoolSize: 0
+  });
+  assert_equals(pc.getConfiguration().iceCandidatePoolSize, 0);
+}, "Initialize a new RTCPeerConnection with iceCandidatePoolSize: 0");
 
-  function reconfigureWithInvalidPoolSize(iceCandidatePoolSize) {
-    test(() => {
-      const pc = new RTCPeerConnection();
-      assert_throws(new TypeError(), () => {
-        pc.setConfiguration({ iceCandidatePoolSize });
-      });
-    }, `setConfiguration({ iceCandidatePoolSize }) to an invalid value: ${iceCandidatePoolSize}`);
-  }
+test(() => {
+  const pc = new RTCPeerConnection({
+    iceCandidatePoolSize: 255
+  });
+  assert_equals(pc.getConfiguration().iceCandidatePoolSize, 255);
+}, "Initialize a new RTCPeerConnection with iceCandidatePoolSize: 255");
 
-  /*
+test(() => {
+  assert_throws(new TypeError(), () => {
+    new RTCPeerConnection({
+      iceCandidatePoolSize: -1
+    });
+  });
+}, "Initialize a new RTCPeerConnection with iceCandidatePoolSize: -1 (Out Of Range)");
 
-  dictionary RTCConfiguration {
-      ...
-      [EnforceRange]
-      octet                    iceCandidatePoolSize = 0;
-  };
+test(() => {
+  assert_throws(new TypeError(), () => {
+    new RTCPeerConnection({
+      iceCandidatePoolSize: 256
+    });
+  });
+}, "Initialize a new RTCPeerConnection with iceCandidatePoolSize: 256 (Out Of Range)");
 
-  ... of type octet
-  */
-  initializeWithValidPoolSize(0, 0);
-  initializeWithValidPoolSize(127, 127);
-  initializeWithValidPoolSize(255, 255);
 
-  // Defaulting to 0
-  initializeWithValidPoolSize(null, 0);
-  initializeWithValidPoolSize(undefined, 0);
+/*
+Reconfiguration
+*/
+const pc = new RTCPeerConnection({});
 
-  // [EnforceRange]
-  initializeWithInvalidPoolSize(-1);
-  initializeWithInvalidPoolSize(256);
+test(() => {
+  pc.setConfiguration({
+    iceCandidatePoolSize: 0
+  });
+  assert_equals(pc.getConfiguration().iceCandidatePoolSize, 0);
+}, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to 0");
 
-  /*
-  setConfiguration({ iceCandidatePoolSize })
-  */
-  reconfigureWithValidPoolSize(0, 0);
-  reconfigureWithValidPoolSize(127, 127);
-  reconfigureWithValidPoolSize(255, 255);
+test(() => {
+  pc.setConfiguration({
+    iceCandidatePoolSize: 255
+  });
+  assert_equals(pc.getConfiguration().iceCandidatePoolSize, 255);
+}, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to 255");
 
-  // [EnforceRange]
-  reconfigureWithInvalidPoolSize(-1);
-  reconfigureWithInvalidPoolSize(256);
+/*
+The following tests include an explicit assertion for the existence of a
+setConfiguration function to prevent the assert_throws from catching the
+TypeError object that will be thrown when attempting to call the
+non-existent setConfiguration method (in cases where it has not yet
+been implemented). Without this check, these tests will pass incorrectly.
+*/
 
+test(() => {
+  assert_equals(typeof pc.setConfiguration, "function", "RTCPeerConnection.prototype.setConfiguration is not implemented");
+
+  assert_throws(new TypeError(), () => {
+    pc.setConfiguration({
+      iceCandidatePoolSize: -1
+    });
+  });
+}, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to -1 (Out Of Range)");
+
+test(() => {
+  assert_equals(typeof pc.setConfiguration, "function", "RTCPeerConnection.prototype.setConfiguration is not implemented");
+
+  assert_throws(new TypeError(), () => {
+    pc.setConfiguration({
+      iceCandidatePoolSize: 256
+    });
+  });
+}, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to 256 (Out Of Range)");
 </script>

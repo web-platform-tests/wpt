@@ -90,7 +90,7 @@ very configurable; for examaple to specify a particular binary use
 `wptrun --binary=path product`. The full range of options can be see
 with `wptrun --help` and `wptrun --wptrunner-help`.
 
-Not all dependnecies can be automatically installed; in paticular the
+Not all dependencies can be automatically installed; in particular the
 `certutil` tool required to run https tests with Firefox must be
 installed using a system package manager or similar.
 

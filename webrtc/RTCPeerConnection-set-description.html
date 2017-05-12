@@ -83,6 +83,36 @@
       'Expect essential content in both session descriptions to be different');
   }
 
+  // Wait for peer connection to fire onsignalingstatechange
+  // event, compare and make sure the new state is the same
+  // as expected state. It accepts an RTCPeerConnection object
+  // and an array of expected state changes. The test passes
+  // if all expected state change events have been fired, and
+  // fail if the new state is different from the expected state.
+  //
+  // Note that the promise is never resolved if no change
+  // event is fired. To avoid confusion with the main test
+  // getting timed out, this is done in parallel as a separate
+  // test
+  function test_state_change_event(parentTest, pcName, pc, expectedStates) {
+    return async_test(t => {
+      pc.onsignalingstatechange = t.step_func(() => {
+        if(expectedStates.length === 0) {
+          return;
+        }
+
+        const newState = pc.signalingState;
+        const expectedState = expectedStates.shift();
+
+        assert_equals(newState, expectedState, 'New signaling state is different from expected.');
+
+        if(expectedStates.length === 0) {
+          t.done();
+        }
+      })
+    }, `Test onsignalingstatechange event for ${pcName} in ${parentTest.name}`)
+  }
+
   function createOfferAndSetLocal(pc, options) {
     return pc.createOffer(options)
     .then(offer =>
@@ -120,6 +150,8 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection;
+    test_state_change_event(t, 'pc', pc, ['have-local-offer']);
+
     return createOfferAndSetLocal(pc)
     .then(offer => {
       assert_equals(pc.signalingState, 'have-local-offer');
@@ -156,6 +188,10 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection;
+
+    // Only one state change event should be fired
+    test_state_change_event(t, 'pc', pc, ['have-local-offer']);
+
     return createOfferAndSetLocal(pc, { offerToReceiveAudio: true })
     .then(offer1 =>
        createOfferAndSetLocal(pc, { offerToReceiveVideo: true })
@@ -172,6 +208,9 @@
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
 
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer']);
+
     return createOfferAndSetRemote(pc1, pc2)
     .then(offer => {
       assert_equals(pc2.signalingState, 'have-remote-offer');
@@ -184,6 +223,9 @@
   promise_test(t => {
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
+
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer']);
 
     return createOfferAndSetRemote(pc1, pc2, { offerToReceiveAudio: true })
     .then(offer1 =>
@@ -220,6 +262,9 @@
   promise_test(t => {
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
+
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable']);
 
     return createAnswerAndSetLocal(pc1, pc2)
     .then(([offer, answer]) => {
@@ -260,6 +305,9 @@
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
 
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer', 'stable']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable']);
+
     return createAnswerAndSetRemote(pc1, pc2)
     .then(([offer, answer]) => {
       assert_equals(pc1.signalingState, 'stable');
@@ -278,10 +326,13 @@
     const pc1 = new RTCPeerConnection;
     const pc2 = new RTCPeerConnection;
 
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer', 'stable', 'have-local-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable']);
+
     return createAnswerAndSetRemote(pc1, pc2, {
       offerToReceiveAudio: true
-    }).then(([offer1, answer1]) => {
-      return createOfferAndSetLocal(pc1, {
+    }).then(([offer1, answer1]) =>
+      createOfferAndSetLocal(pc1, {
         offerToReceiveVideo: true
       }).then(offer2 => {
         assert_equals(pc1.signalingState, 'have-local-offer');
@@ -289,19 +340,71 @@
         assert_session_desc_equals(pc1.localDescription, offer1);
         assert_session_desc_equals(pc1.currentLocalDescription, offer1);
         assert_session_desc_equals(pc1.pendingLocalDescription, offer2);
+      }));
+  }, 'Can create and set local offer again after go back to stable state');
 
-        return pc2.setRemoteDescription(offer2)
-        .then(() => pc2.createAnswer())
-        .then(answer2 => {
-          assert_equals(pc2.signalingState, 'have-remote-offer');
-          assert_session_desc_not_equals(answer1, answer2);
-          assert_session_desc_equals(pc2.remoteDescription, answer1);
-          assert_session_desc_equals(pc2.currentRemoteDescription, answer1);
-          assert_session_desc_equals(pc2.pendingRemoteDescription, answer2);
-        });
-      });
-    });
-  }, 'Create offer again after go back to stable state');
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection;
+    const pc2 = new RTCPeerConnection;
+
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer', 'stable', 'have-local-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable', 'have-remote-offer']);
+
+    return createAnswerAndSetRemote(pc1, pc2, {
+      offerToReceiveAudio: true
+    }).then(([offer1, answer1]) =>
+      createOfferAndSetRemote(pc1, pc2, {
+        offerToReceiveVideo: true
+      }).then(offer2 => {
+        assert_equals(pc2.signalingState, 'have-remote-offer');
+        assert_session_desc_not_equals(offer1, offer2);
+        assert_session_desc_equals(pc2.remoteDescription, offer1);
+        assert_session_desc_equals(pc2.currentRemoteDescription, offer1);
+        assert_session_desc_equals(pc2.pendingRemoteDescription, offer2);
+     }));
+  }, 'Can create and set remote offer again after go back to stable state');
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection;
+    const pc2 = new RTCPeerConnection;
+
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer', 'stable']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable', 'have-local-offer']);
+
+    return createAnswerAndSetRemote(pc1, pc2, {
+      offerToReceiveAudio: true
+    }).then(([offer1, answer1]) =>
+      createOfferAndSetLocal(pc2, {
+        offerToReceiveVideo: true
+      }).then(offer2 => {
+        assert_equals(pc2.signalingState, 'have-local-offer');
+        assert_session_desc_not_equals(offer1, offer2);
+        assert_session_desc_equals(pc2.localDescription, answer1);
+        assert_session_desc_equals(pc2.currentLocalDescription, answer1);
+        assert_session_desc_equals(pc2.pendingLocalDescription, offer2);
+      }));
+  }, 'Can switch role from setRemote offer to setLocal offer after go back to stable state');
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection;
+    const pc2 = new RTCPeerConnection;
+
+    test_state_change_event(t, 'pc1', pc1, ['have-local-offer', 'stable', 'have-remote-offer']);
+    test_state_change_event(t, 'pc2', pc2, ['have-remote-offer', 'stable', 'have-local-offer']);
+
+    return createAnswerAndSetRemote(pc1, pc2, {
+      offerToReceiveAudio: true
+    }).then(([offer1, answer1]) =>
+      createOfferAndSetRemote(pc2, pc1, {
+        offerToReceiveVideo: true
+      }).then(offer2 => {
+        assert_equals(pc1.signalingState, 'have-remote-offer');
+        assert_session_desc_not_equals(offer1, offer2);
+        assert_session_desc_equals(pc1.remoteDescription, answer1);
+        assert_session_desc_equals(pc1.currentRemoteDescription, answer1);
+        assert_session_desc_equals(pc1.pendingRemoteDescription, offer2);
+     }));
+  }, 'Can switch role from setLocal offer to setRemote offer after go back to stable state');
 
   promise_test(t => {
     const pc = new RTCPeerConnection;

@@ -61,9 +61,20 @@
      });
     }
 
-    function checkResponseWithNoBody(bodyType, checkFunction) {
+    function checkBodyFormDataError(response) {
+      return response.formData().then(
+        function(bodyAsFormData) {
+          assert_unreached("FormData parsing should fail");
+        },
+        function(e) {
+          assert_throws(new TypeError(), function() { throw e; });
+          assert_false(response.bodyUsed);
+        });
+    }
+
+    function checkResponseWithNoBody(bodyType, checkFunction, headers) {
       promise_test(function(test) {
-        var response = new Response();
+        var response = new Response(undefined, { "headers": headers || [] });
         assert_false(response.bodyUsed);
         return checkFunction(response);
       }, "Consume response's body as " + bodyType);
@@ -73,8 +84,10 @@
     checkResponseWithNoBody("text", checkBodyText);
     checkResponseWithNoBody("blob", checkBodyBlob);
     checkResponseWithNoBody("arrayBuffer", checkBodyArrayBuffer);
-    checkResponseWithNoBody("json", checkBodyJSON);
-    checkResponseWithNoBody("formData", checkBodyFormData);
+    checkResponseWithNoBody("json (error case)", checkBodyJSON);
+    checkResponseWithNoBody("formData with correct multipart type (error case)", checkBodyFormDataError, [["Content-Type", 'multipart/form-data; boundary="boundary"']]);
+    checkResponseWithNoBody("formData with correct urlencoded type", checkBodyFormData, [["Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"]]);
+    checkResponseWithNoBody("formData without correct type (error case)", checkBodyFormDataError);
 
     function checkResponseWithEmptyBody(bodyType, body, asText) {
       promise_test(function(test) {

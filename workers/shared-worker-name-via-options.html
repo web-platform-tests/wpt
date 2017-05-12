@@ -24,9 +24,9 @@ worker3.port.onmessage = receiveMessage;
 
 let nextCounterExpected = 1;
 function receiveMessage(e) {
-  const { counter, name } = e.data;
+  const { counter, name: receivedName } = e.data;
 
-  assert_equals(name, name);
+  assert_equals(receivedName, name);
   assert_equals(counter, nextCounterExpected);
 
   ++nextCounterExpected;

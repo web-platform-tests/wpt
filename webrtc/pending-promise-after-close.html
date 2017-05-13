@@ -5,12 +5,25 @@
 <script type="text/javascript">
   'use strict';
 
-  function test_never_resolved(test_func, testName) {
+  /*
+   * Test that if a peer connection is closed when there is
+   * pending operation, the promise of that operation is
+   * never resolved. This helper function takes in a
+   * test function that accepts a peer connection and
+   * a close function. The test function is called once
+   * with a real closePc function and once with a noop
+   * function. Because the test still needs to end
+   * somehow without waiting forever for the timeout,
+   * we wait for the promise returned from the second
+   * unclosed pc to resolve, and conclude the test to
+   * pass if the first promise is still not yet resolved.
+   */
+  function test_never_resolved(testFunc, testName) {
     async_test(t => {
       const pc1 = new RTCPeerConnection();
       const closePc1 = () => pc1.close();
 
-      test_func(pc1, closePc1)
+      testFunc(pc1, closePc1)
       .then(
         t.step_func(result => {
           assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`);
@@ -19,14 +32,10 @@
          assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`);
         }));
 
-      t.step_timeout(() => {
-        t.done();
-      }, 1000);
-
       const pc2 = new RTCPeerConnection();
       const closePc2 = () => {}; // noop (don't close)
 
-      test_func(pc2, closePc2)
+      testFunc(pc2, closePc2)
       .then(
         t.step_func_done(),
         t.step_func(err => {
@@ -66,12 +75,12 @@
     return p;
   }, 'pending addIceCandidate() should never resolve if closed');
 
-  test_never_resolved(pc => {
+  test_never_resolved((pc, closePc) => {
     return pc.createOffer()
-    .then(offer => pc.setLocalDescription(offer))
+    .then(offer => pc.setRemoteDescription(offer))
     .then(() => {
       const p = pc.createAnswer();
-      pc.close();
+      closePc();
       return p;
     });
   }, 'pending createAnswer() should never resolve if closed');

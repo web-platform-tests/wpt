@@ -20,7 +20,7 @@ test(() => {
 
   const button = document.createElement("button");
 
-  for (const type of ["reset", "button", "menu", "submit"]) {
+  for (const type of ["reset", "button", "submit"]) {
     button.type = type;
     assert_equals(button.type, type);
 

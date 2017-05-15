@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>columnheader aria-rowspan 2 on th html rowspan 3</title>
+    <title>columnheader aria-rowspan 2 on th html rowspan 3 with three actual rows</title>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -24,16 +24,10 @@
                   "ROLE_COLUMN_HEADER"
                ],
                [
-                  "property",
-                  "objectAttributes",
-                  "doesNotContain",
-                  "rowspan:2"
-               ],
-               [
                   "result",
                   "atk_table_cell_get_row_column_span()",
-                  "doesNotContain",
-                  "row_span=2"
+                  "contains",
+                  "row_span=3"
                ]
             ],
             "AXAPI" : [
@@ -46,8 +40,8 @@
                [
                   "property",
                   "AXRowIndexRange.length",
-                  "isNot",
-                  "2"
+                  "is",
+                  "3"
                ]
             ],
             "IAccessible2" : [
@@ -60,8 +54,8 @@
                [
                   "property",
                   "rowspan",
-                  "isNot",
-                  "2"
+                  "is",
+                  "3"
                ]
             ],
             "MSAA" : [
@@ -74,8 +68,8 @@
                [
                   "property",
                   "rowspan",
-                  "isNot",
-                  "2"
+                  "is",
+                  "3"
                ]
             ],
             "UIA" : [
@@ -88,8 +82,8 @@
                [
                   "property",
                   "HeaderItem.RowSpan",
-                  "isNot",
-                  "2"
+                  "is",
+                  "3"
                ]
             ]
          },
@@ -97,17 +91,24 @@
          "type" : "test"
       }
    ],
-   "title" : "columnheader aria-rowspan 2 on th html rowspan 3"
+   "title" : "columnheader aria-rowspan 2 on th html rowspan 3 with three actual rows"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for columnheader aria-rowspan 2 on th html rowspan 3.</p>
+  <p>This test examines the ARIA properties for columnheader aria-rowspan 2 on th html rowspan 3 with three actual rows.</p>
     <table>
     <tr>
+      <th>1</th>
       <th id="test" role="columnheader" rowspan="3" aria-rowspan="2">test cell</th>
+    </tr>
+    <tr>
+      <th>2</th>
+    </tr>
+    <tr>
+      <th>3</th>
     </tr>
   </table>
 

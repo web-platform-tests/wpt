@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>columnheader aria-rowspan 2 on th html rowspan 3</title>
+    <title>cell aria-colspan 2 on td html colspan 3 with three actual columns</title>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -21,19 +21,13 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_COLUMN_HEADER"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "doesNotContain",
-                  "rowspan:2"
+                  "ROLE_TABLE_CELL"
                ],
                [
                   "result",
                   "atk_table_cell_get_row_column_span()",
-                  "doesNotContain",
-                  "row_span=2"
+                  "contains",
+                  "column_span=3"
                ]
             ],
             "AXAPI" : [
@@ -45,9 +39,9 @@
                ],
                [
                   "property",
-                  "AXRowIndexRange.length",
-                  "isNot",
-                  "2"
+                  "AXColumnIndexRange.length",
+                  "is",
+                  "3"
                ]
             ],
             "IAccessible2" : [
@@ -55,13 +49,13 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_SYSTEM_COLUMNHEADER"
+                  "ROLE_SYSTEM_CELL"
                ],
                [
                   "property",
-                  "rowspan",
-                  "isNot",
-                  "2"
+                  "colspan",
+                  "is",
+                  "3"
                ]
             ],
             "MSAA" : [
@@ -69,13 +63,13 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_SYSTEM_COLUMNHEADER"
+                  "ROLE_SYSTEM_CELL"
                ],
                [
                   "property",
-                  "rowspan",
-                  "isNot",
-                  "2"
+                  "colspan",
+                  "is",
+                  "3"
                ]
             ],
             "UIA" : [
@@ -83,13 +77,13 @@
                   "property",
                   "Control Type",
                   "is",
-                  "HeaderItem"
+                  "TableItem"
                ],
                [
                   "property",
-                  "HeaderItem.RowSpan",
-                  "isNot",
-                  "2"
+                  "TableItem.ColumnSpan",
+                  "is",
+                  "3"
                ]
             ]
          },
@@ -97,17 +91,20 @@
          "type" : "test"
       }
    ],
-   "title" : "columnheader aria-rowspan 2 on th html rowspan 3"
+   "title" : "cell aria-colspan 2 on td html colspan 3 with three actual columns"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for columnheader aria-rowspan 2 on th html rowspan 3.</p>
+  <p>This test examines the ARIA properties for cell aria-colspan 2 on td html colspan 3 with three actual columns.</p>
     <table>
     <tr>
-      <th id="test" role="columnheader" rowspan="3" aria-rowspan="2">test cell</th>
+      <td>1</td><td>2</td><td>3</td>
+    </tr>
+    <tr>
+      <td id="test" colspan="3" aria-colspan="2">test cell</td>
     </tr>
   </table>
 

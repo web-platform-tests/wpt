@@ -5,7 +5,7 @@ def main(req, res):
 
     return (
         [
-            ('Cache-Control', 'must-revalidate'),
+            ('Cache-Control', 'no-cache'),
             ('Content-Type', 'text/html')
         ],
        '<!DOCTYPE html>'

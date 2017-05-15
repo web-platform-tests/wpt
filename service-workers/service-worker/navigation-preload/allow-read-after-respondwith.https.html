@@ -57,6 +57,6 @@
 
     const result = await resultPromise;
 
-    assert_equals(result, '<!DOCTYPE html>');
+    assert_equals(result, '<!DOCTYPE html>', 'Value from preload response');
   }, 'Allow read reloadResponse after respondWith');
 </script>

@@ -8,10 +8,13 @@
 
   async function cleanup() {
     const reg = await navigator.serviceWorker.getRegistration(scope);
-    if (!reg) return;
-    if (reg.scope == new URL(scope, location).href) {
-      return reg.unregister()
+    
+    if (reg && reg.scope == new URL(scope, location).href) {
+      await reg.unregister()
     };
+
+    const iframe = document.querySelector('.test-iframe');
+    if (iframe) iframe.remove();
   }
 
   function testResultMessage(testName) {
@@ -24,33 +27,13 @@
     });
   }
 
-  function waitForActivated(sw) {
-    return new Promise((resolve, reject) => {
-      function check() {
-        if (sw.state == 'activated') {
-          sw.removeEventListener('statechange', check);
-          resolve();
-          return;
-        }
-        if (sw.state == 'redundant') {
-          sw.removeEventListener('statechange', check);
-          reject(Error('Service worker rejected'));
-          return;
-        }
-      }
-
-      sw.addEventListener('statechange', check);
-      check();
-    });
-  }
-
   promise_test(async t => {
     t.add_cleanup(cleanup);
     await cleanup();
     assert_true('NavigationPreloadManager' in window, "Navigation preload supported");
 
     const reg = await navigator.serviceWorker.register('resources/lazy-consume-preload-response.js', {scope});
-    await waitForActivated(reg.installing);
+    await wait_for_state(t, reg.installing, 'activated');
 
     const resultPromise = testResultMessage('lazy-consume-preload-response');
     with_iframe(scope);
@@ -58,5 +41,5 @@
     const result = await resultPromise;
 
     assert_equals(result, '<!DOCTYPE html>', 'Value from preload response');
-  }, 'Allow read reloadResponse after respondWith');
+  }, 'Allow read preloadResponse after respondWith');
 </script>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>cell aria-colspan 2 on td html colspan 3</title>
+    <title>cell aria-colspan 2 on td html colspan 3 with three actual columns</title>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -24,16 +24,10 @@
                   "ROLE_TABLE_CELL"
                ],
                [
-                  "property",
-                  "objectAttributes",
-                  "doesNotContain",
-                  "colspan:2"
-               ],
-               [
                   "result",
                   "atk_table_cell_get_row_column_span()",
-                  "doesNotContain",
-                  "column_span=2"
+                  "contains",
+                  "column_span=3"
                ]
             ],
             "AXAPI" : [
@@ -46,7 +40,7 @@
                [
                   "property",
                   "AXColumnIndexRange.length",
-                  "isNot",
+                  "is",
                   "3"
                ]
             ],
@@ -60,7 +54,7 @@
                [
                   "property",
                   "colspan",
-                  "isNot",
+                  "is",
                   "3"
                ]
             ],
@@ -74,7 +68,7 @@
                [
                   "property",
                   "colspan",
-                  "isNot",
+                  "is",
                   "3"
                ]
             ],
@@ -88,7 +82,7 @@
                [
                   "property",
                   "TableItem.ColumnSpan",
-                  "isNot",
+                  "is",
                   "3"
                ]
             ]
@@ -97,15 +91,18 @@
          "type" : "test"
       }
    ],
-   "title" : "cell aria-colspan 2 on td html colspan 3"
+   "title" : "cell aria-colspan 2 on td html colspan 3 with three actual columns"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for cell aria-colspan 2 on td html colspan 3.</p>
+  <p>This test examines the ARIA properties for cell aria-colspan 2 on td html colspan 3 with three actual columns.</p>
     <table>
+    <tr>
+      <td>1</td><td>2</td><td>3</td>
+    </tr>
     <tr>
       <td id="test" colspan="3" aria-colspan="2">test cell</td>
     </tr>

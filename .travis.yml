@@ -23,7 +23,7 @@ install:
   - pip install -U requests
 env:  # required at the top-level for allow_failures to work below
   global:
-    - SAUCE_USERNAME=w3c_ttwf
+    - SAUCE_USERNAME=w3c-ttwf
 matrix:
   fast_finish: true
   include:

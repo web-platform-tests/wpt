@@ -15,6 +15,9 @@ function format_dict(dict) {
   return `{${props.join(', ')}}`;
 }
 
+// https://drafts.fxtf.org/geometry/#create-a-dommatrix-from-the-dictionary
+// The spec will use the values of `m11` rather than `a`, so the test
+// needs this normalization for e.g. {a: -0, m11: 0} when comparing `a`.
 function normalizeDictForMinusZero(dict) {
   if ('a' in dict && 'm11' in dict) {
     dict.a = dict.m11;
@@ -34,6 +37,22 @@ function normalizeDictForMinusZero(dict) {
   if ('f' in dict && 'm42' in dict) {
     dict.f = dict.m42;
   }
+}
+
+// https://drafts.fxtf.org/geometry/#create-a-dommatrix-from-the-dictionary
+// The spec will use only the 6 relevant values to create a 2d matrix, so the test
+// needs this normalization for e.g. {m13: -0, is2D: true} when comparing `m13`.
+function normalizeDict2D(dict) {
+  delete dict.m13;
+  delete dict.m14;
+  delete dict.m23;
+  delete dict.m24;
+  delete dict.m31;
+  delete dict.m32;
+  delete dict.m33;
+  delete dict.m34;
+  delete dict.m43;
+  delete dict.m44;
 }
 
 [
@@ -74,20 +93,25 @@ function normalizeDictForMinusZero(dict) {
   {d: Infinity, m22: Infinity},
   {e: -Infinity, m41: -Infinity},
   {f: NaN, m42: NaN},
+  {f: NaN, m42: NaN, is2D: true},
   {f: 0, m42: null}, // null is converted to 0
   {f: -0, m42: null}, // null is converted to 0
-  {a:2},
-  {b:2},
-  {c:2},
-  {d:2},
-  {e:2},
-  {f:2},
+  {a: 2},
+  {b: 2},
+  {c: 2},
+  {d: 2},
+  {e: 2},
+  {f: 2},
+  {a: -0, b: -0, c: -0, d: -0, e: -0, f: -0},
+  {a: -0, b: -0, c: -0, d: -0, e: -0, f: -0, is2D: true},
   {m11:2},
   {m12:2},
   {m21:2},
   {m22:2},
   {m41:2},
   {m42:2},
+  {m11: -0, m12: -0, m21: -0, m22: -0, m41: -0, m42: -0},
+  {m11: -0, m12: -0, m21: -0, m22: -0, m41: -0, m42: -0, is2D: true},
   {m13: 0, is2D: true},
   {m13: -0, is2D: true},
   {m14: 0, is2D: true},
@@ -111,6 +135,7 @@ function normalizeDictForMinusZero(dict) {
   test(() => {
     const matrix = DOMMatrix.fromMatrix(dict);
     normalizeDictForMinusZero(dict);
+    normalizeDict2D(dict);
     for (let prop in dict) {
       if (dict[prop] !== undefined && dict[prop] !== null) {
         assert_equals(matrix[prop], dict[prop], prop);

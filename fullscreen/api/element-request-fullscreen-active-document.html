@@ -23,10 +23,12 @@ onload = t.step_func(() => {
       p.catch(t.step_func(() => rejected = true));
       Promise.resolve().then(t.step_func(() => assert_true(rejected)));
     }
-    // Wait two animation frames to ensure that no events are fired. (One should
-    // be enough per spec, but this makes the test flaky in Firefox.)
+    // Per spec the fullscreenerror event should be fired at the next animtion
+    // frame, but at least Gecko and WebKit will instead effectively do "queue a
+    // task to fire ...". Use both rAF and setTimeout to fail even if the timing
+    // of the (unexpected) event isn't as expected.
     requestAnimationFrame(t.step_func(() => {
-      requestAnimationFrame(t.step_func_done());
+      step_timeout(t.step_func_done());
     }));
   });
 

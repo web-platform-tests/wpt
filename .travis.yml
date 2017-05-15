@@ -22,8 +22,8 @@ install:
   - pip install -U setuptools
   - pip install -U requests
 env:  # required at the top-level for allow_failures to work below
-global:
-- SAUCE_USERNAME=w3c_ttwf
+  global:
+    - SAUCE_USERNAME=w3c_ttwf
 matrix:
   fast_finish: true
   include:

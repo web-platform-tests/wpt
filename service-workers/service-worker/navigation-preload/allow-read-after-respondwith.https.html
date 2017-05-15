@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>Service Worker: Nav preload: Allow read after respondwith</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.sub.js"></script>
+<script>
+  const scope = 'resources/slow-doc.py';
+
+  async function cleanup() {
+    const reg = await navigator.serviceWorker.getRegistration(scope);
+    if (!reg) return;
+    if (reg.scope == new URL(scope, location).href) {
+      return reg.unregister()
+    };
+  }
+
+  function testResultMessage(testName) {
+    return new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', function listener(event) {
+        if (event.data.testName != testName) return;
+        navigator.serviceWorker.removeEventListener('message', listener);
+        resolve(event.data.value);
+      });
+    });
+  }
+
+  function waitForActivated(sw) {
+    return new Promise((resolve, reject) => {
+      function check() {
+        if (sw.state == 'activated') {
+          sw.removeEventListener('statechange', check);
+          resolve();
+          return;
+        }
+        if (sw.state == 'redundant') {
+          sw.removeEventListener('statechange', check);
+          reject(Error('Service worker rejected'));
+          return;
+        }
+      }
+
+      sw.addEventListener('statechange', check);
+      check();
+    });
+  }
+
+  promise_test(async t => {
+    t.add_cleanup(cleanup);
+    await cleanup();
+    assert_true('NavigationPreloadManager' in window, "Navigation preload supported");
+
+    const reg = await navigator.serviceWorker.register('resources/lazy-consume-preload-response.js', {scope});
+    await waitForActivated(reg.installing);
+
+    const resultPromise = testResultMessage('lazy-consume-preload-response');
+    with_iframe(scope);
+
+    const result = await resultPromise;
+
+    assert_equals(result, '<!DOCTYPE html>');
+  }, 'Allow read reloadResponse after respondWith');
+</script>

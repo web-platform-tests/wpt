@@ -1326,7 +1326,7 @@ interface DataTransfer {
   void setDragImage(Element image, long x, long y);
 
   /* old interface */
-  readonly attribute DOMString[] types;
+  readonly attribute FrozenArray<DOMString> types;
   DOMString getData(DOMString format);
   void setData(DOMString format, DOMString data);
   void clearData(optional DOMString format);

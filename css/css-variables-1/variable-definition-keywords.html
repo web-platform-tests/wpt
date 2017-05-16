@@ -52,7 +52,6 @@
             test( function () {
                 var elem = document.getElementById(csTest.elementId);
                 var actualValue = window.getComputedStyle(elem).getPropertyValue(csTest.property).trim();
-                console.log(actualValue);
                 assert_equals(csTest.expectedValue, actualValue);
             }, csTest.testName);
         });

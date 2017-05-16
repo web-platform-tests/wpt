@@ -56,6 +56,14 @@
   }, `new RTCIceCandidate({ candidate: '' })`);
 
   test(t => {
+    // Throws because the candidate field is not nullable
+    assert_throws(new TypeError(),
+      () => new RTCIceCandidate({
+        candidate: null
+      }));
+  }, `new RTCIceCandidate({ candidate: null })`);
+
+  test(t => {
     // Throws because both sdpMid and sdpMLineIndex are null by default
     assert_throws(new TypeError(),
       () => new RTCIceCandidate({

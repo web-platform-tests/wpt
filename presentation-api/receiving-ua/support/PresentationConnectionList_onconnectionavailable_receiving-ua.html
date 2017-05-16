@@ -31,13 +31,13 @@
         return receiver.connectionList.then(list => {
           connections = list.connections;
           if (action === 'close') {
-            assert_true(connections.length === number && connections.includes(connection),
-              'A closed presentation connection remains in the set of presentation controllers.');
+            assert_true(connections.length === number - 1 && connections.includes(connection),
+              'A closed presentation connection is removed from the set of presentation controllers.');
           } else if (action === 'connect') {
             assert_true(connections.length === number + 1 && connections.includes(connection),
               'A new presentation connection is added to the set of presentation controllers.');
-            number = connections.length;
           }
+          number = connections.length;
         });
       };
 

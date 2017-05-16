@@ -5,33 +5,31 @@
 <script>
   'use strict';
 
-  const candidateString = 'candidate:1905690388 1 udp 2113937151 192.168.0.1 58041 typ host generation 0 ufrag thC8 network-cost 50'
-  const randomString = '<arbitrary string[0] content>;'
+  const candidateString = 'candidate:1905690388 1 udp 2113937151 192.168.0.1 58041 typ host generation 0 ufrag thC8 network-cost 50';
+  const arbitraryString = '<arbitrary string[0] content>;';
 
   test(t => {
-    // The argument for RTCIceCandidateInit is optional (w3c/webrtc-pc#1153),
-    // but the constructor throws because both sdpMid and sdpMLineIndex are null
+    // The argument for RTCIceCandidateInit is optional (w3c/webrtc-pc #1153 #1166),
+    // but the constructor throws because both sdpMid and sdpMLineIndex are null by default.
     // Note that current browsers pass this test but may throw TypeError for
     // different reason, i.e. they don't accept empty argument.
     // Further tests below are used to differentiate the errors.
-    assert_throws(new TypeError,
-      () => new RTCIceCandidate());
+    assert_throws(new TypeError(), () => new RTCIceCandidate());
   }, 'new RTCIceCandidate()');
 
   test(t => {
     // All fields in RTCIceCandidateInit are optional,
-    // but the constructor throws because both sdpMid and sdpMLineIndex are null
+    // but the constructor throws because both sdpMid and sdpMLineIndex are null by default.
     // Note that current browsers pass this test but may throw TypeError for
     // different reason, i.e. they don't allow undefined candidate string.
     // Further tests below are used to differentiate the errors.
-    assert_throws(new TypeError,
-      () => new RTCIceCandidate({}));
+    assert_throws(new TypeError(), () => new RTCIceCandidate({}));
   }, 'new RTCIceCandidate({})');
 
   test(t => {
-    // Check that manually filling the default values for RTCIceCandidateInit
+    // Checks that manually filling the default values for RTCIceCandidateInit
     // still throws because both sdpMid and sdpMLineIndex are null
-    assert_throws(new TypeError,
+    assert_throws(new TypeError(),
       () => new RTCIceCandidate({
         candidate: '',
         sdpMid: null,
@@ -41,16 +39,25 @@
   }, 'new RTCIceCandidate({ ... }) with manually filled default values');
 
   test(t => {
-    // Throws because both sdpMid and sdpMLineIndex are null
-    assert_throws(new TypeError,
+    // Checks that explicitly setting both sdpMid and sdpMLineIndex null should throw
+    assert_throws(new TypeError(),
+      () => new RTCIceCandidate({
+        sdpMid: null,
+        sdpMLineIndex: null
+      }));
+  }, 'new RTCIceCandidate({ sdpMid: null, sdpMLineIndex: null })');
+
+  test(t => {
+    // Throws because both sdpMid and sdpMLineIndex are null by default
+    assert_throws(new TypeError(),
       () => new RTCIceCandidate({
         candidate: ''
       }));
   }, `new RTCIceCandidate({ candidate: '' })`);
 
   test(t => {
-    // Throws because both sdpMid and sdpMLineIndex are null
-    assert_throws(new TypeError,
+    // Throws because both sdpMid and sdpMLineIndex are null by default
+    assert_throws(new TypeError(),
       () => new RTCIceCandidate({
         candidate: candidateString
       }));
@@ -125,11 +132,11 @@
   test(t =>{
     // candidate string is not validated in RTCIceCandidate
     const candidate = new RTCIceCandidate({
-      candidate: randomString,
+      candidate: arbitraryString,
       sdpMid: 'audio'
     });
 
-    assert_equals(candidate.candidate, randomString);
+    assert_equals(candidate.candidate, arbitraryString);
     assert_equals(candidate.sdpMid, 'audio');
     assert_equals(candidate.sdpMLineIndex, null);
     assert_equals(candidate.ufrag, null);
@@ -153,14 +160,14 @@
   test(t => {
     // sdpMid is not validated in RTCIceCandidate
     const candidate = new RTCIceCandidate({
-      sdpMid: randomString
+      sdpMid: arbitraryString
     });
 
     assert_equals(candidate.candidate, '');
-    assert_equals(candidate.sdpMid, randomString);
+    assert_equals(candidate.sdpMid, arbitraryString);
     assert_equals(candidate.sdpMLineIndex, null);
     assert_equals(candidate.ufrag, null);
-  }, 'new RTCIceCandidate({ ... }) with random sdpMid');
+  }, 'new RTCIceCandidate({ ... }) with invalid sdpMid');
 
 
   test(t => {

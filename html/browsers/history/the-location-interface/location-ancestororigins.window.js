@@ -41,3 +41,32 @@ async_test(t => {
   frame.referrerPolicy = "no-referrer"
   document.body.appendChild(frame)
 }, "location.ancestorOrigins can be masked by a predetermined referrer policy")
+
+async_test(t => {
+  const frame = document.createElement("iframe")
+  t.add_cleanup(() => {
+    frame.remove()
+  })
+  frame.src = new URL("resources/ancestororigins-embed.py?id=123&iframe=|./ancestororigins-embed.py%3Fid=1234", location.href.replace("://", "://天気の良い日.")).href
+  document.body.appendChild(frame)
+
+  let almostDone = false
+  function localDone() {
+    if(almostDone) {
+      t.done()
+    }
+    almostDone = true
+  }
+
+  self.onmessage = t.step_func(e => {
+    if(e.data.id === 123) {
+      assert_array_equals(e.data.output, [location.origin])
+      localDone()
+    } else if(e.data.id === 1234) {
+      assert_array_equals(e.data.output, [location.origin.replace("://", "://xn--n8j6ds53lwwkrqhv28a."), location.origin])
+      localDone()
+    } else {
+      assert_unreached()
+    }
+  })
+}, "location.ancestorOrigins and IDNA")

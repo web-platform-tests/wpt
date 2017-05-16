@@ -41,8 +41,8 @@ link.addEventListener("click", () => {
   link.setAttribute("clicked", "true");
 });
 
-const blob = new Blob(["hello"], {type: "text/html"});
-link.href = URL.createObjectURL(blob);
+const blob_object = new Blob(["hello"], {type: "text/html"});
+link.href = URL.createObjectURL(blob_object);
 
 const button = document.querySelector("button");
 

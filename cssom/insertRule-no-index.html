@@ -1,27 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Test: CSSOM StyleSheet Modify Rule List</title>
+    <title>CSS Test: CSSOM StyleSheet insertRule omitted second argument</title>
     <link rel="author" title="Sendil Kumar N" href="mailto:sendilkumarn.opensource@gmail.com">
-    <link rel="help" href="http://www.w3.org/TR/cssom-1/#the-cssstylesheet-interface">
+    <link rel="help" href="https://drafts.csswg.org/cssom/">
     <link rel="help" href="http://www.w3.org/TR/cssom-1/#the-cssrule-interface">
     <meta name="flags" content="dom">
-    <meta name="assert" content="StyleSheet and CSSStyleSheet objects have the properties specified in their interfaces">
     <script src="/resources/testharness.js" type="text/javascript"></script>
     <script src="/resources/testharnessreport.js" type="text/javascript"></script>
-    <style id="styleElement" type="text/css" media="all" title="internal style sheet" disabled="disabled">
-        * { margin: 0; padding: 0; }
+    <style id="styleElement">
+        /* An initial style rule to test where the new rule is inserted relative to this one */
+        nosuchelement { color: red; }
     </style>
-    <script id="metadata_cache">/*
-     {
-     "add_rule": {
-     "assert": ["Index argument is optional",
-     "Can add a rule at first index"]
-     }
-     */</script>
 </head>
 <body>
-<noscript>Test not run - javascript required.</noscript>
 <div id="log"></div>
 <script type="text/javascript">
     var sheet = document.getElementById("styleElement").sheet;
@@ -30,10 +22,14 @@
         sheet.insertRule("p { color: green; }");
         assert_equals(sheet.cssRules.length, 2);
         assert_equals(sheet.cssRules.item(0).cssText, "p { color: green; }");
-    }, "add_rule", {
-        assert: [   "Index argument is optional",
-            "Can add a rule at first index when no index is given" ]
-    });
+    }, "inserRule with omitted index argument");
+
+    test(function() {
+        assert_equals(sheet.cssRules.length, 2);
+        sheet.insertRule("p { color: yellow; }", undefined);
+        assert_equals(sheet.cssRules.length, 3);
+        assert_equals(sheet.cssRules.item(0).cssText, "p { color: yellow; }");
+    }, "insertRule with undefined index argument");
 </script>
 </body>
 </html>

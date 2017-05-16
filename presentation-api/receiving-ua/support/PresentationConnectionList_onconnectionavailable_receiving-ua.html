@@ -53,6 +53,16 @@
         return checkConnectionList(evt.connection, 'connect');
       };
 
+      const watchEvent = (obj, watcher, type) => {
+        const watchHandler = new Promise(resolve => {
+          obj['on' + type] = evt => { resolve(evt); };
+        });
+        return Promise.all([ watchHandler, watcher.wait_for(type) ]).then(results => {
+          assert_equals(results[0], results[1], 'Both on' + type + ' and addEventListener pass the same event object.');
+          return results[0];
+        });
+      };
+
       // Step 1: check the first connection in "connected" state
       let connection = list.connections[0];
       assert_equals(number, 1, 'A presentation connection list is populated with a first presentation connection.');
@@ -70,12 +80,12 @@
       .then(() => {
         stash.send(JSON.stringify({ type: 'ok' }));
         eventWatcher = new EventWatcher(t, list, 'connectionavailable');
-        return eventWatcher.wait_for('connectionavailable')
+        return watchEvent(list, eventWatcher, 'connectionavailable')
       }).then(checkEvent)
       // Step 4: check the second connection (with <iframe>) in "connected" state
       .then(() => {
         stash.send(JSON.stringify({ type: 'ok' }));
-        return eventWatcher.wait_for('connectionavailable');
+        return watchEvent(list, eventWatcher, 'connectionavailable')
       }).then(checkEvent);
     });
   });

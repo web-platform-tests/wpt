@@ -6,6 +6,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
+<body>
 <script>
 "use strict";
 
@@ -14,14 +15,16 @@ async_test(t => {
   const form = document.createElement("form");
   const button = document.createElement("button");
   form.appendChild(button);
+  document.body.appendChild(form);
 
   form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
     assert_equals(ev.target, form);
   }));
 
   button.click();
 
-}, "clicking a button with .click() should trigger a submit");
+}, "clicking a button with .click() should trigger a submit (form connected)");
 
 async_test(t => {
 
@@ -30,13 +33,31 @@ async_test(t => {
   form.appendChild(button);
 
   form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
+    assert_unreached("Form should not be submitted");
+  }));
+
+  button.click();
+  t.step_timeout(() => t.done(), 500);
+
+}, "clicking a button with .click() should not trigger a submit (form disconnected)");
+
+async_test(t => {
+
+  const form = document.createElement("form");
+  const button = document.createElement("button");
+  form.appendChild(button);
+  document.body.appendChild(form);
+
+  form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
     assert_equals(ev.target, form);
   }));
 
   const e = new MouseEvent("click");
   button.dispatchEvent(e);
 
-}, "clicking a button by dispatching an event should trigger a submit");
+}, "clicking a button by dispatching an event should trigger a submit (form connected)");
 
 async_test(t => {
 
@@ -44,14 +65,35 @@ async_test(t => {
   const button = document.createElement("button");
   form.appendChild(button);
 
-  form.addEventListener("submit", t.unreached_func("Form should not be submitted"));
+  form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
+    assert_unreached("Form should not be submitted");
+  }));
+
+  const e = new MouseEvent("click");
+  button.dispatchEvent(e);
+  t.step_timeout(() => t.done(), 500);
+
+}, "clicking a button by dispatching an event should not trigger a submit (form disconnected)");
+
+async_test(t => {
+
+  const form = document.createElement("form");
+  const button = document.createElement("button");
+  form.appendChild(button);
+
+  form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
+    assert_unreached("Form should not be submitted");
+  }));
+
   button.addEventListener("click", t.step_func(ev => {
     ev.preventDefault();
     t.step_timeout(() => t.done(), 500);
   }));
   button.click();
 
-}, "clicking a button that prevents the event's default should not trigger a submit");
+}, "clicking a button that cancels the event should not trigger a submit");
 
 async_test(t => {
 
@@ -59,8 +101,12 @@ async_test(t => {
   const button = document.createElement("button");
   button.setAttribute("disabled", "");
   form.appendChild(button);
+  document.body.appendChild(form);
 
-  form.addEventListener("submit", t.unreached_func("Form should not be submitted"));
+  form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
+    assert_unreached("Form should not be submitted");
+  }));
 
   button.click();
   t.step_timeout(() => t.done(), 500);
@@ -72,8 +118,12 @@ async_test(t => {
   const form = document.createElement("form");
   form.innerHTML = `<fieldset disabled><button>hello</button></fieldset>`;
   const button = form.querySelector("button");
+  document.body.appendChild(form);
 
-  form.addEventListener("submit", t.unreached_func("Form should not be submitted"));
+  form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
+    assert_unreached("Form should not be submitted");
+  }));
 
   button.click();
   t.step_timeout(() => t.done(), 500);
@@ -85,8 +135,10 @@ test(t => {
   const form = document.createElement("form");
   form.innerHTML = `<fieldset disabled><legend><button>hello</button></legend></fieldset>`;
   const button = form.querySelector("button");
+  document.body.appendChild(form);
 
   form.addEventListener("submit", t.step_func_done(ev => {
+    ev.preventDefault();
     assert_equals(ev.target, form);
   }));
 

@@ -32,26 +32,26 @@ indexeddb_test(
 
       assert_equals(
         rq.readyState, 'done',
-        'request done flag should still be set during complete');
+        'request done flag should still be set during abort');
       assert_equals(
         rq.result, db,
-        'request result should still be set (to connection) during complete');
+        'request result should still be set (to connection) during abort');
       assert_equals(
         rq.error, null,
-        'request result should still be null during upgradeneeded');
+        'request result should still be null during abort');
     });
 
     rq.onerror = t.step_func(() => {
       assert_true(saw_abort, 'abort event should fire before error');
       assert_equals(
         rq.readyState, 'done',
-        'request done flag should be set following error');
+        'request done flag should be set on error');
       assert_equals(
         rq.result, undefined,
-        'request result should be undefined following error');
+        'request result should be undefined on error');
       assert_equals(
         rq.error.name, 'AbortError',
-        'request error should be AbortError following error');
+        'request error should be AbortError on error');
       t.done();
     });
   },

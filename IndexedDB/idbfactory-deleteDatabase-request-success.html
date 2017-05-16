@@ -14,13 +14,13 @@ async_test(t => {
   rq.onsuccess = t.step_func(() => {
     assert_equals(
       rq.readyState, 'done',
-      'request done flag should be set following success');
+      'request done flag should be set on success');
     assert_equals(
       rq.result, undefined,
-      'request result should still be set to undefined following success');
+      'request result should still be set to undefined on success');
     assert_equals(
       rq.error, null,
-      'request error should be null following success');
+      'request error should be null on success');
     t.done();
   });
 }, 'Properties of IDBOpenDBRequest during IDBFactory deleteDatabase()');

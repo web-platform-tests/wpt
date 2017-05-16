@@ -33,20 +33,20 @@ indexeddb_test(
         'request result should still be set (to connection) during complete');
       assert_equals(
         rq.error, null,
-        'request result should still be null during upgradeneeded');
+        'request result should still be null during complete');
     });
   },
   (t, db, rq) => {
     assert_true(saw_complete, 'complete event should fire before success');
     assert_equals(
       rq.readyState, 'done',
-      'request done flag should be set following success');
+      'request done flag should be set on success');
     assert_equals(
       rq.result, db,
-      'request result should still be set (to connection) following success');
+      'request result should still be set (to connection) on success');
     assert_equals(
       rq.error, null,
-      'request error should be null following success');
+      'request error should be null on success');
     t.done();
   },
   'Properties of IDBOpenDBRequest during successful IDBFactory open()');

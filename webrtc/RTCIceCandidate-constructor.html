@@ -171,15 +171,18 @@
 
 
   test(t => {
-    // sdpMLineIndex is not validated in RTCIceCandidate
+    // Some arbitrary large out of bound line index that practically
+    // do not reference any m= line in SDP.
+    // However sdpMLineIndex is not validated in RTCIceCandidate
+    // and it has no knowledge of the SDP it is associated with.
     const candidate = new RTCIceCandidate({
-      sdpMLineIndex: 128
+      sdpMLineIndex: 65535
     });
 
     assert_equals(candidate.candidate, '');
     assert_equals(candidate.sdpMid, null);
-    assert_equals(candidate.sdpMLineIndex, 128);
+    assert_equals(candidate.sdpMLineIndex, 65535);
     assert_equals(candidate.ufrag, null);
-  }, 'new RTCIceCandidate({ ... }) with random sdpMLineIndex');
+  }, 'new RTCIceCandidate({ ... }) with invalid sdpMLineIndex');
 
 </script>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Marquee Test: marquee basic</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<meta name="flags" content="interact">
+
+
+<h2>Description</h2>
+<p>
+  This test validates that marquee direction, background can be customized and scroll can be
+started and stopped by corresponding method.
+</p>
+
+<h2>Test steps:</h2>
+<ol>
+  <li>Click the 'Stop' button to stop marquee</li>
+  <li>Click the 'Start' button to start marquee</li>
+</ol>
+
+<h2>Test result:</h2>
+<p>Test passes if marquee move form left to right, can be stopped or started when click 'Stop' or 'Start' button</p>
+
+<input type="button" id="stop" value="Stop"/>
+<input type="button" id="start" value="Start"/>
+
+<marquee id="testMarquee" direction="right" bgcolor="#FF0000">Test Marquee element</marquee>
+
+<script>
+
+var stopButton = document.getElementById("stop");
+var startButton = document.getElementById("start");
+var marqueeEle = document.getElementById("testMarquee");
+
+stopButton.addEventListener("click", function(evt) { marqueeEle.stop();}, false);
+
+startButton.addEventListener("click", function(evt) { marqueeEle.start();}, false);
+
+</script>

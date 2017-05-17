@@ -972,6 +972,51 @@ IdlInterface.prototype.test_self = function()
         }.bind(this), this.name + " interface object name");
     }
 
+
+    if (this.has_extended_attribute("LegacyWindowAlias")) {
+        test(function()
+        {
+            var aliasAttrs = this.extAttrs.filter(function(o) { return o.name === "LegacyWindowAlias"; });
+            if (aliasAttrs.length > 1) {
+                throw "Invalid IDL: multiple LegacyWindowAlias extended attributes on " + this.name;
+            }
+            if (this.is_callback()) {
+                throw "Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name;
+            }
+            if (this.exposureSet.indexOf("Window") === -1) {
+                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " but not exposed in Window";
+            }
+            // TODO: when testing of [NoInterfaceObject] interfaces is supported,
+            // check that it's not specified together with LegacyWindowAlias.
+
+            // TODO: maybe check that [LegacyWindowAlias] is not specified on a partial interface.
+
+            var rhs = aliasAttrs[0].rhs;
+            if (!rhs) {
+                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " without identifier";
+            }
+            var aliases;
+            if (rhs.type === "identifier-list") {
+                aliases = rhs.value;
+            } else { // rhs.type === identifier
+                aliases = [ rhs.value ];
+            }
+
+            // OK now actually check the aliases...
+            for (var alias of aliases) {
+                assert_true(alias in self, alias + " should exist");
+                assert_equals(self[alias], self[this.name], "self." + alias + " should be the same value as self." + this.name);
+                var desc = Object.getOwnPropertyDescriptor(self, alias);
+                assert_equals(desc.value, self[this.name], "wrong value in " + alias + " property descriptor");
+                assert_true(desc.writable, alias + " is not writable");
+                assert_false(desc.enumerable, alias + " is enumerable");
+                assert_true(desc.configurable, alias + " is not configurable");
+                assert_false('get' in desc, alias + " has a getter");
+                assert_false('set' in desc, alias + " has a setter");
+            }
+
+        }.bind(this), this.name + " interface: legacy window alias");
+    }
     // TODO: Test named constructors if I find any interfaces that have them.
 
     test(function()

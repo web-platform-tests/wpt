@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 import json
 import sys
 
@@ -17,23 +17,20 @@ def main():
     }
 
     This script expects to be fed results in the following way:
-    cat $LOGFILE | grep test_status | ./summarize_logs.py $SUMMARY_FILENAME
+    cat $LOGFILE | ./summarize_logs.py $SUMMARY_FILENAME
     """
+    assert sys.argv[1], 'Required argument: summary file path'
     summary_filename = sys.argv[1]
-    assert summary_filename, 'Required argument: summary file path'
     results = {}
     subtest_results_by_file = {}
 
     for line in sys.stdin:
         test_status = json.loads(line)
 
-        # To guard against irrelevant test lines
-        # Maybe warn if we find too many?
-        if test_status["action"] != "test_status":
+        if test_status["action"] not in ("test_status", "test_end"):
             continue
 
         test_file = test_status["test"]
-        subtest_name = test_status["subtest"]
         status = test_status["status"]
 
         if test_file not in results:

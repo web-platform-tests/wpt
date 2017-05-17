@@ -15,7 +15,6 @@
 <script type="text/javascript">
     var sheet = document.getElementById("linkElement").sheet;
     test(function() {
-        console.log(sheet);
         assert_equals(sheet.cssRules.length, 0);
         sheet.insertRule("p { color: green; }");
         assert_equals(sheet.cssRules.length, 1);

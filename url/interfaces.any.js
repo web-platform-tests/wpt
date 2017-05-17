@@ -21,7 +21,7 @@ interface URL {
   USVString toJSON();
 };
 
-[Constructor(optional (sequence<sequence<USVString>> or USVString) init = ""), // or record<USVString, USVString>
+[Constructor(optional (sequence<sequence<USVString>> or record<USVString, USVString> or USVString) init = ""),
  Exposed=(Window,Worker)]
 interface URLSearchParams {
   void append(USVString name, USVString value);

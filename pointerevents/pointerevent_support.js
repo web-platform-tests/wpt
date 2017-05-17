@@ -21,7 +21,7 @@ function check_PointerEvent(event, testNamePrefix) {
 
     if (expectedPointerType != null) {
         test(function () {
-            assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
+            assert_equals(event.pointerType, expectedPointerType, "pointerType should be the one specified in the test page.");
         }, pointerTestName + " event pointerType is correct.");
     }
 
@@ -201,6 +201,7 @@ function rPointerCapture(e) {
 
 var globalPointerEventTest = null;
 var expectedPointerType = null;
+const ALL_POINTERS = ['mouse', 'touch', 'pen'];
 const HOVERABLE_POINTERS = ['mouse', 'pen'];
 const NOHOVER_POINTERS = ['touch'];
 
@@ -212,6 +213,10 @@ function MultiPointerTypeTest(testName, types) {
     this.createNextTest();
 }
 
+MultiPointerTypeTest.prototype.step = function(op) {
+    this.currentTest.step(op);
+}
+
 MultiPointerTypeTest.prototype.skip = function() {
     var prevTest = this.currentTest;
     this.createNextTest();
@@ -219,10 +224,16 @@ MultiPointerTypeTest.prototype.skip = function() {
 }
 
 MultiPointerTypeTest.prototype.done = function() {
-    var prevTest = this.currentTest;
-    this.createNextTest();
-    if (prevTest != null)
-        prevTest.done();
+    if (this.currentTest.status != 1) {
+        var prevTest = this.currentTest;
+        this.createNextTest();
+        if (prevTest != null)
+            prevTest.done();
+    }
+}
+
+MultiPointerTypeTest.prototype.step = function(stepFunction) {
+    this.currentTest.step(stepFunction);
 }
 
 MultiPointerTypeTest.prototype.createNextTest = function() {
@@ -238,7 +249,10 @@ MultiPointerTypeTest.prototype.createNextTest = function() {
     resetTestState();
 }
 
-
 function setup_pointerevent_test(testName, supportedPointerTypes) {
-   return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);
+    return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);
+}
+
+function checkPointerEventType(event) {
+    assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
 }

@@ -18,6 +18,7 @@ testText("<pre>abc  def", "abc  def", "Internal whitespace preserved");
 testText("<pre>abc\ndef", "abc\ndef", "\\n preserved");
 testText("<pre>abc\rdef", "abc\ndef", "\\r converted to newline");
 testText("<pre>abc\tdef", "abc\tdef", "\\t preserved");
+testText("<div><pre>abc</pre><pre>def</pre>", "abc\ndef", "Two <pre> siblings");
 
 /**** <div style="white-space:pre"> ****/
 
@@ -126,10 +127,6 @@ testText("<fieldset>abc", "abc", "<fieldset> contents preserved");
 testText("<fieldset><legend>abc", "abc", "<fieldset> <legend> contents preserved");
 testText("<input type='text' value='abc'>", "", "<input> contents ignored");
 testText("<textarea>abc", "", "<textarea> contents ignored");
-testText("<select size='1'><option>abc</option><option>def", "abc\ndef", "<select size='1'> contents of options preserved");
-testText("<select size='2'><option>abc</option><option>def", "abc\ndef", "<select size='2'> contents of options preserved");
-testText("<select size='1'><option id='target'>abc</option><option>def", "abc", "<select size='1'> contents of target option preserved");
-testText("<select size='2'><option id='target'>abc</option><option>def", "abc", "<select size='2'> contents of target option preserved");
 testText("<iframe>abc", "", "<iframe> contents ignored");
 testText("<iframe><div id='target'>abc", "", "<iframe> contents ignored");
 testText("<iframe src='data:text/html,abc'>", "","<iframe> subdocument ignored");
@@ -143,6 +140,24 @@ testText("<canvas>abc", "", "<canvas> contents ignored");
 testText("<canvas><div id='target'>abc", "", "<canvas><div id='target'> contents ignored");
 testText("<img alt='abc'>", "", "<img> alt text ignored");
 testText("<img src='about:blank' class='poke'>", "", "<img> contents ignored");
+
+/**** <select>, <optgroup> & <option> ****/
+
+testText("<select size='1'><option>abc</option><option>def", "abc\ndef", "<select size='1'> contents of options preserved");
+testText("<select size='2'><option>abc</option><option>def", "abc\ndef", "<select size='2'> contents of options preserved");
+testText("<select size='1'><option id='target'>abc</option><option>def", "abc", "<select size='1'> contents of target option preserved");
+testText("<select size='2'><option id='target'>abc</option><option>def", "abc", "<select size='2'> contents of target option preserved");
+testText("<div>a<select></select>bc", "abc", "empty <select>");
+testText("<div>a<select><optgroup></select>bc", "a\nbc", "empty <optgroup> in <select>");
+testText("<div>a<select><option></select>bc", "a\nbc", "empty <option> in <select>");
+testText("<select class='poke'></select>", "", "<select> containing text node child");
+testText("<select><optgroup class='poke-optgroup'></select>", "", "<optgroup> containing <optgroup>");
+testText("<select><optgroup><option>abc</select>", "abc", "<optgroup> containing <option>");
+testText("<select><option class='poke-div'>123</select>", "123\nabc", "<div> in <option>");
+testText("<div>a<optgroup></optgroup>bc", "a\nbc", "empty <optgroup> in <div>");
+testText("<div>a<optgroup>123</optgroup>bc", "a\nbc", "<optgroup> in <div>");
+testText("<div>a<option></option>bc", "a\nbc", "empty <option> in <div>");
+testText("<div>a<option>123</option>bc", "a\n123\nbc", "<option> in <div>");
 
 /**** innerText on replaced element children ****/
 
@@ -294,14 +309,13 @@ testText("<math>abc", undefined, "innerText not supported on MathML elements");
 
 /**** Ruby ****/
 
-testText("<div><ruby>abc<rp>(</rp><rt>def</rt><rp>)</rp></ruby>", "abc(def)", "<rp> rendered");
-testText("<div><rp>abc</rp>", "abc", "Lone <rp> rendered");
-testText("<div><rp style='visibility:hidden'>abc</rp>", "", "visibility:hidden <rp> not rendered");
-testText("<div><rp> abc </rp>", " abc ", "Lone <rp> rendered without whitespace trimming");
-testText("<div><rp style='display:block'>abc</rp>def", "abc\ndef", "display:block <rp> induces line breaks");
-testText("<div><rp style='display:block'> abc </rp>def", " abc \ndef", "display:block <rp> induces line breaks but doesn't trim whitespace");
-// XXX this is not desirable but the spec currently requires it.
-testText("<div><select class='poke-rp'></select>", "abc", "<rp> in a replaced element still renders");
+testText("<div><ruby>abc<rt>def</rt></ruby>", "abcdef", "<rt> and no <rp>");
+testText("<div><ruby>abc<rp>(</rp><rt>def</rt><rp>)</rp></ruby>", "abcdef", "<rp>");
+testText("<div><rp>abc</rp>", "", "Lone <rp>");
+testText("<div><rp style='visibility:hidden'>abc</rp>", "", "visibility:hidden <rp>");
+testText("<div><rp style='display:block'>abc</rp>def", "abc\ndef", "display:block <rp>");
+testText("<div><rp style='display:block'> abc </rp>def", "abc\ndef", "display:block <rp> with whitespace");
+testText("<div><select class='poke-rp'></select>", "", "<rp> in a <select>");
 
 /**** Shadow DOM ****/
 

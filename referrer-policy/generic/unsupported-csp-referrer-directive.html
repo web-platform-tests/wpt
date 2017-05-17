@@ -16,13 +16,13 @@
 
     <script>
       var test = async_test("Image has a referrer despite CSP 'referrer' directive");
-      var urlPath = '/referrer-policy/generic/subresource/image.py';
+      var urlPath = '/referrer-policy/generic/subresource/image.py?cache_destroyer=' + (new Date()).getTime();
       var url = location.protocol + "//www1." + location.hostname + ":" + location.port +
                 urlPath;
       queryImage(url, test.step_func(function(message) {
         assert_equals(message.referrer, document.location.href);
         test.done();
-      }));
+      }), null, 'always', test);
     </script>
 
     <div id="log"></div>

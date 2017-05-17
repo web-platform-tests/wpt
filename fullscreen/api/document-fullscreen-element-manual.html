@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Document.fullscreenElement</title>
+<title>Document#fullscreenElement</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../trusted-click.js"></script>
@@ -22,11 +22,11 @@ async_test(function(t)
         });
     });
 
-    trusted_click(t.step_func(function()
+    trusted_click(t, function()
     {
         assert_equals(document.fullscreenElement, null, "fullscreenElement before requestFullscreen()");
         div.requestFullscreen();
         assert_equals(document.fullscreenElement, null, "fullscreenElement after requestFullscreen()");
-    }), document.body);
+    }, document.body);
 });
 </script>

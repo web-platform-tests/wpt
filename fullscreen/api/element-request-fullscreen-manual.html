@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Element.requestFullscreen()</title>
+<title>Element#requestFullscreen()</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../trusted-click.js"></script>
@@ -17,6 +17,6 @@ async_test(function(t)
         t.done();
     }));
 
-    trusted_request(div);
+    trusted_request(t, div);
 });
 </script>

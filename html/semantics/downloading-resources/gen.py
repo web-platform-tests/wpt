@@ -140,7 +140,7 @@ def main():
                                WITHOUT_CONTENT_DISPOSITION):
                 html = gen_html(request_origin, redirect, add_header)
                 filename = ("a-download-%(request_origin)s-%(redirect)s-"
-                            "%(add_header)s.manual.html" % {
+                            "%(add_header)s-manual.html" % {
                                 "request_origin": request_origin,
                                 "redirect": redirect,
                                 "add_header": add_header })

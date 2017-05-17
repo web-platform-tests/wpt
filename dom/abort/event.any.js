@@ -1,4 +1,4 @@
-async_test(t => {
+test(t => {
   const c = new AbortController(),
         s = c.signal;
   let state = "begin";
@@ -6,7 +6,7 @@ async_test(t => {
   assert_false(s.aborted);
 
   s.addEventListener("abort",
-    t.step_func_done(e => {
+    t.step_func(e => {
       assert_equals(state, "begin");
       state = "aborted";
     })
@@ -16,7 +16,7 @@ async_test(t => {
   assert_equals(state, "aborted");
   assert_true(s.aborted);
 
-  t.done();
+  c.abort();
 }, "AbortController() basics");
 
 done();

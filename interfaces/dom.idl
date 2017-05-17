@@ -44,7 +44,7 @@ dictionary CustomEventInit : EventInit {
 };
 
 
-//[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker)]
 interface EventTarget {
   void addEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
   void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
@@ -58,6 +58,23 @@ callback interface EventListener {
 dictionary EventListenerOptions {
   boolean capture;
   boolean passive;
+};
+
+
+[Constructor,
+ Exposed=(Window,Worker)]
+interface AbortController {
+  [SameObject] readonly attribute AbortSignal signal;
+
+  void abort();
+};
+
+
+[Exposed=(Window,Worker)]
+interface AbortSignal : EventTarget {
+  readonly attribute boolean aborted;
+
+  attribute EventHandler onabort;
 };
 
 

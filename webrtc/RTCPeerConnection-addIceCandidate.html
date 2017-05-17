@@ -1,0 +1,393 @@
+<!doctype html>
+<title>Test RTCPeerConnection.addIceCandidate</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  'use strict'
+
+  // SDP copied from JSEP Example 7.1
+  const sdp = `v=0
+o=- 4962303333179871722 1 IN IP4 0.0.0.0
+s=-
+t=0 0
+a=ice-options:trickle
+a=group:BUNDLE a1 v1
+a=group:LS a1 v1
+m=audio 10100 UDP/TLS/RTP/SAVPF 96 0 8 97 98
+c=IN IP4 203.0.113.100
+a=mid:a1
+a=sendrecv
+a=rtpmap:96 opus/48000/2
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:97 telephone-event/8000
+a=rtpmap:98 telephone-event/48000
+a=maxptime:120
+a=extmap:1 urn:ietf:params:rtp-hdrext:sdes:mid
+a=extmap:2 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=msid:47017fee-b6c1-4162-929c-a25110252400 f83006c5-a0ff-4e0a-9ed9-d3e6747be7d9
+a=ice-ufrag:ETEn
+a=ice-pwd:OtSK0WpNtpUjkY4+86js7ZQl
+a=fingerprint:sha-256 19:E2:1C:3B:4B:9F:81:E6:B8:5C:F4:A5:A8:D8:73:04:BB:05:2F:70:9F:04:A9:0E:05:E9:26:33:E8:70:88:A2
+a=setup:actpass
+a=dtls-id:1
+a=rtcp:10101 IN IP4 203.0.113.100
+a=rtcp-mux
+a=rtcp-rsize
+`
+
+  const sessionDesc = { type: 'offer', sdp }
+
+  // valid candidate attributes
+  const sdpMid = 'a1';
+  const sdpMLineIndex = 0;
+  const ufrag = 'ETEn';
+
+  const candidateStr1 = 'candidate:1 1 udp 2113929471 203.0.113.100 10100 typ host';
+  const candidateStr2 = 'candidate:1 2 udp 2113929470 203.0.113.100 10101 typ host';
+  const invalidCandidateStr = '(Invalid) candidate \r\n string';
+
+  const candidateLine1 = `a=${candidateStr1}`;
+  const candidateLine2 = `a=${candidateStr2}`;
+  const endOfCandidateLine = 'a=end-of-candidates';
+
+  const candidate1 = {
+    candidate: candidateStr1,
+    sdpMid, sdpMLineIndex, ufrag
+  }
+
+  const candidate2 = {
+    candidate: candidateStr2,
+    sdpMid, sdpMLineIndex, ufrag
+  }
+
+  const endOfCandidate = {
+    candidate: '',
+    sdpMid, sdpMLineIndex, ufrag
+  }
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, 'InvalidStateError',
+      pc.addIceCandidate(candidate1))
+  }, 'Add ICE candidate before setting remote description should reject with InvalidStateError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate(candidate1));
+  }, 'Add ICE candidate after setting remote description should succeed');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate(new RTCIceCandidate(candidate1)));
+  }, 'Add ICE candidate with RTCIceCandidate should succeed');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate(candidate1))
+    .then(() => {
+      assert_true(pc.remoteDescription.sdp.includes(candidateLine1),
+        'SDP should contain line for candidate1');
+    });
+  }, 'Added candidate should be found in remoteDescription');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate(candidate1))
+    .then(() => pc.addIceCandidate(candidate2))
+    .then(() => {
+      assert_true(pc.remoteDescription.sdp.includes(candidateLine1),
+        'SDP should contain line for candidate1');
+
+      assert_true(pc.remoteDescription.sdp.includes(candidateLine2),
+        'SDP should contain line for candidate2');
+    });
+  }, 'Adding multiple candidates should succeed');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate(candidate1))
+    .then(() => pc.addIceCandidate({
+      candidate: '',
+      sdpMid, sdpMLineIndex,
+      ufrag
+    }))
+    .then(() => {
+      assert_true(pc.remoteDescription.sdp.includes(candidateLine1),
+        'SDP should contain line for candidate1');
+      assert_true(pc.remoteDescription.sdp.includes(endOfCandidateLine),
+        'SDP should contain end of candidate line');
+    });
+  }, 'Add with empty candidate string (end of candidate) should succeed');
+
+  // IDL for addIceCandidate does not allow null argument
+  // null can be accidentally passed from onicecandidate event handler
+  // when null is used to indicate end of candidate
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate(null)));
+  }, 'Add null candidate should reject');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMid: null,
+        sdpMLineIndex: null
+      })));
+  }, 'Add candidate with both sdpMid and sdpMLineIndex manually set to null should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, 'OperationError',
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: invalidCandidateStr,
+        sdpMid, sdpMLineIndex, ufrag
+      })));
+  }, 'Add candidate with invalid candidate string should reject with OperationError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: invalidCandidateStr,
+        sdpMid: null,
+        sdpMLineIndex: null
+      })));
+  }, 'Add candidate with invalid candidate string and both sdpMid and sdpMLineIndex null should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: candidateStr1
+      })));
+  }, 'Add candidate with only valid candidate string should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({})));
+  }, 'Add candidate with empty dict should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, new TypeError(),
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: '',
+        sdpMid: null,
+        sdpMLineIndex: null,
+        ufrag: undefined
+      })));
+  }, 'Add candidate with manually filled default values should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({ sdpMid }));
+  }, 'Add candidate with only valid sdpMid should succeed');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({ sdpMLineIndex }));
+  }, 'Add candidate with only valid sdpMLineIndex should succeed');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, 'OperationError',
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMid: 'invalid', sdpMLineIndex, ufrag
+      })));
+  }, 'Add candidate with invalid sdpMid should reject with OperationError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, 'OperationError',
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMLineIndex: 2,
+        ufrag
+      })));
+  }, 'Add candidate with invalid sdpMLineIndex should reject with OperationError');
+
+  // There is an "Else" for the statement:
+  // "Else, if candidate.sdpMLineIndex is not null, ..."
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate({
+      candidate: candidateStr1,
+      sdpMid,
+      sdpMLineIndex: 2,
+      ufrag
+    }));
+  }, 'Invalid sdpMLineIndex should be ignored if valid sdpMid is provided');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return promise_rejects(t, 'OperationError',
+      pc.setRemoteDescription(sessionDesc)
+      .then(() => pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMid, sdpMLineIndex,
+        ufrag: 'invalid'
+      })));
+  }, 'Add candidate with invalid ufrag should reject with OperationError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => pc.addIceCandidate({
+      candidate: candidateStr1,
+      sdpMid, sdpMLineIndex,
+      ufrag: null
+    }))
+    .then(() => {
+      assert_true(pc.remoteDescription.sdp.includes(candidateLine1));
+    });
+  }, 'Add candidate with null ufrag should succeed');
+
+  // The check for sdpMid and sdpMLineIndex being null is done outside
+  // of enqueuing task, so it rejects even when pc is closed.
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() => {
+      const promise = pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMid: null,
+        sdpMLineIndex: null
+      });
+
+      pc.close();
+      return promise_rejects(t, new TypeError(), promise);
+    });
+  }, 'Add candidate with both sdpMid and sdpMLineIndex null should still reject with TypeError after pc is closed');
+
+
+  function assert_never_resolves(t, promise) {
+    promise.then(
+      t.step_func(result => {
+        assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`);
+      }),
+      t.step_func(err => {
+        assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`);
+      }));
+
+    t.step_timeout(t.step_func_done(), 100)
+  }
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+
+    pc.setRemoteDescription(sessionDesc)
+    .then(() => {
+      assert_never_resolves(t,
+        pc.addIceCandidate({
+          candidate: candidateStr1,
+          sdpMid, sdpMLineIndex, ufrag
+        }));
+
+      pc.close();
+
+      // When pc is closed, the remote description is not modified
+      // even if succeed
+      t.step_timeout(t.step_func(() => {
+        assert_false(pc.remoteDescription.sdp.includes(candidateLine1),
+          'Candidate should not be added to SDP because pc is closed');
+      }), 80);
+    });
+  }, 'Add valid candidate should never resolve when pc is closed')
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+
+    assert_never_resolves(t, pc.addIceCandidate({
+      candidate: candidateStr1,
+      sdpMid, sdpMLineIndex, ufrag
+    }));
+
+    pc.close();
+  }, 'Add candidate when remote description is null should never resolve when pc is closed')
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+
+    pc.setRemoteDescription(sessionDesc)
+    .then(() => {
+      assert_never_resolves(t, pc.addIceCandidate({
+        candidate: invalidCandidateStr,
+        sdpMid, sdpMLineIndex, ufrag
+      }));
+      pc.close();
+    });
+  }, 'Add candidate with invalid candidate string should never resolve when pc is closed')
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+
+    pc.setRemoteDescription(sessionDesc)
+    .then(() => {
+      assert_never_resolves(t, pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMid: 'invalid',
+        sdpMLineIndex, ufrag
+      }));
+      pc.close();
+    });
+  }, 'Add candidate with invalid sdpMid should never resolve when pc is closed')
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+
+    pc.setRemoteDescription(sessionDesc)
+    .then(() => {
+      assert_never_resolves(t, pc.addIceCandidate({
+        candidate: candidateStr1,
+        sdpMLineIndex: 2,
+        ufrag
+      }));
+      pc.close();
+    });
+  }, 'Add candidate with invalid sdpMLineIndex should never resolve when pc is closed')
+
+</script>

@@ -13,41 +13,23 @@
 
 <script>
 "use strict";
-var iframe; // used to get a Document object (can't use `document` because some test clears the page)
-setup(function() {
-  iframe = document.createElement('iframe');
-  iframe.hidden = true;
-  document.body.appendChild(iframe);
-});
 
-function doTest([html, dom]) {
+function doTest(dom) {
   var idlArray = new IdlArray();
   idlArray.add_untested_idls(dom);
-  idlArray.add_idls(html);
+  idlArray.add_idls('partial interface Document { readonly attribute HTMLAllCollection all; };');
 
   idlArray.add_objects({
-    HTMLAllCollection: ['document.all'],
-    Document: ['iframe.contentDocument', 'new Document()'],
+    XMLDocument: ['document.implementation.createDocument(null, "", null)'],
   });
   idlArray.test();
 };
 
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
-  });
-}
-
 promise_test(function() {
   // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      waitForLoad()])
-                .then(doTest);
+  return fetch("/interfaces/dom.idl")
+    .then(response => response.text())
+    .then(doTest);
 }, "Test driver");
 
 </script>

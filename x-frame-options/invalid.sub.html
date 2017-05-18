@@ -7,7 +7,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "./support/xfo.py?value=INVALID";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -20,7 +20,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=INVALID";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -33,7 +33,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "./support/xfo.py?value=ALLOWALL";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -46,7 +46,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=ALLOWALL";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -59,7 +59,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "./support/xfo.py?value=";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -72,7 +72,7 @@
   async_test(t => {
     var i = document.createElement('iframe');
     i.src = "http://{{domains[www]}}:{{ports[http][0]}}/x-frame-options/support/xfo.py?value=";
-   
+
     wait_for_message_from(i, t)
       .then(t.step_func_done(e => {
         assert_equals(e.data, "Loaded");
@@ -82,4 +82,3 @@
     document.body.appendChild(i);
   }, "Empty `XFO:` allows cross-origin framing.");
 </script>
-

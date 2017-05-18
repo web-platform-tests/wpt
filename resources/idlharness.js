@@ -984,7 +984,7 @@ IdlInterface.prototype.test_self = function()
                 throw "Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name;
             }
             if (this.exposureSet.indexOf("Window") === -1) {
-                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " but not exposed in Window";
+                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window";
             }
             // TODO: when testing of [NoInterfaceObject] interfaces is supported,
             // check that it's not specified together with LegacyWindowAlias.
@@ -1003,16 +1003,23 @@ IdlInterface.prototype.test_self = function()
             }
 
             // OK now actually check the aliases...
-            for (var alias of aliases) {
-                assert_true(alias in self, alias + " should exist");
-                assert_equals(self[alias], self[this.name], "self." + alias + " should be the same value as self." + this.name);
-                var desc = Object.getOwnPropertyDescriptor(self, alias);
-                assert_equals(desc.value, self[this.name], "wrong value in " + alias + " property descriptor");
-                assert_true(desc.writable, alias + " is not writable");
-                assert_false(desc.enumerable, alias + " is enumerable");
-                assert_true(desc.configurable, alias + " is not configurable");
-                assert_false('get' in desc, alias + " has a getter");
-                assert_false('set' in desc, alias + " has a setter");
+            var alias;
+            if (exposed_in(exposure_set(this, ["Window"]))) {
+                for (alias of aliases) {
+                    assert_true(alias in self, alias + " should exist");
+                    assert_equals(self[alias], self[this.name], "self." + alias + " should be the same value as self." + this.name);
+                    var desc = Object.getOwnPropertyDescriptor(self, alias);
+                    assert_equals(desc.value, self[this.name], "wrong value in " + alias + " property descriptor");
+                    assert_true(desc.writable, alias + " is not writable");
+                    assert_false(desc.enumerable, alias + " is enumerable");
+                    assert_true(desc.configurable, alias + " is not configurable");
+                    assert_false('get' in desc, alias + " has a getter");
+                    assert_false('set' in desc, alias + " has a setter");
+                }
+            } else {
+                for (alias of aliases) {
+                    assert_false(alias in self, alias + " should not exist");
+                }
             }
 
         }.bind(this), this.name + " interface: legacy window alias");

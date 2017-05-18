@@ -1004,7 +1004,7 @@ IdlInterface.prototype.test_self = function()
 
             // OK now actually check the aliases...
             var alias;
-            if (exposed_in(exposure_set(this, ["Window"]))) {
+            if (exposed_in(exposure_set(this, this.exposureSet)) && 'document' in self) {
                 for (alias of aliases) {
                     assert_true(alias in self, alias + " should exist");
                     assert_equals(self[alias], self[this.name], "self." + alias + " should be the same value as self." + this.name);

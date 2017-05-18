@@ -23,19 +23,10 @@
             var xhr = new XMLHttpRequest();
             var arr = new Uint8Array(bytes);
 
-            xhr.onreadystatechange = function()
-            {
-                if (xhr.readyState == 4)
-                {
-                    test.step(function()
-                    {
-                        assert_equals(xhr.status, 200);
-                        assert_equals(xhr.response, str);
-
-                        test.done();
-                    });
-                }
-            };
+            xhr.onload = test.step_func_done(function() {
+                assert_equals(xhr.status, 200);
+                assert_equals(xhr.response, str);
+            });
 
             xhr.open("POST", "./resources/content.py", true);
             xhr.send(arr);

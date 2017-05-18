@@ -15,21 +15,21 @@
 
 test(() => {
 
-  assert_equals(document.querySelector("#form1").action, (new URL("a.html", document.URL)).href,
+  assert_equals(document.querySelector("#form1").action, (new URL("a.html", document.baseURI)).href,
     "action should equal the correct absolute URL");
 
-}, "An action URL should be resolved relative to the document's URL");
+}, "An action URL should be resolved relative to the document's base URL (= the document's URL in this case)");
 
 test(() => {
 
   assert_equals(document.querySelector("#form2").action, document.URL);
 
-}, "An empty-string action content attribute should cause the IDL attribute to return the document's URL");
+}, "An empty-string action content attribute should cause the IDL attribute to return the document's URL (= the document's base URL in this case)");
 
 test(() => {
 
-  assert_equals(document.querySelector("#form3").action, "");
+  assert_equals(document.querySelector("#form3").action, document.URL);
 
-}, "A missing action content attribute should cause the IDL attribute to return the empty string");
+}, "A missing action content attribute should cause the IDL attribute to return the document's URL (= the document's base URL in this case)");
 
 </script>

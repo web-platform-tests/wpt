@@ -215,81 +215,89 @@ a=rtcp-rsize
     });
   }, 'Add with empty candidate string (end of candidate) should succeed');
 
-  // IDL for addIceCandidate does not allow null argument.
+  // WebIDL for addIceCandidate does not allow null argument.
+  // This throws a TypeError because it is checked at WebIDL level.
   // null can be accidentally passed from onicecandidate event handler
   // when null is used to indicate end of candidate
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate(null)));
-  }, 'Add null candidate should reject');
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate(null)));
+  }, 'Add null candidate should reject withTypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr1,
-        sdpMid: null,
-        sdpMLineIndex: null
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate({
+          candidate: candidateStr1,
+          sdpMid: null,
+          sdpMLineIndex: null
+        })));
   }, 'Add candidate with both sdpMid and sdpMLineIndex manually set to null should reject with TypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, 'OperationError',
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: invalidCandidateStr,
-        sdpMid, sdpMLineIndex, ufrag
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, 'OperationError',
+        pc.addIceCandidate({
+          candidate: invalidCandidateStr,
+          sdpMid, sdpMLineIndex, ufrag
+        })));
   }, 'Add candidate with invalid candidate string should reject with OperationError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: invalidCandidateStr,
-        sdpMid: null,
-        sdpMLineIndex: null
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate({
+          candidate: invalidCandidateStr,
+          sdpMid: null,
+          sdpMLineIndex: null
+        })));
   }, 'Add candidate with invalid candidate string and both sdpMid and sdpMLineIndex null should reject with TypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr1
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate({
+          candidate: candidateStr1
+        })));
   }, 'Add candidate with only valid candidate string should reject with TypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({})));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate({})));
   }, 'Add candidate with empty dict should reject with TypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, new TypeError(),
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: '',
-        sdpMid: null,
-        sdpMLineIndex: null,
-        ufrag: undefined
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
+        pc.addIceCandidate({
+          candidate: '',
+          sdpMid: null,
+          sdpMLineIndex: null,
+          ufrag: undefined
+        })));
   }, 'Add candidate with manually filled default values should reject with TypeError');
 
   promise_test(t => {
@@ -309,24 +317,26 @@ a=rtcp-rsize
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, 'OperationError',
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr1,
-        sdpMid: 'invalid', sdpMLineIndex, ufrag
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, 'OperationError',
+        pc.addIceCandidate({
+          candidate: candidateStr1,
+          sdpMid: 'invalid', sdpMLineIndex, ufrag
+        })));
   }, 'Add candidate with invalid sdpMid should reject with OperationError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, 'OperationError',
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr1,
-        sdpMLineIndex: 2,
-        ufrag
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, 'OperationError',
+        pc.addIceCandidate({
+          candidate: candidateStr1,
+          sdpMLineIndex: 2,
+          ufrag
+        })));
   }, 'Add candidate with invalid sdpMLineIndex should reject with OperationError');
 
   // There is an "Else" for the statement:
@@ -346,13 +356,14 @@ a=rtcp-rsize
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, 'OperationError',
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr1,
-        sdpMid, sdpMLineIndex,
-        ufrag: 'invalid'
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, 'OperationError',
+        pc.addIceCandidate({
+          candidate: candidateStr1,
+          sdpMid, sdpMLineIndex,
+          ufrag: 'invalid'
+        })));
   }, 'Add candidate with invalid ufrag should reject with OperationError');
 
   promise_test(t => {
@@ -389,14 +400,15 @@ a=rtcp-rsize
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return promise_rejects(t, 'OperationError',
-      pc.setRemoteDescription(sessionDesc)
-      .then(() => pc.addIceCandidate({
-        candidate: candidateStr2,
-        sdpMid: sdpMid2,
-        sdpMLineIndex: sdpMLineIndex2,
-        ufrag: ufrag
-      })));
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, 'OperationError',
+        pc.addIceCandidate({
+          candidate: candidateStr2,
+          sdpMid: sdpMid2,
+          sdpMLineIndex: sdpMLineIndex2,
+          ufrag: ufrag
+        })));
   }, 'Add candidate with sdpMid belonging to different ufrag should reject with OperationError');
 
   // The check for sdpMid and sdpMLineIndex being null is done outside

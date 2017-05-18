@@ -1,0 +1,69 @@
+[
+  "This resource is focused on highlighting issues with UTS #46 ToASCII",
+  {
+    "comment": "Label longer than 63 code points",
+    "input": "x01234567890123456789012345678901234567890123456789012345678901x"
+  },
+  {
+    "input": "x01234567890123456789012345678901234567890123456789012345678901†",
+    "output": "xn--x01234567890123456789012345678901234567890123456789012345678901-6963b"
+  },
+  {
+    "comment": "Label with hyphens in 3rd and 4th position",
+    "input": "aa--"
+  },
+  {
+    "input": "a†--",
+    "output": "xn--a---kp0a"
+  },
+  {
+    "input": "ab--c"
+  },
+  {
+    "comment": "Label with leading hyphen",
+    "input": "-x"
+  },
+  {
+    "input": "-†",
+    "output": "xn----xhn"
+  },
+  {
+    "comment": "Invalid Punycode",
+    "input": "xn--a",
+    "output": null
+  },
+  {
+    "input": "xn--a.xn--nxa",
+    "output": null
+  },
+  {
+    "input": "xn--a.β",
+    "output": null
+  },
+  {
+    "comment": "Valid Punycode",
+    "input": "xn--nxa.xn--nxa"
+  },
+  {
+    "comment": "Mixed",
+    "input": "xn--nxa.β",
+    "output": "xn--nxa.xn--nxa"
+  },
+  {
+    "input": "ab--c.xn--nxa"
+  },
+  {
+    "input": "ab--c.β",
+    "output": "ab--c.xn--nxa"
+  },
+  {
+    "comment": "CheckJoiners is false",
+    "input": "👩‍⚕️",
+    "output": "xn--1ug39w1n45b"
+  },
+  {
+    "comment": "CheckBidi is true",
+    "input": "يa",
+    "output": null
+  }
+]

@@ -56,7 +56,7 @@ function runTest(config,qualifier) {
             }).then(test.step_func(function() {
                 _events.push(event.messageType + '-response-resolved');
                 if (event.messageType === 'license-release') {
-                    setTimeout(test.step_func(function() {
+                    test.step_timeout(function() {
                         checkEventSequence(_events, [
                             'generaterequest',
                             [    // potentially repeating
@@ -75,7 +75,7 @@ function runTest(config,qualifier) {
                             'keystatuseschange-empty'
                         ]);
                         test.done();
-                    } ), 100);
+                    }, 100);
                 }
             })).catch(onFailure);
         }

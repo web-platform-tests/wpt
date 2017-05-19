@@ -26,6 +26,8 @@
       required USVString password;
     };
 
+    typedef (PasswordCredentialData or HTMLFormElement) PasswordCredentialInit;
+
     typedef (FormData or URLSearchParams) CredentialBodyType;
 
 
@@ -34,6 +36,11 @@
       USVString iconURL;
       required USVString provider;
       DOMString protocol;
+    };
+
+    dictionary CredentialCreationOptions {
+      PasswordCredentialInit? password;
+      FederatedCredentialInit? federated;
     };
 
     dictionary CredentialRequestOptions {
@@ -53,6 +60,7 @@
     interface CredentialsContainer {
       Promise<Credential> get(optional CredentialRequestOptions options);
       Promise<Credential> store(Credential credential);
+      Promise<Credential?> create(optional CredentialCreationOptions options);
       Promise<void> requireUserMediation();
     };
 

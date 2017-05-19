@@ -773,8 +773,7 @@ CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-1.png
 CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/ui3/support/replaced-min-max-1.png
 
 # TODO https://github.com/w3c/web-platform-tests/issues/5770
-MISSING-LINK: css/geometry-1/DOMMatrix-css-string.worker.js
-MISSING-LINK: css/geometry-1/WebKitCSSMatrix.worker.js
+MISSING-LINK: css/geometry-1/*.worker.js
 
 WEBIDL2.JS:.gitmodules
 

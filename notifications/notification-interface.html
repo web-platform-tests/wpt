@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Web Notifications API IDL Test</title>
+	<link rel="author" title="Kazuki Kanamori" href="mailto:yogurito@gmail.com">
+	<link rel="help" href="http://www.w3.org/TR/notifications/#api">	
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="/resources/webidl2/lib/webidl2.js"></script>
+	<script src="/resources/idlharness.js"></script>
+</head>
+<body>
+	<h1>Web Notificaitons API IDL Tests</h1>
+	<p>Clear all Notification permissions before running this test. If prompted for permission, please allow.</p>	
+	
+	<div id="log"></div>
+	<script type="text/plain" class="untested">
+	interface EventTarget {
+		void addEventListener(DOMString type, EventListener? callback, optional boolean capture /* = false */);
+		void removeEventListener(DOMString type, EventListener? callback, optional boolean capture /* = false */);
+		boolean dispatchEvent(Event event);
+	};
+
+	[Callback]
+	interface EventListener {
+		void handleEvent(Event event);
+	};
+	</script>
+	<script type="text/plain">
+	[Constructor(DOMString title, optional NotificationOptions options)]
+	interface Notification : EventTarget {
+		static readonly attribute NotificationPermission permission;
+		static void requestPermission(optional NotificationPermissionCallback callback);
+
+		attribute EventHandler onclick;
+		attribute EventHandler onshow;
+		attribute EventHandler onerror;
+		attribute EventHandler onclose;
+
+		readonly attribute NotificationDirection dir;
+		readonly attribute DOMString lang;
+		readonly attribute DOMString body;
+		readonly attribute DOMString tag;
+		readonly attribute DOMString icon;
+
+		void close();
+	};
+
+	dictionary NotificationOptions {
+		NotificationDirection dir = "auto";
+		DOMString lang = "";
+		DOMString body;
+		DOMString tag;
+		DOMString icon;
+	};
+
+	enum NotificationPermission {
+		"default",
+		"denied",
+		"granted"
+	};
+
+	callback NotificationPermissionCallback = void (NotificationPermission permission);
+
+	enum NotificationDirection {
+		"auto",
+		"ltr",
+		"rtl"
+	};
+	</script>
+	<script>
+	(function() {
+		var idl_test = function(){
+			var idl_array = new IdlArray();
+			[].forEach.call(document.querySelectorAll('script[type=text\\/plain]'), function(node) {
+      			// replace 'EventHandler' and 'unrestricted double' unrecognized by idlharness.js
+      			idls = node.textContent.replace(/EventHandler/g, 'Function?').replace(/unrestricted double/g, 'double');
+      			idl_array[(node.className === 'untested') ? 'add_untested_idls' : 'add_idls'](idls);
+      		});
+			notificationObj = new Notification('title', {
+				dir: 'auto',
+				lang: 'en',
+				body: 'test',
+				tag: 'tag',
+				icon: '/media/poster.png'
+			});
+			idl_array.add_objects({Notification: ['window.notificationObj']});
+			idl_array.test();
+			t.done();
+		};
+
+		var t = async_test('Tests that the notification object is properly initialized', {timeout: 20000});
+
+		t.step(function(){
+			assert_own_property(window, 'Notification');
+			if(Notification.permission === 'granted') {
+				t.step(idl_test);
+			} else {
+				Notification.requestPermission(function(permission){
+					if(permission !== 'granted') {
+						assert_unreached('Notification permission must be granted for he test');
+					}
+					t.step(idl_test);
+				});
+			}
+		});
+	})();
+	</script>
+</body>
+</html>

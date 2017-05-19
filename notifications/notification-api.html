@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+	<title>Web Notifications API Test</title>
+	<link rel="author" title="Kazuki Kanamori" href="mailto:yogurito@gmail.com">
+	<link rel="help" href="http://www.w3.org/TR/notifications/#api">
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+	<h1>Web Notificaitons API</h1>
+	<p>Clear all Notification permissions before running this test. If prompted for permission, please allow.</p>
+	<div id="log"></div>
+	<script>
+		setup({timeout: 20000});
+		test(function(){
+			assert_own_property(window, 'Notification');
+		}, 'The Notification constructor exists');
+
+		test(function(){
+			assert_in_array(Notification.permission, ['default', 'denied', 'granted']);
+		}, 'The static permission attribute must return permission');
+
+		var getPermission = async_test('get permission for Notification');
+		getPermission.step(function(){
+			var permissionCallback = function(){
+				getPermission.done();
+			};
+			if(Notification.permission !== 'granted') {
+				Notification.requestPermission(permissionCallback);
+			} else {
+				getPermission.done();
+			}
+		});
+
+		var notification = new Notification('title', {
+				dir: 'auto',
+				lang: 'en',
+				body: 'test',
+				tag: 'tag',
+				icon: '/media/poster.png'
+			});
+		var emptyNotification = new Notification('');
+
+		test(function(){
+			assert_not_equals(notification, null);
+		}, 'Notification object can be created by its constructor');
+
+		test(function(){
+			assert_equals(notification.dir, 'auto');
+			assert_equals(emptyNotification.dir, 'auto');
+		}, 'The dir attribute must return the notification\'s direction.')
+
+		test(function(){
+			assert_equals(notification.lang, 'en');
+		}, 'The lang attribute must return the notification\'s language.');
+
+		test(function(){
+			assert_equals(notification.body, 'test');
+			assert_equals(emptyNotification.body, '');
+		}, 'The body attribute must return the notification\'s body and the empty string otherwise.');
+
+		test(function(){
+			assert_equals(notification.tag, 'tag');
+			assert_equals(emptyNotification.tag, '');
+		}, 'The tag attribute must return the notification\'s tag and the empty string otherwise.');
+
+		test(function(){
+			assert_regexp_match(notification.icon, /(https?:\/\/[^\/]+)?\/media\/poster\.png/);
+			assert_equals(emptyNotification.icon, '');
+		}, 'The icon attribute must return the notification\'s icon URL, serialized, and the empty string otherwise.');
+	</script>
+</body>
+</html>

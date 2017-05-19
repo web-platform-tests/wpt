@@ -514,4 +514,11 @@ a=rtcp-rsize
     });
   }, 'Add candidate with invalid sdpMLineIndex should never resolve when pc is closed');
 
+  // TODO: More tests need to be added:
+  // - Set pc with both current and pending remote descriptions with different ufrags,
+  //   Check that addIceCandidate with specific ufrag adds candidate to the correct
+  //   remote description.
+  // - Call with candidate string containing partial malformed syntax, i.e. malformed IP.
+  //   Some browsers may ignore the syntax error and add it to the SDP regardless.
+
 </script>

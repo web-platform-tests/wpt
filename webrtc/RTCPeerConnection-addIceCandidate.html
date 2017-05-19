@@ -215,8 +215,7 @@ a=rtcp-rsize
     });
   }, 'Add with empty candidate string (end of candidate) should succeed');
 
-  // WebIDL for addIceCandidate does not allow null argument.
-  // This throws a TypeError because it is checked at WebIDL level.
+  // Reject because WebIDL for addIceCandidate does not allow null argument
   // null can be accidentally passed from onicecandidate event handler
   // when null is used to indicate end of candidate
   promise_test(t => {
@@ -514,18 +513,5 @@ a=rtcp-rsize
       pc.close();
     });
   }, 'Add candidate with invalid sdpMLineIndex should never resolve when pc is closed');
-
-  async_test(t => {
-    const pc = new RTCPeerConnection();
-
-    pc.setRemoteDescription(sessionDesc)
-    .then(() => {
-      assert_never_resolves(t, pc.addIceCandidate({
-        candidate: invalidCandidateStr,
-        sdpMid, sdpMLineIndex, ufrag
-      }));
-      pc.close();
-    });
-  }, 'Add candidate with invalid candidate string should never resolve when pc is closed');
 
 </script>

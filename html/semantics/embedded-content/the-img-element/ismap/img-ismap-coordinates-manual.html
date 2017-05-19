@@ -63,8 +63,10 @@
         assert_not_equals(i, -1);
         var x = parseFloat(coordsStr.substring(0, i));
         var y = parseFloat(coordsStr.substring(i+1));
-        assert_true((x >= minXY) && (x <= maxXY), "The x coordinate ["+x+"] must be greater-than (or equal-to) " + minXY + " and less-than (or equal-to) " + maxXY);
-        assert_true((y >= minXY) && (y <= maxXY), "The y coordinate ["+y+"] must be greater-than (or equal-to) " + minXY + " and less-than (or equal-to) " + maxXY);
+        assert_greater_than_equal(x, minXY, "The x coordinate ["+x+"] must be greater-than (or equal-to) " + minXY);
+        assert_less_than_equal(x, maxXY, "The x coordinate ["+x+"] must be less-than (or equal-to) " + maxXY);
+        assert_greater_than_equal(y, minXY, "The y coordinate ["+y+"] must be greater-than (or equal-to) " + minXY);
+        assert_less_than_equal(y, maxXY, "The y coordinate ["+y+"] must be less-than (or equal-to) " + maxXY);
         test.done();
       });
       if (testIndex >= tests.length)

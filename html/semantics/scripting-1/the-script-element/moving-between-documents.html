@@ -19,17 +19,15 @@
 <body>
 <script>
 "use strict";
-window.didExecute = false;
 
 for (const type of ["text/javascript", "module"]) {
   async_test(t => {
     t.add_cleanup(() => {
-      window.didExecute = false;
+      window.didExecute = undefined;
     });
 
     const iframe = document.createElement("iframe");
     iframe.onload = t.step_func_done(() => {
-      iframe.contentWindow.didExecute = false;
       iframe.contentDocument.write("<streaming-element>");
       document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
       iframe.contentDocument.write(`<script id="s1" type="${type}">window.didExecute = true;<` + "/script>");
@@ -41,7 +39,7 @@ for (const type of ["text/javascript", "module"]) {
 
       iframe.contentDocument.close();
 
-      assert_false(window.didExecute, "The script must not have executed in this window");
+      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
       assert_equals(iframe.contentWindow.didExecute, undefined,
         "The script must not have executed in the iframe window");
     });
@@ -51,12 +49,11 @@ for (const type of ["text/javascript", "module"]) {
 
   async_test(t => {
     t.add_cleanup(() => {
-      window.didExecute = false;
+      window.didExecute = undefined;
     });
 
     const iframe = document.createElement("iframe");
     iframe.onload = t.step_func(() => {
-      iframe.contentWindow.didExecute = false;
       iframe.contentDocument.write("<streaming-element>");
       document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
       iframe.contentDocument.write(`<script id="s2" type="${type}" src="resources/flag-setter.js"><` + "/script>");
@@ -69,7 +66,7 @@ for (const type of ["text/javascript", "module"]) {
       iframe.contentDocument.close();
 
       t.step_timeout(() => {
-        assert_false(window.didExecute, "The script must not have executed in this window");
+        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
         assert_equals(iframe.contentWindow.didExecute, undefined,
           "The script must not have executed in the iframe window");
         t.done();
@@ -81,7 +78,7 @@ for (const type of ["text/javascript", "module"]) {
 
   async_test(t => {
     t.add_cleanup(() => {
-      window.didExecute = false;
+      window.didExecute = undefined;
     });
 
     const iframe = document.createElement("iframe");
@@ -102,7 +99,7 @@ for (const type of ["text/javascript", "module"]) {
       }, 0);
 
       t.step_timeout(() => {
-        assert_false(window.didExecute, "The script must not have executed in this window");
+        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
         assert_equals(iframe.contentWindow.didExecute, undefined,
           "The script must not have executed in the iframe window");
         t.done();
@@ -114,7 +111,7 @@ for (const type of ["text/javascript", "module"]) {
 
   async_test(t => {
     t.add_cleanup(() => {
-      window.didExecute = false;
+      window.didExecute = undefined;
     });
 
     const s = document.createElement("script");
@@ -134,7 +131,7 @@ for (const type of ["text/javascript", "module"]) {
     }, 0);
 
     t.step_timeout(() => {
-        assert_false(window.didExecute, "The script must not have executed in this window");
+      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
       t.done();
     }, 3000);
   }, `${type}: moving to a document where scripting is disabled during fetching`);

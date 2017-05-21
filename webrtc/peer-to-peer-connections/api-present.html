@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<title>RTCPeerconnection: test that RTCPeerConnection is present (with or without vendor prefix)</title>
+<meta name='assert' content='Check that the RTCPeerConnection() method is present.'/>
+<meta name='flags' content='vendor-prefix, dom'/>
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test checks for the presence of the <code>RTCPeerConnection</code> method, taking vendor prefixes into account.</p>
+    <div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../featuredetection.js></script>
+<script>
+test(function () {
+        assert_true(undefined !== BrowserHasFeature(window, "RTCPeerConnection"), "RTCPeerconnection exists");
+    }, "RTCPeerConnection() is present on window");
+</script>
+</body>
+</html>

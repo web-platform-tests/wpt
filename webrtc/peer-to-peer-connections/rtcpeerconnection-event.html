@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<title>On a peer connection</title>
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test checks that a new peer connection triggers the events as expected.</p>
+
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=../featuredetection.js></script>
+<script src=prefix.js></script>
+<script>
+var t = async_test("Tests that a new peer triggers events as expected.", {timeout: 20000});
+t.step(function () {
+  var peer, connection, config;
+
+  peer = new window.RTCPeerConnection({"iceServers": [{"url": "stun:stun.l.google.com:19302"}]});
+  peer.onicecandidate = onIceCandidate;
+
+  function onIceCandidate(event) {
+    t.step(function () {
+       assert_own_property(event, "candidate", "a new candidate is created");
+       t.done();
+    });
+  }
+});
+</script>
+</body>
+</html>

@@ -75,10 +75,7 @@
      Exposed=Window,
      SecureContext]
     interface PasswordCredential : Credential {
-      attribute USVString idName;
-      attribute USVString passwordName;
-
-      attribute CredentialBodyType? additionalData;
+      readonly attribute DOMString password;
     };
     PasswordCredential implements CredentialUserData;
 

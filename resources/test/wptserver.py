@@ -30,6 +30,9 @@ class WPTServer(object):
         context.check_hostname = False
 
         while True:
+            if self.proc.poll() != None:
+                raise Exception('Could not start wptserve.')
+
             try:
                 urllib2.urlopen(self.base_url, timeout=1, context=context)
                 break

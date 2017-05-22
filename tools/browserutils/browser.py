@@ -3,7 +3,7 @@ import os
 import re
 import stat
 from abc import ABCMeta, abstractmethod
-from configparser import RawConfigParser
+from ConfigParser import RawConfigParser
 from distutils.spawn import find_executable
 
 from utils import call, get, untar, unzip

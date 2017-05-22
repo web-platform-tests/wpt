@@ -43,11 +43,17 @@
       FederatedCredentialInit? federated;
     };
 
+    enum CredentialMediationRequirement {
+      "silent",
+      "optional",
+      "required"
+    };
+
     dictionary CredentialRequestOptions {
       boolean password = false;
       FederatedCredentialRequestOptions federated;
 
-      boolean unmediated = false;
+      CredentialMediationRequirement mediation = "optional";
     };
 
     dictionary FederatedCredentialRequestOptions {

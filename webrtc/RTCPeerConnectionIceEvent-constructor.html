@@ -35,7 +35,9 @@ test(() => {
   assert_equals(event.url, null);
 
   /*
-  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means that an event with the name e, which does not bubble (except where otherwise stated) and is not cancelable (except where otherwise stated),
+  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means that an
+  event with the name e, which does not bubble (except where otherwise stated) and is not
+  cancelable (except where otherwise stated),
   */
   assert_false(event.bubbles);
   assert_false(event.cancelable);
@@ -53,7 +55,9 @@ test(() => {
   assert_equals(event.url, null);
 
   /*
-  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means that an event with the name e, which does not bubble (except where otherwise stated) and is not cancelable (except where otherwise stated),
+  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means
+  that an event with the name e, which does not bubble (except where otherwise stated) and
+  is not cancelable (except where otherwise stated),
   */
   assert_false(event.bubbles);
   assert_false(event.cancelable);
@@ -79,13 +83,15 @@ test(() => {
 
 4.8.1 RTCIceCandidate Interface
 
-The RTCIceCandidate() constructor takes a dictionary argument, candidateInitDict, whose content is used to initialize the new RTCIceCandidate object. When run, if both the sdpMid and sdpMLineIndex dictionary members are null, throw a TypeError.
+The RTCIceCandidate() constructor takes a dictionary argument, candidateInitDict,
+whose content is used to initialize the new RTCIceCandidate object. When run, if
+both the sdpMid and sdpMLineIndex dictionary members are null, throw a TypeError.
 */
-let candidate = "";
-let sdpMid = "sdpMid";
-let sdpMLineIndex = 1;
-let ufrag = "";
-let url = "foo.bar";
+const candidate = "";
+const sdpMid = "sdpMid";
+const sdpMLineIndex = 1;
+const ufrag = "";
+const url = "foo.bar";
 
 test(() => {
   const iceCandidate = new RTCIceCandidate({ candidate, sdpMid, sdpMLineIndex, ufrag });
@@ -106,7 +112,8 @@ test(() => {
 
 test(() => {
   /*
-  When firing an RTCPeerConnectionIceEvent event that contains a RTCIceCandidate object, it must include values for both sdpMid and sdpMLineIndex.
+  When firing an RTCPeerConnectionIceEvent event that contains a RTCIceCandidate object,
+  it must include values for both sdpMid and sdpMLineIndex.
   */
 
   assert_throws(new TypeError(), () => {
@@ -122,18 +129,6 @@ test(() => {
   });
 
 }, "RTCIceCandidate must include values for both sdpMid and sdpMLineIndex");
-
-test(() => {
-  sdpMid = null;
-  sdpMLineIndex = null;
-
-  assert_throws(new TypeError(), () => {
-    new RTCPeerConnectionIceEvent("type", {
-      candidate: new RTCIceCandidate({ candidate, sdpMid, sdpMLineIndex, ufrag })
-    });
-  });
-}, "RTCIceCandidate if both the sdpMid and sdpMLineIndex dictionary members are null, throw a TypeError.");
-
 
 test(() => {
   const event = new RTCPeerConnectionIceEvent("type", {

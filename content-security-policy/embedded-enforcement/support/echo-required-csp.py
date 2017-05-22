@@ -1,8 +1,8 @@
 import json
 def main(request, response):
-    header = request.headers.get("Embedding-CSP");
+    header = request.headers.get("Required-CSP");
     message = {}
-    message['embedding_csp'] = header if header else None
+    message['required_csp'] = header if header else None
     return [("Content-Type", "text/html"), ("Allow-CSP-From", "*")], '''
 <!DOCTYPE html>
 <html>

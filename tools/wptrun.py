@@ -232,14 +232,26 @@ def setup_sauce(kwargs):
     raise NotImplementedError
 
 
-def setup_servo(kwargs):
-    raise NotImplementedError
+def args_servo(venv, kwargs, servo, prompt=True):
+    if kwargs["binary"] is None:
+        binary = servo.find_binary()
+
+        if binary is None:
+            exit("Unable to find servo binary on the PATH")
+        kwargs["binary"] = binary
+
+
+def setup_servo(venv, kwargs, prompt=True):
+    servo = browser.Servo()
+    args_servo(venv, kwargs, servo, prompt)
+    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", servo.requirements))
 
 
 product_setup = {
     "firefox": setup_firefox,
     "chrome": setup_chrome,
-    "edge": setup_edge
+    "edge": setup_edge,
+    "servo": setup_servo
 }
 
 

@@ -297,3 +297,29 @@ class Edge(Browser):
 
     def version(self):
         raise NotImplementedError
+
+
+class Servo(Browser):
+    """Firefox-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "servo"
+    requirements = "requirements_servo.txt"
+
+    def install(self, platform, dest=None):
+        """Install Servo."""
+        raise NotImplementedError
+
+    def find_binary(self):
+        return find_executable("servo")
+
+    def find_webdriver(self):
+        return None
+
+    def install_webdriver(self):
+        raise NotImplementedError
+
+    def version(self, root):
+        return None

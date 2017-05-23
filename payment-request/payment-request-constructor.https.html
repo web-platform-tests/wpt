@@ -7,6 +7,43 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 'use strict';
+const basicCard = Object.freeze({supportedMethods: ['basic-card']})
+const defaultMethods = Object.freeze([basicCard]);
+const defaultDetails = Object.freeze({
+  total: {
+    label: "",
+    amount: {
+      currency: 'USD',
+      value: '1.00',
+    },
+  },
+});
+test(()=>{
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  assert_true(!!request.id, "must be some truthy value");
+}, "If details.id is missing, assign a identifier");
+
+test(()=>{
+  const request1 = new PaymentRequest(defaultMethods, defaultDetails);
+  const request2 = new PaymentRequest(defaultMethods, defaultDetails);
+  assert_not_equals(request1.id, request2.id, "UA generated ID must be unique");
+}, "If details.id is missing, assign a unique identifier");
+
+test(()=>{
+  const newDetails = Object.assign({}, defaultDetails, {id: "test123"});
+  const request1 = new PaymentRequest(defaultMethods, newDetails);
+  const request2 = new PaymentRequest(defaultMethods, newDetails);
+  assert_equals(request1.id, newDetails.id, `id must be ${newDetails.id}`);
+  assert_equals(request2.id, newDetails.id, `id must be ${newDetails.id}`);
+  assert_equals(request1.id, request2.id, "ids need to be the same");
+}, "If the same id is provided, then use it");
+
+test(()=>{
+  const newDetails = Object.assign({}, defaultDetails, {id: "".padStart(100000000, "\n test 123 \t \n ")});
+  const request = new PaymentRequest(defaultMethods, newDetails);
+  assert_equals(request.id, newDetails.id, `id must be provided value, even if very long and contain spaces`);
+}, "Use ids even if they are strange");
+
 
 test(() => {
   assert_equals((new PaymentRequest([{
@@ -61,18 +98,24 @@ test(() => {
    'then throw a TypeError');
 
 test(() => {
-  new PaymentRequest([{
-    supportedMethods: ['basic-card'],
-    data: ['some-data'],
-  }], {
-    total: {
-      label: '',
-      amount: {
-        currency: 'USD',
-        value: '1.00',
+  let itThrows = false;
+  try {
+    new PaymentRequest([{
+      supportedMethods: ['basic-card'],
+      data: ['some-data'],
+    }], {
+      total: {
+        label: '',
+        amount: {
+          currency: 'USD',
+          value: '1.00',
+        },
       },
-    },
-  });
+    });
+  } catch (err){
+    itThrows = true;
+  }
+  assert_false(itThrows, "shouldn't throw when using a list");
 }, 'Method data must be JSON-serializable object (a list in this case)');
 
 test(() => {
@@ -90,7 +133,26 @@ test(() => {
       },
     },
   });
-}, 'Method data must be JSON-serializable object (a dictionary in this case)');
+}, 'Method data must be JSON-serializable object (an object in this case)');
+
+test(() => {
+  assert_throws({
+    name: 'TypeError'
+  }, () =>{
+    new PaymentRequest([{
+        supportedMethods: ['basic-card'],
+        data: null,
+      }], {
+        total: {
+          label: '',
+          amount: {
+            currency: 'USD',
+            value: '1.00',
+          },
+        },
+      });
+  }, "Even though null is JSON-serializable, it's not an object");
+}, 'Method data must be JSON-serializable object (null in this case)');
 
 test(() => {
   const recursiveDictionary = {};
@@ -132,10 +194,13 @@ test(() => {
 }, 'Rethrow any exceptions of JSON-serializing paymentMethod.data into ' +
    'a string');
 
-const invalidMonetaryAmounts = ['-', 'notdigits', 'ALSONOTDIGITS', '10.', '.99',
-  '-10.', '-.99', '10-', '1-0', '1.0.0', '1/3', '', null,
+// process total
+const invalidAmounts = ['-', 'notdigits', 'ALSONOTDIGITS', '10.', '.99',
+  '-10.', '-.99', '10-', '1-0', '1.0.0', '1/3', '', null, ' 1.0  ', ' 1.0 ', 
+  '1.0 ', 'USD$1.0', '$1.0', {toString() { return " 1.0"}} 
 ];
-for (const amount of invalidMonetaryAmounts) {
+const invalidTotalAmounts = invalidAmounts.concat(["-1", "-1.0", "-1.00", "-1000.000"]);
+for (const amount of invalidTotalAmounts) {
   test(() => {
     assert_throws({
         name: 'TypeError',
@@ -177,7 +242,7 @@ test(() => {
 }, 'If the first character of details.total.amount.value is ' +
    'U+002D HYPHEN-MINUS, then throw a TypeError');
 
-for (const amount of invalidMonetaryAmounts) {
+for (const amount of invalidAmounts) {
   test(() => {
     assert_throws({
         name: 'TypeError',
@@ -207,6 +272,106 @@ for (const amount of invalidMonetaryAmounts) {
      '"), then throw a TypeError');
 }
 
+test(() => {
+  let itThrows = false;
+  try {
+    new PaymentRequest([{
+      supportedMethods: ['basic-card'],
+      data: ['some-data'],
+    }], {
+      total: {
+        label: '',
+        amount: {
+          currency: 'USD',
+          value: '1.00',
+        },
+      },
+      displayItems: [{
+        label: '',
+        amount: {
+          currency: 'USD',
+          value: '-1000',
+        },
+      },{
+        label: '',
+        amount: {
+          currency: 'AUD',
+          value: '-2000.00',
+        },
+      }],
+    });
+  } catch (err){
+    itThrows = true;
+  }
+  assert_false(itThrows, "shouldn't throw when given a negative value");
+}, 'Negative values are allowed for displayItems.amount.value, irrespective of total amount');
+
+// Process shipping options:
+const defaultAmount = Object.freeze({
+  currency: 'USD',
+  value: '0.0',
+});
+const defaultShippingOption = Object.freeze({
+  id: "default",
+  label: "",
+  amount: defaultAmount,
+  selected: false
+});
+const defaultShippingOptions = Object.freeze([
+  Object.assign({}, defaultShippingOption),
+]);
+
+for (const amount of invalidAmounts) {
+  test(() => {
+    assert_throws({
+        name: 'TypeError',
+      },
+      () => {
+        const invalidAmount = Object.assign({}, defaultAmount, {value: amount})
+        const invalidShippingOption = Object.assign({}, defaultShippingOption, {amount: invalidAmount} );
+        const details = Object.assign({}, defaultDetails, {shippingOptions:[ invalidShippingOption ]} )
+        new PaymentRequest(defaultMethods, details);
+      });
+  }, 'For each option in details.shippingOptions: if option.amount.value is not ' +
+     'a valid decimal monetary value (in this case "' + amount +
+     '"), then throw a TypeError');
+}
+
+test(() => {
+  const shippingOptions = [defaultShippingOption];
+  const details = Object.assign({}, defaultDetails, { shippingOptions } );
+  const request = new PaymentRequest(defaultMethods, details);
+  assert_equals(request.shippingOption, "PASS", "selected option must PASS");
+}, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
+
+test(() => {
+  const selectedOption = Object.assign({}, defaultShippingOption, {select: true, id: "PASS"});
+  const shippingOptions = [selectedOption];
+  const details = Object.assign({}, defaultDetails, { shippingOptions } );
+  const request = new PaymentRequest(defaultMethods, details);
+  assert_equals(request.shippingOption, "PASS", "selected option must be PASS");
+}, "If there is a selected shipping option, then it becomes synchronously selected");
+
+test(() => {
+  const failOption1 = Object.assign({}, defaultShippingOption, {select: true, id: "FAIL1"});
+  const failOption2 = Object.assign({}, defaultShippingOption, {select: false, id: "FAIL2"});
+  const passOption = Object.assign({}, defaultShippingOption, {select: true, id: "PASS"});
+  const shippingOptions = [failOption1, failOption2, passOption];
+  const details = Object.assign({}, defaultDetails, { shippingOptions } );
+  const request = new PaymentRequest(defaultMethods, details);
+  assert_equals(request.shippingOption, "PASS", "selected option must PASS");
+}, "If there is a multiple selected shipping options, only the last is selected");
+
+test(() => {
+  const selectedOption = Object.assign({}, defaultShippingOption, {select: true});
+  const unselectedOption = Object.assign({}, defaultShippingOption, {select: false});
+  const shippingOptions = [selectedOption, unselectedOption];
+  const details = Object.assign({}, defaultDetails, { shippingOptions } );
+  const request = new PaymentRequest(defaultMethods, details);
+  assert_equals(request.shippingOption, null, "selected option must be null");
+}, "If there are any duplicate shipping option ids, then there are no shipping options");
+
+// Process payment details modifiers:
 test(() => {
   new PaymentRequest([{
     supportedMethods: ['basic-card'],

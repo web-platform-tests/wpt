@@ -1,33 +1,23 @@
+import argparse
 import browser
 import sys
 
-usage = 'Usage: %s [browser name] [component] [destination]\n' % sys.argv[0]
-components = ['browser', 'webdriver']
+parser = argparse.ArgumentParser()
+parser.add_argument('browser', choices=['firefox', 'chrome'],
+                    help='name of web browser product')
+parser.add_argument('component', choices=['browser', 'webdriver'],
+                    help='name of component')
+parser.add_argument('-d', '--destination',
+                    help='filesystem directory to place the component')
 
-def fail(msg):
-    sys.stderr.write(msg)
-    sys.stderr.write(usage)
-    sys.exit(1)
+if __name__ == '__main__':
+    args = parser.parse_args()
 
-if len(set(sys.argv).intersection(['-h', '--help'])) > 0:
-    sys.stdout.write(usage)
-    sys.exit(0)
+    Subclass= getattr(browser, args.browser.title())
+    if args.component == 'webdriver':
+        method = 'install_webdriver'
+    else:
+        method = 'install'
 
-if len(sys.argv) < 3:
-    fail('Browser name and component required.\n')
-
-Subclass = getattr(browser, sys.argv[1].title(), None)
-
-if Subclass is None:
-    fail('Unrecognized browser name: "%s".\n' % sys.argv[1])
-
-if sys.argv[2] not in components:
-    fail('Unrecognized component: "%s".\n' % sys.argv[2])
-
-method = 'install%s' % ('_webdriver' if sys.argv[2] == 'webdriver' else '')
-
-dest = sys.argv[3] if len(sys.argv) > 3 else None
-
-sys.stdout.write('Now installing %s %s...\n' % (sys.argv[1], sys.argv[2]))
-
-getattr(Subclass(), method)(dest=dest)
+    sys.stdout.write('Now installing %s %s...\n' % (args.browser, args.component))
+    getattr(Subclass(), method)(dest=args.destination)

@@ -73,14 +73,23 @@
     "output": "ab--c.xn--nxa"
   },
   {
-    "comment": "CheckJoiners is false",
-    "input": "👩‍⚕️",
-    "output": "xn--1ug39w1n45b"
+    "comment": "CheckJoiners is true",
+    "input": "\u200D.example",
+    "output": null
   },
   {
     "comment": "CheckBidi is true",
     "input": "يa",
     "output": null
+  },
+  {
+    "comment": "processing_option is Nontransitional_Processing",
+    "input": "ශ්‍රී",
+    "output": "xn--10cl1a0b660p"
+  },
+  {
+    "input": "نامه‌ای",
+    "output": "xn--mgba3gch31f060k"
   },
   {
     "comment": "Label longer than 63 code points",

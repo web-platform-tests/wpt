@@ -13,7 +13,7 @@ parser.add_argument('-d', '--destination',
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    Subclass= getattr(browser, args.browser.title())
+    Subclass = getattr(browser, args.browser.title())
     if args.component == 'webdriver':
         method = 'install_webdriver'
     else:

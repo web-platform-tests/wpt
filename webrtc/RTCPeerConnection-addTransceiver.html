@@ -1,0 +1,105 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection addTransceiver</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  'use strict';
+
+  /*
+   *  5.1. RTCPeerConnection Interface Extensions
+   *  partial interface RTCPeerConnection {
+   *      sequence<RTCRtpSender>      getSenders();
+   *      sequence<RTCRtpReceiver>    getReceivers();
+   *      sequence<RTCRtpTransceiver> getTransceivers();
+   *      RTCRtpTransceiver           addTransceiver((MediaStreamTrack or DOMString) trackOrKind,
+   *                                                 optional RTCRtpTransceiverInit init);
+   *      ...
+   *  };
+   *
+   *  dictionary RTCRtpTransceiverInit {
+   *      RTCRtpTransceiverDirection         direction = "sendrecv";
+   *      sequence<MediaStream>              streams;
+   *      sequence<RTCRtpEncodingParameters> sendEncodings;
+   *  };
+   */
+
+  test(t => {
+    const pc = new RTCPeerConnection();
+
+    const senders = pc.getSenders();
+    assert_array_equals([], senders, 'Expect senders to be empty array');
+
+    const receivers = pc.getReceivers();
+    assert_array_equals([], receivers, 'Expect receivers to be empty array');
+
+    const transceivers = pc.getTransceivers();
+    assert_array_equals([], transceivers, 'Expect transceivers to be empty array');
+
+  }, 'Initial peer connection should have list of zero senders, receivers and transceivers');
+
+  /*
+   *  5.1.  addTransceiver
+   *        The initial value of mid is null.
+   *
+   *        3.  If the first argument is a string, let it be kind and run the following steps:
+   *            2.  Let track be null.
+   *
+   *  5.3.  RTCRtpReceiver Interface
+   *        Create an RTCRtpReceiver
+   *        3.  Initialize track.kind to kind.
+   *        5.  Initialize track.label to the result of concatenating the string "remote " with kind.
+   *        6.  Initialize track.readyState to live.
+   *        7.  Initialize track.muted to true.
+   */
+  test(t => {
+    const pc = new RTCPeerConnection();
+
+    const transceiver = pc.addTransceiver('audio');
+    assert_true(transceiver instanceof RTCRTPTransceiver,
+      'Expect transceiver to be instance of RTCRTPTransceiver');
+
+    assert_equals(transceiver.mid, null);
+    assert_equals(transceiver.stopped, false);
+    assert_equals(transceiver.direction, 'sendrecv');
+
+    assert_array_equals([transceiver], pc.getTransceivers(),
+      `Expect added transceiver to be the only element in connection's list of transceivers`);
+
+    const sender = transceiver.sender;
+
+    assert_true(sender instanceof RTCRTPSender,
+      'Expect sender to be instance of RTCRTPSender');
+
+    assert_equals(sender.track, null);
+
+    assert_array_equals([sender], pc.getSenders(),
+      `Expect added sender to be the only element in connection's list of senders`);
+
+    const receiver = transceiver.receiver;
+    assert_true(receiver instanceof RTCRTPReceiver,
+      'Expect receiver to be instance of RTCRTPReceiver');
+
+    const track = receiver.track
+    assert_true(track instanceof MediaStreamTrack,
+      'Expect receiver.track to be instance of MediaStreamTrack');
+
+    assert_equals(track.kind, 'audio');
+    assert_equals(track.label, 'remote audio');
+    assert_equals(track.readyState, 'live');
+    assert_equals(track.muted, true);
+
+    assert_array_equals([receiver], pc.getReceivers(),
+      `Expect added receiver to be the only element in connection's list of receivers`);
+
+  }, `addTransceiver('audio') should return an audio transceiver`);
+
+  /*
+   * 3.1 If kind is not a legal MediaStreamTrack kind, throw a TypeError.
+   */
+  test(t => {
+    const pc = new RTCPeerConnection();
+    assert_own_property(pc, 'addTransceiver');
+    assert_throws(new TypeError(), () => pc.addTransceiver('invalid'));
+  }, 'addTransceiver() with string argument as invalid kind should throw TypeError');
+</script>

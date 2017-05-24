@@ -1,13 +1,15 @@
-<!doctype html>
-<meta charset=windows-1252>
+<?xml version="1.0" encoding="windows-1252"?>
 <!-- Using windows-1252 to ensure that new Document() doesn't inherit utf-8
      from the parent document. -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <title>Document constructor</title>
-<link rel=help href="https://dom.spec.whatwg.org/#dom-document">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-document" />
+</head>
+<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+<script><![CDATA[
 test(function() {
   var doc = new Document();
   assert_true(doc instanceof Node, "Should be a Node");
@@ -43,12 +45,6 @@ test(function() {
   assert_equals(doc.charset, "UTF-8", "charset");
   assert_equals(doc.inputEncoding, "UTF-8", "inputEncoding");
 }, "new Document(): characterSet aliases")
-
-test(function() {
-  var doc = new Document();
-  var a = doc.createElement("a");
-  // In UTF-8: 0xC3 0xA4
-  a.href = "http://example.org/?\u00E4";
-  assert_equals(a.href, "http://example.org/?%C3%A4");
-}, "new Document(): URL parsing")
-</script>
+]]></script>
+</body>
+</html>

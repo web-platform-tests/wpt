@@ -231,7 +231,8 @@ VisualOutput.prototype = {
         if (subtest_pass_count === subtests_count &&
             (status == "OK" || status == "PASS")) {
             test_status = "PASS";
-        } else if (subtest_notrun_count == subtests_count) {
+        } else if ((!subtests_count && status === "NOTRUN") ||
+            (subtests_count && (subtest_notrun_count == subtests_count) ) ) {
             test_status = "NOTRUN";
         } else if (subtests_count > 0 && status === "OK") {
             test_status = "FAIL";
@@ -363,6 +364,7 @@ function ManualUI(elem, runner) {
     this.runner = runner;
     this.pass_button = this.elem.querySelector("button.pass");
     this.fail_button = this.elem.querySelector("button.fail");
+    this.skip_button = this.elem.querySelector("button.skip");
     this.ref_buttons = this.elem.querySelector(".reftestUI");
     this.ref_type = this.ref_buttons.querySelector(".refType");
     this.ref_warning = this.elem.querySelector(".reftestWarn");
@@ -378,6 +380,11 @@ function ManualUI(elem, runner) {
     this.pass_button.onclick = function() {
         this.disable_buttons();
         this.runner.on_result("PASS", "", []);
+    }.bind(this);
+
+    this.skip_button.onclick = function() {
+        this.disable_buttons();
+        this.runner.on_result("NOTRUN", "", []);
     }.bind(this);
 
     this.fail_button.onclick = function() {

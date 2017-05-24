@@ -16,7 +16,7 @@ async_test(t => {
     count++;
     assert_between_inclusive(count, 1, 4, 'number of fullscreenchange events');
     const expected = {
-      target: count == 1 || count == 4 ? document : iframeDoc,
+      target: count == 1 || count == 4 ? iframe : iframeBody,
       outerFullscreenElement: count <= 2 ? iframe : null,
       innerFullscreenElement: count <= 2 ? iframeBody : null,
     };

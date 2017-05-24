@@ -166,7 +166,7 @@ def test_title_handle_prompt_missing_value(session, create_dialog):
 #            done();
 #        }, 0);
 #        setTimeout(function() {
-#            window.print();
+#            window['print']();
 #        }, 0);
 #    """
 #    session.url = inline(document)

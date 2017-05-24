@@ -12,11 +12,9 @@ if [ $TOXENV == "py27" ] || [ $TOXENV == "pypy" ]; then
   tox
 
   cd $ROOT
-  pip install requests
-  python -c "
-from tools.browserutils.browser import firefox
-Firefox().install('$HOME')
-Firefox().install_webdriver('$HOME/firefox')"
+  pip install --requirement tools/browserutils/requirements.txt
+  python tools/browserutils/install.py firefox browser $HOME
+  python tools/browserutils/install.py firefox webdriver $HOME/firefox
   export PATH=$HOME/firefox:$PATH
 
   cd $ROOT/resources/test

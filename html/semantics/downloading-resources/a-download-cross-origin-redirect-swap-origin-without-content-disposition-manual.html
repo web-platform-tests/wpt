@@ -52,7 +52,7 @@ button.addEventListener("click", (event) => {
   const yes = document.querySelector("input#yes").checked;
   const no = document.querySelector("input#no").checked;
   assert_true(yes || no, "Please indicate whether a file was downloaded.");
-  assert_true(no, "Download should not work");
+  assert_true(yes, "Download should work");
   done();
 });
 </script>

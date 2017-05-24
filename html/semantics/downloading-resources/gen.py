@@ -88,15 +88,15 @@ def gen_html(request_origin, redirect, add_header):
                            "redirect": DESCRIPTION[redirect],
                            "header": DESCRIPTION[add_header]})
 
-    if ((request_origin == CROSS_ORIGIN or
-         (request_origin == SAME_ORIGIN and
-          redirect == REDIRECT_SWAP_ORIGIN)) and
-        (add_header == WITHOUT_CONTENT_DISPOSITION)):
-        expected_result = "no"
-        assert_description = "Download should not work"
-    else:
-        expected_result = "yes"
-        assert_description = "Download should work"
+    expected_result = "yes"
+    assert_description = "Download should work"
+    # If the initiator and the final URL are cross orign, and there is no
+    # content disposition header, the download should be refused.
+    if add_header == WITHOUT_CONTENT_DISPOSITION:
+        if ((request_origin == SAME_ORIGIN and redirect == REDIRECT_SWAP_ORIGIN) or
+            (request_origin == CROSS_ORIGIN and redirect != REDIRECT_SWAP_ORIGIN)): 
+            expected_result = "no"
+            assert_description = "Download should not work"
 
     path = "/html/semantics/downloading-resources/"
     same_origin = "http://{{host}}:{{location[port]}}" + path

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <title>WebCrypto API: test each methods is present (with or without vendor prefix)</title>
+    <link rel='author' title='Channy Yun' href='mailto:channy@gmail.com'/>
+    <link rel='help' href='http://www.w3.org/TR/WebCryptoAPI/'/>
+    <meta name='flags' content='webcrypto'/>
+    <meta name='assert' content='Check that the webcryptography api methods is present'/>
+    <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+  </head>
+  <body>
+    <h1>API Presence for WebCrypto methods</h1>
+    <p>
+      This test checks for the presence of the WebCryptography API methods, taking vendor prefixes into account.
+    </p>
+    <div id='log'></div>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <script src='/common/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["window"], "name":"crypto"}]'></script>
+
+    <script>
+      test(function () {
+          assert_true(undefined !== window.crypto, "window.crypto exists");
+      }, "window.crypto() is present on navigator.");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.getRandomValues, "window.crypto.getRandomValues exists");
+      }, "window.crypto.getRandomValues() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle, "window.crypto.subtle exists");
+      }, "window.crypto.subtle() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.encrypt, "window.subtle.encrypt exists");
+      }, "window.crypto.subtle.encrypt is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.decrypt, "window.crypto.subtle.decrypt exists");
+      }, "window.crypto.subtle.decrypt() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.sign, "window.crypto.subtle.sign exists");
+      }, "window.crypto.subtle.sign() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.verify, "window.crypto.subtle.verify exists");
+      }, "window.crypto.subtle.verify() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.digest, "window.crypto.subtle.digest exists");
+      }, "window.crypto.subtle.digest() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle,generateKey, "window.crypto.subtle.generateKey exists");
+      }, "window.crypto.subtle.generateKey() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.deriveKey, "window.crypto.subtle.deriveKey exists");
+      }, "window.crypto.subtle.deriveKey() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.deriveBits, "window.crypto.deriveBits exists");
+      }, "window.crypto.subtle.deriveBits() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.importKey, "window.crypto.subtle.importKey exists");
+      }, "window.crypto.subtle.importKey() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.exportKey, "window.crypto.subtle.exportKey exists");
+      }, "window.crypto.subtle.exportKey() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.wrapKey, "window.crypto.subtle.wrapKey exists");
+      }, "window.crypto.subtle.wrapKey() is present on navigator");
+
+      test(function () {
+          assert_true(undefined !== window.crypto.subtle.unwrapKey, "window.crypto.subtle.unwrapKey exists");
+      }, "window.crypto.subtle.unwrapKey() is present on navigator");
+    </script>
+  </body>
+</html>

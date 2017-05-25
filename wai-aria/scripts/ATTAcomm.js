@@ -603,11 +603,11 @@ ATTAcomm.prototype = {
             innerResolve(true);
           })
           .then(function(res) {
-            var theLog = "\nSUBTEST SKIPPED: No assertions for API " + API + "\n";
+            var theLog = "\nSUBTEST NOTRUN: No assertions for API " + API + "\n";
             if (theLog !== "") {
               ANNO.saveLog("runTest", theLog, subtest);
             }
-            assert_false(true, "SKIPPED: No assertion for API " + API);
+            assert_false(true, "NOTRUN: No assertion for API " + API);
           });
         }, subtest.name );
       }

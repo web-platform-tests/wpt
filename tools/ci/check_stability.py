@@ -48,7 +48,7 @@ def do_delayed_imports():
     from mozlog.formatters import TbplFormatter
     from mozlog.handlers import BaseHandler, LogLevelFilter, StreamHandler
     from tools.manifest import manifest
-    from wptrunner import wptcommandline, wptrunner
+    from tools.wptrunner.wptrunner import wptcommandline, wptrunner
     setup_log_handler()
     setup_action_filter()
 

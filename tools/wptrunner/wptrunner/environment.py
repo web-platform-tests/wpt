@@ -10,7 +10,7 @@ from mozlog import get_default_logger, handlers
 
 from wptlogging import LogLevelRewriter
 
-here = os.path.split(__file__)[0]
+here = os.path.abspath(os.path.split(__file__)[0])
 
 serve = None
 sslutils = None

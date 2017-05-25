@@ -2,8 +2,8 @@
 <html>
 <head>
 <title>Example with a service worker</title>
-<script src="../testharness.js"></script>
-<script src="../testharnessreport.js"></script>
+<script src="../../testharness.js"></script>
+<script src="../../testharnessreport.js"></script>
 </head>
 <body>
 <h1>Service Worker Tests</h1>
@@ -25,8 +25,8 @@ promise_test(
         // Since the service worker registration could be in an indeterminate
         // state (due to, for example, a previous test run failing), we start by
         // unregstering our service worker and then registering it again.
-        var scope = "/service-worker-scope";
-        var worker_url = "apisample-worker.js";
+        var scope = "service-worker-scope";
+        var worker_url = "worker.js";
 
         return navigator.serviceWorker.register(worker_url, {scope: scope})
             .then(
@@ -58,5 +58,71 @@ promise_test(
                 });
     },
     "Register ServiceWorker");
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "TIMEOUT",
+    "message": null,
+    "stack": null
+  },
+  "summarized_tests": [
+    {
+      "status_string": "PASS",
+      "name": "Browser supports ServiceWorker",
+      "properties": {},
+      "message": null,
+      "stack": null
+    },
+    {
+      "status_string": "PASS",
+      "name": "Register ServiceWorker",
+      "properties": {},
+      "message": null,
+      "stack": null
+    },
+    {
+      "status_string": "PASS",
+      "name": "Worker async_test that completes successfully",
+      "properties": {},
+      "phase_string": "COMPLETE",
+      "message": {},
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status_string": "PASS",
+      "name": "Worker test that completes successfully",
+      "properties": {},
+      "phase_string": "COMPLETE",
+      "message": {},
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status_string": "NOTRUN",
+      "name": "Worker test that doesn't run ('NOT RUN')",
+      "properties": {},
+      "phase_string": "COMPLETE",
+      "message": {},
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status_string": "FAIL",
+      "name": "Worker test that fails ('FAIL')",
+      "properties": {},
+      "phase_string": "COMPLETE",
+      "message": "assert_true: Failing test expected true got false",
+      "stack": "(implementation-defined)"
+    },
+    {
+      "status_string": "TIMEOUT",
+      "name": "Worker test that times out ('TIMEOUT')",
+      "properties": {},
+      "phase_string": "COMPLETE",
+      "message": "Test timed out",
+      "stack": "(implementation-defined)"
+    }
+  ],
+  "type": "complete"
+}
 </script>
 </body>

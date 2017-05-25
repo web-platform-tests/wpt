@@ -78,8 +78,16 @@
     "output": null
   },
   {
+    "input": "xn--1ug.example",
+    "output": null
+  },
+  {
     "comment": "CheckBidi is true",
     "input": "يa",
+    "output": null
+  },
+  {
+    "input": "xn--a-yoc",
     "output": null
   },
   {

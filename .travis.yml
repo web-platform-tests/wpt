@@ -21,6 +21,10 @@ before_install:
 install:
   - pip install -U setuptools
   - pip install -U requests
+  - pip install -U mozinfo
+  - pip install -U mozlog
+  - pip install -U mozdebug
+  - pip install -U html5lib
 env:  # required at the top-level for allow_failures to work below
   global:
     - SAUCE_USERNAME=w3c-ttwf

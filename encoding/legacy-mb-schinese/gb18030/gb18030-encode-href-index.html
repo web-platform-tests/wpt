@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GB18030 encoding index (href)</title>
+<meta charset="gb18030"> <!-- test breaks if the server overrides this -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="gb18030_index.js"></script>
+<script src="gb18030-encoder.js"></script>
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/encoding/#gb18030">
+<meta name="assert" content="The browser produces the expected byte sequences for all characters in the gb18030 index after 0x9F when writing characters to an href value, using the encoder steps in the specification.">
+<script>
+
+
+ function encode(input, expected, desc) {
+ // tests whether a Unicode character is converted to an equivalent byte sequence by href
+ // input: a Unicode character
+ // expected: expected byte sequence 
+ // desc: what's being tested
+   test(function() {
+     var a = document.createElement("a"); // <a> uses document encoding for URL's query
+     a.href = "https://example.com/?" + input; 
+     result = a.search.substr(1)  // remove leading "?"
+     assert_equals(normalizeStr(result), normalizeStr(expected)); 
+   },  desc);
+ }
+
+
+ // create a simple list of just those code points for which there is an encoding described , in this case, in the index
+	codepoints = []
+	for (var i=0x80;i<0xFFFF;i++) {
+		result =gbIndexEncoder(String.fromCodePoint(i))
+		if (result) {
+			var item = {}
+			codepoints.push(item)
+			item.cp = i
+			item.expected = '%'+result.replace(/ /g,'%')
+			}
+		}
+
+for (var x=0;x<codepoints.length;x++) {
+	encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected,  "U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+normalizeStr(String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected))
+	}
+
+
+// NOTES
+// this test relies on support for String.fromCodePoint, which appears to be supported by major desktop browsers
+// the tests excludes ASCII characters
+
+ 
+</script>
+</head>
+<body>
+<div id="log"></div>
+</body>
+</html>

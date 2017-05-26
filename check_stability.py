@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import argparse
-from ConfigParser import SafeConfigParser
 import logging
 import os
 import re
@@ -10,10 +9,10 @@ import subprocess
 import sys
 import tarfile
 import zipfile
+from ConfigParser import RawConfigParser, SafeConfigParser
 from abc import ABCMeta, abstractmethod
 from cStringIO import StringIO as CStringIO
 from collections import defaultdict, OrderedDict
-from ConfigParser import RawConfigParser
 from io import BytesIO, StringIO
 
 import requests

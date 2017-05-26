@@ -89,7 +89,7 @@
       innerScript.innerText = script.innerText;
       innerScript.setAttribute('nonce', 'abc');
       assert_equals(innerScript.getAttribute('nonce'), 'abc', "Pre-insertion content");
-      assert_equals(innerScript.nonce, '', "Pre-insertion IDL");
+      assert_equals(innerScript.nonce, 'abc', "Pre-insertion IDL");
       s.appendChild(innerScript);
       document.body.appendChild(s);
       assert_equals(innerScript.nonce, 'abc', "Post-insertion IDL");

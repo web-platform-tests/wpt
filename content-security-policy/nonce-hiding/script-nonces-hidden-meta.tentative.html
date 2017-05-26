@@ -46,7 +46,7 @@
     test(t => {
       script.setAttribute('nonce', 'foo');
       assert_equals(script.getAttribute('nonce'), 'foo');
-      assert_equals(script.nonce, 'abc');
+      assert_equals(script.nonce, 'foo');
     }, "Writing 'nonce' content attribute.");
 
     // Set the IDL attribute to 'bar'
@@ -86,7 +86,7 @@
       s.innerText = script.innerText;
       s.nonce = 'zyx';
       s.setAttribute('nonce', 'abc');
-      assert_equals(s.nonce, 'zyx');
+      assert_equals(s.nonce, 'abc');
       document.head.appendChild(s);
       assert_equals(s.nonce, 'abc');
       assert_equals(s.getAttribute('nonce'), 'abc');
@@ -102,7 +102,7 @@
       s.innerText = script.innerText;
       s.setAttribute('nonce', 'abc');
       assert_equals(s.getAttribute('nonce'), 'abc', "Pre-insertion content");
-      assert_equals(s.nonce, '', "Pre-insertion IDL");
+      assert_equals(s.nonce, 'abc', "Pre-insertion IDL");
       document.head.appendChild(s);
       assert_equals(s.nonce, 'abc', "Post-insertion IDL");
       assert_equals(s.getAttribute('nonce'), 'abc', "Post-insertion content");

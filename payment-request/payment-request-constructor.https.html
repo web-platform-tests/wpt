@@ -410,6 +410,49 @@ test(() => {
   assert_false(itThrows, "shouldn't throw when given a negative value");
 }, "Negative values are allowed for displayItems.amount.value, irrespective of total amount");
 
+test(() => {
+  let itThrows = false;
+  const largeMoney = "1234567890".repeat(100000);
+
+  try {
+    new PaymentRequest(
+      [
+        {
+          supportedMethods: ["basic-card"]
+        },
+      ],
+      {
+        total: {
+          label: "",
+          amount: {
+            currency: "USD",
+            value: `${largeMoney}.${largeMoney}`,
+          },
+        },
+        displayItems: [
+          {
+            label: "",
+            amount: {
+              currency: "USD",
+              value: `-${largeMoney}`,
+            },
+          },
+          {
+            label: "",
+            amount: {
+              currency: "AUD",
+              value: `-${largeMoney}.${largeMoney}`,
+            },
+          },
+        ],
+      }
+    );
+  } catch (err) {
+    itThrows = true;
+  }
+  assert_false(itThrows, "shouldn't throw when given a absurd monetary values");
+}, "it handles high precision currency values without throwing");
+
 // Process shipping options:
 const defaultAmount = Object.freeze({
   currency: "USD",

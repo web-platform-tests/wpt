@@ -94,7 +94,7 @@ def gen_html(request_origin, redirect, add_header):
     # content disposition header, the download should be refused.
     if add_header == WITHOUT_CONTENT_DISPOSITION:
         if ((request_origin == SAME_ORIGIN and redirect == REDIRECT_SWAP_ORIGIN) or
-            (request_origin == CROSS_ORIGIN and redirect != REDIRECT_SWAP_ORIGIN)): 
+            (request_origin == CROSS_ORIGIN and redirect != REDIRECT_SWAP_ORIGIN)):
             expected_result = "no"
             assert_description = "Download should not work"
 

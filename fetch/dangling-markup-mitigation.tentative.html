@@ -105,7 +105,7 @@
     // Leading and trailing whitespace is stripped:
     `
       <img id="dangling" src="
-        /images/green-1x1.png?img= 
+        /images/green-1x1.png?img=
       ">
     `,
     `
@@ -118,7 +118,7 @@
         /images/green-1x1.png?img=${escapedNewline}
       ">
     `,
-    
+
     // Data URLs don't trigger blocking:
     `<img id="dangling" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">`,
     `<img id="dangling" src="data:image/png;base64,${rawNewline}iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">`,

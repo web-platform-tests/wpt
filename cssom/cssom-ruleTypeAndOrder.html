@@ -1,8 +1,6 @@
 <!doctype html>
 <head>
-  <title>CSS OM: CSS Rule Types</title>
-  <link rel="author" title="Divya Manian" href="mailto:manian@adobe.com">
-  <link rel="author" title="Melanie Richards" href="mailto:Melanie.Richards@microsoft.com">
+  <title>CSS OM: CSS Rule Types and Order</title>
   <link rel="help" href="https://www.w3.org/TR/cssom-1/#the-cssrule-interface">
   <meta name="flags" content="dom">
   <meta name="assert" content="Testing Serialization of Style Rules">
@@ -17,7 +15,6 @@
   <style id="s-2">
     h1 { background: indianred; }
   </style>
-  <!-- Unsure why the second of 2 rules is the test subject in #s-3 -->
   <style id="s-3">
     @namespace svg "http://www.w3.org/2000/svg";
     svg|a { color: white; }
@@ -52,7 +49,7 @@
 
     var stylesheets = document.styleSheets;
 
-    var expectedTypes = [10, 3, 1, 1, 5, 4, 6];
+    var expectedOrderOfTypes = [10, 3, 1, 1, 5, 4, 6];
 
     var typesText = {
       1: 'style rule',
@@ -60,19 +57,18 @@
       4: 'media rule',
       5: '@font-face rule',
       6: 'page rule',
-      10: 'namespace rule',
-      11: 'unrecognized rule'
+      10: 'namespace rule'
     };
 
     for (var i = 0; i < stylesheets.length; i++) {
       test( function () {
           if (i === 3) {
-            var cssType = stylesheets[i].cssRules.length > 0 && stylesheets[i].cssRules[1] ? stylesheets[i].cssRules[1].type : 11;
+            var cssType = stylesheets[i].cssRules[1].type;
           } else {
-            var cssType = stylesheets[i].cssRules.length > 0 ? stylesheets[i].cssRules[0].type : 11;
+            var cssType = stylesheets[i].cssRules[0].type;
           }
-          assert_equals(typesText[cssType], typesText[expectedTypes[i]]);
-      }, 'Type of #s-' + i + ' is expected to be ' + typesText[expectedTypes[i]]);
+          assert_equals(typesText[cssType], typesText[expectedOrderOfTypes[i]]);
+      }, 'Type of #s-' + i + ' is expected to be ' + typesText[expectedOrderOfTypes[i]]);
     }
   </script>
 </body>

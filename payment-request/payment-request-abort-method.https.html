@@ -7,10 +7,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
-setup(()=>{}, {
-  // Ignore unhanded rejections resulting from .show()'s acceptPromise 
+setup(() => {}, {
+  // Ignore unhanded rejections resulting from .show()'s acceptPromise
   // not being explicitly handled.
-  "allow_uncaught_exception": true,
+  allow_uncaught_exception: true,
 });
 const basicCard = Object.freeze({ supportedMethods: ["basic-card"] });
 const defaultMethods = Object.freeze([basicCard]);
@@ -42,7 +42,7 @@ promise_test(async t => {
   // Let's set request the state to "closed" by calling .abort()
   try {
     await request.abort();
-  } catch(err) {
+  } catch (err) {
     assert_true(false, "Unexpected promise rejection: " + err.message);
   }
   // The request is now "closed", so...
@@ -54,11 +54,11 @@ promise_test(async t => {
   const acceptPromise = request.show();
   try {
     await request.abort();
-  } catch(err) {
+  } catch (err) {
     assert_true(false, "Unexpected promise rejection: " + err.message);
   }
   await promise_rejects(t, "AbortError", acceptPromise);
-  // As request is now "closed", trying to show it will fail 
+  // As request is now "closed", trying to show it will fail
   await promise_rejects(t, "InvalidStateError", request.show());
 }, "calling .abort() causes acceptPromise to reject and closes the request.");
 

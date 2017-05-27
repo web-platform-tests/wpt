@@ -206,7 +206,10 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
+                    if (vector.algorithm.tagLength > 255)
+                        assert_equals(err.name, "TypeError", "Should throw an TypeError instead of " + err.message);
+                    else
+                        assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
                 });
             }, vector.name);
         }, function(err) {
@@ -229,7 +232,10 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
+                    if (vector.algorithm.tagLength > 255)
+                        assert_equals(err.name, "TypeError", "Should throw an TypeError instead of " + err.message);
+                    else
+                        assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
                 });
             }, vector.name + " decryption");
         }, function(err) {

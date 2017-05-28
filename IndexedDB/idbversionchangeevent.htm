@@ -16,6 +16,7 @@
         t = async_test(document.title, {timeout: 10000});
 
     t.step(function() {
+        var deleterq = indexedDB.deleteDatabase('db');
         var openrq = indexedDB.open('db', 3);
 
         openrq.onupgradeneeded = t.step_func(function(e) {

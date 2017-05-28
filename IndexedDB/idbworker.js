@@ -14,6 +14,7 @@ function MessageHandler(e)
     else
         self.postMessage(true)
 
+    idb.deleteDatabase("webworker101")
     open_rq = idb.open("webworker101", 1)
 
     open_rq.onupgradeneeded = function(e) {
@@ -27,6 +28,7 @@ function MessageHandler(e)
         db.transaction("store").objectStore("store").get(1).onsuccess = function(e) {
             self.postMessage(e.target.result)
             db.close()
+            idb.deleteDatabase("webworker101")
         }
     }
     open_rq.onerror = function() { self.postMessage("open.error") }

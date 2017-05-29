@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test play state changes for animations with a negative playback rate</title>
+<link rel="help" href="http://w3c.github.io/web-animations/#play-state">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<body>
+<script>
+'use strict';
+
+function createIdleAnimation(t) {
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
+  animation.reverse();
+  animation.cancel();
+  return animation;
+}
+
+function createRunningAnimation(t) {
+  var animation = createIdleAnimation(t);
+  animation.play();
+  animation.startTime = document.timeline.currentTime + 50 * MS_PER_SEC;
+  return animation;
+}
+
+function createPendingStartTimeAnimation(t) {
+  var animation = createIdleAnimation(t);
+  animation.play();
+  return animation;
+}
+
+function createPausedAnimation(t) {
+  var animation = createIdleAnimation(t);
+  animation.pause();
+  animation.currentTime = 100 * MS_PER_SEC;
+  return animation;
+}
+
+function createFinishedAnimation(t) {
+  var animation = createIdleAnimation(t);
+  animation.play();
+  animation.finish();
+  return animation;
+}
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Play state is idle after cancelling a reversed animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Play state is pending after playing a cancelled reversed animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 50 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Play state is running after playing and setting start time of a cancelled reversed animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'paused');
+}, "Play state is paused after pausing and setting current time of a cancelled reversed animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Play state is finished after playing and finishing a cancelled reversed animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.play();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling play() on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.pause();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling pause() on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.cancel();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Calling cancel() on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.finish();
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Calling finish() on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.reverse();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'pending');
+}, "Calling reverse() on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.currentTime = 1 * MS_PER_SEC;
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'paused');
+}, "Setting currentTime on an idle animation");
+
+test(function(t) {
+  var animation = createIdleAnimation(t);
+  animation.startTime = document.timeline.currentTime + 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime + 1 * MS_PER_SEC);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting startTime on an idle animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.play();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling play() on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.pause();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling pause() on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.cancel();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Calling cancel() on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.finish();
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Calling finish() on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.reverse();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'pending');
+}, "Calling reverse() on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.currentTime = 1 * MS_PER_SEC;
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Setting currentTime on a pending animation");
+
+test(function(t) {
+  var animation = createPendingStartTimeAnimation(t);
+  animation.startTime = document.timeline.currentTime + 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime + 1 * MS_PER_SEC);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting startTime on a pending animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  var startTime = animation.startTime;
+  var currentTime = animation.currentTime;
+  animation.play();
+  assert_times_equal(animation.startTime, startTime);
+  assert_times_equal(animation.currentTime, currentTime);
+  assert_equals(animation.playState, 'running');
+}, "Calling play() on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.pause();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 50 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling pause() on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.cancel();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Calling cancel() on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.finish();
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Calling finish() on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.reverse();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 50 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling reverse() on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.currentTime = 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting currentTime on a running animation");
+
+test(function(t) {
+  var animation = createRunningAnimation(t);
+  animation.startTime = document.timeline.currentTime + 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime + 1 * MS_PER_SEC);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting startTime on a running animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.play();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling play() on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.pause();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'paused');
+}, "Calling pause() on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.cancel();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Calling cancel() on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.finish();
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Calling finish() on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.reverse();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'pending');
+}, "Calling reverse() on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.currentTime = 1 * MS_PER_SEC;
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'paused');
+}, "Setting currentTime on a paused animation");
+
+test(function(t) {
+  var animation = createPausedAnimation(t);
+  animation.startTime = document.timeline.currentTime + 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime + 1 * MS_PER_SEC);
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting startTime on a paused animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.play();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  assert_equals(animation.playState, 'pending');
+}, "Calling play() on a finished animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.pause();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'pending');
+}, "Calling pause() on a finished animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.cancel();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, null);
+  assert_equals(animation.playState, 'idle');
+}, "Calling cancel() on a finished animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.finish();
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'finished');
+}, "Calling finish() on a finished animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.reverse();
+  assert_equals(animation.startTime, null);
+  assert_times_equal(animation.currentTime, 0);
+  assert_equals(animation.playState, 'pending');
+}, "Calling reverse() on a finished animation");
+
+test(function(t) {
+  var animation = createFinishedAnimation(t);
+  animation.currentTime = 1 * MS_PER_SEC;
+  assert_times_equal(animation.startTime, document.timeline.currentTime - (animation.playbackRate * animation.currentTime));
+  assert_times_equal(animation.currentTime, 1 * MS_PER_SEC);
+  assert_equals(animation.playState, 'running');
+}, "Setting currentTime on a finished animation");
+
+</script>
+</body>

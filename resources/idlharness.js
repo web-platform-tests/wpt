@@ -1086,33 +1086,80 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     if (this.is_global() && typeof Object.setPrototypeOf === "function") {
-        // This function tests WebIDL as of 2017-05-04.
+        // These functions test WebIDL as of 2017-05-29.
         // https://heycam.github.io/webidl/#named-properties-object-setprototypeof
         test(function() {
-            var proto = Object.getPrototypeOf(self[this.name].prototype);
-            var error = null;
-            var set;
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+            var newValue = Object.create(null);
 
-            try {
-                Object.setPrototypeOf(self[this.name].prototype, proto);
-            } catch (err) {
-                error = err;
-            }
+            assert_throws(new TypeError(), function() {
+                Object.setPrototypeOf(self[this.name].prototype, newValue);
+            });
 
-            assert_equals(error, null, "Supports assignment of current value");
+            assert_equals(
+                    Object.getPrototypeOf(self[this.name].prototype),
+                    originalValue,
+                    "original value not modified"
+                );
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to a new value via Object.setPrototypeOf " +
+            "should throw a TypeError");
 
-            try {
-                Object.setPrototypeOf(self[this.name].prototype, null);
-            } catch (err) {
-                error = err;
-            }
+        test(function() {
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+            var newValue = Object.create(null);
 
-            if (error === null) {
-                Object.setPrototypeOf(self[this.name].prototype, proto);
-            }
+            assert_throws(new TypeError(), function() {
+                self[this.name].prototype.__proto__ = newValue;
+            });
 
-            assert_true(error instanceof TypeError, "Rejects re-assignment with a TypeError");
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method of named properties object");
+            assert_equals(
+                    Object.getPrototypeOf(self[this.name].prototype),
+                    originalValue,
+                    "original value not modified"
+                );
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to a new value via __proto__ " +
+            "should throw a TypeError");
+
+        test(function() {
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+            var newValue = Object.create(null);
+
+            assert_false(Reflect.setPrototypeOf(self[this.name].prototype.__proto__, newValue));
+
+            assert_equals(
+                    Object.getPrototypeOf(self[this.name].prototype),
+                    originalValue,
+                    "original value not modified"
+                );
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to a new value via Reflect.setPrototypeOf " +
+            "should return false");
+
+        test(function() {
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+
+            Object.setPrototypeOf(self[this.name].prototype, originalValue);
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to its original value via Object.setPrototypeOf " +
+            "should not throw");
+
+        test(function() {
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+
+            self[this.name].prototype.__proto__ = originalValue;
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to its original value via __proto__ " +
+            "should not throw");
+
+        test(function() {
+            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
+
+            assert_true(Reflect.setPrototypeOf(self[this.name].prototype, originalValue));
+        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+            "of named properties object - setting to its original value via Reflect.setPrototypeOf " +
+            "should return true");
     }
 
     test(function()

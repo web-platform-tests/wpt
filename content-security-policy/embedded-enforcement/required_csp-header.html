@@ -9,15 +9,18 @@
 <body>
   <script>
     var tests = [
-      { "name": "Required-CSP is not sent if `csp` attribute is not set on <iframe>.", 
+      { "name": "Required-CSP is not sent if `csp` attribute is not set on <iframe>.",
         "csp": null,
         "expected":  null },
-      { "name": "Send Required-CSP when `csp` attribute of <iframe> is not empty.", 
+      { "name": "Send Required-CSP when `csp` attribute of <iframe> is not empty.",
         "csp": "script-src 'unsafe-inline'",
         "expected":  "script-src 'unsafe-inline'" },
-      { "name": "Send Required-CSP Header on change of `src` attribute on iframe.", 
-        "csp": "script-src 'unsafe-inline'", 
+      { "name": "Send Required-CSP Header on change of `src` attribute on iframe.",
+        "csp": "script-src 'unsafe-inline'",
         "expected":  "script-src 'unsafe-inline'" },
+      { "name": "Wrong value of `csp` should not trigger sending Required-CSP Header.",
+        "csp": "completely wrong csp",
+        "expected": null },
     ];
 
     tests.forEach(test => {
@@ -55,14 +58,14 @@
           if (e.source != i.contentWindow || !('required_csp' in e.data))
               return;
           if (!loaded) {
-            assert_equals(test.expected, e.data['required_csp']);
+            assert_equals(e.data['required_csp'], test.expected);
             loaded = true;
             i.csp = "default-src 'unsafe-inline'";
             i.src = generateURLString(Host.CROSS_ORIGIN, PolicyHeader.REQUIRED_CSP);
           } else {
             // Once iframe has loaded, check that on change of `src` attribute
             // Required-CSP value is based on latest `csp` attribute value.
-            assert_equals("default-src 'unsafe-inline'", e.data['required_csp']);
+            assert_equals(e.data['required_csp'], "default-src 'unsafe-inline'");
             t.done();
           }
         }));

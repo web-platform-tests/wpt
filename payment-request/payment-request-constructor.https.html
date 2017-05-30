@@ -451,12 +451,12 @@ test(() => {
   const shippingOptions = [defaultShippingOption];
   const details = Object.assign({}, defaultDetails, { shippingOptions });
   const request = new PaymentRequest(defaultMethods, details);
-  assert_equals(request.shippingOption, "PASS", "selected option must PASS");
+  assert_equals(request.shippingOption, null, "request.shippingOption must be null");
 }, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
 
 test(() => {
   const selectedOption = Object.assign({}, defaultShippingOption, {
-    select: true,
+    selected: true,
     id: "PASS",
   });
   const shippingOptions = [selectedOption];
@@ -467,15 +467,15 @@ test(() => {
 
 test(() => {
   const failOption1 = Object.assign({}, defaultShippingOption, {
-    select: true,
+    selected: true,
     id: "FAIL1",
   });
   const failOption2 = Object.assign({}, defaultShippingOption, {
-    select: false,
+    selected: false,
     id: "FAIL2",
   });
   const passOption = Object.assign({}, defaultShippingOption, {
-    select: true,
+    selected: true,
     id: "PASS",
   });
   const shippingOptions = [failOption1, failOption2, passOption];
@@ -486,10 +486,10 @@ test(() => {
 
 test(() => {
   const selectedOption = Object.assign({}, defaultShippingOption, {
-    select: true,
+    selected: true,
   });
   const unselectedOption = Object.assign({}, defaultShippingOption, {
-    select: false,
+    selected: false,
   });
   const shippingOptions = [selectedOption, unselectedOption];
   const details = Object.assign({}, defaultDetails, { shippingOptions });

@@ -76,8 +76,8 @@ function assert_required_csp(t, url, csp, expected) {
 
   window.addEventListener('message', t.step_func(e => {
     if (e.source != i.contentWindow || !('required_csp' in e.data))
-        return;
-    assert_equals(expected, e.data['required_csp']);
+      return;
+    assert_equals(e.data['required_csp'], expected);
     t.done();
   }));
 

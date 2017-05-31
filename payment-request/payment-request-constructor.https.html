@@ -431,7 +431,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"]
+          supportedMethods: ["basic-card"],
         },
       ],
       {
@@ -507,7 +507,11 @@ test(() => {
   const shippingOptions = [defaultShippingOption];
   const details = Object.assign({}, defaultDetails, { shippingOptions });
   const request = new PaymentRequest(defaultMethods, details);
-  assert_equals(request.shippingOption, null, "request.shippingOption must be null");
+  assert_equals(
+    request.shippingOption,
+    null,
+    "request.shippingOption must be null"
+  );
 }, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
 
 test(() => {

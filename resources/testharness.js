@@ -1549,10 +1549,12 @@ policies and contribution forms [3].
         var clone = {};
         Object.keys(this).forEach(
                 (function(key) {
-                    if (typeof(this[key]) === "object") {
-                        clone[key] = merge({}, this[key]);
+                    var value = this[key];
+
+                    if (typeof value === "object" && value !== null) {
+                        clone[key] = merge({}, value);
                     } else {
-                        clone[key] = this[key];
+                        clone[key] = value;
                     }
                 }).bind(this));
         clone.phases = merge({}, this.phases);

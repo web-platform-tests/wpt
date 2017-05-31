@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Embedded Enforcement: Subsumption Algorithm - Nonces.</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="../support/testharness-helper.sub.js"></script>
+</head>
+<body>
+  <script>
+    var tests = [
+      { "name": "'nonce-abc' is properly subsumed.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'unsafe-hashed-attributes' 'strict-dynamic' 'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/bar.html 'nonce-abc'",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_LOAD },
+      { "name": "Hashes do not have to be present in returned csp.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_LOAD },
+      { "name": "Hashes do not have to be present in returned csp but must not allow all inline behavior.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/ 'unsafe-inline'",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_BLOCK },
+      { "name": "Other expressions have to be subsumed.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/ 'unsafe-eval' 'nonce-abc'",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_BLOCK },
+      { "name": "Other expressions have to be subsumed but 'unsafe-inline' gets ignored.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/ 'unsafe-inline' 'nonce-abc'",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_LOAD },
+      { "name": "Effective policy is properly found.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self'  'nonce-abc'", 
+        "returned_csp_1": "style-src http://example1.com/foo/ 'unsafe-hashed-attributes' 'nonce-abc'",
+        "returned_csp_2": "style-src http://example1.com/foo/ 'self' 'nonce-abc'",
+        "expected": IframeLoad.EXPECT_LOAD },
+      { "name": "Required csp must allow 'nonce-abc'.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self'", 
+        "returned_csp_1": "style-src http://example1.com/foo/ 'self'  'nonce-abc'",
+        "returned_csp_2": null,
+        "expected": IframeLoad.EXPECT_BLOCK },
+      { "name": "Effective policy is properly found where 'nonce-abc' is not subsumed.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self'", 
+        "returned_csp_1": "style-src 'unsafe-hashed-attributes' 'nonce-abc'",
+        "returned_csp_2": "style-src 'nonce-abc' 'unsafe-inline'",
+        "expected": IframeLoad.EXPECT_BLOCK },
+      { "name": "'nonce-abc' is not subsumed by 'nonce-123'.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-123'", 
+        "returned_csp_1": "style-src 'unsafe-hashed-attributes' 'nonce-abc'",
+        "returned_csp_2": "style-src 'nonce-abc' 'unsafe-inline'",
+        "expected": IframeLoad.EXPECT_BLOCK },
+      { "name": "Effective policy now does not allow 'nonce-abc'.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self' 'nonce-123'", 
+        "returned_csp_1": "style-src 'unsafe-hashed-attributes' 'nonce-abc' 'nonce-123'",
+        "returned_csp_2": "style-src 'nonce-123' 'unsafe-inline'",
+        "expected": IframeLoad.EXPECT_LOAD },
+      { "name": "Effective policy is properly found where 'nonce-abc' is not part of it.", 
+        "required_csp": "style-src http://example1.com/foo/ 'self'", 
+        "returned_csp_1": "style-src 'unsafe-hashed-attributes' 'self'",
+        "returned_csp_2": "style-src 'nonce-abc' 'self'",
+        "expected": IframeLoad.EXPECT_LOAD },
+    ];
+    tests.forEach(test => {
+      async_test(t =>  {
+        var url = generateUrlWithPolicies(Host.CROSS_ORIGIN, test.returned_csp_1);
+        if (test.returned_csp_2)
+          url.searchParams.append("policy2", test.returned_csp_2);
+        assert_iframe_with_csp(t, url, test.required_csp, test.expected, test.name, null);
+      }, test.name);
+    });
+  </script>
+</body>
+</html>

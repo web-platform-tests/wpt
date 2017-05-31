@@ -25,6 +25,7 @@ promise_test(function(t) {
       .then(function() { return with_iframe(scope); })
       .then(function(frame2) {
           var expected_events_seen = [
+            'invalidstateerror', // by update() during the script evaluation.
             'updatefound',  // by register().
             'activate',
             'fetch',

@@ -22,4 +22,6 @@ self.addEventListener('message', function(e) {
   });
 
 // update() during the script evaluation should be ignored.
-self.registration.update();
+self.registration.update().catch(function(e) {
+    events_seen.push(e.name.toLowerCase());
+  });

@@ -305,6 +305,17 @@ for (const amount of invalidTotalAmounts) {
   }, `If details.total.amount.value is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
 }
 
+for (const prop in ["displayItems", "shippingOptions", "modifiers"]) {
+  test(() => {
+    try {
+      const details = Object.assign({}, defaultDetails, { [prop]: [] });
+      new PaymentRequest(defaultMethods, details);
+    } catch (err) {
+      assert_true(false, `${prop} can be zero length`);
+    }
+  }, `PaymentDetailsBase.${prop} can be 0 length`);
+}
+
 test(() => {
   assert_throws(
     {

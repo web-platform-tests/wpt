@@ -41,7 +41,7 @@ test(() => {
 
 test(() => {
   const newDetails = Object.assign({}, defaultDetails, {
-    id: "".padStart(100000000, "\n test 123 \t \n "),
+    id: "".padStart(1024, "a"),
   });
   const request = new PaymentRequest(defaultMethods, newDetails);
   assert_equals(
@@ -414,7 +414,7 @@ test(() => {
 
 test(() => {
   let itThrows = false;
-  const largeMoney = "1234567890".repeat(100000);
+  const largeMoney = "1".repeat(510);
 
   try {
     new PaymentRequest(

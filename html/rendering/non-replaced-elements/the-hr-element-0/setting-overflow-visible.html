@@ -1,0 +1,44 @@
+<!doctype html>
+<title>The hr element: setting 'overflow: visible'</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+#test-visible {
+  overflow: visible;
+}
+.float, hr::before {
+  content: "";
+  float: left;
+  width: 50px;
+  height: 50px;
+  background-color: orange;
+}
+.clear {
+  clear: left;
+}
+</style>
+
+<div class=float></div>
+<hr id=test-control>
+<div class=clear></div>
+
+<div class=float></div>
+<hr id=test-visible>
+<div class=clear></div>
+
+<script>
+const defaultBodyMargin = 8;
+
+test(() => {
+  const hr = document.getElementById('test-control');
+  assert_equals(hr.offsetLeft, 50 + defaultBodyMargin, 'offsetLeft');
+  assert_equals(hr.clientHeight, 50, 'clientHeight');
+}, 'control');
+
+test(() => {
+  const hr = document.getElementById('test-visible');
+  assert_equals(hr.offsetLeft, 0 + defaultBodyMargin, 'offsetLeft');
+  assert_equals(hr.clientHeight, 0, 'clientHeight');
+}, 'overflow: visible');
+
+</script>

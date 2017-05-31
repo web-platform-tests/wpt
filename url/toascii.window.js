@@ -25,9 +25,6 @@ function runTests(tests) {
     if (typeof hostTest === "string") {
       continue // skip comments
     }
-    if(hostTest.output === undefined) {
-      hostTest.output = hostTest.input
-    }
     const typeName = { "url": "URL", "a": "<a>", "area": "<area>" }
     ;["url", "a", "area"].forEach((type) => {
       test(() => {

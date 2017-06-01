@@ -107,6 +107,16 @@
     "output": "xn--mgba3gch31f060k"
   },
   {
+    "comment": "U+FFFD",
+    "input": "\uFFFD.com",
+    "output": null
+  },
+  {
+    "comment": "U+FFFD character encoded in Punycode",
+    "input": "xn--zn7c.com",
+    "output": null
+  },
+  {
     "comment": "Label longer than 63 code points",
     "input": "x01234567890123456789012345678901234567890123456789012345678901x",
     "output": "x01234567890123456789012345678901234567890123456789012345678901x"

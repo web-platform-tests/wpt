@@ -41,7 +41,7 @@ test(() => {
 
 test(() => {
   const newDetails = Object.assign({}, defaultDetails, {
-    id: "".padStart(100000000, "\n test 123 \t \n "),
+    id: "".padStart(1024, "a"),
   });
   const request = new PaymentRequest(defaultMethods, newDetails);
   assert_equals(
@@ -305,6 +305,17 @@ for (const amount of invalidTotalAmounts) {
   }, `If details.total.amount.value is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
 }
 
+for (const prop in ["displayItems", "shippingOptions", "modifiers"]) {
+  test(() => {
+    try {
+      const details = Object.assign({}, defaultDetails, { [prop]: [] });
+      new PaymentRequest(defaultMethods, details);
+    } catch (err) {
+      assert_true(false, `${prop} can be zero length`);
+    }
+  }, `PaymentDetailsBase.${prop} can be 0 length`);
+}
+
 test(() => {
   assert_throws(
     {
@@ -375,7 +386,9 @@ test(() => {
       [
         {
           supportedMethods: ["basic-card"],
-          data: ["some-data"],
+          data: {
+            supportedTypes: ["debit"],
+          },
         },
       ],
       {
@@ -409,6 +422,49 @@ test(() => {
   }
   assert_false(itThrows, "shouldn't throw when given a negative value");
 }, "Negative values are allowed for displayItems.amount.value, irrespective of total amount");
+
+test(() => {
+  let itThrows = false;
+  const largeMoney = "1".repeat(510);
+
+  try {
+    new PaymentRequest(
+      [
+        {
+          supportedMethods: ["basic-card"],
+        },
+      ],
+      {
+        total: {
+          label: "",
+          amount: {
+            currency: "USD",
+            value: `${largeMoney}.${largeMoney}`,
+          },
+        },
+        displayItems: [
+          {
+            label: "",
+            amount: {
+              currency: "USD",
+              value: `-${largeMoney}`,
+            },
+          },
+          {
+            label: "",
+            amount: {
+              currency: "AUD",
+              value: `-${largeMoney}.${largeMoney}`,
+            },
+          },
+        ],
+      }
+    );
+  } catch (err) {
+    itThrows = true;
+  }
+  assert_false(itThrows, "shouldn't throw when given absurd monetary values");
+}, "it handles high precision currency values without throwing");
 
 // Process shipping options:
 const defaultAmount = Object.freeze({
@@ -451,7 +507,11 @@ test(() => {
   const shippingOptions = [defaultShippingOption];
   const details = Object.assign({}, defaultDetails, { shippingOptions });
   const request = new PaymentRequest(defaultMethods, details);
-  assert_equals(request.shippingOption, null, "request.shippingOption must be null");
+  assert_equals(
+    request.shippingOption,
+    null,
+    "request.shippingOption must be null"
+  );
 }, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
 
 test(() => {

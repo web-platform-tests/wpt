@@ -48,7 +48,7 @@ def do_delayed_imports():
     from mozlog.formatters import TbplFormatter
     from mozlog.handlers import BaseHandler, LogLevelFilter, StreamHandler
     from tools.manifest import manifest
-    from wptrunner import wptcommandline, wptrunner
+    from tools.wptrunner.wptrunner import wptcommandline, wptrunner
     setup_log_handler()
     setup_action_filter()
 
@@ -853,7 +853,7 @@ def get_parser():
                         action="store",
                         type=str,
                         help="Location of ini-formatted configuration file",
-                        default="check_stability.ini")
+                        default=os.path.join(os.path.dirname(__file__), "check_stability.ini"))
     parser.add_argument("--sauce-platform",
                         action="store",
                         default=os.environ.get("PLATFORM"),

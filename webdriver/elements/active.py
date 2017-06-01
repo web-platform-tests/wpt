@@ -11,9 +11,15 @@ def assert_result_is_active_element(session, result):
     element returned by the `activeElement` attribute of the current browsing
     context's active document."""
     assert result.status == 200
+
+    from_js = session.execute_script("return document.activeElement;")
+
+    if result.body["value"] is None:
+        assert from_js == None
+        return
+
     assert isinstance(result.body["value"], dict)
     assert element_key in result.body["value"]
-    from_js = session.execute_script("return document.activeElement;")
 
     assert result.body["value"][element_key] == from_js[element_key]
 
@@ -197,5 +203,55 @@ def test_sucess_input_non_interactable(session):
             <p>Another element</p>
         </body>""")
     result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+
+    assert_result_is_active_element(session, result)
+
+def test_success_explicit_focus(session):
+    session.url = inline("""
+        <body>
+            <h1>Heading</h1>
+            <input />
+            <iframe></iframe>
+        </body>""")
+
+    session.execute_script("document.body.getElementsByTagName('h1')[0].focus();")
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    assert_result_is_active_element(session, result)
+
+    session.execute_script("document.body.getElementsByTagName('input')[0].focus();")
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    assert_result_is_active_element(session, result)
+
+    session.execute_script("document.body.getElementsByTagName('iframe')[0].focus();")
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    assert_result_is_active_element(session, result)
+
+    session.execute_script("document.body.getElementsByTagName('iframe')[0].focus();")
+    session.execute_script("document.body.getElementsByTagName('iframe')[0].remove();")
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    assert_result_is_active_element(session, result)
+
+    session.execute_script("document.body.appendChild(document.createElement('textarea'));")
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    assert_result_is_active_element(session, result)
+
+def test_success_iframe_content(session):
+    session.url = inline("<body></body>")
+    session.execute_script("""
+        var iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        var input = iframe.contentDocument.createElement('input');
+        iframe.contentDocument.body.appendChild(input);
+        input.focus();""")
+
+    result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+
+    assert_result_is_active_element(session, result)
+
+def test_sucess_without_body(session):
+    session.url = inline("<body></body>")
+    session.execute_script("document.body.remove();")
+
+    result = session.transport.send("GET", "session/%s/element/active"% session.session_id)
 
     assert_result_is_active_element(session, result)

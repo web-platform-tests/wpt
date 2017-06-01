@@ -26,7 +26,7 @@ promise_test(function(t) {
             });
 
           return new Promise(function(resolve, reject) {
-              setTimeout(function() {
+              t.step_timeout(function() {
                   var xhr;
                   try {
                     xhr = frame.contentWindow.performSyncXHR(non_existent_file);

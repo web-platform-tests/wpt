@@ -8,7 +8,7 @@
 <script>
 "use strict";
 setup(() => {}, {
-  // Ignore unhanded rejections resulting from .show()'s acceptPromise
+  // Ignore unhandled rejections resulting from .show()'s acceptPromise
   // not being explicitly handled.
   allow_uncaught_exception: true,
 });
@@ -47,7 +47,7 @@ promise_test(async t => {
   }
   // The request is now "closed", so...
   await promise_rejects(t, "InvalidStateError", request.abort());
-}, "Calling abort must not change the [[state]] until after interactive");
+}, `Calling abort must not change the [[state]] until after "interactive"`);
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);

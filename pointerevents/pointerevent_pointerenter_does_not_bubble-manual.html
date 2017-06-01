@@ -45,7 +45,7 @@
                 on_event(parent0, "pointerenter", function (event) {
                     detected_pointertypes[event.pointerType] = true;
                     test_pointerEvent.step(function () {
-                        assert_equals(event.target.id, "parent0", "Recieved " + event.type + " in parent for " + event.target.id);
+                        assert_equals(event.target.id, "parent0", "Received " + event.type + " in parent for " + event.target.id);
                     });
                 });
             }

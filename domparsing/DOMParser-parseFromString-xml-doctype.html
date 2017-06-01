@@ -10,7 +10,7 @@
     var doc = new DOMParser().parseFromString('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"><html><div id="test"/></html>', 'application/xhtml+xml');
     var div = doc.getElementById('test');
     assert_equals(div, null); // If null, then this was a an error document (didn't parse the input successfully)
-  }, "Doctype parsing of System Id must fail on ommitted value");
+  }, "Doctype parsing of System Id must fail on omitted value");
 
   test(function () {
     var doc = new DOMParser().parseFromString('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" ""><html><div id="test"/></html>', 'application/xhtml+xml');

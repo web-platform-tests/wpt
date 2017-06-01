@@ -49,7 +49,7 @@
 
                 test.waitForExpectedEvents(function()
                 {
-                    // No more seeking or seeked events should occur.
+                    // No more seeking or sought events should occur.
                     mediaElement.addEventListener('seeking', test.unreached_func("Unexpected event 'seeking'"));
                     mediaElement.addEventListener('seeked', test.unreached_func("Unexpected event 'seeked'"));
 

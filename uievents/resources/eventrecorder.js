@@ -70,7 +70,7 @@
 //    //<recorded property names with their values for all enumerable properties of the event object instance>
 // };
 // * EventRecordDetails
-//   * For records with 'sequentialOccurrences' > 1, only the first occurence is recorded (subsequent event details are dropped).
+//   * For records with 'sequentialOccurrences' > 1, only the first occurrence is recorded (subsequent event details are dropped).
 //   * Object reference values (e.g., event.target, event.currentTarget, etc.) are replaced with their mapped 'targetTestID' string.
 //     If no 'targetTestID' string mapping is available for a particular object, the value 'UNKNOWN_OBJECT' is returned.
 

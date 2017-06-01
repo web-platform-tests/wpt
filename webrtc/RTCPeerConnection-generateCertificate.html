@@ -16,6 +16,12 @@
    *        AlgorithmIdentifier keygenAlgorithm);
    *    };
    *
+   *  4.10.2. RTCCertificate Interface
+   *    interface RTCCertificate {
+   *      readonly attribute DOMTimeStamp expires;
+   *      ...
+   *    };
+   *
    *  [WebCrypto]
    *  11. Algorithm Dictionary
    *    typedef (object or DOMString) AlgorithmIdentifier;
@@ -36,6 +42,9 @@
     }).then(cert => {
       assert_true(cert instanceof RTCCertificate,
         'Expect cert to be instance of RTCCertificate');
+
+      assert_greater_than(cert.expires, Date.now(),
+        'Expect generated certificate to expire reasonably long after current time');
     }),
     'generateCertificate() with compulsary RSASSA-PKCS1-v1_5 parameters should succeed');
 
@@ -46,6 +55,9 @@
     }).then(cert => {
       assert_true(cert instanceof RTCCertificate,
         'Expect cert to be instance of RTCCertificate');
+
+      assert_greater_than(cert.expires, Date.now(),
+        'Expect generated certificate to expire reasonably long after current time');
     }),
     'generateCertificate() with compulsary ECDSA parameters should succeed');
 
@@ -82,12 +94,6 @@
    *    RTCCertificateExpiration. If this is unsuccessful, immediately
    *    return a promise that is rejected with a newly created TypeError
    *    and abort processing.
-   *
-   *  4.10.2. RTCCertificate Interface
-   *    interface RTCCertificate {
-   *      readonly attribute DOMTimeStamp expires;
-   *      ...
-   *    };
    */
 
   promise_test(t => {
@@ -107,7 +113,7 @@
       namedCurve: 'P-256',
       expires: 0
     }).then(cert => {
-      assert_less_than(cert.expires, Date.now());
+      assert_less_than_equal(cert.expires, Date.now());
     })
   }, 'generateCertificate() with 0 expires parameter should generate expired cert');
 

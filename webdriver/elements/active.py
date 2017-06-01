@@ -1,18 +1,21 @@
 import pytest
-from webdriver.client import Element, element_key
+from webdriver.client import element_key
 
 from support.asserts import assert_error, assert_success, assert_dialog_handled
 from support.fixtures import create_dialog
 from support.inline import inline
 
-def assert_element_result(result):
+def assert_result_is_active_element(session, result):
+    """Ensure that the provided object is a successful WebDriver response
+    describing an element reference and that the referenced element matches the
+    element returned by the `activeElement` attribute of the current browsing
+    context's active document."""
     assert result.status == 200
     assert isinstance(result.body["value"], dict)
     assert element_key in result.body["value"]
+    from_js = session.execute_script("return document.activeElement;")
 
-def get_id(session, element_json):
-    element = Element(session, element_json[element_key])
-    return element.attribute("id")
+    assert result.body["value"][element_key] == from_js[element_key]
 
 # > 1. If the current browsing context is no longer open, return error with
 # >    error code no such window.
@@ -41,15 +44,14 @@ def test_closed_context(session, create_window):
 # 3. Return success.
 def test_handle_prompt_dismiss(new_session):
     _, session = new_session({"alwaysMatch": {"unhandledPromptBehavior": "dismiss"}})
-    session.url = inline("<body id='document-body'><p>Hello, World!</p></body>")
+    session.url = inline("<body><p>Hello, World!</p></body>")
 
     create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
 
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #1")
     assert session.execute_script("return dismiss1;") == None
 
@@ -58,8 +60,7 @@ def test_handle_prompt_dismiss(new_session):
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #2")
     assert read_global(session, "dismiss2") == None
 
@@ -68,8 +69,7 @@ def test_handle_prompt_dismiss(new_session):
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #3")
     assert read_global(session, "dismiss3") == None
 
@@ -86,16 +86,15 @@ def test_handle_prompt_dismiss(new_session):
 #    [...]
 #
 # 3. Return success.
-def test_handle_prompt_accept(new_session, get_id):
+def test_handle_prompt_accept(new_session):
     _, session = new_session({"alwaysMatch": {"unhandledPromptBehavior": "accept"}})
-    session.url = inline("<body id='document-body'><p>Hello, World!</p></body>")
+    session.url = inline("<body><p>Hello, World!</p></body>")
     create_dialog(session)("alert", text="accept #1", result_var="accept1")
 
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "accept #1")
     assert read_global(session, "accept1") == None
 
@@ -104,8 +103,7 @@ def test_handle_prompt_accept(new_session, get_id):
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "accept #2")
     assert read_global(session, "accept2"), True
 
@@ -114,8 +112,7 @@ def test_handle_prompt_accept(new_session, get_id):
     result = session.transport.send("GET",
                                     "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "accept #3")
     assert read_global(session, "accept3") == ""
 
@@ -132,7 +129,7 @@ def test_handle_prompt_accept(new_session, get_id):
 #      1. Dismiss the current user prompt.
 #      2. Return error with error code unexpected alert open.
 def test_handle_prompt_missing_value(session, create_dialog):
-    session.url = inline("<body id='document-body'><p>Hello, World!</p></body>")
+    session.url = inline("<body><p>Hello, World!</p></body>")
 
     create_dialog("alert", text="dismiss #1", result_var="dismiss1")
 
@@ -168,43 +165,37 @@ def test_handle_prompt_missing_value(session, create_dialog):
 # > 5. Return success with data active web element.
 def test_sucess_document(session):
     session.url = inline("""
-        <body id="document-body">
+        <body>
             <h1>Heading</h1>
-            <input id="the-input" />
-            <input id="interactable-input" />
-            <input id="non-interactable-input" style="opacity: 0;" />
+            <input />
+            <input />
+            <input style="opacity: 0;" />
             <p>Another element</p>
         </body>""")
     result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-
-    assert get_id(session, result.body["value"]) == "document-body"
+    assert_result_is_active_element(session, result)
 
 def test_sucess_input(session):
     session.url = inline("""
-        <body id="document-body">
+        <body>
             <h1>Heading</h1>
-            <input id="interactable-input" autofocus />
-            <input id="non-interactable-input" style="opacity: 0;" />
+            <input autofocus />
+            <input style="opacity: 0;" />
             <p>Another element</p>
         </body>""")
     result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-
-    assert get_id(session, result.body["value"]) == "interactable-input"
+    assert_result_is_active_element(session, result)
 
 def test_sucess_input_non_interactable(session):
     session.url = inline("""
-        <body id="document-body">
+        <body>
             <h1>Heading</h1>
-            <input id="interactable-input" />
-            <input id="non-interactable-input" style="opacity: 0;" autofocus />
+            <input />
+            <input style="opacity: 0;" autofocus />
             <p>Another element</p>
         </body>""")
     result = session.transport.send("GET", "session/%s/element/active" % session.session_id)
 
-    assert_element_result(result)
-
-    assert get_id(session, result.body["value"]) == "non-interactable-input"
+    assert_result_is_active_element(session, result)

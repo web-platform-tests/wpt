@@ -31,13 +31,22 @@ setup(() => {
 ['display',
  'unicodeBidi',
  'color',
- 'borderStyle',
- 'borderWidth',
+ 'borderTopStyle',
+ 'borderRightStyle',
+ 'borderBottomStyle',
+ 'borderLeftStyle',
+ 'borderTopWidth',
+ 'borderRightWidth',
+ 'borderBottomWidth',
+ 'borderLeftWidth',
  'marginTop',
  'marginRight',
  'marginBottom',
  'marginLeft',
  'overflow',
+ // Extra tests
+ 'height',
+ 'box-sizing',
 ].forEach(prop => {
   test(() => {
     assert_equals(testStyle[prop], refStyle[prop]);

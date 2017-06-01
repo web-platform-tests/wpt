@@ -12,21 +12,30 @@
 
 test(function(t) {
   t.add_cleanup(function() {
-    throw new Error('exception in cleanup method');
+    throw new Error('exception in cleanup function');
   });
-}, "Exceptions in cleanup cause harness failure.");
+}, "Exception in cleanup function causes harness failure.");
+
+test(function() {}, "This test should not be run.");
 </script>
 <script type="text/json" id="expected">
 {
   "summarized_status": {
     "status_string": "ERROR",
-    "message": "Error: exception in cleanup method",
-    "stack": "(implementation-defined)"
+    "message": "Test named 'Exception in cleanup function causes harness failure.' specified 1 'cleanup' function, and 1 failed.",
+    "stack": null
   },
   "summarized_tests": [
     {
       "status_string": "PASS",
-      "name": "Exceptions in cleanup cause harness failure.",
+      "name": "Exception in cleanup function causes harness failure.",
+      "properties": {},
+      "message": null,
+      "stack": null
+    },
+    {
+      "status_string": "NOTRUN",
+      "name": "This test should not be run.",
       "properties": {},
       "message": null,
       "stack": null

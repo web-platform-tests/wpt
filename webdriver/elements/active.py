@@ -15,7 +15,7 @@ def get_id(session, element_json):
     return element.attribute("id")
 
 # > 1. If the current browsing context is no longer open, return error with
-# >    error code no such window. 
+# >    error code no such window.
 def test_closed_context(session, create_window):
     new_window = create_window()
     session.window_handle = new_window

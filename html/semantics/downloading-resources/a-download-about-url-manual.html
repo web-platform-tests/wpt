@@ -1,56 +1,38 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Download a about: URL from an a element</title>
+<title>Download an about: URL from an a element</title>
 <link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#downloading-resources">
 <link rel="help" href="https://github.com/whatwg/html/issues/2622">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<script>
-setup({explicit_timeout: true});
-</script>
+<p>Download an about: URL from an a element
 
-<p>
-  Download a about: URL from an a element.
-</p>
+<ol>
+ <li><a href="about:blank" download="foo.html">Click this link</a>.
+ <li>Did a file get downloaded? <button>yes</button> <button>no</button>
+</ol>
 
-<form>
-  <ol>
-    <li>
-      <a href="about:blank" download="foo.html">Click this link</a>
-    </li>
-    <li>
-        Did a file get downloaded?
-        <input type="radio" id="yes" name="downloaded" value="yes">
-        <label for="yes">Yes</label>
-        <input type="radio" id="no" name="downloaded" value="no">
-        <label for="yes">No</label>
-    </li>
-    <li>
-      <button type="submit">Check test result</button>
-    </li>
-  </ol>
-</form>
+<div id="log"></div>
 
 <script>
 "use strict";
 
-const link = document.querySelector("a");
-link.addEventListener("click", () => {
-  link.setAttribute("clicked", "true");
-});
+setup({explicit_timeout: true});
 
-const button = document.querySelector("button");
+let clicked = false;
 
-button.addEventListener("click", (event) => {
-  event.preventDefault();
-  const clicked = link.hasAttribute("clicked");
-  assert_true(clicked, "Please click on the link first.");
-  const yes = document.querySelector("input#yes").checked;
-  const no = document.querySelector("input#no").checked;
-  assert_true(yes || no, "Please indicate whether a file was downloaded");
-  assert_true(yes, "about: URLs should be downloaded.");
-  done();
+addEventListener("click", (event) => {
+  if (event.target instanceof HTMLAnchorElement) {
+    clicked = true;
+  } else if (event.target instanceof HTMLButtonElement) {
+    if (!clicked) {
+      document.getElementById("log").textContent = "Please click on the link first.";
+      return;
+    }
+    assert_equals(event.target.textContent, "yes", "Download should work");
+    done();
+  }
 });
 </script>

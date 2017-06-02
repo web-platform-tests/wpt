@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Download a data: URL from an a element</title>
+<title>Download a cross origin URL (that redirect to another origin) that replies with a Content-Disposition header from an a element.</title>
 <link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#downloading-resources">
 <link rel="help" href="https://github.com/whatwg/html/issues/2622">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<p>Download a data: URL from an a element</p>
+<p>Download a cross origin URL (that redirect to another origin) that replies with a Content-Disposition header from an a element.</p>
 
 <ol>
- <li><a href="data:text/html,test" download="foo.html">Click this link</a>.
+ <li><a href="http://{{domains[www1]}}:{{location[port]}}/html/semantics/downloading-resources/resources/regular.html?pipe=status(302)|header(Location,http://{{host}}:{{location[port]}}/html/semantics/downloading-resources/resources/with-content-disposition.html)" download="foo.html">Click this link</a>.
  <li>Did a file get downloaded? <button>yes</button> <button>no</button>
 </ol>
 

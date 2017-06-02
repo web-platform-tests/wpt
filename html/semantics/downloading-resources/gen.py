@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-TEMPLATE = """
-<!DOCTYPE html>
+TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <title>%(title)s</title>
 <link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
@@ -10,52 +9,33 @@ TEMPLATE = """
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<script>
-setup({explicit_timeout: true});
-
-if (location.search != "?pipe=sub")
-  location = location.href + "?pipe=sub";
-</script>
-
 <p>%(title)s</p>
 
-<form>
-  <ol>
-    <li>
-      <a href="%(url)s" download="foo.html">Click this link</a>
-    </li>
-    <li>
-        Did a file get downloaded?
-        <input type="radio" id="yes" name="downloaded" value="yes">
-        <label for="yes">Yes</label>
-        <input type="radio" id="no" name="downloaded" value="no">
-        <label for="yes">No</label>
-    </li>
-    <li>
-      <button type="submit">Check test result</button>
-    </li>
-  </ol>
-</form>
+<ol>
+ <li><a href="%(url)s" download="foo.html">Click this link</a>.
+ <li>Did a file get downloaded? <button>yes</button> <button>no</button>
+</ol>
+
+<div id="log"></div>
 
 <script>
 "use strict";
 
-const link = document.querySelector("a");
-link.addEventListener("click", () => {
-  link.setAttribute("clicked", "true");
-});
+setup({explicit_timeout: true});
 
-const button = document.querySelector("button");
+let clicked = false;
 
-button.addEventListener("click", (event) => {
-  event.preventDefault();
-  const clicked = link.hasAttribute("clicked");
-  assert_true(clicked, "Please click on the link first.");
-  const yes = document.querySelector("input#yes").checked;
-  const no = document.querySelector("input#no").checked;
-  assert_true(yes || no, "Please indicate whether a file was downloaded.");
-  assert_true(%(expected_result)s, "%(assert_description)s");
-  done();
+addEventListener("click", (event) => {
+  if (event.target instanceof HTMLAnchorElement) {
+    clicked = true;
+  } else if (event.target instanceof HTMLButtonElement) {
+    if (!clicked) {
+      document.getElementById("log").textContent = "Please click on the link first.";
+      return;
+    }
+    assert_equals(event.target.textContent, "%(expected_result)s", "%(assert_description)s");
+    done();
+  }
 });
 </script>
 """
@@ -140,7 +120,7 @@ def main():
                                WITHOUT_CONTENT_DISPOSITION):
                 html = gen_html(request_origin, redirect, add_header)
                 filename = ("a-download-%(request_origin)s-%(redirect)s-"
-                            "%(add_header)s-manual.html" % {
+                            "%(add_header)s-manual.sub.html" % {
                                 "request_origin": request_origin,
                                 "redirect": redirect,
                                 "add_header": add_header })

@@ -1,7 +1,6 @@
 import pytest
-from webdriver.client import element_key
 
-from support.asserts import assert_error, assert_success, assert_dialog_handled
+from support.asserts import assert_error, assert_success, assert_dialog_handled, assert_same_element
 from support.fixtures import create_dialog
 from support.inline import inline
 
@@ -16,12 +15,8 @@ def assert_result_is_active_element(session, result):
 
     if result.body["value"] is None:
         assert from_js == None
-        return
-
-    assert isinstance(result.body["value"], dict)
-    assert element_key in result.body["value"]
-
-    assert result.body["value"][element_key] == from_js[element_key]
+    else:
+        assert_same_element(session, result.body["value"], from_js)
 
 # > 1. If the current browsing context is no longer open, return error with
 # >    error code no such window.

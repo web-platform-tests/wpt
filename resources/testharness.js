@@ -1469,11 +1469,6 @@ policies and contribution forms [3].
         this.cleanup_callbacks.push(callback);
     };
 
-    Test.prototype.force_timeout = function() {
-        this.set_status(this.TIMEOUT);
-        this.phase = this.phases.HAS_RESULT;
-    };
-
     Test.prototype.set_timeout = function()
     {
         if (this.timeout_length !== null) {
@@ -1499,6 +1494,8 @@ policies and contribution forms [3].
         this.phase = this.phases.HAS_RESULT;
         this.done();
     };
+
+    Test.prototype.force_timeout = Test.prototype.timeout;
 
     Test.prototype.done = function()
     {

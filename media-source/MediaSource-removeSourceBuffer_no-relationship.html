@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Removing sourceBuffer with unrelated mediaSource</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+var video = document.createElement('video');
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
+
+//check the browser supports the MIME used in this test
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
+function testMedia(mime) {
+    async_test(function(t) {
+        if(!isTypeSupported.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource1 = new MediaSource();
+        mediaSource1.addEventListener('sourceopen', function(e) {
+            var sourceBuffer1 = mediaSource1.addSourceBuffer(mime);
+            var mediaSource2 = new MediaSource();
+            mediaSource2.addEventListener('sourceopen', function(e) {
+                var sourceBuffer2 = mediaSource2.addSourceBuffer(mime);
+                t.step(function() {
+                    assert_throws({name : 'NotFoundError'},
+                                  function() {
+                                      mediaSource2.removeSourceBuffer(sourceBuffer1);
+                                  },
+                                  'Remove sourceBuffer which is created by mediaSource2');
+                });
+                t.done();
+            });
+            var video2 = document.createElement('video');
+            video2.src = window.URL.createObjectURL(mediaSource2);
+        }, false);
+        video.src = window.URL.createObjectURL(mediaSource1);
+    }, 'MediaSource#removeSouceBuffer (' + mime + ') : ' +
+       'If sourceBuffer specifies an object that is not in sourceBuffers then throw a NOT_FOUND_ERR exception and abort these steps.');
+}
+mimes.forEach(function(mime) {
+    testMedia(mime);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>MediaSource#removeSouceBuffer(null)</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var mediaSource = new MediaSource();
+    assert_throws(new TypeError(), function() {
+        mediaSource.removeSourceBuffer(null);
+    });
+}, 'MediaSource#removeSouceBuffer : doesn\'t accept a null value.');
+</script>
+</body>
+</html>

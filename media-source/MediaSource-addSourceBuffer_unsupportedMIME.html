@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>MediaSource#addSourceBuffer(not_supported_MIME)</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+async_test(function(t) {
+    var mediaSource = new MediaSource();
+    mediaSource.addEventListener('sourceopen', function(e) {
+        var sourceBuffer = null;
+        t.step(function() {
+            assert_throws({name : 'NotSupportedError'},
+                          function() {
+                              sourceBuffer = mediaSource.addSourceBuffer('text/html');
+                          },
+                          'Set invalid MIME');
+        });
+        t.done();
+    }, false);
+    var video = document.createElement('video');
+    video.src = window.URL.createObjectURL(mediaSource);
+}, 'MediaSource#addSourceBuffer : If type contains a MIME type that is not supported ' +
+   'or contains a MIME type that is not supported with the types specified for the ' +
+   'other SourceBuffer objects in sourceBuffers, then throw a NOT_SUPPORTED_ERR ' +
+   'exception and abort these steps.');
+</script>
+</body>
+</html>

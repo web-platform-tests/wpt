@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Initial state of MediaSource#readyState</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+
+<script>
+test(function() {
+    var mediaSource = new MediaSource();
+    assert_equals(mediaSource.readyState, 'closed');
+}, 'MediaSource#readyState : Initial state');
+</script>
+</body>
+</html>

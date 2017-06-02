@@ -78,7 +78,7 @@ function minOverloadLength(overloads)
 function throwOrReject(a_test, operation, fn, obj, args,  message, cb)
 //@{
 {
-    if (operation.idlType.generic !== "Promise") {
+    if (operation.idlType.idlType !== "Promise") {
         assert_throws(new TypeError(), function() {
             fn.apply(obj, args);
         }, message);
@@ -1293,7 +1293,7 @@ IdlInterface.prototype.test_member_attribute = function(member)
                 format_value(member.name));
 
             if (!member.has_extended_attribute("LenientThis")) {
-                if (member.idlType.generic !== "Promise") {
+                if (member.idlType.idlType !== "Promise") {
                     assert_throws(new TypeError(), function() {
                         self[this.name].prototype[member.name];
                     }.bind(this), "getting property on prototype object must throw TypeError");
@@ -1930,7 +1930,7 @@ IdlInterface.prototype.do_interface_attribute_asserts = function(obj, member, a_
         // attribute, then return undefined.
         // "Otherwise, throw a TypeError."
         if (!member.has_extended_attribute("LenientThis")) {
-            if (member.idlType.generic !== "Promise") {
+            if (member.idlType.idlType !== "Promise") {
                 assert_throws(new TypeError(), function() {
                     desc.get.call({});
                 }.bind(this), "calling getter on wrong object type must throw TypeError");

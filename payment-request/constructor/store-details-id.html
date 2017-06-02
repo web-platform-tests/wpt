@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<meta charset='utf-8'>
+<title>PaymentRequest: use id passed in details as payment request id.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+async_test((t) => {
+  onload = t.step_func_done(() => {
+    let pr = new PaymentRequest([{
+      supportedMethods: ['non-supported-payment-method']
+    }], {
+      id: 'foobar',
+      total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}
+    });
+    assert_true(pr.id == 'foobar');
+  });
+});
+</script>

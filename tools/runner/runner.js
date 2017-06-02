@@ -112,14 +112,48 @@ ManifestIterator.prototype = {
         }
     },
 
-    matches: function(manifest_item) {
-        if (this.regex_pattern !== null) {
-            return manifest_item.url.match(this.regex_pattern);
-        } else {
-            return this.paths.some(function(p) {
-                return manifest_item.url.indexOf(p) === 0;
-            });
+    // Calculate the location of a match within a provided URL.
+    //
+    // @param {string} url - Valid URL
+    //
+    // @returns {null|object} - null if the URL does not satisfy the iterator's
+    //                          filtering criteria. Otherwise, an object with
+    //                          the following properties:
+    //
+    //                          - index - the zero-indexed offset of the start
+    //                                    of the match
+    //                          - width - the total number of matching
+    //                                    characters
+    match_location: function(url) {
+        var match;
+
+        if (this.regex_pattern) {
+           match = url.match(this.regex_pattern);
+
+           if (!match) {
+              return null;
+           }
+
+           return { index: match.index, width: match[0].length };
         }
+
+        this.paths.some(function(path) {
+            if (url.indexOf(path) === 0) {
+                match = path;
+                return true;
+            }
+            return false;
+        });
+
+        if (!match) {
+            return null;
+        }
+
+        return { index: 0, width: match.length };
+    },
+
+    matches: function(manifest_item) {
+        return this.match_location(manifest_item.url) !== null;
     },
 
     to_test: function(manifest_item) {
@@ -293,7 +327,7 @@ VisualOutput.prototype = {
         this.meter.textContent = textContent;
         this.meter.classList.remove("progress-striped", "active", "stopped", "loading-manifest");
         this.meter.classList.add(statusName);
-        this.runner.test_div.textContent = "";
+        this.runner.display_current_test(null);
     },
 
     on_done: function() {
@@ -627,7 +661,8 @@ function Runner(manifest_path) {
     this.manifest_iterator = null;
 
     this.test_window = null;
-    this.test_div = document.getElementById('test_url');
+    this.test_div = document.getElementById('current_test');
+    this.test_url = this.test_div.getElementsByTagName('a')[0];
     this.current_test = null;
     this.timeout = null;
     this.num_tests = null;
@@ -764,12 +799,35 @@ Runner.prototype = {
             this.timeout = setTimeout(this.on_timeout.bind(this),
                                       this.test_timeout * window.testharness_properties.timeout_multiplier);
         }
-        this.test_div.textContent = this.current_test.url;
+        this.display_current_test(this.current_test.url);
         this.load(this.current_test.url);
 
         this.test_start_callbacks.forEach(function(callback) {
             callback(this.current_test);
         }.bind(this));
+    },
+
+    display_current_test: function(url) {
+        var match_location, index, width;
+
+        if (url === null) {
+            this.test_div.style.visibility = "hidden";
+            this.test_url.removeAttribute("href");
+            this.test_url.textContent = "";
+            return;
+        }
+
+        match_location = this.manifest_iterator.match_location(url);
+        index = match_location.index;
+        width = match_location.width;
+
+        this.test_url.setAttribute("href", url);
+        this.test_url.innerHTML = url.substring(0, index) +
+            "<span class='match'>" +
+            url.substring(index, index + width) +
+            "</span>" +
+            url.substring(index + width);
+        this.test_div.style.visibility = "visible";
     },
 
     load: function(path) {

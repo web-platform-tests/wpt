@@ -100,6 +100,50 @@
 
   }, `addTransceiver('audio') should return an audio transceiver`);
 
+  test(t => {
+    const pc = new RTCPeerConnection();
+
+    assert_own_property(pc, 'addTransceiver');
+
+    const transceiver = pc.addTransceiver('video');
+    assert_true(transceiver instanceof RTCRtpTransceiver,
+      'Expect transceiver to be instance of RTCRtpTransceiver');
+
+    assert_equals(transceiver.mid, null);
+    assert_equals(transceiver.stopped, false);
+    assert_equals(transceiver.direction, 'sendrecv');
+
+    assert_array_equals([transceiver], pc.getTransceivers(),
+      `Expect added transceiver to be the only element in connection's list of transceivers`);
+
+    const sender = transceiver.sender;
+
+    assert_true(sender instanceof RTCRtpSender,
+      'Expect sender to be instance of RTCRtpSender');
+
+    assert_equals(sender.track, null);
+
+    assert_array_equals([sender], pc.getSenders(),
+      `Expect added sender to be the only element in connection's list of senders`);
+
+    const receiver = transceiver.receiver;
+    assert_true(receiver instanceof RTCRtpReceiver,
+      'Expect receiver to be instance of RTCRtpReceiver');
+
+    const track = receiver.track
+    assert_true(track instanceof MediaStreamTrack,
+      'Expect receiver.track to be instance of MediaStreamTrack');
+
+    assert_equals(track.kind, 'video');
+    assert_equals(track.label, 'remote video');
+    assert_equals(track.readyState, 'live');
+    assert_equals(track.muted, true);
+
+    assert_array_equals([receiver], pc.getReceivers(),
+      `Expect added receiver to be the only element in connection's list of receivers`);
+
+  }, `addTransceiver('video') should return a video transceiver`);
+
   /*
    *  5.1.  addTransceiver
    *        3.1.  If kind is not a legal MediaStreamTrack kind, throw a TypeError.

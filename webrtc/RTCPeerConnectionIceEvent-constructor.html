@@ -35,9 +35,10 @@ test(() => {
   assert_equals(event.url, null);
 
   /*
-  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means that an
-  event with the name e, which does not bubble (except where otherwise stated) and is not
-  cancelable (except where otherwise stated),
+  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate
+  candidate means that an event with the name e, which does not bubble
+  (except where otherwise stated) and is not cancelable
+  (except where otherwise stated),
   */
   assert_false(event.bubbles);
   assert_false(event.cancelable);
@@ -55,9 +56,10 @@ test(() => {
   assert_equals(event.url, null);
 
   /*
-  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate candidate means
-  that an event with the name e, which does not bubble (except where otherwise stated) and
-  is not cancelable (except where otherwise stated),
+  Firing an RTCPeerConnectionIceEvent event named e with an RTCIceCandidate
+  candidate means that an event with the name e, which does not bubble
+  (except where otherwise stated) and is not cancelable
+  (except where otherwise stated),
   */
   assert_false(event.bubbles);
   assert_false(event.cancelable);
@@ -110,11 +112,13 @@ test(() => {
   assert_throws(new TypeError(), () => new RTCPeerConnectionIceEvent("type", { candidate: plain }));
 }, "RTCPeerConnectionIceEvent with non RTCIceCandidate object throws");
 
+/*
+This will remain commented out until https://github.com/w3c/webrtc-pc/issues/1232
+is resolved.
+
 test(() => {
-  /*
-  When firing an RTCPeerConnectionIceEvent event that contains a RTCIceCandidate object,
-  it must include values for both sdpMid and sdpMLineIndex.
-  */
+  // When firing an RTCPeerConnectionIceEvent event that contains a RTCIceCandidate
+  // object, it must include values for both sdpMid and sdpMLineIndex.
 
   assert_throws(new TypeError(), () => {
     new RTCPeerConnectionIceEvent("type", {
@@ -129,6 +133,7 @@ test(() => {
   });
 
 }, "RTCIceCandidate must include values for both sdpMid and sdpMLineIndex");
+*/
 
 test(() => {
   const event = new RTCPeerConnectionIceEvent("type", {

@@ -61,7 +61,7 @@ promise_test(async t => {
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
   const acceptPromise = request.show(); // The state is now "interactive"
-  acceptPromise.catch(() => {}); // no-op, just to silence unhandled rejection in devtools. 
+  acceptPromise.catch(() => {}); // no-op, just to silence unhandled rejection in devtools.
   await request.abort(); // The state is now "closed"
   await promise_rejects(t, "InvalidStateError", request.canMakePayment());
   try {
@@ -91,7 +91,7 @@ promise_test(async t => {
     "basic-card?not-really",
     "basic-card://not-ok",
     "basic card",
-    "/basic card/", 
+    "/basic card/",
     "BaSicCarD",
     "BASIC-CARD",
     " basic-card ",
@@ -119,7 +119,7 @@ promise_test(async t => {
 }, `If payment method identifier is unknown, resolve promise with false.`);
 
 promise_test(async t => {
-  // This test might never actually hit its assertion, but that's allowed. 
+  // This test might never actually hit its assertion, but that's allowed.
   const request = new PaymentRequest(defaultMethods, defaultDetails);
   for (let i = 0; i < 1000; i++) {
     try {

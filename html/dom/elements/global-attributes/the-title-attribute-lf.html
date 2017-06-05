@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>the title attribute - allows "LF"</title>
+<link rel="help" href="http://w3c.github.io/html/dom.html#the-title-attribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <h1>the title attribute allows "LF" characters</h1>
+  
+  <div id="title_lf" title='Blah, blah blah etc. &#x000A;title splits into 2 lines for LF'>Blah, blah blah etc. <br>title splits into 2 lines for LF.</div>
+  <div id="title_lf_twice" title='Blah, blah blah etc. &#x000A;&#x000A;title splits into 3 lines for LFLF.'>Blah, blah blah etc. <br><br>title splits into 3 lines for LFLF.</div>
+
+  <script type="text/javascript">
+    var elementLF = document.getElementById('title_lf');
+    var elementLFTwice = document.getElementById('title_lf_twice');
+
+    test(function() {
+      assert_equals(elementLF.title, 'Blah, blah blah etc. \ntitle breaks for LF', 'title allows "LF" characters');
+
+      assert_equals(elementLFTwice.title, 'Blah, blah blah etc. \n\ntitle breaks for LF', 'title allows "LF" characters and split into multiple lines.');
+    }, 'the title attribute allows "LF" characters, please manually check if the tooltip is properly rendered');
+  </script>
+</body>

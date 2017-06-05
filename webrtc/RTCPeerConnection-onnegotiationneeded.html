@@ -18,16 +18,25 @@
   // This allow us to promisify the event listening and assert whether
   // an event is fired or not by testing whether a promise is resolved.
   function awaitNegotiation(pc) {
-    return new Promise(resolve => {
-      pc.onnegotiationneeded = event => {
-        const nextPromise = awaitNegotiation(pc);
-        resolve({ nextPromise, event });
-      }
-    });
+    if(pc.onnegotiationneeded) {
+      throw new Error('connection is already attached with onnegotiationneeded event handler');
+    }
+
+    function waitNextNegotiation() {
+      return new Promise(resolve => {
+        pc.onnegotiationneeded = event => {
+          const nextPromise = waitNextNegotiation();
+          resolve({ nextPromise, event });
+        }
+      });
+    }
+
+    return waitNextNegotiation();
   }
 
-  // Return a promise that rejects if the first promise resolves before second promise
-  function assert_first_promise_resolve_after_second(promise1, promise2, message) {
+  // Return a promise that rejects if the first promise is resolved before second promise.
+  // Also rejects when either promise rejects.
+  function assert_first_promise_fulfill_after_second(promise1, promise2, message) {
     if(!message) {
       message = 'first promise is resolved before second promise';
     }
@@ -35,20 +44,18 @@
     return new Promise((resolve, reject) => {
       let secondResolved = false;
 
-      function onPromise1Resolved() {
+      promise1.then(() => {
         if(secondResolved) {
           resolve();
         } else {
-          reject(new Error(message));
+          assert_unreached(message);
         }
-      }
+      })
+      .catch(reject);
 
-      function onPromise2Resolved() {
+      promise2.then(() => {
         secondResolved = true;
-      }
-
-      promise1.then(onPromise1Resolved, onPromise1Resolved);
-      promise2.then(onPromise2Resolved, onPromise2Resolved);
+      }, reject);
     });
   }
 
@@ -69,6 +76,14 @@
 
       t.step_timeout(t.step_func_done(), 200)
     }, testName);
+  }
+
+  // Helper function to generate answer based on given offer using a freshly
+  // created RTCPeerConnection object
+  function generateAnswer(offer) {
+    const pc = new RTCPeerConnection();
+    return pc.setRemoteDescription(offer)
+    .then(() => pc.createAnswer());
   }
 
   /*
@@ -117,7 +132,6 @@
     pc.createDataChannel('test');
     pc.close();
     return awaitNegotiation(pc);
-
   }, 'negotiationneeded event should not fire if connection is closed');
 
   test_never_resolve(t => {
@@ -211,20 +225,17 @@
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    return assert_first_promise_resolve_after_second(
+    return assert_first_promise_fulfill_after_second(
       awaitNegotiation(pc),
       pc.createOffer()
       .then(offer =>
         pc.setLocalDescription(offer)
         .then(() => {
           pc.createDataChannel('test');
-
-          const pc2 = new RTCPeerConnection();
-          return pc2.setRemoteDescription(offer)
-          .then(() => pc2.createAnswer());
+          return generateAnswer(offer);
         }))
       .then(answer => pc.setRemoteDescription(answer)),
-    'Expect negotiationneeded promise to resolve after pc has set remote answer and go back to stable state');
+      'Expect negotiationneeded promise to resolve after pc has set remote answer and go back to stable state');
   }, 'negotiationneeded event should fire only after signaling state go back to stable');
 
   /*

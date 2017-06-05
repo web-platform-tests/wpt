@@ -1371,12 +1371,14 @@ policies and contribution forms [3].
             this._structured_clone = merge({
                 name:String(this.name),
                 properties:merge({}, this.properties),
+                phases:merge({}, this.phases)
             }, Test.statuses);
         }
         this._structured_clone.status = this.status;
         this._structured_clone.message = this.message;
         this._structured_clone.stack = this.stack;
         this._structured_clone.index = this.index;
+        this._structured_clone.phase = this.phase;
         return this._structured_clone;
     };
 
@@ -1547,10 +1549,12 @@ policies and contribution forms [3].
         var clone = {};
         Object.keys(this).forEach(
                 (function(key) {
-                    if (typeof(this[key]) === "object") {
-                        clone[key] = merge({}, this[key]);
+                    var value = this[key];
+
+                    if (typeof value === "object" && value !== null) {
+                        clone[key] = merge({}, value);
                     } else {
-                        clone[key] = this[key];
+                        clone[key] = value;
                     }
                 }).bind(this));
         clone.phases = merge({}, this.phases);

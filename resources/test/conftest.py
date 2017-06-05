@@ -117,12 +117,12 @@ class HTMLItem(pytest.Item, pytest.Collector):
     def _summarize_test(test_obj):
         del test_obj['index']
 
-        if 'phases' in test_obj:
-            for key, value in [item for item in test_obj['phases'].items()]:
-                if test_obj['phase'] == value:
-                    test_obj['phase_string'] = key
-            del test_obj['phases']
-            del test_obj['phase']
+        assert 'phase' in test_obj
+        assert 'phases' in test_obj
+        assert 'COMPLETE' in test_obj['phases']
+        assert test_obj['phase'] == test_obj['phases']['COMPLETE']
+        del test_obj['phases']
+        del test_obj['phase']
 
         return HTMLItem._expand_status(HTMLItem._scrub_stack(test_obj))
 

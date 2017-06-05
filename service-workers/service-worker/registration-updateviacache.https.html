@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
 <script>
-  const updateViaCacheValues = [undefined, 'imports', 'all', 'never'];
+  const updateViaCacheValues = [undefined, 'imports', 'all', 'none'];
   const scriptUrl = 'resources/update-max-aged-worker.py';
   const scope = 'resources/blank.html';
 
@@ -52,7 +52,7 @@
     });
   }
 
-  // Testing updating registrations
+  // Testing creating registrations
   for (const updateViaCache of updateViaCacheValues) {
     const testName = `register-with-updateViaCache-${updateViaCache}`;
 
@@ -136,7 +136,7 @@
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
           }
-          else { // 'never'
+          else { // 'none'
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_not_equals(values.importTime, newValues.importTime, "Imported script should have updated");
           }

@@ -120,7 +120,7 @@
     return generateOffer({ video: true })
     .then(offer =>
       pc.setRemoteDescription(offer)
-      .then(() => pc.createAnswer(offer))
+      .then(() => pc.createAnswer())
       .then(answer =>
         pc.setLocalDescription(answer)
         .then(() => {
@@ -142,7 +142,7 @@
     return generateOffer({ video: true })
     .then(offer =>
       pc.setRemoteDescription(offer)
-      .then(() => pc.createAnswer(offer))
+      .then(() => pc.createAnswer())
       .then(answer =>
         pc.setLocalDescription({ type: 'answer' })
         .then(() => {

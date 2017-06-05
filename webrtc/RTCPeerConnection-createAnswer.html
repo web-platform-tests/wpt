@@ -24,13 +24,17 @@
       pc.createAnswer());
   }, 'createAnswer() with null remoteDescription should reject with InvalidStateError');
 
+  /*
+   *  Final steps to create an answer
+   *  4. Let answer be a newly created RTCSessionDescriptionInit dictionary with its
+   *     type member initialized to the string "answer" and its sdp member initialized to sdpString.
+   */
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
     return generateOffer({ video: true })
-    .then(offer =>
-      pc.setRemoteDescription(offer)
-      .then(() => pc.createAnswer(offer)))
+    .then(offer => pc.setRemoteDescription(offer))
+    .then(() => pc.createAnswer())
     .then(answer => {
       assert_equals(typeof answer, 'object',
         'Expect answer to be plain object dictionary RTCSessionDescriptionInit');

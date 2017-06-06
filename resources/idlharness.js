@@ -1086,8 +1086,8 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
     if (this.is_global() && typeof Object.setPrototypeOf === "function") {
-        // These functions test WebIDL as of 2017-05-29.
-        // https://heycam.github.io/webidl/#named-properties-object-setprototypeof
+        // These functions test WebIDL as of 2017-06-06.
+        // https://heycam.github.io/webidl/#platform-object-setprototypeof
         test(function() {
             var originalValue = Object.getPrototypeOf(self[this.name].prototype);
             var newValue = Object.create(null);
@@ -1102,7 +1102,7 @@ IdlInterface.prototype.test_self = function()
                     "original value not modified"
                 );
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to a new value via Object.setPrototypeOf " +
+            "of global platform object - setting to a new value via Object.setPrototypeOf " +
             "should throw a TypeError");
 
         test(function() {
@@ -1119,7 +1119,7 @@ IdlInterface.prototype.test_self = function()
                     "original value not modified"
                 );
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to a new value via __proto__ " +
+            "of global platform object - setting to a new value via __proto__ " +
             "should throw a TypeError");
 
         test(function() {
@@ -1134,7 +1134,7 @@ IdlInterface.prototype.test_self = function()
                     "original value not modified"
                 );
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to a new value via Reflect.setPrototypeOf " +
+            "of global platform object - setting to a new value via Reflect.setPrototypeOf " +
             "should return false");
 
         test(function() {
@@ -1142,7 +1142,7 @@ IdlInterface.prototype.test_self = function()
 
             Object.setPrototypeOf(self[this.name].prototype, originalValue);
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to its original value via Object.setPrototypeOf " +
+            "of global platform object - setting to its original value via Object.setPrototypeOf " +
             "should not throw");
 
         test(function() {
@@ -1150,7 +1150,7 @@ IdlInterface.prototype.test_self = function()
 
             self[this.name].prototype.__proto__ = originalValue;
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to its original value via __proto__ " +
+            "of global platform object - setting to its original value via __proto__ " +
             "should not throw");
 
         test(function() {
@@ -1158,7 +1158,7 @@ IdlInterface.prototype.test_self = function()
 
             assert_true(Reflect.setPrototypeOf(self[this.name].prototype, originalValue));
         }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of named properties object - setting to its original value via Reflect.setPrototypeOf " +
+            "of global platform object - setting to its original value via Reflect.setPrototypeOf " +
             "should return true");
     }
 

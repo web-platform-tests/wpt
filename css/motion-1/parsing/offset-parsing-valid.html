@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Motion Path Module Level 1: parsing offset with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-shorthand">
+<meta name="assert" content="offset supports the full grammar from the spec.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("offset", "path('m 0 0 h 100') 100px 0deg");
+test_valid_value("offset", "ray(sides 0deg) 50% 90deg auto", "ray(0deg sides) 50% auto 90deg");
+test_valid_value("offset", "none calc(10px + 20%) auto");
+</script>
+</body>
+</html>

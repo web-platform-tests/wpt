@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>menu element removed properties</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-menu-element">
+<link rel="help" href="https://github.com/whatwg/html/pull/2742">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<menu type="context" label="label">
+  <menuitem>Text</menuitem>
+  <menuitem type="checkbox" checked>Checked</menuitem>
+  <menuitem disabled>Disabled</menuitem>
+  <menuitem default>Default</menuitem>
+</menu>
+
+<script>
+"use strict";
+
+const menu = document.querySelector("menu");
+const menuitem = document.querySelector("menuitem");
+
+test(() => {
+  assert_false("HTMLMenuItemElement" in window, "the HTMLMenuItemElement interface must not exist");
+  assert_equals(menuitem.constructor, HTMLUnknownElement, "A <menuitem> must be HTMLUnknownElement");
+
+  for (const prop of ["type", "label", "icon", "disabled", "checked", "radiogroup", "default"]) {
+    assert_false(prop in menuitem, `menuitem.${prop} must not be present`);
+  }
+}, "HTMLMenuItemElement must not be not present");
+
+test(() => {
+  for (const location of [window, HTMLElement.prototype, SVGElement.prototype, Document.prototype]) {
+    assert_false("onshow" in location,
+      `${location.constructor.name} must not have a property "onshow"`);
+  }
+  assert_false("onshow" in Element.prototype, `Element.prototype must not contain an "onshow" property`);
+}, `onshow must not be present on the GlobalEventHandlers locations`);
+
+test(() => {
+  assert_false("RelatedEvent" in window);
+}, "RelatedEvent must not be present");
+
+test(() => {
+  assert_false("contextMenu" in HTMLElement.prototype,
+    "HTMLElement's prototype must not have a property \"contextmenu\"");
+  assert_false("contextMenu" in document.createElement("div"),
+    "A div must not have a property \"contextmenu\"");
+}, "el.contextMenu must not be present");
+
+test(() => {
+  assert_false("type" in menu);
+}, "menu.type must not be present");
+
+test(() => {
+  assert_false("label" in menu);
+}, "menu.label must not be present");
+
+test(() => {
+  console.log(document.querySelectorAll("menuitem:enabled"));
+  assert_array_equals(document.querySelectorAll("menuitem:enabled"), []);
+}, ":enabled must not match menuitems");
+
+test(() => {
+  assert_array_equals(document.querySelectorAll("menuitem:disabled"), []);
+}, ":disabled must not match menuitems");
+
+test(() => {
+  assert_array_equals(document.querySelectorAll("menuitem:checked"), []);
+}, ":checked must not match menuitems");
+
+test(() => {
+  try {
+    assert_array_equals(document.querySelectorAll("menuitem:default"), []);
+  } catch (e) {
+    // Not everyone has implemented :default as of the time of this writing.
+    if (e.name !== "SyntaxError") {
+      throw e;
+    }
+  }
+}, ":default must not match menuitems");
+
+</script>

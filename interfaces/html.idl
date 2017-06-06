@@ -136,7 +136,6 @@ interface HTMLElement : Element {
   [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
   [CEReactions] attribute boolean draggable;
-  [CEReactions] attribute HTMLMenuElement? contextMenu;
   [CEReactions] attribute boolean spellcheck;
   void forceSpellCheck();
 
@@ -956,30 +955,7 @@ interface HTMLDetailsElement : HTMLElement {
 };
 
 interface HTMLMenuElement : HTMLElement {
-           attribute DOMString type;
-           attribute DOMString label;
-
   // also has obsolete members
-};
-
-interface HTMLMenuItemElement : HTMLElement {
-           attribute DOMString type;
-           attribute DOMString label;
-           attribute DOMString icon;
-           attribute boolean disabled;
-           attribute boolean checked;
-           attribute DOMString radiogroup;
-           attribute boolean default;
-  readonly attribute HTMLElement? command;
-};
-
-[Constructor(DOMString type, optional RelatedEventInit eventInitDict)]
-interface RelatedEvent : Event {
-  readonly attribute EventTarget? relatedTarget;
-};
-
-dictionary RelatedEventInit : EventInit {
-  EventTarget? relatedTarget;
 };
 
 interface HTMLDialogElement : HTMLElement {
@@ -1602,7 +1578,6 @@ interface GlobalEventHandlers {
   attribute EventHandler onseeked;
   attribute EventHandler onseeking;
   attribute EventHandler onselect;
-  attribute EventHandler onshow;
   attribute EventHandler onstalled;
   attribute EventHandler onsubmit;
   attribute EventHandler onsuspend;

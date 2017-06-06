@@ -36,6 +36,7 @@ test(() => {
   assert_true(ev.bubbles, "set by EventInitDict");
   assert_true(ev.cancelable, "set by EventInitDict");
   assert_true(ev.composed, "set by EventInitDict");
+  assert_equals(ev.target, null, "initially null");
   assert_equals(ev.type, "test");
 }, "PaymentRequestUpdateEvent can be constructed with an EventInitDict, even if not trusted");
 

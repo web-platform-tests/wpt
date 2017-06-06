@@ -84,10 +84,6 @@
       assert_true(err instanceof RTCError,
         'Expect err to be instance of RTCError');
     });
-
-    return promise_rejects(t,
-      new RTCError('sdp-syntax-error'),
-      );
   }, 'setRemoteDescription(offer) with invalid SDP should reject with RTCError');
 
   /*

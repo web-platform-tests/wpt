@@ -1,25 +1,69 @@
 <!doctype html>
 <title>WebRTC IDL Tests</title>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=/resources/WebIDLParser.js></script>
-<script src=/resources/idlharness.js></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script src="./RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
-  function generateCertificate() {
-    if (!RTCPeerConnection.generateCertificate)
-      return null;
+  // Put the global IDL test objects under a parent object.
+  // This allows easier search for the test cases when
+  // viewing the web page.
+  window.idlTestObjects = {
+    certificate: null,
+    sctp: null
+  }
+
+  function initCertificate() {
     return RTCPeerConnection.generateCertificate({
       name: 'RSASSA-PKCS1-v1_5',
       modulusLength: 2048,
       publicExponent: new Uint8Array([1, 0, 1]),
       hash: 'SHA-256'
     })
-    .catch(() => {}); // ignore error
+    .then(cert => {
+      idlTestObjects.certificate = cert
+    });
   }
 
-  function doIdlTest([idlText, certificate]) {
+  function initSctp() {
+    const pc = new RTCPeerConnection();
+    pc.createDataChannel('test');
+    return pc.createOffer()
+    .then(offer =>
+      pc.setLocalDescription(offer)
+      .then(() => generateAnswer(offer)))
+    .then(answer => pc.setRemoteDescription(answer))
+    .then(() => {
+      idlTestObjects.sctp = pc.sctp;
+    });
+  }
+
+  const asyncTasks = [
+    initCertificate,
+    initSctp,
+  ];
+
+  // Asynchronously initialize global objects and
+  // ignore any error thrown/rejected. Proper test
+  // for correct initialization of the objects are
+  // done in their respective test files.
+  function asyncInit() {
+    return Promise.all(asyncTasks.map(
+      task => {
+        try {
+          return task().catch(err => {
+            console.error(err);
+          })
+        } catch(err) {
+          console.error(err);
+        }
+      }));
+  }
+
+  function doIdlTest(idlText) {
     const idlArray = new IdlArray();
 
     idlArray.add_untested_idls('interface EventHandler {};');
@@ -32,20 +76,20 @@
       'RTCSessionDescription': ['new RTCSessionDescription({ type: "offer" })'],
       'RTCIceCandidate': ['new RTCIceCandidate'],
       'RTCPeerConnectionIceEvent': ['new RTCPeerConnectionIceEvent("ice")'],
-      'RTCPeerConnectionIceErrorEvent': ['new RTCPeerConnectionIceErrorEvent("ice-error", { errorCode: 701 });'],
+      'RTCPeerConnectionIceErrorEvent':
+        ['new RTCPeerConnectionIceErrorEvent("ice-error", { errorCode: 701 });'],
+      'RTCRtpTransceiver': ['new RTCPeerConnection().addTransceiver("audio")'],
+      'RTCCertificate': ['idlTestObjects.certificate'],
+      'RTCSctpTransport': ['idlTestObjects.sctp'],
     });
-
-    if (certificate) {
-      window.certificate = certificate;
-      idlArray.add_objects({'RTCCertificate': ['certificate']});
-    }
 
     idlArray.test();
   }
 
   promise_test(() => {
-    return Promise.all([fetch('/interfaces/webrtc-pc.idl').then(response => response.text()),
-                        generateCertificate()])
-                  .then(doIdlTest);
+    return asyncInit()
+    .then(() => fetch('/interfaces/webrtc-pc.idl'))
+    .then(response => response.text())
+    .then(doIdlTest);
   }, 'Test driver');
 </script>

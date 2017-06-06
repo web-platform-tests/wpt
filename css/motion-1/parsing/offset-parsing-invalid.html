@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Motion Path Module Level 1: parsing offset with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-shorthand">
+<meta name="assert" content="offset supports only the grammar from the spec.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("offset", "path('m 0 0 h 100') 100px 0");
+test_invalid_value("offset", "ray(sides 0) 50% 90deg auto");
+test_invalid_value("offset", "100px 0deg path('m 0 0 h 100')");
+</script>
+</body>
+</html>

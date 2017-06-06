@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- Copyright © 2017 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<meta charset="utf-8">
+<title>Test for PaymentRequestUpdateEvent Constructor</title>
+<link rel="help" href="https://w3c.github.io/browser-payment-api/#updatewith-method">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const basicCard = Object.freeze({ supportedMethods: ["basic-card"] });
+const defaultMethods = Object.freeze([basicCard]);
+const defaultDetails = Object.freeze({
+  total: {
+    label: "Total",
+    amount: {
+      currency: "USD",
+      value: "1.00",
+    },
+  },
+});
+
+test(() => {
+  // Smoke test - checks target is set as expected
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  const ev = new PaymentRequestUpdateEvent("test");
+  request.addEventListener("test", () => {
+    assert_equals(ev.target, request, "The request and the target at the same");
+  });
+  request.dispatchEvent(ev);
+}, "Let target be the request which is dispatching the event.");
+
+test(() => {
+  const ev = new PaymentRequestUpdateEvent("test");
+  let didListen = false;
+  window.addEventListener("test", () => {
+    assert_equals(ev.target, window, "should be the window object");
+    assert_throws("TypeError", () => {
+      ev.updateWith(Promise.resolve({}));
+    });
+    didListen = true;
+  });
+  window.dispatchEvent(ev);
+  assert_true(didListen, "event was handled");
+}, "If event.target is not a PaymentRequest object, then throw a TypeError.");
+
+async_test( t => {
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  const ev = new PaymentRequestUpdateEvent("test");
+  function firstHandler(ev) {
+    const { target: request } = ev;
+    // set the event.[[waitForUpdate]] is true
+    ev.updateWith(new Promise(()=>{}));
+    request.addEventListener("test", secondHandler, { once: true });
+    // spin the event loop
+    Promise.resolve().then(() => request.dispatchEvent(ev)); 
+  }
+  function secondHandler(ev) {
+    const { target: request } = ev;
+    // [[waitForUpdate]] is now true, so calling request
+    t.step(()=>{
+      assert_throws("InvalidStateError", () => {
+        ev.updateWith(new Promise(()=>{}));
+      });
+    });
+    t.done();
+  }
+  request.addEventListener("test", firstHandler, { once: true });
+  request.dispatchEvent(ev);
+}, `If event.[[waitForUpdate]] is true, then throw an "InvalidStateError" DOMException.`);
+
+
+test(
+  () => {
+    // created state
+    const request = new PaymentRequest(defaultMethods, defaultDetails);
+    const ev = new PaymentRequestUpdateEvent("test");
+    request.addEventListener("test", ev => {
+      assert_throws("InvalidStateError", () => {
+        ev.updateWith(new Promise(()=>{}));
+      });
+    });
+    request.dispatchEvent(ev);
+  },
+  `If request.[[state]] is "created", then throw an "InvalidStateError" DOMException.`
+);
+
+promise_test(
+  async () => {
+    const request = new PaymentRequest(defaultMethods, defaultDetails);
+    await request.abort(); // state is closed
+    const ev = new PaymentRequestUpdateEvent("test");
+    request.addEventListener("test", ev => {
+      assert_throws("InvalidStateError", () => {
+        ev.updateWith(new Promise(()=>{}));
+      });
+    });
+    request.dispatchEvent(ev);
+  },
+  `If request.[[state]] is "closed", then throw an "InvalidStateError" DOMException.`
+);
+
+promise_test(
+  async t => {
+    const request = new PaymentRequest(defaultMethods, defaultDetails);
+    const acceptPromise = request.show();
+    const ev = new PaymentRequestUpdateEvent("test");
+    request.addEventListener("test", ev => {  
+      ev.updateWith(Promise.reject(new SyntaxError()));
+    });
+    //spin the event loop - let request become "interactive"
+    await Promise.resolve();
+    request.dispatchEvent(ev);    
+    await Promise.all([promise_rejects(t, "AbortError", acceptPromise, "expect AbortError here"), request.abort()]);
+  },
+  `Upon rejection of detailsPromise, abort the update with an "AbortError" DOMException`
+);
+
+
+// test(() => {
+//   const ev = new PaymentRequestUpdateEvent("test");
+//   assert_throws("TypeError", evt =>{
+//     ev.updateWith(Promise.resolve());
+//   });
+// }, "If target is not a PaymentRequest object, then throw a TypeError.");
+</script>

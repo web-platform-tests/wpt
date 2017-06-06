@@ -3,19 +3,16 @@
 <title>RTCSctpTransport constructor</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="./RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
   // Test is based on the following editor draft:
   // https://w3c.github.io/webrtc-pc/archives/20170515/webrtc.html
 
-  // Helper function to generate answer based on given offer using a freshly
-  // created RTCPeerConnection object
-  function generateAnswer(offer) {
-      const pc = new RTCPeerConnection();
-      return pc.setRemoteDescription(offer)
-      .then(() => pc.createAnswer());
-  }
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   generateOffer()
+  //   generateAnswer()
 
   /*
     6.1.  RTCPeerConnection Interface Extensions
@@ -72,10 +69,7 @@
     const pc = new RTCPeerConnection();
     assert_equals(pc.sctp, null);
 
-    const pc2 = new RTCPeerConnection();
-    pc2.createDataChannel('test');
-
-    return pc2.createOffer()
+    return generateOffer({ data: true })
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => pc.createAnswer())
     .then(answer => pc.setLocalDescription(answer))

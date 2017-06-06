@@ -87,6 +87,7 @@ W3C-TEST.ORG:tools/*
 PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
+PRINT STATEMENT:wptrun.py
 
 ### Test exclusions ##
 
@@ -150,6 +151,7 @@ SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
+SET TIMEOUT: css-font-display/font-display.html
 SET TIMEOUT: encrypted-media/Google/migrated_to_root_disabled/encrypted-media-utils.js
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
@@ -188,7 +190,9 @@ SET TIMEOUT: service-workers/service-worker/update-recovery.https.html
 SET TIMEOUT: service-workers/service-worker/resources/extendable-event-async-waituntil.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-async-respond-with-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-test-worker.js
+SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-iframe.html
 SET TIMEOUT: service-workers/service-worker/resources/performance-timeline-worker.js
+SET TIMEOUT: service-workers/service-worker/resources/register-foreign-fetch-errors-worker.js
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
@@ -341,16 +345,6 @@ NON-EXISTENT-REF: css/mediaqueries-3/relative-units-003.html
 NON-EXISTENT-REF: css/mediaqueries-3/relative-units-004.html
 SAME-FILE-REF: css/css-multicol-1/multicol-rule-shorthand-2.xht
 
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-001.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-003.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-006.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-007.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-008.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-009.html
-NON-EXISTENT-REF:html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-010.html
 
 ## Whitespace rules that we can't enforce yet
 INDENT TABS: css/.gitmodules
@@ -377,7 +371,6 @@ INDENT TABS: css/css-regions-1/*
 INDENT TABS: css/css-round-display-1/*
 INDENT TABS: css/css-shapes-1/*
 INDENT TABS: css/css-speech-1/*
-INDENT TABS: css/css-tables-3/*
 INDENT TABS: css/css-text-3/*
 INDENT TABS: css/css-text-decor-3/*
 INDENT TABS: css/css-transforms-1/*
@@ -396,7 +389,7 @@ INDENT TABS: css/WOFF2/*
 
 
 ## Things we're stopping from getting worse
-CONSOLE: css/css-flexbox-1/support/check-layout-th.js
+CONSOLE: css/*/support/check-layout-th.js
 CONSOLE: css/css-regions-1/elements/support/Three.js
 CONSOLE: css/css-regions-1/interactivity/selection/support/js/selection-test-helper.js
 CONSOLE: css/css-regions-1/stacking-context/javascript-stacking-context-002.html
@@ -780,7 +773,7 @@ CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-1.png
 CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/ui3/support/replaced-min-max-1.png
 
 # TODO https://github.com/w3c/web-platform-tests/issues/5770
-MISSING-LINK: css/geometry-1/DOMMatrix-css-string.worker.js
+MISSING-LINK: css/geometry-1/*.worker.js
 
 WEBIDL2.JS:.gitmodules
 

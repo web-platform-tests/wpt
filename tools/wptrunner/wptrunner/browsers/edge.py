@@ -11,13 +11,14 @@ __wptrunner__ = {"product": "edge",
                               "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
+                 "env_extras": "env_extras",
                  "env_options": "env_options"}
 
 
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
-def browser_kwargs(**kwargs):
+def browser_kwargs(test_type, run_info_data, **kwargs):
     return {"webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
 
@@ -30,6 +31,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = dict(DesiredCapabilities.EDGE.items())
     return executor_kwargs
+
+def env_extras(**kwargs):
+    return []
 
 def env_options():
     return {"host": "web-platform.test",
@@ -47,7 +51,7 @@ class EdgeBrowser(Browser):
         self.webdriver_host = "localhost"
         self.webdriver_port = self.server.port
 
-    def start(self):
+    def start(self, **kwargs):
         print self.server.url
         self.server.start()
 

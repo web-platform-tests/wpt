@@ -10,7 +10,8 @@ policies and contribution forms [3].
 [3] http://www.w3.org/2004/10/27-testcases
 */
 
-/* Documentation is in docs/api.md */
+/* Documentation: http://web-platform-tests.org/writing-tests/testharness-api.html
+ * (../docs/_writing-tests/testharness-api.md) */
 
 (function ()
 {
@@ -1178,7 +1179,7 @@ policies and contribution forms [3].
                 throw e;
             }
             if (code === null) {
-                return;
+                throw new AssertionError('Test bug: need to pass exception to assert_throws()');
             }
             if (typeof code === "object") {
                 assert(typeof e == "object" && "name" in e && e.name == code.name,
@@ -1370,12 +1371,14 @@ policies and contribution forms [3].
             this._structured_clone = merge({
                 name:String(this.name),
                 properties:merge({}, this.properties),
+                phases:merge({}, this.phases)
             }, Test.statuses);
         }
         this._structured_clone.status = this.status;
         this._structured_clone.message = this.message;
         this._structured_clone.stack = this.stack;
         this._structured_clone.index = this.index;
+        this._structured_clone.phase = this.phase;
         return this._structured_clone;
     };
 
@@ -1546,10 +1549,12 @@ policies and contribution forms [3].
         var clone = {};
         Object.keys(this).forEach(
                 (function(key) {
-                    if (typeof(this[key]) === "object") {
-                        clone[key] = merge({}, this[key]);
+                    var value = this[key];
+
+                    if (typeof value === "object" && value !== null) {
+                        clone[key] = merge({}, value);
                     } else {
-                        clone[key] = this[key];
+                        clone[key] = value;
                     }
                 }).bind(this));
         clone.phases = merge({}, this.phases);

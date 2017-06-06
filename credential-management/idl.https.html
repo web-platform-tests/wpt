@@ -14,34 +14,46 @@
       readonly attribute DOMString type;
     };
 
-    dictionary SiteBoundCredentialData : CredentialData {
-      USVString name;
-      USVString iconURL;
-    };
-
     [NoInterfaceObject, SecureContext]
     interface CredentialUserData {
       readonly attribute USVString name;
       readonly attribute USVString iconURL;
     };
 
-    dictionary PasswordCredentialData : SiteBoundCredentialData {
-      USVString password;
+    dictionary PasswordCredentialData : CredentialData {
+      USVString name;
+      USVString iconURL;
+      required USVString password;
     };
+
+    typedef (PasswordCredentialData or HTMLFormElement) PasswordCredentialInit;
 
     typedef (FormData or URLSearchParams) CredentialBodyType;
 
 
-    dictionary FederatedCredentialData : SiteBoundCredentialData {
-      USVString provider;
+    dictionary FederatedCredentialInit : CredentialData {
+      USVString name;
+      USVString iconURL;
+      required USVString provider;
       DOMString protocol;
+    };
+
+    dictionary CredentialCreationOptions {
+      PasswordCredentialInit? password;
+      FederatedCredentialInit? federated;
+    };
+
+    enum CredentialMediationRequirement {
+      "silent",
+      "optional",
+      "required"
     };
 
     dictionary CredentialRequestOptions {
       boolean password = false;
       FederatedCredentialRequestOptions federated;
 
-      boolean unmediated = false;
+      CredentialMediationRequirement mediation = "optional";
     };
 
     dictionary FederatedCredentialRequestOptions {
@@ -51,10 +63,12 @@
 
 </script>
 <script type="text/plain" id="tested">
+    [Exposed=Window, SecureContext]
     interface CredentialsContainer {
       Promise<Credential> get(optional CredentialRequestOptions options);
       Promise<Credential> store(Credential credential);
-      Promise<void> requireUserMediation();
+      Promise<Credential?> create(optional CredentialCreationOptions options);
+      Promise<void> preventSilentAccess();
     };
 
     [Constructor(PasswordCredentialData data),
@@ -62,14 +76,11 @@
      Exposed=Window,
      SecureContext]
     interface PasswordCredential : Credential {
-      attribute USVString idName;
-      attribute USVString passwordName;
-
-      attribute CredentialBodyType? additionalData;
+      readonly attribute DOMString password;
     };
     PasswordCredential implements CredentialUserData;
 
-    [Constructor(FederatedCredentialData data),
+    [Constructor(FederatedCredentialInit data),
      Exposed=Window,
      SecureContext]
     interface FederatedCredential : Credential {

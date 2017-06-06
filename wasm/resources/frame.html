@@ -2,7 +2,7 @@
 function listener(event) {
   var mod = event.data;
   try {
-    var i = new WebAssembly.Instance(mod);    
+    var i = new WebAssembly.Instance(mod);
     var ans = i.exports.increment(42);
     event.source.postMessage(ans, event.origin);
   } catch (e) {

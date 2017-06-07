@@ -1,0 +1,31 @@
+<!doctype html>
+<title>Negative timeouts</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-windowtimers-settimeout">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+
+async_test(t => {
+  const today = Date.now();
+
+  setTimeout(() => {
+    const yesterday = Date.now();
+    assert_less_than(yesterday, today);
+  }, -24 * 60 * 60 * 1000);
+}, "setTimeout with negative arguments travels into the past, affecting Date");
+
+async_test(t => {
+  // Nobody implemented service workers before 2015
+  const travelTo = new Date(2015, 0, 1);
+  const travelTime = travelTo - Date.now();
+
+  // Be sure not to use modern JS features like arrow functions or const; they don't work in the past
+  setTimeout(function () {
+    var serviceWorker = navigator.serviceWorker;
+    assert_equals(serviceWorker, undefined);
+  }, travelTime);
+}, "setTimeout with negative arguments travels into the past, affecting API implementation");
+</script>

@@ -79,4 +79,8 @@ test(() => {
   }
 }, ":default must not match menuitems");
 
+test(() => {
+  assert_equals(getComputedStyle(menu).display, "block");
+}, "The user-agent stylesheet must type=\"context\" menus as block display");
+
 </script>

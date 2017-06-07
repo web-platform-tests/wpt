@@ -6,12 +6,49 @@
 <script>
 'use strict';
 
+// Test is based on the following editor draft:
+// https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+
+/*
+  6.1.  RTCPeerConnection Interface Extensions
+
+    partial interface RTCPeerConnection {
+      RTCDataChannel createDataChannel(USVString label,
+                                        optional RTCDataChannelInit dataChannelDict);
+      ...
+    };
+
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      boolean         ordered = true;
+      unsigned short  maxPacketLifeTime;
+      unsigned short  maxRetransmits;
+      USVString       protocol = "";
+      boolean         negotiated = false;
+      [EnforceRange]
+      unsigned short  id;
+      RTCPriorityType priority = "low";
+    };
+
+    4.9.1.  RTCPriorityType Enum
+      enum RTCPriorityType {
+        "very-low",
+        "low",
+        "medium",
+        "high"
+      };
+ */
+
 test(() => {
   const pc = new RTCPeerConnection;
   assert_equals(pc.createDataChannel.length, 1);
   assert_throws(new TypeError, () => pc.createDataChannel());
 }, 'createDataChannel required arguments');
 
+/*
+  6.2.  createDataChannel
+    2.  If connection's [[isClosed]] slot is true, throw an InvalidStateError.
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   pc.close();
@@ -19,6 +56,14 @@ test(() => {
   assert_throws('InvalidStateError', () => pc.createDataChannel(''));
 }, 'createDataChannel with closed connection');
 
+/*
+  6.2.  createDataChannel
+    4.  Initialize channel's label attribute to the value of the first argument.
+    5.  Set channel's ordered , maxPacketLifeTime , maxRetransmits , protocol,
+        negotiated , id and priority attributes to the values of the corresponding
+        members of the dataChannelDict argument, using a value of null if the
+        corresponding dictionary member is missing.
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('');
@@ -35,6 +80,17 @@ test(() => {
   assert_equals(channel.priority, 'low', 'priority');
 }, 'createDataChannel defaults');
 
+
+/*
+  6.2.  createDataChannel
+    4.  Initialize channel's label attribute to the value of the first argument.
+
+  [ECMA262] 7.1.12. ToString(argument)
+    undefined -> "undefined"
+    null -> "null"
+
+  [WebIDL] 3.10.15. Convert a DOMString to a sequence of Unicode scalar values
+ */
 const labels = [
   ['"foo"', 'foo', 'foo'],
   ['null', null, 'null'],
@@ -49,6 +105,13 @@ for (const [description, label, expected] of labels) {
   }, 'createDataChannel with label ' + description);
 }
 
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      boolean         ordered = true;
+      ...
+    }
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { ordered: false });
@@ -65,18 +128,38 @@ test(() => {
   assert_equals(channel2.ordered, true);
 }, 'createDataChannel with ordered null/undefined');
 
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      unsigned short  maxPacketLifeTime;
+      ...
+    }
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { maxPacketLifeTime: 0 });
   assert_equals(channel.maxPacketLifeTime, 0);
 }, 'createDataChannel with maxPacketLifeTime 0');
 
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      unsigned short  maxRetransmits;
+      ...
+    }
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { maxRetransmits: 0 });
   assert_equals(channel.maxRetransmits, 0);
 }, 'createDataChannel with maxRetransmits 0');
 
+
+/*
+  6.2.  createDataChannel
+    8.  If both the maxPacketLifeTime and maxRetransmits attributes are set
+        (not null), throw a SyntaxError.
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   assert_throws('SyntaxError', () => pc.createDataChannel('', {
@@ -85,6 +168,14 @@ test(() => {
   }));
 }, 'createDataChannel with both maxPacketLifeTime and maxRetransmits');
 
+
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      USVString       protocol = "";
+      ...
+    }
+ */
 const protocols = [
   ['"foo"', 'foo', 'foo'],
   ['null', null, 'null'],
@@ -99,16 +190,32 @@ for (const [description, protocol, expected] of protocols) {
   }, 'createDataChannel with protocol ' + description);
 }
 
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      boolean         negotiated = false;
+      ...
+    }
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { negotiated: true });
   assert_equals(channel.negotiated, true);
 }, 'createDataChannel with negotiated true');
 
-// |id| is an unsigned short using [EnforceRange]. Additionally,
-// https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-createdatachannel
-// says: "If id is equal to 65535, which is greater than the maximum allowed ID
-// of 65534 but still qualifies as an unsigned short, throw a TypeError."
+
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      [EnforceRange]
+      unsigned short  id;
+      ...
+    }
+
+    createDataChannel
+      10. If id is equal to 65535, which is greater than the maximum allowed ID
+          of 65534 but still qualifies as an unsigned short, throw a TypeError.
+ */
 for (const id of [-1, 0, 1, 65534, 65535, 65536]) {
   test(() => {
     const pc = new RTCPeerConnection;
@@ -121,9 +228,39 @@ for (const id of [-1, 0, 1, 65534, 65535, 65536]) {
   }, 'createDataChannel with id ' + id);
 }
 
+/*
+  6.2.  RTCDataChannel
+    dictionary RTCDataChannelInit {
+      RTCPriorityType priority = "low";
+      ...
+    }
+ */
 test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { priority: "high" });
   assert_equals(channel.priority, "high");
 }, 'createDataChannel with priority "high"');
+
+/*
+  TODO
+  6.2.  createDataChannel
+    6.  If negotiated is false and label is longer than 65535 bytes long,
+        throw a TypeError.
+    7.  If negotiated is false and protocol is longer than 65535 bytes long,
+        throw a TypeError.
+    11. If the id attribute is null (due to no ID being passed into
+        createDataChannel), and the DTLS role of the SCTP transport has already
+        been negotiated, then initialize id to a value generated by the user
+        agent, according to [RTCWEB-DATA-PROTOCOL], and skip to the next step.
+        If no available ID could be generated, or if the value of the id member
+        of the dictionary is taken by an existing RTCDataChannel , throw a
+        ResourceInUse exception.
+
+  Untestable
+  6.2.  createDataChannel
+    9.  If an attribute, either maxPacketLifeTime or maxRetransmits , has been
+        set to indicate unreliable mode, and that value exceeds the maximum
+        value supported by the user agent, the value must be set to the user
+        agents maximum value.
+ */
 </script>

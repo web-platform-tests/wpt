@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<link rel="match" href="paint2d-zoom-ref.html">
+<style>
+    #output {
+        width: 100px;
+        height: 100px;
+        background-image: paint(worklet);
+    }
+</style>
+<script src="../common/css-paint-tests.js"></script>
+<body>
+<div id="output"></div>
+
+<script id="code" type="text/worklet">
+registerPaint('worklet', class {
+    paint(ctx, geom) {
+         // ctx.rotate(10 * Math.PI / 180);
+         ctx.strokeStyle = 'blue';
+         ctx.lineWidth = 4;
+         ctx.strokeRect(30, 10, 30, 30);
+    }
+});
+</script>
+
+<script>
+    document.body.style.zoom = "300%";
+    importPaintWorkletAndTerminateTestAfterAsyncPaint(document.getElementById('code').textContent);
+</script>
+</body>
+</html>

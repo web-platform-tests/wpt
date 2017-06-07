@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <link rel="match" href="paint2d-image-ref.html">
 <style>
     #output {
@@ -8,6 +9,7 @@
         border-image: url("resources/html5.png");
     }
 </style>
+<script src="/common/reftest-wait.js"></script>
 <script src="/common/css-paint-tests.js"></script>
 <div id="output"></div>
 
@@ -23,3 +25,4 @@
 <script>
     importPaintWorkletAndTerminateTestAfterAsyncPaint(document.getElementById('code').textContent);
 </script>
+</html>

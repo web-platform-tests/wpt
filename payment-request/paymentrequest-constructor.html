@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang).  -->
+<meta charset="utf-8">
+<title>Tests for PaymentRequest constructor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function substitute(originalObject, substituteKeyValuePairs) {
+    for (var key in originalObject) {
+        if (originalObject.hasOwnProperty(key) && substituteKeyValuePairs.hasOwnProperty(key)) {
+            originalObject[key] = substituteKeyValuePairs[key];
+        }
+    }
+}
+
+function buildItem(optionalSubstituteKeyValuePairs) {
+    var item = {
+        'id': 'item_id',
+        'label': 'Item Description',
+        'amount': {
+            'currency': 'USD',
+            'value': '10.00'
+        },
+        'selected': false
+    };
+
+    if (optionalSubstituteKeyValuePairs) {
+        for (var key in optionalSubstituteKeyValuePairs) {
+            assert_true(item.hasOwnProperty(key) || item['amount'].hasOwnProperty(key), 'Unrecognized substitution key "' + key + '"');
+        }
+
+        substitute(item, optionalSubstituteKeyValuePairs);
+        substitute(item['amount'], optionalSubstituteKeyValuePairs);
+    }
+
+    return item;
+}
+
+function setValue(obj, key, val) {
+    keys = key.split(/\./);
+    key = keys.pop();
+    keys.forEach((k) => { obj = obj[k]; });
+    assert_true(obj != undefined);
+    obj[key] = val;
+}
+
+function buildDetails(optionalDetailName, optionalSubstituteKeyValuePairs) {
+    var details = {
+        'total': buildItem(),
+        'displayItems': [buildItem()],
+        'shippingOptions': [buildItem()],
+        'modifiers': [{
+            'supportedMethods': ['foo'],
+            'total': buildItem(),
+            'additionalDisplayItems': [buildItem()]
+        }]
+    };
+
+    if (optionalDetailName)
+        setValue(details, optionalDetailName, buildItem(optionalSubstituteKeyValuePairs));
+
+    return details;
+}
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), {});
+}, 'Creating a PaymentRequest with empty optional parameters should not throw or crash.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), {}, '');
+}, 'Creating a PaymentRequest with extra parameters should not throw or crash.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails());
+}, 'Creating a PaymentRequest with omitted optional parameters should not throw or crash.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), undefined);
+}, 'Creating a PaymentRequest with undefined optional parameters should not throw or crash.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), null);
+}, 'Creating a PaymentRequest with null optional parameters should not throw or crash.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': undefined});
+}, 'Undefined display items should not throw.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': []});
+}, 'Empty display items should not throw.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('total', {'value': '0'}));
+}, 'Non-negative total value should not throw.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('displayItems.0', {'value': '-0.01'}));
+}, 'Negative line item value should not throw.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': undefined});
+}, 'Undefined modifiers should not throw.');
+
+test(function() {
+    new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': ['foo'], 'total': buildItem({'value': '0.0'})}]});
+}, 'Non-negative total value in PaymentDetailsModifier should not throw.');
+
+generate_tests(assert_throws, [
+    ['PaymentRequest constructor should throw for incorrect parameter types.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest('', '', '')
+    }],
+    ['PaymentRequest constructor should throw for undefined required parameters.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest(undefined, undefined)
+    }],
+    ['PaymentRequest constructor should throw for null required parameter.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest(null, null)
+    }],
+    ['Empty list of supported payment method identifiers should throw TypeError. ("If the length of the methodData sequence is zero, then throw a TypeError.")', new TypeError(), function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([], buildDetails())
+    }],
+    ['Empty supported payment method identifiers should throw TypeError. ("For each PaymentMethodData dictionary, if the length of the supportedMethods sequence is zero, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': []}], buildDetails())
+    }],
+    ['Duplicate supported payment method identifiers should throw TypeError (1). ("If a payment method identifier appears more than once in the methodData or details.modifiers sequences, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo', 'foo']}], buildDetails(), {})
+    }],
+    ['Duplicate supported payment method identifiers should throw TypeError (2). ("If a payment method identifier appears more than once in the methodData or details.modifiers sequences, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}, {'supportedMethods': ['foo']}], buildDetails(), {})
+    }],
+    ['Duplicate shipping option identifiers should throw TypeError.', null, function() {
+        assert_true("PaymentRequest" in self);
+        var shippingOptions = [buildItem({'id': 'express', 'selected': false}), buildItem({'id': 'express', 'selected': true})];
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()], 'shippingOptions': shippingOptions}, {'requestShipping': true})
+    }],
+    ['Absence of total should throw TypeError. ("If details does not contain a value for total, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'displayItems': [buildItem()]})
+    }],
+    ['Negative total value should throw a TypeError. ("If the first character of details.total.amount.value is U+002D HYPHEN-MINUS, then throw a TypeError. total must be a non-negative amount.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('total', {'value': '-0.01'}))
+    }],
+    ['Duplicate supported payment method identifiers in modifiers should throw TypeError (1). ("If a payment method identifier appears more than once in the methodData or details.modifiers sequences, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': ['foo', 'foo']}]})
+    }],
+    ['Duplicate supported payment method identifiers in modifiers should throw TypeError (2). ("If a payment method identifier appears more than once in the methodData or details.modifiers sequences, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': ['foo']}, {'supportedMethods': ['foo']}]})
+    }],
+    ['Negative total value in PaymentDetailsModifier should throw a TypeError. ("For each PaymentDetailsModifier in details.modifiers, if the total field is supplied and the first character of total.amount.value is U+002D HYPHEN-MINUS, then throw a TypeError. total must be a non-negative amount.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': ['foo'], 'total': buildItem({'value': '-0.01'})}]})
+    }],
+    ['Null supportedMethods in modifiers should throw TypeError.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': null}]})
+    }],
+    ['Undefined supportedMethods in modifiers should throw TypeError.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': undefined}]})
+    }],
+    ['Empty supportedMethods in modifiers should throw TypeError. ("For each PaymentMethodData dictionary, if the length of the supportedMethods sequence is zero, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': []}]})
+    }],
+    ['Absence of supportedMethods in modifiers should throw TypeError.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'total': buildItem()}]})
+    }],
+    ['Empty modifiers should throw TypeError.', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': []})
+    }],
+    ['Empty details should throw', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {})
+    }],
+    ['Null items should throw', new TypeError(), function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': null});
+    }],
+    ['Null shipping options should throw', new TypeError(), function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()], 'shippingOptions': null});
+    }],
+
+    // Payment method specific data should be a JSON-serializable object.
+    ['Array value for payment method specific data parameter should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': []}], buildDetails(), {})
+    }],
+    ['String value for payment method specific data parameter should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': 'foo'}], buildDetails(), {})
+    }],
+    ['Numeric value for payment method specific data parameter should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': 42}], buildDetails(), {})
+    }],
+    ['Infinite JSON value for one of the payment method specific data pieces should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        var infiniteData = {'foo': {}};
+        infiniteData.foo = infiniteData;
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': infiniteData}], buildDetails())
+    }],
+    ['Null for payment method specific data parameter should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': null}], buildDetails())
+    }],
+    ['Empty string for payment method specific data parameter should throw. ("For each PaymentMethodData in methodData, if the data field is supplied but is not a JSON-serializable object, then throw a TypeError.")', null, function() {
+        assert_true("PaymentRequest" in self);
+        new PaymentRequest([{'supportedMethods': ['foo'], 'data': ''}], buildDetails())
+    }]
+]);
+
+var detailNames = ['total', 'displayItems.0', 'shippingOptions.0', 'modifiers.0.total', 'modifiers.0.additionalDisplayItems.0'];
+for (var i in detailNames) {
+    // Non-ISO4217 currency code formats.
+    test(function() {
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': 'US1'}))
+    }, `Non-ISO4217 currency code US1 should not throw ("any string is considered valid") (${detailNames[i]})`)
+    test(function() {
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': 'US'}))
+    }, `Non-ISO4217 currency code US should not throw ("any string is considered valid") (${detailNames[i]})`)
+    test(function() {
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': 'USDO'}))
+    }, `Non-ISO4217 currency code USDO should not throw ("any string is considered valid") (${detailNames[i]})`)
+    test(function() {
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': 'usd'}))
+    }, `Non-ISO4217 currency code usd should not throw ("any string is considered valid") (${detailNames[i]})`)
+    test(function() {
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': ''}))
+    }, `Empty currency code should not throw ("any string is considered valid") (${detailNames[i]})`)
+    test(function() {
+        // null gets stringified into 'null'
+        new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': null}))
+    }, `Null currency code should not throw (${detailNames[i]})`)
+
+    generate_tests(assert_throws, [
+        [`Undefined currency code should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            // throws "required member currency is undefined"
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'currency': undefined}))
+        }],
+        // Invalid "value" field formats.
+        [`Invalid "value" field "-" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '-'}))
+        }],
+        [`Invalid "value" field "notdigits" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': 'notdigits'}))
+        }],
+        [`Invalid "value" field "ALSONOTDIGITS" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': 'ALSONOTDIGITS'}))
+        }],
+        [`Invalid "value" field "10." should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '10.'}))
+        }],
+        [`Invalid "value" field ".99" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '.99'}))
+        }],
+        [`Invalid "value" field "-10." should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '-10.'}))
+        }],
+        [`Invalid "value" field "-.99" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '-.99'}))
+        }],
+        [`Invalid "value" field "10-" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '10-'}))
+        }],
+        [`Invalid "value" field "1-0" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '1-0'}))
+        }],
+        [`Invalid "value" field "1.0.0" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '1.0.0'}))
+        }],
+        [`Invalid "value" field "1/3" should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': '1/3'}))
+        }],
+        [`Empty "value" field should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': ''}))
+        }],
+        [`Null "value" field should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': null}))
+        }],
+        [`Undefined "value" field should throw (${detailNames[i]})`, null, function() {
+            assert_true("PaymentRequest" in self);
+            // throws "required member value is undefined"
+            new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': undefined}))
+        }],
+    ]);
+}
+</script>

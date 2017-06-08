@@ -29,7 +29,7 @@ var metadataElements = {
       type: "enum",
       keywords: ["classic", "module"],
       defaultVal: "classic",
-      invalidVal: null,
+      invalidVal: "",
     },
 
     // Obsolete

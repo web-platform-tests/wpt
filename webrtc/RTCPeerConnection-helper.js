@@ -210,3 +210,37 @@ function test_never_resolve(testFunc, testName) {
     t.step_timeout(t.step_func_done(), 100)
   }, testName);
 }
+
+// Helper function to exchange ice candidates between
+// two local peer connections
+function exchangeIceCandidates(pc1, pc2) {
+  function doExchange(localPc, remotePc) {
+    localPc.addEventListener('icecandidate', event => {
+      const { candidate } = event;
+
+      // candidate may be null to indicate end of candidate gathering.
+      // There is ongoing discussion on w3c/webrtc-pc#1213
+      // that there should be an empty candidate string event
+      // for end of candidate for each m= section.
+      if(candidate) {
+        remotePc.addIceCandidate(candidate);
+      }
+    });
+  }
+
+  doExchange(pc1, pc2);
+  doExchange(pc2, pc1);
+}
+
+// Helper function for doing one round of offer/answer exchange
+// betweeen two local peer connections
+function doSignalingHandshake(localPc, remotePc) {
+  return localPc.createOffer()
+  .then(offer => Promise.all([
+    localPc.setLocalDescription(offer),
+    remotePc.setRemoteDescription(offer)]))
+  .then(() => remotePc.createAnswer())
+  .then(answer => Promise.all([
+    remotePc.setLocalDescription(answer),
+    localPc.setRemoteDescription(answer)]))
+}

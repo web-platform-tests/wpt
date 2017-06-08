@@ -28,7 +28,8 @@ var metadataElements = {
     workerType: {
       type: "enum",
       keywords: ["classic", "module"],
-      defaultVal: "classic"
+      defaultVal: "classic",
+      invalidVal: null,
     },
 
     // Obsolete

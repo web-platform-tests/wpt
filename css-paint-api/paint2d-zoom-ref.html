@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id ="output" width="300" height="300"></canvas>
+<script>
+var canvas = document.getElementById('output');
+var ctx = canvas.getContext('2d');
+// ctx.rotate(10 * Math.PI / 180);
+ctx.scale(3, 3);
+ctx.strokeStyle = 'blue';
+ctx.lineWidth = 4;
+ctx.strokeRect(30, 10, 30, 30);
+</script>
+</body>
+</html>

@@ -78,7 +78,8 @@ function minOverloadLength(overloads)
 function throwOrReject(a_test, operation, fn, obj, args,  message, cb)
 //@{
 {
-    if (operation.idlType.generic !== "Promise") {
+    if (operation.idlType.generic !== "Promise" &&
+        operation.idlType.idlType !== "Promise" ) {
         assert_throws(new TypeError(), function() {
             fn.apply(obj, args);
         }, message);

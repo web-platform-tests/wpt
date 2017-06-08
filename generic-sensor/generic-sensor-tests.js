@@ -32,6 +32,40 @@ function reading_to_array(sensor) {
   return arr;
 }
 
+function load_iframe(src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.onload = () => { resolve(iframe); };
+    iframe.srcdoc = src;
+    iframe.style.display = "none";
+    document.documentElement.appendChild(iframe);
+  });
+}
+
+function wait_for_message(iframe) {
+  return new Promise(resolve => {
+    self.addEventListener("message", function listener(e) {
+      if (e.source === iframe.contentWindow) {
+        resolve(e.data);
+        self.removeEventListener("message", listener);
+      }
+    });
+  });
+}
+
+function make_script(sensorType) {
+  return '<script>' +
+         '  window.onmessage = () => {' +
+         '    try {' +
+         '      let sensor = new ' + sensorType.name + '();' +
+         '      parent.postMessage( {result: "No error"} , "*");' +
+         '    } catch (e) {' +
+         '      parent.postMessage( {result: e.name} , "*");' +
+         '    }' +
+         '  };' +
+         '<\/script>';
+}
+
 function runGenericSensorTests(sensorType) {
   async_test(t => {
     let sensor = new sensorType();
@@ -141,11 +175,15 @@ function runGenericSensorTests(sensorType) {
     }
   }, "no exception is thrown when calling stop() on already stopped sensor");
 
-  async_test(t => {
-    window.onmessage = t.step_func(e => {
-      assert_equals(e.data, "SecurityError");
-      t.done();
-    });
+  promise_test(t => {
+    return load_iframe(make_script(sensorType))
+      .then(iframe => {
+        iframe.contentWindow.postMessage({}, '*');
+        return wait_for_message(iframe);
+      })
+      .then(message => {
+        assert_equals(message.result, 'SecurityError');
+      });
   }, "throw a 'SecurityError' when firing sensor readings within iframes");
 
   async_test(t => {

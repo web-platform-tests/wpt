@@ -32,21 +32,21 @@
  */
 
 test(() => {
-  const pc = new RTCPeerConnection;
+  const pc = new RTCPeerConnection();
   assert_equals(pc.createDataChannel.length, 1);
-  assert_throws(new TypeError, () => pc.createDataChannel());
-}, 'createDataChannel required arguments');
+  assert_throws(new TypeError(), () => pc.createDataChannel());
+}, 'createDataChannel with no argument should throw TypeError');
 
 /*
   6.2.  createDataChannel
     2.  If connection's [[isClosed]] slot is true, throw an InvalidStateError.
  */
 test(() => {
-  const pc = new RTCPeerConnection;
+  const pc = new RTCPeerConnection();
   pc.close();
   assert_equals(pc.signalingState, 'closed', 'signaling state');
   assert_throws('InvalidStateError', () => pc.createDataChannel(''));
-}, 'createDataChannel with closed connection');
+}, 'createDataChannel with closed connection should throw InvalidStateError');
 
 /*
   6.2.  createDataChannel
@@ -57,7 +57,7 @@ test(() => {
         corresponding dictionary member is missing.
  */
 test(() => {
-  const pc = new RTCPeerConnection;
+  const pc = new RTCPeerConnection();
   const channel = pc.createDataChannel('');
   assert_true(channel instanceof RTCDataChannel, 'is RTCDataChannel');
   assert_equals(channel.label, '', 'label');
@@ -70,7 +70,7 @@ test(() => {
   // and so the ID should be null.
   assert_equals(channel.id, null, 'id');
   assert_equals(channel.priority, 'low', 'priority');
-}, 'createDataChannel defaults');
+}, 'createDataChannel attribute default values');
 
 
 /*
@@ -94,7 +94,7 @@ for (const [description, label, expected] of labels) {
     const pc = new RTCPeerConnection;
     const channel = pc.createDataChannel(label);
     assert_equals(channel.label, expected);
-  }, 'createDataChannel with label ' + description);
+  }, `createDataChannel with label ${description} should succeed`);
 }
 
 /*
@@ -105,20 +105,20 @@ for (const [description, label, expected] of labels) {
     }
  */
 test(() => {
-  const pc = new RTCPeerConnection;
+  const pc = new RTCPeerConnection();
   const channel = pc.createDataChannel('', { ordered: false });
   assert_equals(channel.ordered, false);
-}, 'createDataChannel with ordered false');
+}, 'createDataChannel with ordered false should succeed');
 
 // true as the default value of a boolean is confusing because null is converted
 // to false while undefined is converted to true.
 test(() => {
-  const pc = new RTCPeerConnection;
+  const pc = new RTCPeerConnection();
   const channel1 = pc.createDataChannel('', { ordered: null });
   assert_equals(channel1.ordered, false);
   const channel2 = pc.createDataChannel('', { ordered: undefined });
   assert_equals(channel2.ordered, true);
-}, 'createDataChannel with ordered null/undefined');
+}, 'createDataChannel with ordered null/undefined should succeed');
 
 /*
   6.2.  RTCDataChannel
@@ -131,7 +131,7 @@ test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { maxPacketLifeTime: 0 });
   assert_equals(channel.maxPacketLifeTime, 0);
-}, 'createDataChannel with maxPacketLifeTime 0');
+}, 'createDataChannel with maxPacketLifeTime 0 should succeed');
 
 /*
   6.2.  RTCDataChannel
@@ -144,8 +144,7 @@ test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { maxRetransmits: 0 });
   assert_equals(channel.maxRetransmits, 0);
-}, 'createDataChannel with maxRetransmits 0');
-
+}, 'createDataChannel with maxRetransmits 0 should succeed');
 
 /*
   6.2.  createDataChannel
@@ -158,8 +157,7 @@ test(() => {
     maxPacketLifeTime: 0,
     maxRetransmits: 0
   }));
-}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits');
-
+}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits should throw SyntaxError');
 
 /*
   6.2.  RTCDataChannel
@@ -177,9 +175,9 @@ const protocols = [
 for (const [description, protocol, expected] of protocols) {
   test(() => {
     const pc = new RTCPeerConnection;
-    const channel = pc.createDataChannel('', { protocol: protocol });
+    const channel = pc.createDataChannel('', { protocol });
     assert_equals(channel.protocol, expected);
-  }, 'createDataChannel with protocol ' + description);
+  }, `createDataChannel with protocol ${description} should succeed`);
 }
 
 /*
@@ -193,7 +191,7 @@ test(() => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('', { negotiated: true });
   assert_equals(channel.negotiated, true);
-}, 'createDataChannel with negotiated true');
+}, 'createDataChannel with negotiated true should succeed');
 
 
 /*
@@ -208,16 +206,19 @@ test(() => {
       10. If id is equal to 65535, which is greater than the maximum allowed ID
           of 65534 but still qualifies as an unsigned short, throw a TypeError.
  */
-for (const id of [-1, 0, 1, 65534, 65535, 65536]) {
+for (const id of [0, 1, 65534]) {
   test(() => {
-    const pc = new RTCPeerConnection;
-    if (id >= 0 && id <= 65534) {
-      const channel = pc.createDataChannel('', { id: id });
-      assert_equals(channel.id, id);
-    } else {
-      assert_throws(new TypeError, () => pc.createDataChannel('', { id: id }));
-    }
-  }, 'createDataChannel with id ' + id);
+    const pc = new RTCPeerConnection();
+    const channel = pc.createDataChannel('', { id });
+    assert_equals(channel.id, id);
+  }, `createDataChannel with id ${id} should succeed`);
+}
+
+for (const id of [-1, 65535, 65536]) {
+  test(() => {
+    const pc = new RTCPeerConnection();
+    assert_throws(new TypeError(), () => pc.createDataChannel('', { id }));
+  }, `createDataChannel with id ${id} should throw TypeError`);
 }
 
 /*
@@ -236,10 +237,10 @@ for (const id of [-1, 0, 1, 65534, 65535, 65536]) {
     };
  */
 test(() => {
-  const pc = new RTCPeerConnection;
-  const channel = pc.createDataChannel('', { priority: "high" });
-  assert_equals(channel.priority, "high");
-}, 'createDataChannel with priority "high"');
+  const pc = new RTCPeerConnection();
+  const channel = pc.createDataChannel('', { priority: 'high' });
+  assert_equals(channel.priority, 'high');
+}, 'createDataChannel with priority "high" should succeed');
 
 test(() => {
   const pc = new RTCPeerConnection();

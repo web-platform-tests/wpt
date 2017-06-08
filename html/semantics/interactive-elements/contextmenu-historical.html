@@ -29,11 +29,19 @@ test(() => {
 }, "HTMLMenuItemElement must not be not present");
 
 test(() => {
-  for (const location of [window, HTMLElement.prototype, SVGElement.prototype, Document.prototype]) {
+  const potentialBadLocations = [
+    window,
+    document,
+    HTMLElement.prototype,
+    SVGElement.prototype,
+    Document.prototype,
+    HTMLDocument.prototype,
+    Element.prototype
+  ];
+  for (const location of potentialBadLocations) {
     assert_false("onshow" in location,
       `${location.constructor.name} must not have a property "onshow"`);
   }
-  assert_false("onshow" in Element.prototype, `Element.prototype must not contain an "onshow" property`);
 }, `onshow must not be present on the GlobalEventHandlers locations`);
 
 test(() => {
@@ -42,21 +50,26 @@ test(() => {
 
 test(() => {
   assert_false("contextMenu" in HTMLElement.prototype,
-    "HTMLElement's prototype must not have a property \"contextmenu\"");
+    "HTMLElement's prototype must not have a property \"contextMenu\"");
   assert_false("contextMenu" in document.createElement("div"),
-    "A div must not have a property \"contextmenu\"");
+    "A div must not have a property \"contextMenu\"");
 }, "el.contextMenu must not be present");
 
 test(() => {
   assert_false("type" in menu);
-}, "menu.type must not be present");
+
+  menu.type = "toolbar";
+  assert_equals(menu.getAttribute("type"), "context");
+}, "menu.type must not exist or reflect the content attribute");
 
 test(() => {
   assert_false("label" in menu);
-}, "menu.label must not be present");
+
+  menu.label = "new label";
+  assert_equals(menu.getAttribute("label"), "label");
+}, "menu.label must not exist or reflect the content attribute");
 
 test(() => {
-  console.log(document.querySelectorAll("menuitem:enabled"));
   assert_array_equals(document.querySelectorAll("menuitem:enabled"), []);
 }, ":enabled must not match menuitems");
 
@@ -81,6 +94,6 @@ test(() => {
 
 test(() => {
   assert_equals(getComputedStyle(menu).display, "block");
-}, "The user-agent stylesheet must type=\"context\" menus as block display");
+}, "The user-agent stylesheet must leave type=\"context\" menus as block display like other menus");
 
 </script>

@@ -20,10 +20,10 @@ var req_c = 0;
 var CROSSDOMAIN_URL = CROSSDOMAIN + 'resources/cors-makeheader.py?';
 
 /*
- * Redirection after successfull (200) preflight.
+ * Redirection after successful (200) preflight.
  */
 function redir_after_successfull_preflight(code) {
-  var desc = 'Should allow redirect ' + code + ' after succesful (200) preflight';
+  var desc = 'Should allow redirect ' + code + ' after successful (200) preflight';
   async_test(desc).step(function() {
     var client = new XMLHttpRequest();
     var redirect = encodeURIComponent(

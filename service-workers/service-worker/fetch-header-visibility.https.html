@@ -22,7 +22,7 @@
         frame.src = scope;
         document.body.appendChild(frame);
 
-        // Resolve a promise when we recieve 2 success messages
+        // Resolve a promise when we receive 2 success messages
         return new Promise(function(resolve, reject) {
           var remaining = 4;
           function onMessage(e) {

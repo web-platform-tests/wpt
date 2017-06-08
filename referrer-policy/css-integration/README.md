@@ -1,4 +1,4 @@
-These tests exercise differnt ways to load an image, generated via
+These tests exercise different ways to load an image, generated via
 ```/referrer-policy/generic/subresource/image.py?id=<UUID>``` and later
 verify the headers used to request that image.
 

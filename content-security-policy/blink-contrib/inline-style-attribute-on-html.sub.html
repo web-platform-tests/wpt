@@ -15,7 +15,7 @@ style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src
 </head>
 
 <body>
-    <p>Even though this page has a CSP policy the blocks inline style, the style attribute on the HTML element still takes effect because it preceeds the meta element.
+    <p>Even though this page has a CSP policy the blocks inline style, the style attribute on the HTML element still takes effect because it precedes the meta element.
     </p>
     <script>
         log(document.documentElement.style.length > 0 ? 'PASS' : 'FAIL');

@@ -9,7 +9,7 @@
 <div id="log"></div>
 <script>
 // Needed to prevent a race condition if a worker throws an exception that may or may
-// not propogate to the window before the tests finish
+// not propagate to the window before the tests finish
 setup({allow_uncaught_exception: true});
 
 function testSharedWorkerHelper(t, script) {

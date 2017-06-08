@@ -29,7 +29,7 @@
           client.send(input)
           var exp = expectations[number]
           assert_equals(client.getResponseHeader('X-Request-Content-Type'), exp.contentType, 'document should be serialized and sent as '+exp.contentType+' (TEST#'+number+')')
-          // The indexOf() assertation will overlook some stuff, i.e. XML prologues that shouldn't be there (looking at you, Presto).
+          // The indexOf() assertion will overlook some stuff, i.e. XML prologues that shouldn't be there (looking at you, Presto).
           // However, arguably these things have little to do with the XHR functionality we're testing.
           if(exp.responseText){ // This test does not want to assert anything about what markup a standalone IMG should be wrapped in. Hence the GIF test lacks a responseText expectation.
             assert_true(client.responseText.indexOf(exp.responseText) != -1,

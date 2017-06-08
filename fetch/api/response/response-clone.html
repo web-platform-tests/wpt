@@ -47,7 +47,7 @@
 
       promise_test(function(test) {
         return validateStreamFromString(response.body.getReader(), body);
-      }, "Check orginal response's body after cloning");
+      }, "Check original response's body after cloning");
 
       promise_test(function(test) {
         return validateStreamFromString(clonedResponse.body.getReader(), body);

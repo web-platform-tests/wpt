@@ -44,7 +44,7 @@
                   test.waitForExpectedEvents(function()
                   {
                       assert_greater_than_equal(mediaElement.currentTime, seekTo, 'Playback time has reached seekTo');
-                      assert_false(mediaElement.seeking, 'mediaElement.seeking after seeked to seekTo');
+                      assert_false(mediaElement.seeking, 'mediaElement.seeking after sought to seekTo');
 
                       assert_false(sourceBuffer.updating, 'sourceBuffer.updating');
 
@@ -133,7 +133,7 @@
                                        'mediaElement duration increased by new append');
                   assert_equals(mediaSource.duration, mediaElement.duration,
                                 'mediaSource duration increased by new append');
-                  assert_false(mediaElement.seeking, 'mediaElement.seeking after seeked to truncatedDuration');
+                  assert_false(mediaElement.seeking, 'mediaElement.seeking after sought to truncatedDuration');
 
                   test.done();
               });
@@ -162,7 +162,7 @@
                                 'mediaElement truncatedDuration after seek to it');
                   assert_equals(mediaSource.duration, truncatedDuration,
                                 'mediaSource truncatedDuration after seek to it');
-                  assert_false(mediaElement.seeking, 'mediaElement.seeking after seeked to truncatedDuration');
+                  assert_false(mediaElement.seeking, 'mediaElement.seeking after sought to truncatedDuration');
 
                   test.done();
               });

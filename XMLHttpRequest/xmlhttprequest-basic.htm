@@ -12,9 +12,9 @@
     <div id="log"></div>
     <script>
       test(function() {
-        XMLHttpRequest.prototype.test = function() { return "TEH" }
+        XMLHttpRequest.prototype.test = function() { return "THE" }
         var client = new XMLHttpRequest()
-        assert_equals(client.test(), "TEH")
+        assert_equals(client.test(), "THE")
         var members = ["onreadystatechange",
                        "open",
                        "setRequestHeader",

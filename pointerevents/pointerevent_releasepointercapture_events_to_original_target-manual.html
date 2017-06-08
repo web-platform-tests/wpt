@@ -67,7 +67,7 @@
                         // if any other events are received after releaseCapture, then the test fails
                         test(function () {
                             assert_unreached(event.target.id + "-" + event.type + " should be handled by target element handler");
-                        }, expectedPointerType + " No other events should be recieved by capturing node after release");
+                        }, expectedPointerType + " No other events should be received by capturing node after release");
                     }
                 }
             }
@@ -78,7 +78,7 @@
                 if (f_gotPointerCapture) {
                     if(event.type != "pointerout" && event.type != "pointerleave") {
                         test(function () {
-                            assert_unreached("The Target element should not have received any events while capture is active. Event recieved:" + event.type + ".  ");
+                            assert_unreached("The Target element should not have received any events while capture is active. Event received:" + event.type + ".  ");
                         }, expectedPointerType + " The target element should not receive any events while capture is active");
                     }
                 }

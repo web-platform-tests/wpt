@@ -1671,8 +1671,8 @@
             "href": "https://example.net?lang=en-US#nav",
             "new_value": "??lang=fr",
             "expected": {
-                "href": "https://example.net/??lang=fr#nav",
-                "search": "??lang=fr"
+                "href": "https://example.net/?lang=fr#nav",
+                "search": "?lang=fr"
             }
         },
         {

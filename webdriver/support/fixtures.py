@@ -68,14 +68,14 @@ def _windows(session, exclude=None):
 
 def create_frame(session):
     """Create an `iframe` element in the current browsing context and insert it
-    into the document. Return an element reference."""
+    into the document. Return a reference to the newly-created element."""
     def create_frame():
         append = """
             var frame = document.createElement('iframe');
             document.body.appendChild(frame);
             return frame;
         """
-        response = session.execute_script(append)
+        return session.execute_script(append)
 
     return create_frame
 

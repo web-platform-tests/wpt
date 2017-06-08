@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>RTCPeerConnection createDataChannel method</title>
+<title>RTCPeerConnection.prototype.createDataChannel</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
@@ -247,17 +247,6 @@ test(() => {
     () => pc.createDataChannel('', { priority: 'invalid' }));
 }, 'createDataChannel with invalid priority should throw TypeError');
 
-function generateLongString(length) {
-  let str = '';
-  for(let i=0; i<length; i++) {
-    str += 'a';
-  }
-  return str;
-}
-
-const longString = generateLongString(65536);
-assert_equals(longString.length, 65536);
-
 /*
   6.2.  createDataChannel
     6.  If negotiated is false and label is longer than 65535 bytes long,
@@ -267,7 +256,7 @@ test(() => {
   const pc = new RTCPeerConnection();
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('', {
-      label: longString,
+      label: ' '.repeat(65536),
       negotiated: false
     }));
 }, 'createDataChannel with negotiated false and long label should throw TypeError');
@@ -279,10 +268,9 @@ test(() => {
  */
 test(() => {
   const pc = new RTCPeerConnection();
-  const protocol = generateLongString(65536);
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('', {
-      protocol: longString,
+      protocol: ' '.repeat(65536),
       negotiated: false
     }));
 }, 'createDataChannel with negotiated false and long protocol should throw TypeError');
@@ -290,11 +278,11 @@ test(() => {
 test(() => {
   const pc = new RTCPeerConnection();
   pc.createDataChannel('', {
-    label: longString,
-    protocol: longString,
+    label: ' '.repeat(65536),
+    protocol: ' '.repeat(65536),
     negotiated: true
   });
-}, 'createDataChannel with negotiated true and long label and protocol should succeed');
+}, 'createDataChannel with negotiated true and long label and long protocol should succeed');
 
 /*
   TODO

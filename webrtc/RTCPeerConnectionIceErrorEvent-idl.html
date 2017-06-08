@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>IDL check of RTCPeerConnectionIceErrorEvent</title>
+<link rel="author" title="Soares Chen" href="mailto:soares.chen@gmail.com"/>
+<link rel="help" href="http://w3c.github.io/webrtc-pc/#idl-def-rtcpeerconnectioniceerrorevent">
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies the availability of the RTCPeerConnectionIceErrorEvent interface.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<!-- This IDL is copied from the 13 March 2017 editors' draft. -->
+<script type="text/plain">
+[Constructor(DOMString type, RTCPeerConnectionIceErrorEventInit eventInitDict)]
+interface RTCPeerConnectionIceErrorEvent : Event {
+    readonly attribute DOMString      hostCandidate;
+    readonly attribute DOMString      url;
+    readonly attribute unsigned short errorCode;
+    readonly attribute USVString      errorText;
+};
+</script>
+
+<script>
+(() => {
+  const idl_array = new IdlArray();
+
+  for(const node of document.querySelectorAll("script[type=text\\/plain]")) {
+    idl_array.add_idls(node.textContent);
+  }
+
+  window.iceErrorEvent = new RTCPeerConnectionIceErrorEvent("ice-error", { errorCode: 701 });
+
+  idl_array.add_objects({"RTCPeerConnectionIceErrorEvent": ["iceErrorEvent"]});
+  idl_array.test();
+  done();
+})();
+</script>
+</body>
+</html>

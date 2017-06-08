@@ -545,6 +545,7 @@ policies and contribution forms [3].
                     }));
             return donePromise;
         });
+      return tests.promise_tests;
     }
 
     function promise_rejects(test, expected, promise, description) {

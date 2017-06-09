@@ -21,7 +21,9 @@ var metadataElements = {
     scope: "string",
     updateViaCache: {
       type: "enum",
-      keywords: ["imports", "all", "none"]
+      keywords: ["imports", "all", "none"],
+      defaultVal: "imports",
+      invalidVal: "imports"
     },
     media: "string",
     nonce: "string",

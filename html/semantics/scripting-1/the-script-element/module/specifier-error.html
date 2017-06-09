@@ -4,6 +4,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+    setup({allow_uncaught_exception: true});
+
     window.log = [];
 
     window.addEventListener("error", ev => log.push(ev.error));

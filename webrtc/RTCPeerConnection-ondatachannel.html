@@ -59,130 +59,7 @@
       interface RTCDataChannelEvent : Event {
         readonly attribute RTCDataChannel channel;
       };
-
-    4.4.  State Definitions
-      enum RTCIceGatheringState {
-        "complete",
-        ...
-      };
-
-        complete
-          At least one RTCIceTransport exists, and all RTCIceTransport s are in
-          the completed gathering state.
-
-      enum RTCIceConnectionState {
-        "connected",
-        "completed",
-        ...
-      };
-
-        connected
-          All RTCIceTransport s are in the connected, completed or closed state
-          and at least one of them is in the connected state.
-
-        completed
-          All RTCIceTransport s are in the completed or closed state and at least
-          one of them is in the completed state.
-
-      enum RTCPeerConnectionState {
-        "connected",
-        ...
-      };
-
-        connected
-          All RTCIceTransport s and RTCDtlsTransport s are in the connected,
-          completed or closed state and at least of them is in the connected
-          or completed state.
-
-    5.5.  RTCDtlsTransport Interface
-      enum RTCDtlsTransportState {
-        "connected",
-        ...
-      };
-
-        connected
-          DTLS has completed negotiation of a secure connection.
-
-
-    5.6.  RTCIceTransport Interface
-      enum RTCIceGathererState {
-        "complete",
-        ...
-      };
-
-        complete
-          The RTCIceTransport has completed gathering and the end-of-candidates
-          indication for this transport has been sent. It will not gather candidates
-          again until an ICE restart causes it to restart.
-
-      enum RTCIceTransportState {
-        "connected",
-        "completed",
-        ...
-      };
-
-        connected
-          The RTCIceTransport has found a usable connection, but is still
-          checking other candidate pairs to see if there is a better connection.
-          It may also still be gathering and/or waiting for additional remote
-          candidates.
-
-        completed
-          The RTCIceTransport has finished gathering, received an indication
-          that there are no more remote candidates, finished checking all
-          candidate pairs and found a connection.
    */
-
-  // Assert that when datachannel event is fired on the other side,
-  // The SCTP, DTLS, and ICE transports should all be connected.
-  // This is because the data channel can only be negotiated to
-  // the remote peer through a connected SCTP transport.
-  // And since the peer connection we are testing have only one
-  // transport of each kind, the various connection states of the
-  // peer connection should all be in connected states.
-  function assert_sctp_connected(pc) {
-    assert_equals(pc.iceGatheringState, 'complete',
-      'Expect pc.iceGatheringState to be complete');
-
-    // Need verification - the underlying RTCIceTransport state
-    // may be connected instead of completed when the DTLS
-    // connection is established
-    assert_true(
-      pc.iceConnectionState === 'completed' ||
-      pc.iceConnectionState === 'connected',
-      'Expect pc.iceConnectionState to be either completed or connected');
-
-    assert_equals(pc.connectionState, 'connected',
-      'Expect pc.connectionState to be connected');
-
-    assert_own_property(pc, 'sctp');
-
-    const sctpTransport = pc.sctp;
-
-    assert_true(sctpTransport instanceof RTCSctpTransport,
-      'Expect sctpTransport to instance of RTCSctpTransport');
-
-    const dtlsTransport = sctp.transport;
-    assert_true(dtlsTransport instanceof RTCDtlsTransport,
-      'Expect dtlsTransport to be instance of RTCDtlsTransport');
-
-    assert_equals(dtlsTransport.state, 'connected',
-      'Expect dtlsTransport to be in connected state');
-
-    const iceTransport = dtlsTransport.transport;
-    assert_true(iceTransport instanceof RTCIceTransport,
-      'Expect iceTransport to be instance of RTCIceTransport');
-
-    assert_equals(
-      iceTransport.gathererState === 'complete' ||
-      iceTransport.gathererState === 'gathering',
-      'Expect iceTransport gatherer state to be either complete or gathering');
-
-    assert_true(
-      iceTransport.state === 'completed' ||
-      iceTransport.state === 'connected',
-      'Expect iceTransport transport state to be either completed or completed');
-  }
 
   async_test(t => {
     const localPc = new RTCPeerConnection();
@@ -190,7 +67,7 @@
 
     let eventCount = 0;
 
-    const onDataChannel = t.step_func(event => {
+    const onDataChannel = t.step_func_done(event => {
       eventCount++;
       assert_equals(eventCount, 1,
         'Expect data channel event to fire exactly once');
@@ -209,9 +86,6 @@
       // is invoked, especially with local connections.
       assert_true(readyState === 'connecting' || readyState === 'open',
         'Expect channel ready state to be either connecting or open');
-
-      assert_sctp_connected(localPc);
-      assert_sctp_connected(remotePc);
     });
 
     const localChannel = localPc.createDataChannel('test');

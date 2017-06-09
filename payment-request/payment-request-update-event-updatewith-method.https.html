@@ -22,147 +22,45 @@ test(() => {
   // Smoke test - checks target is set as expected
   const request = new PaymentRequest(defaultMethods, defaultDetails);
   const ev = new PaymentRequestUpdateEvent("test");
-  request.addEventListener("test", () => {
-    assert_equals(ev.target, request, "The request and the target at the same");
-  });
   request.dispatchEvent(ev);
+  assert_equals(ev.target, request, "The request and the target at the same");
 }, "Let target be the request which is dispatching the event.");
 
+// Github issue: https://github.com/w3c/browser-payment-api/issues/546
 test(() => {
-  const ev = new PaymentRequestUpdateEvent("test");
-  let didListen = false;
-  window.addEventListener("test", () => {
-    assert_equals(ev.target, window, "should be the window object");
-    assert_throws("TypeError", () => {
-      ev.updateWith(Promise.resolve({}));
-    });
-    didListen = true;
+  const untrustedEvents = [
+    new PaymentRequestUpdateEvent("just a test"),
+    new PaymentRequestUpdateEvent("shippingaddresschange"),
+    new PaymentRequestUpdateEvent("shippingoptionchange"),
+  ].forEach(ev => {
+    assert_throws(
+      "NotAllowedError",
+      () => {
+        ev.updateWith(Promise.resolve());
+      },
+      `untrusted event of type "${ev.type}" must throw "NotAllowedError"`
+    );
   });
-  window.dispatchEvent(ev);
-  assert_true(didListen, "event was handled");
-}, "If event.target is not a PaymentRequest object, then throw a TypeError.");
+}, `Calling .updateWith() with an undispatched untrusted event throws "NotAllowedError"`);
 
-async_test( t => {
+// Github issue: https://github.com/w3c/browser-payment-api/issues/546
+test(() => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const ev = new PaymentRequestUpdateEvent("test");
-  function firstHandler(ev) {
-    const { target: request } = ev;
-    // set the event.[[waitForUpdate]] is true
-    ev.updateWith(new Promise(()=>{}));
-    request.addEventListener("test", secondHandler, { once: true });
-    // spin the event loop
-    Promise.resolve().then(() => request.dispatchEvent(ev)); 
-  }
-  function secondHandler(ev) {
-    const { target: request } = ev;
-    // [[waitForUpdate]] is now true, so calling request
-    t.step(()=>{
-      assert_throws("InvalidStateError", () => {
-        ev.updateWith(new Promise(()=>{}));
-      });
-    });
-    t.done();
-  }
-  request.addEventListener("test", firstHandler, { once: true });
-  request.dispatchEvent(ev);
-}, `If event.[[waitForUpdate]] is true, then throw an "InvalidStateError" DOMException.`);
-
-
-test(
-  () => {
-    // created state
-    const request = new PaymentRequest(defaultMethods, defaultDetails);
-    const ev = new PaymentRequestUpdateEvent("test");
-    request.addEventListener("test", ev => {
-      assert_throws("InvalidStateError", () => {
-        ev.updateWith(new Promise(()=>{}));
-      });
-    });
-    request.dispatchEvent(ev);
-  },
-  `If request.[[state]] is "created", then throw an "InvalidStateError" DOMException.`
-);
-
-promise_test(
-  async () => {
-    const request = new PaymentRequest(defaultMethods, defaultDetails);
-    await request.abort(); // state is closed
-    const ev = new PaymentRequestUpdateEvent("test");
-    request.addEventListener("test", ev => {
-      assert_throws("InvalidStateError", () => {
-        ev.updateWith(new Promise(()=>{}));
-      });
-    });
-    request.dispatchEvent(ev);
-  },
-  `If request.[[state]] is "closed", then throw an "InvalidStateError" DOMException.`
-);
-
-promise_test(async t => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  // Set state to "interactive" - so we can update.
-  const acceptPromise = request.show();
-  // Let's test rejecting detailsPromise.
-  const eventPromise = new Promise(done => {
-    request.addEventListener("test", async ev => {
-      // Abort the current user interaction and close down any remaining user interface.
-      ev.updateWith(Promise.reject(new Error("Rejecting detailsPromise")));
-      // Set request.[[state]] to "closed".
-      // Reject the promise request.[[acceptPromise]] with exception.
-      await promise_rejects(
-        t,
-        "AbortError",
-        acceptPromise,
-        "expect AbortError here"
-      );
-      await promise_rejects(
-        t,
-        "InvalidStateError",
-        request.show(),
-        "expect InvalidStateError here"
-      );
-      done();
-    });
+  const untrustedEvents = [
+    new PaymentRequestUpdateEvent("just a test"),
+    new PaymentRequestUpdateEvent("shippingaddresschange"),
+    new PaymentRequestUpdateEvent("shippingoptionchange"),
+  ].map(ev => {
+    request.dispatchEvent(ev); // set .target and dispatch flag
+    // unstrusted event.
+    assert_throws(
+      "NotAllowedError",
+      () => {
+        ev.updateWith(Promise.resolve())
+      },
+      `untrusted event of type "${ev.type}" must throw "NotAllowedError"`
+    );
   });
-  request.dispatchEvent(new PaymentRequestUpdateEvent("test"));
-  await eventPromise;
-}, `Upon rejection of detailsPromise, abort the update with an "AbortError" DOMException`);
+}, `Calling .updateWith() with a dispatched, untrusted event, throws "NotAllowedError"`);
 
-promise_test(async t => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  // Set state to "interactive" - so we can update.
-  const acceptPromise = request.show();
-  // Let's test resolving with an invalid IDL conversion...
-  const eventPromise = new Promise(done => {
-    request.addEventListener("test", async ev => {
-      // Abort the current user interaction and close down any remaining user interface.
-      ev.updateWith(Promise.resolve({ total: "Conversion TypeError here" }));
-      // Set request.[[state]] to "closed".
-      // Reject the promise request.[[acceptPromise]] with exception.
-      await promise_rejects(
-        t,
-        "TypeError",
-        acceptPromise,
-        "expected TypeError here from the WebIDL conversion"
-      );
-      await promise_rejects(
-        t,
-        "InvalidStateError",
-        request.show(),
-        "expected InvalidStateError here"
-      );
-      done();
-    });
-  });
-  request.dispatchEvent(new PaymentRequestUpdateEvent("test"));
-  await eventPromise;
-}, `Upon fulfillment of detailsPromise, convert value to PaymentDetailsUpdate dictionary`);
-
-promise_test(async t => {
-  
-}, `Upon fulfillment of detailsPromise, validate and canonicalize details.total`);
-
-promise_test(async t => {
-  
-}, `Upon fulfillment of detailsPromise, validate and canonicalize details.displayItems amounts`);
 </script>

@@ -68,4 +68,25 @@ test(() => {
   assert_equals(textarea.value, "", "setting the value property to null should result in an empty string");
 
 }, "tests for the value setter");
+
+test(() => {
+
+  const textarea = document.createElement("textarea");
+  textarea.defaultValue = "foo\0";
+
+  assert_equals(textarea.defaultValue, "foo\0", "defaultValue after setting defaultValue");
+  assert_equals(textarea.textContent, "foo\0", "textContent after setting defaultValue");
+  assert_equals(textarea.value, "foo\0", "value after setting defaultValue");
+
+  textarea.textContent = "bar\0";
+  assert_equals(textarea.defaultValue, "bar\0", "defaultValue after setting textContent");
+  assert_equals(textarea.textContent, "bar\0", "textContent after setting textContent");
+  assert_equals(textarea.value, "bar\0", "value after setting textContent");
+
+  textarea.value = "baz\0";
+  assert_equals(textarea.defaultValue, "bar\0", "defaultValue after setting value");
+  assert_equals(textarea.textContent, "bar\0", "textContent after setting value");
+  assert_equals(textarea.value, "baz\0", "value after setting value");
+
+}, "tests for U+0000 NULL");
 </script>

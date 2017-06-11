@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Clicking on an &lt;a> element with a download attribute and href that leads to 404 should not navigate</title>
+<link rel="author" title="phistuck" href="mailto:user@domain.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-a-element:activation-behaviour">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<a id="error-url" href="a-download-404.py" download="html.html">Click me</a>
+
+<script>
+"use strict";
+const t = async_test("Do not navigate to 404 for anchor with download");
+window.addEventListener("beforeunload", function () {
+    t.unreached_func("Navigated instead of downloading");
+});
+window.addEventListener("unload", function () {
+    t.unreached_func("Navigated instead of downloading");
+});
+document.querySelector("#error-url").click();
+setTimeout(function () { t.done(); }, 200);
+</script>

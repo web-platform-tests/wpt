@@ -11,7 +11,7 @@
 
 <script>
 "use strict";
-async_test(function () {
+async_test(function (t) {
     let hasBeforeUnloadFired = false;
     const errorFrame = document.querySelector("#error-frame");
     errorFrame.addEventListener("load", function () {

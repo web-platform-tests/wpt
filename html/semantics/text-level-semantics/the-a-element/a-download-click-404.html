@@ -6,9 +6,7 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<iframe id="error-frame"
-    srcdoc="<a id='error-url' href='a-download-404.py' download='html.html'>Click me</a>"></iframe>
-
+<iframe id="error-frame" src="resources/a-download-404.html"></iframe>
 <script>
 "use strict";
 async_test(function (t) {

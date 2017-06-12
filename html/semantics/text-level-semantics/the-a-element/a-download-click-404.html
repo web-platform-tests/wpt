@@ -24,6 +24,7 @@ async_test(function (t) {
             }
         }, 1000);
     });
+
     errorFrame.contentWindow.addEventListener("beforeunload", function () {
         hasBeforeUnloadFired = true;
         console.log("beforeunload fired");

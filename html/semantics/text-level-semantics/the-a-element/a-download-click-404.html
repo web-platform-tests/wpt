@@ -17,7 +17,7 @@ errorFrame.addEventListener("load", function () {
     errorFrame.contentDocument.querySelector("#error-url").click();
     setTimeout(function () { t.done(); }, 500);
 });
-errorFrame.addEventListener("beforeunload", function () {
+errorFrame.contentWindow.addEventListener("beforeunload", function () {
     t.unreached_func("Navigated instead of downloading");
 });
 

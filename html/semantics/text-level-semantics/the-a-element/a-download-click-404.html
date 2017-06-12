@@ -14,6 +14,7 @@
 const t = async_test("Do not navigate to 404 for anchor with download");
 const errorFrame = document.querySelector("#error-frame");
 let iteration = 0;
+
 errorFrame.contentWindow.addEventListener('beforeunload', function() {
     console.log("BeforeUnload event fired");
 });

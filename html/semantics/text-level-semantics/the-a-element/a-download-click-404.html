@@ -6,17 +6,18 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<a id="error-url" href="a-download-404.py" download="html.html">Click me</a>
+<iframe id="error-frame"
+    srcdoc="<a id='error-url' href='a-download-404.py' download='html.html'>Click me</a>"></iframe>
 
 <script>
 "use strict";
 const t = async_test("Do not navigate to 404 for anchor with download");
-window.addEventListener("beforeunload", function () {
-    t.unreached_func("Navigated instead of downloading");
+const errorFrame = document.querySelector("#error-frame");
+errorFrame.addEventListener("load", function () {
+    if (errorFrame.contentDocument.location.href.indexOf('a-download-404.py') !== -1) {
+        t.unreached_func("Navigated instead of downloading");
+    }
 });
-window.addEventListener("unload", function () {
-    t.unreached_func("Navigated instead of downloading");
-});
-document.querySelector("#error-url").click();
-setTimeout(function () { t.done(); }, 200);
+errorFrame.contentDocument.querySelector("#error-url").click();
+setTimeout(function () { t.done(); }, 500);
 </script>

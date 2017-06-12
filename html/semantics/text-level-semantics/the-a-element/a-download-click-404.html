@@ -13,11 +13,15 @@
 "use strict";
 const t = async_test("Do not navigate to 404 for anchor with download");
 const errorFrame = document.querySelector("#error-frame");
+let iteration = 0;
 errorFrame.addEventListener("load", function () {
-    if (errorFrame.contentDocument.location.href.indexOf('a-download-404.py') !== -1) {
+	if (iteration === 0) {
+		iteration = 1;
+		errorFrame.contentDocument.querySelector("#error-url").click();
+		setTimeout(function () { t.done(); }, 500);
+	}
+    if (iteration === 1 && errorFrame.contentDocument.location.href.indexOf('a-download-404.py') !== -1) {
         t.unreached_func("Navigated instead of downloading");
     }
 });
-errorFrame.contentDocument.querySelector("#error-url").click();
-setTimeout(function () { t.done(); }, 500);
 </script>

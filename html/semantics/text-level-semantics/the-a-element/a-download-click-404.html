@@ -15,10 +15,10 @@ const t = async_test("Do not navigate to 404 for anchor with download");
 const errorFrame = document.querySelector("#error-frame");
 let iteration = 0;
 errorFrame.contentWindow.addEventListener('beforeunload', function() {
-    console.log("BeforeUnload event fired".);
+    console.log("BeforeUnload event fired");
 });
 errorFrame.contentWindow.addEventListener('unload', function() {
-    console.log("Unload event fired".);
+    console.log("Unload event fired");
 });
 errorFrame.addEventListener("load", function () {
     console.log(iteration, errorFrame.contentDocument.location.href);	

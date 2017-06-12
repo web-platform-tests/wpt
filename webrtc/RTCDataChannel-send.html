@@ -1,0 +1,380 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.prototype.send</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+  'use strict';
+
+  // Test is based on the following editor draft:
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //  createDataChannelPair
+  //  awaitMessage
+  //  blobToArrayBuffer
+  //  assertEqualsArrayBuffer
+
+  /*
+    6.2.  RTCDataChannel
+      interface RTCDataChannel : EventTarget {
+        ...
+        readonly  attribute RTCDataChannelState readyState;
+        readonly  attribute unsigned long       bufferedAmount;
+                  attribute EventHandler        onopen;
+                  attribute EventHandler        onmessage;
+                  attribute DOMString           binaryType;
+
+        void send(USVString data);
+        void send(Blob data);
+        void send(ArrayBuffer data);
+        void send(ArrayBufferView data);
+      };
+
+      bufferedAmount
+        The bufferedAmount attribute must return the number of bytes of application
+        data (UTF-8 text and binary data) that have been queued using send() but that,
+        as of the last time the event loop started executing a task, had not yet been
+        transmitted to the network. (This thus includes any text sent during the
+        execution of the current task, regardless of whether the user agent is able
+        to transmit text asynchronously with script execution.) This does not include
+        framing overhead incurred by the protocol, or buffering done by the operating
+        system or network hardware. If the channel is closed, this attribute's value
+        will only increase with each call to the send() method (the attribute does not
+        reset to zero once the channel closes).
+
+
+    [WebMessaging]
+    interface MessageEvent : Event {
+      readonly attribute any data;
+      ...
+    };
+   */
+
+  // Simple ASCII encoded string
+  const helloString = 'hello';
+  // ASCII encoded buffer representation of the string
+  const helloBuffer = Uint8Array.of(0x68, 0x65, 0x6c, 0x6c, 0x6f);
+  const helloBlob = new Blob([helloBuffer]);
+
+  // Unicode string with multiple code units
+  const unicodeString = '世界你好';
+  // UTF-8 encoded buffer representation of the string
+  const unicodeBuffer = Uint8Array.of(
+    0xe4, 0xb8, 0x96, 0xe7, 0x95, 0x8c,
+    0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd);
+
+  /*
+      6.2.  send()
+        2.  If channel's readyState attribute is connecting, throw an InvalidStateError.
+
+   */
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const channel = pc.createDataChannel('test');
+    assert_equals(channel.readyState, 'connecting');
+    assert_throws('InvalidStateError', () => channel.send(helloString));
+  }, 'Calling send() when data channel is in connecting state should throw InvalidStateError');
+
+  /*
+      6.2.  send()
+        4.  If channel's underlying data transport is not established yet, or if the
+            closing procedure has started, then abort these steps.
+   */
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const channel = pc.createDataChannel('test');
+    channel.close();
+    assert_equals(channel.readyState, 'closing');
+    channel.send(helloString);
+  }, 'Calling send() when data channel is in closing state should succeed');
+
+  /*
+    6.2.  send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+
+          string object
+            Let data be the object and increase the bufferedAmount attribute
+            by the number of bytes needed to express data as UTF-8.
+
+    [WebSocket]
+    5.  Feedback from the protocol
+      When a WebSocket message has been received
+        4.  If type indicates that the data is Text, then initialize event's data
+            attribute to data.
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel1.send(helloString);
+      assert_equals(channel1.bufferedAmount, helloString.length);
+
+      return awaitMessage(channel2);
+    }).then(message => {
+      assert_equals(channel1.bufferedAmount, 0,
+        'Expect sender bufferedAmount to be reduced after message is sent');
+
+      assert_equals(typeof message, 'string',
+        'Expect message to be a string');
+
+      assert_equals(message, helloString);
+    });
+  }, 'Data channel should be able to send simple string and receive as string');
+
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel1.send(unicodeString);
+      assert_equals(channel1.bufferedAmount, unicodeBuffer.byteLength,
+        'Expect bufferedAmount to be the byte length of the unicode string');
+
+      return awaitMessage(channel2)
+    }).then(message => {
+      assert_equals(channel1.bufferedAmount, 0,
+        'Expect sender bufferedAmount to be reduced after message is sent');
+
+      assert_equals(typeof message, 'string',
+        'Expect message to be a string');
+
+      assert_equals(message, unicodeString);
+    });
+  }, 'Data channel should be able to send unicode string and receive as unicode string');
+
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'arraybuffer';
+
+      channel1.send(helloString);
+      assert_equals(channel1.bufferedAmount, helloString.length);
+
+      return awaitMessage(channel2);
+    }).then(message => {
+      assert_equals(channel1.bufferedAmount, 0,
+        'Expect sender bufferedAmount to be reduced after message is sent');
+
+      assert_equals(typeof message, 'string',
+        'Expect message to be a string');
+
+      assert_equals(message, helloString);
+    });
+  }, 'Data channel should ignore binaryType and always receive string message as string');
+
+  /*
+    6.2. send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+          ArrayBufferView object
+            Let data be the data stored in the section of the buffer described
+            by the ArrayBuffer object that the ArrayBufferView object references
+            and increase the bufferedAmount attribute by the length of the
+            ArrayBufferView in bytes.
+
+    [WebSocket]
+    5.  Feedback from the protocol
+      When a WebSocket message has been received
+        4.  If binaryType is set to "arraybuffer", then initialize event's data
+            attribute to a new read-only ArrayBuffer object whose contents are data.
+
+    [WebIDL]
+    4.1.  ArrayBufferView
+      typedef (Int8Array or Int16Array or Int32Array or
+        Uint8Array or Uint16Array or Uint32Array or Uint8ClampedArray or
+        Float32Array or Float64Array or DataView) ArrayBufferView;
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'arraybuffer';
+
+      channel1.send(helloBuffer);
+      assert_equals(channel1.bufferedAmount, helloString.length);
+
+      return awaitMessage(channel2)
+    }).then(messageBuffer => {
+      assert_equals(channel1.bufferedAmount, 0,
+        'Expect sender bufferedAmount to be reduced after message is sent');
+
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+
+      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+    });
+  }, 'Data channel should be able to send Uint8Array message and receive as ArrayBuffer');
+
+
+  /*
+    6.2. send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+          ArrayBuffer object
+            Let data be the data stored in the buffer described by the ArrayBuffer
+            object and increase the bufferedAmount attribute by the length of the
+            ArrayBuffer in bytes.
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'arraybuffer';
+
+      channel1.send(helloBuffer.buffer);
+      assert_equals(channel1.bufferedAmount, helloString.length);
+
+      return awaitMessage(channel2)
+    }).then(messageBuffer => {
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+
+      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+    });
+  }, 'Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer');
+
+  /*
+    6.2. send()
+      3.  Execute the sub step that corresponds to the type of the methods argument:
+          Blob object
+            Let data be the raw data represented by the Blob object and increase
+            the bufferedAmount attribute by the size of data, in bytes.
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'arraybuffer';
+
+      channel1.send(helloBlob);
+      assert_equals(channel1.bufferedAmount, helloString.length);
+
+      return awaitMessage(channel2);
+    }).then(messageBuffer => {
+      assert_equals(channel1.bufferedAmount, 0,
+        'Expect sender bufferedAmount to be reduced after message is sent')
+
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+
+      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+    });
+  }, 'Data channel should be able to send Blob message and receive as ArrayBuffer');
+
+  /*
+    [WebSocket]
+    5.  Feedback from the protocol
+      When a WebSocket message has been received
+        4.  If binaryType is set to "blob", then initialize event's data attribute
+            to a new Blob object that represents data as its raw data.
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'blob';
+
+      channel1.send(helloBuffer);
+
+      return awaitMessage(channel2);
+    })
+    .then(messageBlob => {
+      assert_true(messageBlob instanceof Blob,
+        'Expect received messageBlob to be a Blob');
+
+      return blobToArrayBuffer(messageBlob);
+    }).then(messageBuffer => {
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+
+      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+    });
+  }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
+
+  /*
+    6.2.  RTCDataChannel
+      binaryType
+        The binaryType attribute must, on getting, return the value to which it was
+        last set. On setting, the user agent must set the IDL attribute to the new
+        value. When a RTCDataChannel object is created, the binaryType attribute must
+        be initialized to the string "blob".
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      assert_equals(channel2.binaryType, 'blob',
+        'Expect initial binaryType value to be blob');
+
+      channel1.send(helloBuffer);
+
+      return awaitMessage(channel2);
+    })
+    .then(messageBlob => {
+      assert_true(messageBlob instanceof Blob,
+        'Expect received messageBlob to be a Blob');
+
+      return blobToArrayBuffer(messageBlob);
+    }).then(messageBuffer => {
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+
+      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+    });
+  }, 'Data channel binaryType should receive message as Blob by default');
+
+  async_test(t => {
+    const receivedMessages = [];
+    const expectedMessages = [helloBuffer, unicodeString, helloBuffer];
+    const expectedMessageCount = expectedMessages.length;
+    const expectedBufferedAmount = helloBuffer.byteLength*2 + unicodeBuffer.byteLength
+
+    const onMessage = t.step_func(event => {
+      const { data } = event;
+      receivedMessages.push(data);
+
+      if(receivedMessages.length === expectedMessageCount) {
+        assert_equals(channel1.bufferedAmount, 0,
+          'Expect sender bufferedAmount to be reduced after message is sent');
+
+        for(let i=0; i<expectedMessageCount; i++) {
+          const receivedMessage = receivedMessages[i];
+          const expectedMessage = expectedMessages[i];
+
+          if(typeof(expectedMessage) === 'string') {
+            assert_equals(receivedMessage, expectedMessage);
+          } else {
+            assert_true(receivedMessage instanceof ArrayBuffer,
+              'Expect receivedMessage to be ArrayBuffer');
+
+            assertEqualsArrayBuffer(receivedMessage, expectedMessage);
+          }
+        }
+
+        t.done();
+      }
+    });
+
+    createDataChannelPair()
+    .then(([channel1, channel2]) => {
+      channel2.binaryType = 'arraybuffer';
+      channel2.addEventListener('message', onMessage);
+
+      channel1.send(helloBuffer);
+      channel1.send(unicodeString);
+      channel1.send(helloBlob);
+
+      assert_equals(channel1.bufferedAmount, expectedBufferedAmount,
+        'Expect bufferedAmount to be the total length of all messages queued to send');
+    })
+    .catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, 'Sending multiple messages with different types should succeed and be received');
+
+  /*
+    [Deferred]
+    6.2.  RTCDataChannel
+      The send() method is being amended in w3c/webrtc-pc#1209 to throw error instead
+      of closing data channel when buffer is full
+
+      send()
+        5.  Attempt to send data on channel's underlying data transport; if the data
+            cannot be sent, e.g. because it would need to be buffered but the buffer
+            is full, the user agent must abruptly close channel's underlying data
+            transport with an error.
+
+   */
+
+</script>

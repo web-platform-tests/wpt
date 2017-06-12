@@ -13,8 +13,6 @@
 "use strict";
 const t = async_test("Do not navigate to 404 for anchor with download");
 const errorFrame = document.querySelector("#error-frame");
-let iteration = 0;
-
 errorFrame.addEventListener("load", function () {
     errorFrame.contentDocument.querySelector("#error-url").click();
     setTimeout(function () { t.done(); }, 500);

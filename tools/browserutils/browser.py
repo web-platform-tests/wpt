@@ -59,7 +59,7 @@ class Firefox(Browser):
     requirements = "requirements_firefox.txt"
 
 
-    def platform_string(self):
+    def platform_string_certutil(self):
         platform = {
             "Linux": "linux",
             "Windows": "win",
@@ -78,7 +78,7 @@ class Firefox(Browser):
 
         return "%s%s" % (platform, bits)
 
-    def platform_string_geckodriver(self):
+    def platform_string(self):
         platform = {
             "Linux": "linux",
             "Windows": "win",
@@ -110,7 +110,7 @@ class Firefox(Browser):
         if dest is None:
             dest = os.getcwd()
 
-        resp = self.get_from_nightly("<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.%s\.tar\.bz2)" % self.platform_string())
+        resp = get("https://download.mozilla.org/?product=firefox-beta-latest&os=%s&lang=en-US" % self.platform_string())
         untar(resp.raw, dest=dest)
         return os.path.join(dest, "firefox")
 
@@ -140,7 +140,7 @@ class Firefox(Browser):
             dest = split[0]
 
         resp = self.get_from_nightly(
-            "<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.%s\.common\.tests.zip)</a>" % self.platform_string())
+            "<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.%s\.common\.tests.zip)</a>" % self.platform_string_certutil())
         bin_path = path("bin/certutil", exe=True)
         unzip(resp.raw, dest=dest, limit=[bin_path])
 
@@ -184,7 +184,7 @@ class Firefox(Browser):
         format = "zip" if uname[0] == "Windows" else "tar.gz"
         logger.debug("Latest geckodriver release %s" % version)
         url = ("https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-%s.%s" %
-               (version, version, self.platform_string_geckodriver(), format))
+               (version, version, self.platform_string(), format))
         if format == "zip":
             unzip(get(url).raw, dest=dest)
         else:

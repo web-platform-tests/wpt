@@ -12,23 +12,15 @@
 <script>
 "use strict";
 async_test(function (t) {
-    let hasBeforeUnloadFired = false;
     const errorFrame = document.querySelector("#error-frame");
     errorFrame.addEventListener("load", function () {
-        console.log("load fired");
         errorFrame.contentDocument.querySelector("#error-url").click();
         t.step_timeout(function () {
-            console.log("Timer passed!");
-            if (!hasBeforeUnloadFired) {
-                t.done();
-            }
+            t.done();
         }, 1000);
     });
 
-    errorFrame.contentWindow.addEventListener("beforeunload", function () {
-        hasBeforeUnloadFired = true;
-        console.log("beforeunload fired");
-        t.unreached_func("Navigated instead of downloading");
-    });
+    errorFrame.contentWindow.addEventListener(
+        "beforeunload", t.unreached_func("Navigated instead of downloading"));
 }, "Do not navigate to 404 for anchor with download");
 </script>

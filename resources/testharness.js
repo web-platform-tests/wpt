@@ -483,7 +483,10 @@ policies and contribution forms [3].
     }
 
     function is_service_worker(worker) {
-        return 'ServiceWorker' in self && worker instanceof ServiceWorker;
+        // The worker object may be from another execution context,
+        // so do not use instanceof here.
+        return 'ServiceWorker' in self &&
+            Object.prototype.toString.call(worker) == '[object ServiceWorker]';
     }
 
     /*

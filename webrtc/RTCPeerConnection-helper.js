@@ -329,7 +329,7 @@ function blobToArrayBuffer(blob) {
 }
 
 // Assert that two ArrayBuffer objects have the same byte values
-function assertEqualsArrayBuffer(buffer1, buffer2) {
+function assert_equals_array_buffer(buffer1, buffer2) {
   assert_true(buffer1 instanceof ArrayBuffer,
     'Expect buffer to be instance of ArrayBuffer');
 

@@ -14,7 +14,7 @@
   //  createDataChannelPair
   //  awaitMessage
   //  blobToArrayBuffer
-  //  assertEqualsArrayBuffer
+  //  assert_equals_array_buffer
 
   /*
     6.2.  RTCDataChannel
@@ -198,7 +198,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer);
     });
   }, 'Data channel should be able to send Uint8Array message and receive as ArrayBuffer');
 
@@ -224,7 +224,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer');
 
@@ -251,7 +251,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer);
     });
   }, 'Data channel should be able to send Blob message and receive as ArrayBuffer');
 
@@ -280,7 +280,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
 
@@ -311,7 +311,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assertEqualsArrayBuffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer);
     });
   }, 'Data channel binaryType should receive message as Blob by default');
 
@@ -339,7 +339,7 @@
             assert_true(receivedMessage instanceof ArrayBuffer,
               'Expect receivedMessage to be ArrayBuffer');
 
-            assertEqualsArrayBuffer(receivedMessage, expectedMessage);
+            assert_equals_array_buffer(receivedMessage, expectedMessage);
           }
         }
 

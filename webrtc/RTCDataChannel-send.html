@@ -68,7 +68,6 @@
   /*
       6.2.  send()
         2.  If channel's readyState attribute is connecting, throw an InvalidStateError.
-
    */
   test(t => {
     const pc = new RTCPeerConnection();
@@ -76,19 +75,6 @@
     assert_equals(channel.readyState, 'connecting');
     assert_throws('InvalidStateError', () => channel.send(helloString));
   }, 'Calling send() when data channel is in connecting state should throw InvalidStateError');
-
-  /*
-      6.2.  send()
-        4.  If channel's underlying data transport is not established yet, or if the
-            closing procedure has started, then abort these steps.
-   */
-  test(t => {
-    const pc = new RTCPeerConnection();
-    const channel = pc.createDataChannel('test');
-    channel.close();
-    assert_equals(channel.readyState, 'closing');
-    channel.send(helloString);
-  }, 'Calling send() when data channel is in closing state should succeed');
 
   /*
     6.2.  send()
@@ -370,11 +356,19 @@
       of closing data channel when buffer is full
 
       send()
+        4.  If channel's underlying data transport is not established yet, or if the
+            closing procedure has started, then abort these steps.
         5.  Attempt to send data on channel's underlying data transport; if the data
             cannot be sent, e.g. because it would need to be buffered but the buffer
             is full, the user agent must abruptly close channel's underlying data
             transport with an error.
 
+    test(t => {
+      const pc = new RTCPeerConnection();
+      const channel = pc.createDataChannel('test');
+      channel.close();
+      assert_equals(channel.readyState, 'closing');
+      channel.send(helloString);
+    }, 'Calling send() when data channel is in closing state should succeed');
    */
-
 </script>

@@ -77,7 +77,14 @@ class HTMLItem(pytest.Item, pytest.Collector):
         summarized[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
         summarized[u'type'] = actual['type']
 
-        assert summarized == self.expected
+        if u'unit_test_mode' in self.expected:
+            assert summarized[u'summarized_status'][u'status_string'] == u'OK'
+            for test in summarized[u'summarized_tests']:
+                assert test[u'status_string'] == u'PASS', test[u'message']
+                assert test[u'stack'] == None, test[u'message']
+                assert test[u'message'] == None, test[u'message']
+        else:
+            assert summarized == self.expected
 
     @staticmethod
     def _assert_sequence(nums):

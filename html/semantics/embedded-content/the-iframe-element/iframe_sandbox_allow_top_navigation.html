@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>iframe_sandbox_allow_top_navigation</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-iframe-sandbox">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-iframe-element">
+<meta name="assert" content="Verifies that iframe with allow-top-navigation can perform navigation on its top frame.">
+<link rel="match" href="iframe_sandbox_allow_top_navigation-ref.html">
+<p>Pass if you see a green square below.</p>
+<div style="width: 200px; height: 200px; background: red;"></div>
+<iframe sandbox="allow-top-navigation allow-scripts" src="support/iframe-that-performs-top-navigation-without-user-gesture-passed.html" style="display: none"></iframe>

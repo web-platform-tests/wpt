@@ -214,6 +214,7 @@ function test_never_resolve(testFunc, testName) {
 // Helper function to exchange ice candidates between
 // two local peer connections
 function exchangeIceCandidates(pc1, pc2) {
+  // private function
   function doExchange(localPc, remotePc) {
     localPc.addEventListener('icecandidate', event => {
       const { candidate } = event;
@@ -243,4 +244,107 @@ function doSignalingHandshake(localPc, remotePc) {
   .then(answer => Promise.all([
     remotePc.setLocalDescription(answer),
     localPc.setRemoteDescription(answer)]))
+}
+
+// Helper function to create a pair of connected data channel.
+// On success the promise resolves to an array with two data channels.
+// It does the heavy lifting of performing signaling handshake,
+// ICE candidate exchange, and waiting for data channel at two
+// end points to open.
+function createDataChannelPair() {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  const channel1 = pc1.createDataChannel('test');
+
+  exchangeIceCandidates(pc1, pc2);
+
+  return new Promise((resolve, reject) => {
+    let channel2;
+    let opened1 = false;
+    let opened2 = false;
+
+    function onBothOpened() {
+      resolve([channel1, channel2]);
+    }
+
+    function onOpen1() {
+      opened1 = true;
+      if(opened2) onBothOpened();
+    }
+
+    function onOpen2() {
+      opened2 = true;
+      if(opened1) onBothOpened();
+    }
+
+    function onDataChannel(event) {
+      channel2 = event.channel
+      channel2.addEventListener('error', reject);
+      const { readyState } = channel2;
+
+      if(readyState === 'open') {
+        onOpen2();
+      } else if(readyState === 'connecting') {
+        channel2.addEventListener('open', onOpen2);
+      } else {
+        reject(new Error(`Unexpected ready state ${readyState}`));
+      }
+    }
+
+    channel1.addEventListener('open', onOpen1);
+    channel1.addEventListener('error', reject);
+
+    pc2.addEventListener('datachannel', onDataChannel);
+
+    doSignalingHandshake(pc1, pc2);
+  });
+}
+
+// Wait for a single message event and return
+// a promise that resolve when the event fires
+function awaitMessage(channel) {
+  return new Promise((resolve, reject) => {
+    channel.addEventListener('message',
+      event => resolve(event.data),
+      { once: true });
+
+    channel.addEventListener('error', reject, { once: true });
+  });
+}
+
+// Helper to convert a blob to array buffer so that
+// we can read the content
+function blobToArrayBuffer(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+      resolve(reader.result);
+    });
+
+    reader.addEventListener('error', reject);
+
+    reader.readAsArrayBuffer(blob);
+  });
+}
+
+// Assert that two ArrayBuffer objects have the same byte values
+function assert_equals_array_buffer(buffer1, buffer2) {
+  assert_true(buffer1 instanceof ArrayBuffer,
+    'Expect buffer to be instance of ArrayBuffer');
+
+  assert_true(buffer2 instanceof ArrayBuffer,
+    'Expect buffer to be instance of ArrayBuffer');
+
+  assert_equals(buffer1.byteLength, buffer2.byteLength,
+    'Expect both array buffers to be of the same byte length');
+
+  const byteLength = buffer1.byteLength;
+  const byteArray1 = new Uint8Array(buffer1);
+  const byteArray2 = new Uint8Array(buffer2);
+
+  for(let i=0; i<byteLength; i++) {
+    assert_equals(byteArray1[i], byteArray2[i],
+      `Expect byte at buffer position ${i} to be equal`);
+  }
 }

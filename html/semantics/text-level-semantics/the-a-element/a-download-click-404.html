@@ -8,17 +8,25 @@
 <script src="/resources/testharnessreport.js"></script>
 <iframe id="error-frame" src="resources/a-download-404.html"></iframe>
 <script>
+callback = 0;
 "use strict";
 async_test(function (t) {
     const errorFrame = document.querySelector("#error-frame");
     errorFrame.addEventListener("load", function () {
-        errorFrame.contentDocument.querySelector("#error-url").click();
+        const link = errorFrame.contentDocument.querySelector("#error-url");
+        const callbackName = "callback" + callback;
+        callback++;
+        window[callbackName] = t.unreached_func("Navigated instead of downloading");
+        
+        link.search = "callbackName=" + callbackName;
+        link.click();
+        
         t.step_timeout(function () {
             t.done();
         }, 1000);
     });
 
-    errorFrame.contentWindow.addEventListener(
-        "beforeunload", t.unreached_func("Navigated instead of downloading"));
+    // errorFrame.contentWindow.addEventListener(
+    //    "beforeunload", t.unreached_func("Navigated instead of downloading"));
 }, "Do not navigate to 404 for anchor with download");
 </script>

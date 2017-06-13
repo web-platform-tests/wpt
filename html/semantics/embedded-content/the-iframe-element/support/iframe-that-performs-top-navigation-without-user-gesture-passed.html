@@ -4,7 +4,12 @@
 <script>
 window.onload = function()
 {
-    top.location = "data:text/html,<!DOCTYPE html><p>Pass if you see a green square below.</p><div style='width: 200px; height: 200px; background: green;'></div>";
+    try {
+        top.location = "navigation-changed-iframe.html";
+        top.postMessage("PASS", "*");
+    } catch(e) {
+        top.postMessage("FAIL", "*");
+    }
 }
 </script>
 </body>

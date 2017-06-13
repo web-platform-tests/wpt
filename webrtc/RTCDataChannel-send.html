@@ -22,7 +22,6 @@
         ...
         readonly  attribute RTCDataChannelState readyState;
         readonly  attribute unsigned long       bufferedAmount;
-                  attribute EventHandler        onopen;
                   attribute EventHandler        onmessage;
                   attribute DOMString           binaryType;
 
@@ -31,25 +30,6 @@
         void send(ArrayBuffer data);
         void send(ArrayBufferView data);
       };
-
-      bufferedAmount
-        The bufferedAmount attribute must return the number of bytes of application
-        data (UTF-8 text and binary data) that have been queued using send() but that,
-        as of the last time the event loop started executing a task, had not yet been
-        transmitted to the network. (This thus includes any text sent during the
-        execution of the current task, regardless of whether the user agent is able
-        to transmit text asynchronously with script execution.) This does not include
-        framing overhead incurred by the protocol, or buffering done by the operating
-        system or network hardware. If the channel is closed, this attribute's value
-        will only increase with each call to the send() method (the attribute does not
-        reset to zero once the channel closes).
-
-
-    [WebMessaging]
-    interface MessageEvent : Event {
-      readonly attribute any data;
-      ...
-    };
    */
 
   // Simple ASCII encoded string
@@ -94,13 +74,8 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel1.send(helloString);
-      assert_equals(channel1.bufferedAmount, helloString.length);
-
-      return awaitMessage(channel2);
+      return awaitMessage(channel2)
     }).then(message => {
-      assert_equals(channel1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent');
-
       assert_equals(typeof message, 'string',
         'Expect message to be a string');
 
@@ -112,34 +87,21 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel1.send(unicodeString);
-      assert_equals(channel1.bufferedAmount, unicodeBuffer.byteLength,
-        'Expect bufferedAmount to be the byte length of the unicode string');
-
       return awaitMessage(channel2)
     }).then(message => {
-      assert_equals(channel1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent');
-
       assert_equals(typeof message, 'string',
         'Expect message to be a string');
 
       assert_equals(message, unicodeString);
     });
   }, 'Data channel should be able to send unicode string and receive as unicode string');
-
   promise_test(t => {
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
-
       channel1.send(helloString);
-      assert_equals(channel1.bufferedAmount, helloString.length);
-
       return awaitMessage(channel2);
     }).then(message => {
-      assert_equals(channel1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent');
-
       assert_equals(typeof message, 'string',
         'Expect message to be a string');
 
@@ -172,22 +134,15 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
-
       channel1.send(helloBuffer);
-      assert_equals(channel1.bufferedAmount, helloString.length);
-
       return awaitMessage(channel2)
     }).then(messageBuffer => {
-      assert_equals(channel1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent');
-
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send Uint8Array message and receive as ArrayBuffer');
-
 
   /*
     6.2. send()
@@ -201,16 +156,13 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
-
       channel1.send(helloBuffer.buffer);
-      assert_equals(channel1.bufferedAmount, helloString.length);
-
       return awaitMessage(channel2)
     }).then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer');
 
@@ -225,19 +177,13 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
-
       channel1.send(helloBlob);
-      assert_equals(channel1.bufferedAmount, helloString.length);
-
       return awaitMessage(channel2);
     }).then(messageBuffer => {
-      assert_equals(channel1.bufferedAmount, 0,
-        'Expect sender bufferedAmount to be reduced after message is sent')
-
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send Blob message and receive as ArrayBuffer');
 
@@ -252,9 +198,7 @@
     return createDataChannelPair()
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'blob';
-
       channel1.send(helloBuffer);
-
       return awaitMessage(channel2);
     })
     .then(messageBlob => {
@@ -266,7 +210,7 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
 
@@ -285,7 +229,6 @@
         'Expect initial binaryType value to be blob');
 
       channel1.send(helloBuffer);
-
       return awaitMessage(channel2);
     })
     .then(messageBlob => {
@@ -297,37 +240,22 @@
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
 
-      assert_equals_array_buffer(messageBuffer, helloBuffer);
+      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel binaryType should receive message as Blob by default');
 
+  // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
   async_test(t => {
     const receivedMessages = [];
-    const expectedMessages = [helloBuffer, unicodeString, helloBuffer];
-    const expectedMessageCount = expectedMessages.length;
-    const expectedBufferedAmount = helloBuffer.byteLength*2 + unicodeBuffer.byteLength
 
     const onMessage = t.step_func(event => {
       const { data } = event;
       receivedMessages.push(data);
 
-      if(receivedMessages.length === expectedMessageCount) {
-        assert_equals(channel1.bufferedAmount, 0,
-          'Expect sender bufferedAmount to be reduced after message is sent');
-
-        for(let i=0; i<expectedMessageCount; i++) {
-          const receivedMessage = receivedMessages[i];
-          const expectedMessage = expectedMessages[i];
-
-          if(typeof(expectedMessage) === 'string') {
-            assert_equals(receivedMessage, expectedMessage);
-          } else {
-            assert_true(receivedMessage instanceof ArrayBuffer,
-              'Expect receivedMessage to be ArrayBuffer');
-
-            assert_equals_array_buffer(receivedMessage, expectedMessage);
-          }
-        }
+      if(receivedMessages.length === 3) {
+        assert_equals_array_buffer(receivedMessages[0], helloBuffer.buffer);
+        assert_equals(receivedMessages[1], unicodeString);
+        assert_equals_array_buffer(receivedMessages[2], helloBuffer.buffer);
 
         t.done();
       }
@@ -342,10 +270,7 @@
       channel1.send(unicodeString);
       channel1.send(helloBlob);
 
-      assert_equals(channel1.bufferedAmount, expectedBufferedAmount,
-        'Expect bufferedAmount to be the total length of all messages queued to send');
-    })
-    .catch(t.step_func(err =>
+    }).catch(t.step_func(err =>
       assert_unreached(`Unexpected promise rejection: ${err}`)));
   }, 'Sending multiple messages with different types should succeed and be received');
 

@@ -34,14 +34,14 @@ test(() => {
     new PaymentRequestUpdateEvent("shippingoptionchange"),
   ].forEach(ev => {
     assert_throws(
-      "NotAllowedError",
+      "InvalidStateError",
       () => {
         ev.updateWith(Promise.resolve());
       },
-      `untrusted event of type "${ev.type}" must throw "NotAllowedError"`
+      `untrusted event of type "${ev.type}" must throw "InvalidStateError"`
     );
   });
-}, `Calling .updateWith() with an undispatched untrusted event throws "NotAllowedError"`);
+}, `Calling .updateWith() with an undispatched untrusted event throws "InvalidStateError"`);
 
 // Github issue: https://github.com/w3c/browser-payment-api/issues/546
 test(() => {
@@ -54,13 +54,13 @@ test(() => {
     request.dispatchEvent(ev); // set .target and dispatch flag
     // unstrusted event.
     assert_throws(
-      "NotAllowedError",
+      "InvalidStateError",
       () => {
         ev.updateWith(Promise.resolve())
       },
-      `untrusted event of type "${ev.type}" must throw "NotAllowedError"`
+      `untrusted event of type "${ev.type}" must throw "InvalidStateError"`
     );
   });
-}, `Calling .updateWith() with a dispatched, untrusted event, throws "NotAllowedError"`);
+}, `Calling .updateWith() with a dispatched, untrusted event, throws "InvalidStateError"`);
 
 </script>

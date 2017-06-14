@@ -10,9 +10,12 @@
   // Test is based on the following editor draft:
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  // exchangeIceCandidates
+  // doSignalingHandshake
+
   /*
     4.3.2.  Interface Definition
-
       interface RTCPeerConnection : EventTarget {
         ...
         readonly  attribute RTCIceGatheringState   iceGatheringState;
@@ -26,20 +29,7 @@
         "complete"
       };
 
-      new
-        Any of the RTCIceTransport s are in the new gathering state and
-        none of the transports are in the gathering state, or there are
-        no transports.
-
-      gathering
-        Any of the RTCIceTransport s are in the gathering state.
-
-      complete
-        At least one RTCIceTransport exists, and all RTCIceTransports are
-        in the completed gathering state.
-
     5.6.  RTCIceTransport Interface
-
       interface RTCIceTransport {
         readonly attribute RTCIceGathererState  gatheringState;
         ...
@@ -50,20 +40,15 @@
         "gathering",
         "complete"
       };
-
-      new
-        The RTCIceTransport was just created, and has not started gathering
-        candidates yet.
-
-      gathering
-        The RTCIceTransport is in the process of gathering candidates.
-
-      complete
-        The RTCIceTransport has completed gathering and the end-of-candidates
-        indication for this transport has been sent. It will not gather candidates
-        again until an ICE restart causes it to restart.
    */
 
+  /*
+    4.4.2.  RTCIceGatheringState Enum
+      new
+        Any of the RTCIceTransport s are in the new gathering state and
+        none of the transports are in the gathering state, or there are
+        no transports.
+   */
   test(t => {
     const pc = new RTCPeerConnection();
     assert_equals(pc.iceGatheringState, 'new');
@@ -92,6 +77,24 @@
 
   }, 'iceGatheringState should eventually become complete after setLocalDescription');
 
+  /*
+    4.4.2.  RTCIceGatheringState Enum
+      gathering
+        Any of the RTCIceTransport s are in the gathering state.
+
+      complete
+        At least one RTCIceTransport exists, and all RTCIceTransports are
+        in the completed gathering state.
+
+    5.6.  RTCIceGathererState
+      gathering
+        The RTCIceTransport is in the process of gathering candidates.
+
+      complete
+        The RTCIceTransport has completed gathering and the end-of-candidates
+        indication for this transport has been sent. It will not gather candidates
+        again until an ICE restart causes it to restart.
+   */
   async_test(t => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
@@ -131,4 +134,11 @@
 
   }, 'connection with one data channel should eventually have connected connection state');
 
+  /*
+    TODO
+    5.6.  RTCIceTransport Interface
+      new
+        The RTCIceTransport was just created, and has not started gathering
+        candidates yet.
+   */
 </script>

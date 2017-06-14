@@ -7,11 +7,14 @@ import sys
 import tarfile
 from distutils.spawn import find_executable
 
+wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
+
 import localpaths
 from browserutils import browser, utils, virtualenv
 logger = None
 
-wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
 
 
 class WptrunnerHelpAction(argparse.Action):
@@ -286,6 +289,17 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
     return kwargs
 
 
+def run(venv, **kwargs):
+    kwargs = setup_wptrunner(venv,
+                             kwargs["product"],
+                             kwargs["tests"],
+                             kwargs["wptrunner_args"],
+                             prompt=kwargs["prompt"])
+
+    from wptrunner import wptrunner
+    wptrunner.start(**kwargs)
+
+
 def main():
     parser = create_parser()
     args = parser.parse_args()
@@ -295,10 +309,7 @@ def main():
     venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
     venv.install("requests")
 
-    kwargs = setup_wptrunner(venv, args.product, args.tests, args.wptrunner_args, prompt=args.prompt)
-    from wptrunner import wptrunner
-    wptrunner.start(**kwargs)
-
+    run(venv, vars(args))
 
 if __name__ == "__main__":
     import pdb

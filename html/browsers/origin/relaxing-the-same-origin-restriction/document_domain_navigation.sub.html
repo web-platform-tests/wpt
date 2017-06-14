@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  function postMessageToFrame(frame, message) {
+    return new Promise(resolve => {
+      var c = new MessageChannel();
+      c.port1.onmessage = e => {
+        resolve({ data: e.data, frame: frame })
+      };
+      frame.contentWindow.postMessage(message, '*', [c.port2]);
+    });
+  }
+
+  function createFrame(origin) {
+    return new Promise(resolve => {
+      var i = document.createElement('iframe');
+      i.src = origin + "/html/browsers/origin/relaxing-the-same-origin-restriction/support/document_domain_iframe.html";
+      window.addEventListener('message', m => {
+        if (m.source == i.contentWindow)
+          resolve(i);
+      });
+      document.body.appendChild(i);
+    });
+  }
+
+	promise_test(t => {
+		var f1, f2;
+		return createFrame("http://{{domains[www]}}:{{ports[http][0]}}")
+			.then(f => {
+				f1 = f;
+		    return createFrame("http://{{domains[www]}}:{{ports[http][0]}}");
+			})
+			.then(f => {
+				f2 = f;
+				return postMessageToFrame(f1, { domain: '{{domains[]}}' });
+			})
+			.then(response => {
+				return postMessageToFrame(f1, { poke: 1 });
+			})
+			.then(response => {
+				assert_equals(response.data, "navigated");
+			});
+	}, "One frame can navigate the other.");
+</script>

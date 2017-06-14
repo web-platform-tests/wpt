@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>secondary window</title>
+  </head>
+  <body>
+    <p>Please click the below button to reload the page, then confirm the prompt-to-unload dialog.</p>
+
+    <button id="navigation">newNavigation</button>
+
+    <div id="status"></div>
+  </body>
+
+  <script>
+    onload = function() {
+      opener.child_load_index++;
+      
+      //after the reload
+      if(opener.child_load_index > 1) {
+        // take (refTime.now - childTime.now) as the time origin of the secondary window
+        opener.child_origin = opener.performance.now() - performance.now();
+
+        document.getElementById('status').innerHTML = "<hr/><p>Index:" + opener.child_load_index + "</p><p>origin: " + opener.child_origin + "</p><p>unload time was : " + opener.child_unload_time + "</p><hr/>";
+
+        opener.postMessage('hr_time_unload_done', '*');
+      }
+
+      document.getElementById('navigation').onclick = function () {
+        window.location.reload(true);
+      };
+
+      window.onbeforeunload = function() {
+        opener.child_unload_time = opener.performance.now();
+          
+        return opener.child_unload_time;
+      };
+    };
+</script>
+</html>

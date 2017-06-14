@@ -1,0 +1,2 @@
+{"install-browser": {"path": "install.py", "script": "run", "parser": "get_parser", "help": "Install browser components",
+         "virtualenv": true}}

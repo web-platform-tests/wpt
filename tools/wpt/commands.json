@@ -1,0 +1,2 @@
+{"run": {"path": "run.py", "script": "run", "parser": "create_parser", "help": "Run tests in a browser",
+         "virtualenv": true, "install": ["requests"], "requirements": ["../wptrunner/requirements.txt"]}}

@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>IdlArray.prototype.is_JSON_type()</title>
+</head>
+<body>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+    function makeAST(type) {
+        var ast = WebIDL2.parse('interface Foo { ' + type + ' a(); };');
+        ast = ast[0]; // get the first fragment
+        ast = ast.members[0]; // get the first member
+        return ast.idlType; // get the type of the first field
+    }
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_true(idl.is_JSON_type(makeAST("DOMString")));
+        assert_true(idl.is_JSON_type(makeAST("ByteString")));
+        assert_true(idl.is_JSON_type(makeAST("USVString")));
+        idl.add_untested_idls('enum BarEnum { "a", "b", "c" };');
+        assert_true(idl.is_JSON_type(makeAST("BarEnum")));
+    }, 'should return true for all string types');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_false(idl.is_JSON_type(makeAST("Error")));
+        assert_false(idl.is_JSON_type(makeAST("DOMException")));
+    }, 'should return false for all exception types');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_false(idl.is_JSON_type(makeAST("Int8Array")));
+        assert_false(idl.is_JSON_type(makeAST("Int16Array")));
+        assert_false(idl.is_JSON_type(makeAST("Int32Array")));
+        assert_false(idl.is_JSON_type(makeAST("Uint8Array")));
+        assert_false(idl.is_JSON_type(makeAST("Uint16Array")));
+        assert_false(idl.is_JSON_type(makeAST("Uint32Array")));
+        assert_false(idl.is_JSON_type(makeAST("Uint8ClampedArray")));
+        assert_false(idl.is_JSON_type(makeAST("Float32Array")));
+        assert_false(idl.is_JSON_type(makeAST("ArrayBuffer")));
+        assert_false(idl.is_JSON_type(makeAST("DataView")));
+    }, 'should return false for all buffer source types');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_true(idl.is_JSON_type(makeAST("boolean")));
+    }, 'should return true for boolean');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_true(idl.is_JSON_type(makeAST("byte")));
+        assert_true(idl.is_JSON_type(makeAST("octet")));
+        assert_true(idl.is_JSON_type(makeAST("short")));
+        assert_true(idl.is_JSON_type(makeAST("unsigned short")));
+        assert_true(idl.is_JSON_type(makeAST("long")));
+        assert_true(idl.is_JSON_type(makeAST("unsigned long")));
+        assert_true(idl.is_JSON_type(makeAST("long long")));
+        assert_true(idl.is_JSON_type(makeAST("unsigned long long")));
+        assert_true(idl.is_JSON_type(makeAST("float")));
+        assert_true(idl.is_JSON_type(makeAST("unrestricted float")));
+        assert_true(idl.is_JSON_type(makeAST("double")));
+        assert_true(idl.is_JSON_type(makeAST("unrestricted double")));
+    }, 'should return true for all numeric types');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_false(idl.is_JSON_type(makeAST("Promise<DOMString>")));
+    }, 'should return false for promises');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_false(idl.is_JSON_type(makeAST("sequence<DOMException>")));
+        assert_true(idl.is_JSON_type(makeAST("sequence<DOMString>")));
+    }, 'should handle sequences according to their inner types');
+
+    test(function() {
+        var idl = new IdlArray();
+        assert_true(idl.is_JSON_type(makeAST("record<DOMString, DOMString>")));
+        assert_false(idl.is_JSON_type(makeAST("record<DOMString, Error>")));
+    }, 'should handle records according to their inner types');
+    
+    test(function() {
+        var idl = new IdlArray();
+        assert_true(idl.is_JSON_type(makeAST("object")));
+    }, 'should return true for object type');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('dictionary Foo { DOMString foo; }; dictionary Bar : Foo { DOMString bar; };');
+        assert_true(idl.is_JSON_type(makeAST("Foo")));
+        assert_true(idl.is_JSON_type(makeAST("Bar")));
+    }, 'should return true for dictionaries whose members are all JSON types');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('dictionary Foo { };');
+        assert_true(idl.is_JSON_type(makeAST("Foo")));
+    }, 'should return true for dictionaries which have no members');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('dictionary FooBar { DOMString a; Error b; }; dictionary Baz : FooBar {};');
+        assert_false(idl.is_JSON_type(makeAST("FooBar")));
+        assert_false(idl.is_JSON_type(makeAST("Baz")));
+    }, 'should return false for dictionaries whose members are not all JSON types');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('interface Foo { DOMString toJSON(); };');
+        assert_true(idl.is_JSON_type(makeAST("Foo")));
+    }, 'should return true for interfaces which declare a toJSON operation');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('interface Foo { DOMString toJSON(); }; interface Bar : Foo { };');
+        assert_true(idl.is_JSON_type(makeAST("Bar")));
+    }, 'should return true for interfaces which inherit from an interface which declares a toJSON operation');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('interface Foo { }; interface Bar { DOMString toJSON(); }; Foo implements Bar;');
+        assert_true(idl.is_JSON_type(makeAST("Foo")));
+    }, 'should return true for interfaces which mixin an interface which declare a toJSON operation');
+    
+//    test(function() {
+//        var idl = new IdlArray();
+//        idl.add_untested_idls('interface Foo { }; interface Bar { }; interface Baz { DOMString toJSON(); }; Foo implements Bar; Bar implements Baz;');
+//        assert_true(idl.is_JSON_type(makeAST("Foo")));
+//    }, 'should return true for interfaces which mixin an interface which itself mixes in an interface which declares a toJSON operation');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('interface Foo { };');
+        assert_false(idl.is_JSON_type(makeAST("Foo")));
+    }, 'should return false for interfaces which do not declare a toJSON operation');
+    
+    test(function() {
+        var idl = new IdlArray();
+        assert_throws(new Error(), _ => idl.is_JSON_type(makeAST("Foo")));
+    }, "should throw if it references a dictionary, enum or interface which wasn't added to the IdlArray");
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_untested_idls('interface Foo : Bar { };');
+        assert_throws(new Error(), _ => idl.is_JSON_type(makeAST("Foo")));
+    }, "should throw for interfaces which inherit from another interface which wasn't added to the IdlArray");
+</script>
+</body>
+</html>
+

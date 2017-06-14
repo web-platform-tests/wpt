@@ -431,10 +431,8 @@ def get_sha1():
 
 def build_manifest():
     """Build manifest of all files in web-platform-tests"""
-    with pwd(wpt_root):
-        # TODO: Call the manifest code directly
-        call("python", "manifest")
-
+    from tools.manifest import update
+    update.run(**vars(update.create_parser().parse_args([])))
 
 def install_wptrunner():
     """Install wptrunner."""

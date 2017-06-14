@@ -322,6 +322,155 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
     return ret;
 };
 
+//@}
+IdlArray.prototype.get_inheritance_stack = function(idl_interface)
+//@{
+{
+    /**
+     * See https://heycam.github.io/webidl/#create-an-inheritance-stack
+     *
+     * Returns an array of IdlInterface objects which contains idl_interface
+     * and all of its inherited interfaces.
+     *
+     * So given:
+     *
+     *   A : B {};
+     *   B : C {};
+     *   C {};
+     *
+     * then get_inheritance_stack(A) should return [A, B, C],
+     * and get_inheritance_stack(B) should return [B, C].
+     *
+     * Note: as dictionary inheritance is expressed identically by the AST,
+     * this works just as well for getting a stack of inherited dictionaries. 
+     */
+
+    var stack = [];
+    stack.push(idl_interface);
+    while (idl_interface.base) {
+        var base = this.members[idl_interface.base];
+        if (!base) {
+            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
+        }
+        idl_interface = base;
+        stack.push(idl_interface);
+    }
+    return stack;
+};
+
+//@}
+IdlArray.prototype.is_JSON_type = function(type)
+//@{
+{
+    /**
+     * Checks whether type is a JSON type as per
+     * https://heycam.github.io/webidl/#dfn-json-types
+     */
+
+    var idlType = type.idlType;
+    
+    if (type.generic == "Promise") { return false; }
+
+    //  nullable and annotated types don't need to be handled separately,
+    //  as webidl2 doesn't represent them wrapped-up (as they're described
+    //  in WebIDL).
+
+    // union and record types
+    if (type.union || type.generic == "record") {
+        return idlType.every(this.is_JSON_type, this);
+    }
+
+    // sequence types
+    if (type.generic == "sequence") { return this.is_JSON_type(idlType); }
+    
+    if (typeof idlType == "string")
+    {
+        switch (idlType)
+        {
+           //  Numeric types
+           case "byte":
+           case "octet":
+           case "short":
+           case "unsigned short":
+           case "long":
+           case "unsigned long":
+           case "long long":
+           case "unsigned long long":
+           case "float":
+           case "double":
+           case "unrestricted float":
+           case "unrestricted double":
+           // boolean
+           case "boolean":
+           // string types
+           case "DOMString":
+           case "ByteString":
+           case "USVString":
+           // object type
+           case "object":
+               return true;
+           case "Error":
+           case "DOMException":
+           case "Int8Array":
+           case "Int16Array":
+           case "Int32Array":
+           case "Uint8Array":
+           case "Uint16Array":
+           case "Uint32Array":
+           case "Uint8ClampedArray":
+           case "Float32Array":
+           case "ArrayBuffer":
+           case "DataView":
+               return false;
+           default:
+               var thing = this.members[idlType];
+               if (!thing) { throw new Error("Type " + idlType + " not found"); }
+
+               if (thing instanceof IdlEnum) { return true; }
+
+               //  dictionaries where all of their members are JSON types
+               if (thing instanceof IdlDictionary)
+               {
+                   var stack = this.get_inheritance_stack(thing);
+                   var map = new Map();
+                   while (stack.length)
+                   {
+                       stack.pop().members.forEach(m => map.set(m.name, m.idlType));
+                   }
+                   return [...map.values()].every(this.is_JSON_type, this);
+               }
+               
+               //  interface types that have a toJSON operation declared on themselves or
+               //  one of their inherited or consequential interfaces.
+               if (thing instanceof IdlInterface)
+               {
+                   var base;
+                   while (thing)
+                   {
+                       if (thing.has_to_json_regular_operation()) { return true; }
+                       var mixins = this.implements[thing.name];
+                       if (mixins) {
+                           mixins = mixins.map(m => this.members[m]);
+                           if (mixins.some(m => !m)) {
+                               throw new Error("Interface " + m + " not found (implemented by " + thing.name + ")");
+                           }
+                           if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
+                       }
+                       // TODO handle consequential interfaces
+                       if (!thing.base) { return false; }
+                       base = this.members[thing.base];
+                       if (!base) {
+                           throw new Error("Interface " + thing.base + " not found (inherited by " + thing.name + ")");
+                       }
+                       thing = base;
+                   }
+                   return false;
+               }
+        }
+        return false;
+    }
+}
+
 function exposure_set(object, default_set) {
     var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });
     if (exposed.length > 1 || exposed.length < 0) {
@@ -773,6 +922,15 @@ IdlInterface.prototype.is_global = function()
     return this.extAttrs.some(function(attribute) {
         return attribute.name === "Global" ||
                attribute.name === "PrimaryGlobal";
+    });
+};
+//@}
+
+IdlInterface.prototype.has_to_json_regular_operation = function()
+//@{
+{
+    return this.members.some(m => {
+        return m.type == "operation" && !m.static && m.name == "toJSON";
     });
 };
 //@}

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>IdlArray.prototype.get_inheritance_stack()</title>
+</head>
+<body>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { };');
+        var A = idl.members["A"];
+        var stack = idl.get_inheritance_stack(A);
+        assert_array_equals(stack.map(i => i.name), ["A"]);
+    }, 'should return an array that includes itself.');
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A : B { };');
+        var A = idl.members["A"];
+        assert_throws(new Error(), _ => idl.get_inheritance_stack(A));
+    }, "should throw for interfaces which inherit from another interface which wasn't added to the IdlArray");
+    
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A : B { };');
+        idl.add_untested_idls('interface B : C { }; interface C { };');
+        var A = idl.members["A"];
+        var stack = idl.get_inheritance_stack(A);
+        assert_array_equals(stack.map(i => i.name), ["A", "B", "C"]);
+    }, 'should return an array of inherited interfaces in order of inheritance, starting with itself.');
+</script>
+</body>
+</html>
+

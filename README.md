@@ -280,7 +280,7 @@ can run it manually by starting the `lint` executable from the root of
 your local web-platform-tests working directory like this:
 
 ```
-./lint
+./wpt lint
 ```
 
 The lint tool is also run automatically for every submitted pull

@@ -11,26 +11,26 @@
 
     <style type="text/css">
     	* { padding: 0; margin: 0; }
-    	#test-color-red {
-    		background-color: red;
-    		height: 200px;
-            position: absolute;
-    		width: 200px;
-    	}
-    	#test-color-green {
-    		background-clip: content-box;
-    		background-color: rgba(0, 255, 0, 1);
-    		height: 180px;
-    		padding: 10px;
-            position: absolute;
-    		width: 180px;
+	#test-color-blue {
+		background-color: blue;
+		height: 200px;
+		position: absolute;
+		width: 200px;
+	}
+	#test-color-orange {
+		background-clip: content-box;
+		background-color: rgba(255, 165, 0, 1);
+		height: 180px;
+		padding: 10px;
+		position: absolute;
+		width: 180px;
     	}
     </style>
 </head>
 <body>
-    <p>Test pass if the green box has a 10px width red edge</p>
+    <p>Test passes if the orange box has a 10px width blue edge.</p>
     <!-- background -->
-    <div id="test-color-red"></div>
-    <div id="test-color-green"></div>
+    <div id="test-color-blue"></div>
+    <div id="test-color-orange"></div>
 </body>
 </html>

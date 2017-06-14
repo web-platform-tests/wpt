@@ -12,6 +12,7 @@ the promise of working across browsers and devices without needing extra
 layers of abstraction to paper over the gaps left by specification
 editors and implementors.
 
+
 Running the Tests
 =================
 
@@ -40,7 +41,11 @@ following entries are required:
 If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.
 
-The test environment can then be started using
+
+Running Tests Manually
+======================
+
+The test server can be started using
 
     ./serve
 
@@ -73,18 +78,18 @@ like:
 Running Tests Automatically
 ---------------------------
 
-Tests can be run automatically in a browser using the `wptrun` script
-in the root of the checkout. This requires the hosts file and OpenSSL
-setup documented above, but you must *not* have the test server
-already running when calling `wptrun`. The basic command line syntax
-is:
+Tests can be run automatically in a browser using the `run` command of
+the `wpt` script in the root of the checkout. This requires the hosts
+file and OpenSSL setup documented above, but you must *not* have the
+test server already running when calling `wpt run`. The basic command
+line syntax is:
 
 ```
-./wptrun product [tests]
+./wpt run product [tests]
 ```
 
 **On Windows**: for technical reasons the above will not work and you
-must instead run `python tools/wptrun.py products [tests]`.
+must instead run `python tools/wpt/wpt.py run products [tests]`.
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
@@ -108,6 +113,17 @@ And on macOS with homebrew using:
 ```
 brew install nss
 ```
+
+Command Line Tools
+==================
+
+The `wpt` command provides a frontend to a variety of tools for
+working with and running web-platform-tests. Some of the most useful
+commands are:
+
+* `wpt run` - For running tests in a browser
+* `wpt lint` - For running the lint against all tests
+* `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest
 
 <span id="submodules">Submodules</span>
 =======================================

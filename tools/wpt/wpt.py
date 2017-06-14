@@ -10,7 +10,7 @@ from browserutils import virtualenv
 
 
 here = os.path.dirname(__file__)
-wpt_root = os.path.abspath(os.path.join(here, "..", ".."))
+wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 
 def load_commands():

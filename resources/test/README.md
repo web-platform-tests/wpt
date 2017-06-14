@@ -34,8 +34,8 @@ This should be followed by one or more `<script>` tags that interface with the
       }, 'This test is expected to fail.');
     </script>
 
-Finally, each test should include a summary of the expected results as a JSON
-string within a `<script>` tag with an `id` of expected, e.g.:
+Finally, each test may include a summary of the expected results as a JSON
+string within a `<script>` tag with an `id` of `"expected"`, e.g.:
 
     <script type="text/json" id="expected">
     {
@@ -56,3 +56,6 @@ string within a `<script>` tag with an `id` of expected, e.g.:
       "type": "complete"
     }
     </script>
+
+This is useful to test, for example, whether asserations that should fail or
+throw actually do.

@@ -4973,6 +4973,17 @@
     "search": "",
     "hash": ""
   },
+  "More IPv4 parsing (via https://github.com/jsdom/whatwg-url/issues/92)",
+  {
+    "input": "https://0x100000000/test",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://256.0.0.1/test",
+    "base": "about:blank",
+    "failure": true
+  },
   "# file URLs containing percent-encoded Windows drive letters (shouldn't work)",
   {
     "input": "file:///C%3A/",

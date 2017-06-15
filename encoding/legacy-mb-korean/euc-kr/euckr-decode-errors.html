@@ -21,53 +21,81 @@
 <div id="log"></div>
 
 <script>
-var tests = []
+var tests = [];
 
-function iframeRef( frameRef ) {
-    return frameRef.contentWindow
-        ? frameRef.contentWindow.document
-        : frameRef.contentDocument
-	}
+function iframeRef(frameRef) {
+	return frameRef.contentWindow
+		? frameRef.contentWindow.document
+		: frameRef.contentDocument;
+}
 
-function showNodes () {
-	var iframe = iframeRef( document.getElementById('scrwin') )
-	nodes = iframe.querySelectorAll('span')
+function showNodes() {
+	var iframe = iframeRef(document.getElementById("scrwin"));
+	nodes = iframe.querySelectorAll("span");
 
-	t=-1;
-	t++; tests[t] = async_test("lead not 0x00 and no more bytes: B0")
-	t++; tests[t] = async_test("lead not 0x00 and no more bytes: B0 B5 B0")
-	t++; tests[t] = async_test("lead not 0x00 and no more bytes: B0 B0 B0")
+	t = -1;
+	t++;
+	tests[t] = async_test("lead not 0x00 and no more bytes: B0");
+	t++;
+	tests[t] = async_test("lead not 0x00 and no more bytes: B0 B5 B0");
+	t++;
+	tests[t] = async_test("lead not 0x00 and no more bytes: B0 B0 B0");
 
-	t++; tests[t] = async_test("lead byte outside 0x81-0xFE: FF")
-	t++; tests[t] = async_test("lead byte outside 0x81-0xFE: B0 B0 FF")
+	t++;
+	tests[t] = async_test("lead byte outside 0x81-0xFE: FF");
+	t++;
+	tests[t] = async_test("lead byte outside 0x81-0xFE: B0 B0 FF");
 
-	t++; tests[t] = async_test("trail byte outside 0x41-0xFE: B0 31")
-	t++; tests[t] = async_test("trail byte outside 0x41-0xFE: B0 FF")
+	t++;
+	tests[t] = async_test("trail byte outside 0x41-0xFE: B0 31");
+	t++;
+	tests[t] = async_test("trail byte outside 0x41-0xFE: B0 FF");
 
-	t++; tests[t] = async_test("pointer is null: 81 5B")
+	t++;
+	tests[t] = async_test("pointer is null: 81 5B");
 
-
-
-	t=-1;
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '갠�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '같�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '갠�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�1') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�[') } )
-	tests[t].done()
-
-	}
-
+	t = -1;
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "갠�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "같�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "갠�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "�1");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "�");
+	});
+	tests[t].done();
+	t++;
+	tests[t].step(function() {
+		assert_equals(nodes[t].textContent, "�[");
+	});
+	tests[t].done();
+}
 </script>
 </body>
 </html>

@@ -12,79 +12,86 @@
 <link rel="help" href="https://encoding.spec.whatwg.org//#shift_jis">
 <meta name="assert" content="The browser produces percent-escaped character references when writing characters to an href value and encoding han characters that are not in the shift_jis encoding.">
 <script>
+function encode(input, expected, desc) {
+	// tests whether a Unicode character is converted to an equivalent byte sequence by href
+	// input: a Unicode character
+	// expected: expected byte sequence
+	// desc: what's being tested
+	test(function() {
+		var a = document.createElement("a"); // <a> uses document encoding for URL's query
+		a.href = "https://example.com/?" + input;
+		result = a.search.substr(1); // remove leading "?"
+		assert_equals(normalizeStr(result), normalizeStr(expected));
+	}, desc);
+}
 
- function encode(input, expected, desc) {
- // tests whether a Unicode character is converted to an equivalent byte sequence by href
- // input: a Unicode character
- // expected: expected byte sequence
- // desc: what's being tested
-   test(function() {
-     var a = document.createElement("a"); // <a> uses document encoding for URL's query
-     a.href = "https://example.com/?" + input;
-     result = a.search.substr(1)  // remove leading "?"
-     assert_equals(normalizeStr(result), normalizeStr(expected));
-   },  desc);
- }
+// set up a simple array of unicode codepoints that are not encoded
+var codepoints = [];
 
-
- // set up a simple array of unicode codepoints that are not encoded
-var codepoints = []
-
-for (i=0x4E00;i<0x9FBA;i++) {
-	result = sjisEncoder(String.fromCodePoint(i))
+for (i = 0x4e00; i < 0x9fba; i++) {
+	result = sjisEncoder(String.fromCodePoint(i));
 	if (!result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%26%23'+item.cp+'%3B'
-		item.desc = 'cjk '
-		}
- 	}
-
-for (i=0xF900;i<0xFA6E;i++) { // compatibility
-	result = sjisEncoder(String.fromCodePoint(i))
-	if (!result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%26%23'+item.cp+'%3B'
-		item.desc = 'compatibility '
-		}
+		var item = {};
+		codepoints.push(item);
+		item.cp = i;
+		item.expected = "%26%23" + item.cp + "%3B";
+		item.desc = "cjk ";
 	}
+}
 
-for (i=0xFA70;i<0xFADA;i++) {
-	result = sjisEncoder(String.fromCodePoint(i))
+for (i = 0xf900; i < 0xfa6e; i++) {
+	// compatibility
+	result = sjisEncoder(String.fromCodePoint(i));
 	if (!result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%26%23'+item.cp+'%3B'
-		item.desc = 'compatibility '
-		}
+		var item = {};
+		codepoints.push(item);
+		item.cp = i;
+		item.expected = "%26%23" + item.cp + "%3B";
+		item.desc = "compatibility ";
 	}
+}
 
-for (i=0x3400;i<0x4DBF;i++) { // cjk extension A
-	result = sjisEncoder(String.fromCodePoint(i))
+for (i = 0xfa70; i < 0xfada; i++) {
+	result = sjisEncoder(String.fromCodePoint(i));
 	if (!result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%26%23'+item.cp+'%3B'
-		item.desc = 'extension A '
-		}
+		var item = {};
+		codepoints.push(item);
+		item.cp = i;
+		item.expected = "%26%23" + item.cp + "%3B";
+		item.desc = "compatibility ";
 	}
+}
 
+for (i = 0x3400; i < 0x4dbf; i++) {
+	// cjk extension A
+	result = sjisEncoder(String.fromCodePoint(i));
+	if (!result) {
+		var item = {};
+		codepoints.push(item);
+		item.cp = i;
+		item.expected = "%26%23" + item.cp + "%3B";
+		item.desc = "extension A ";
+	}
+}
 
 // run the tests
-for (var x=0;x<codepoints.length;x++) {
-	encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected, codepoints[x].desc+" U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected)
-	}
-
+for (var x = 0; x < codepoints.length; x++) {
+	encode(
+		String.fromCodePoint(codepoints[x].cp),
+		codepoints[x].expected,
+		codepoints[x].desc +
+			" U+" +
+			codepoints[x].cp.toString(16).toUpperCase() +
+			" " +
+			String.fromCodePoint(codepoints[x].cp) +
+			" " +
+			codepoints[x].expected
+	);
+}
 
 // NOTES
 // this test relies on support for String.fromCodePoint, which appears to be supported by major desktop browsers
 // the tests exclude ASCII characters
-
 </script>
 </head>
 <body>

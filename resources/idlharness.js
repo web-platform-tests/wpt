@@ -383,93 +383,91 @@ IdlArray.prototype.is_JSON_type = function(type)
     // sequence types
     if (type.generic == "sequence") { return this.is_JSON_type(idlType); }
     
-    if (typeof idlType == "string")
+    if (typeof idlType != "string") { throw new Error("Unexpected type " + JSON.stringify(idlType)); }
+    
+    switch (idlType)
     {
-        switch (idlType)
-        {
-           //  Numeric types
-           case "byte":
-           case "octet":
-           case "short":
-           case "unsigned short":
-           case "long":
-           case "unsigned long":
-           case "long long":
-           case "unsigned long long":
-           case "float":
-           case "double":
-           case "unrestricted float":
-           case "unrestricted double":
-           // boolean
-           case "boolean":
-           // string types
-           case "DOMString":
-           case "ByteString":
-           case "USVString":
-           // object type
-           case "object":
-               return true;
-           case "Error":
-           case "DOMException":
-           case "Int8Array":
-           case "Int16Array":
-           case "Int32Array":
-           case "Uint8Array":
-           case "Uint16Array":
-           case "Uint32Array":
-           case "Uint8ClampedArray":
-           case "Float32Array":
-           case "ArrayBuffer":
-           case "DataView":
+       //  Numeric types
+       case "byte":
+       case "octet":
+       case "short":
+       case "unsigned short":
+       case "long":
+       case "unsigned long":
+       case "long long":
+       case "unsigned long long":
+       case "float":
+       case "double":
+       case "unrestricted float":
+       case "unrestricted double":
+       // boolean
+       case "boolean":
+       // string types
+       case "DOMString":
+       case "ByteString":
+       case "USVString":
+       // object type
+       case "object":
+           return true;
+       case "Error":
+       case "DOMException":
+       case "Int8Array":
+       case "Int16Array":
+       case "Int32Array":
+       case "Uint8Array":
+       case "Uint16Array":
+       case "Uint32Array":
+       case "Uint8ClampedArray":
+       case "Float32Array":
+       case "ArrayBuffer":
+       case "DataView":
+       case "any":
+           return false;
+       default:
+           var thing = this.members[idlType];
+           if (!thing) { throw new Error("Type " + idlType + " not found"); }
+
+           if (thing instanceof IdlEnum) { return true; }
+
+           //  dictionaries where all of their members are JSON types
+           if (thing instanceof IdlDictionary) {
+               var stack = this.get_inheritance_stack(thing);
+               var map = new Map();
+               while (stack.length)
+               {
+                   stack.pop().members.forEach(m => map.set(m.name, m.idlType));
+               }
+               return [...map.values()].every(this.is_JSON_type, this);
+           }
+           
+           //  interface types that have a toJSON operation declared on themselves or
+           //  one of their inherited or consequential interfaces.
+           if (thing instanceof IdlInterface) {
+               var base;
+               while (thing)
+               {
+                   if (thing.has_to_json_regular_operation()) { return true; }
+                   var mixins = this.implements[thing.name];
+                   if (mixins) {
+                       mixins = mixins.map(m => this.members[m]);
+                       if (mixins.some(m => !m)) {
+                           throw new Error("Interface " + m + " not found (implemented by " + thing.name + ")");
+                       }
+                       if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
+                   }
+                   // TODO handle consequential interfaces
+                   if (!thing.base) { return false; }
+                   base = this.members[thing.base];
+                   if (!base) {
+                       throw new Error("Interface " + thing.base + " not found (inherited by " + thing.name + ")");
+                   }
+                   thing = base;
+               }
                return false;
-           default:
-               var thing = this.members[idlType];
-               if (!thing) { throw new Error("Type " + idlType + " not found"); }
-
-               if (thing instanceof IdlEnum) { return true; }
-
-               //  dictionaries where all of their members are JSON types
-               if (thing instanceof IdlDictionary)
-               {
-                   var stack = this.get_inheritance_stack(thing);
-                   var map = new Map();
-                   while (stack.length)
-                   {
-                       stack.pop().members.forEach(m => map.set(m.name, m.idlType));
-                   }
-                   return [...map.values()].every(this.is_JSON_type, this);
-               }
-               
-               //  interface types that have a toJSON operation declared on themselves or
-               //  one of their inherited or consequential interfaces.
-               if (thing instanceof IdlInterface)
-               {
-                   var base;
-                   while (thing)
-                   {
-                       if (thing.has_to_json_regular_operation()) { return true; }
-                       var mixins = this.implements[thing.name];
-                       if (mixins) {
-                           mixins = mixins.map(m => this.members[m]);
-                           if (mixins.some(m => !m)) {
-                               throw new Error("Interface " + m + " not found (implemented by " + thing.name + ")");
-                           }
-                           if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
-                       }
-                       // TODO handle consequential interfaces
-                       if (!thing.base) { return false; }
-                       base = this.members[thing.base];
-                       if (!base) {
-                           throw new Error("Interface " + thing.base + " not found (inherited by " + thing.name + ")");
-                       }
-                       thing = base;
-                   }
-                   return false;
-               }
-        }
-        return false;
+           }
+           return false;
     }
-}
+};
 
 function exposure_set(object, default_set) {
     var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });

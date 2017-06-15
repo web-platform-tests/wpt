@@ -3,11 +3,15 @@
 <title>RTCPeerConnection.prototype.addTransceiver</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
   // Test is based on the following editor draft:
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+
+  // The following helper function is called from RTCPeerConnection-helper.js:
+  // generateMediaStreamTrack
 
   /*
    *  5.1. RTCPeerConnection Interface Extensions
@@ -156,6 +160,81 @@
   }, 'addTransceiver() with string argument as invalid kind should throw TypeError');
 
   /*
+    5.1.  addTransceiver
+      3.  If the first argument is a MediaStreamTrack , let it be track and let
+          kind be track.kind.
+      7.  Create an RTCRtpSender with track, streams and sendEncodings and let sender
+          be the result.
+      8.  Create an RTCRtpReceiver with kind and let receiver be the result.
+   */
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const track = generateMediaStreamTrack('audio');
+
+    const transceiver = pc.addTransceiver(track);
+    const { sender, receiver } = transceiver;
+
+    assert_true(sender instanceof RTCRtpSender,
+      'Expect sender to be instance of RTCRtpSender');
+
+    assert_true(receiver instanceof RTCRtpReceiver,
+      'Expect receiver to be instance of RTCRtpReceiver');
+
+    assert_equals(sender.track, track,
+      'Expect sender.track should be the track that is added');
+
+    const receiverTrack = receiver.track
+    assert_true(receiverTrack instanceof MediaStreamTrack,
+      'Expect receiver.track to be instance of MediaStreamTrack');
+
+    assert_equals(receiverTrack.kind, 'audio',
+      `receiver.track should have the same kind as added track's kind`);
+
+    assert_equals(receiverTrack.label, 'remote audio');
+    assert_equals(receiverTrack.readyState, 'live');
+    assert_equals(receiverTrack.muted, true);
+
+    assert_array_equals([transceiver], pc.getTransceivers(),
+      `Expect added transceiver to be the only element in connection's list of transceivers`);
+
+    assert_array_equals([sender], pc.getSenders(),
+      `Expect added sender to be the only element in connection's list of senders`);
+
+    assert_array_equals([receiver], pc.getReceivers(),
+      `Expect added receiver to be the only element in connection's list of receivers`);
+
+  }, 'addTransceiver(track) should have result with sender.track be given track');
+
+  // This might be a bug (w3c/webrtc-pc#1386)
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const track = generateMediaStreamTrack('audio');
+
+    const transceiver1 = pc.addTransceiver(track);
+    const transceiver2 = pc.addTransceiver(track);
+
+    assert_not_equals(transceiver1, transceiver2);
+
+    const sender1 = transceiver1.sender;
+    const sender2 = transceiver2.sender;
+
+    assert_not_equals(sender1, sender2);
+    assert_equals(transceiver1.sender.track, track);
+    assert_equals(transceiver2.sender.track, track);
+
+    const transceivers = pc.getTransceivers();
+    assert_equals(transceivers.length, 2);
+    assert_true(transceivers.includes(transceiver1));
+    assert_true(transceivers.includes(transceiver2));
+
+    const senders = pc.getSenders();
+    assert_equals(senders.length, 2);
+    assert_true(senders.includes(sender1));
+    assert_true(senders.includes(sender2));
+
+  }, 'addTransceiver(track) multiple times should create multiple transceivers');
+
+  /*
     TODO
       5.1.  addTransceiver
         Adding a transceiver will cause future calls to createOffer to add a media
@@ -171,8 +250,6 @@
             streams be that list of MediaStream objects.
         2.  If the dictionary argument is present, and it has a sendEncodings member,
             let sendEncodings be that list of RTCRtpEncodingParameters objects.
-        3.  If the first argument is a MediaStreamTrack , let it be track and let
-            kind be track.kind.
         5.  Verify that each rid value in sendEncodings is composed only of
             case-sensitive alphanumeric characters (a-z, A-Z, 0-9) up to a
             maximum of 16 characters. If one of the RIDs does not meet these
@@ -214,7 +291,7 @@
               to a list containing a single RTCRtpEncodingParameters with active
               set to true.
 
-    Tested in RTCPeerConnection-onnegotiationneeded.html:
+    Tested in RTCPeerConnection-onnegotiationneeded.html
       5.1.  addTransceiver
         11. Update the negotiation-needed flag for connection.
    */

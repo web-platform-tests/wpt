@@ -51,7 +51,7 @@ if the align value is stretch (the default)</p>
 </div>
 
 <p>Tests that we get a definite size in a wrapping flexbox:</p>
-<div class="flexbox wrap" style="height: 50px;" data-expected-height="50">
+<div class="flexbox wrap" data-expected-height="50">
   <div data-expected-height="50">
     <div style="height: 50%" data-expected-height="25">
       <div class="rect" data-expected-height="50"></div>
@@ -59,7 +59,8 @@ if the align value is stretch (the default)</p>
   </div>
 </div>
 
-<p>Tests that we get an indefinite size when not stretch-aligning:</p>
+<p>Tests that we get an indefinite size when not stretch-aligning, despite
+definite size on container:</p>
 <div class="flexbox wrap" style="height: 50px;" data-expected-height="50">
   <div class="align-self-flex-start" data-expected-height="50">
     <div style="height: 50%" data-expected-height="50">
@@ -101,10 +102,20 @@ one has an explicit height and has an opposite direction:</p>
   </div>
 </div>
 
-<p>Tests that we respect min-height:</p>
+<p>Tests that we respect min-height, on child of a flex item with percent
+height that's treated as definite:</p>
 <div class="flexbox" style="height: 50px;" data-expected-height="50">
   <div data-expected-height="50">
     <div style="height: 50%; min-height: 30px;" data-expected-height="30">
+      <div class="rect" data-expected-height="50"></div>
+    </div>
+  </div>
+</div>
+
+<p>Tests that max-height also supports percentages:</p>
+<div class="flexbox" data-expected-height="50">
+  <div data-expected-height="50">
+    <div style="max-height: 50%" data-expected-height="25">
       <div class="rect" data-expected-height="50"></div>
     </div>
   </div>

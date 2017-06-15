@@ -17,11 +17,11 @@ onmessage = t.step_func(function(event) {
   if (event.data != "hr_time_unload_done") {
     return;
   } else {
-  document.getElementById('time').innerHTML = "<hr/><p>child_origin: " + child_origin + "</p><p>unload time was : " + child_unload_time + "</p><hr/>";
+    document.getElementById('time').innerHTML = "<hr/><p>child_origin: " + child_origin + "</p><p>unload time was : " + child_unload_time + "</p><hr/>";
 
-  assert_less_than(Math.abs(child_unload_time - child_origin), 10, "");
+    assert_approx_equals(child_unload_time, child_origin, 10);
 
-  t.done();
+    t.done();
   }
 });
 </script>

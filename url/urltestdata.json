@@ -6312,7 +6312,7 @@
     "hostname": "example.org",
     "port": "",
     "pathname": "/test",
-    "search": "?%23%23",
+    "search": "?%E2%8C%A3",
     "hash": ""
   },
   {

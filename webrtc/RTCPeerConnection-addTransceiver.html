@@ -29,6 +29,12 @@
    *      sequence<MediaStream>              streams;
    *      sequence<RTCRtpEncodingParameters> sendEncodings;
    *  };
+
+      Note
+        While addTrack checks if the MediaStreamTrack given as an argument is
+        already being sent to avoid sending the same MediaStreamTrack twice,
+        the other ways do not, allowing the same MediaStreamTrack to be sent
+        several times simultaneously.
    */
 
   /*
@@ -205,7 +211,6 @@
 
   }, 'addTransceiver(track) should have result with sender.track be given track');
 
-  // This might be a bug (w3c/webrtc-pc#1386)
   test(t => {
     const pc = new RTCPeerConnection();
     const track = generateMediaStreamTrack('audio');

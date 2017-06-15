@@ -6,6 +6,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({explicit_timeout: true});
+
 var t = async_test('Window time origin is almost equal (<10ms) to the time of the user confirming the navigation if a confirmation dialog is displayed');
 
 var child_unload_time = child_origin = 0;
@@ -18,7 +20,7 @@ onmessage = t.step_func(function(event) {
   document.getElementById('time').innerHTML = "<hr/><p>child_origin: " + child_origin + "</p><p>unload time was : " + child_unload_time + "</p><hr/>";
 
   assert_less_than(Math.abs(child_unload_time - child_origin), 10, "");
-  
+
   t.done();
   }
 });

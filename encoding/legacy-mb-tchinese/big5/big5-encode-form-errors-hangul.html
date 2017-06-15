@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Big5 encoding errors (form, hangul)</title>
 <meta charset="big5"> <!-- test breaks if the server overrides this -->
+<title>Big5 encoding errors (form, hangul)</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="big5_index.js"></script>
 <script src="big5-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
-<link rel="help" href="http://www.w3.org/TR/encoding/#big5">
-<meta name="timeout" content="long">
+<link rel="help" href="https://encoding.spec.whatwg.org/#big5">
 <meta name="assert" content="The browser produces percent-escaped character references for a URL produced by a form when encoding hangul characters that are not in the big5 encoding.">
 <style>
  iframe { display:none }

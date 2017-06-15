@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Big5 encoding ASCII</title>
 <meta charset=big5> <!-- test breaks if the server overrides this -->
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
-<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
-<link rel='help' href='http://www.w3.org/TR/encoding/#big5'>
+<title>Big5 encoding ASCII</title>
 <meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='https://encoding.spec.whatwg.org/#big5'>
 <meta name="assert" content="The browser produces the characters when encoding ASCII in a Big5-encoded document.">
+</head>
+<body>
+<div id=log></div>
 <script>
 // index is Big5 index pointer, value is Unicode codepoint (dec)
 
@@ -44,8 +47,5 @@ for (var a = 0; a < 0x7f; a++) {
   );
 }
 </script>
-</head>
-<body>
-<div id=log></div>
 </body>
 </html>

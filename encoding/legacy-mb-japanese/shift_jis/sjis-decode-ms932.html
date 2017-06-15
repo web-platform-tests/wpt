@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <title>ms932 decoding</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
@@ -19,7 +20,6 @@
 
 <iframe src="sjis_chars-ms932.html" name="scriptWindow" id="scrwin"></iframe>
 
-<p class="instructions">Test passes if the number of failures is the same as for test sjis-decode.html</p>
 <div id="log"></div>
 
 <script>
@@ -34,11 +34,11 @@ function iframeRef( frameRef ) {
 function showNodes () {
 	var iframe = iframeRef( document.getElementById('scrwin') );
 	nodes = iframe.querySelectorAll('span')
-	
+
 	for (var i=0; i<nodes.length; i++) {
-		tests[i] = async_test("U+"+nodes[i].dataset.cp+' '+String.fromCodePoint(parseInt(nodes[i].dataset.cp,16))+' '+sjisDecoder(nodes[i].dataset.bytes)+' '+nodes[i].dataset.bytes) 
-		}	
-		
+		tests[i] = async_test("U+"+nodes[i].dataset.cp+' '+String.fromCodePoint(parseInt(nodes[i].dataset.cp,16))+' '+sjisDecoder(nodes[i].dataset.bytes)+' '+nodes[i].dataset.bytes)
+		}
+
 	for (var i=0; i<nodes.length; i++) {
 		tests[i].step(function() {assert_equals(nodes[i].textContent, sjisDecoder(nodes[i].dataset.bytes)) } )
 		tests[i].done()
@@ -46,7 +46,5 @@ function showNodes () {
 	}
 
 </script>
-<p style="font-size: 70%;">This test takes a while to run. You can raise issues at <a target="_blank" href="https://github.com/w3c/encodingtests/issues">https://github.com/w3c/encodingtests/issues</a></p>
 </body>
 </html>
-

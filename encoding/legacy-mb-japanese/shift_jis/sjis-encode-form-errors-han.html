@@ -3,12 +3,13 @@
 <head>
 <meta charset="shift_jis"> <!-- test breaks if the server overrides this -->
 <title>Shift_jis encoding errors (form, han)</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="jis0208_index.js"></script>
 <script src="sjis-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
-<link rel="help" href="http://www.w3.org/TR/encoding/#shift_jis">
+<link rel="help" href="https://encoding.spec.whatwg.org//#shift_jis">
 <meta name="assert" content="The browser produces percent-escaped character references for a URL produced by a form when encoding han characters that are not in the shift_jis encoding.">
 <style>
  iframe { display:none }
@@ -46,7 +47,7 @@ setup(function() {
 			item.desc = 'cjk '
 			}
 		}
-	 
+
 	for (i=0xF900;i<0xFA6E;i++) { // compatibility
 		result = sjisEncoder(String.fromCodePoint(i))
 		if (!result) {
@@ -68,7 +69,7 @@ setup(function() {
 			item.desc = 'compatibility '
 			}
 		}
-	
+
 	for (i=0x3400;i<0x4DBF;i++) { // cjk extension A
 		result = sjisEncoder(String.fromCodePoint(i))
 		if (!result) {
@@ -110,7 +111,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "shift_jis"
         form.target = frame.id
         var input = document.createElement("input")

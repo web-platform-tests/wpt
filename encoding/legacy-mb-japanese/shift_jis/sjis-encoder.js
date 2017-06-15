@@ -11,7 +11,7 @@
  	}
 
 
-function chars2cps ( chars ) { 
+function chars2cps ( chars ) {
 	// this is needed because of javascript's handling of supplementary characters
 	// char: a string of unicode characters
 	// returns an array of decimal code point values
@@ -44,19 +44,19 @@ function chars2cps ( chars ) {
 	}
 
 
-function sjisEncoder (stream) { 
+function sjisEncoder (stream) {
 	var cps = chars2cps(stream)
 	var out = ''
 	var cp
 	var finished = false
 	var endofstream = 2000000
-	
+
 	while (!finished) {
 		if (cps.length == 0) cp = endofstream
 		else cp = cps.shift()
-		
+
 		if (cp == endofstream) { finished = true; continue }
-		if ((cp >= 0x00 && cp <= 0x7F) || cp == 0x80) {  
+		if ((cp >= 0x00 && cp <= 0x7F) || cp == 0x80) {
 			out +=  ' '+cp.toString(16).toUpperCase()
 			continue
 			}

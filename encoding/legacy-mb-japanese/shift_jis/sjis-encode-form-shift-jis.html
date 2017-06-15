@@ -3,12 +3,13 @@
 <head>
 <meta charset="shift-jis"> <!-- test breaks if the server overrides this -->
 <title>shift-jis encoding (form)</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="jis0208_index.js"></script>
 <script src="sjis-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
-<link rel="help" href="http://www.w3.org/TR/encoding/#shift_jis">
+<link rel="help" href="https://encoding.spec.whatwg.org//#shift_jis">
 <meta name="assert" content="The browser produces the same encoding behavior for a document labeled 'shift-jis' as for a document labeled 'euc-jp'.">
 <style>
  iframe { display:none }
@@ -45,7 +46,7 @@ setup(function() {
 			}
 		}
 
- 
+
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
     var currentTests = []
@@ -74,7 +75,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "shift-jis"
         form.target = frame.id
         var input = document.createElement("input")

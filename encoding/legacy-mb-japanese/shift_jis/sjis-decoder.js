@@ -1,11 +1,11 @@
 function dec2char ( n ) {
 	// converts a decimal number to a Unicode character
 	// n: the dec codepoint value to be converted
-    if (n <= 0xFFFF) { out = String.fromCharCode(n) } 
+    if (n <= 0xFFFF) { out = String.fromCharCode(n) }
 	else if (n <= 0x10FFFF) {
 		n -= 0x10000
 		out = String.fromCharCode(0xD800 | (n >> 10)) + String.fromCharCode(0xDC00 | (n & 0x3FF))
-    	} 
+    	}
 	else out = 'dec2char error: Code point out of range: '+n
 	return out
 	}
@@ -21,10 +21,10 @@ function sjisDecoder (stream) {
 	var sjisLead = 0x00
 	var endofstream = 2000000
 	var finished = false
-	
+
 	while (!finished) {
 		if (bytes.length == 0) byte = endofstream
-		else byte = bytes.shift()	
+		else byte = bytes.shift()
 
 		if (byte == endofstream && sjisLead != 0x00) {
 			sjisLead = 0x00
@@ -35,7 +35,7 @@ function sjisDecoder (stream) {
 			finished = true
 			continue
 			}
-		if (sjisLead != 0x00) {	
+		if (sjisLead != 0x00) {
 			lead = sjisLead
 			ptr = null
 			sjisLead = 0x00
@@ -53,7 +53,7 @@ function sjisDecoder (stream) {
 			if (cp == null && byte >= 0x00 && byte <= 0x7F) {
 				bytes.unshift(byte)
 				}
-			if (cp == null) { 
+			if (cp == null) {
 				out += '�'
 				continue
 				}

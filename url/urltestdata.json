@@ -6304,7 +6304,7 @@
   {
     "input": "http://example.org/test?\u2323",
     "base": "about:blank",
-    "href": "http://example.org/test?%23%23",
+    "href": "http://example.org/test?%E2%8C%A3",
     "protocol": "http:",
     "username": "",
     "password": "",

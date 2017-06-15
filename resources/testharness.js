@@ -1490,7 +1490,7 @@ policies and contribution forms [3].
      */
     Test.prototype.add_cleanup = function(callback) {
         this._user_defined_cleanup_count += 1;
-		this._add_cleanup(callback);
+        this._add_cleanup(callback);
     };
 
     Test.prototype.force_timeout = function() {

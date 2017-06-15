@@ -6262,7 +6262,7 @@
   {
     "input": "http://example.org/test?\u0023",
     "base": "about:blank",
-    "href": "http://example.org/test?%23",
+    "href": "http://example.org/test?#",
     "protocol": "http:",
     "username": "",
     "password": "",
@@ -6270,7 +6270,7 @@
     "hostname": "example.org",
     "port": "",
     "pathname": "/test",
-    "search": "?%23",
+    "search": "",
     "hash": ""
   },
   {

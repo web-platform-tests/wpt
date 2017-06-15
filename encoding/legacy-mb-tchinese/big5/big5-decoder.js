@@ -1,11 +1,11 @@
 function dec2char ( n ) {
 	// converts a decimal number to a Unicode character
 	// n: the dec codepoint value to be converted
-    if (n <= 0xFFFF) { out = String.fromCharCode(n) } 
+    if (n <= 0xFFFF) { out = String.fromCharCode(n) }
 	else if (n <= 0x10FFFF) {
 		n -= 0x10000
 		out = String.fromCharCode(0xD800 | (n >> 10)) + String.fromCharCode(0xDC00 | (n & 0x3FF))
-    	} 
+    	}
 	else out = 'dec2char error: Code point out of range: '+n
 	return out
 	}
@@ -21,10 +21,10 @@ function big5Decoder (stream) {
 	var big5lead = 0x00
 	var endofstream = 2000000
 	var finished = false
-	
+
 	while (!finished) {
 		if (bytes.length == 0) byte = endofstream
-		else byte = bytes.shift()	
+		else byte = bytes.shift()
 
 		if (byte == endofstream && big5lead != 0x00) {
 			big5lead = 0x00
@@ -33,7 +33,7 @@ function big5Decoder (stream) {
 			}
 		if (byte == endofstream && big5lead == 0x00) { finished = true; continue }
 
-		if (big5lead != 0x00) {	
+		if (big5lead != 0x00) {
 			lead = big5lead
 			ptr = null
 			big5lead = 0x00
@@ -49,8 +49,8 @@ function big5Decoder (stream) {
 				}
 			if (ptr == null) cp = null
 			else cp = big5[ptr]
-			if (cp == null && byte >= 0x00 && byte < 0x7F) { bytes.unshift(byte); continue } 			
-			if (cp == null) { 
+			if (cp == null && byte >= 0x00 && byte < 0x7F) { bytes.unshift(byte); continue }
+			if (cp == null) {
 				out += '�'
 				continue
 				}

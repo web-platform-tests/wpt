@@ -9,6 +9,7 @@
 <script src="big5-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#big5">
+<meta name="timeout" content="long">
 <meta name="assert" content="The browser produces percent-escaped character references for a URL produced by a form when encoding miscellaneous characters that are not in the big5 encoding.">
 <style>
  iframe { display:none }
@@ -35,7 +36,7 @@ var currentChunkIndex = 0
 setup(function() {
 	 // set up a simple array of miscellaneous unicode codepoints that are not encoded
 	var codepoints = [ ]
-	 
+
 	for (var i=0x80;i<0x4FF;i++) {
 		result = big5Encoder(String.fromCodePoint(i))
 		if (!result) {
@@ -57,7 +58,7 @@ setup(function() {
 			item.desc = 'punctuation, currency, symbols '
 			}
 		}
-	 
+
 	 for (i=0x2460;i<0x26FF;i++) {
 		result = big5Encoder(String.fromCodePoint(i))
 		if (!result) {
@@ -68,7 +69,7 @@ setup(function() {
 			item.desc = 'enclosed chars and boxes '
 			}
 		}
-	 
+
 	 for (i=0x3000;i<0x33FF;i++) {
 		result = big5Encoder(String.fromCodePoint(i))
 		if (!result) {
@@ -79,7 +80,7 @@ setup(function() {
 			item.desc = 'various asian '
 			}
 		}
-	 
+
 	 for (i=0xFF00;i<0xFFEF;i++) {
 		result = big5Encoder(String.fromCodePoint(i))
 		if (!result) {
@@ -90,7 +91,7 @@ setup(function() {
 			item.desc = 'half/full width '
 			}
 		}
-	 
+
 
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
@@ -121,7 +122,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "big5"
         form.target = frame.id
         var input = document.createElement("input")

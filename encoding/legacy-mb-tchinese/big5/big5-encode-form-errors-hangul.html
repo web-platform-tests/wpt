@@ -9,6 +9,7 @@
 <script src="big5-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#big5">
+<meta name="timeout" content="long">
 <meta name="assert" content="The browser produces percent-escaped character references for a URL produced by a form when encoding hangul characters that are not in the big5 encoding.">
 <style>
  iframe { display:none }
@@ -35,7 +36,7 @@ var currentChunkIndex = 0
 setup(function() {
 	 // set up a simple array of miscellaneous unicode codepoints that are not encoded
 	var codepoints = [ ]
-	 
+
 	for (i=0xAC00;i<0xD7AF;i++) {
 		result = big5Encoder(String.fromCodePoint(i))
 		if (!result) {
@@ -46,7 +47,7 @@ setup(function() {
 			item.desc = 'hangul '
 			}
 		}
-	 
+
 
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
@@ -77,7 +78,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "big5"
         form.target = frame.id
         var input = document.createElement("input")

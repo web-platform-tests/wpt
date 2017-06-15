@@ -10,10 +10,10 @@
 
 <script>
 promise_test(function(t) {
-	t.add_cleanup(function() {});
-	t.add_cleanup(function() {});
-	t.add_cleanup(function() { throw new Error(); });
-	new EventWatcher(t, document.body, []);
+    t.add_cleanup(function() {});
+    t.add_cleanup(function() {});
+    t.add_cleanup(function() { throw new Error(); });
+    new EventWatcher(t, document.body, []);
 
     return Promise.resolve();
 }, 'test with 3 user-defined cleanup functions');

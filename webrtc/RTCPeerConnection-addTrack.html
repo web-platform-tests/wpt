@@ -25,6 +25,12 @@
         RTCRtpTransceiver           addTransceiver((MediaStreamTrack or DOMString) trackOrKind,
                                                    optional RTCRtpTransceiverInit init);
       };
+
+      Note
+        While addTrack checks if the MediaStreamTrack given as an argument is
+        already being sent to avoid sending the same MediaStreamTrack twice,
+        the other ways do not, allowing the same MediaStreamTrack to be sent
+        several times simultaneously.
    */
 
   /*

@@ -19,116 +19,135 @@
 <body>
 <div id="log"></div>
 <script>
-var tests = []
-var cplist = []
-var numTests = null
-var numFrames = 2
-var chunkSize = 400
-var numChunks = null
-var frames = null
-var frames = null
-var forms = null
-var seperator = ","
-var encodedSeperator = encodeURIComponent(",")
-var currentChunkIndex = 0
-
+var tests = [];
+var cplist = [];
+var numTests = null;
+var numFrames = 2;
+var chunkSize = 400;
+var numChunks = null;
+var frames = null;
+var frames = null;
+var forms = null;
+var seperator = ",";
+var encodedSeperator = encodeURIComponent(",");
+var currentChunkIndex = 0;
 
 setup(function() {
-	 // set up a simple array of miscellaneous unicode codepoints that are not encoded
-	var codepoints = [ ]
+    // set up a simple array of miscellaneous unicode codepoints that are not encoded
+    var codepoints = [];
 
-	for (i=0x20000;i<0x2536B;i++) { // cjk extension A
-		result = big5Encoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'extB (pt 1)'
-			}
-		}
+    for (i = 0x20000; i < 0x2536b; i++) {
+        // cjk extension A
+        result = big5Encoder(String.fromCodePoint(i));
+        if (!result) {
+            var item = {};
+            codepoints.push(item);
+            item.cp = i;
+            item.expected = "%26%23" + item.cp + "%3B";
+            item.desc = "extB (pt 1)";
+        }
+    }
 
     // convert the information into a simple array of objects that can be easily traversed
-    var currentChunk = []
-    var currentTests = []
-    cplist = [currentChunk]
-    tests = [currentTests]
-    for (i=0; i< codepoints.length; i++) {
+    var currentChunk = [];
+    var currentTests = [];
+    cplist = [currentChunk];
+    tests = [currentTests];
+    for (i = 0; i < codepoints.length; i++) {
         if (currentChunk.length == chunkSize) {
-            currentChunk = []
-            cplist.push(currentChunk)
-            currentTests = []
-            tests.push(currentTests)
-			}
-		var item = {}
-		currentChunk.push(item)
-		item.cp = codepoints[i].cp
-		item.expected = codepoints[i].expected
-		item.desc = codepoints[i].desc
-		currentTests.push(async_test(item.desc+"U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +item.expected))
-		}
+            currentChunk = [];
+            cplist.push(currentChunk);
+            currentTests = [];
+            tests.push(currentTests);
+        }
+        var item = {};
+        currentChunk.push(item);
+        item.cp = codepoints[i].cp;
+        item.expected = codepoints[i].expected;
+        item.desc = codepoints[i].desc;
+        currentTests.push(
+            async_test(
+                item.desc +
+                    "U+" +
+                    item.cp.toString(16).toUpperCase() +
+                    " " +
+                    String.fromCodePoint(item.cp) +
+                    " " +
+                    item.expected
+            )
+        );
+    }
 
-    numChunks = cplist.length
+    numChunks = cplist.length;
 
-    for (var i=0; i<numFrames; i++) {
-        var frame = document.createElement("iframe")
-        frame.id = frame.name = "frame-" + i
-        document.body.appendChild(frame)
-        var form = document.createElement("form")
-        form.id = 'form-' + i
-        form.method = "GET"
-        form.action = "/common/blank.html"
-        form.acceptCharset = "big5"
-        form.target = frame.id
-        var input = document.createElement("input")
-        input.id = input.name = "input-" + i
-        form.appendChild(input)
-        document.body.appendChild(form)
-		}
+    for (var i = 0; i < numFrames; i++) {
+        var frame = document.createElement("iframe");
+        frame.id = frame.name = "frame-" + i;
+        document.body.appendChild(frame);
+        var form = document.createElement("form");
+        form.id = "form-" + i;
+        form.method = "GET";
+        form.action = "/common/blank.html";
+        form.acceptCharset = "big5";
+        form.target = frame.id;
+        var input = document.createElement("input");
+        input.id = input.name = "input-" + i;
+        form.appendChild(input);
+        document.body.appendChild(form);
+    }
 
-    addEventListener("load", function () {
-        frames = Array.prototype.slice.call(document.getElementsByTagName("iframe"))
-        forms = Array.prototype.slice.call(document.getElementsByTagName("form"))
-        inputs = Array.prototype.slice.call(document.getElementsByTagName("input"))
-        for (var i=0; i<Math.min(numFrames, numChunks); i++) {
-            runNext(i)
-			}
-		})
-
-	})
+    addEventListener("load", function() {
+        frames = Array.prototype.slice.call(
+            document.getElementsByTagName("iframe")
+        );
+        forms = Array.prototype.slice.call(
+            document.getElementsByTagName("form")
+        );
+        inputs = Array.prototype.slice.call(
+            document.getElementsByTagName("input")
+        );
+        for (var i = 0; i < Math.min(numFrames, numChunks); i++) {
+            runNext(i);
+        }
+    });
+});
 
 function runNext(id) {
-    var i = currentChunkIndex
-    currentChunkIndex += 1
+    var i = currentChunkIndex;
+    currentChunkIndex += 1;
 
-    var iframe = frames[id]
-    var form = forms[id]
-    var input = inputs[id]
+    var iframe = frames[id];
+    var form = forms[id];
+    var input = inputs[id];
 
-    input.value = cplist[i].map(function(x) {
-        return String.fromCodePoint(x.cp)
-		}).join(seperator);
-    form.submit()
+    input.value = cplist[i]
+        .map(function(x) {
+            return String.fromCodePoint(x.cp);
+        })
+        .join(seperator);
+    form.submit();
 
-    iframe.onload = function () {
-        var url = iframe.contentWindow.location
-        var query = url.search
-        var result_string = query.substr(query.indexOf('=') + 1)
-        var results = result_string.split(encodedSeperator)
+    iframe.onload = function() {
+        var url = iframe.contentWindow.location;
+        var query = url.search;
+        var result_string = query.substr(query.indexOf("=") + 1);
+        var results = result_string.split(encodedSeperator);
 
-        for (var j=0; j<cplist[i].length; j++) {
-            var t = tests[i][j]
+        for (var j = 0; j < cplist[i].length; j++) {
+            var t = tests[i][j];
             t.step(function() {
-                assert_equals(normalizeStr(results[j]), normalizeStr(cplist[i][j].expected))
-				})
-            t.done()
-            }
+                assert_equals(
+                    normalizeStr(results[j]),
+                    normalizeStr(cplist[i][j].expected)
+                );
+            });
+            t.done();
+        }
         if (currentChunkIndex < numChunks) {
-            runNext(id)
-			}
-		}
-	}
-
+            runNext(id);
+        }
+    };
+}
 </script>
 </body>
 </html>

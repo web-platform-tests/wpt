@@ -5,7 +5,7 @@
 			}
  	}
 
-function chars2cps ( chars ) { 
+function chars2cps ( chars ) {
 	// this is needed because of javascript's handling of supplementary characters
 	// char: a string of unicode characters
 	// returns an array of decimal code point values
@@ -48,7 +48,7 @@ function euckrEncoder (stream) {
 	while (!finished) {
 		if (cps.length == 0) cp = endofstream
 		else cp = cps.shift()
-		
+
 		if (cp == endofstream) { finished = true; continue }
 		if (cp >= 0x00 && cp <= 0x7F) {  // ASCII
 			out +=  ' '+cp.toString(16).toUpperCase()

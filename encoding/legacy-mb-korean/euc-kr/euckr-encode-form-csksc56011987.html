@@ -3,6 +3,7 @@
 <head>
 <meta charset="csksc56011987"> <!-- test breaks if the server overrides this -->
 <title>csksc56011987 encoding (form)</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="euckr_index.js"></script>
@@ -16,7 +17,6 @@
 </style>
 </head>
 <body>
-<p class="instructions">Test passes if the number of failures is the same as for test euckr-encode-form.html</p>
 <div id="log"></div>
 <script>
 var tests = []
@@ -74,7 +74,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "csksc56011987"
         form.target = frame.id
         var input = document.createElement("input")

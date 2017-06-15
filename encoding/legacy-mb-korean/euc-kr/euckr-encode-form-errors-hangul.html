@@ -3,11 +3,12 @@
 <head>
 <title>EUC-KR encoding errors (form, hangul)</title>
 <meta charset="euc-kr"> <!-- test breaks if the server overrides this -->
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="euckr_index.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
-<link rel="help" href="http://www.w3.org/TR/encoding/#euc-kr">
+<link rel="help" href="https://encoding.spec.whatwg.org/#euc-kr">
 <meta name="assert" content="The browser produces percent-escaped character references when encoding bytes for a URL produced by a form when encoding hangul characters that are not in the euc-kr encoding.">
 <style>
  iframe { display:none }
@@ -38,7 +39,7 @@ function getByteSequence (cp) {
 	// cp: integer, a code point number
 	var cps = [cp]
 	var out = ''
-	
+
 	while (cps.length > 0) {
 		cp = cps.shift()
 		if (cp >= 0x00 && cp <= 0x7F) {  // ASCII
@@ -70,7 +71,7 @@ function getByteSequence (cp) {
 setup(function() {
 	 // set up a simple array of all unicode codepoints that are not encoded
 	var codepoints = [ ]
-	 
+
 	for (i=0xAC00;i<0xD7AF;i++) {
 		result = getByteSequence(i)
 		if (!result) {
@@ -81,8 +82,8 @@ setup(function() {
 			item.desc = 'hangul '
 			}
 		}
-		 
- 
+
+
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
     var currentTests = []
@@ -112,7 +113,7 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "euc-kr"
         form.target = frame.id
         var input = document.createElement("input")

@@ -924,14 +924,17 @@ IdlInterface.prototype.is_global = function()
 };
 //@}
 
-IdlInterface.prototype.has_to_json_regular_operation = function()
-//@{
-{
-    return this.members.some(m => {
-        return m.type == "operation" && !m.static && m.name == "toJSON";
+IdlInterface.prototype.has_to_json_regular_operation = function() {
+    return this.members.some(function(m) {
+        return m.is_to_json_regular_operation();
     });
 };
-//@}
+
+IdlInterface.prototype.has_default_to_json_regular_operation = function() {
+    return this.members.some(function(m) {
+        return m.is_to_json_regular_operation() && m.has_extended_attribute("Default");
+    });
+};
 
 IdlInterface.prototype.test = function()
 //@{
@@ -2251,6 +2254,10 @@ function IdlInterfaceMember(obj)
 
 //@}
 IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
+
+IdlInterfaceMember.prototype.is_to_json_regular_operation = function() {
+    return this.type == "operation" && !this.static && this.name == "toJSON";
+};
 
 /// Internal helper functions ///
 function create_suitable_object(type)

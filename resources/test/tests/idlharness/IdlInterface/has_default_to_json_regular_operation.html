@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>IdlInterface.prototype.has_default_to_json_regular_operation()</title>
+</head>
+<body>
+<div id="log"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { };');
+        var A = idl.members["A"];
+        assert_false(A.has_default_to_json_regular_operation());
+    }, 'should return false when the interface declares no toJSON operation.');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { static object toJSON(); };');
+        var A = idl.members["A"];
+        assert_false(A.has_default_to_json_regular_operation());
+    }, 'should return false when the interface declares a static toJSON operation.');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { object toJSON(); };');
+        var A = idl.members["A"];
+        assert_false(A.has_default_to_json_regular_operation());
+    }, 'should return false when the interface declares a regular toJSON operation with no extended attribute.');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { [x] object toJSON(); };');
+        var A = idl.members["A"];
+        assert_false(A.has_default_to_json_regular_operation());
+    }, 'should return false when the interface declares a regular toJSON operation with another extented attribute.');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { [Default] object toJSON(); };');
+        var A = idl.members["A"];
+        assert_true(A.has_default_to_json_regular_operation());
+    }, 'should return true when the interface declares a regular toJSON operation with the [Default] extented attribute.');
+
+    test(function() {
+        var idl = new IdlArray();
+        idl.add_idls('interface A { [Attr, AnotherAttr, Default] object toJSON(); };');
+        var A = idl.members["A"];
+        assert_true(A.has_default_to_json_regular_operation());
+    }, 'should return true when the interface declares a regular toJSON operation with multiple extended attributes, including [Default].');
+</script>
+</body>
+</html>
+

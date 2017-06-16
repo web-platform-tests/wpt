@@ -323,42 +323,6 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
 };
 
 //@}
-IdlArray.prototype.get_inheritance_stack = function(idl_interface)
-//@{
-{
-    /**
-     * See https://heycam.github.io/webidl/#create-an-inheritance-stack
-     *
-     * Returns an array of IdlInterface objects which contains idl_interface
-     * and all of its inherited interfaces.
-     *
-     * So given:
-     *
-     *   A : B {};
-     *   B : C {};
-     *   C {};
-     *
-     * then get_inheritance_stack(A) should return [A, B, C],
-     * and get_inheritance_stack(B) should return [B, C].
-     *
-     * Note: as dictionary inheritance is expressed identically by the AST,
-     * this works just as well for getting a stack of inherited dictionaries. 
-     */
-
-    var stack = [];
-    stack.push(idl_interface);
-    while (idl_interface.base) {
-        var base = this.members[idl_interface.base];
-        if (!base) {
-            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
-        }
-        idl_interface = base;
-        stack.push(idl_interface);
-    }
-    return stack;
-};
-
-//@}
 IdlArray.prototype.is_JSON_type = function(type)
 //@{
 {
@@ -431,7 +395,7 @@ IdlArray.prototype.is_JSON_type = function(type)
 
            //  dictionaries where all of their members are JSON types
            if (thing instanceof IdlDictionary) {
-               var stack = this.get_inheritance_stack(thing);
+               var stack = thing.get_inheritance_stack();
                var map = new Map();
                while (stack.length)
                {
@@ -843,6 +807,9 @@ function IdlDictionary(obj)
     /** Self-explanatory. */
     this.name = obj.name;
 
+    /** A back-reference to our IdlArray. */
+    this.array = obj.array;
+
     /** An array of objects produced by the "dictionaryMember" production. */
     this.members = obj.members;
 
@@ -855,6 +822,10 @@ function IdlDictionary(obj)
 
 //@}
 IdlDictionary.prototype = Object.create(IdlObject.prototype);
+
+IdlDictionary.prototype.get_inheritance_stack = function() {
+    return IdlInterface.prototype.get_inheritance_stack.call(this);
+};
 
 /// IdlInterface ///
 function IdlInterface(obj, is_callback)
@@ -934,6 +905,39 @@ IdlInterface.prototype.has_default_to_json_regular_operation = function() {
     return this.members.some(function(m) {
         return m.is_to_json_regular_operation() && m.has_extended_attribute("Default");
     });
+};
+
+IdlInterface.prototype.get_inheritance_stack = function() {
+    /**
+     * See https://heycam.github.io/webidl/#create-an-inheritance-stack
+     *
+     * Returns an array of IdlInterface objects which contains itself
+     * and all of its inherited interfaces.
+     *
+     * So given:
+     *
+     *   A : B {};
+     *   B : C {};
+     *   C {};
+     *
+     * then A.get_inheritance_stack() should return [A, B, C],
+     * and B.get_inheritance_stack() should return [B, C].
+     *
+     * Note: as dictionary inheritance is expressed identically by the AST,
+     * this works just as well for getting a stack of inherited dictionaries. 
+     */
+
+    var stack = [this];
+    var idl_interface = this;
+    while (idl_interface.base) {
+        var base = this.array.members[idl_interface.base];
+        if (!base) {
+            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
+        }
+        idl_interface = base;
+        stack.push(idl_interface);
+    }
+    return stack;
 };
 
 IdlInterface.prototype.test = function()

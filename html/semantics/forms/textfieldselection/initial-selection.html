@@ -88,11 +88,12 @@ test(() => {
 test(() => {
   const el = document.createElement("input");
   el.type = "number";
-  el.defaultValue = "5";
+  el.defaultValue = "50";
   document.body.appendChild(el);
+  el.focus();
 
   el.type = "text";
-  assert_equals(el.selectionStart, 0, "selectionStart does not apply");
-  assert_equals(el.selectionEnd, 0, "selectionEnd does not apply");
+  assert_equals(el.selectionStart, 0, "selectionStart gets reset");
+  assert_equals(el.selectionEnd, 0, "selectionEnd gets reset");
 }, "Input switching from unselectable type to selectable type");
 </script>

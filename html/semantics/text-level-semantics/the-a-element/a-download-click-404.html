@@ -10,7 +10,7 @@
 "use strict";
 async_test(t => {
     const errorFrame = document.createElement("iframe");
-    
+
     errorFrame.addEventListener("load", function () {
         errorFrame.contentWindow.addEventListener(
             "beforeunload", t.unreached_func("Navigated instead of downloading"));

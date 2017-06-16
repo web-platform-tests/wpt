@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>IdlDictionary.prototype.get_inheritance_stack()</title>
+<title>IdlInterface.prototype.get_inheritance_stack()</title>
 </head>
 <body>
 <div id="log"></div>
@@ -12,22 +12,22 @@
 <script src="../helper.js"></script>
 <script>
     test(function() {
-        var stack = dictionaryFrom('dictionary A { };').get_inheritance_stack();
+        var stack = interfaceFrom('interface A { };').get_inheritance_stack();
         assert_array_equals(stack.map(i => i.name), ["A"]);
     }, 'should return an array that includes itself.');
     
     test(function() {
-        var i = dictionaryFrom('dictionary A : B { };');
+        var i = interfaceFrom('interface A : B { };');
         assert_throws(new Error(), _ => i.get_inheritance_stack());
-    }, "should throw for dictionaries which inherit from another dictionary which wasn't added to the IdlArray");
+    }, "should throw for interfaces which inherit from another interface which wasn't added to the IdlArray");
     
     test(function() {
         var idl = new IdlArray();
-        idl.add_idls('dictionary A : B { };');
-        idl.add_untested_idls('dictionary B : C { }; dictionary C { };');
+        idl.add_idls('interface A : B { };');
+        idl.add_untested_idls('interface B : C { }; interface C { };');
         var A = idl.members["A"];
         assert_array_equals(A.get_inheritance_stack().map(i => i.name), ["A", "B", "C"]);
-    }, 'should return an array of inherited dictionaries in order of inheritance, starting with itself.');
+    }, 'should return an array of inherited interfaces in order of inheritance, starting with itself.');
 </script>
 </body>
 </html>

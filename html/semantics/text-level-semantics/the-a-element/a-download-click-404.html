@@ -5,6 +5,7 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<body>
 <script>
 "use strict";
 async_test(t => {
@@ -21,3 +22,4 @@ async_test(t => {
     document.body.appendChild(errorFrame);
 }, "Do not navigate to 404 for anchor with download");
 </script>
+</body>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Initial cursor position in text entry controls</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#textFieldSelection">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="container">
+  <input type="text" value="value" autofocus>
+  <input type="text" value="value">
+  <input type="search" value="value">
+  <input type="tel" value="value">
+  <input type="password" value="value">
+  <textarea>hello</textarea>
+</div>
+
+<script>
+"use strict";
+test(() => {
+  for (const el of Array.from(document.querySelector("#container").children)) {
+    const label = el.localName +
+      (el.type ? " " + el.type : "") +
+      (el.autofocus ? " autofocus" : "");
+    assert_equals(el.selectionStart, 0, "selectionStart " + label);
+    assert_equals(el.selectionEnd, 0, "selectionEnd " + label);
+  }
+}, "Created by the parser");
+
+test(() => {
+  const el = document.createElement("textarea");
+  assert_equals(el.selectionStart, 0, "selectionStart");
+  assert_equals(el.selectionStart, 0, "selectionEnd");
+}, "Created by script, out of document: textarea");
+
+test(() => {
+  const el = document.createElement("input");
+  for (const type of ["text", "search", "tel", "password"]) {
+    el.type = type;
+    assert_equals(el.selectionStart, 0, "selectionStart " + type);
+    assert_equals(el.selectionStart, 0, "selectionEnd " + type);
+  }
+}, "Created by script, out of document: input");
+
+test(() => {
+  const el = document.createElement("textarea");
+  document.body.appendChild(el);
+  assert_equals(el.selectionStart, 0, "selectionStart before");
+  assert_equals(el.selectionStart, 0, "selectionEnd before");
+  el.defaultValue = "value";
+}, "Created by script, in document: textarea");
+
+test(() => {
+  const el = document.createElement("input");
+  for (const type of ["text", "search", "tel", "password"]) {
+    el.type = type;
+    document.body.appendChild(el);
+    assert_equals(el.selectionStart, 0, "selectionStart before " + type);
+    assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
+    el.defaultValue = "value";
+  }
+}, "Created by script, in document: input");
+
+// The "trigger setter first" tests are related to WebKit inconsistencies; see
+// https://github.com/whatwg/html/issues/2424. (However, they pass in WebKit, as we don't test
+// the selectionStart/End values *after* setting defaultValue in these tests.)
+test(() => {
+  const el = document.createElement("textarea");
+  document.body.appendChild(el);
+  el.selectionStart = el.selectionStart;
+  assert_equals(el.selectionStart, 0, "selectionStart before");
+  assert_equals(el.selectionStart, 0, "selectionEnd before");
+  el.defaultValue = "value";
+}, "Created by script, in document, trigger setter first: textarea");
+
+test(() => {
+  const el = document.createElement("input");
+  for (const type of ["text", "search", "tel", "password"]) {
+    el.type = type;
+    document.body.appendChild(el);
+    el.selectionStart = el.selectionStart;
+    assert_equals(el.selectionStart, 0, "selectionStart before " + type);
+    assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
+    el.defaultValue = "value";
+  }
+}, "Created by script, in document, trigger setter first: input");
+</script>

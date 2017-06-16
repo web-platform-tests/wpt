@@ -348,3 +348,27 @@ function assert_equals_array_buffer(buffer1, buffer2) {
       `Expect byte at buffer position ${i} to be equal`);
   }
 }
+
+// Generate a MediaStreamTrack for testing use.
+// We generate it by creating an anonymous RTCPeerConnection,
+// call addTransceiver(), and use the remote track
+// from RTCRtpReceiver. This track is supposed to
+// receive media from a remote peer and be played locally.
+// We use this approach instead of getUserMedia()
+// to bypass the permission dialog and fake media devices,
+// as well as being able to generate many unique tracks.
+function generateMediaStreamTrack(kind) {
+  const pc = new RTCPeerConnection();
+
+  assert_own_property(pc, 'addTransceiver',
+    'Expect pc to have addTransceiver() method');
+
+  const transceiver = pc.addTransceiver(kind);
+  const { receiver } = transceiver;
+  const { track } = receiver;
+
+  assert_true(track instanceof MediaStreamTrack,
+    'Expect receiver track to be instance of MediaStreamTrack');
+
+  return track;
+}

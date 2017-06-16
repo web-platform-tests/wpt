@@ -9,7 +9,7 @@
   function postMessageToFrame(frame, message) {
     return new Promise(resolve => {
       var c = new MessageChannel();
-      c.port1.onmessage = e => { 
+      c.port1.onmessage = e => {
         resolve({ data: e.data, frame: frame })
       };
       frame.contentWindow.postMessage(message, '*', [c.port2]);

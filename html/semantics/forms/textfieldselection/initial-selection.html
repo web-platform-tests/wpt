@@ -29,7 +29,6 @@ test(() => {
 
 test(() => {
   const el = document.createElement("textarea");
-  el.defaultValue = "value";
   assert_equals(el.selectionStart, 0, "selectionStart");
   assert_equals(el.selectionStart, 0, "selectionEnd");
 }, "Created by script, out of document: textarea");
@@ -38,7 +37,6 @@ test(() => {
   const el = document.createElement("input");
   for (const type of ["text", "search", "tel", "password"]) {
     el.type = type;
-    el.defaultValue = "value";
     assert_equals(el.selectionStart, 0, "selectionStart " + type);
     assert_equals(el.selectionStart, 0, "selectionEnd " + type);
   }
@@ -50,8 +48,6 @@ test(() => {
   assert_equals(el.selectionStart, 0, "selectionStart before");
   assert_equals(el.selectionStart, 0, "selectionEnd before");
   el.defaultValue = "value";
-  assert_equals(el.selectionStart, 0, "selectionStart after");
-  assert_equals(el.selectionStart, 0, "selectionEnd after");
 }, "Created by script, in document: textarea");
 
 test(() => {
@@ -62,12 +58,12 @@ test(() => {
     assert_equals(el.selectionStart, 0, "selectionStart before " + type);
     assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
     el.defaultValue = "value";
-    assert_equals(el.selectionStart, 0, "selectionStart after " + type);
-    assert_equals(el.selectionStart, 0, "selectionEnd after " + type);
   }
 }, "Created by script, in document: input");
 
-
+// The "trigger setter first" tests are related to WebKit inconsistencies; see
+// https://github.com/whatwg/html/issues/2424. (However, they pass in WebKit, as we don't test
+// the selectionStart/End values *after* setting defaultValue in these tests.)
 test(() => {
   const el = document.createElement("textarea");
   document.body.appendChild(el);
@@ -75,8 +71,6 @@ test(() => {
   assert_equals(el.selectionStart, 0, "selectionStart before");
   assert_equals(el.selectionStart, 0, "selectionEnd before");
   el.defaultValue = "value";
-  assert_equals(el.selectionStart, 0, "selectionStart after");
-  assert_equals(el.selectionStart, 0, "selectionEnd after");
 }, "Created by script, in document, trigger setter first: textarea");
 
 test(() => {
@@ -88,8 +82,17 @@ test(() => {
     assert_equals(el.selectionStart, 0, "selectionStart before " + type);
     assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
     el.defaultValue = "value";
-    assert_equals(el.selectionStart, 0, "selectionStart after " + type);
-    assert_equals(el.selectionStart, 0, "selectionEnd after " + type);
   }
 }, "Created by script, in document, trigger setter first: input");
+
+test(() => {
+  const el = document.createElement("input");
+  el.type = "number";
+  el.defaultValue = "5";
+  document.body.appendChild(el);
+
+  el.type = "text";
+  assert_equals(el.selectionStart, 0, "selectionStart does not apply");
+  assert_equals(el.selectionEnd, 0, "selectionEnd does not apply");
+}, "Input switching from unselectable type to selectable type");
 </script>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Initial cursor position in text entry controls</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="container">
+  <input type="text" value="value" autofocus>
+  <input type="text" value="value">
+  <input type="search" value="value">
+  <input type="tel" value="value">
+  <input type="password" value="value">
+  <textarea>hello</textarea>
+</div>
+
+<script>
+"use strict";
+test(() => {
+  for (const el of Array.from(document.querySelector("#container").children)) {
+    const label = el.localName +
+      (el.type ? " " + el.type : "") +
+      (el.autofocus ? " autofocus" : "");
+    assert_equals(el.selectionStart, 0, label);
+    assert_equals(el.selectionEnd, 0, label);
+  }
+});
+</script>

@@ -47,6 +47,10 @@
         // script-src 127.0.0.1:8000
         "csp": "script-src%20127.0.0.1%3A8000",
         "expected": null },
+      { "name": "Wrong value of `csp` should not trigger sending Sec-Required-CSP Header - report-uri present",
+        "csp": "script-src 'unsafe-inline'; report-uri resources/dummy-report.php",
+        "expected": null },
+      // TODO(andypaicu): when `report-to` is implemented, add tests here.
     ];
 
     tests.forEach(test => {

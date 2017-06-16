@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <title>idlharness: Primary interface</title>
-  <script src="../../testharness.js"></script>
-  <script src="../../testharnessreport.js"></script>
-  <script src="../../WebIDLParser.js"></script>
-  <script src="../../idlharness.js"></script>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/WebIDLParser.js"></script>
+  <script src="/resources/idlharness.js"></script>
 </head>
 <body>
-<p>Regression test for prior bug where tests were skipped for "tested"
-interface objects and instead executed for "untested" interface objects.</p>
+<p>Verify the series of sub-tests that are executed for "tested" interface
+objects but skipped for "untested" interface objects.</p>
 <script>
-"use strictt";
+"use strict";
 
 function FooParent() {}
 Object.defineProperty(window, "Foo", {

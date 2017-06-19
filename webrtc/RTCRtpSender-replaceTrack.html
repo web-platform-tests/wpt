@@ -75,10 +75,10 @@
     const { sender } = transceiver;
     transceiver.stop();
 
-    return promise_rejects(t, new TypeError(),
+    return promise_rejects(t, 'InvalidStateError',
       sender.replaceTrack(track));
 
-  }, 'Calling replaceTrack on stopped sender should reject with TypeError');
+  }, 'Calling replaceTrack on stopped sender should reject with InvalidStateError');
 
   /*
     5.2.  replaceTrack

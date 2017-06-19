@@ -16,7 +16,7 @@
   function createFrame(origin) {
     return new Promise(resolve => {
       var i = document.createElement('iframe');
-      i.src = origin + "/html/browsers/origin/relaxing-the-same-origin-restriction/support/document_domain_iframe.html";
+      i.src = origin + "/html/browsers/origin/relaxing-the-same-origin-restriction/support/document_domain_frame.html";
       window.addEventListener('message', m => {
         if (m.source == i.contentWindow)
           resolve(i);
@@ -24,6 +24,24 @@
       document.body.appendChild(i);
     });
   }
+
+	promise_test(t => {
+    var f1, f2;
+		return createFrame("http://{{domains[www]}}:{{ports[http][0]}}")
+			.then(f => {
+        f1 = f;
+		    return createFrame("http://{{domains[www]}}:{{ports[http][0]}}");
+			})
+			.then(f => {
+        f2 = f;
+				return postMessageToFrame(f, { poke: 1 });
+			})
+			.then(response => {
+				assert_equals(response.data, "navigated");
+        f1.remove();
+        f2.remove();
+			});
+	}, "One frame can navigate a same origin sibling.");
 
 	promise_test(t => {
 		var f1, f2;
@@ -40,7 +58,29 @@
 				return postMessageToFrame(f1, { poke: 1 });
 			})
 			.then(response => {
-				assert_equals(response.data, "navigated");
+				assert_equals(response.data, "SecurityError");
+        f1.remove();
+        f2.remove();
 			});
-	}, "One frame can navigate the other.");
+	}, "One frame cannot navigate a same origin but not same origin-domain sibling.");
+
+	promise_test(t => {
+		var f1, f2;
+		return createFrame("http://{{domains[www]}}:{{ports[http][0]}}")
+			.then(f => {
+				f1 = f;
+		    return createFrame("http://{{domains[www]}}:{{ports[http][0]}}");
+			})
+			.then(f => {
+				f2 = f;
+				return postMessageToFrame(f1, { domain: '{{domains[]}}' });
+			})
+      .then(_ => postMessageToFrame(f1, { domain: '{{domains[]}}' }))
+      .then(_ => postMessageToFrame(f1, { poke: 1 }))
+			.then(response => {
+				assert_equals(response.data, "SecurityError");
+        f1.remove();
+        f2.remove();
+			});
+	}, "One frame can navigate a same origin-domain sibling.");
 </script>

@@ -29,7 +29,7 @@
                 } catch(error) {
                   e.ports[0].postMessage(error.name);
                 }
-              } else if (e.data == 'poke-at-parent') {
+              } else if (e.data.poke == 'parent') {
                 try {
                   var sekrit = window.parent.document.body.querySelector('#sekrit').value;
                   e.ports[0].postMessage(sekrit);
@@ -50,7 +50,7 @@
 
   promise_test(t => {
     return createFrame()
-      .then(f => postMessageToFrame(f, 'poke-at-parent'))
+      .then(f => postMessageToFrame(f, { 'poke': 'parent' }))
       .then(result => {
         assert_equals(result.data, document.querySelector('#sekrit').value);
         result.frame.remove();
@@ -62,7 +62,7 @@
       .then(f => postMessageToFrame(f, { domain: window.location.hostname }))
       .then(result => {
         assert_equals(result.data, 'Done');
-        return postMessageToFrame(result.frame, 'poke-at-parent')
+        return postMessageToFrame(result.frame, { 'poke': 'parent' })
           .then(result => {
         assert_equals(result.data, document.querySelector('#sekrit').value);
             result.frame.remove();
@@ -74,7 +74,7 @@
     return createFrame()
       .then(f => {
         document.domain = window.location.hostname;
-        return postMessageToFrame(f, 'poke-at-parent');
+        return postMessageToFrame(f, { 'poke': 'parent' });
       })
       .then(result => {
         assert_equals(result.data, document.querySelector('#sekrit').value);

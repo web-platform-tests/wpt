@@ -30,7 +30,7 @@
 
   promise_test(t => {
     return createFrame()
-      .then(f => postMessageToFrame(f, 'poke-at-parent'))
+      .then(f => postMessageToFrame(f, { 'poke': 'parent' }))
       .then(result => {
         assert_equals(result.data, document.querySelector('#sekrit').value);
         result.frame.remove();
@@ -42,7 +42,7 @@
       .then(f => postMessageToFrame(f, { domain: null }))
       .then(result => {
         assert_equals(result.data, 'Done');
-        return postMessageToFrame(result.frame, 'poke-at-parent')
+        return postMessageToFrame(result.frame, { 'poke': 'parent' })
           .then(result => {
             assert_equals(result.data, 'SecurityError');
             result.frame.remove();
@@ -55,7 +55,7 @@
       .then(f => {
         document.domain = null;
         assert_equals(document.domain, "null");
-        return postMessageToFrame(f, 'poke-at-parent');
+        return postMessageToFrame(f, { 'poke': 'parent' });
       })
       .then(result => {
         assert_equals(result.data, 'SecurityError');
@@ -72,7 +72,7 @@
       })
       .then(result => {
         assert_equals(result.data, 'Done');
-        return postMessageToFrame(result.frame, 'poke-at-parent')
+        return postMessageToFrame(result.frame, { 'poke': 'parent' })
           .then(result => {
             assert_equals(result.data, 'SecurityError');
             result.frame.remove();

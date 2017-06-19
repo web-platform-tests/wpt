@@ -26,7 +26,7 @@ test(t => {
   var expected_y = shadowDiv.offsetTop;
   assert_not_equals(window.scrollX, expected_x);
   assert_not_equals(window.scrollY, expected_y);
-  shadowDiv.scrollIntoView({block: "start", inlinePosition: "start"});
+  shadowDiv.scrollIntoView({block: "start", inline: "start"});
   assert_approx_equals(window.scrollX, expected_x, 1);
   assert_approx_equals(window.scrollY, expected_y, 1);
 }, "scrollIntoView should behave correctly if applies to shadow dom elements");

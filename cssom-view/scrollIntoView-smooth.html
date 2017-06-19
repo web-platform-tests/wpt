@@ -47,7 +47,7 @@ promise_test(t => {
   var expected_y = content.offsetTop + content_height - window_height;
   assert_not_equals(window.scrollX, expected_x);
   assert_not_equals(window.scrollY, expected_y);
-  content.scrollIntoView({behavior: "smooth", block: "nearest", inlinePosition:
+  content.scrollIntoView({behavior: "smooth", block: "nearest", inline:
 "nearest"});
   return waitForScrollEnd().then(() => {
     assert_approx_equals(window.scrollX, expected_x, 1);
@@ -61,7 +61,7 @@ promise_test(t => {
   var expected_y = content.offsetTop;
   assert_not_equals(window.scrollX, expected_x);
   assert_not_equals(window.scrollY, expected_y);
-  content.scrollIntoView({behavior: "smooth", block: "start", inlinePosition:
+  content.scrollIntoView({behavior: "smooth", block: "start", inline:
 "start"});
   return waitForScrollEnd().then(() => {
     assert_approx_equals(window.scrollX, expected_x, 1);
@@ -75,7 +75,7 @@ promise_test(t => {
   var expected_y = content.offsetTop + (content_height - window_height) / 2;
   assert_not_equals(window.scrollX, expected_x);
   assert_not_equals(window.scrollY, expected_y);
-  content.scrollIntoView({behavior: "smooth", block: "center", inlinePosition:
+  content.scrollIntoView({behavior: "smooth", block: "center", inline:
 "center"});
   return waitForScrollEnd().then(() => {
     assert_approx_equals(window.scrollX, expected_x, 1);
@@ -89,7 +89,7 @@ promise_test(t => {
   var expected_y = content.offsetTop + content_height - window_height;
   assert_not_equals(window.scrollX, expected_x);
   assert_not_equals(window.scrollY, expected_y);
-  content.scrollIntoView({behavior: "smooth", block: "end", inlinePosition:
+  content.scrollIntoView({behavior: "smooth", block: "end", inline:
 "end"});
   return waitForScrollEnd().then(() => {
     assert_approx_equals(window.scrollX, expected_x, 1);

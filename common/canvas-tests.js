@@ -35,10 +35,7 @@ function _getPixel(canvas, x,y)
 function _assertPixel(canvas, x,y, r,g,b,a, pos, colour)
 {
     var c = _getPixel(canvas, x,y);
-    assert_equals(c[0], r, 'Red channel of the pixel at (' + x + ', ' + y + ')');
-    assert_equals(c[1], g, 'Green channel of the pixel at (' + x + ', ' + y + ')');
-    assert_equals(c[2], b, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
-    assert_equals(c[3], a, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');
+    _assertPixelImageDataArray(c, x,y, r,g,b,a, pos, colour);
 }
 
 function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
@@ -48,6 +45,14 @@ function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
     assert_approx_equals(c[1], g, tolerance, 'Green channel of the pixel at (' + x + ', ' + y + ')');
     assert_approx_equals(c[2], b, tolerance, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
     assert_approx_equals(c[3], a, tolerance, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');
+}
+
+function _assertPixelImageDataArray(image_data_arr, x,y, r,g,b,a, pos, colour)
+{
+    assert_equals(image_data_arr[0], r, 'Red channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(image_data_arr[1], g, 'Green channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(image_data_arr[2], b, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(image_data_arr[3], a, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');
 }
 
 function _addTest(testFn)

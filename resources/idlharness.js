@@ -1764,7 +1764,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
 {
     // Only the object itself, not its members, are tested here, so if the
     // interface is untested, there is nothing to do.
-    if (!this.untested)
+    if (this.untested)
     {
         return;
     }

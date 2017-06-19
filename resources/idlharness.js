@@ -413,10 +413,13 @@ IdlArray.prototype.is_JSON_type = function(type)
                    if (thing.has_to_json_regular_operation()) { return true; }
                    var mixins = this.implements[thing.name];
                    if (mixins) {
-                       mixins = mixins.map(m => this.members[m]);
-                       if (mixins.some(m => !m)) {
-                           throw new Error("Interface " + m + " not found (implemented by " + thing.name + ")");
-                       }
+                       mixins = mixins.map(id => {
+                           var mixin = this.members[id];
+                           if (!mixin) {
+                               throw new Error("Interface " + id + " not found (implemented by " + thing.name + ")");
+                           }
+                           return mixin;
+                       });
                        if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
                    }
                    // TODO handle consequential interfaces

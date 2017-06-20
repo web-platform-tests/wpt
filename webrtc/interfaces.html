@@ -11,6 +11,7 @@
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //   generateAnswer()
+  //   generateMediaStreamTrack()
 
   // Put the global IDL test objects under a parent object.
   // This allows easier search for the test cases when
@@ -32,6 +33,7 @@
   const asyncInitTasks = [
     asyncInitCertificate,
     asyncInitTransports,
+    asyncInitMediaStreamTrack,
   ];
 
   // Asynchronously generate an RTCCertificate
@@ -75,6 +77,18 @@
     });
   }
 
+  // Asynchoronously generate MediaStreamTrack from getUserMedia
+  function asyncInitMediaStreamTrack() {
+    return navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(mediaStream => {
+      const tracks = mediaStream.getTracks();
+      assert_greater_than(tracks.length, 0,
+        'Expect media stream to have at least one track');
+
+      idlTestObjects.mediaStreamTrack = tracks[0];
+    });
+  }
+
   // Run all async test drivers, report and swallow any error
   // thrown/rejected. Proper test for correct initialization
   // of the objects are done in their respective test files.
@@ -98,7 +112,7 @@
     const idlArray = new IdlArray();
 
     idlArray.add_untested_idls('interface EventHandler {};');
-    idlArray.add_untested_idls('interface MediaStreamTrack {};');
+    idlArray.add_idls('interface MediaStreamTrack : EventTarget {};');
     idlArray.add_idls(idlText);
 
     idlArray.add_objects({
@@ -137,6 +151,11 @@
       'RTCDtlsTransport': ['idlTestObjects.dtlsTransport'],
 
       'RTCIceTransport': ['idlTestObjects.iceTransport'],
+
+      // Test on both MediaStreamTrack from getUserMedia and transceiver
+      'MediaStreamTrack': [
+        `idlTestObjects.mediaStreamTrack`,
+        `generateMediaStreamTrack('audio')`]
     });
 
     idlArray.test();

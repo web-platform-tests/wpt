@@ -2,24 +2,25 @@
 <html>
  <head>
   <title>CSSOM View - GetClientRects().length is the same regardless source new lines</title>
-  <link rel="help" href="http://www.w3.org/TR/cssom-view/#dom-element-getclientrects">
-  <script src="/resources/testharness.js" type="text/javascript"></script>
-  <script src="/resources/testharnessreport.js" type="text/javascript"></script>
+  <link rel="help" href="https://drafts.csswg.org/cssom-view-1/#dom-element-getclientrects">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
  </head>
  <body>
   <span id="single">
-   test test test test test test test test test test test test test test test test test test.
+   test test
   </span><br/>
   <span id="multiple">
-   test test test test test test test test test
-   test test test test test test test test test.
+   test
+   test
   </span>
   <script>
     test(function () {
       const count = document.querySelector("#single").getClientRects().length;
       const count2 = document.querySelector("#multiple").getClientRects().length;
-      assert_equals(count, count2, "getClientRects().length must return the same regardless of source lines")
-    }, "getClientRects().length is the same regardless of source new lines");
+      assert_equals(count, 1, "count");
+      assert_equals(count2, 1, "count2");
+    });
   </script>
  </body>
 </html>

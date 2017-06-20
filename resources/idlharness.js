@@ -943,6 +943,76 @@ IdlInterface.prototype.get_inheritance_stack = function() {
     return stack;
 };
 
+/**
+ * Implementation of
+ * https://heycam.github.io/webidl/#default-tojson-operation
+ * for testing purposes.
+ *
+ * Collects the IDL types of the attributes that meet the criteria
+ * for inclusion in the default toJSON operation for easy
+ * comparison with actual value
+ */
+IdlInterface.prototype.default_to_json_operation = function(callback) {
+    var map = new Map();
+    this.traverse_inherited_and_consequential_interfaces(function(I) {
+        if (I.has_default_to_json_regular_operation()) {
+            I.members.forEach(function(m) {
+                if (!m.static && m.type == "attribute" && I.array.is_JSON_type(m.idlType)) {
+                    map.set(m.name, m.idlType);
+                }
+            });
+        }
+    });
+    return map;
+};
+
+/**
+ * Traverses inherited interfaces from the top down
+ * and imeplemented interfaces inside out.
+ * Invokes |callback| on each interface.
+ *
+ * This is an abstract implementation of the traversal
+ * algorithm specified in:
+ * https://heycam.github.io/webidl/#collect-attribute-values
+ * Given the following inheritance tree:
+ *
+ *           F
+ *           |
+ *       C   E - I
+ *       |   |
+ *       B - D
+ *       |
+ *   G - A - H - J
+ *
+ * Invoking traverse_inherited_and_consequential_interfaces() on A
+ * would traverse the tree in the following order:
+ * C -> B -> F -> E -> I -> D -> A -> G -> H -> J
+ */
+
+IdlInterface.prototype.traverse_inherited_and_consequential_interfaces = function(callback) {
+    var stack = this.get_inheritance_stack();
+    _traverse_inherited_and_consequential_interfaces(stack, callback || function() {});
+};
+
+function _traverse_inherited_and_consequential_interfaces(stack, callback) {
+    var I = stack.pop();
+    callback(I);
+    var mixins = I.array["implements"][I.name];
+    if (mixins) {
+        mixins.forEach(id => {
+            var mixin = I.array.members[id];
+            if (!mixin) {
+                throw new Error("Interface " + id + " not found (implemented by " + I.name + ")");
+            }
+            var interfaces = mixin.get_inheritance_stack();
+            _traverse_inherited_and_consequential_interfaces(interfaces, callback);
+        });
+    }
+    if (stack.length > 0) {
+        _traverse_inherited_and_consequential_interfaces(stack, callback);
+    }
+}
+
 IdlInterface.prototype.test = function()
 //@{
 {

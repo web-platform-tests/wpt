@@ -72,6 +72,24 @@
     }, 'should return an empty map when there are no attributes');
 
     test(function() {
+        var r = interfaceFrom('interface A { };').default_to_json_operation();
+        assert_equals(r, null);
+    }, 'should return null when there is no toJSON method');
+
+    test(function() {
+        var r = interfaceFrom('interface A { DOMString toJSON(); };').default_to_json_operation();
+        assert_equals(r, null);
+    }, 'should return null when there is a toJSON method but it does not have the [Default] extended attribute');
+
+    test(function() {
+        var context = new IdlArray();
+        context.add_idls("interface A : B { DOMString toJSON(); };");
+        context.add_idls("interface B { [Default] object toJSON(); };");
+        var r = context.members.A.default_to_json_operation();
+        assert_equals(r, null);
+    }, 'should return null when there is a toJSON method but it does not have the [Default] extended attribute even if this extended attribute exists on inherited interfaces');
+
+    test(function() {
         var map = interfaceFrom('interface A { [Default] object toJSON(); static attribute DOMString foo; };').default_to_json_operation();
         assert_equals(map.size, 0);
     }, 'should not include static attributes');

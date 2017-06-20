@@ -953,17 +953,20 @@ IdlInterface.prototype.get_inheritance_stack = function() {
  * comparison with actual value
  */
 IdlInterface.prototype.default_to_json_operation = function(callback) {
-    var map = new Map();
+    var map = new Map(), isDefault = false;
     this.traverse_inherited_and_consequential_interfaces(function(I) {
         if (I.has_default_to_json_regular_operation()) {
+            isDefault = true;
             I.members.forEach(function(m) {
                 if (!m.static && m.type == "attribute" && I.array.is_JSON_type(m.idlType)) {
                     map.set(m.name, m.idlType);
                 }
             });
+        } else if (I.has_to_json_regular_operation()) {
+            isDefault = false;
         }
     });
-    return map;
+    return isDefault ? map : null;
 };
 
 /**
@@ -1730,6 +1733,9 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
             return m.type == "operation" && m.name == member.name;
         })),
         "property has wrong .length");
+
+
+   this.test_to_json_operation();
 
     // Make some suitable arguments
     var args = member.arguments.map(function(arg) {

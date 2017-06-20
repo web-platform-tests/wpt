@@ -47,7 +47,7 @@ Running Tests Manually
 
 The test server can be started using
 
-    ./serve
+    ./wpt serve
 
 This will start HTTP servers on two ports and a websockets server on
 one port. By default one web server starts on port 8000 and the other
@@ -121,6 +121,7 @@ The `wpt` command provides a frontend to a variety of tools for
 working with and running web-platform-tests. Some of the most useful
 commands are:
 
+* `wpt serve` - For starting the wpt http server
 * `wpt run` - For running tests in a browser
 * `wpt lint` - For running the lint against all tests
 * `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest

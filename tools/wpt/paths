@@ -1,4 +1,5 @@
-tools/wpt/
 tools/browserutils/
 tools/lint/
 tools/manifest/
+tools/serve/
+tools/wpt/

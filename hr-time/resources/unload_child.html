@@ -1,39 +1,32 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>secondary window</title>
-  </head>
-  <body>
-    <p>Please click the below button to reload the page, then confirm the prompt-to-unload dialog.</p>
+<title>Helper page for ../unload-manual.html</title>
+<ol start="2">
+ <li><button id="navigation">Click here</button>
+ <li>Confirm the unload/reload dialog.
+</ol>
+<script>
+onload = function() {
+  opener.child_load_index++;
 
-    <button id="navigation">newNavigation</button>
+  // after the reload
+  if (opener.child_load_index > 1) {
+    // child_origin is the expected time origin of the secondary window
+    var child_origin = opener.performance.now() - performance.now();
+    opener.t.step(function () {
+     opener.assert_approx_equals(opener.child_unload_time, child_origin, 10);
+     opener.t.done();
+    });
+    window.onbeforeunload = null;
+    window.close();
+  }
 
-    <div id="status"></div>
-  </body>
+  document.getElementById('navigation').onclick = function() {
+    window.location.reload();
+  };
 
-  <script>
-    onload = function() {
-      opener.child_load_index++;
-
-      //after the reload
-      if(opener.child_load_index > 1) {
-        // take (refTime.now - childTime.now) as the time origin of the secondary window
-        opener.child_origin = opener.performance.now() - performance.now();
-
-        document.getElementById('status').innerHTML = "<hr/><p>Index:" + opener.child_load_index + "</p><p>origin: " + opener.child_origin + "</p><p>unload time was : " + opener.child_unload_time + "</p><hr/>";
-
-        opener.postMessage('hr_time_unload_done', '*');
-      }
-
-      document.getElementById('navigation').onclick = function () {
-        window.location.reload(true);
-      };
-
-      window.onbeforeunload = function() {
-        opener.child_unload_time = opener.performance.now();
-
-        return opener.child_unload_time;
-      };
-    };
+  window.onbeforeunload = function() {
+    opener.child_unload_time = opener.performance.now();
+    return "Reload?";
+  };
+};
 </script>
-</html>

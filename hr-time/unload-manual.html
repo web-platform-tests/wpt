@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>time origin value manual test</title>
 <link rel="help" href="https://w3c.github.io/hr-time/#time-origin-1">
 <script src="/resources/testharness.js"></script>
@@ -8,39 +6,19 @@
 <script>
 setup({explicit_timeout: true});
 
-var t = async_test('Window time origin is almost equal (<10ms) to the time of the user confirming the navigation if a confirmation dialog is displayed');
+var t = async_test();
 
-var child_unload_time = child_origin = 0;
+var child_unload_time = 0;
 var child_load_index = 0;
-
-onmessage = t.step_func(function(event) {
-  if (event.data != "hr_time_unload_done") {
-    return;
-  } else {
-    document.getElementById('time').innerHTML = "<hr/><p>child_origin: " + child_origin + "</p><p>unload time was : " + child_unload_time + "</p><hr/>";
-
-    assert_approx_equals(child_unload_time, child_origin, 10);
-
-    t.done();
-  }
-});
 </script>
-</head>
-<body>
-<h2>Description</h2>
-<p>This test validates that time origin is almost equal (less than 10ms apart) to the time of the user confirming the navigation if a confirmation dialog is displayed during the prompt to unload algorithm.</p>
-<hr/>
 
-<h2>Manual Test Steps:</h2>
+<h2>Description</h2>
+<p>This test validates that time origin is almost equal to the time of the user confirming the
+navigation if a confirmation dialog is displayed during the prompt to unload algorithm.</p>
+
+<h2>Manual Test Steps</h2>
 <ol>
-<li>Click <a href="resources/unload_child.html" target="_blank">open a secondary window</a>;</li>
-<li>Please click the "newNavigation" button to reload the page in the secondary page;</li>
-<li>Confirm the unload dialog within 10s;</li>
-<li>Done, you can close the secondary page. Thanks!</li>
+ <li><a href="resources/unload_child.html" target="_blank">Click here</a>
 </ol>
 
-<div id="time"></div>
-<hr/>
 <div id="log"></div>
-</body>
-</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  function waitUntilMessageFromSource(source) {
+    return new Promise((resolve, reject) => {
+      var listener = e => {
+        if (e.source == source) {
+          window.removeEventListener("message", listener);
+          resolve(e);
+        }
+      };
+      window.addEventListener("message", listener);
+    });
+  }
+
+  var wwwEchoURL = "https://{{domains[www]}}:{{ports[https][0]}}/clear-site-data/support/echo.html";
+  var wwwClearingURL = "https://{{domains[www]}}:{{ports[https][0]}}/clear-site-data/support/clear-site-data.py";
+
+  promise_test(t => {
+    var i = document.createElement("iframe");
+    i.src = wwwEchoURL;
+    document.body.appendChild(i);
+
+    return waitUntilMessageFromSource(i.contentWindow)
+      .then(e => {
+        assert_equals(e.data, "loaded", "First load event.");
+
+
+        return new Promise((resolve, reject) => {
+          waitUntilMessageFromSource(i.contentWindow)
+            .then(e => {
+              assert_equals(e.data, "loaded");
+
+              waitUntilMessageFromSource(i.contentWindow)
+                .then(e => resolve(e));
+
+              i.contentWindow.postMessage({ "action": "get" }, "*");
+            });
+
+          i.contentWindow.postMessage({ "action": "set", "value": 42 }, "*");
+
+          fetch(wwwClearingURL + "?documents", { "credentials": "include" });
+        });
+      })
+      .then(e => {
+        assert_equals(e.data.value, 0);
+      });
+  }, "Iframed resources reload.");
+</script>

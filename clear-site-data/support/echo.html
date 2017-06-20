@@ -1,0 +1,21 @@
+<script>
+  window.onload = e => {
+    var toPing = window.top;
+
+    if (toPing == self && window.opener)
+      toPing = window.opener;
+
+    toPing.postMessage("loaded", "*");
+  };
+
+  var globalValue = 0;
+  window.addEventListener("message", e => {
+    if (e.data.action == "set") {
+      globalValue = e.data.value;
+    }
+
+    if (e.data.action == "get") {
+      e.source.postMessage({ "value": globalValue }, "*");
+    }
+  });
+</script>

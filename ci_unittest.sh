@@ -13,8 +13,8 @@ if [ $TOXENV == "py27" ] || [ $TOXENV == "pypy" ]; then
 
   cd $ROOT
   pip install --requirement tools/browserutils/requirements.txt
-  wpt install firefox browser --destination $HOME
-  wpt install firefox webdriver --destination $HOME/firefox
+  ./wpt install firefox browser --destination $HOME
+  ./wpt install firefox webdriver --destination $HOME/firefox
   export PATH=$HOME/firefox:$PATH
 
   cd $ROOT/resources/test

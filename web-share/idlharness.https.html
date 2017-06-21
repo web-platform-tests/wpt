@@ -24,7 +24,7 @@
         }
 
         promise_test(function() {
-          return fetch('../interfaces/webshare.idl')
+          return fetch('../interfaces/web-share.idl')
             .then(response => response.text())
             .then(doTest);
         }, 'Test driver');

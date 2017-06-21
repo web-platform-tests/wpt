@@ -11,6 +11,7 @@
 <script src="/resources/idlharness.js"></script>
 <script src="../helper.js"></script>
 <script>
+    "use strict";
     test(function() {
         var stack = interfaceFrom('interface A { };').get_inheritance_stack();
         assert_array_equals(stack.map(i => i.name), ["A"]);

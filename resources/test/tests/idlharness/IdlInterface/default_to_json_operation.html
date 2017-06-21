@@ -65,7 +65,7 @@
     H implements J;
 </pre>
 <script>
-
+    "use strict";
     test(function() {
         var map = interfaceFrom('interface A { [Default] object toJSON(); };').default_to_json_operation();
         assert_equals(map.size, 0);

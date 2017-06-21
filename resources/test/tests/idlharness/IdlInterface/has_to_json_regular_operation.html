@@ -11,6 +11,7 @@
 <script src="/resources/idlharness.js"></script>
 <script src="../helper.js"></script>
 <script>
+    "use strict";
     test(function() {
         var i = interfaceFrom('interface A { };');
         assert_false(i.has_to_json_regular_operation());

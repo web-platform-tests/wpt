@@ -133,6 +133,17 @@
 
     test(function() {
         var context = new IdlArray();
+        context.add_idls("interface A : B { [Default] object toJSON(); };");
+        context.add_idls("interface B : C { [Default] object toJSON(); attribute DOMString foo; };");
+        context.add_idls("interface C { [Default] object toJSON(); attribute long foo; };");
+        var map = context.members.A.default_to_json_operation();
+        assert_equals(map.size, 1);
+        assert_true(map.has("foo"));
+        assert_equals(map.get("foo").idlType, "DOMString");
+    }, 'attributes declared further away in the inheritance hierarchy should be masked by attributes declared closer');
+
+    test(function() {
+        var context = new IdlArray();
         context.add_idls("interface A : B { [Default] object toJSON(); attribute DOMString a; };");
         context.add_idls("interface B { object toJSON(); attribute long b; };");
         var map = context.members.A.default_to_json_operation();

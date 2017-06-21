@@ -44,7 +44,7 @@ dictionary CustomEventInit : EventInit {
 };
 
 
-//[Exposed=(Window,Worker)]
+[Constructor/*, Exposed=(Window,Worker)*/]
 interface EventTarget {
   void addEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
   void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);

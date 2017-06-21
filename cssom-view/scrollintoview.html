@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <link rel="author" title="Chris Wu" href="mailto:pwx.frontend@gmail.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#dom-element-scrollintoview">
+<link rel="help" href="https://heycam.github.io/webidl/#es-operations">
+<link rel="help" href="https://heycam.github.io/webidl/#es-overloads">
 <meta name="flags" content="dom">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -32,7 +34,8 @@ var expectedYCenter = 4000 - (window.innerHeight / 2) + (testDiv.clientHeight / 
   ["omitted argument", "nearest", expectedYTop],
   [true, "nearest", expectedYTop],
   [false, "nearest", expectedYBottom],
-  [undefined, "nearest", expectedYTop],
+  [undefined, "nearest", expectedYTop], // like omitted argument
+  [null, expectedXCenter, expectedYCenter], // like {}
   [{}, expectedXCenter, expectedYCenter],
   [{block: "center", inline: "center"}, expectedXCenter, expectedYCenter],
   [{block: "start", inline: "start"}, expectedXLeft, expectedYTop],

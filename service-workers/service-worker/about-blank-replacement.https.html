@@ -9,6 +9,25 @@
 <script>
 const worker = 'resources/about-blank-replacement-worker.js';
 
+// Helper routine that creates an iframe that internally has some kind
+// of nested window.  The nested window could be another iframe or
+// it could be a popup window.
+function createFrameWithNestedWindow(url) {
+  return new Promise(resolve => {
+    let frame = document.createElement('iframe');
+    frame.src = url;
+    document.body.appendChild(frame);
+
+    window.addEventListener('message', function onMsg(evt) {
+      if (evt.data.type !== 'NESTED_LOADED') {
+        return;
+      }
+      window.removeEventListener('message', onMsg);
+      resolve(frame);
+    });
+  });
+}
+
 // Helper routine to request the given worker find the client with
 // the specified URL using the clients.matchAll() API.
 function getClientIdByURL(worker, url) {
@@ -32,8 +51,8 @@ async function doAsyncTest(t, scope, extraSearchParams) {
   // iframe.  The service worker will intercept the load of the nested
   // iframe and populate its body with the client ID of the initial
   // about:blank document it sees via clients.matchAll().
-  let frame = await with_iframe(scope);
-  let initialResult = frame.contentWindow.nested().contentWindow.document.body.textContent;
+  let frame = await createFrameWithNestedWindow(scope);
+  let initialResult = frame.contentWindow.nested().document.body.textContent;
   assert_false(initialResult.startsWith('failure:'), `result: ${initialResult}`);
 
   // Next, ask the service worker to find the final client ID for the fully
@@ -71,6 +90,13 @@ promise_test(async function(t) {
                     { 'ping': true });
 }, 'Initial about:blank modified by parent is controlled, exposed to ' +
    'clients.matchAll(), and matches final Client.');
+
+promise_test(async function(t) {
+  // Execute a test where the nested window is a popup window instead of
+  // an iframe.  This should behave the same as the simple iframe case.
+  await doAsyncTest(t, 'resources/about-blank-replacement-popup-frame.html');
+}, 'Popup initial about:blank is controlled, exposed to clients.matchAll(), and ' +
+   'matches final Client.');
 
 </script>
 </body>

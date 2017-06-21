@@ -1,24 +1,29 @@
 <!doctype html>
 <html>
 <body>
-<iframe src="?nested=true&ping=true" id="nested"></iframe>
+<script>
+function nestedLoaded() {
+  parent.postMessage({ type: 'NESTED_LOADED' }, '*');
+}
+</script>
+<iframe src="?nested=true&ping=true" id="nested" onload="nestedLoaded()"></iframe>
 <script>
 // Helper routine to make it slightly easier for our parent to find
 // the nested frame.
 function nested() {
-  return document.getElementById('nested');
+  return document.getElementById('nested').contentWindow;
 }
 
 // This modifies the nested iframe immediately and does not wait for it to
 // load.  This effectively modifies the global for the initial about:blank
 // document.  Any modifications made here should be preserved after the
 // frame loads because the global should be re-used.
-let frame = nested();
-frame.contentWindow.navigator.serviceWorker.addEventListener('message', evt => {
+let win = nested();
+win.navigator.serviceWorker.addEventListener('message', evt => {
   if (evt.data.type === 'PING') {
     evt.source.postMessage({
       type: 'PONG',
-      location: frame.contentWindow.location.toString()
+      location: win.location.toString()
     });
   }
 });

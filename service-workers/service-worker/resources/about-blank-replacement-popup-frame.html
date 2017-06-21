@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<body>
+<script>
+function nestedLoaded() {
+  parent.postMessage({ type: 'NESTED_LOADED' }, '*');
+}
+
+let popup = window.open('?nested=true');
+popup.onload = nestedLoaded;
+
+// Helper routine to make it slightly easier for our parent to find
+// the nested popup window.
+function nested() {
+  return popup;
+}
+</script>
+</body>
+</html>

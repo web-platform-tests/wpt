@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>Service Worker: about:blank replacement handling</title>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<body>
+<script>
+const worker = 'resources/about-blank-replacement-worker.js';
+
+// Helper routine to request the given worker find the client with
+// the specified URL using the clients.matchAll() API.
+function getClientIdByURL(worker, url) {
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', function onMsg(evt) {
+      if (evt.data.type !== 'GET_CLIENT_ID') {
+        return;
+      }
+      navigator.serviceWorker.removeEventListener('message', onMsg);
+      resolve(evt.data.result);
+    });
+    worker.postMessage({ type: 'GET_CLIENT_ID', url: url.toString() });
+  });
+}
+
+async function doAsyncTest(t, scope, extraSearchParams) {
+  let reg = await service_worker_unregister_and_register(t, worker, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+
+  // Load the scope as a frame.  We expect this in turn to have a nested
+  // iframe.  The service worker will intercept the load of the nested
+  // iframe and populate its body with the client ID of the initial
+  // about:blank document it sees via clients.matchAll().
+  let frame = await with_iframe(scope);
+  let initialResult = frame.contentWindow.nested().contentWindow.document.body.textContent;
+  assert_false(initialResult.startsWith('failure:'), `result: ${initialResult}`);
+
+  // Next, ask the service worker to find the final client ID for the fully
+  // loaded nested frame.
+  let nestedURL = new URL(scope, window.location);
+  nestedURL.searchParams.set('nested', true);
+  extraSearchParams = extraSearchParams || {};
+  for (let p in extraSearchParams) {
+    nestedURL.searchParams.set(p, extraSearchParams[p]);
+  }
+  let finalResult = await getClientIdByURL(reg.active, nestedURL);
+  assert_false(finalResult.startsWith('failure:'), `result: ${finalResult}`);
+
+  // The initial about:blank client and the final loaded client should have
+  // the same ID value.
+  assert_equals(initialResult, finalResult, 'client ID values should match');
+
+  frame.remove();
+  await service_worker_unregister_and_done(t, scope);
+}
+
+promise_test(async function(t) {
+  // Execute a test where the nested frame is simple loaded normally.
+  await doAsyncTest(t, 'resources/about-blank-replacement-frame.html');
+}, 'Initial about:blank is controlled, exposed to clients.matchAll(), and ' +
+   'matches final Client.');
+
+promise_test(async function(t) {
+  // Execute a test where the nested frame is modified immediately by
+  // its parent.  In this case we add a message listener so the service
+  // worker can ping the client to verify its existence.  This ping-pong
+  // check is performed during the initial load and when verifying the
+  // final loaded client.
+  await doAsyncTest(t, 'resources/about-blank-replacement-ping-frame.html',
+                    { 'ping': true });
+}, 'Initial about:blank modified by parent is controlled, exposed to ' +
+   'clients.matchAll(), and matches final Client.');
+
+</script>
+</body>

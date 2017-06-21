@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<body>
+<iframe src="?nested=true" id="nested"></iframe>
+<script>
+// Helper routine to make it slightly easier for our parent to find
+// the nested frame.
+function nested() {
+  return document.getElementById('nested');
+}
+
+// NOTE: Make sure not to touch the iframe directly here.  We want to
+//       test the case where the initial about:blank document is not
+//       directly accessed before load.
+</script>
+</body>
+</html>

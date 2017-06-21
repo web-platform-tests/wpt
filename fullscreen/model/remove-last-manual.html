@@ -23,9 +23,14 @@ async_test(function(t)
             assert_equals(document.fullscreenElement, last);
             assert_equals(event.target, last);
             last.remove();
+            // Because /last/ was removed from the top layer, only /first/
+            // remains and it becomes the new fullscreen element synchronously.
+            assert_equals(document.fullscreenElement, first);
             document.onfullscreenchange = t.step_func_done(function(event)
             {
-                assert_equals(document.fullscreenElement, first);
+                // When the asynchronous steps of "exit fullscreen" ran, only
+                // /first/ was in the top layer, and thus we exited fully.
+                assert_equals(document.fullscreenElement, null);
                 assert_equals(event.target, document);
             });
         });

@@ -31,6 +31,13 @@
           sequence<RTCRtpEncodingParameters> sendEncodings;
       };
 
+      enum RTCRtpTransceiverDirection {
+        "sendrecv",
+        "sendonly",
+        "recvonly",
+        "inactive"
+      };
+
     5.2.  RTCRtpSender Interface
 
       interface RTCRtpSender {
@@ -198,6 +205,25 @@
       `Expect added receiver to be the only element in connection's list of receivers`);
 
   }, `addTransceiver('video') should return a video transceiver`);
+
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const transceiver = pc.addTransceiver('audio', { direction: 'sendonly' });
+    assert_equals(transceiver.direction, 'sendonly');
+  }, `addTransceiver() with direction sendonly should have result transceiver.direction be the same`);
+
+  test(t => {
+    const pc = new RTCPeerConnection();
+    const transceiver = pc.addTransceiver('audio', { direction: 'inactive' });
+    assert_equals(transceiver.direction, 'inactive');
+  }, `addTransceiver() with direction inactive should have result transceiver.direction be the same`);
+
+  test(t => {
+    const pc = new RTCPeerConnection();
+    assert_own_property(pc, 'addTransceiver');
+    assert_throws(new TypeError(), () =>
+      pc.addTransceiver('audio', { direction: 'invalid' }));
+  }, `addTransceiver() with invalid direction should throw TypeError`);
 
   /*
     5.1.  addTransceiver

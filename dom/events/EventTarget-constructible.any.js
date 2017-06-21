@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>EventTarget is constructible and subclassable</title>
-<meta name="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
 "use strict";
 
 test(() => {
@@ -67,5 +59,3 @@ test(() => {
   target.dispatch("foo", detail);
   assert_equals(callCount, 2);
 }, "EventTarget can be subclassed");
-
-</script>

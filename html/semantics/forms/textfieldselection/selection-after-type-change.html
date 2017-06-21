@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Selection properties resetting, or not, when changing type</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#input-type-change">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helpers.js"></script>
+
+<body>
+<script>
+"use strict";
+test(() => {
+  const el = document.createElement("input");
+  document.body.appendChild(el);
+
+  el.setAttribute("value", "hey");
+  el.selectionStart = 1;
+  el.selectionEnd = 2;
+  el.selectionDirection = "backward";
+
+  el.setAttribute("type", "search");
+  assert_equals(el.selectionStart, 1, "selectionStart");
+  assert_equals(el.selectionEnd, 2, "selectionEnd");
+  assert_equals(el.selectionDirection, "backward", "selectionDirection");
+}, "Input switching from a selectable type to other selectable type");
+
+test(() => {
+  const el = document.createElement("input");
+  document.body.appendChild(el);
+
+  el.setAttribute("value", "hey");
+  el.selectionStart = 1;
+  el.selectionEnd = 2;
+  el.selectionDirection = "backward";
+
+  el.setAttribute("type", "checkbox");
+  assert_equals(el.selectionStart, null, "selectionStart");
+  assert_equals(el.selectionEnd, null, "selectionEnd");
+  assert_equals(el.selectionDirection, null, "selectionDirection");
+}, "Input switching from a selectable type to an unselectable type");
+
+test(() => {
+  const el = document.createElement("input");
+  document.body.appendChild(el);
+
+  el.setAttribute("value", "hey");
+  el.selectionStart = 1;
+  el.selectionEnd = 2;
+  el.selectionDirection = "backward";
+
+  el.setAttribute("type", "checkbox");
+  el.setAttribute("type", "text");
+  assert_equals(el.selectionStart, 0, "selectionStart");
+  assert_equals(el.selectionEnd, 0, "selectionEnd");
+  assertSelectionDirectionIsReset(el);
+}, "Input switching from a selectable type to an unselectable type and then back");
+
+test(() => {
+  const el = document.createElement("input");
+  document.body.appendChild(el);
+
+  el.setAttribute("value", "hey");
+  el.selectionStart = 3;
+  el.selectionEnd = 3;
+  el.selectionDirection = "backward";
+
+  el.setAttribute("type", "checkbox");
+  el.setAttribute("value", "ab");
+  el.setAttribute("type", "text");
+  assert_equals(el.selectionStart, 0, "selectionStart");
+  assert_equals(el.selectionEnd, 0, "selectionEnd");
+  assertSelectionDirectionIsReset(el);
+}, "Input switching from a selectable type to an unselectable type and then back with the value changing in between");
+</script>

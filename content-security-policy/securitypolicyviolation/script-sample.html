@@ -55,7 +55,7 @@
         if (e.blockedURI != "eval")
           return;
 
-        assert_equals(e.sample, "");
+        assert_equals(e.sample, "assert_unreached('eval')");
         t.done();
       }));
       try {

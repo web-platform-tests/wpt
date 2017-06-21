@@ -67,5 +67,5 @@ function callWhenButtonClicked(click_handler) {
 }
 
 function getAbsoluteUrl(url) {
-  return new URL(url, location).toString();
+  return new URL(url, document.baseURI).toString();
 }

@@ -345,10 +345,12 @@ IdlArray.prototype.is_json_type = function(type)
     }
 
     // sequence types
-    if (type.generic == "sequence") { return this.is_json_type(idlType); }
-    
+    if (type.generic == "sequence" || type.generic == "FrozenArray") {
+        return this.is_json_type(idlType);
+    }
+
     if (typeof idlType != "string") { throw new Error("Unexpected type " + JSON.stringify(idlType)); }
-    
+
     switch (idlType)
     {
        //  Numeric types

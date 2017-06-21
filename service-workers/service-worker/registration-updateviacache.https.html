@@ -5,40 +5,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
 <script>
-  const updateViaCacheValues = [undefined, 'imports', 'all', 'none'];
-  const scriptUrl = 'resources/update-max-aged-worker.py';
-  const scope = 'resources/blank.html';
+  const UPDATE_VIA_CACHE_VALUES = [undefined, 'imports', 'all', 'none'];
+  const SCRIPT_URL = 'resources/update-max-aged-worker.py';
+  const SCOPE = 'resources/blank.html';
 
   async function cleanup() {
-    const reg = await navigator.serviceWorker.getRegistration(scope);
+    const reg = await navigator.serviceWorker.getRegistration(SCOPE);
     if (!reg) return;
-    if (reg.scope == new URL(scope, location).href) {
-      return reg.unregister()
+    if (reg.scope == new URL(SCOPE, location).href) {
+      return reg.unregister();
     };
   }
 
   function wait(ms) {
     return new Promise(r => setTimeout(r, ms));
-  }
-
-  function waitForActivated(sw) {
-    return new Promise((resolve, reject) => {
-      function check() {
-        if (sw.state == 'activated') {
-          sw.removeEventListener('statechange', check);
-          resolve();
-          return;
-        }
-        if (sw.state == 'redundant') {
-          sw.removeEventListener('statechange', check);
-          reject(Error('Service worker rejected'));
-          return;
-        }
-      }
-
-      sw.addEventListener('statechange', check);
-      check();
-    });
   }
 
   function getScriptTimes(sw, testName) {
@@ -60,34 +40,37 @@
     return navigator.serviceWorker.register(scriptUrl, opts);
   }
 
-  async function registerViaLinkElement(scriptUrl, opts) {
-    const link = document.createElement('link');
+  function registerViaLinkElement(scriptUrl, opts) {
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
 
-    if (link.relList.supports('serviceworker') == false) throw Error("link rel=serviceworker not supported");
+      if (link.relList.supports('serviceworker') == false) throw Error("link rel=serviceworker not supported");
 
-    link.rel = 'serviceworker';
-    link.href = scriptUrl;
-    link.scope = opts.scope;
+      link.rel = 'serviceworker';
+      link.href = scriptUrl;
+      link.scope = opts.scope;
 
-    if (opts.updateViaCache) {
-      link.updateViaCache = opts.updateViaCache;
-    }
-
-    document.head.appendChild(link);
-
-    const fullScope = new URL(opts.scope, window.location).href;
-
-    while (true) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      const reg = regs.find(r => r.scope == fullScope && (r.installing || r.waiting || r.active));
-
-      if (reg) {
-        document.head.removeChild(link);
-        return reg;
+      if (opts.updateViaCache) {
+        link.updateViaCache = opts.updateViaCache;
       }
 
-      await wait(100);
-    }
+      link.onload = async () => {
+        const fullScope = new URL(opts.scope, window.location).href;
+
+        const regs = await navigator.serviceWorker.getRegistrations();
+        const reg = regs.find(r => r.scope == fullScope && (r.installing || r.waiting || r.active));
+
+        if (reg) {
+          document.head.removeChild(link);
+          resolve(reg);
+        }
+        else {
+          reject(Error('Service worker not registered'));
+        }
+      };
+
+      document.head.appendChild(link);
+    });
   }
 
   async function registerViaLinkHeader(scriptUrl, opts) {
@@ -105,22 +88,20 @@
       linkHeader += `; updateviacache="${opts.updateViaCache}"`;
     }
 
-    const url = new URL('resources/link-header.py', location);
-    url.searchParams.set('Link', linkHeader);
+    const linkHeaderSenderURL = new URL('resources/link-header.py', location);
+    linkHeaderSenderURL.searchParams.set('Link', linkHeader);
 
-    const frame = await with_iframe(url);
+    await fetch(linkHeaderSenderURL);
+    const frame = await with_iframe(fullScope);
+    await frame.contentWindow.navigator.serviceWorker.ready;
 
-    while (true) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      const reg = regs.find(r => r.scope == fullScope && (r.installing || r.waiting || r.active));
+    const regs = await navigator.serviceWorker.getRegistrations();
+    const reg = regs.find(r => r.scope == fullScope && (r.installing || r.waiting || r.active));
 
-      if (reg) {
-        frame.parentNode.removeChild(frame);
-        return reg;
-      }
+    if (!reg) throw Error('Service worker not registered');
 
-      await wait(100);
-    }
+    frame.parentNode.removeChild(frame);
+    return reg;
   }
 
   const registrationMethods = [
@@ -129,26 +110,25 @@
     [registerViaLinkHeader, 'via-link-header']
   ];
 
-  // Testing creating registrations
+  // Test creating registrations.
   for (const [registrationMethod, registrationMethodName] of registrationMethods) {
-    for (const updateViaCache of updateViaCacheValues) {
+    for (const updateViaCache of UPDATE_VIA_CACHE_VALUES) {
       const testName = `register-${registrationMethodName}-updateViaCache-${updateViaCache}`;
 
-      promise_test(async () => {
+      promise_test(async t => {
         await cleanup();
 
-        const opts = {scope};
+        const opts = {scope: SCOPE};
 
         if (updateViaCache) opts.updateViaCache = updateViaCache;
 
         const reg = await registrationMethod(
-          `${scriptUrl}?test=${testName}`,
+          `${SCRIPT_URL}?test=${testName}`,
           opts
         );
 
         const sw = reg.installing || reg.waiting || reg.active;
-        if (!sw) console.log(reg);
-        await waitForActivated(sw);
+        await wait_for_state(t, sw, 'activated');
         const values = await getScriptTimes(sw, testName);
         await reg.update();
 
@@ -164,7 +144,7 @@
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
           }
-          else { // 'none'
+          else { // updateViaCache == 'none'
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_not_equals(values.importTime, newValues.importTime, "Imported script should have updated");
           }
@@ -175,30 +155,30 @@
     }
   }
 
-  // Testing changing registration
-  for (const updateViaCache1 of updateViaCacheValues) {
-    for (const updateViaCache2 of updateViaCacheValues) {
+  // Test changing the updateViaCache value of an existing registration.
+  for (const updateViaCache1 of UPDATE_VIA_CACHE_VALUES) {
+    for (const updateViaCache2 of UPDATE_VIA_CACHE_VALUES) {
       const testName = `register-with-updateViaCache-${updateViaCache1}-then-${updateViaCache2}`;
 
-      promise_test(async () => {
+      promise_test(async t => {
         await cleanup();
 
-        const fullScriptUrl = `${scriptUrl}?test=${testName}`;
-        let opts = {scope};
+        const fullScriptUrl = `${SCRIPT_URL}?test=${testName}`;
+        let opts = {scope: SCOPE};
         if (updateViaCache1) opts.updateViaCache = updateViaCache1;
 
         const reg = await navigator.serviceWorker.register(fullScriptUrl, opts);
 
         const sw = reg.installing;
-        await waitForActivated(sw);
+        await wait_for_state(t, sw, 'activated');
         const values = await getScriptTimes(sw, testName);
 
-        opts = {scope};
+        opts = {scope: SCOPE};
         if (updateViaCache2) opts.updateViaCache = updateViaCache2;
 
         await navigator.serviceWorker.register(fullScriptUrl, opts);
 
-        // If there's no change, register should be a no-op.
+        // If there's no change to the updateViaCache value, register should be a no-op.
         // The default value should behave as 'imports'.
         if ((updateViaCache1 || 'imports') == (updateViaCache2 || 'imports')) {
           assert_equals(reg.installing, null, "No new service worker");
@@ -216,7 +196,7 @@
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
           }
-          else { // 'none'
+          else { // updateViaCache == 'none'
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_not_equals(values.importTime, newValues.importTime, "Imported script should have updated");
           }

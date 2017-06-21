@@ -32,9 +32,13 @@ function runWindowTests (baselineDimensions) {
 
   // The last specified feature is used
   [ 'width=401,width=402',
+  [ 'width=error,width=402',
     'width=401,innerwidth=402',
+    'width=error,innerwidth=402',
     'innerwidth=401,width=402',
+    'innerwidth=error,width=402',
     'innerwidth=401,innerwidth=402',
+    'innerwidth=error,innerwidth=402',
   ].forEach(features => {
     async_test(t => {
       var prefixedMessage = new PrefixedMessageTest();
@@ -48,13 +52,21 @@ function runWindowTests (baselineDimensions) {
 
   // The last specified feature is used even if the value is 0 or error
   [ 'width=401,width=0',
+  [ 'width=error,width=0',
     'width=401,innerwidth=0',
+    'width=error,innerwidth=0',
     'innerwidth=401,width=0',
+    'innerwidth=error,width=0',
     'innerwidth=401,innerwidth=0',
+    'innerwidth=error,innerwidth=0',
     'width=401,width=error',
+    'width=error,width=error',
     'width=401,innerwidth=error',
+    'width=error,innerwidth=error',
     'innerwidth=401,width=error',
+    'innerwidth=error,width=error',
     'innerwidth=401,innerwidth=error',
+    'innerwidth=error,innerwidth=error',
   ].forEach(features => {
     async_test(t => {
       var prefixedMessage = new PrefixedMessageTest();

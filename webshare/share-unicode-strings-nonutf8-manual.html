@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="iso-8859-1">
+    <meta charset="windows-1252">
     <title>WebShare Test: Share with non-ASCII Unicode strings in a Latin-1-encoded page</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -10,6 +10,8 @@
   <body>
     <script>
         setup({explicit_timeout: true});
+
+        assert_equals(document.characterSet, 'windows-1252');
 
         // Exact same test as in share-unicode-strings-manual.html, with same
         // expectations. This tests that the page's encoding (ISO-8859-1) is

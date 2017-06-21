@@ -12,8 +12,11 @@
         setup({explicit_timeout: true});
 
         // Expect that each of the non-string values is converted into a string.
-        setupManualShareTest(false, '384957', '[object Object]', '');
-        callWhenButtonClicked(() => navigator.share({title: 384957, text: {}}));
+        setupManualShareTest(false, 'true', 'the object', getAbsoluteUrl('384957'));
+
+        const objectWithToString = {toString() { return 'the object'; }};
+        callWhenButtonClicked(() => navigator.share(
+              {title: true, text: objectWithToString, url: 384957}));
     </script>
   </body>
 </html>

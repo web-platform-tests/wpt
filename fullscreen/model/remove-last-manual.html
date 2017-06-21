@@ -31,7 +31,7 @@ async_test(function(t)
                 // When the asynchronous steps of "exit fullscreen" ran, only
                 // /first/ was in the top layer, and thus we exited fully.
                 assert_equals(document.fullscreenElement, null);
-                assert_equals(event.target, document);
+                assert_equals(event.target, first);
             });
         });
     });

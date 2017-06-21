@@ -55,9 +55,13 @@ function setupManualShareTest(
 // Returns a promise. When the user clicks the button, calls
 // |click_handler| and resolves the promise with the result.
 function callWhenButtonClicked(click_handler) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     document.querySelector('#share_button').onclick = () => {
-      resolve(click_handler());
+      try {
+        resolve(click_handler());
+      } catch (e) {
+        reject(e);
+      }
     };
   });
 }

@@ -1735,7 +1735,7 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
         "property has wrong .length");
 
 
-   this.test_to_json_operation();
+   this.test_to_json_operation(memberHolderObject, member);
 
     // Make some suitable arguments
     var args = member.arguments.map(function(arg) {
@@ -1792,6 +1792,35 @@ IdlInterface.prototype.add_iterable_members = function(member)
           [{ name: "callback", idlType: {idlType: "function"}},
            { name: "thisValue", idlType: {idlType: "any"}, optional: true}]}));
 };
+
+IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, member) {
+    if (member.is_to_json_regular_operation()) {
+        if (member.has_extended_attribute("Default")) {
+            var map = this.default_to_json_operation();
+            test(function() {
+                var json = memberHolderObject.toJSON();
+                [...map.keys()].forEach(function(k) {
+                    assert_true(k in json, "property " + k + " should be present in the output of " + this.name + ".prototype.toJSON()");
+                    var descriptor = Object.getOwnPropertyDescriptor(json, k);
+                    assert_true(descriptor.writable, "property " + k + " should be writable");
+                    assert_true(descriptor.configurable, "property " + k + " should be configurable");
+                    assert_true(descriptor.enumerable, "property " + k + " should be enumerable");
+                    var type = map.get(k);
+                    this.array.assert_type_is(json[k], type);
+                    delete json[k];
+                }, this);
+                for (var k in json) {
+                    assert_unreached("property " + k + " should not be present in the output of " + this.name + ".prototype.toJSON()");
+                }
+            }.bind(this), "Test default toJSON operation of " + this.name);
+        } else {
+            test(function() {
+                assert_true(this.array.is_JSON_type(member.idlType), JSON.stringify(member.idlType) + " is not an appropriate return value for the toJSON operation of " + this.name);
+                this.array.assert_type_is(memberHolderObject.toJSON(), member.idlType);
+            }.bind(this), "Test toJSON operation of " + this.name);
+        }
+    }
+}
 
 //@}
 IdlInterface.prototype.test_member_iterable = function(member)

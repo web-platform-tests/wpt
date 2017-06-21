@@ -22,7 +22,7 @@ var height = 'height=402,';
   '\nleft= 141',
   ',left=141,,',
   'LEFT=141'
-].forEach((features, idx, arr) => {
+].forEach(features => {
   async_test(t => {
     var prefixedMessage = new PrefixedMessageTest();
     prefixedMessage.onMessage(t.step_func_done((data, e) => {
@@ -39,7 +39,7 @@ var height = 'height=402,';
   '\ttop= 142',
   ',top=142,,',
   'TOP=142'
-].forEach((features, idx, arr) => {
+].forEach(features => {
   async_test(t => {
     var prefixedMessage = new PrefixedMessageTest();
     prefixedMessage.onMessage(t.step_func_done((data, e) => {
@@ -54,7 +54,7 @@ var height = 'height=402,';
   'top=152,,left=152,',
   'top=152==left=152',
   ',,top= 152, left=152'
-].forEach((features, idx, arr) => {
+].forEach(features => {
   async_test(t => {
     var prefixedMessage = new PrefixedMessageTest();
     prefixedMessage.onMessage(t.step_func_done((data, e) => {

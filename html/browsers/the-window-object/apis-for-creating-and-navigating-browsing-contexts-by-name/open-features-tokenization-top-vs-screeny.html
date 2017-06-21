@@ -35,7 +35,7 @@ function runWindowTests (baselineDimensions) {
     'top=101,screeny=102',
     'screeny=101,top=102',
     'screeny=101,screeny=102',
-  ].forEach((features, idx, arr) => {
+  ].forEach(features => {
     async_test(t => {
       var prefixedMessage = new PrefixedMessageTest();
       prefixedMessage.onMessage(t.step_func_done((data, e) => {
@@ -55,7 +55,7 @@ function runWindowTests (baselineDimensions) {
     'top=101,screeny=error',
     'screeny=101,top=error',
     'screeny=101,screeny=error',
-  ].forEach((features, idx, arr) => {
+  ].forEach(features => {
     async_test(t => {
       var prefixedMessage = new PrefixedMessageTest();
       prefixedMessage.onMessage(t.step_func_done((data, e) => {

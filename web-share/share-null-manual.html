@@ -11,8 +11,7 @@
     <script>
         setup({explicit_timeout: true});
 
-        // Expect null to be converted into the string 'null'. (This isn't good
-        // practice, but it's how Web IDL specifies conversion.) On the other
+        // Expect null to be converted into the string 'null'. On the other
         // hand, undefined should be equivalent to omitting the attribute.
         setupManualShareTest(false, 'null', '', getAbsoluteUrl('null'));
         callWhenButtonClicked(() => navigator.share(

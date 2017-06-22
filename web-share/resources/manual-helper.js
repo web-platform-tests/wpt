@@ -2,14 +2,14 @@
 // instructions (based on the parameters) and the share button.
 function setupManualShareTest(
     user_should_cancel, expected_title, expected_text, expected_url) {
-  let div = document.createElement('div');
+  const div = document.createElement('div');
   document.body.appendChild(div);
 
-  let instruction = document.createElement('div');
+  const instruction = document.createElement('div');
   instruction.id = 'instruction';
   div.appendChild(instruction);
 
-  let shareButton = document.createElement('input');
+  const shareButton = document.createElement('input');
   shareButton.id = 'share_button';
   shareButton.value = 'Share button';
   shareButton.type = 'button';

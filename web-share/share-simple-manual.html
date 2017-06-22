@@ -19,8 +19,9 @@
                 // Check that promise resolved with undefined. This is guarded
                 // by an if statement because we do not want it to register as a
                 // test if it passes (since this is a manual test).
-                if (result !== undefined)
+                if (result !== undefined) {
                   assert_equals(result, undefined);
+                }
               });
     </script>
   </body>

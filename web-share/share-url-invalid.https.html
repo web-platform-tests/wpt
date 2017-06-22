@@ -13,7 +13,7 @@
           // large).
           const url = 'http://example.com:65536';
           return promise_rejects(
-              t, new TypeError(), navigator.share({url: url}));
+              t, new TypeError(), navigator.share({url}));
         }, 'share with an invalid URL');
     </script>
   </body>

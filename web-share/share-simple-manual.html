@@ -14,7 +14,7 @@
         const url = 'https://www.example.com/some/path?some_query#some_fragment';
         setupManualShareTest(false, 'the title', 'the message', url);
         callWhenButtonClicked(() => navigator.share(
-              {title: 'the title', text: 'the message', url: url})).then(
+              {title: 'the title', text: 'the message', url})).then(
               result => {
                 // Check that promise resolved with undefined. This is guarded
                 // by an if statement because we do not want it to register as a

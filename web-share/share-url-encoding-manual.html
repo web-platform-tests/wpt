@@ -16,7 +16,7 @@
         // to be removed, and all the other illegal characters to be percent-escaped.
         const url_encoded = 'http://example.com/foo/abc%20%22%3C%3E%60%7B%7D';
         setupManualShareTest(false, '', '', url_encoded);
-        callWhenButtonClicked(() => navigator.share({url: url}));
+        callWhenButtonClicked(() => navigator.share({url}));
     </script>
   </body>
 </html>

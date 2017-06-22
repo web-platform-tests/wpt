@@ -21,7 +21,7 @@
         // Host is IDNA-encoded. Path is percent-encoded with UTF-8.
         const url_ascii = 'https://xn--0zwm56d.example.com/%F0%9F%93%84';
         setupManualShareTest(false, title, '\ufffdx', url_ascii);
-        callWhenButtonClicked(() => navigator.share({title: title, text: '\ud9a3x', url: url}));
+        callWhenButtonClicked(() => navigator.share({title: title, text: '\ud9a3x', url}));
     </script>
   </body>
 </html>

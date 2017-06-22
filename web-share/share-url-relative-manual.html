@@ -14,7 +14,7 @@
 
         const url = 'foo';
         setupManualShareTest(false, '', '', getAbsoluteUrl(url));
-        callWhenButtonClicked(() => navigator.share({url: url}));
+        callWhenButtonClicked(() => navigator.share({url}));
     </script>
   </body>
 </html>

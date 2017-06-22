@@ -13,7 +13,7 @@
 
         const url = '/some/path?some_query#some_fragment';
         setupManualShareTest(false, '', '', getAbsoluteUrl(url));
-        callWhenButtonClicked(() => navigator.share({url: url}));
+        callWhenButtonClicked(() => navigator.share({url}));
     </script>
   </body>
 </html>

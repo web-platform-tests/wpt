@@ -3,13 +3,22 @@
 // -----------------------------------------------------------------------------
 [Exposed=(Window,Worker)]
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
-  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  void addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options);
+  void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
   boolean dispatchEvent(Event event);
 };
 
 callback interface EventListener {
   void handleEvent(Event event);
+};
+
+dictionary EventListenerOptions {
+  boolean capture = false;
+};
+
+dictionary AddEventListenerOptions : EventListenerOptions {
+  boolean passive = false;
+  boolean once = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -28,66 +37,86 @@ interface WorkerGlobalScope : EventTarget {
   readonly attribute WorkerGlobalScope self;
   readonly attribute WorkerLocation location;
   readonly attribute WorkerNavigator navigator;
-
-  void importScripts(DOMString... urls);
+  void importScripts(USVString... urls);
 
   attribute OnErrorEventHandler onerror;
-
+  attribute EventHandler onlanguagechange;
   attribute EventHandler onoffline;
   attribute EventHandler ononline;
+  attribute EventHandler onrejectionhandled;
+  attribute EventHandler onunhandledrejection;
 };
 
 [Global=(Worker,DedicatedWorker),Exposed=DedicatedWorker]
-/*sealed*/ interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
-  void postMessage(any message, optional sequence<Transferable> transfer);
+interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
+  [Replaceable] readonly attribute DOMString name;
+
+  void postMessage(any message, optional sequence<object> transfer = []);
+
   void close();
+
   attribute EventHandler onmessage;
+  attribute EventHandler onmessageerror;
 };
 
-WorkerGlobalScope implements WindowTimers;
-WorkerGlobalScope implements WindowBase64;
+typedef (DOMString or Function) TimerHandler;
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
-interface WindowTimers {
-  long setTimeout(Function handler, optional long timeout = 0, any... arguments);
-  long setTimeout(DOMString handler, optional long timeout = 0, any... arguments);
+interface WindowOrWorkerGlobalScope {
+  [Replaceable] readonly attribute USVString origin;
+
+  // base64 utility methods
+  DOMString btoa(DOMString data);
+  DOMString atob(DOMString data);
+
+  // timers
+  long setTimeout(TimerHandler handler, optional long timeout = 0, any... arguments);
   void clearTimeout(optional long handle = 0);
-  long setInterval(Function handler, optional long timeout = 0, any... arguments);
-  long setInterval(DOMString handler, optional long timeout = 0, any... arguments);
+  long setInterval(TimerHandler handler, optional long timeout = 0, any... arguments);
   void clearInterval(optional long handle = 0);
-};
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
-interface WindowBase64 {
-  DOMString btoa(DOMString btoa);
-  DOMString atob(DOMString atob);
+  // ImageBitmap
+  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, optional ImageBitmapOptions options);
+  Promise<ImageBitmap> createImageBitmap(ImageBitmapSource image, long sx, long sy, long sw, long sh, optional ImageBitmapOptions options);
 };
+WorkerGlobalScope implements WindowOrWorkerGlobalScope;
 
 [Exposed=Worker]
 interface WorkerNavigator {};
 WorkerNavigator implements NavigatorID;
 WorkerNavigator implements NavigatorLanguage;
 WorkerNavigator implements NavigatorOnLine;
+WorkerNavigator implements NavigatorConcurrentHardware;
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorID {
   readonly attribute DOMString appCodeName; // constant "Mozilla"
-  readonly attribute DOMString appName;
+  readonly attribute DOMString appName; // constant "Netscape"
   readonly attribute DOMString appVersion;
   readonly attribute DOMString platform;
   readonly attribute DOMString product; // constant "Gecko"
+  [Exposed=Window] readonly attribute DOMString productSub;
   readonly attribute DOMString userAgent;
+  [Exposed=Window] readonly attribute DOMString vendor;
+  [Exposed=Window] readonly attribute DOMString vendorSub; // constant ""
+
+  // also has additional members in a partial interface
 };
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorLanguage {
-  readonly attribute DOMString? language;
-  readonly attribute DOMString[] languages;
+  readonly attribute DOMString language;
+  readonly attribute FrozenArray<DOMString> languages;
 };
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorOnLine {
   readonly attribute boolean onLine;
+};
+
+[NoInterfaceObject, Exposed=(Window,Worker)]
+interface NavigatorConcurrentHardware {
+  readonly attribute unsigned long long hardwareConcurrency;
 };
 
 [Exposed=Worker]

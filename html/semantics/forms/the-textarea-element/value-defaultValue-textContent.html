@@ -67,6 +67,26 @@ test(() => {
 test(() => {
 
   const textarea = document.createElement("textarea");
+  textarea.textContent = "foo bar";
+
+  const frag = document.createDocumentFragment();
+  frag.appendChild(document.createTextNode(" baz"));
+  const el = document.createElement("span");
+  el.appendChild(document.createTextNode("qux?"));
+  frag.appendChild(el);
+  frag.appendChild(document.createTextNode(" fizz"));
+  textarea.appendChild(frag);
+
+  textarea.appendChild(document.createTextNode(" whee"));
+  assert_equals(textarea.defaultValue, "foo bar baz fizz whee", "the defaultValue should reflect the textContent");
+  assert_equals(textarea.value, "foo bar baz fizz whee",
+    "changing the textContent should change the raw value, and subsequently the api value");
+
+}, "defaultValue and value are affected by textContent in combination with appending a DocumentFragment");
+
+test(() => {
+
+  const textarea = document.createElement("textarea");
   textarea.appendChild(document.createTextNode("foo bar"));
 
   const child = document.createElement("span");

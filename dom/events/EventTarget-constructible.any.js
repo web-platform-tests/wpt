@@ -40,6 +40,7 @@ test(() => {
 
   const target = new NicerEventTarget();
   const event = new Event("foo", { bubbles: true, cancelable: false });
+  const detail = "some data";
   let callCount = 0;
 
   function listener(e) {

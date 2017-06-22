@@ -12,7 +12,9 @@
         setup({explicit_timeout: true});
 
         setupManualShareTest(false, 'the title', 'the message', 'data:the url');
-        callWhenButtonClicked(() => navigator.share({title: 'the title', text: 'the message', url: 'data:the url', unused: 'unexpected field'}));
+        callWhenButtonClicked(() => navigator.share(
+              {title: 'the title', text: 'the message', url: 'data:the url',
+               unused: 'unexpected field'}));
     </script>
   </body>
 </html>

@@ -79,7 +79,7 @@
     const fullScope = new URL(opts.scope, window.location).href;
     scriptUrl = new URL(scriptUrl, location).href;
 
-    // Assuming that if this isn't supported, the header isn't
+    // Assume that if the link element doesn't support serviceworker, the header doesn't either.
     if (link.relList.supports('serviceworker') == false) throw Error("link rel=serviceworker not supported");
 
     let linkHeader = `<${scriptUrl}>; rel=serviceworker; scope="${fullScope}"`;

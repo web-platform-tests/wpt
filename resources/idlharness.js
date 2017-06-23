@@ -322,6 +322,121 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
     return ret;
 };
 
+//@}
+IdlArray.prototype.is_json_type = function(type)
+//@{
+{
+    /**
+     * Checks whether type is a JSON type as per
+     * https://heycam.github.io/webidl/#dfn-json-types
+     */
+
+    var idlType = type.idlType;
+    
+    if (type.generic == "Promise") { return false; }
+
+    //  nullable and annotated types don't need to be handled separately,
+    //  as webidl2 doesn't represent them wrapped-up (as they're described
+    //  in WebIDL).
+
+    // union and record types
+    if (type.union || type.generic == "record") {
+        return idlType.every(this.is_json_type, this);
+    }
+
+    // sequence types
+    if (type.generic == "sequence" || type.generic == "FrozenArray") {
+        return this.is_json_type(idlType);
+    }
+
+    if (typeof idlType != "string") { throw new Error("Unexpected type " + JSON.stringify(idlType)); }
+
+    switch (idlType)
+    {
+       //  Numeric types
+       case "byte":
+       case "octet":
+       case "short":
+       case "unsigned short":
+       case "long":
+       case "unsigned long":
+       case "long long":
+       case "unsigned long long":
+       case "float":
+       case "double":
+       case "unrestricted float":
+       case "unrestricted double":
+       // boolean
+       case "boolean":
+       // string types
+       case "DOMString":
+       case "ByteString":
+       case "USVString":
+       // object type
+       case "object":
+           return true;
+       case "Error":
+       case "DOMException":
+       case "Int8Array":
+       case "Int16Array":
+       case "Int32Array":
+       case "Uint8Array":
+       case "Uint16Array":
+       case "Uint32Array":
+       case "Uint8ClampedArray":
+       case "Float32Array":
+       case "ArrayBuffer":
+       case "DataView":
+       case "any":
+           return false;
+       default:
+           var thing = this.members[idlType];
+           if (!thing) { throw new Error("Type " + idlType + " not found"); }
+
+           if (thing instanceof IdlEnum) { return true; }
+
+           //  dictionaries where all of their members are JSON types
+           if (thing instanceof IdlDictionary) {
+               var stack = thing.get_inheritance_stack();
+               var map = new Map();
+               while (stack.length)
+               {
+                   stack.pop().members.forEach(m => map.set(m.name, m.idlType));
+               }
+               return [...map.values()].every(this.is_json_type, this);
+           }
+           
+           //  interface types that have a toJSON operation declared on themselves or
+           //  one of their inherited or consequential interfaces.
+           if (thing instanceof IdlInterface) {
+               var base;
+               while (thing)
+               {
+                   if (thing.has_to_json_regular_operation()) { return true; }
+                   var mixins = this.implements[thing.name];
+                   if (mixins) {
+                       mixins = mixins.map(id => {
+                           var mixin = this.members[id];
+                           if (!mixin) {
+                               throw new Error("Interface " + id + " not found (implemented by " + thing.name + ")");
+                           }
+                           return mixin;
+                       });
+                       if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
+                   }
+                   if (!thing.base) { return false; }
+                   base = this.members[thing.base];
+                   if (!base) {
+                       throw new Error("Interface " + thing.base + " not found (inherited by " + thing.name + ")");
+                   }
+                   thing = base;
+               }
+               return false;
+           }
+           return false;
+    }
+};
+
 function exposure_set(object, default_set) {
     var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });
     if (exposed.length > 1 || exposed.length < 0) {
@@ -696,6 +811,9 @@ function IdlDictionary(obj)
     /** Self-explanatory. */
     this.name = obj.name;
 
+    /** A back-reference to our IdlArray. */
+    this.array = obj.array;
+
     /** An array of objects produced by the "dictionaryMember" production. */
     this.members = obj.members;
 
@@ -708,6 +826,10 @@ function IdlDictionary(obj)
 
 //@}
 IdlDictionary.prototype = Object.create(IdlObject.prototype);
+
+IdlDictionary.prototype.get_inheritance_stack = function() {
+    return IdlInterface.prototype.get_inheritance_stack.call(this);
+};
 
 /// IdlInterface ///
 function IdlInterface(obj, is_callback)
@@ -776,6 +898,127 @@ IdlInterface.prototype.is_global = function()
     });
 };
 //@}
+
+IdlInterface.prototype.has_to_json_regular_operation = function() {
+    return this.members.some(function(m) {
+        return m.is_to_json_regular_operation();
+    });
+};
+
+IdlInterface.prototype.has_default_to_json_regular_operation = function() {
+    return this.members.some(function(m) {
+        return m.is_to_json_regular_operation() && m.has_extended_attribute("Default");
+    });
+};
+
+IdlInterface.prototype.get_inheritance_stack = function() {
+    /**
+     * See https://heycam.github.io/webidl/#create-an-inheritance-stack
+     *
+     * Returns an array of IdlInterface objects which contains itself
+     * and all of its inherited interfaces.
+     *
+     * So given:
+     *
+     *   A : B {};
+     *   B : C {};
+     *   C {};
+     *
+     * then A.get_inheritance_stack() should return [A, B, C],
+     * and B.get_inheritance_stack() should return [B, C].
+     *
+     * Note: as dictionary inheritance is expressed identically by the AST,
+     * this works just as well for getting a stack of inherited dictionaries. 
+     */
+
+    var stack = [this];
+    var idl_interface = this;
+    while (idl_interface.base) {
+        var base = this.array.members[idl_interface.base];
+        if (!base) {
+            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
+        }
+        idl_interface = base;
+        stack.push(idl_interface);
+    }
+    return stack;
+};
+
+/**
+ * Implementation of
+ * https://heycam.github.io/webidl/#default-tojson-operation
+ * for testing purposes.
+ *
+ * Collects the IDL types of the attributes that meet the criteria
+ * for inclusion in the default toJSON operation for easy
+ * comparison with actual value
+ */
+IdlInterface.prototype.default_to_json_operation = function(callback) {
+    var map = new Map(), isDefault = false;
+    this.traverse_inherited_and_consequential_interfaces(function(I) {
+        if (I.has_default_to_json_regular_operation()) {
+            isDefault = true;
+            I.members.forEach(function(m) {
+                if (!m.static && m.type == "attribute" && I.array.is_json_type(m.idlType)) {
+                    map.set(m.name, m.idlType);
+                }
+            });
+        } else if (I.has_to_json_regular_operation()) {
+            isDefault = false;
+        }
+    });
+    return isDefault ? map : null;
+};
+
+/**
+ * Traverses inherited interfaces from the top down
+ * and imeplemented interfaces inside out.
+ * Invokes |callback| on each interface.
+ *
+ * This is an abstract implementation of the traversal
+ * algorithm specified in:
+ * https://heycam.github.io/webidl/#collect-attribute-values
+ * Given the following inheritance tree:
+ *
+ *           F
+ *           |
+ *       C   E - I
+ *       |   |
+ *       B - D
+ *       |
+ *   G - A - H - J
+ *
+ * Invoking traverse_inherited_and_consequential_interfaces() on A
+ * would traverse the tree in the following order:
+ * C -> B -> F -> E -> I -> D -> A -> G -> H -> J
+ */
+
+IdlInterface.prototype.traverse_inherited_and_consequential_interfaces = function(callback) {
+    if (typeof callback != "function") {
+        throw new TypeError();
+    }
+    var stack = this.get_inheritance_stack();
+    _traverse_inherited_and_consequential_interfaces(stack, callback);
+};
+
+function _traverse_inherited_and_consequential_interfaces(stack, callback) {
+    var I = stack.pop();
+    callback(I);
+    var mixins = I.array["implements"][I.name];
+    if (mixins) {
+        mixins.forEach(id => {
+            var mixin = I.array.members[id];
+            if (!mixin) {
+                throw new Error("Interface " + id + " not found (implemented by " + I.name + ")");
+            }
+            var interfaces = mixin.get_inheritance_stack();
+            _traverse_inherited_and_consequential_interfaces(interfaces, callback);
+        });
+    }
+    if (stack.length > 0) {
+        _traverse_inherited_and_consequential_interfaces(stack, callback);
+    }
+}
 
 IdlInterface.prototype.test = function()
 //@{
@@ -1495,6 +1738,10 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
         })),
         "property has wrong .length");
 
+    if (member.is_to_json_regular_operation()) {
+        this.test_to_json_operation(memberHolderObject, member);
+    }
+
     // Make some suitable arguments
     var args = member.arguments.map(function(arg) {
         return create_suitable_object(arg.idlType);
@@ -1549,6 +1796,32 @@ IdlInterface.prototype.add_iterable_members = function(member)
           arguments:
           [{ name: "callback", idlType: {idlType: "function"}},
            { name: "thisValue", idlType: {idlType: "any"}, optional: true}]}));
+};
+
+IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, member) {
+    if (member.has_extended_attribute("Default")) {
+        var map = this.default_to_json_operation();
+        test(function() {
+            var json = memberHolderObject.toJSON();
+            map.forEach(function(type, k) {
+                assert_true(k in json, "property " + k + " should be present in the output of " + this.name + ".prototype.toJSON()");
+                var descriptor = Object.getOwnPropertyDescriptor(json, k);
+                assert_true(descriptor.writable, "property " + k + " should be writable");
+                assert_true(descriptor.configurable, "property " + k + " should be configurable");
+                assert_true(descriptor.enumerable, "property " + k + " should be enumerable");
+                this.array.assert_type_is(json[k], type);
+                delete json[k];
+            }, this);
+            for (var k in json) {
+                assert_unreached("property " + k + " should not be present in the output of " + this.name + ".prototype.toJSON()");
+            }
+        }.bind(this), "Test default toJSON operation of " + this.name);
+    } else {
+        test(function() {
+            assert_true(this.array.is_json_type(member.idlType), JSON.stringify(member.idlType) + " is not an appropriate return value for the toJSON operation of " + this.name);
+            this.array.assert_type_is(memberHolderObject.toJSON(), member.idlType);
+        }.bind(this), "Test toJSON operation of " + this.name);
+    }
 };
 
 //@}
@@ -2095,6 +2368,10 @@ function IdlInterfaceMember(obj)
 
 //@}
 IdlInterfaceMember.prototype = Object.create(IdlObject.prototype);
+
+IdlInterfaceMember.prototype.is_to_json_regular_operation = function() {
+    return this.type == "operation" && !this.static && this.name == "toJSON";
+};
 
 /// Internal helper functions ///
 function create_suitable_object(type)

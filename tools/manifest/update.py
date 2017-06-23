@@ -12,6 +12,7 @@ here = os.path.dirname(__file__)
 
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
+
 def update(tests_root, manifest, working_copy=False):
     tree = None
     if not working_copy:

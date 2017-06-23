@@ -44,10 +44,14 @@ dictionary CustomEventInit : EventInit {
 };
 
 
-//[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker)]
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
+  void addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options);
+
   void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
+  void removeEventListener(DOMString type, RemoveEventListenerGroupOptions options);
+  void removeEventListener(RemoveEventListenerGroupOptions options);
+
   boolean dispatchEvent(Event event);
 };
 
@@ -56,8 +60,17 @@ callback interface EventListener {
 };
 
 dictionary EventListenerOptions {
-  boolean capture;
-  boolean passive;
+  boolean capture = false;
+};
+
+dictionary RemoveEventListenerGroupOptions {
+ required any group;
+};
+
+dictionary AddEventListenerOptions : EventListenerOptions {
+  boolean passive = false;
+  boolean once = false;
+  any group;
 };
 
 

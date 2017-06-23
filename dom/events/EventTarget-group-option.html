@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>EventTarget's ability to remove event listeners by group</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-addeventlisteneroptions-group">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: "g" });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: "g" });
+
+  target.removeEventListener({ group: "g" });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "Removing via a string group works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: "g" });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: "g" });
+
+  target.removeEventListener("e1", { group: "g" });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, ["e2.1", "e2.2"]);
+}, "Removing via a string group with a type specified works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+  const group = Symbol();
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group });
+
+  target.removeEventListener({ group });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "Removing via a symbol group works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+  const group = Symbol();
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group });
+
+  target.removeEventListener("e1", { group });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, ["e2.1", "e2.2"]);
+}, "Removing via a symbol group with a type specified works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: navigator });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: navigator });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: navigator });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: navigator });
+
+  target.removeEventListener({ group: navigator });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "Removing via a platform object group works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: null });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: null });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: null });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: null });
+
+  target.removeEventListener({ group: null });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "Removing via a null group works");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  // undefined is treated as not present (i.e. not grouped) for addEventListener
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: undefined });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: undefined });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: undefined });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: undefined });
+
+  // undefined is not allowed for removeEventListener
+  assert_throws(new TypeError(), () => target.removeEventListener({ group: undefined }));
+  assert_throws(new TypeError(), () => target.removeEventListener({ }));
+  assert_throws(new TypeError(), () => target.removeEventListener("e1", { group: undefined }));
+  assert_throws(new TypeError(), () => target.removeEventListener("e1", { }));
+
+  // null is different from undefined. But this will be a no-op since nothing has group = null
+  target.removeEventListener({ group: null });
+  target.removeEventListener("e1", { group: null });
+  target.removeEventListener("e2", { group: null });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, ["e1.1", "e1.2", "e2.1", "e2.2"]);
+}, "Attempting to use undefined as a group does not work");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: 0 });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: -0 });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: 0 });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: -0 });
+
+  target.removeEventListener({ group: 0 });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "0 equals -0 for purposes of group identity");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: 0 });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: -0 });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: 0 });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: -0 });
+
+  target.removeEventListener({ group: -0 });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "-0 equals 0 for purposes of group identity");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: NaN });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: NaN });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: NaN });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: NaN });
+
+  target.removeEventListener({ group: NaN });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, []);
+}, "NaN equals itself for purposes of group identity");
+
+test(() => {
+  const target = document.createElement("div");
+  const happenings = [];
+  const group1 = { the: "group" };
+  const group2 = { the: "group" };
+
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: group1 });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: group2 });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: group1 });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: group2 });
+
+  target.removeEventListener({ group: group2 });
+
+  target.dispatchEvent(new CustomEvent("e1"));
+  target.dispatchEvent(new CustomEvent("e2"));
+
+  assert_array_equals(happenings, ["e1.1", "e2.1"]);
+}, "Same-shape objects are different for purposes of group identity");
+</script>

@@ -112,6 +112,30 @@ either installed or to have specific metrics. As such, in most cases
 when a known font is needed Ahem should be used. In other cases,
 `@font-face` should be used.
 
+#### Be Conservative
+
+Sometimes, when authoring tests for one web platform feature, it may be
+convenient to use some unrelated feature (e.g. web browser APIs or ECMAScript
+language features). Reliance on such extraneous features tends to make tests
+more difficult to consume, so care should be taken when considering their use.
+Tests may only rely on on language features that are available in the latest
+version of all of the following browsers:
+
+- [Mozilla Firefox][mozilla-firefox]
+- [Google Chrome][google-chrome]
+- [Apple Safari][apple-safari]
+- [Microsoft Edge][microsoft-edge]
+
+For JavaScript code that is re-used across many tests (e.g. `testharness.js`
+and the files located in the directory named `common`), language features that
+were introduced in [ECMAScript 2015][es2015] or later should be avoided. This
+practice avoids introducing spanning test failures for consumers maintaining
+older JavaScript runtimes.
+
+Existing tests can be used as a guide to identify acceptable features.  For
+Community-maintained projects such as [the ECMAScript compatibility
+tables][es-compat] and [caniuse.com][caniuse] provide an overview of basic
+feature support across the browsers listed above.
 
 ### Be Self-Contained
 
@@ -171,10 +195,16 @@ for CSS have some additional requirements for:
 * [Metadata][css-metadata], and
 * [User style sheets][css-user-styles].
 
-
 [server features]: {{ site.baseurl }}{% link _writing-tests/server-features.md %}
 [assumptions]: {{ site.baseurl }}{% link _writing-tests/assumptions.md %}
 [ahem]: {{ site.baseurl }}{% link _writing-tests/ahem.md %}
 [lint-tool]: {{ site.baseurl }}{% link _writing-tests/lint-tool.md %}
 [css-metadata]: {{ site.baseurl }}{% link _writing-tests/css-metadata.md %}
 [css-user-styles]: {{ site.baseurl }}{% link _writing-tests/css-user-styles.md %}
+[mozilla-firefox]: https://mozilla.org/firefox
+[google-chrome]: https://google.com/chrome/browser/desktop/
+[apple-safari]: https://apple.com/safari
+[microsoft-edge]: http://microsoftedge.com/
+[es2015]: http://www.ecma-international.org/ecma-262/6.0/
+[es-compat]: https://kangax.github.io/compat-table/
+[caniuse]: https://caniuse.com/

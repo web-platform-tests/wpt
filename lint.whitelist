@@ -191,7 +191,8 @@ SET TIMEOUT: service-workers/service-worker/update-recovery.https.html
 SET TIMEOUT: service-workers/service-worker/resources/extendable-event-async-waituntil.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-async-respond-with-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-test-worker.js
-SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-iframe.html
+SET TIMEOUT: service-workers/service-worker/resources/opaque-response-being-preloaded-xhr.html
+SET TIMEOUT: service-workers/service-worker/resources/opaque-response-preloaded-xhr.html
 SET TIMEOUT: service-workers/service-worker/resources/performance-timeline-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/register-foreign-fetch-errors-worker.js
 SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html

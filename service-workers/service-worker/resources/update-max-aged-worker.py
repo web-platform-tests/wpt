@@ -6,7 +6,7 @@ def main(request, response):
                ('Cache-Control', 'max-age=86400'),
                ('Last-Modified', time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))]
 
-    test = request.GET['test'];
+    test = request.GET['test']
 
     body = '''
         const mainTime = {time};

@@ -17,10 +17,6 @@
     };
   }
 
-  function wait(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
   function getScriptTimes(sw, testName) {
     return new Promise(resolve => {
       navigator.serviceWorker.addEventListener('message', function listener(event) {
@@ -110,7 +106,7 @@
     [registerViaLinkHeader, 'via-link-header']
   ];
 
-  // Test creating registrations.
+  // Test creating registrations & triggering an update.
   for (const [registrationMethod, registrationMethodName] of registrationMethods) {
     for (const updateViaCache of UPDATE_VIA_CACHE_VALUES) {
       const testName = `register-${registrationMethodName}-updateViaCache-${updateViaCache}`;
@@ -126,6 +122,8 @@
           `${SCRIPT_URL}?test=${testName}`,
           opts
         );
+
+        assert_equals(reg.updateViaCache, updateViaCache || 'imports', "reg.updateViaCache");
 
         const sw = reg.installing || reg.waiting || reg.active;
         await wait_for_state(t, sw, 'activated');
@@ -144,9 +142,14 @@
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
           }
-          else { // updateViaCache == 'none'
+          else if (updateViaCache == 'none') {
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_not_equals(values.importTime, newValues.importTime, "Imported script should have updated");
+          }
+          else {
+            // We should have handled all of the possible values for updateViaCache.
+            // If this runs, something's gone very wrong.
+            throw Error(`Unexpected updateViaCache value: ${updateViaCache}`);
           }
         }
 
@@ -178,9 +181,17 @@
 
         await navigator.serviceWorker.register(fullScriptUrl, opts);
 
+        assert_equals(reg.updateViaCache, updateViaCache2 || 'imports', "reg.updateViaCache updated");
+
+        // If the update happens via the cache, the scripts will come back byte-identical.
+        // We bypass the byte-identical check if the script URL has changed, but not if
+        // only the updateViaCache value has changed.
+        if (updateViaCache2 == 'all') {
+          assert_equals(reg.installing, null, "No new service worker");
+        }
         // If there's no change to the updateViaCache value, register should be a no-op.
         // The default value should behave as 'imports'.
-        if ((updateViaCache1 || 'imports') == (updateViaCache2 || 'imports')) {
+        else if ((updateViaCache1 || 'imports') == (updateViaCache2 || 'imports')) {
           assert_equals(reg.installing, null, "No new service worker");
         }
         else {
@@ -188,17 +199,18 @@
           assert_true(!!newWorker, "New worker installing");
           const newValues = await getScriptTimes(newWorker, testName);
 
-          if (updateViaCache2 == 'all') {
-            assert_equals(values.mainTime, newValues.mainTime, "Main script should be the same");
-            assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
-          }
-          else if (updateViaCache2 == 'imports') {
+          if (!updateViaCache2 || updateViaCache2 == 'imports') {
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_equals(values.importTime, newValues.importTime, "Imported script should be the same");
           }
-          else { // updateViaCache == 'none'
+          else if (updateViaCache2 == 'none') {
             assert_not_equals(values.mainTime, newValues.mainTime, "Main script should have updated");
             assert_not_equals(values.importTime, newValues.importTime, "Imported script should have updated");
+          }
+          else {
+            // We should have handled all of the possible values for updateViaCache2.
+            // If this runs, something's gone very wrong.
+            throw Error(`Unexpected updateViaCache value: ${updateViaCache}`);
           }
         }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Reference for WebVTT rendering, align:middle, position less than 50%, size greater than maximum size</title>
+<title>Reference for WebVTT rendering, align:center with long cues</title>
 <style>
 html { overflow:hidden }
 body { margin:0 }
@@ -13,9 +13,8 @@ body { margin:0 }
 .cue {
     position: absolute;
     bottom: 0;
-    left: 23px;
+    left: 0;
     right: 0;
-    width: 64px;
     text-align: center;
 }
 .cue > span {
@@ -24,4 +23,4 @@ body { margin:0 }
     color: green;
 }
 </style>
-<div class=video><span class=cue><span>Aweso<br>me!!!</span></span></div>
+<div class=video><span class=cue><span>This is a test subtitle that <br>most likely will span over <br>several rows since it is a pretty <br>long cue with a lot of text.</span></span></div>

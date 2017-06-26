@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<title>Service Worker: Fetch event client IDs</title>
+<script src="/resources/testharness.js"></script>
+<script src="resources/testharness-helpers.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+  const SCRIPT_URL = 'resources/fetch-clients.worker.js';
+  const SCOPE = 'resources/blank.html';
+
+  async function cleanup() {
+    for (const iframe of document.querySelectorAll('.test-iframe')) {
+      iframe.parentNode.removeChild(iframe);
+    }
+    const reg = await navigator.serviceWorker.getRegistration(SCOPE);
+    if (!reg) return;
+    if (reg.scope == new URL(SCOPE, location).href) {
+      return reg.unregister();
+    };
+  }
+
+  function iframeLoad(iframe) {
+    return new Promise(resolve => {
+      iframe.addEventListener('load', function load() {
+        iframe.removeEventListener('load', load);
+        resolve();
+      });
+    });
+  }
+
+  async function registerAndActivate(t) {
+    const reg = await navigator.serviceWorker.register(SCRIPT_URL, { scope: SCOPE });
+    const sw = reg.installing || reg.waiting || reg.active;
+    await wait_for_state(t, sw, 'activated');
+    return reg;
+  }
+
+  function testResultMessage(testName) {
+    return new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', function listener(event) {
+        if (event.data.testName != testName) return;
+        navigator.serviceWorker.removeEventListener('message', listener);
+        resolve(event.data.value);
+      });
+    });
+  }
+
+  promise_test(async t => {
+    const testId = 'fetch';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const iframe = await with_iframe(SCOPE);
+    const response = await iframe.contentWindow.fetch('/clients.matchAll');
+
+    const clients = await response.json();
+
+    assert_equals(clients.length, 1, 'One controlled client');
+
+    const client = clients[0];
+    const resultsPromise = testResultMessage(testId);
+
+    iframe.contentWindow.fetch('?test=' + testId);
+
+    const results = await resultsPromise;
+
+    assert_equals(results.clientId, client.id, 'Fetch comes from iframe');
+    assert_equals(results.reservedClientId, '', 'Empty reserved client id');
+    assert_equals(results.targetClientId, '', 'Empty target client id');
+
+    await cleanup();
+  }, 'Correct client IDs for subresource loads');
+
+  promise_test(async t => {
+    const testId = 'iframe-nav';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const iframe = await with_iframe(SCOPE);
+    const response = await iframe.contentWindow.fetch('/clients.matchAll');
+
+    const clients = await response.json();
+
+    assert_equals(clients.length, 1, 'One controlled client');
+
+    const client = clients[0];
+    const resultsPromise = testResultMessage(testId);
+    const iframeLoaded = iframeLoad(iframe);
+
+    // TODO: I'm assuming that the source of this request will be the iframe's window,
+    // but I'm not totally sure.
+    iframe.contentWindow.location.href = SCOPE + '?test=' + testId;
+
+    const results = await resultsPromise;
+
+    assert_equals(results.clientId, client.id, 'Fetch comes from iframe');
+    assert_not_equals(results.reservedClientId, '', 'Not empty reserved client id');
+    assert_not_equals(results.reservedClientId, undefined, 'Not empty reserved client id');
+    assert_equals(results.targetClientId, client.id, 'Target client id is the iframe');
+
+    await iframeLoaded;
+
+    const fetchResultsPromise = testResultMessage(testId);
+
+    iframe.contentWindow.fetch('?test=' + testId);
+
+    const fetchResults = await fetchResultsPromise;
+
+    assert_equals(results.reservedClientId, fetchResults.clientId, 'Iframe now uses reserved client ID for subresource fetches');
+
+    await cleanup();
+  }, 'Correct client IDs for iframe navigation');
+</script>

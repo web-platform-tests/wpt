@@ -259,6 +259,16 @@
                 "href": "view-source+data:text/html,<p>Test",
                 "protocol": "view-source+data:"
             }
+        },
+        {
+            "comment": "Port is set to null if it is the default for new scheme.",
+            "href": "http://foo.com:443/",
+            "new_value": "https",
+            "expected": {
+                "href": "https://foo.com/",
+                "protocol": "https:",
+                "port": ""
+            }
         }
     ],
     "username": [
@@ -472,16 +482,6 @@
             "expected": {
                 "href": "file://test/",
                 "password": ""
-            }
-        },
-        {
-            "comment": "Port is set to null if it is the default for new scheme.",
-            "href": "http://foo.com:443/",
-            "new_value": "https",
-            "expected": {
-                "href": "https://foo.com/",
-                "protocol": "https:",
-                "port": ""
             }
         }
     ],

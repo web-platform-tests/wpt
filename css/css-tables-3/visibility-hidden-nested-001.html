@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='base.css' />
+<link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
 <link rel="help" href="https://drafts.csswg.org/css-box-3/#visibility-prop">
@@ -87,47 +87,54 @@
 </main>
 
 <script>
-    generate_tests(assert_equals, [
-        [
-            "table visibility:hidden doesn't change table height",
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight
-        ],
-        [
-            "table visibility:hidden doesn't change table width",
-            document.getElementById('two').offsetWidth,
-            222
-        ],
-        [
-            "row visibility:hidden doesn't change row width",
-            document.getElementById('visibleRow').offsetWidth,
-            document.getElementById('invisibleRow').offsetWidth
-        ],
-        [
-            "row visibility:hidden doesn't change row height",
-            document.getElementById('visibleRow').offsetHeight,
-            document.getElementById('invisibleRow').offsetHeight
-        ],
-        [
-            "cell visibility:hidden doesn't change cell width",
-            document.getElementById('visibleCell').offsetWidth,
-            document.getElementById('invisibleCell').offsetWidth
-        ],
-        [
-            "cell visibility:hidden doesn't change cell height",
-            document.getElementById('visibleCell').offsetHeight,
-            document.getElementById('invisibleCell').offsetHeight
-        ],
-        [
-            "span visibility:hidden doesn't change span width",
-            document.getElementById('visibleSpan').offsetWidth,
-            document.getElementById('invisibleSpan').offsetWidth
-        ],
-        [
-            "span visibility:hidden doesn't change span height",
-            document.getElementById('visibleSpan').offsetHeight,
-            document.getElementById('invisibleSpan').offsetHeight
-        ]
-    ]);
+    tests = [
+    [
+        document.getElementById('two').offsetHeight,
+        document.getElementById('one').offsetHeight,
+        "table visibility:hidden doesn't change table height"
+    ],
+    [
+        document.getElementById('two').offsetWidth,
+        222,
+        "table visibility:hidden doesn't change table width"
+    ],
+    [
+        document.getElementById('visibleRow').offsetWidth,
+        document.getElementById('invisibleRow').offsetWidth,
+        "row visibility:hidden doesn't change row width"
+    ],
+    [
+        document.getElementById('visibleRow').offsetHeight,
+        document.getElementById('invisibleRow').offsetHeight,
+        "row visibility:hidden doesn't change row height"
+    ],
+    [
+        document.getElementById('visibleCell').offsetWidth,
+        document.getElementById('invisibleCell').offsetWidth,
+        "cell visibility:hidden doesn't change cell width"
+    ],
+    [
+        document.getElementById('visibleCell').offsetHeight,
+        document.getElementById('invisibleCell').offsetHeight,
+        "cell visibility:hidden doesn't change cell height"
+    ],
+    [
+        document.getElementById('visibleSpan').offsetWidth,
+        document.getElementById('invisibleSpan').offsetWidth,
+        "span visibility:hidden doesn't change span width"
+    ],
+    [
+        document.getElementById('visibleSpan').offsetHeight,
+        document.getElementById('invisibleSpan').offsetHeight,
+        "span visibility:hidden doesn't change span height"
+    ]];
+
+    for (i = 0; i< tests.length; i++) {
+        test(function()
+            {
+                assert_equals.apply(this, tests[i]);
+            },
+            tests[i][2]);
+    };
 </script>
 </html>

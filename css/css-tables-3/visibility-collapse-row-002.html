@@ -2,9 +2,9 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='base.css' />
+<link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
-<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">
 <style>
     x-table {
       border: 5px solid black;
@@ -20,9 +20,9 @@
 </style>
 <main>
     <h1>Visibility collapse</h1>
-    <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">Spec</a>
+    <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">Spec</a>
     <p>
-    Setting a column to visibility:collapse changes table width but not height.
+    Setting row group to visibility:collapse changes table height but not width.
     </p>
     <x-table id="one">
       <x-tbody>
@@ -42,22 +42,19 @@
                 <span></span>
             </x-td>
         </x-tr>
+    </x-tbody>
         <x-tr>
             <x-td>
                 <span>row 3</span>
             </x-td>
             <x-td>
-                <span style="height:50px"></span>
+                <span></span>
             </x-td>
         </x-tr>
-      </x-tbody>
     </x-table>
-    Second table is identical to first except both column groups have been collapsed.
-    5px borders are still visible.
+    Bottom table is identical to top except row group of first two rows has been collapsed.
     <x-table id="two">
-      <x-colgroup style="visibility:collapse;"></x-colgroup>
-      <x-colgroup style="visibility:collapse;"></x-colgroup>
-      <x-tbody>
+      <x-tbody style="visibility:collapse;">
         <x-tr>
             <x-td>
                 <span>row 1</span>
@@ -74,31 +71,37 @@
                 <span></span>
             </x-td>
         </x-tr>
+    </x-tbody>
         <x-tr>
             <x-td>
                 <span>row 3</span>
             </x-td>
             <x-td>
-                <span style="height:50px"></span>
+                <span></span>
             </x-td>
         </x-tr>
-      </x-tbody>
     </x-table>
-
 </main>
 
 <script>
-    generate_tests(assert_equals, [
-        [
-            "colgroup visibility:collapse doesn't change table height",
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight
-        ],
-        [
-            "colgroup visibility:collapse changes table width",
-            document.getElementById('two').offsetWidth,
-            10
-        ]
-    ]);
+    tests = [
+    [
+        document.getElementById('two').offsetWidth,
+        document.getElementById('one').offsetWidth,
+        "row group visibility:collapse doesn't change table width"
+    ],
+    [
+        document.getElementById('two').offsetHeight,
+        116,
+        "row group visibility:collapse changes table height"
+    ]];
+
+    for (i = 0; i< tests.length; i++) {
+        test(function()
+            {
+                assert_equals.apply(this, tests[i]);
+            },
+            tests[i][2]);
+    };
 </script>
 </html>

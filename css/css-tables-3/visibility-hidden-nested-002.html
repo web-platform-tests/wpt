@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='base.css' />
+<link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
 <link rel="help" href="https://drafts.csswg.org/css-box-3/#visibility-prop">
@@ -24,7 +24,7 @@
     <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">Spec</a>
     <p>
     Setting a table to visibility:hidden, but rows and cells to different nested visibility values.
-    Height and width of table should not change. 
+    Height and width of table should not change.
     </p>
     <x-table id="one">
       <x-tbody>
@@ -72,27 +72,35 @@
 </main>
 
 <script>
-    generate_tests(assert_equals, [
+    tests = [
         [
-            "table visibility:hidden doesn't change table height",
             document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight
+            document.getElementById('one').offsetHeight,
+            "table visibility:hidden doesn't change table height"
         ],
         [
-            "table visibility:hidden doesn't change table width",
             document.getElementById('two').offsetWidth,
-            document.getElementById('one').offsetWidth
+            document.getElementById('one').offsetWidth,
+            "table visibility:hidden doesn't change table width"
         ],
         [
-            "hidden and visible cells should have same height",
             document.getElementById("leftCell").offsetWidth,
-            document.getElementById("rightCell").offsetWidth
+            document.getElementById("rightCell").offsetWidth,
+            "hidden and visible cells should have same height"
         ],
         [
-            "hidden and visible cells should have same width",
             document.getElementById("leftCell").offsetHeight,
-            document.getElementById("rightCell").offsetHeight
+            document.getElementById("rightCell").offsetHeight,
+            "hidden and visible cells should have same width"
         ]
-    ]);
+    ];
+
+    for (i = 0; i< tests.length; i++) {
+        test(function()
+            {
+                assert_equals.apply(this, tests[i]);
+            },
+            tests[i][2]);
+    };
 </script>
 </html>

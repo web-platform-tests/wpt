@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='base.css' />
+<link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
 <style>
@@ -19,10 +19,10 @@
     }
 </style>
 <main>
-    <h1>Visibility collapse</h1>
+    <h1>Visibility hidden</h1>
     <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">Spec</a>
     <p>
-    Setting a column to visibility:collapse changes table width but not height.
+    Setting a column of cells to visibility:hidden.
     </p>
     <x-table id="one">
       <x-tbody>
@@ -47,27 +47,19 @@
                 <span>row 3</span>
             </x-td>
             <x-td>
-                <span style="height:50px"></span>
+                <span></span>
             </x-td>
         </x-tr>
       </x-tbody>
     </x-table>
-
-    Second table is identical to first except right column has been collapsed.
-    Visibility:collapse is applied on col, not colgroup.
-
+    Bottom table is identical to top except right column's cells are hidden.
     <x-table id="two">
-      <x-colgroup></x-colgroup>
-        <x-colgroup>
-            <x-col style="visibility:collapse;">
-        </x-colgroup>
-
       <x-tbody>
         <x-tr>
             <x-td>
                 <span>row 1</span>
             </x-td>
-            <x-td>
+            <x-td style="visibility:hidden;">
                 <span></span>
             </x-td>
         </x-tr>
@@ -75,7 +67,7 @@
             <x-td>
                 <span>row 2</span>
             </x-td>
-            <x-td>
+            <x-td style="visibility:hidden;">
                 <span></span>
             </x-td>
         </x-tr>
@@ -83,8 +75,8 @@
             <x-td>
                 <span>row 3</span>
             </x-td>
-            <x-td>
-                <span style="height:50px"></span>
+            <x-td style="visibility:hidden;">
+                <span></span>
             </x-td>
         </x-tr>
       </x-tbody>
@@ -92,17 +84,24 @@
 </main>
 
 <script>
-    generate_tests(assert_equals, [
-        [
-            "col visibility:collapse doesn't change table height",
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight
-        ],
-        [
-            "col visibility:collapse changes table width",
-            document.getElementById('two').offsetWidth,
-            116
-        ]
-    ]);
+    tests = [
+    [
+        document.getElementById('two').offsetHeight,
+        document.getElementById('one').offsetHeight,
+        "visibility:hidden doesn't change table height"
+    ],
+    [
+        document.getElementById('two').offsetWidth,
+        222,
+        "visibility:hidden doesn't change table width"
+    ]];
+
+    for (i = 0; i< tests.length; i++) {
+        test(function()
+            {
+                assert_equals.apply(this, tests[i]);
+            },
+            tests[i][2]);
+    };
 </script>
 </html>

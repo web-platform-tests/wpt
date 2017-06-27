@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='base.css' />
+<link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">
 <link rel="help" href="https://drafts.csswg.org/css-box-3/#visibility-prop">
@@ -66,37 +66,44 @@
 </main>
 
 <script>
-    generate_tests(assert_equals, [
-        [
-            "table width is unchanged",
-            document.getElementById('two').offsetWidth,
-            document.getElementById('one').offsetWidth
-        ],
-        [
-            "table height is unchanged",
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight
-        ],
-        [
-            "td visibility:collapse has no effect on td width",
-            document.getElementById('hiddenCell').offsetWidth,
-            document.getElementById('visibleCell').offsetWidth
-        ],
-        [
-            "td visibility:collapse has no effect on td height",
-            document.getElementById('hiddenCell').offsetHeight,
-            document.getElementById('visibleCell').offsetHeight
-        ],
-        [
-            "span visibility:collapse has no effect on span width",
-            document.getElementById('hiddenSpan').offsetWidth,
-            document.getElementById('visibleSpan').offsetWidth
-        ],
-        [
-            "span visibility:collapse has no effect on span height",
-            document.getElementById('hiddenSpan').offsetHeight,
-            document.getElementById('visibleSpan').offsetHeight
-        ]
-    ]);
+    tests = [
+    [
+        document.getElementById('two').offsetWidth,
+        document.getElementById('one').offsetWidth,
+        "table width is unchanged"
+    ],
+    [
+        document.getElementById('two').offsetHeight,
+        document.getElementById('one').offsetHeight,
+        "table height is unchanged"
+    ],
+    [
+        document.getElementById('hiddenCell').offsetWidth,
+        document.getElementById('visibleCell').offsetWidth,
+        "td visibility:collapse has no effect on td width"
+    ],
+    [
+        document.getElementById('hiddenCell').offsetHeight,
+        document.getElementById('visibleCell').offsetHeight,
+        "td visibility:collapse has no effect on td height"
+    ],
+    [
+        document.getElementById('hiddenSpan').offsetWidth,
+        document.getElementById('visibleSpan').offsetWidth,
+        "span visibility:collapse has no effect on span width"
+    ],
+    [
+        document.getElementById('hiddenSpan').offsetHeight,
+        document.getElementById('visibleSpan').offsetHeight,
+        "span visibility:collapse has no effect on span height"
+    ]];
+
+    for (i = 0; i< tests.length; i++) {
+        test(function()
+            {
+                assert_equals.apply(this, tests[i]);
+            },
+            tests[i][2]);
+    };
 </script>
 </html>

@@ -115,11 +115,12 @@ when a known font is needed Ahem should be used. In other cases,
 #### Be Conservative
 
 Sometimes, when authoring tests for one web platform feature, it may be
-convenient to use some unrelated feature (e.g. web browser APIs or ECMAScript
-language features). Reliance on such extraneous features tends to make tests
-more difficult to consume, so care should be taken when considering their use.
-Tests may only rely on on language features that are available in the latest
-version of all of the following browsers:
+convenient to use some other feature (e.g. a web browser API or ECMAScript
+language feature) that is not directly related to the test itself. Reliance on
+such extraneous features tends to make tests more difficult to consume, so care
+should be taken when considering their use.  Tests may only rely on on language
+features that are available in the latest version of all of the following
+browsers:
 
 - [Mozilla Firefox][mozilla-firefox]
 - [Google Chrome][google-chrome]
@@ -129,13 +130,14 @@ version of all of the following browsers:
 For JavaScript code that is re-used across many tests (e.g. `testharness.js`
 and the files located in the directory named `common`), language features that
 were introduced in [ECMAScript 2015][es2015] or later should be avoided. This
-practice avoids introducing spanning test failures for consumers maintaining
-older JavaScript runtimes.
+practice avoids introducing test failures for consumers maintaining older
+JavaScript runtimes.
 
-Existing tests can be used as a guide to identify acceptable features.  For
-Community-maintained projects such as [the ECMAScript compatibility
-tables][es-compat] and [caniuse.com][caniuse] provide an overview of basic
-feature support across the browsers listed above.
+Existing tests can be used as a guide to identify acceptable features. For
+features that are not used in existing tests, community-maintained projects
+such as [the ECMAScript compatibility tables][es-compat] and
+[caniuse.com][caniuse] provide an overview of basic feature support across the
+browsers listed above.
 
 ### Be Self-Contained
 
@@ -194,6 +196,7 @@ for CSS have some additional requirements for:
 
 * [Metadata][css-metadata], and
 * [User style sheets][css-user-styles].
+
 
 [server features]: {{ site.baseurl }}{% link _writing-tests/server-features.md %}
 [assumptions]: {{ site.baseurl }}{% link _writing-tests/assumptions.md %}

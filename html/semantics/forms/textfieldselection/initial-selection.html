@@ -47,7 +47,6 @@ test(() => {
   document.body.appendChild(el);
   assert_equals(el.selectionStart, 0, "selectionStart before");
   assert_equals(el.selectionStart, 0, "selectionEnd before");
-  el.defaultValue = "value";
 }, "Created by script, in document: textarea");
 
 test(() => {
@@ -57,7 +56,6 @@ test(() => {
     document.body.appendChild(el);
     assert_equals(el.selectionStart, 0, "selectionStart before " + type);
     assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
-    el.defaultValue = "value";
   }
 }, "Created by script, in document: input");
 
@@ -70,7 +68,6 @@ test(() => {
   el.selectionStart = el.selectionStart;
   assert_equals(el.selectionStart, 0, "selectionStart before");
   assert_equals(el.selectionStart, 0, "selectionEnd before");
-  el.defaultValue = "value";
 }, "Created by script, in document, trigger setter first: textarea");
 
 test(() => {
@@ -81,7 +78,6 @@ test(() => {
     el.selectionStart = el.selectionStart;
     assert_equals(el.selectionStart, 0, "selectionStart before " + type);
     assert_equals(el.selectionStart, 0, "selectionEnd before " + type);
-    el.defaultValue = "value";
   }
 }, "Created by script, in document, trigger setter first: input");
 </script>

@@ -1,7 +1,5 @@
-// Sets up the page for running manual tests. Automatically creates the
-// instructions (based on the parameters) and the share button.
-function setupManualShareTest(
-    user_should_cancel, expected_title, expected_text, expected_url) {
+// Internal function. Returns [instruction, list] DOM elements.
+function setupManualShareTestCommon() {
   const div = document.createElement('div');
   document.body.appendChild(div);
 
@@ -23,14 +21,15 @@ function setupManualShareTest(
   let item = document.createElement('li');
   list.appendChild(item);
   item.innerText = 'Click the Share button.';
-  item = document.createElement('li');
 
-  if (user_should_cancel) {
-    list.appendChild(item);
-    item.innerText = 'Cancel the share dialog.';
-    return;
-  }
+  return [instruction, list];
+}
 
+// Sets up the page for running manual tests. Automatically creates the
+// instructions (based on the parameters) and the share button.
+function setupManualShareTest(expected_title, expected_text, expected_url) {
+  let [instruction, list] = setupManualShareTestCommon();
+  let item = document.createElement('li');
   list.appendChild(item);
   item.innerText = 'Choose a valid share target.';
 
@@ -50,6 +49,13 @@ function setupManualShareTest(
   item = document.createElement('li');
   list.appendChild(item);
   item.innerText = `url = "${expected_url}"`;
+}
+
+function setupManualShareTestRequiringCancellation() {
+  const [instruction, list] = setupManualShareTestCommon();
+  const item = document.createElement('li');
+  list.appendChild(item);
+  item.innerText = 'Cancel the share dialog.';
 }
 
 // Returns a promise. When the user clicks the button, calls

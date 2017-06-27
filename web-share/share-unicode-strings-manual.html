@@ -18,7 +18,7 @@
         const url = 'https://测试.example.com/📄';
         // Host is IDNA-encoded. Path is percent-encoded.
         const url_ascii = 'https://xn--0zwm56d.example.com/%F0%9F%93%84';
-        setupManualShareTest(false, title, '\ufffdx', url_ascii);
+        setupManualShareTest(title, '\ufffdx', url_ascii);
         callWhenButtonClicked(() => navigator.share({title: title, text: '\ud9a3x', url}));
     </script>
   </body>

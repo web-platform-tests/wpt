@@ -11,7 +11,7 @@
     <script>
         setup({explicit_timeout: true});
 
-        setupManualShareTest(true);
+        setupManualShareTestRequiringCancellation();
 
         promise_test(t => {
           return callWhenButtonClicked(() => promise_rejects(

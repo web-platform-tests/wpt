@@ -11,7 +11,7 @@
     <script>
         setup({explicit_timeout: true});
 
-        setupManualShareTest('', '', document.baseURI);
+        setupManualShareTest({title: '', text: '', url: document.baseURI});
         callWhenButtonClicked(() => navigator.share({url: ''}));
     </script>
   </body>

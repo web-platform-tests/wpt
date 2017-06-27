@@ -13,7 +13,8 @@
 
         // Expect null to be converted into the string 'null'. On the other
         // hand, undefined should be equivalent to omitting the attribute.
-        setupManualShareTest('null', '', getAbsoluteUrl('null'));
+        setupManualShareTest(
+            {title: 'null', text: '', url: getAbsoluteUrl('null')});
         callWhenButtonClicked(() => navigator.share(
               {title: null, text: undefined, url: null}));
     </script>

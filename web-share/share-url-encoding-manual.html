@@ -15,7 +15,7 @@
         // Expect '\' to normalize to '/', "%63" to normalize to 'c', '\r\n\t'
         // to be removed, and all the other illegal characters to be percent-escaped.
         const url_encoded = 'http://example.com/foo/abc%20%22%3C%3E%60%7B%7D';
-        setupManualShareTest('', '', url_encoded);
+        setupManualShareTest({title: '', text: '', url: url_encoded});
         callWhenButtonClicked(() => navigator.share({url}));
     </script>
   </body>

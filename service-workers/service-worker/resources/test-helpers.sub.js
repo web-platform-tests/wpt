@@ -49,14 +49,19 @@ function unreached_rejection(test, prefix) {
 // Adds an iframe to the document and returns a promise that resolves to the
 // iframe when it finishes loading. The caller is responsible for removing the
 // iframe later if needed.
-function with_iframe(url) {
+function with_iframe(url, opts) {
+  opts = Object.assign({
+    name: ''
+  }, opts);
+
   return new Promise(function(resolve) {
-      var frame = document.createElement('iframe');
-      frame.className = 'test-iframe';
-      frame.src = url;
-      frame.onload = function() { resolve(frame); };
-      document.body.appendChild(frame);
-    });
+    var frame = document.createElement('iframe');
+    frame.className = 'test-iframe';
+    frame.name = opts.name;
+    frame.src = url;
+    frame.onload = function() { resolve(frame); };
+    document.body.appendChild(frame);
+  });
 }
 
 function normalizeURL(url) {

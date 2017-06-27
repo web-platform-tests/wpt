@@ -1,23 +1,6 @@
 addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  if (url.pathname == '/clients.matchAll') {
-    event.respondWith(async function() {
-      const clientsArray = await clients.matchAll();
-      const body = clientsArray.map(c => ({
-        id: c.id,
-        reserved: c.reserved,
-        url: c.url
-      }));
-
-      return new Response(JSON.stringify(body), {
-        headers: {'Content-Type': 'application/json'}
-      });
-    }());
-
-    return;
-  }
-
   if (!url.searchParams.has('test')) return;
 
   event.respondWith(new Response('sw response', {
@@ -34,22 +17,27 @@ addEventListener('fetch', event => {
 });
 
 addEventListener('message', event => {
-  if (event.data.func == 'clients.matchAll') {
+  if (event.data.action == 'clients.matchAll') {
     event.waitUntil(async function() {
-      const clients = await clients.matchAll(...(event.data.args || []))
-      const r = clients.map(c => ({
+      const clientsArray = await clients.matchAll(...(event.data.args || []));
+      const value = clientsArray.map(c => ({
         id: c.id,
         reserved: c.reserved,
         url: c.url
       }));
 
-      await broadcast(event.test, r);
+      event.source.postMessage({ id: event.data.id, value });
     }());
+    return;
+  }
+  if (event.data.action == 'this-client-id') {
+    event.source.postMessage({ id: event.data.id, value: event.source.id });
+    return;
   }
 });
 
-async function broadcast(testName, value) {
-  const data = { testName, value };
+async function broadcast(id, value) {
+  const data = { id, value };
   const cs = await clients.matchAll({ includeUncontrolled: true });
 
   for (const client of cs) client.postMessage(data);

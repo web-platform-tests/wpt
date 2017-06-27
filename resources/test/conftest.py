@@ -45,9 +45,6 @@ class HTMLItem(pytest.Item, pytest.Collector):
         if not name:
             raise ValueError('No name found in file: %s' % filename)
 
-        if not self.expected:
-            raise ValueError('Expected JSON not found in file: %s' % filename)
-
         super(HTMLItem, self).__init__(name, parent)
 
 
@@ -77,7 +74,13 @@ class HTMLItem(pytest.Item, pytest.Collector):
         summarized[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
         summarized[u'type'] = actual['type']
 
-        assert summarized == self.expected
+        if not self.expected:
+            assert summarized[u'summarized_status'][u'status_string'] == u'OK', summarized[u'summarized_status'][u'message']
+            for test in summarized[u'summarized_tests']:
+                msg = "%s\n%s:\n%s" % (test[u'name'], test[u'message'], test[u'stack'])
+                assert test[u'status_string'] == u'PASS', msg
+        else:
+            assert summarized == self.expected
 
     @staticmethod
     def _assert_sequence(nums):
@@ -117,12 +120,12 @@ class HTMLItem(pytest.Item, pytest.Collector):
     def _summarize_test(test_obj):
         del test_obj['index']
 
-        if 'phases' in test_obj:
-            for key, value in [item for item in test_obj['phases'].items()]:
-                if test_obj['phase'] == value:
-                    test_obj['phase_string'] = key
-            del test_obj['phases']
-            del test_obj['phase']
+        assert 'phase' in test_obj
+        assert 'phases' in test_obj
+        assert 'COMPLETE' in test_obj['phases']
+        assert test_obj['phase'] == test_obj['phases']['COMPLETE']
+        del test_obj['phases']
+        del test_obj['phase']
 
         return HTMLItem._expand_status(HTMLItem._scrub_stack(test_obj))
 

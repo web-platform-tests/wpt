@@ -20,8 +20,8 @@ test(() => {
 test(() => {
 
   const textarea = document.createElement("textarea");
-  textarea.textContent = "foo bar";
 
+  textarea.textContent = "foo bar";
   assert_equals(textarea.defaultValue, "foo bar", "the defaultValue should reflect the textContent");
   assert_equals(textarea.value, "foo bar",
     "changing the textContent should change the raw value, and subsequently the api value");
@@ -31,9 +31,9 @@ test(() => {
 test(() => {
 
   const textarea = document.createElement("textarea");
+
   textarea.textContent = "foo bar";
   textarea.appendChild(document.createTextNode(" baz"));
-
   assert_equals(textarea.defaultValue, "foo bar baz", "the defaultValue should reflect the textContent");
   assert_equals(textarea.value, "foo bar baz",
     "changing the textContent should change the raw value, and subsequently the api value");
@@ -43,8 +43,8 @@ test(() => {
 test(() => {
 
   const textarea = document.createElement("textarea");
-  textarea.textContent = "foo\r\nbar\rbaz\nqux";
 
+  textarea.textContent = "foo\r\nbar\rbaz\nqux";
   assert_equals(textarea.defaultValue, "foo\r\nbar\rbaz\nqux", "the defaultValue should reflect the textContent");
   assert_equals(textarea.value, "foo\nbar\nbaz\nqux", "The value property should normalize CRLF and CR to LF");
 
@@ -53,9 +53,9 @@ test(() => {
 test(() => {
 
   const textarea = document.createElement("textarea");
+
   textarea.textContent = "foo";
   textarea.value = "baz";
-
   assert_equals(textarea.defaultValue, "foo", "setting the value property should not affect the defaultValue");
   assert_equals(textarea.textContent, "foo", "setting the value property should not affect the textContent");
   assert_equals(textarea.value, "baz",
@@ -68,4 +68,25 @@ test(() => {
   assert_equals(textarea.value, "", "setting the value property to null should result in an empty string");
 
 }, "tests for the value setter");
+
+test(() => {
+
+  const textarea = document.createElement("textarea");
+
+  textarea.defaultValue = "foo\0";
+  assert_equals(textarea.defaultValue, "foo\0", "defaultValue after setting defaultValue");
+  assert_equals(textarea.textContent, "foo\0", "textContent after setting defaultValue");
+  assert_equals(textarea.value, "foo\0", "value after setting defaultValue");
+
+  textarea.textContent = "bar\0";
+  assert_equals(textarea.defaultValue, "bar\0", "defaultValue after setting textContent");
+  assert_equals(textarea.textContent, "bar\0", "textContent after setting textContent");
+  assert_equals(textarea.value, "bar\0", "value after setting textContent");
+
+  textarea.value = "baz\0";
+  assert_equals(textarea.defaultValue, "bar\0", "defaultValue after setting value");
+  assert_equals(textarea.textContent, "bar\0", "textContent after setting value");
+  assert_equals(textarea.value, "baz\0", "value after setting value");
+
+}, "tests for U+0000 NULL");
 </script>

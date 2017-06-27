@@ -19,7 +19,6 @@ function xhr_send(method, data) {
     });
 }
 
-
 window.addEventListener('message', function(evt) {
     var port = evt.ports[0];
     xhr_send('POST', 'test string')

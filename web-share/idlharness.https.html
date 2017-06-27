@@ -23,10 +23,9 @@
           idl_array.test();
         }
 
-        promise_test(function() {
-          return fetch('../interfaces/web-share.idl')
-            .then(response => response.text())
-            .then(doTest);
+        promise_test(async () => {
+          const response = await fetch('../interfaces/web-share.idl');
+          doTest(await response.text());
         }, 'Test driver');
     </script>
   </body>

@@ -39,7 +39,7 @@ def branch_point():
         # http://stackoverflow.com/questions/13460152/find-first-ancestor-commit-in-another-branch
         head = git("rev-parse", "HEAD")
         not_heads = [item for item in git("rev-parse", "--not", "--all").split("\n")
-                     if item.strip() and not head in item]
+                     if item.strip() and head not in item]
         commits = git("rev-list", "HEAD", *not_heads).split("\n")
         branch_point = None
         if len(commits):
@@ -200,7 +200,7 @@ def get_revish(**kwargs):
 def run_changed_files(**kwargs):
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish, kwargs["ignore_dirs"])
-    for item in changed:
+    for item in sorted(changed):
         print(os.path.relpath(item, wpt_root))
 
 
@@ -208,5 +208,5 @@ def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish, kwargs["ignore_dirs"])
     tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]))
-    for item in itertools.chain(tests_changed, dependents):
+    for item in sorted(tests_changed | dependents):
         print(os.path.relpath(item, wpt_root))

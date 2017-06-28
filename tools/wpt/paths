@@ -1,3 +1,4 @@
+tools/ci/
 tools/browserutils/
 tools/lint/
 tools/manifest/

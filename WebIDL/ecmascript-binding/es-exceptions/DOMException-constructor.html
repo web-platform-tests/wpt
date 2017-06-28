@@ -22,7 +22,7 @@ test(function() {
                "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
                "The message property should be inherited");
-}, 'new DOMException(): own-ness');
+}, 'new DOMException(): inherited-ness');
 
 test(function() {
   var ex = new DOMException(null);
@@ -46,7 +46,7 @@ test(function() {
                "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
                "The message property should be inherited");
-}, 'new DOMException(undefined): own-ness');
+}, 'new DOMException(undefined): inherited-ness');
 
 test(function() {
   var ex = new DOMException("foo");
@@ -59,9 +59,9 @@ test(function() {
   var ex = new DOMException("foo");
   assert_false(ex.hasOwnProperty("name"),
                "The name property should be inherited");
-  assert_true(ex.hasOwnProperty("message"),
-              "The message property should be own");
-}, 'new DOMException("foo"): own-ness');
+  assert_false(ex.hasOwnProperty("message"),
+              "The message property should be inherited");
+}, 'new DOMException("foo"): inherited-ness');
 
 test(function() {
   var ex = new DOMException("bar", undefined);
@@ -80,11 +80,11 @@ test(function() {
 
 test(function() {
   var ex = new DOMException("bar", "NotSupportedError");
-  assert_true(ex.hasOwnProperty("name"),
-              "The name property should be own");
-  assert_true(ex.hasOwnProperty("message"),
-              "The message property should be own");
-}, 'new DOMException("bar", "NotSupportedError"): own-ness');
+  assert_false(ex.hasOwnProperty("name"),
+              "The name property should be inherited");
+  assert_false(ex.hasOwnProperty("message"),
+              "The message property should be inherited");
+}, 'new DOMException("bar", "NotSupportedError"): inherited-ness');
 
 test(function() {
   var ex = new DOMException("bar", "foo");

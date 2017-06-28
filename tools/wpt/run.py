@@ -15,11 +15,14 @@ from browserutils import browser, utils, virtualenv
 logger = None
 
 
+<<<<<<< HEAD
 
 
 class WptrunError(Exception):
     pass
 
+=======
+>>>>>>> 356fd1589d... Make stability checking part of |wpt run|
 class WptrunnerHelpAction(argparse.Action):
     def __init__(self,
                  option_strings,
@@ -42,18 +45,18 @@ class WptrunnerHelpAction(argparse.Action):
 
 
 def create_parser():
-    parser = argparse.ArgumentParser()
+    from wptrunner import wptcommandline
+
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("product", action="store",
                         help="Browser to run tests in")
-    parser.add_argument("tests", action="store", nargs="*",
-                        help="Path to tests to run")
-    parser.add_argument("wptrunner_args", nargs=argparse.REMAINDER,
-                        help="Arguments to pass through to wptrunner")
     parser.add_argument("--yes", "-y", dest="prompt", action="store_false", default=True,
                         help="Don't prompt before installing components")
-    parser.add_argument("--wptrunner-help",
-                        action=WptrunnerHelpAction, default=argparse.SUPPRESS,
-                        help="Print wptrunner help")
+    parser.add_argument("--stability", action="store_true",
+                        help="Stability check tests")
+    parser.add_argument("--install-brower", action="store_true",
+                        help="Install the latest development version of the browser")
+    parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
 
@@ -190,8 +193,10 @@ your library path.
         kwargs["prefs_root"] = prefs_root
 
 
-def setup_firefox(venv, kwargs, prompt=True):
+def setup_firefox(venv, kwargs, prompt=True, install_browser=False):
     firefox = browser.Firefox()
+    if install_browser:
+        firefox.install(venv)
     args_firefox(venv, kwargs, firefox, prompt)
     venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", firefox.requirements))
 
@@ -241,8 +246,15 @@ def setup_edge(venv, kwargs, prompt=True):
     venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", edge.requirements))
 
 
-def setup_sauce(kwargs):
-    raise NotImplementedError
+def args_sauce(venv, kwargs, sauce, prompt=True):
+    product, browser = kwargs["product"].split(":")
+    kwargs["test_types"] = ["testharness", "reftest"]
+
+
+def setup_sauce(venv, kwargs, prompt=True):
+    sauce = browser.Sauce()
+    args_sauce(venv, kwargs, edge, prompt)
+    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", sauce.requirements))
 
 
 def args_servo(venv, kwargs, servo, prompt=True):
@@ -264,23 +276,22 @@ product_setup = {
     "firefox": setup_firefox,
     "chrome": setup_chrome,
     "edge": setup_edge,
-    "servo": setup_servo
+    "servo": setup_servo,
+    "sauce": setup_sauce,
 }
 
 
-def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
+def setup_wptrunner(venv, prompt=True, **kwargs):
     from wptrunner import wptrunner, wptcommandline
 
     global logger
 
-    wptparser = wptcommandline.create_parser()
-    kwargs = utils.Kwargs(vars(wptparser.parse_args(wptrunner_args)).iteritems())
+    kwargs = utils.Kwargs(kwargs.iteritems())
+
+    product = kwargs["product"]
 
     wptrunner.setup_logging(kwargs, {"mach": sys.stdout})
     logger = wptrunner.logger
-
-    kwargs["product"] = product
-    kwargs["test_list"] = tests
 
     check_environ(product)
     args_general(kwargs)
@@ -300,14 +311,38 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
 
 
 def run(venv, **kwargs):
-    kwargs = setup_wptrunner(venv,
-                             kwargs["product"],
-                             kwargs["tests"],
-                             kwargs["wptrunner_args"],
-                             prompt=kwargs["prompt"])
+    #Remove arguments that aren't passed to wptrunner
+    prompt = kwargs.pop("prompt", True)
+    stability = kwargs.pop("stability", True)
+    install_browser = kwargs.pop("install_browser", False)
 
+    print(kwargs)
+
+    kwargs = setup_wptrunner(venv,
+                             prompt=prompt,
+                             install=install_browser,
+                             **kwargs)
+
+    if stability:
+        import stability
+        results, inconsistent = stability.run(venv, logger, **kwargs)
+        iterations = kwargs["repeat"]
+        def log(x):
+            print x
+        if inconsistent:
+            stability.write_inconsistent(log, inconsistent, iterations)
+        else:
+            log("All tests stable")
+        rv = len(inconsistent) > 0
+    else:
+        rv = run_single(venv, **kwargs) > 0
+
+    return rv
+
+
+def run_single(venv, **kwargs):
     from wptrunner import wptrunner
-    wptrunner.start(**kwargs)
+    return wptrunner.start(**kwargs)
 
 
 def main():
@@ -320,9 +355,10 @@ def main():
         venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
         venv.install("requests")
 
-        run(venv, vars(args))
+        return run(venv, vars(args))
     except WptrunError as e:
         exit(e.message)
+
 
 if __name__ == "__main__":
     import pdb

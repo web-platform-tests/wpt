@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import itertools
 import logging
 import os
 import re
@@ -16,44 +17,14 @@ from collections import defaultdict, OrderedDict
 from io import BytesIO, StringIO
 
 from tools.wpt import testfiles
-
-import requests
-
-
-BaseHandler = None
-LogActionFilter = None
-LogHandler = None
-LogLevelFilter = None
-StreamHandler = None
-TbplFormatter = None
-manifest = None
-reader = None
-wptcommandline = None
-wptrunner = None
-wpt_root = None
-wptrunner_root = None
+from testfiles import get_git_cmd
+from tools.browserutils.virtualenv import Virtualenv
+from tools.browserutils.utils import Kwargs
+from tools.wpt.run import run
 
 logger = None
 
-
-def do_delayed_imports():
-    """Import and set up modules only needed if execution gets to this point."""
-    global BaseHandler
-    global LogLevelFilter
-    global StreamHandler
-    global TbplFormatter
-    global manifest
-    global reader
-    global wptcommandline
-    global wptrunner
-    from mozlog import reader
-    from mozlog.formatters import TbplFormatter
-    from mozlog.handlers import BaseHandler, LogLevelFilter, StreamHandler
-    from tools.manifest import manifest
-    from wptrunner import wptcommandline, wptrunner
-    setup_log_handler()
-    setup_action_filter()
-
+wpt_root = os.path.dirname(__file__)
 
 def setup_logging():
     """Set up basic debug logger."""
@@ -62,32 +33,6 @@ def setup_logging():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
-
-
-def setup_action_filter():
-    """Create global LogActionFilter class as part of deferred module load."""
-    global LogActionFilter
-
-    class LogActionFilter(BaseHandler):
-
-        """Handler that filters out messages not of a given set of actions.
-
-        Subclasses BaseHandler.
-
-        :param inner: Handler to use for messages that pass this filter
-        :param actions: List of actions for which to fire the handler
-        """
-
-        def __init__(self, inner, actions):
-            """Extend BaseHandler and set inner and actions props on self."""
-            BaseHandler.__init__(self, inner)
-            self.inner = inner
-            self.actions = actions
-
-        def __call__(self, item):
-            """Invoke handler if action is in list passed as constructor param."""
-            if item["action"] in self.actions:
-                return self.inner(item)
 
 
 class TravisFold(object):
@@ -156,198 +101,6 @@ def replace_streams(capacity, warning_msg):
     sys.stderr = wrapped_stderr = FilteredIO(sys.stderr, on_write)
 
 
-class Browser(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def install(self):
-        return NotImplemented
-
-    @abstractmethod
-    def install_webdriver(self):
-        return NotImplemented
-
-    @abstractmethod
-    def version(self):
-        return NotImplemented
-
-    @abstractmethod
-    def wptrunner_args(self):
-        return NotImplemented
-
-
-class Firefox(Browser):
-    """Firefox-specific interface.
-
-    Includes installation, webdriver installation, and wptrunner setup methods.
-    """
-
-    product = "firefox"
-    binary = "%s/firefox/firefox"
-    platform_ini = "%s/firefox/platform.ini"
-
-    def __init__(self, **kwargs):
-        pass
-
-    def install(self):
-        """Install Firefox."""
-        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
-        index = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/")
-        latest = re.compile("<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.linux-x86_64\.tar\.bz2)</a>")
-        filename = latest.search(index.text).group(1)
-        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/%s" %
-                   filename)
-        untar(resp.raw)
-
-        if not os.path.exists("profiles"):
-            os.mkdir("profiles")
-        with open(os.path.join("profiles", "prefs_general.js"), "wb") as f:
-            resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
-            f.write(resp.content)
-        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
-
-    def _latest_geckodriver_version(self):
-        """Get and return latest version number for geckodriver."""
-        # This is used rather than an API call to avoid rate limits
-        tags = call("git", "ls-remote", "--tags", "--refs",
-                    "https://github.com/mozilla/geckodriver.git")
-        release_re = re.compile(".*refs/tags/v(\d+)\.(\d+)\.(\d+)")
-        latest_release = 0
-        for item in tags.split("\n"):
-            m = release_re.match(item)
-            if m:
-                version = [int(item) for item in m.groups()]
-                if version > latest_release:
-                    latest_release = version
-        assert latest_release != 0
-        return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
-
-    def install_webdriver(self):
-        """Install latest Geckodriver."""
-        version = self._latest_geckodriver_version()
-        logger.debug("Latest geckodriver release %s" % version)
-        url = "https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-linux64.tar.gz" % (version, version)
-        untar(get(url).raw)
-
-    def version(self, root):
-        """Retrieve the release version of the installed browser."""
-        platform_info = RawConfigParser()
-
-        with open(self.platform_ini % root, "r") as fp:
-            platform_info.readfp(BytesIO(fp.read()))
-            return "BuildID %s; SourceStamp %s" % (
-                platform_info.get("Build", "BuildID"),
-                platform_info.get("Build", "SourceStamp"))
-
-    def wptrunner_args(self, root):
-        """Return Firefox-specific wpt-runner arguments."""
-        return {
-            "product": "firefox",
-            "binary": self.binary % root,
-            "certutil_binary": "certutil",
-            "webdriver_binary": "%s/geckodriver" % root,
-            "prefs_root": "%s/profiles" % root,
-        }
-
-
-class Chrome(Browser):
-    """Chrome-specific interface.
-
-    Includes installation, webdriver installation, and wptrunner setup methods.
-    """
-
-    product = "chrome"
-    binary = "/usr/bin/google-chrome"
-
-    def __init__(self, **kwargs):
-        pass
-
-    def install(self):
-        """Install Chrome."""
-
-        # Installing the Google Chrome browser requires administrative
-        # privileges, so that installation is handled by the invoking script.
-
-        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_chrome.txt"))
-
-    def install_webdriver(self):
-        """Install latest Webdriver."""
-        latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
-        url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip" % latest
-        unzip(get(url).raw)
-        st = os.stat('chromedriver')
-        os.chmod('chromedriver', st.st_mode | stat.S_IEXEC)
-
-    def version(self, root):
-        """Retrieve the release version of the installed browser."""
-        output = call(self.binary, "--version")
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
-
-    def wptrunner_args(self, root):
-        """Return Chrome-specific wpt-runner arguments."""
-        return {
-            "product": "chrome",
-            "binary": self.binary,
-            "webdriver_binary": "%s/chromedriver" % root,
-            "test_types": ["testharness", "reftest"]
-        }
-
-
-class Sauce(Browser):
-    """Sauce-specific interface.
-
-    Includes installation and wptrunner setup methods.
-    """
-
-    product = "sauce"
-
-    def __init__(self, **kwargs):
-        browser = kwargs["product"].split(":")
-        self.browser_name = browser[1]
-        self.browser_version = browser[2]
-        self.sauce_platform = kwargs["sauce_platform"]
-        self.sauce_build = kwargs["sauce_build_number"]
-        self.sauce_key = kwargs["sauce_key"]
-        self.sauce_user = kwargs["sauce_user"]
-        self.sauce_build_tags = kwargs["sauce_build_tags"]
-        self.sauce_tunnel_id = kwargs["sauce_tunnel_identifier"]
-
-    def install(self):
-        """Install sauce selenium python deps."""
-        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_sauce.txt"))
-
-    def install_webdriver(self):
-        """No need to install webdriver locally."""
-        pass
-
-    def version(self, root):
-        """Retrieve the release version of the browser under test."""
-        return self.browser_version
-
-    def wptrunner_args(self, root):
-        """Return Sauce-specific wptrunner arguments."""
-        return {
-            "product": "sauce",
-            "sauce_browser": self.browser_name,
-            "sauce_build": self.sauce_build,
-            "sauce_key": self.sauce_key,
-            "sauce_platform": self.sauce_platform,
-            "sauce_tags": self.sauce_build_tags,
-            "sauce_tunnel_id": self.sauce_tunnel_id,
-            "sauce_user": self.sauce_user,
-            "sauce_version": self.browser_version,
-            "test_types": ["testharness", "reftest"]
-        }
-
-
-def get(url):
-    """Issue GET request to a given URL and return the response."""
-    logger.debug("GET %s" % url)
-    resp = requests.get(url, stream=True)
-    resp.raise_for_status()
-    return resp
-
-
 def call(*args):
     """Log terminal command, invoke it as a subprocess.
 
@@ -362,65 +115,6 @@ def call(*args):
         logger.critical(e.output)
         raise
 
-
-def get_git_cmd(repo_path):
-    """Create a function for invoking git commands as a subprocess."""
-    def git(cmd, *args):
-        full_cmd = ["git", cmd] + list(args)
-        try:
-            logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).strip()
-        except subprocess.CalledProcessError as e:
-            logger.error("Git command exited with status %i" % e.returncode)
-            logger.error(e.output)
-            sys.exit(1)
-    return git
-
-
-def seekable(fileobj):
-    """Attempt to use file.seek on given file, with fallbacks."""
-    try:
-        fileobj.seek(fileobj.tell())
-    except Exception:
-        return CStringIO(fileobj.read())
-    else:
-        return fileobj
-
-
-def untar(fileobj):
-    """Extract tar archive."""
-    logger.debug("untar")
-    fileobj = seekable(fileobj)
-    with tarfile.open(fileobj=fileobj) as tar_data:
-        tar_data.extractall()
-
-
-def unzip(fileobj):
-    """Extract zip archive."""
-    logger.debug("unzip")
-    fileobj = seekable(fileobj)
-    with zipfile.ZipFile(fileobj) as zip_data:
-        for info in zip_data.infolist():
-            zip_data.extract(info)
-            perm = info.external_attr >> 16 & 0x1FF
-            os.chmod(info.filename, perm)
-
-
-class pwd(object):
-    """Create context for temporarily changing present working directory."""
-    def __init__(self, dir):
-        self.dir = dir
-        self.old_dir = None
-
-    def __enter__(self):
-        self.old_dir = os.path.abspath(os.curdir)
-        os.chdir(self.dir)
-
-    def __exit__(self, *args, **kwargs):
-        os.chdir(self.old_dir)
-        self.old_dir = None
-
-
 def fetch_wpt(user, *args):
     git = get_git_cmd(wpt_root)
     git("fetch", "https://github.com/%s/web-platform-tests.git" % user, *args)
@@ -432,18 +126,12 @@ def get_sha1():
     return git("rev-parse", "HEAD").strip()
 
 
-def build_manifest():
-    """Build manifest of all files in web-platform-tests"""
-    from tools.manifest import update
-    update.run(**vars(update.create_parser().parse_args([])))
-
-
 def install_wptrunner():
     """Install wptrunner."""
     call("pip", "install", wptrunner_root)
 
 
-def deepen_checkout():
+def deepen_checkout(user):
     """Convert from a shallow checkout to a full one"""
     fetch_args = [user, "+refs/heads/*:refs/remotes/origin/*"]
     if os.path.exists(os.path.join(wpt_root, ".git", "shallow")):
@@ -451,219 +139,11 @@ def deepen_checkout():
     fetch_wpt(*fetch_args)
 
 
-def wptrunner_args(root, files_changed, iterations, browser):
-    """Derive and return arguments for wpt-runner."""
-    parser = wptcommandline.create_parser([browser.product])
-    args = vars(parser.parse_args([]))
-    args.update(browser.wptrunner_args(root))
-    args.update({
-        "tests_root": wpt_root,
-        "metadata_root": wpt_root,
-        "repeat": iterations,
-        "config": "%s//wptrunner.default.ini" % (wptrunner_root),
-        "test_list": files_changed,
-        "restart_on_unexpected": False,
-        "pause_after_test": False
-    })
-    wptcommandline.check_args(args)
-    return args
-
-
-def setup_log_handler():
-    """Set up LogHandler class as part of deferred module load."""
-    global LogHandler
-
-    class LogHandler(reader.LogHandler):
-
-        """Handle updating test and subtest status in log.
-
-        Subclasses reader.LogHandler.
-        """
-        def __init__(self):
-            self.results = OrderedDict()
-
-        def find_or_create_test(self, data):
-            test_name = data["test"]
-            if self.results.get(test_name):
-                return self.results[test_name]
-
-            test = {
-                "subtests": OrderedDict(),
-                "status": defaultdict(int)
-            }
-            self.results[test_name] = test
-            return test
-
-        def find_or_create_subtest(self, data):
-            test = self.find_or_create_test(data)
-            subtest_name = data["subtest"]
-
-            if test["subtests"].get(subtest_name):
-                return test["subtests"][subtest_name]
-
-            subtest = {
-                "status": defaultdict(int),
-                "messages": set()
-            }
-            test["subtests"][subtest_name] = subtest
-
-            return subtest
-
-        def test_status(self, data):
-            subtest = self.find_or_create_subtest(data)
-            subtest["status"][data["status"]] += 1
-            if data.get("message"):
-                subtest["messages"].add(data["message"])
-
-        def test_end(self, data):
-            test = self.find_or_create_test(data)
-            test["status"][data["status"]] += 1
-
-
-def is_inconsistent(results_dict, iterations):
-    """Return whether or not a single test is inconsistent."""
-    return len(results_dict) > 1 or sum(results_dict.values()) != iterations
-
-
-def err_string(results_dict, iterations):
-    """Create and return string with errors from test run."""
-    rv = []
-    total_results = sum(results_dict.values())
-    for key, value in sorted(results_dict.items()):
-        rv.append("%s%s" %
-                  (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
-    if total_results < iterations:
-        rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
-    rv = ", ".join(rv)
-    if is_inconsistent(results_dict, iterations):
-        rv = "**%s**" % rv
-    return rv
-
-
-def process_results(log, iterations):
-    """Process test log and return overall results and list of inconsistent tests."""
-    inconsistent = []
-    handler = LogHandler()
-    reader.handle_log(reader.read(log), handler)
-    results = handler.results
-    for test_name, test in results.iteritems():
-        if is_inconsistent(test["status"], iterations):
-            inconsistent.append((test_name, None, test["status"], []))
-        for subtest_name, subtest in test["subtests"].iteritems():
-            if is_inconsistent(subtest["status"], iterations):
-                inconsistent.append((test_name, subtest_name, subtest["status"], subtest["messages"]))
-    return results, inconsistent
-
-
-def format_comment_title(product):
-    """Produce a Markdown-formatted string based on a given "product"--a string
-    containing a browser identifier optionally followed by a colon and a
-    release channel. (For example: "firefox" or "chrome:dev".) The generated
-    title string is used both to create new comments and to locate (and
-    subsequently update) previously-submitted comments."""
-    parts = product.split(":")
-    title = parts[0].title()
-
-    if len(parts) > 1:
-       title += " (%s)" % parts[1]
-
-    return "# %s #" % title
-
-
-def markdown_adjust(s):
-    """Escape problematic markdown sequences."""
-    s = s.replace('\t', u'\\t')
-    s = s.replace('\n', u'\\n')
-    s = s.replace('\r', u'\\r')
-    s = s.replace('`',  u'')
-    s = s.replace('|', u'\\|')
-    return s
-
-
-def table(headings, data, log):
-    """Create and log data to specified logger in tabular format."""
-    cols = range(len(headings))
-    assert all(len(item) == len(cols) for item in data)
-    max_widths = reduce(lambda prev, cur: [(len(cur[i]) + 2)
-                                           if (len(cur[i]) + 2) > prev[i]
-                                           else prev[i]
-                                           for i in cols],
-                        data,
-                        [len(item) + 2 for item in headings])
-    log("|%s|" % "|".join(item.center(max_widths[i]) for i, item in enumerate(headings)))
-    log("|%s|" % "|".join("-" * max_widths[i] for i in cols))
-    for row in data:
-        log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
-    log("")
-
-
-def write_inconsistent(inconsistent, iterations):
-    """Output inconsistent tests to logger.error."""
-    logger.error("## Unstable results ##\n")
-    strings = [(
-        "`%s`" % markdown_adjust(test),
-        ("`%s`" % markdown_adjust(subtest)) if subtest else "",
-        err_string(results, iterations),
-        ("`%s`" % markdown_adjust(";".join(messages))) if len(messages) else ""
-    )
-               for test, subtest, results, messages in inconsistent]
-    table(["Test", "Subtest", "Results", "Messages"], strings, logger.error)
-
-
-def write_results(results, iterations, comment_pr):
-    """Output all test results to logger.info."""
-    pr_number = None
-    if comment_pr:
-        try:
-            pr_number = int(comment_pr)
-        except ValueError:
-            pass
-    logger.info("## All results ##\n")
-    if pr_number:
-        logger.info("<details>\n")
-        logger.info("<summary>%i %s ran</summary>\n\n" % (len(results),
-                                                          "tests" if len(results) > 1
-                                                          else "test"))
-
-    for test_name, test in results.iteritems():
-        baseurl = "http://w3c-test.org/submissions"
-        if "https" in os.path.splitext(test_name)[0].split(".")[1:]:
-            baseurl = "https://w3c-test.org/submissions"
-        if pr_number:
-            logger.info("<details>\n")
-            logger.info('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
-                        (baseurl, pr_number, test_name, test_name))
-        else:
-            logger.info("### %s ###" % test_name)
-        strings = [("", err_string(test["status"], iterations), "")]
-
-        strings.extend(((
-            ("`%s`" % markdown_adjust(subtest_name)) if subtest else "",
-            err_string(subtest["status"], iterations),
-            ("`%s`" % markdown_adjust(';'.join(subtest["messages"]))) if len(subtest["messages"]) else ""
-        ) for subtest_name, subtest in test["subtests"].items()))
-        table(["Subtest", "Results", "Messages"], strings, logger.info)
-        if pr_number:
-            logger.info("</details>\n")
-
-    if pr_number:
-        logger.info("</details>\n")
-
-
 def get_parser():
     """Create and return script-specific argument parser."""
     description = """Detect instabilities in new tests by executing tests
     repeatedly and comparing results between executions."""
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("--root",
-                        action="store",
-                        default=os.path.join(os.path.expanduser("~"), "build"),
-                        help="Root path")
-    parser.add_argument("--iterations",
-                        action="store",
-                        default=10,
-                        type=int,
-                        help="Number of times to run tests")
     parser.add_argument("--comment-pr",
                         action="store",
                         default=os.environ.get("TRAVIS_PULL_REQUEST"),
@@ -683,34 +163,25 @@ def get_parser():
                         type=str,
                         help="Location of ini-formatted configuration file",
                         default="check_stability.ini")
-    parser.add_argument("--sauce-platform",
-                        action="store",
-                        default=os.environ.get("PLATFORM"),
-                        help="Sauce Labs OS")
-    parser.add_argument("--sauce-build-number",
-                        action="store",
-                        default=os.environ.get("TRAVIS_BUILD_NUMBER"),
-                        help="Sauce Labs build identifier")
-    parser.add_argument("--sauce-build-tags",
-                        action="store", nargs="*",
-                        default=[os.environ.get("TRAVIS_PYTHON_VERSION")],
-                        help="Sauce Labs build tag")
-    parser.add_argument("--sauce-tunnel-identifier",
-                        action="store",
-                        default=os.environ.get("TRAVIS_JOB_NUMBER"),
-                        help="Sauce Connect tunnel identifier")
-    parser.add_argument("--sauce-user",
-                        action="store",
-                        default=os.environ.get("SAUCE_USERNAME"),
-                        help="Sauce Labs user name")
-    parser.add_argument("--sauce-key",
-                        action="store",
-                        default=os.environ.get("SAUCE_ACCESS_KEY"),
-                        help="Sauce Labs access key")
-    parser.add_argument("product",
-                        action="store",
-                        help="Product to run against (`browser-name` or 'browser-name:channel')")
     return parser
+
+
+def set_default_args(kwargs):
+    kwargs["product"] = kwargs["product"].split(":")[0]
+
+    kwargs.set_if_none("sauce_platform",
+                        default=os.environ.get("PLATFORM"))
+    kwargs.set_if_none("sauce_build_number",
+                        os.environ.get("TRAVIS_BUILD_NUMBER"))
+    python_version = os.environ.get("TRAVIS_PYTHON_VERSION")
+    kwargs.set_if_none("sauce_build_tags",
+                        [python_version] if python_version else [])
+    kwargs.set_if_none("sauce_tunnel_identifier",
+                       os.environ.get("TRAVIS_JOB_NUMBER"))
+    kwargs.set_if_none("sauce-user",
+                       os.environ.get("SAUCE_USERNAME"))
+    kwargs.set_if_none("sauce_key",
+                        os.environ.get("SAUCE_ACCESS_KEY"))
 
 
 def pr():
@@ -720,13 +191,11 @@ def pr():
 
 def main():
     """Perform check_stability functionality and return exit code."""
-    global wpt_root
-    global wptrunner_root
     global logger
 
     retcode = 0
     parser = get_parser()
-    args = parser.parse_args()
+    args, wpt_args = parser.parse_known_args()
 
     with open(args.config_file, 'r') as config_fp:
         config = SafeConfigParser()
@@ -739,63 +208,51 @@ def main():
                         "Log reached capacity (%s bytes); output disabled." % args.output_bytes)
 
     logger = logging.getLogger(os.path.splitext(__file__)[0])
+
     setup_logging()
 
-    wpt_root = os.path.abspath(os.curdir)
-    wptrunner_root = os.path.normpath(os.path.join(wpt_root, "tools", "wptrunner"))
+    venv = Virtualenv(os.environ.get("VIRTUAL_ENV"))
 
-    if not os.path.exists(args.root):
-        logger.critical("Root directory %s does not exist" % args.root)
-        return 1
-
-    os.chdir(args.root)
     browser_name = args.product.split(":")[0]
 
-    if browser_name == "sauce" and not args.sauce_key:
+    if browser_name == "sauce" and not wpt_args.sauce_key:
         logger.warning("Cannot run tests on Sauce Labs. No access key.")
         return retcode
 
     pr_number = pr()
 
     with TravisFold("browser_setup"):
-        logger.info(format_comment_title(args.product))
+        logger.info(format_comment_title(wpt_args.product))
 
-        browser_cls = {"firefox": Firefox,
-                       "chrome": Chrome,
-                       "sauce": Sauce}.get(browser_name)
-        if browser_cls is None:
-            logger.critical("Unrecognised browser %s" % browser_name)
-            return 1
+        if pr is not None:
+            deepen_checkout(args.user)
 
+        # Ensure we have a branch called "master"
         fetch_wpt(args.user, "master:master")
 
         head_sha1 = get_sha1()
         logger.info("Testing web-platform-tests at revision %s" % head_sha1)
 
-        if pr is not None:
-            deepen_checkout()
-
         branch_point = testfiles.branch_point(args.user)
 
-        # For now just pass the whole list of changed files to wptrunner and
-        # assume that it will run everything that's actually a test
         files_changed, files_ignored = testfiles.files_changed("%s..HEAD" % branch_point, ignore_changes)
 
         if files_ignored:
             logger.info("Ignoring %s changed files:\n%s" % (len(files_ignored),
                                                             "".join(" * %s\n" % item for item in files_ignored)))
 
-        if not files_changed:
-            logger.info("No files changed")
+        tests_changed, files_affected = testfiles.affected_testfiles(files_changed, skip_tests)
+
+        if not (tests_changed or files_affected):
+            logger.info("No tests changed")
             return 0
 
-        build_manifest()
-        install_wptrunner()
-        do_delayed_imports()
+        wpt_kwargs =  set_default_args(vars(wpt_kwargs))
 
-        browser = browser_cls(**vars(args))
-        browser.install()
-        browser.install_webdriver()
+        venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
+        venv.install("requests")
+
+        run(venv, install=True, wpt_kwargs)
 
         try:
             version = browser.version(args.root)
@@ -809,7 +266,9 @@ def main():
 
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 
-        wptrunner_files = list(itertools.chain(tests_changed, affected_testfiles)
+        wptrunner_files = list(itertools.chain(tests_changed, affected_testfiles))
+
+        wptrunner_kwargs = Kwargs(wptrunner_kwargs)
 
         kwargs = wptrunner_args(args.root,
                                 wptrunner_files,
@@ -818,22 +277,8 @@ def main():
 
     with TravisFold("running_tests"):
         logger.info("Starting %i test iterations" % args.iterations)
-        with open("raw.log", "wb") as log:
-            wptrunner.setup_logging(kwargs,
-                                    {"raw": log})
-            # Setup logging for wptrunner that keeps process output and
-            # warning+ level logs only
-            wptrunner.logger.add_handler(
-                LogActionFilter(
-                    LogLevelFilter(
-                        StreamHandler(
-                            sys.stdout,
-                            TbplFormatter()
-                        ),
-                        "WARNING"),
-                    ["log", "process_output"]))
 
-            wptrunner.run_tests(**kwargs)
+        wptrunner.run_tests(**kwargs)
 
         with open("raw.log", "rb") as log:
             results, inconsistent = process_results(log, args.iterations)

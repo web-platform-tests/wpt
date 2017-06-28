@@ -303,7 +303,7 @@ class Edge(Browser):
 
 
 class Servo(Browser):
-    """Firefox-specific interface.
+    """Servo-specific interface.
 
     Includes installation, webdriver installation, and wptrunner setup methods.
     """
@@ -317,6 +317,32 @@ class Servo(Browser):
 
     def find_binary(self):
         return find_executable("servo")
+
+    def find_webdriver(self):
+        return None
+
+    def install_webdriver(self):
+        raise NotImplementedError
+
+    def version(self, root):
+        return None
+
+
+class Sauce(Browser):
+    """Sauce-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "sauce"
+    requirements = "requirements_sauce.txt"
+
+    def install(self, platform, dest=None):
+        """Install Servo."""
+        raise NotImplementedError
+
+    def find_binary(self):
+        return None
 
     def find_webdriver(self):
         return None

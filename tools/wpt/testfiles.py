@@ -39,7 +39,7 @@ def branch_point():
         # http://stackoverflow.com/questions/13460152/find-first-ancestor-commit-in-another-branch
         head = git("rev-parse", "HEAD")
         not_heads = [item for item in git("rev-parse", "--not", "--all").split("\n")
-                     if item.strip() and not head in item]
+                     if item.strip() and head not in item]
         commits = git("rev-list", "HEAD", *not_heads).split("\n")
         branch_point = None
         if len(commits):

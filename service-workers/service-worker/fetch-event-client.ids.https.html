@@ -49,6 +49,7 @@
     });
   }
 
+  // Sends a message to the service worker and waits for a response
   function swPostAction(sw, action, ...args) {
     const id = Math.random();
     sw.postMessage({ id, action, args });
@@ -64,7 +65,7 @@
 
     assert_equals(clients.length, 1, 'One controlled client');
 
-    const client = clients[0];
+    const iframeClient = clients[0];
 
     // The service worker broadcasts client details for any request with
     // 'test' as one of the search params.
@@ -72,9 +73,9 @@
 
     const results = await swMessageResponse(testId);
 
-    assert_equals(results.clientId, client.id, 'Fetch comes from iframe');
-    assert_equals(results.reservedClientId, '', 'Empty reserved client id');
-    assert_equals(results.targetClientId, '', 'Empty target client id');
+    assert_equals(results.clientId, iframeClient.id, 'Fetch comes from iframe');
+    assert_equals(results.resultingClientId, '', 'No resulting client id');
+    assert_equals(results.replacesClientId, '', 'No client replaced');
 
     await cleanup();
   }, 'Correct client IDs for subresource loads');
@@ -88,7 +89,7 @@
 
     assert_equals(clients.length, 1, 'One controlled client');
 
-    const client = clients[0];
+    const iframeClient = clients[0];
     const iframeLoaded = iframeLoad(iframe);
 
     // The service worker broadcasts client details for any request with
@@ -99,17 +100,21 @@
 
     const results = await swMessageResponse(testId);;
 
-    assert_equals(results.clientId, client.id, 'Fetch comes from iframe');
-    assert_not_equals(results.reservedClientId, '', 'Not empty reserved client id');
-    assert_not_equals(results.reservedClientId, undefined, 'Not empty reserved client id');
-    assert_equals(results.targetClientId, client.id, 'Target client id is the iframe');
+    assert_equals(results.clientId, iframeClient.id, 'Fetch comes from iframe');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframeClient.id, 'Replaces iframe client');
 
     await iframeLoaded;
 
     iframe.contentWindow.fetch('?test=' + testId);
-    const fetchResults = await swMessageResponse(testId);
+    const subresourceResults = await swMessageResponse(testId);
 
-    assert_equals(results.reservedClientId, fetchResults.clientId, 'Iframe now uses reserved client ID for subresource fetches');
+    assert_equals(
+      results.resultingClientId,
+      subresourceResults.clientId,
+      'Resulting client id has become the client id for subresource fetches'
+    );
 
     await cleanup();
   }, 'Correct client IDs for iframe navigation');
@@ -133,9 +138,9 @@
     const results = await swMessageResponse(testId);
 
     assert_equals(results.clientId, thisClientId, 'Fetch comes from this page');
-    assert_not_equals(results.reservedClientId, '', 'Not empty reserved client id');
-    assert_not_equals(results.reservedClientId, undefined, 'Not empty reserved client id');
-    assert_equals(results.targetClientId, iframeClient.id, 'Target client id is the iframe');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframeClient.id, 'Replaces iframe client');
 
     await cleanup();
   }, 'Correct client IDs for iframe src navigation');
@@ -156,29 +161,29 @@
     const iframe1Client = clients.find(c => c.url.endsWith('?1'));
     const iframe2Client = clients.find(c => c.url.endsWith('?2'));
     
-    const iframe2Loaded = iframeLoad(iframe2);
-
     assert_not_equals(iframe1Client.id, iframe2Client.id, 'Clients have different IDs');
 
-    // Click a link in iframe1 that navigates iframe2.
     // The service worker broadcasts client details for any request with
     // 'test' as one of the search params.
     iframe1.contentDocument.body.innerHTML = `<a href="?test=${testId}" target="iframe2">link</a>`;
+    
+    // Click a link in iframe1 that navigates iframe2.
+    const iframe2Loaded = iframeLoad(iframe2);
     iframe1.contentDocument.querySelector('a').click();
 
     const results = await swMessageResponse(testId);
 
     assert_equals(results.clientId, iframe1Client.id, 'Fetch comes from iframe1');
-    assert_not_equals(results.reservedClientId, '', 'Not empty reserved client id');
-    assert_not_equals(results.reservedClientId, undefined, 'Not empty reserved client id');
-    assert_equals(results.targetClientId, iframe2Client.id, 'Target client id is iframe2');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframe2Client.id, 'Replaces iframe2 client');
 
     await iframe2Loaded;
 
     iframe2.contentWindow.fetch('?test=' + testId);
     const fetchResults = await swMessageResponse(testId);
 
-    assert_equals(results.reservedClientId, fetchResults.clientId, 'iframe2 now uses reserved client ID for subresource fetches');
+    assert_equals(results.resultingClientId, fetchResults.clientId, 'iframe2 now uses resulting client ID for subresource fetches');
 
     await cleanup();
   }, 'Correct client IDs for clicking a link in one iframe which navigates another');
@@ -202,9 +207,9 @@
     const results = await swMessageResponse(testId);;
 
     assert_equals(results.clientId, '', 'No client id as fetch is from another origin');
-    assert_not_equals(results.reservedClientId, '', 'Not empty reserved client id');
-    assert_not_equals(results.reservedClientId, undefined, 'Not empty reserved client id');
-    assert_equals(results.targetClientId, '', 'No target client id as target is from another origin');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, '', 'No replaces client id as target is from another origin');
 
     await cleanup();
   }, 'Correct client IDs for cross-origin iframe navigation');

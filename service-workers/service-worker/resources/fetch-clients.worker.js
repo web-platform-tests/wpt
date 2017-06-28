@@ -10,8 +10,8 @@ addEventListener('fetch', event => {
   event.waitUntil(
     broadcast(url.searchParams.get('test'), {
       clientId: event.clientId,
-      reservedClientId: event.reservedClientId,
-      targetClientId: event.targetClientId
+      resultingClientId: event.resultingClientId,
+      replacesClientId: event.replacesClientId
     })
   );
 });

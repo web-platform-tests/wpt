@@ -1,0 +1,4 @@
+{
+    "test-jobs": {"path": "jobs.py", "script": "run", "parser": "create_parser", "help": "List test jobs that should run for a set of commits",
+                  "virtualenv": false}
+}

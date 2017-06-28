@@ -517,8 +517,7 @@ var gCSSProperties = {
   },
   'flood-opacity': {
     // https://drafts.fxtf.org/filters/#propdef-flood-opacity
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'font-size': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-size
@@ -1224,8 +1223,7 @@ var gCSSProperties = {
   },
   'stop-opacity': {
     // https://svgwg.org/svg2-draft/pservers.html#StopOpacityProperty
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'stroke': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeProperty

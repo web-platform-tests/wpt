@@ -36,6 +36,9 @@
 span {
 	font-family: serif;
 	color: red;
+	line-height: 0; /* not clear that this is needed based on specs,
+			   but without it, line height calculations go
+			   wrong (too tall) in some browsers. */
 }
 </style>
 

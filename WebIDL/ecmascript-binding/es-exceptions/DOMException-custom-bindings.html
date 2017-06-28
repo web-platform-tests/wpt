@@ -34,6 +34,12 @@ test(() => {
 }, "message property descriptor");
 
 test(() => {
+  const getter = Object.getOwnPropertyDescriptor(DOMException.prototype, "message").get;
+
+  assert_throws(new TypeError(), () => getter.apply({}));
+}, "message getter performs brand checks (i.e. is not [LenientThis]");
+
+test(() => {
   const e = new DOMException("message", "name");
   assert_false(e.hasOwnProperty("name"), "property is not own");
 
@@ -45,6 +51,12 @@ test(() => {
 }, "name property descriptor");
 
 test(() => {
+  const getter = Object.getOwnPropertyDescriptor(DOMException.prototype, "name").get;
+
+  assert_throws(new TypeError(), () => getter.apply({}));
+}, "name getter performs brand checks (i.e. is not [LenientThis]");
+
+test(() => {
   const e = new DOMException("message", "name");
   assert_false(e.hasOwnProperty("code"), "property is not own");
 
@@ -54,6 +66,12 @@ test(() => {
   assert_true(propDesc.enumerable, "property descriptor enumerable");
   assert_true(propDesc.configurable, "property descriptor configurable");
 }, "code property descriptor");
+
+test(() => {
+  const getter = Object.getOwnPropertyDescriptor(DOMException.prototype, "code").get;
+
+  assert_throws(new TypeError(), () => getter.apply({}));
+}, "code getter performs brand checks (i.e. is not [LenientThis]");
 
 test(() => {
   const e = new DOMException("message", "InvalidCharacterError");
@@ -73,9 +91,25 @@ test(() => {
 
 test(() => {
   const e = new DOMException("message", "name");
-  assert_equals(typeof DOMException.prototype.toString, "function", "toString exists on the DOMException prototype");
-  assert_equals(e.toString(), "name: message", "toString() returns the concatenation");
-}, "toString() is defined like for other interfaces, and behaves correctly");
+  assert_false(e.hasOwnProperty("toString"), "toString must not exist on the instance");
+  assert_false(DOMException.prototype.hasOwnProperty("toString"), "toString must not exist on DOMException.prototype");
+  assert_equals(typeof e.toString, "function", "toString must still exist (via Error.prototype)");
+}, "Inherits its toString() from Error.prototype");
+
+test(() => {
+  const e = new DOMException("message", "name");
+  assert_equals(e.toString(), "name: message",
+    "The default Error.prototype.toString() behavior must work on supplied name and message");
+
+  Object.defineProperty(e, "name", { value: "new name" });
+  Object.defineProperty(e, "message", { value: "new message" });
+  assert_equals(e.toString(), "new name: new message",
+    "The default Error.prototype.toString() behavior must work on shadowed names and messages");
+}, "toString() behavior from Error.prototype applies as expected");
+
+test(() => {
+  assert_throws(new TypeError(), () => DOMException.prototype.toString());
+}, "DOMException.prototype.toString() applied to DOMException.prototype throws because of name/message brand checks");
 
 test(() => {
   let stackOnNormalErrors;

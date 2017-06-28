@@ -1473,7 +1473,7 @@ policies and contribution forms [3].
     }
 
     /*
-     * Private method for registering cleanup functions. `testharnes.js`
+     * Private method for registering cleanup functions. `testharness.js`
      * internals should use this method instead of the public `add_cleanup`
      * method in order to hide implementation details from the harness status
      * message in the case errors.

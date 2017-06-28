@@ -15,10 +15,9 @@ from browserutils import browser, utils, virtualenv
 logger = None
 
 
-
-
 class WptrunError(Exception):
     pass
+
 
 class WptrunnerHelpAction(argparse.Action):
     def __init__(self,
@@ -42,18 +41,18 @@ class WptrunnerHelpAction(argparse.Action):
 
 
 def create_parser():
-    parser = argparse.ArgumentParser()
+    from wptrunner import wptcommandline
+
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("product", action="store",
                         help="Browser to run tests in")
-    parser.add_argument("tests", action="store", nargs="*",
-                        help="Path to tests to run")
-    parser.add_argument("wptrunner_args", nargs=argparse.REMAINDER,
-                        help="Arguments to pass through to wptrunner")
     parser.add_argument("--yes", "-y", dest="prompt", action="store_false", default=True,
                         help="Don't prompt before installing components")
-    parser.add_argument("--wptrunner-help",
-                        action=WptrunnerHelpAction, default=argparse.SUPPRESS,
-                        help="Print wptrunner help")
+    parser.add_argument("--stability", action="store_true",
+                        help="Stability check tests")
+    parser.add_argument("--install-browser", action="store_true",
+                        help="Install the latest development version of the browser")
+    parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
 
@@ -114,173 +113,196 @@ See README.md for more details.""" % "\n".join("%s\t%s" %
                                                for host in expected_hosts))
 
 
-def prompt_install(component, prompt):
-    if not prompt:
-        return True
-    while True:
-        resp = raw_input("Download and install %s [Y/n]? " % component).strip().lower()
-        if not resp or resp == "y":
+class BrowserSetup(object):
+    name = None
+    browser_cls = None
+
+    def __init__(self, venv, prompt=True):
+        self.browser = self.browser_cls()
+        self.venv = venv
+        self.prompt = prompt
+        self.install_path = None
+
+    def prompt_install(self, component):
+        if not self.prompt:
             return True
-        elif resp == "n":
-            return False
+        while True:
+            resp = raw_input("Download and install %s [Y/n]? " % component).strip().lower()
+            if not resp or resp == "y":
+                return True
+            elif resp == "n":
+                return False
+
+    def install(self):
+        if self.prompt_install(self.name):
+            self.install_path = self.browser.install()
+
+    def setup(self, kwargs):
+        self.venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements))
+        self.setup_kwargs(kwargs)
 
 
-def args_firefox(venv, kwargs, firefox, prompt=True):
-    if kwargs["binary"] is None:
-        binary = firefox.find_binary()
-        if binary is None:
-            raise WptrunError("""Firefox binary not found on $PATH.
+class Firefox(BrowserSetup):
+    name = "firefox"
+    browser_cls = browser.Firefox
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary(self.install_path)
+            if binary is None:
+                raise WptrunError("""Firefox binary not found on $PATH.
 
 Install Firefox or use --binary to set the binary path""")
-        kwargs["binary"] = binary
+            kwargs["binary"] = binary
 
-    if kwargs["certutil_binary"] is None and kwargs["ssl_type"] != "none":
-        certutil = firefox.find_certutil()
+        if kwargs["certutil_binary"] is None and kwargs["ssl_type"] != "none":
+            certutil = self.browser.find_certutil()
 
-        if certutil is None:
-            # Can't download this for now because it's missing the libnss3 library
-            raise WptrunError("""Can't find certutil.
+            if certutil is None:
+                # Can't download this for now because it's missing the libnss3 library
+                raise WptrunError("""Can't find certutil.
 
 This must be installed using your OS package manager or directly e.g.
 
 Debian/Ubuntu:
-sudo apt install libnss3-tools
+    sudo apt install libnss3-tools
 
 macOS/Homebrew:
-brew install nss
+    brew install nss
 
 Others:
-Download the firefox archive and common.tests.zip archive for your platform
-from
-https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/
-Then extract certutil[.exe] from the tests.zip package and
-libnss3[.so|.dll|.dynlib] and but the former on your path and the latter on
-your library path.
+    Download the firefox archive and common.tests.zip archive for your platform
+    from https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/
+
+   Then extract certutil[.exe] from the tests.zip package and
+   libnss3[.so|.dll|.dynlib] and but the former on your path and the latter on
+   your library path.
 """)
-        else:
-            print("Using certutil %s" % certutil)
+            else:
+                print("Using certutil %s" % certutil)
 
-        if certutil is not None:
-            kwargs["certutil_binary"] = certutil
-        else:
-            print("Unable to find or install certutil, setting ssl-type to none")
-            kwargs["ssl_type"] = "none"
+            if certutil is not None:
+                kwargs["certutil_binary"] = certutil
+            else:
+                print("Unable to find or install certutil, setting ssl-type to none")
+                kwargs["ssl_type"] = "none"
 
-    if kwargs["webdriver_binary"] is None and "wdspec" in kwargs["test_types"]:
-        webdriver_binary = firefox.find_webdriver()
+        if kwargs["webdriver_binary"] is None and "wdspec" in kwargs["test_types"]:
+            webdriver_binary = self.browser.find_webdriver()
 
-        if webdriver_binary is None:
-            install = prompt_install("geckodriver", prompt)
+            if webdriver_binary is None:
+                install = self.prompt_install("geckodriver")
 
-            if install:
-                print("Downloading geckodriver")
-                webdriver_binary = firefox.install_webdriver(dest=venv.bin_path)
-        else:
-            print("Using webdriver binary %s" % webdriver_binary)
+                if install:
+                    print("Downloading geckodriver")
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+            else:
+                print("Using webdriver binary %s" % webdriver_binary)
 
-        if webdriver_binary:
-            kwargs["webdriver_binary"] = webdriver_binary
-        else:
-            print("Unable to find or install geckodriver, skipping wdspec tests")
-            kwargs["test_types"].remove("wdspec")
+            if webdriver_binary:
+                kwargs["webdriver_binary"] = webdriver_binary
+            else:
+                print("Unable to find or install geckodriver, skipping wdspec tests")
+                kwargs["test_types"].remove("wdspec")
 
-    if kwargs["prefs_root"] is None:
-        print("Downloading gecko prefs")
-        prefs_root = firefox.install_prefs(venv.path)
-        kwargs["prefs_root"] = prefs_root
-
-
-def setup_firefox(venv, kwargs, prompt=True):
-    firefox = browser.Firefox()
-    args_firefox(venv, kwargs, firefox, prompt)
-    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", firefox.requirements))
+        if kwargs["prefs_root"] is None:
+            print("Downloading gecko prefs")
+            prefs_root = self.browser.install_prefs(self.venv.path)
+            kwargs["prefs_root"] = prefs_root
 
 
-def args_chrome(venv, kwargs, chrome, prompt=True):
-    if kwargs["webdriver_binary"] is None:
-        webdriver_binary = chrome.find_webdriver()
+class Chrome(BrowserSetup):
+    name = "chrome"
+    browser_cls = browser.Chrome
 
-        if webdriver_binary is None:
-            install = prompt_install("chromedriver", prompt)
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
 
-            if install:
-                print("Downloading chromedriver")
-                webdriver_binary = chrome.install_webdriver(dest=venv.bin_path)
-        else:
-            print("Using webdriver binary %s" % webdriver_binary)
+            if webdriver_binary is None:
+                install = self.prompt_install("chromedriver")
 
-        if webdriver_binary:
-            kwargs["webdriver_binary"] = webdriver_binary
-        else:
-            raise WptrunError("Unable to locate or install chromedriver binary")
+                if install:
+                    print("Downloading chromedriver")
+                    webdriver_binary = self.browser.install_webdriver(dest=self.venv.bin_path)
+            else:
+                print("Using webdriver binary %s" % webdriver_binary)
 
-
-def setup_chrome(venv, kwargs, prompt=True):
-    chrome = browser.Chrome()
-    args_chrome(venv, kwargs, chrome, prompt)
-    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", chrome.requirements))
+            if webdriver_binary:
+                kwargs["webdriver_binary"] = webdriver_binary
+            else:
+                raise WptrunError("Unable to locate or install chromedriver binary")
 
 
-def args_edge(venv, kwargs, edge, prompt=True):
-    if kwargs["webdriver_binary"] is None:
-        webdriver_binary = edge.find_webdriver()
+class Edge(BrowserSetup):
+    name = "edge"
+    browser_cls = browser.Edge
 
-        if webdriver_binary is None:
-            raise WptrunError("""Unable to find WebDriver and we aren't yet clever enough to work out which
+    def install(self):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                raise WptrunError("""Unable to find WebDriver and we aren't yet clever enough to work out which
 version to download. Please go to the following URL and install the correct
 version for your Edge/Windows release somewhere on the %PATH%:
 
 https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
- """)
-        kwargs["webdriver_binary"] = webdriver_binary
+""")
+            kwargs["webdriver_binary"] = webdriver_binary
 
 
-def setup_edge(venv, kwargs, prompt=True):
-    edge = browser.Edge()
-    args_edge(venv, kwargs, edge, prompt)
-    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", edge.requirements))
+class Sauce(BrowserSetup):
+    name = "sauce"
+    browser_cls = browser.Sauce
+
+    def install(self):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        product, browser = kwargs["product"].split(":")
+        kwargs["test_types"] = ["testharness", "reftest"]
 
 
-def setup_sauce(kwargs):
-    raise NotImplementedError
+class Servo(BrowserSetup):
+    name = "servo"
+    browser_cls = browser.Servo
 
+    def install(self):
+        raise NotImplementedError
 
-def args_servo(venv, kwargs, servo, prompt=True):
-    if kwargs["binary"] is None:
-        binary = servo.find_binary()
+    def setup_kwargs(self, kwargs):
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary()
 
-        if binary is None:
-            raise WptrunError("Unable to find servo binary on the PATH")
-        kwargs["binary"] = binary
-
-
-def setup_servo(venv, kwargs, prompt=True):
-    servo = browser.Servo()
-    args_servo(venv, kwargs, servo, prompt)
-    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", servo.requirements))
+            if binary is None:
+                raise WptrunError("Unable to find servo binary on the PATH")
+            kwargs["binary"] = binary
 
 
 product_setup = {
-    "firefox": setup_firefox,
-    "chrome": setup_chrome,
-    "edge": setup_edge,
-    "servo": setup_servo
+    "firefox": Firefox,
+    "chrome": Chrome,
+    "edge": Edge,
+    "servo": Servo,
+    "sauce": Sauce,
 }
 
 
-def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
+def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
     from wptrunner import wptrunner, wptcommandline
 
     global logger
 
-    wptparser = wptcommandline.create_parser()
-    kwargs = utils.Kwargs(vars(wptparser.parse_args(wptrunner_args)).iteritems())
+    kwargs = utils.Kwargs(kwargs.iteritems())
+
+    product = kwargs["product"]
 
     wptrunner.setup_logging(kwargs, {"mach": sys.stdout})
     logger = wptrunner.logger
-
-    kwargs["product"] = product
-    kwargs["test_list"] = tests
 
     check_environ(product)
     args_general(kwargs)
@@ -288,7 +310,12 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
     if product not in product_setup:
         raise WptrunError("Unsupported product %s" % product)
 
-    product_setup[product](venv, kwargs, prompt)
+    setup_cls = product_setup[product](venv, prompt)
+
+    setup_cls.setup(kwargs)
+
+    if install:
+        setup_cls.install()
 
     wptcommandline.check_args(kwargs)
 
@@ -300,14 +327,37 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
 
 
 def run(venv, **kwargs):
-    kwargs = setup_wptrunner(venv,
-                             kwargs["product"],
-                             kwargs["tests"],
-                             kwargs["wptrunner_args"],
-                             prompt=kwargs["prompt"])
+    #Remove arguments that aren't passed to wptrunner
+    prompt = kwargs.pop("prompt", True)
+    stability = kwargs.pop("stability", True)
+    install_browser = kwargs.pop("install_browser", False)
 
+    kwargs = setup_wptrunner(venv,
+                             prompt=prompt,
+                             install=install_browser,
+                             **kwargs)
+
+    if stability:
+        import stability
+        iterations, results, inconsistent = stability.run(venv, logger, **kwargs)
+
+        def log(x):
+            print(x)
+
+        if inconsistent:
+            stability.write_inconsistent(log, inconsistent, iterations)
+        else:
+            log("All tests stable")
+        rv = len(inconsistent) > 0
+    else:
+        rv = run_single(venv, **kwargs) > 0
+
+    return rv
+
+
+def run_single(venv, **kwargs):
     from wptrunner import wptrunner
-    wptrunner.start(**kwargs)
+    return wptrunner.start(**kwargs)
 
 
 def main():
@@ -320,9 +370,10 @@ def main():
         venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
         venv.install("requests")
 
-        run(venv, vars(args))
+        return run(venv, vars(args))
     except WptrunError as e:
         exit(e.message)
+
 
 if __name__ == "__main__":
     import pdb

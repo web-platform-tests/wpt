@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>idlharness: Immutable prototypes</title>
-  <script src="../../testharness.js"></script>
-  <script src="../../testharnessreport.js"></script>
-  <script src="../../WebIDLParser.js"></script>
-  <script src="../../idlharness.js"></script>
+  <script src="../../../../testharness.js"></script>
+  <script src="../../../../testharnessreport.js"></script>
+  <script src="../../../../WebIDLParser.js"></script>
+  <script src="../../../../idlharness.js"></script>
 </head>
 <body>
 <script>
@@ -86,7 +86,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Object.setPrototypeOf should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function () {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw",
+            "message": "assert_throws: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw",
             "stack": "(implementation-defined)"
         },
         {
@@ -100,7 +100,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via __proto__ should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function () {\n            obj.__proto__ = newValue;\n        }\" did not throw",
+            "message": "assert_throws: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw",
             "stack": "(implementation-defined)"
         },
         {
@@ -128,7 +128,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Object.setPrototypeOf should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function () {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw",
+            "message": "assert_throws: function \"function() {\n            Object.setPrototypeOf(obj, newValue);\n        }\" did not throw",
             "stack": "(implementation-defined)"
         },
         {
@@ -142,7 +142,7 @@ idlArray.test();
             "name": "Foo interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via __proto__ should throw a TypeError",
             "status_string": "FAIL",
             "properties": {},
-            "message": "assert_throws: function \"function () {\n            obj.__proto__ = newValue;\n        }\" did not throw",
+            "message": "assert_throws: function \"function() {\n            obj.__proto__ = newValue;\n        }\" did not throw",
             "stack": "(implementation-defined)"
         },
         {

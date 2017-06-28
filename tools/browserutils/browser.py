@@ -247,7 +247,8 @@ class Chrome(Browser):
         url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (latest,
                                                                                      self.platform_string())
         unzip(get(url).raw, dest)
-        path = find_executable(dest, "chromedriver")
+
+        path = find_executable("chromedriver", dest)
         st = os.stat(path)
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path

@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>DOMException exotic-ness</title>
+<link rel="help" href="https://heycam.github.io/webidl/#es-DOMException-constructor-object">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+
+test(() => {
+  DOMException();
+}, "Can construct without new");
+
+test(() => {
+  assert_equals(Object.getPrototypeOf(DOMException.prototype), Error.prototype);
+}, "inherits from Error: prototype-side");
+
+test(() => {
+  assert_equals(Object.getPrototypeOf(DOMException), Error);
+}, "inherits from Error: class-side");
+
+test(() => {
+  const e = new DOMException("message", "name");
+  assert_true(e.hasOwnProperty("message"), "property is own");
+
+  const propDesc = Object.getOwnPropertyDescriptor(e, "message");
+  assert_equals(propDesc.value, "message", "property descriptor value");
+  assert_true(propDesc.writable, "property descriptor writable");
+  assert_false(propDesc.enumerable, "property descriptor enumerable");
+  assert_true(propDesc.configurable, "property descriptor configurable");
+}, "message property descriptor");
+
+test(() => {
+  const e = new DOMException("message", "name");
+  assert_true(e.hasOwnProperty("name"), "property is own");
+
+  const propDesc = Object.getOwnPropertyDescriptor(e, "name");
+  assert_equals(propDesc.value, "name", "property descriptor value");
+  assert_true(propDesc.writable, "property descriptor writable");
+  assert_false(propDesc.enumerable, "property descriptor enumerable");
+  assert_true(propDesc.configurable, "property descriptor configurable");
+}, "name property descriptor");
+
+test(() => {
+  const e = new DOMException("message", "name");
+  assert_equals(Object.prototype.toString.call(e), "Error");
+}, "Object.prototype.toString behavior is inherited from Error");
+
+test(() => {
+  const e = new DOMException("message", "name");
+  assert_false(e.hasOwnProperty(Symbol.toStringTag), "on instance");
+  assert_false(Object.getPrototypeOf(e).hasOwnProperty(Symbol.toStringTag), "on prototype");
+}, "No @@toStringTag is present anywhere");
+</script>

@@ -25,6 +25,12 @@ var metadataElements = {
     type: "string",
     sizes: "settable tokenlist",
     referrerPolicy: {type: "enum", keywords: ["", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"]},
+    workerType: {
+      type: "enum",
+      keywords: ["classic", "module"],
+      defaultVal: "classic",
+      invalidVal: "",
+    },
 
     // Obsolete
     charset: "string",

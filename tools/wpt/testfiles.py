@@ -3,6 +3,7 @@ import itertools
 import logging
 import os
 import subprocess
+import sys
 
 from ..manifest import manifest, update
 
@@ -103,17 +104,20 @@ def _in_repo_root(full_path):
     return len(path_components) < 2
 
 
-def affected_testfiles(files_changed, skip_tests):
+def affected_testfiles(files_changed, skip_tests, manifest_path=None):
     """Determine and return list of test files that reference changed files."""
     affected_testfiles = set()
     # Exclude files that are in the repo root, because
     # they are not part of any test.
     files_changed = [f for f in files_changed if not _in_repo_root(f)]
     nontests_changed = set(files_changed)
-    manifest_file = os.path.join(wpt_root, "MANIFEST.json")
+    if manifest_path is None:
+        manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     test_types = ["testharness", "reftest", "wdspec"]
 
-    wpt_manifest = manifest.load(wpt_root, manifest_file)
+    wpt_manifest = manifest.load(wpt_root, manifest_path)
+    if wpt_manifest is None:
+        wpt_manifest = manifest.Manifest()
     update.update(wpt_root, wpt_manifest)
 
     support_files = {os.path.join(wpt_root, path)

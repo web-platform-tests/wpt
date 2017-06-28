@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/intersection-observer-test-utils.js"></script>
+
+<style>
+pre, #log {
+  position: absolute;
+  top: 0;
+  left: 200px;
+}
+#target {
+  background-color: green;
+  width: 100px;
+  height: 100px;
+}
+</style>
+
+<div id="target"></div>
+
+<script>
+var entries = [];
+
+runTestCycle(function() {
+  assert_equals(window.innerWidth, 800, "Window must be 800 pixels wide.");
+  assert_equals(window.innerHeight, 600, "Window must be 600 pixels high.");
+
+  var target = document.getElementById("target");
+  var root = document.getElementById("root");
+  var observer = new IntersectionObserver(function(changes) {
+    entries = entries.concat(changes)
+  });
+  observer.observe(target);
+  entries = entries.concat(observer.takeRecords());
+  assert_equals(entries.length, 0, "No initial notifications.");
+  runTestCycle(step0, "Intersecting notification after first rAF.");
+}, "IntersectionObserver should send a not-intersecting notification for a target that gets display:none.");
+
+function step0() {
+  runTestCycle(step1, "Not-intersecting notification after setting display:none on target.");
+  checkLastEntry(entries, 0, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, true]);
+  target.style.display = "none";
+}
+
+function step1() {
+  runTestCycle(step2, "Intersecting notification after removing display:none on target.");
+  checkLastEntry(entries, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false]);
+  target.style.display = "";
+}
+
+function step2() {
+  checkLastEntry(entries, 2, [8, 108, 8, 108, 8, 108, 8, 108, 0, 800, 0, 600, true]);
+}
+</script>

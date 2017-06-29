@@ -8,20 +8,22 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style type='text/css'>
-.test div { width: 50px; }
-#box[lang='cs-CZ'] { width: 100px; }
+.test div { width: 100px; height: 50px; background-color: blue; }
+#box[lang='cs-CZ'] { width: 50px; }
+.ref { width: 100px; height: 50px; background-color: blue; }
 </style>
 </head>
 <body>
 
 
-
+<p>The following two blocks should be <strong>identical</strong>.</p>
 <div class="test"><div id="box" lang="cs-Latn-CZ">&#xA0;</div></div>
+<p class="ref">&#xA0;</p>
 
 
 <script>
 test(function() {
-assert_equals(document.getElementById('box').offsetWidth, 50);
+assert_equals(document.getElementById('box').offsetWidth, 100);
 }, "A lang= value with language and region subtags will NOT match a lang attribute value with language, script and region subtags.");
 </script>
 

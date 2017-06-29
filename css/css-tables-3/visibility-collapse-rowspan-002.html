@@ -4,7 +4,7 @@
 <script src='/resources/testharnessreport.js'></script>
 <link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
-<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#visibility-collapse-cell-rendering">
 <style>
 table {
     border-spacing: 0;
@@ -16,15 +16,15 @@ table td {
 }
 </style>
 <main>
-    <h1>Visibility collapse (according to Edge's behavior)</h1>
-    <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">Spec</a>
+    <h1>Visibility collapse</h1>
+    <a href="https://drafts.csswg.org/css-tables-3/#visibility-collapse-cell-rendering">Spec</a>
     <p>
     Setting a row to visibility:collapse changes table height but not width.
     Here, the spanning cell is the only cell in its row.
     </p>
     <table id="one">
     	<tr id="spanningRowRef">
-    		<td rowspan="5" id="spanningCellRef">B</td>
+    		<td rowspan="5">B<br>B<br>B<br>B<br>B</td>
     	</tr>
     	<tr id="firstRowRef">
     		<td>aaaa</td>
@@ -40,12 +40,10 @@ table td {
     	</tr>
     </table>
     Bottom table is identical to top except second row has been collapsed.
-    The spanning cell's height does not change. This is according to Edge's
-    behavior. Note: Firefox's behavior is different in that the spanning
-    cell's height will shrink by a row's height and content may be clipped.
+    The spanning cell's height shrinks and is clipped.
     <table id="two">
     	<tr id="spanningRow">
-    		<td rowspan="5" id="spanningCell">B</td>
+    		<td rowspan="5" id="spanningCell">B<br>B<br>B<br>B<br>B</td>
     	</tr>
     	<tr id="firstRow">
     		<td>aaaa</td>
@@ -60,6 +58,9 @@ table td {
     		<td>dddd</td>
     	</tr>
     </table>
+
+    This text should not intersect with the table.
+
 </main>
 
 <script>
@@ -68,11 +69,6 @@ table td {
             document.getElementById('two').offsetWidth,
             document.getElementById('one').offsetWidth,
             "spanning row visibility:collapse doesn't change table width"
-        ],
-        [
-            document.getElementById('spanningRow').offsetHeight,
-            document.getElementById('spanningRowRef').offsetHeight,
-            "spanning row height stays the same height"
         ],
         [
         	document.getElementById('fourthRow').offsetHeight,
@@ -86,7 +82,8 @@ table td {
         ],
         [   document.getElementById('secondRow').offsetHeight,
             0,
-            "spanning row visibility:collapse makes row height 0"],
+            "spanning row visibility:collapse makes row height 0"
+        ],
        	[
        		document.getElementById('firstRow').offsetHeight,
             document.getElementById('firstRowRef').offsetHeight,
@@ -94,8 +91,8 @@ table td {
         ],
         [
             document.getElementById('spanningCell').offsetHeight,
-            document.getElementById('spanningCellRef').offsetHeight,
-            "the spanning cell stays the same height"
+            90,
+            "spanning cell shrinks to 90px in height"
         ]];
     for (i = 0; i< tests.length; i++) {
         test(function()

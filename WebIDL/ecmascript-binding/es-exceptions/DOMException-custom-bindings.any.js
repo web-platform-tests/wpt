@@ -1,13 +1,3 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>DOMException behaves mostly like an interface, with a few custom bindings</title>
-<link rel="help" href="https://heycam.github.io/webidl/#es-DOMException-constructor-object">
-<link rel="help" href="https://github.com/heycam/webidl/pull/378">
-<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
-<script>
 "use strict";
 
 test(() => {
@@ -128,4 +118,3 @@ test(() => {
 
   assert_equals(typeof stackOnDOMException, typeof stackOnNormalErrors, "The typeof values must match");
 }, "If the implementation has a stack property on normal errors, it also does on DOMExceptions");
-</script>

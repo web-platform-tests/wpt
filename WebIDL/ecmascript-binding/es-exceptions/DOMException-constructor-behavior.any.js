@@ -1,13 +1,5 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>DOMException constructor</title>
-<link rel=help href="https://heycam.github.io/webidl/#es-DOMException-constructor-object">
-<link rel=help href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-error.prototype.message">
-<link rel=help href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-error.prototype.name">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+'use strict';
+
 test(function() {
   var ex = new DOMException();
   assert_equals(ex.name, "Error",
@@ -135,5 +127,3 @@ test(function() {
   assert_equals(ex.code, 0,
                 "Should have 0 for code for a name in the exception names table with no legacy code");
 }, 'new DOMException("bar", "UnknownError")');
-
-</script>

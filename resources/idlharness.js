@@ -1380,81 +1380,14 @@ IdlInterface.prototype.test_self = function()
         }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
-    if (this.is_global() && typeof Object.setPrototypeOf === "function") {
-        // These functions test WebIDL as of 2017-06-06.
-        // https://heycam.github.io/webidl/#platform-object-setprototypeof
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-            var newValue = Object.create(null);
-
-            assert_throws(new TypeError(), function() {
-                Object.setPrototypeOf(self[this.name].prototype, newValue);
-            });
-
-            assert_equals(
-                    Object.getPrototypeOf(self[this.name].prototype),
-                    originalValue,
-                    "original value not modified"
-                );
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to a new value via Object.setPrototypeOf " +
-            "should throw a TypeError");
-
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-            var newValue = Object.create(null);
-
-            assert_throws(new TypeError(), function() {
-                self[this.name].prototype.__proto__ = newValue;
-            });
-
-            assert_equals(
-                    Object.getPrototypeOf(self[this.name].prototype),
-                    originalValue,
-                    "original value not modified"
-                );
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to a new value via __proto__ " +
-            "should throw a TypeError");
-
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-            var newValue = Object.create(null);
-
-            assert_false(Reflect.setPrototypeOf(self[this.name].prototype.__proto__, newValue));
-
-            assert_equals(
-                    Object.getPrototypeOf(self[this.name].prototype),
-                    originalValue,
-                    "original value not modified"
-                );
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to a new value via Reflect.setPrototypeOf " +
-            "should return false");
-
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-
-            Object.setPrototypeOf(self[this.name].prototype, originalValue);
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to its original value via Object.setPrototypeOf " +
-            "should not throw");
-
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-
-            self[this.name].prototype.__proto__ = originalValue;
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to its original value via __proto__ " +
-            "should not throw");
-
-        test(function() {
-            var originalValue = Object.getPrototypeOf(self[this.name].prototype);
-
-            assert_true(Reflect.setPrototypeOf(self[this.name].prototype, originalValue));
-        }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
-            "of global platform object - setting to its original value via Reflect.setPrototypeOf " +
-            "should return true");
+    // "If the interface is declared with the [Global] or [PrimaryGlobal]
+    // extended attribute, or the interface is in the set of inherited
+    // interfaces for any other interface that is declared with one of these
+    // attributes, then the interface prototype object must be an immutable
+    // prototype exotic object."
+    // https://heycam.github.io/webidl/#interface-prototype-object
+    if (this.is_global()) {
+        this.test_immutable_prototype("interface prototype object", self[this.name].prototype);
     }
 
     test(function()
@@ -1491,6 +1424,110 @@ IdlInterface.prototype.test_self = function()
         assert_equals(self[this.name].prototype.constructor, self[this.name],
                       this.name + '.prototype.constructor is not the same object as ' + this.name);
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
+};
+
+//@}
+IdlInterface.prototype.test_immutable_prototype = function(type, obj)
+//@{
+{
+    if (typeof Object.setPrototypeOf !== "function") {
+        return;
+    }
+
+    test(function(t) {
+        var originalValue = Object.getPrototypeOf(obj);
+        var newValue = Object.create(null);
+
+        t.add_cleanup(function() {
+            try {
+                Object.setPrototypeOf(obj, originalValue);
+            } catch (err) {}
+        });
+
+        assert_throws(new TypeError(), function() {
+            Object.setPrototypeOf(obj, newValue);
+        });
+
+        assert_equals(
+                Object.getPrototypeOf(obj),
+                originalValue,
+                "original value not modified"
+            );
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to a new value via Object.setPrototypeOf " +
+        "should throw a TypeError");
+
+    test(function(t) {
+        var originalValue = Object.getPrototypeOf(obj);
+        var newValue = Object.create(null);
+
+        t.add_cleanup(function() {
+            var setter = Object.getOwnPropertyDescriptor(
+                Object.prototype, '__proto__'
+            ).set;
+
+            try {
+                setter.call(obj, originalValue);
+            } catch (err) {}
+        });
+
+        assert_throws(new TypeError(), function() {
+            obj.__proto__ = newValue;
+        });
+
+        assert_equals(
+                Object.getPrototypeOf(obj),
+                originalValue,
+                "original value not modified"
+            );
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to a new value via __proto__ " +
+        "should throw a TypeError");
+
+    test(function(t) {
+        var originalValue = Object.getPrototypeOf(obj);
+        var newValue = Object.create(null);
+
+        t.add_cleanup(function() {
+            try {
+                Reflect.setPrototypeOf(obj, originalValue);
+            } catch (err) {}
+        });
+
+        assert_false(Reflect.setPrototypeOf(obj, newValue));
+
+        assert_equals(
+                Object.getPrototypeOf(obj),
+                originalValue,
+                "original value not modified"
+            );
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to a new value via Reflect.setPrototypeOf " +
+        "should return false");
+
+    test(function() {
+        var originalValue = Object.getPrototypeOf(obj);
+
+        Object.setPrototypeOf(obj, originalValue);
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to its original value via Object.setPrototypeOf " +
+        "should not throw");
+
+    test(function() {
+        var originalValue = Object.getPrototypeOf(obj);
+
+        obj.__proto__ = originalValue;
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to its original value via __proto__ " +
+        "should not throw");
+
+    test(function() {
+        var originalValue = Object.getPrototypeOf(obj);
+
+        assert_true(Reflect.setPrototypeOf(obj, originalValue));
+    }.bind(this), this.name + " interface: internal [[SetPrototypeOf]] method " +
+        "of " + type + " - setting to its original value via Reflect.setPrototypeOf " +
+        "should return true");
 };
 
 //@}
@@ -2041,6 +2078,18 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
     {
         return;
     }
+
+    // "The internal [[SetPrototypeOf]] method of every platform object that
+    // implements an interface with the [Global] or [PrimaryGlobal] extended
+    // attribute must execute the same algorithm as is defined for the
+    // [[SetPrototypeOf]] internal method of an immutable prototype exotic
+    // object."
+    // https://heycam.github.io/webidl/#platform-object-setprototypeof
+    if (this.is_global())
+    {
+        this.test_immutable_prototype("global platform object", obj);
+    }
+
 
     // We can't easily test that its prototype is correct if there's no
     // interface object, or the object is from a different global environment

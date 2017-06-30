@@ -83,34 +83,24 @@ test(() => {
   const happenings = [];
 
   target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: navigator });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: navigator });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: navigator });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: navigator });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: "[object Navigator]" });
+  target.addEventListener("e1", () => { happenings.push("e1.3"); }, { group: "other value" });
 
   target.removeEventListener({ group: navigator });
 
   target.dispatchEvent(new CustomEvent("e1"));
-  target.dispatchEvent(new CustomEvent("e2"));
 
-  assert_array_equals(happenings, []);
-}, "Removing via a platform object group works");
+  assert_array_equals(happenings, ["e1.3"]);
+}, "Attempting to use a platform object as a group converts it to a string");
 
 test(() => {
   const target = document.createElement("div");
   const happenings = [];
 
-  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: null });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: null });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: null });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: null });
-
-  target.removeEventListener({ group: null });
-
-  target.dispatchEvent(new CustomEvent("e1"));
-  target.dispatchEvent(new CustomEvent("e2"));
-
-  assert_array_equals(happenings, []);
-}, "Removing via a null group works");
+  assert_throws(new TypeError(), () => target.addEventListener("e1", () => {}, { group: null }));
+  assert_throws(new TypeError(), () => target.removeEventListener("e1", { group: null }));
+  assert_throws(new TypeError(), () => target.removeEventListener({ group: null }));
+}, "Attempting to use null as a group does not work");
 
 test(() => {
   const target = document.createElement("div");
@@ -128,11 +118,6 @@ test(() => {
   assert_throws(new TypeError(), () => target.removeEventListener("e1", { group: undefined }));
   assert_throws(new TypeError(), () => target.removeEventListener("e1", { }));
 
-  // null is different from undefined. But this will be a no-op since nothing has group = null
-  target.removeEventListener({ group: null });
-  target.removeEventListener("e1", { group: null });
-  target.removeEventListener("e2", { group: null });
-
   target.dispatchEvent(new CustomEvent("e1"));
   target.dispatchEvent(new CustomEvent("e2"));
 
@@ -142,70 +127,68 @@ test(() => {
 test(() => {
   const target = document.createElement("div");
   const happenings = [];
+  const g2 = Symbol("g2");
 
-  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: 0 });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: -0 });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: 0 });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: -0 });
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: ["g", g2] });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: ["f", "g"] });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: [g2] });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.3"); }, { group: "h" });
 
-  target.removeEventListener({ group: 0 });
+  target.removeEventListener({ group: "g" });
+  target.removeEventListener({ group: g2 });
 
   target.dispatchEvent(new CustomEvent("e1"));
   target.dispatchEvent(new CustomEvent("e2"));
 
-  assert_array_equals(happenings, []);
-}, "0 equals -0 for purposes of group identity");
+  assert_array_equals(happenings, ["e2.3"]);
+}, "Multiple groups can be added via an array");
+
+test(() => {
+  const target = document.createElement("div");
+
+  target.removeEventListener({ group: "g" });
+  target.removeEventListener({ group: new Symbol() });
+
+  target.removeEventListener("e1", { group: "g" });
+  target.removeEventListener("e1", { group: new Symbol() });
+}, "Removing using non-existant groups doesn't throw or do anything weird");
 
 test(() => {
   const target = document.createElement("div");
   const happenings = [];
 
-  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: 0 });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: -0 });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: 0 });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: -0 });
+  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: ["g", "g2"] });
+  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: ["f", "g"] });
+  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: ["g2"] });
+  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: "g" });
+  target.addEventListener("e2", () => { happenings.push("e2.3"); }, { group: "g,g2" });
 
-  target.removeEventListener({ group: -0 });
+  target.removeEventListener({ group: ["g", "g2"] });
 
   target.dispatchEvent(new CustomEvent("e1"));
   target.dispatchEvent(new CustomEvent("e2"));
 
-  assert_array_equals(happenings, []);
-}, "-0 equals 0 for purposes of group identity");
+  assert_array_equals(happenings, ["e1.1", "e1.2", "e2.1", "e2.2"]);
+}, "Attempting to pass an array to remove stringifies it");
 
 test(() => {
   const target = document.createElement("div");
-  const happenings = [];
+  let counter = 0;
 
-  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: NaN });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: NaN });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: NaN });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: NaN });
+  function handler() {
+    ++counter;
+  }
 
-  target.removeEventListener({ group: NaN });
-
-  target.dispatchEvent(new CustomEvent("e1"));
-  target.dispatchEvent(new CustomEvent("e2"));
-
-  assert_array_equals(happenings, []);
-}, "NaN equals itself for purposes of group identity");
-
-test(() => {
-  const target = document.createElement("div");
-  const happenings = [];
-  const group1 = { the: "group" };
-  const group2 = { the: "group" };
-
-  target.addEventListener("e1", () => { happenings.push("e1.1"); }, { group: group1 });
-  target.addEventListener("e1", () => { happenings.push("e1.2"); }, { group: group2 });
-  target.addEventListener("e2", () => { happenings.push("e2.1"); }, { group: group1 });
-  target.addEventListener("e2", () => { happenings.push("e2.2"); }, { group: group2 });
-
-  target.removeEventListener({ group: group2 });
+  target.addEventListener("e1", handler, { group: "g" });
+  target.addEventListener("e1", handler);
+  target.addEventListener("e1", handler, { group: "f" });
 
   target.dispatchEvent(new CustomEvent("e1"));
-  target.dispatchEvent(new CustomEvent("e2"));
+  assert_equals(counter, 1, "The handler must only have been added once");
 
-  assert_array_equals(happenings, ["e1.1", "e2.1"]);
-}, "Same-shape objects are different for purposes of group identity");
+  target.removeEventListener({ group: "g" });
+  target.dispatchEvent(new CustomEvent("e1"));
+  assert_equals(counter, 1, "Dispatching the event after removing the handler must not call the handler");
+}, "Groups are not considered when checking for duplicates");
 </script>

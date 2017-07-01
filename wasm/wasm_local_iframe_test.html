@@ -1,8 +1,12 @@
 <!DOCTYPE html>
+<html>
+<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/load_wasm.js"></script>
 <iframe src="resources/frame.html" id="iframe"></iframe>
+</head>
+<body>
 <script>
   promise_test(async function() {
     var mod = await createWasmModule();
@@ -15,3 +19,5 @@
     assert_equals(ans, 43);
   }, "send wasm module to iframe");
 </script>
+</body>
+</html>

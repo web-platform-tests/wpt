@@ -68,6 +68,10 @@ interface OrientationSensor : Sensor {
 [Constructor(optional SensorOptions sensorOptions)]
 interface AbsoluteOrientationSensor : OrientationSensor {
 };
+
+[Constructor(optional SensorOptions sensorOptions)]
+interface RelativeOrientationSensor : OrientationSensor {
+};
 </pre>
 
 <script>
@@ -81,6 +85,10 @@ interface AbsoluteOrientationSensor : OrientationSensor {
 
   idl_array.add_objects({
     AbsoluteOrientationSensor: ['new AbsoluteOrientationSensor();']
+  });
+
+  idl_array.add_objects({
+    RelativeOrientationSensor: ['new RelativeOrientationSensor();']
   });
 
   idl_array.test();

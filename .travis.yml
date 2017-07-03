@@ -95,6 +95,7 @@ script:
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/meta
 notifications:
   email:
     on_success: never

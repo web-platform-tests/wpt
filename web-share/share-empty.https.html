@@ -10,6 +10,10 @@
   <body>
     <script>
         promise_test(t => {
+          return promise_rejects(t, new TypeError(), navigator.share());
+        }, 'share with no arguments (same as empty dictionary)');
+
+        promise_test(t => {
           return promise_rejects(t, new TypeError(), navigator.share({}));
         }, 'share with an empty dictionary');
 

@@ -29,6 +29,7 @@ def load_commands():
                     "path": os.path.join(base_dir, props["path"]),
                     "script": props["script"],
                     "parser": props.get("parser"),
+                    "parse_known": props.get("parse_known", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
                     "install": props.get("install", []),
@@ -97,16 +98,23 @@ def main():
         props = commands[command]
         script, parser = import_command(command, props)
         if parser:
-            kwargs = vars(parser.parse_args(command_args))
+            if props["parse_known"]:
+                kwargs, extras = parser.parse_known_args(command_args)
+                extras = (extras,)
+                kwargs = vars(kwargs)
+            else:
+                extras = ()
+                kwargs = vars(parser.parse_args(command_args))
         else:
+            extras = ()
             kwargs = {}
     else:
         return
 
     if props["virtualenv"]:
-        args = (setup_virtualenv(main_args.venv, props),)
+        args = (setup_virtualenv(main_args.venv, props),) + extras
     else:
-        args = ()
+        args = extras
 
     if script:
         try:

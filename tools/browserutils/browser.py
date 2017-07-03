@@ -111,7 +111,7 @@ class Firefox(Browser):
 
         resp = self.get_from_nightly("<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.%s\.tar\.bz2)" % self.platform_string())
         untar(resp.raw, dest=dest)
-        return os.path.join(dest, "firefox")
+        return find_executable("firefox", os.path.join(dest, "firefox"))
 
     def find_binary(self, path=None):
         return find_executable("firefox", path)

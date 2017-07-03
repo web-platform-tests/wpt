@@ -117,11 +117,11 @@ class BrowserSetup(object):
     name = None
     browser_cls = None
 
-    def __init__(self, venv, prompt=True):
+    def __init__(self, venv, prompt=True, sub_product=None):
         self.browser = self.browser_cls()
         self.venv = venv
         self.prompt = prompt
-        self.install_path = None
+        self.sub_product = sub_product
 
     def prompt_install(self, component):
         if not self.prompt:
@@ -133,9 +133,9 @@ class BrowserSetup(object):
             elif resp == "n":
                 return False
 
-    def install(self):
+    def install(self, venv):
         if self.prompt_install(self.name):
-            self.install_path = self.browser.install()
+            return self.browser.install(venv.path)
 
     def setup(self, kwargs):
         self.venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements))
@@ -148,7 +148,7 @@ class Firefox(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
-            binary = self.browser.find_binary(self.install_path)
+            binary = self.browser.find_binary()
             if binary is None:
                 raise WptrunError("""Firefox binary not found on $PATH.
 
@@ -238,7 +238,7 @@ class Edge(BrowserSetup):
     name = "edge"
     browser_cls = browser.Edge
 
-    def install(self):
+    def install(self, venv):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -259,11 +259,12 @@ class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
 
-    def install(self):
+    def install(self, venv):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
-        product, browser = kwargs["product"].split(":")
+        kwargs.set_if_none("sauce_browser", self.sub_product[0])
+        kwargs.set_if_none("sauce_version", self.sub_product[1])
         kwargs["test_types"] = ["testharness", "reftest"]
 
 
@@ -271,7 +272,7 @@ class Servo(BrowserSetup):
     name = "servo"
     browser_cls = browser.Servo
 
-    def install(self):
+    def install(self, venv):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -299,23 +300,26 @@ def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
 
     kwargs = utils.Kwargs(kwargs.iteritems())
 
-    product = kwargs["product"]
+    product_parts = kwargs["product"].split(":")
+    kwargs["product"] = product_parts[0]
+    sub_product = product_parts[1:]
 
     wptrunner.setup_logging(kwargs, {"mach": sys.stdout})
     logger = wptrunner.logger
 
-    check_environ(product)
+    check_environ(kwargs["product"])
     args_general(kwargs)
 
-    if product not in product_setup:
-        raise WptrunError("Unsupported product %s" % product)
+    if kwargs["product"] not in product_setup:
+        raise WptrunError("Unsupported product %s" % kwargs["product"])
 
-    setup_cls = product_setup[product](venv, prompt)
-
-    setup_cls.setup(kwargs)
+    setup_cls = product_setup[kwargs["product"]](venv, prompt, sub_product)
 
     if install:
-        setup_cls.install()
+        logger.info("Installing browser")
+        kwargs["binary"] = setup_cls.install(venv)
+
+    setup_cls.setup(kwargs)
 
     wptcommandline.check_args(kwargs)
 

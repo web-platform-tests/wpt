@@ -126,7 +126,7 @@ def write_inconsistent(log, inconsistent, iterations):
     table(["Test", "Subtest", "Results", "Messages"], strings, log)
 
 
-def write_results(log, results, iterations, use_details=False):
+def write_results(log, results, iterations, pr_number=None, use_details=False):
     log("## All results ##\n")
     if use_details:
         log("<details>\n")
@@ -138,12 +138,14 @@ def write_results(log, results, iterations, use_details=False):
         baseurl = "http://w3c-test.org/submissions"
         if "https" in os.path.splitext(test_name)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
+        title = test_name
         if use_details:
             log("<details>\n")
-            log('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
-                        (baseurl, pr_number, test_name, test_name))
+            if pr_number:
+                title = "<a href=\"%s/%s%s\">%s</a>" % (baseurl, pr_number, test_name, title)
+            log('<summary>%s</summary>\n\n' % title)
         else:
-            log("### %s ###" % test_name)
+            log("### %s ###" % title)
         strings = [("", err_string(test["status"], iterations), "")]
 
         strings.extend(((

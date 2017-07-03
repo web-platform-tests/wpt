@@ -177,8 +177,6 @@ def get_parser():
 
 
 def set_default_args(kwargs):
-    kwargs["product"] = kwargs["product"].split(":")[0]
-
     kwargs.set_if_none("sauce_platform",
                        os.environ.get("PLATFORM"))
     kwargs.set_if_none("sauce_build",
@@ -291,25 +289,20 @@ def run(venv, wpt_args, **kwargs):
         wpt_kwargs["stability"] = True
         wpt_kwargs["prompt"] = False
         wpt_kwargs["install_browser"] = True
-        wpt_kwargs["install"] = wpt_kwargs["product"] == "firefox"
+        wpt_kwargs["install"] = wpt_kwargs["product"].split(":")[0] == "firefox"
 
         wpt_kwargs = setup_wptrunner(venv, **wpt_kwargs)
 
-        try:
-            version = browser.version(args.root)
-        except Exception as e:
-            version = "unknown (error: %s)" % e
-        logger.info("Using browser at version %s", version)
+        logger.info("Using binary %s" % wpt_kwargs["binary"])
 
-        if files_changed:
-            logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
+        if tests_changed:
+            logger.debug("Tests changed:\n%s" % "".join(" * %s\n" % item for item in tests_changed))
 
         if files_affected:
             logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in files_affected))
 
 
     with TravisFold("running_tests"):
-        print(wpt_kwargs["repeat"])
         logger.info("Starting tests")
 
 
@@ -323,7 +316,9 @@ def run(venv, wpt_args, **kwargs):
         else:
             logger.info("All results were stable\n")
         with TravisFold("full_results"):
-            write_results(logger.info, results, iterations, kwargs["comment_pr"])
+            write_results(logger.info, results, iterations,
+                          pr_number=kwargs["comment_pr"],
+                          use_details=True)
     else:
         logger.info("No tests run.")
 

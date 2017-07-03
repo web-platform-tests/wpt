@@ -34,7 +34,9 @@ def test_run_firefox():
         if os.path.exists(fx_path):
             shutil.rmtree(fx_path)
         with pytest.raises(SystemExit) as excinfo:
-            wpt.main(argv=["run", "--no-pause", "--install-browser", "--yes", "firefox", "/dom/nodes/Element-tagName.html"])
+            wpt.main(argv=["run", "--no-pause", "--install-browser", "--yes",
+                           "--metadata", "~/meta/",
+                           "firefox", "/dom/nodes/Element-tagName.html"])
         assert os.path.exists(fx_path)
         shutil.rmtree(fx_path)
         assert excinfo.value.code == 0
@@ -44,7 +46,9 @@ def test_run_firefox():
 
 def test_run_chrome():
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless", "chrome", "/dom/nodes/Element-tagName.html"])
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
+                       "--metadata", "~/meta/",
+                       "chrome", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 
@@ -93,7 +97,7 @@ def test_tests_affected(capsys):
     # that specific commit. But we can at least test it returns something sensible
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["tests-affected", "%s~..%s" % (commit, commit)])
+        wpt.main(argv=["tests-affected", "--metadata", "~/meta/", "%s~..%s" % (commit, commit)])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     assert "html/browsers/offline/appcache/workers/appcache-worker.html" in out

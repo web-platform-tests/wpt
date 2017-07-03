@@ -194,6 +194,15 @@ def get_parser():
     return parser
 
 
+def get_parser_affected():
+    parser = get_parser()
+    parser.add_argument("--metadata",
+                        dest="metadata_root",
+                        action="store",
+                        default=wpt_root,
+                        help="Directory that will contain MANIFEST.json")
+    return parser
+
 def get_revish(**kwargs):
     revish = kwargs["revish"]
     if kwargs["revish"] is None:
@@ -211,6 +220,7 @@ def run_changed_files(**kwargs):
 def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish, kwargs["ignore_dirs"])
-    tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]))
+    tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]),
+                                                   manifest_path=os.path.join(kwargs["metadata_root"], "MANIFEST.json"))
     for item in sorted(tests_changed | dependents):
         print(os.path.relpath(item, wpt_root))

@@ -19,7 +19,7 @@
   font-family: ahem;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 5em;
+  width: 5.2em; /* making this 5.2em rather than 5em, to ensure that the atomic inline gets entirely hidden even if it is only partially obstructing */
   color: green;
 }
 span {
@@ -27,6 +27,7 @@ span {
 }
 .ib {
   display: inline-block;
+  background: red; /* in case the text gets disapeared but the box is still there. */
 }
 </style>
 
@@ -34,3 +35,4 @@ span {
 <div class=green></div>
 <div class=test>    <span class=ib>X</span>     </div>
 <div class=test>    <span>X</span>     </div>
+<div class=test>    <img src="support/1x1-red.png" width=10 height=10>     </div>

@@ -13,9 +13,7 @@
   width: 2em;
   margin-left: -1em;
   white-space:pre;
-  line-height: 1;
-  font-size: 100px;
-  font-family: ahem;
+  font: 100px/1 ahem;
   color: green;
 
   /* 2em width and starting with a space
@@ -34,14 +32,11 @@
   background: red;
 }
 span {
-	font-family: serif;
-	color: red;
-	line-height: 0; /* not clear that this is needed based on specs,
-			   but without it, line height calculations go
-			   wrong (too tall) in some browsers. */
+  font: 50%/1 serif;
+  color: red;
 }
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class=red></div>
-<div class=test> <span>                    </span></div>
+<div class=test> <span>xxxxxxxxxxxxxxxxxxxx</span></div>

@@ -9,10 +9,8 @@
 <style>
 .test {
   white-space: pre;
-  font-family: ahem;
+  font: 100px/1 ahem;
   color: green;
-  line-height: 1;
-  font-size: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 500px;
@@ -28,4 +26,7 @@
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 <div class=red></div>
-<div class=test dir=rtl>                   </div>
+<div class=test dir=rtl>    <span style="color:orange">xxxxxx</span></div>
+<!-- Adding some visible non-green characters in the positions that are supposed to be elided,
+to make sure that not only the ellipsis is shown at the right place, but that it replaces
+the right characters -->

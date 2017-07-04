@@ -7,14 +7,18 @@
 <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="ahem should">
 <!-- This is SHOULD because although CSS-UI defines "character" as "grapheme cluster" in a non optional manner
-  UAX29 itself (which defines grapheme cluster) only provides a baseline mechnism for determining grapheme clusters,
-  which implementations are expected to tailor and tweak. -->
+  UAX29 itself defines grapheme cluster as either legacy or extended grapheme clusters,
+  and says (emphasis mine):
+      The extended grapheme clusters **should** be used
+      in implementations in preference to legacy grapheme clusters
+
+  I could not find legacy grapheme clusters that are visually longer than their constituent parts,
+  and could only find extended grapheme clusters verifying this property, which is necessary for this test to make sense.
+  -->
 <meta name="assert" content="Implementations must hide characters, i.e. entire garpheme clusters, not part of them, to make room for the ellipsis">
 <style>
 #test {
-  font-size: 50px;
-  line-height: 1;
-  font-family: ahem;
+  font: 50px/1 ahem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre;

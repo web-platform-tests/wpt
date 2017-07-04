@@ -5,16 +5,14 @@
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#text-overflow">
 <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="ahem">
-<meta name="assert" content="The ellipsis is placed immediately adjacent to then end edge of the remaining inline content.">
+<meta name="assert" content="The ellipsis is placed immediately adjacent to the end edge of the remaining inline content, with no intervening gap.">
 <style>
 .test {
   white-space: pre;
-  font-family: ahem;
+  font: 50px/1 ahem;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-size: 50px;
-  width: 2.5em;
-  line-height: 1;
+  width: 2.5em; /* We will be fitting 2em worth of characters in a 2.5em space, to see where the extra .5em goes. It should be after, not between the characters.*/
   color: green;
 }
 .red {

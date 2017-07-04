@@ -13,6 +13,7 @@ hosts_fixup() {
 127.0.0.1 www2.web-platform.test
 127.0.0.1 xn--n8j6ds53lwwkrqhv28a.web-platform.test
 127.0.0.1 xn--lve-6lad.web-platform.test
+0.0.0.0 nonexistent-origin.web-platform.test
 " >> /etc/hosts'
     echo "== /etc/hosts =="
     cat /etc/hosts

@@ -11,7 +11,7 @@ wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
 import localpaths
-from browserutils import browser, utils, virtualenv
+from . import browser, utils, virtualenv
 logger = None
 
 

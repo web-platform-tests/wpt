@@ -11,9 +11,9 @@ wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os
 sys.path.insert(0, wpt_root)
 
 from tools.wpt import testfiles
-from testfiles import get_git_cmd
-from tools.browserutils.virtualenv import Virtualenv
-from tools.browserutils.utils import Kwargs
+from tools.wpt.testfiles import get_git_cmd
+from tools.wpt.virtualenv import Virtualenv
+from tools.wpt.utils import Kwargs
 from tools.wpt.run import create_parser, setup_wptrunner
 from tools.wpt import markdown
 from tools import localpaths

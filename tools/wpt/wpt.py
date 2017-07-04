@@ -6,7 +6,7 @@ import sys
 import localpaths
 
 from six import iteritems
-from browserutils import virtualenv
+from . import virtualenv
 
 
 here = os.path.dirname(__file__)
@@ -93,26 +93,29 @@ def main():
 
     main_args, command_args = parse_args(commands)
 
-    if len(sys.argv) > 1 and sys.argv[1] in commands:
-        command = main_args.command
-        props = commands[command]
-        script, parser = import_command(command, props)
-        if parser:
-            if props["parse_known"]:
-                kwargs, extras = parser.parse_known_args(command_args)
-                extras = (extras,)
-                kwargs = vars(kwargs)
-            else:
-                extras = ()
-                kwargs = vars(parser.parse_args(command_args))
-        else:
-            extras = ()
-            kwargs = {}
-    else:
+    if not(len(sys.argv) > 1 and sys.argv[1] in commands):
         return
 
+    command = main_args.command
+    props = commands[command]
+    venv = None
     if props["virtualenv"]:
-        args = (setup_virtualenv(main_args.venv, props),) + extras
+        venv = setup_virtualenv(main_args.venv, props)
+    script, parser = import_command(command, props)
+    if parser:
+        if props["parse_known"]:
+            kwargs, extras = parser.parse_known_args(command_args)
+            extras = (extras,)
+            kwargs = vars(kwargs)
+        else:
+            extras = ()
+            kwargs = vars(parser.parse_args(command_args))
+    else:
+        extras = ()
+        kwargs = {}
+
+    if venv is not None:
+        args = (venv,) + extras
     else:
         args = extras
 

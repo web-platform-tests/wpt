@@ -10,8 +10,7 @@ from distutils.spawn import find_executable
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
-from browserutils import browser, utils, virtualenv
-
+from . import browser, utils, virtualenv
 logger = None
 
 

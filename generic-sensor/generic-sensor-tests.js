@@ -38,7 +38,7 @@ function load_iframe(src) {
     iframe.onload = () => { resolve(iframe); };
     iframe.srcdoc = src;
     iframe.style.display = "none";
-    document.documentElement.appendChild(iframe);
+    document.body.appendChild(iframe);
   });
 }
 
@@ -53,7 +53,7 @@ function wait_for_message(iframe) {
   });
 }
 
-function make_script(sensorType) {
+function try_to_create_sensor(sensorType) {
   return '<script>' +
          '  window.onmessage = () => {' +
          '    try {' +
@@ -176,7 +176,7 @@ function runGenericSensorTests(sensorType) {
   }, "no exception is thrown when calling stop() on already stopped sensor");
 
   promise_test(t => {
-    return load_iframe(make_script(sensorType))
+    return load_iframe(try_to_create_sensor(sensorType))
       .then(iframe => {
         iframe.contentWindow.postMessage({}, '*');
         return wait_for_message(iframe);

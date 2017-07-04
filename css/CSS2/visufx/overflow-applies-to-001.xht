@@ -12,7 +12,8 @@ block containers and boxes that establish a formatting context" />
   <link rel="author" title="Bert Bos" href="mailto:bert@w3.org/" />
 
   <style type="text/css">
-  #container {width: 20em; background: red; text-align: center}
+  #container {width: 20em; background: red; text-align: center;
+    line-height: 1.2em}
 
   /* The visible overflow of grandchild1 hides the red container background */
   #child1 {width: 10em; overflow: visible}
@@ -53,13 +54,17 @@ block containers and boxes that establish a formatting context" />
      </div>
 
      <div id="child3">
-       <img id="grandchild3" src="../support/1x1-green.png" alt="green" />
+       <img id="grandchild3" src="support/1x1-green.png" alt="green" />
      </div>
 
      <table id="child4">
-       <caption id="grandchild4">
-	 Block 4a
-       </caption>
+       <tr>
+	 <td>
+	   <div id="grandchild4">
+	     Block 4a
+	   </div>
+	 </td>
+       </tr>
        <tr><td>Block 4b</td></tr>
      </table>
    </div>

@@ -681,7 +681,32 @@ def create_parser():
                         help="Run CSS testsuite specific lints")
     parser.add_argument("--repo-root", help="The WPT directory. Use this"
                         "option if the lint script exists outside the repository")
+    parser.add_argument("--cache", default="LINT.json", help="Path to the lint cache file")
     return parser
+
+
+class LintCache(object):
+    def __init__(self):
+        self.old_data = {}
+        self.new_data = {}
+
+    @classmethod
+    def from_json(cls, data):
+        rv = cls()
+        rv.old_data = data
+        return rv
+
+    def to_json(self):
+        return self.new_data
+
+    def changed(self, sourcefile):
+        changed = self.old_data.get(sourcefile.rel_path) != sourcefile.hash
+        if not changed:
+            self.new_data[sourcefile.rel_path] = sourcefile.hash
+        return changed
+
+    def add(self, sourcefile):
+        self.new_data[sourcefile.rel_path] = sourcefile.hash
 
 
 def main(**kwargs):
@@ -690,6 +715,9 @@ def main(**kwargs):
         sys.exit(2)
 
     repo_root = kwargs.get('repo_root') or localpaths.repo_root
+
+    cache_path = kwargs.get('cache') or os.path.join(repo_root, "LINT.json")
+
     output_format = {(True, False): "json",
                      (False, True): "markdown",
                      (False, False): "normal"}[(kwargs.get("json", False),
@@ -698,12 +726,20 @@ def main(**kwargs):
     paths = list(kwargs.get("paths") if kwargs.get("paths") else all_filesystem_paths(repo_root))
     if output_format == "markdown":
         setup_logging(True)
-    return lint(repo_root, paths, output_format, kwargs.get("css_mode", False))
 
+    return lint(repo_root, paths, output_format, kwargs.get("css_mode", False), kwargs["cache"])
 
-def lint(repo_root, paths, output_format, css_mode):
+def lint(repo_root, paths, output_format, css_mode, cache_path):
     error_count = defaultdict(int)
     last = None
+
+    if cache_path is not None:
+        cache_path = os.path.join(repo_root, cache_path)
+    if cache_path is not None and os.path.exists(cache_path):
+        with open(cache_path) as f:
+            cache = LintCache.from_json(json.load(f))
+    else:
+        cache = LintCache()
 
     with open(os.path.join(repo_root, "lint.whitelist")) as f:
         whitelist, ignored_files = parse_whitelist(f)
@@ -714,14 +750,12 @@ def lint(repo_root, paths, output_format, css_mode):
 
     def process_errors(errors):
         """
-        Filters and prints the errors, and updates the ``error_count`` object.
+        Prints the errors, and updates the ``error_count`` object and return the last error
 
         :param errors: a list of error tuples (error type, message, path, line number)
         :returns: ``None`` if there were no errors, or
                   a tuple of the error type and the path otherwise
         """
-
-        errors = filter_whitelist_errors(whitelist, errors)
 
         if not errors:
             return None
@@ -742,15 +776,21 @@ def lint(repo_root, paths, output_format, css_mode):
             paths.remove(path)
             continue
 
-        errors = check_path(repo_root, path, css_mode)
-        last = process_errors(errors) or last
+        source_file = SourceFile(repo_root, path, "/")
 
-        if not os.path.isdir(abs_path):
-            with open(abs_path, 'rb') as f:
-                errors = check_file_contents(repo_root, path, f, css_mode)
-                last = process_errors(errors) or last
+        if cache.changed(source_file):
+            errors = filter_whitelist_errors(whitelist, check_path(repo_root, path, css_mode))
+            last = process_errors(errors) or last
+            passed = not errors
+            if not os.path.isdir(abs_path):
+                with open(abs_path, 'rb') as f:
+                    errors = filter_whitelist_errors(whitelist, check_file_contents(repo_root, path, f, css_mode))
+                    last = process_errors(errors) or last
+                    passed = passed and not errors
+            if passed:
+                cache.add(source_file)
 
-    errors = check_all_paths(repo_root, paths, css_mode)
+    errors = filter_whitelist_errors(whitelist, check_all_paths(repo_root, paths, css_mode))
     last = process_errors(errors) or last
 
     if output_format in ("normal", "markdown"):
@@ -758,6 +798,11 @@ def lint(repo_root, paths, output_format, css_mode):
         if error_count:
             for line in (ERROR_MSG % (last[0], last[1], last[0], last[1])).split("\n"):
                 logger.info(line)
+
+    if cache_path is not None:
+        with open(cache_path, "wb") as f:
+            json.dump(cache.to_json(), f)
+
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision]

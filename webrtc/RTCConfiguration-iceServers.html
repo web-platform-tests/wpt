@@ -7,8 +7,8 @@
 <script>
   'use strict';
 
-  // Test is based on the following tip of tree draft (20170630):
-  // https://rawgit.com/w3c/webrtc-pc/3345dadfd5cf9ed177b70b6191b4de55af40f5e6/webrtc.html
+  // Test is based on the following editor's draft:
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper function is called from
   // RTCConfiguration-helper.js:
@@ -275,40 +275,15 @@
 
   /*
     4.3.2.  To set a configuration
-      11.3.  For each url in server.urls parse the url using the generic URI syntax defined
-             in [RFC3986] and obtain the scheme name.
-             - If the parsing based on the syntax defined in [RFC3986] fails, throw a SyntaxError.
+      11.3. For each url in server.urls parse url and obtain scheme name.
+        - If the scheme name is not implemented by the browser, throw a SyntaxError.
+        - or if parsing based on the syntax defined in [ RFC7064] and [RFC7065] fails,
+          throw a SyntaxError.
 
-    [RFC3986] Uniform Resource Identifier (URI): Generic Syntax
-    3.  Syntax Components
-      URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-   */
-  config_test(makePc => {
-    assert_throws('SyntaxError', () =>
-      makePc({ iceServers: [{
-        urls: 'relative-url'
-      }] }));
-  }, 'with relative url should throw SyntaxError');
-
-  /*
-    4.3.2.  To set a configuration
-      11.3.  For each url in server.urls parse the url using the generic URI syntax defined
-             in [RFC3986] and obtain the scheme name.
-             - If the scheme name is not implemented by the browser throw a NotSupportedError.
-   */
-  config_test(makePc => {
-    assert_throws('NotSupportedError', () =>
-      makePc({ iceServers: [{
-        urls: 'http://example.com'
-      }] }));
-  }, 'with http url should throw NotSupportedError');
-
-  /*
-    4.3.2.  To set a configuration
-      11.3.  For each url in server.urls parse the url using the generic URI syntax defined
-             in [RFC3986] and obtain the scheme name.
-              - If scheme name is turn or turns, and parsing the url using the syntax defined
-                in [RFC7064] fails, throw a SyntaxError.
+    [RFC7064] URI Scheme for the Session Traversal Utilities for NAT (STUN) Protocol
+    3.1.  URI Scheme Syntax
+      stunURI       = scheme ":" host [ ":" port ]
+      scheme        = "stun" / "stuns"
 
     [RFC7065] Traversal Using Relays around NAT (TURN) Uniform Resource Identifiers
     3.1.  URI Scheme Syntax
@@ -321,22 +296,24 @@
   config_test(makePc => {
     assert_throws('SyntaxError', () =>
       makePc({ iceServers: [{
+        urls: 'relative-url'
+      }] }));
+  }, 'with relative url should throw SyntaxError');
+
+  config_test(makePc => {
+    assert_throws('SyntaxError', () =>
+      makePc({ iceServers: [{
+        urls: 'http://example.com'
+      }] }));
+  }, 'with http url should throw SyntaxError');
+
+  config_test(makePc => {
+    assert_throws('SyntaxError', () =>
+      makePc({ iceServers: [{
         urls: 'turn://example.org/foo?x=y'
       }] }));
   }, 'with invalid turn url should throw SyntaxError');
 
-  /*
-    4.3.2.  To set a configuration
-      11.3.  For each url in server.urls parse the url using the generic URI syntax defined
-             in [RFC3986] and obtain the scheme name.
-              - If scheme name is stun or stuns, and parsing the url using the syntax defined
-                in [RFC7065] fails, throw a SyntaxError.
-
-    [RFC7064] URI Scheme for the Session Traversal Utilities for NAT (STUN) Protocol
-    3.1.  URI Scheme Syntax
-      stunURI       = scheme ":" host [ ":" port ]
-      scheme        = "stun" / "stuns"
-   */
   config_test(makePc => {
     assert_throws('SyntaxError', () =>
       makePc({ iceServers: [{
@@ -584,10 +561,10 @@
         11.7.  Append server to validatedServers.
 
     Coverage Report
-      Tested        10
+      Tested         9
       Not Tested     0
       Untestable     1
-      Total         11
+      Total         10
    */
 
 </script>

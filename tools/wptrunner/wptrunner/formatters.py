@@ -28,13 +28,9 @@ class WptreportFormatter(BaseFormatter):
             }
         return self.raw_results[test_name]
 
-    def find_or_create_subtest(self, data):
+    def create_subtest(self, data):
         test = self.find_or_create_test(data)
         subtest_name = data["subtest"]
-
-        for i in range(len(test["subtests"])):
-            if test["subtests"][i]["name"] == subtest_name:
-                return test["subtests"][i]
 
         subtest = {
             "name": subtest_name,
@@ -46,14 +42,11 @@ class WptreportFormatter(BaseFormatter):
         return subtest
 
     def test_status(self, data):
-        subtest = self.find_or_create_subtest(data)
+        subtest = self.create_subtest(data)
         subtest["status"] = data["status"]
-        if data.get("message"):
-            if subtest["message"]:
-                subtest["message"] += ", " + data["message"]
-            else:
-                subtest["message"] = data["message"]
 
     def test_end(self, data):
         test = self.find_or_create_test(data)
         test["status"] = data["status"]
+        if "message" in data:
+            test["message"] = data["message"]

@@ -1,5 +1,9 @@
 set -e
 
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
+cd $WPT_ROOT
+
 hosts_fixup() {
     echo "travis_fold:start:hosts_fixup"
     echo "Rewriting hosts file"

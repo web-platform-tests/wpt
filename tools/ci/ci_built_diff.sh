@@ -1,5 +1,9 @@
 set -ex
 
+SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
+cd $WPT_ROOT
+
 # Diff PNGs based on pixel-for-pixel identity
 echo -e '[diff "img"]\n  textconv = identify -quiet -format "%#"' >> .git/config
 echo -e '*.png diff=img' >> .git/info/attributes

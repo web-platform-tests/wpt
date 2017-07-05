@@ -184,7 +184,7 @@ function runGenericSensorTests(sensorType) {
       .then(message => {
         assert_equals(message.result, 'SecurityError');
       });
-  }, "throw a 'SecurityError' when firing sensor readings within iframes");
+  }, "throw a 'SecurityError' when constructing sensor object within iframe");
 
   async_test(t => {
     let sensor = new sensorType();

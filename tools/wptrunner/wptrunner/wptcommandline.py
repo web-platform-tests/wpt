@@ -7,6 +7,7 @@ from distutils.spawn import find_executable
 
 import config
 import wpttest
+import formatters
 
 
 def abs_path(path):
@@ -222,6 +223,8 @@ scheme host and port.""")
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
                              "(equivalent to --include)")
+
+    commandline.log_formatters["wptreport"] = (formatters.WptreportFormatter, "wptreport format")
 
     commandline.add_logging_group(parser)
     return parser

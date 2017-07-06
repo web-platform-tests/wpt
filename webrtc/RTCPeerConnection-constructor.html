@@ -70,13 +70,6 @@ const testArgs = {
   '{ iceTransports: "invalid" }': false,
   '{ iceTransports: "none" }': false,
 
-  // rtcpMuxPolicy
-  '{ rtcpMuxPolicy: null }': new TypeError,
-  '{ rtcpMuxPolicy: undefined }': false,
-  '{ rtcpMuxPolicy: "negotiate" }': false,
-  '{ rtcpMuxPolicy: "require" }': false,
-  '{ rtcpMuxPolicy: "invalid" }': new TypeError,
-
   // peerIdentity
   '{ peerIdentity: toStringThrows }': new Error,
 

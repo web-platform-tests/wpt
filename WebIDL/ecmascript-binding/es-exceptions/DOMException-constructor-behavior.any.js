@@ -119,11 +119,3 @@ test(function() {
                   "Should have matching legacy code from error names table");
   },'new DOMexception("msg", "' + test_case.name + '")');
 });
-
-test(function() {
-  var ex = new DOMException("bar", "UnknownError");
-  assert_equals(ex.name, "UnknownError", "Should be using the passed-in name");
-  assert_equals(ex.message, "bar", "Should still be using passed-in message");
-  assert_equals(ex.code, 0,
-                "Should have 0 for code for a name in the exception names table with no legacy code");
-}, 'new DOMException("bar", "UnknownError")');

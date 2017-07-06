@@ -18,7 +18,7 @@ test(() => {
 
   const propDesc = Object.getOwnPropertyDescriptor(DOMException.prototype, "message");
   assert_equals(typeof propDesc.get, "function", "property descriptor is a getter");
-  assert_equals(propDesc.set, undefined, "property descriptor is not a getter");
+  assert_equals(propDesc.set, undefined, "property descriptor is not a setter");
   assert_true(propDesc.enumerable, "property descriptor enumerable");
   assert_true(propDesc.configurable, "property descriptor configurable");
 }, "message property descriptor");
@@ -35,7 +35,7 @@ test(() => {
 
   const propDesc = Object.getOwnPropertyDescriptor(DOMException.prototype, "name");
   assert_equals(typeof propDesc.get, "function", "property descriptor is a getter");
-  assert_equals(propDesc.set, undefined, "property descriptor is not a getter");
+  assert_equals(propDesc.set, undefined, "property descriptor is not a setter");
   assert_true(propDesc.enumerable, "property descriptor enumerable");
   assert_true(propDesc.configurable, "property descriptor configurable");
 }, "name property descriptor");
@@ -52,7 +52,7 @@ test(() => {
 
   const propDesc = Object.getOwnPropertyDescriptor(DOMException.prototype, "code");
   assert_equals(typeof propDesc.get, "function", "property descriptor is a getter");
-  assert_equals(propDesc.set, undefined, "property descriptor is not a getter");
+  assert_equals(propDesc.set, undefined, "property descriptor is not a setter");
   assert_true(propDesc.enumerable, "property descriptor enumerable");
   assert_true(propDesc.configurable, "property descriptor configurable");
 }, "code property descriptor");

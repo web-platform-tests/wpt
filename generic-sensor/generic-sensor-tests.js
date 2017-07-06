@@ -149,7 +149,7 @@ function runGenericSensorTests(sensorType) {
                       '    if (message.data === "LOADED") {' +
                       '      try {' +
                       '        new ' + sensorType.name + '();' +
-                      '        parent.postMessage("FAIL", "*");'' +
+                      '        parent.postMessage("FAIL", "*");' +
                       '      } catch (e) {' +
                       '        parent.postMessage(e.name, "*");' +
                       '      }' +

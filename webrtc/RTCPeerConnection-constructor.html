@@ -60,18 +60,6 @@ const testArgs = {
   // Blink and Gecko fall back to url, but it's not in the spec.
   '{ iceServers: [{ url: "stun:stun1.example.net" }] }': new TypeError,
 
-  // iceTransportPolicy
-  '{ iceTransportPolicy: null }': new TypeError,
-  '{ iceTransportPolicy: undefined }': false,
-  '{ iceTransportPolicy: "relay" }': false,
-  '{ iceTransportPolicy: "all" }': false,
-  '{ iceTransportPolicy: "invalid" }': new TypeError,
-  // "none" is in Blink and Gecko's IDL, but not in the spec.
-  '{ iceTransportPolicy: "none" }': new TypeError,
-  // iceTransportPolicy is called iceTransports in Blink.
-  '{ iceTransports: "invalid" }': false,
-  '{ iceTransports: "none" }': false,
-
   // rtcpMuxPolicy
   '{ rtcpMuxPolicy: null }': new TypeError,
   '{ rtcpMuxPolicy: undefined }': false,

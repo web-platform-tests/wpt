@@ -70,14 +70,6 @@ const testArgs = {
   '{ iceTransports: "invalid" }': false,
   '{ iceTransports: "none" }': false,
 
-  // bundlePolicy
-  '{ bundlePolicy: null }': new TypeError,
-  '{ bundlePolicy: undefined }': false,
-  '{ bundlePolicy: "balanced" }': false,
-  '{ bundlePolicy: "max-compat" }': false,
-  '{ bundlePolicy: "max-bundle" }': false,
-  '{ bundlePolicy: "invalid" }': new TypeError,
-
   // rtcpMuxPolicy
   '{ rtcpMuxPolicy: null }': new TypeError,
   '{ rtcpMuxPolicy: undefined }': false,

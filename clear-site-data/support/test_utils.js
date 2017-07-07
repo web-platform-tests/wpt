@@ -6,6 +6,9 @@ var TestUtils = (function() {
     return result;
   };
 
+  /** @string The base URL this test. */
+  var base_url = location.origin + "/clear-site-data/";
+
   /**
    * Representation of one datatype.
    * @typedef Datatype
@@ -51,7 +54,36 @@ var TestUtils = (function() {
           resolve(!localStorage.length);
         });
       }
-    }
+    },
+    {
+      "name": "cache",
+      "add": function() {
+        // Request a resource from the get_resource_to_cache.py server.
+        // The server is instructed to return a high "CacheControl: max-age"
+        // header value, to ensure that this resource will really be added
+        // to the cache.
+        return fetch(base_url + "support/get-resource-to-cache.py");
+      },
+      "isEmpty": function() {
+        return new Promise(function(resolve, reject) {
+          // Request the resource with the "Cache-Control: only-if-cached"
+          // header. If the request suceeds, the resource must have been found
+          // in the cache. Since not all user agents support this header value,
+          // the get-resource-to-cache.py server is instructed to respond with
+          // status code 500 if it sees such a request.
+          var fetch_options = {
+            "headers": new Headers({ "cache-control": "only-if-cached" }),
+          };
+
+          fetch(base_url + "support/get-resource-to-cache.py", fetch_options)
+              .then(function(response) {
+                resolve(response.status == 500  /* Internal server error. */);
+              }).catch(function() {
+                resolve(true);
+              });
+        });
+      }
+    },
   ];
 
   /**
@@ -82,7 +114,7 @@ var TestUtils = (function() {
    */
   TestUtils.getClearSiteDataUrl = function(datatypes) {
     names = datatypes.map(function(e) { return e.name });
-    return "support/echo-clear-site-data.py?" + names.join("&");
+    return base_url + "support/echo-clear-site-data.py?" + names.join("&");
   }
 
   return TestUtils;

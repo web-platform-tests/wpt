@@ -8,7 +8,7 @@
   'use strict';
 
   // Test is based on the following editor draft:
-  // https://w3c.github.io/webrtc-pc/archives/20170515/webrtc.html
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //   generateOffer()
@@ -19,9 +19,40 @@
   //   test_never_resolve()
 
   /*
-   *  4.3.2.  setRemoteDescription(offer)
+    4.3.2.  Interface Definition
+      [Constructor(optional RTCConfiguration configuration)]
+      interface RTCPeerConnection : EventTarget {
+        Promise<void>                      setRemoteDescription(
+            RTCSessionDescriptionInit description);
+
+        readonly attribute RTCSessionDescription? remoteDescription;
+        readonly attribute RTCSessionDescription? currentRemoteDescription;
+        readonly attribute RTCSessionDescription? pendingRemoteDescription;
+        ...
+      };
+
+    4.6.2.  RTCSessionDescription Class
+      dictionary RTCSessionDescriptionInit {
+        required RTCSdpType type;
+                 DOMString  sdp = "";
+      };
+
+    4.6.1.  RTCSdpType
+      enum RTCSdpType {
+        "offer",
+        "pranswer",
+        "answer",
+        "rollback"
+      };
    */
 
+  /*
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.2.3.  Otherwise, if description is set as a remote description, then run one of
+              the following steps:
+        - If description is of type "offer", set connection.pendingRemoteDescription
+          attribute to description and signaling state to have-remote-offer.
+   */
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
@@ -58,6 +89,10 @@
       }));
   }, 'Setting remote description multiple times with different offer should succeed');
 
+  /*
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.2.1.  If connection's [[IsClosed]] slot is true, then abort these steps.
+   */
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
 
@@ -70,11 +105,11 @@
   }, 'setRemoteDescription(offer) should never resolve if connection is closed in parallel')
 
   /*
-   *  4.3.1.  Setting an RTCSessionDescription
-   *    2.4.  If the content of description is not valid SDP syntax, then reject p
-   *          with an RTCError (with errorDetail set to "sdp-syntax-error" and the
-   *          sdpLineNumber attribute set to the line number in the SDP where the
-   *          syntax error was detected) and abort these steps.
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.1.4.  If the content of description is not valid SDP syntax, then reject p with
+              an RTCError (with errorDetail set to "sdp-syntax-error" and the
+              sdpLineNumber attribute set to the line number in the SDP where the syntax
+              error was detected) and abort these steps.
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -95,7 +130,7 @@
   }, 'setRemoteDescription(offer) with invalid SDP should reject with RTCError');
 
   /*
-   *  4.6.1.  enum RTCSdpType
+    4.6.1.  enum RTCSdpType
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -119,25 +154,22 @@
       }));
   }, 'setRemoteDescription() with invalid SDP and stable state should reject with InvalidStateError')
 
-  /*
-   *  TODO
-   *  Setting an RTCSessionDescription
-   *    2.1.5. If the content of description is invalid, then reject p with
-   *       a newly created InvalidAccessError and abort these steps.
-   *    2.2.5-10
-   *  setRemoteDescription(rollback)
-   *  setRemoteDescription(pranswer)
-   *
-   *  Non-testable
-   *  Setting an RTCSessionDescription
-   *    6. For all other errors, for example if description cannot be
-   *       applied at the media layer, reject p with a newly created OperationError.
-   */
+  /* setRemoteDescription(answer) */
 
   /*
-   *  4.3.2.  setRemoteDescription(answer)
-   */
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.2.3.  Otherwise, if description is set as a remote description, then run one of
+              the following steps:
+        - If description is of type "answer", then this completes an offer answer
+          negotiation.
 
+          Set connection's currentRemoteDescription to description and
+          currentLocalDescription to the value of pendingLocalDescription.
+
+          Set both pendingRemoteDescription and pendingLocalDescription to null.
+
+          Finally setconnection's signaling state to stable.
+   */
   promise_test(t => {
     const pc = new RTCPeerConnection();
     test_state_change_event(t, pc, ['have-local-offer', 'stable']);
@@ -149,6 +181,8 @@
       .then(answer =>
         pc.setRemoteDescription(answer)
         .then(() => {
+          assert_equals(pc.signalingState, 'stable');
+
           assert_session_desc_equals(pc.localDescription, offer);
           assert_session_desc_equals(pc.remoteDescription, answer);
 
@@ -160,28 +194,7 @@
         })));
   }, 'setRemoteDescription() with valid state and answer should succeed');
 
-  /*
-   *  TODO
-   *  4.3.2 setRemoteDescription
-   *    If an a=identity attribute is present in the session description,
-   *    the browser validates the identity assertion.
-   *
-   *    If the "peerIdentity" configuration is applied to the RTCPeerConnection,
-   *    this establishes a target peer identity of the provided value. Alternatively,
-   *    if the RTCPeerConnection has previously authenticated the identity of the
-   *    peer (that is, there is a current value for peerIdentity ), then this also
-   *    establishes a target peer identity.
-   *
-   *    The target peer identity cannot be changed once set. Once set,
-   *    if a different value is provided, the user agent must reject
-   *    the returned promise with a newly created InvalidModificationError
-   *    and abort this operation. The RTCPeerConnection must be closed if
-   *    the validated peer identity does not match the target peer identity.
-   */
-
-  /*
-   *  Operations after returning to stable state
-   */
+  /* Operations after returning to stable state */
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -231,16 +244,14 @@
   }, 'Switching role from offerer to answerer after going back to stable state should succeed');
 
   /*
-   *  InvalidStateError
-   *    [webrtc-pc] 4.3.1. Setting the RTCSessionDescription
-   *      2.3.  If the description's type is invalid for the current signaling state
-   *            of connection, then reject p with a newly created InvalidStateError
-   *            and abort these steps.
-   */
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.1.3.  If the description's type is invalid for the current signaling state of
+              connection, then reject p with a newly created InvalidStateError and abort
+              these steps.
 
-  /*
-   *  [jsep] 5.6. If the type is "pranswer" or "answer", the PeerConnection
-   *              state MUST be either "have-local-offer" or "have-remote-pranswer".
+    [JSEP]
+      5.6.  If the type is "answer", the PeerConnection state MUST be either
+            "have-local-offer" or "have-remote-pranswer".
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -251,26 +262,6 @@
         pc.setRemoteDescription({ type: 'answer', sdp: offer.sdp })));
   }, 'Calling setRemoteDescription(answer) from stable state should reject with InvalidStateError');
 
-
-  /*
-   *  [jsep] 5.6. If the type is "offer", the PeerConnection state
-   *              MUST be either "stable" or "have-remote-offer".
-   */
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-
-    return pc.createOffer()
-    .then(offer => pc.setLocalDescription(offer))
-    .then(() => generateOffer())
-    .then(offer =>
-      promise_rejects(t, 'InvalidStateError',
-        pc.setRemoteDescription(offer)));
-  }, 'Calling setRemoteDescription(offer) from have-local-offer state should reject with InvalidStateError');
-
-  /*
-   *  [jsep] 5.6. If the type is "pranswer" or "answer", the PeerConnection
-   *              state MUST be either "have-local-offer" or "have-remote-pranswer".
-   */
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
@@ -284,44 +275,32 @@
 
   }, 'Calling setRemoteDescription(answer) from have-remote-offer state should reject with InvalidStateError');
 
-  // tests that ontrack is called and parses the msid information from the SDP and creates
-  // the streams with matching identifiers.
-  async_test(t => {
+  /*
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.1.3.  If the description's type is invalid for the current signaling state of
+              connection, then reject p with a newly created InvalidStateError and abort
+              these steps.
+
+    [JSEP]
+      5.6.  If the type is "offer", the PeerConnection state MUST be either "stable" or
+            "have-remote-offer".
+   */
+  promise_test(t => {
     const pc = new RTCPeerConnection();
 
-    // Fail the test if the ontrack event handler is not implemented
-    assert_own_property(pc, 'ontrack', 'Expect pc to have ontrack event handler attribute');
+    return pc.createOffer()
+    .then(offer => pc.setLocalDescription(offer))
+    .then(() => generateOffer())
+    .then(offer =>
+      promise_rejects(t, 'InvalidStateError',
+        pc.setRemoteDescription(offer)));
+  }, 'Calling setRemoteDescription(offer) from have-local-offer state should reject with InvalidStateError');
 
-    const sdp = `v=0
-o=- 166855176514521964 2 IN IP4 127.0.0.1
-s=-
-t=0 0
-a=msid-semantic:WMS *
-m=audio 9 UDP/TLS/RTP/SAVPF 111
-c=IN IP4 0.0.0.0
-a=rtcp:9 IN IP4 0.0.0.0
-a=ice-ufrag:someufrag
-a=ice-pwd:somelongpwdwithenoughrandomness
-a=fingerprint:sha-256 8C:71:B3:8D:A5:38:FD:8F:A4:2E:A2:65:6C:86:52:BC:E0:6E:94:F2:9F:7C:4D:B5:DF:AF:AA:6F:44:90:8D:F4
-a=setup:actpass
-a=rtcp-mux
-a=mid:mid1
-a=sendonly
-a=rtpmap:111 opus/48000/2
-a=msid:stream1 track1
-a=ssrc:1001 cname:some
-`;
-
-    pc.ontrack = t.step_func(event => {
-      assert_equals(event.streams.length, 1, 'the track belongs to one MediaStream');
-      assert_equals(event.streams[0].id, 'stream1', 'the stream name is parsed from the MSID line');
-      t.done();
-    });
-
-    pc.setRemoteDescription(new RTCSessionDescription({type: 'offer', sdp: sdp}))
-    .catch(t.step_func(err => {
-      assert_unreached('Error ' + err.name + ': ' + err.message);
-    }));
-  }, 'setRemoteDescription should trigger ontrack event when the MSID of the stream is is parsed.');
+  /*
+    TODO
+    4.3.2.  setRemoteDescription
+      - If an a=identity attribute is present in the session description, the browser
+        validates the identity assertion.
+   */
 
 </script>

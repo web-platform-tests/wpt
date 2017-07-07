@@ -23,10 +23,7 @@
 
     const [cachedRequest] = requests;
 
-    await new Promise(resolve => {
-      signal.addEventListener('abort', resolve);
-      controller.abort();
-    });
+    controller.abort();
 
     assert_false(cachedRequest.signal.aborted, "Request from cache shouldn't be aborted");
 

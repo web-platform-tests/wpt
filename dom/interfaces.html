@@ -21,6 +21,7 @@ var idlArray = new IdlArray();
 function doTest(idl) {
   idlArray.add_idls(idl);
   idlArray.add_objects({
+    EventTarget: ['new EventTarget()'],
     Event: ['document.createEvent("Event")', 'new Event("foo")'],
     CustomEvent: ['new CustomEvent("foo")'],
     Document: ['new Document()'],

@@ -3,4 +3,5 @@ def main(request, response):
     key = request.GET.first("key")
     value = request.GET.first("value")
     request.server.stash.put(key, value, url_dir)
+    response.headers.set('Access-Control-Allow-Origin', '*')
     return "done"

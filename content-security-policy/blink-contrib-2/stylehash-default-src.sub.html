@@ -10,9 +10,10 @@
     <p id="p">Test</p>
     <style>p#p { color: green; }</style>
     <script>
-    var color = window.getComputedStyle(document.querySelector('#p')).color;
-    assert_equals(color, "rgb(0, 128, 0)");
-    done();
+    test(function () {
+      var color = window.getComputedStyle(document.querySelector('#p')).color;
+      assert_equals(color, "rgb(0, 128, 0)");
+    });
     </script>
 
     <div id="log"></div>

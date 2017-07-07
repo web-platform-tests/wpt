@@ -8,4 +8,12 @@
   <script src="/common/utils.js"></script>
   <script src="general.js"></script>
 </head>
+<body>
+<script>
+  fetch_tests_from_worker(new Worker("general.js"));
+  if (window.SharedWorker) {
+    fetch_tests_from_worker(new SharedWorker("general.js"));
+  }
+</script>
+</body>
 </html>

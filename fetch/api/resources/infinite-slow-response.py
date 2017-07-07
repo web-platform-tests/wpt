@@ -1,18 +1,22 @@
 import time
 
 
+def url_dir(request):
+    return '/'.join(request.url_parts.path.split('/')[:-1]) + '/'
+
+
 def stash_write(request, key, value):
     """Write to the stash, overwriting any previous value"""
-    dir = '/'.join(request.url_parts.path.split('/')[:-1]) + '/'
-    request.server.stash.take(key, dir)
-    request.server.stash.put(key, value, dir)
+    request.server.stash.take(key, url_dir(request))
+    request.server.stash.put(key, value, url_dir(request))
 
 
 def main(request, response):
-    key = request.GET.first("key", "")
+    stateKey = request.GET.first("stateKey", "")
+    abortKey = request.GET.first("abortKey", "")
 
-    if key:
-        stash_write(request, key, 'open')
+    if stateKey:
+        stash_write(request, stateKey, 'open')
 
     response.headers.set("Content-type", "text/plain")
     response.write_status_headers()
@@ -20,9 +24,13 @@ def main(request, response):
     # Writing an initial 2k so browsers realise it's there. *shrug*
     response.writer.write("." * 2048)
     
-    while response.writer.flush():
+    while True:
+        if not response.writer.flush():
+            break
+        if abortKey and request.server.stash.take(abortKey, url_dir(request)):
+            break
         response.writer.write(".")
         time.sleep(0.01)
 
-    if key:
-        stash_write(request, key, 'closed')
+    if stateKey:
+        stash_write(request, stateKey, 'closed')

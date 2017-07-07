@@ -1,87 +1,22 @@
-/*
-// This is a really stupid set of hacks that I'm using to do some basic
-// sanity-checking on the tests.
-class AbortSignal {
-  constructor() {
-    this.aborted = false;
-    this._abortCallbacks = [];
-  }
-  _abort() {
-    this.aborted = true;
-    for (const func of this._abortCallbacks) func();
-    this._abortCallbacks = null;
-  }
-  _addAbortCallback(callback) {
-    if (this.aborted) {
-      callback();
-      return;
-    }
-    this._abortCallbacks.push(callback);
-  }
+if (self.importScripts) {
+  // Load scripts if being run from a worker
+  importScripts(
+    '/resources/testharness.js',
+    '/common/utils.js'
+  );
 }
 
-class AbortController {
-  constructor() {
-    this.signal = new AbortSignal();
-  }
-  abort() {
-    this.signal._abort();
-  }
+// This is used to close connections that weren't correctly closed during the tests,
+// otherwise you can end up running out of HTTP connections.
+let requestKeys = [];
+
+function abortRequests() {
+  const keys = requestKeys;
+  requestKeys = [];
+  return Promise.all(
+    keys.map(key => fetch(`../resources/stash-put.py?key=${key}&value=close`))
+  );
 }
-
-function fetch(request, {
-  signal = request.signal
-}={}) {
-  const url = request.url || request;
-
-  if (signal && signal.aborted) return Promise.reject(new DOMException('Aborted', 'AbortError'));
-
-  return new Promise((resolve, reject) => {
-    // Do the usual XHR stuff
-    const req = new XMLHttpRequest();
-    req.open('GET', url);
-
-    const read = new Promise((readResolve, readReject) => {
-      req.onload = () => {
-        readResolve();
-      };
-
-      req.onreadystatechange = () => {
-        if (req.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
-          resolve({
-            async json() {
-              await read;
-              return JSON.parse(req.responseText);
-            },
-            async text() {
-              await read;
-              return req.responseText;
-            }
-          })
-        }
-      };
-
-      // Handle network errors
-      req.onerror = () => {
-        reject(Error("Network Error"));
-        readReject(Error("Network Error"));
-      };
-  
-      req.onabort = () => {
-        reject(new DOMException('Aborted', 'AbortError'));
-        readReject(new DOMException('Aborted', 'AbortError'));
-      };
-  
-      // Make the request
-      req.send();
-  
-      if (signal) {
-        signal._addAbortCallback(() => req.abort());
-      }
-    });
-  });
-}
-//*/
 
 function assert_abort_error(err) {
   assert_equals(err.constructor, DOMException);
@@ -101,6 +36,97 @@ promise_test(async () => {
     assert_abort_error(err);
   });
 }, "Aborting rejects with AbortError");
+
+test(() => {
+  // TODO: we may want to discuss this design idea
+  const request = new Request('');
+  assert_true(Boolean(request.signal), "Signal member is present & truthy");
+  assert_equals(request.signal.constructor, AbortSignal);
+}, "Request objects have a signal property");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json', { signal });
+
+  // TODO: we may want to discuss this design idea
+  assert_true(Boolean(request.signal), "Signal member is present & truthy");
+  assert_equals(request.signal.constructor, AbortSignal);
+  assert_not_equals(request.signal, signal, 'Request has a new signal, not a reference');
+
+  await fetch(request).then(
+    () => assert_unreached("Fetch must not resolve"),
+    err => assert_abort_error(err)
+  );
+}, "Signal on request object");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json', { signal });
+  const requestFromRequest = new Request(request);
+
+  await fetch(requestFromRequest).then(
+    () => assert_unreached("Fetch must not resolve"),
+    err => assert_abort_error(err)
+  );
+}, "Signal on request object created from request object");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json');
+  const requestFromRequest = new Request(request, { signal });
+
+  await fetch(requestFromRequest).then(
+    () => assert_unreached("Fetch must not resolve"),
+    err => assert_abort_error(err)
+  );
+}, "Signal on request object created from request object, with signal on second request");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json', { signal: new AbortController().signal });
+  const requestFromRequest = new Request(request, { signal });
+
+  await fetch(requestFromRequest).then(
+    () => assert_unreached("Fetch must not resolve"),
+    err => assert_abort_error(err)
+  );
+}, "Signal on request object created from request object, with signal on second request overriding another");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json', { signal });
+
+  await fetch(request, {method: 'POST'}).then(
+    () => assert_unreached("Fetch must not resolve"),
+    err => assert_abort_error(err)
+  );
+}, "Signal retained after unrelated properties are overridden by fetch");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('../resources/data.json', { signal });
+
+  const data = await fetch(request, { signal: null }).then(r => r.json());
+  assert_equals(data.key, 'value', 'Fetch fully completes');
+}, "Signal removed by setting to null");
 
 promise_test(async () => {
   const controller = new AbortController();
@@ -134,9 +160,8 @@ promise_test(async () => {
 
   await fetch(request).catch(() => {});
 
-  assert_false(request.bodyUsed, "Body has not been used");
-  assert_equals(await request.text(), 'foo', "Correct body");
-}, "Request is not 'used' if signal is aborted before fetching");
+  assert_true(request.bodyUsed, "Body has been used");
+}, "Request is still 'used' if signal is aborted before fetching");
 
 const bodyMethods = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
 
@@ -166,24 +191,30 @@ for (const bodyMethod of bodyMethods) {
 }
 
 promise_test(async () => {
+  await abortRequests();
+
   const controller = new AbortController();
   const signal = controller.signal;
-  const key = token();
+  const stateKey = token();
+  const abortKey = token();
+  requestKeys.push(abortKey);
   controller.abort();
 
-  await fetch(`../resources/infinite-slow-response.py?key=${key}`, { signal }).catch(() => {});
+  await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal }).catch(() => {});
   
   // I'm hoping this will give the browser enough time to (incorrectly) make the request
   // above, if it intends to.
   await fetch('../resources/data.json').then(r => r.json());
 
-  const response = await fetch(`../resources/stash-take.py?key=${key}`);
+  const response = await fetch(`../resources/stash-take.py?key=${stateKey}`);
   const data = await response.json();
 
   assert_equals(data, null, "Request hasn't been made to the server");
 }, "Already aborted signal does not make request");
 
 promise_test(async () => {
+  await abortRequests();
+
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -191,8 +222,11 @@ promise_test(async () => {
   const fetches = [];
 
   for (let i = 0; i < 3; i++) {
+    const abortKey = token();
+    requestKeys.push(abortKey);
+
     fetches.push(
-      fetch(`../resources/infinite-slow-response.py?${i}`, { signal })
+      fetch(`../resources/infinite-slow-response.py?${i}&abortKey=${abortKey}`, { signal })
     );
   }
 
@@ -206,18 +240,23 @@ promise_test(async () => {
 }, "Already aborted signal can be used for many fetches");
 
 promise_test(async () => {
+  await abortRequests();
+
   const controller = new AbortController();
   const signal = controller.signal;
-
+  
   await fetch('../resources/data.json', { signal }).then(r => r.json());
-
+  
   controller.abort();
-
+  
   const fetches = [];
-
+  
   for (let i = 0; i < 3; i++) {
+    const abortKey = token();
+    requestKeys.push(abortKey);
+
     fetches.push(
-      fetch(`../resources/infinite-slow-response.py?${i}`, { signal })
+      fetch(`../resources/infinite-slow-response.py?${i}&abortKey=${abortKey}`, { signal })
     );
   }
 
@@ -231,13 +270,17 @@ promise_test(async () => {
 }, "Signal can be used to abort other fetches, even if another fetch succeeded before aborting");
 
 promise_test(async () => {
+  await abortRequests();
+
   const controller = new AbortController();
   const signal = controller.signal;
-  const key = token();
+  const stateKey = token();
+  const abortKey = token();
+  requestKeys.push(abortKey);
   
-  await fetch(`../resources/infinite-slow-response.py?key=${key}`, { signal });
+  await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
 
-  const beforeAbortResult = await fetch(`../resources/stash-take.py?key=${key}`).then(r => r.json());
+  const beforeAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
   assert_equals(beforeAbortResult, "open", "Connection is open");
 
   controller.abort();
@@ -249,20 +292,24 @@ promise_test(async () => {
     // Stop spinning if 10 seconds have passed
     if (Date.now() - start > 10000) throw Error('Timed out');
 
-    const afterAbortResult = await fetch(`../resources/stash-take.py?key=${key}`).then(r => r.json());
+    const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
     if (afterAbortResult == 'closed') break;
   }
 }, "Underlying connection is closed when aborting after receiving response");
 
 for (const bodyMethod of bodyMethods) {
   promise_test(async () => {
+    await abortRequests();
+
     const controller = new AbortController();
     const signal = controller.signal;
-    const key = token();
+    const stateKey = token();
+    const abortKey = token();
+    requestKeys.push(abortKey);
 
-    const response = await fetch(`../resources/infinite-slow-response.py?key=${key}`, { signal });
+    const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
 
-    const beforeAbortResult = await fetch(`../resources/stash-take.py?key=${key}`).then(r => r.json());
+    const beforeAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
     assert_equals(beforeAbortResult, "open", "Connection is open");
 
     const bodyPromise = response[bodyMethod]();
@@ -281,7 +328,7 @@ for (const bodyMethod of bodyMethods) {
       // Stop spinning if 10 seconds have passed
       if (Date.now() - start > 10000) throw Error('Timed out');
 
-      const afterAbortResult = await fetch(`../resources/stash-take.py?key=${key}`).then(r => r.json());
+      const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
       if (afterAbortResult == 'closed') break;
     }
   }, `Fetch aborted & connection closed when aborted after calling response.${bodyMethod}()`);

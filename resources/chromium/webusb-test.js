@@ -19,6 +19,21 @@ let internal = {
   chooserCrossFrameProxy: null,
 };
 
+// Converts an ECMAScript String object to an instance of
+// mojo.common.mojom.String16.
+function mojoString16ToString(string16) {
+  return String.fromCharCode.apply(null, string16.data);
+}
+
+// Converts an instance of mojo.common.mojom.String16 to an ECMAScript String.
+function stringToMojoString16(string) {
+  let array = new Array(string.length);
+  for (var i = 0; i < string.length; ++i) {
+    array[i] = string.charCodeAt(i);
+  }
+  return { data: array }
+}
+
 function fakeDeviceInitToDeviceInfo(guid, init) {
   let deviceInfo = {
     guid: guid + "",
@@ -33,16 +48,16 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
     deviceVersionMajor: init.deviceVersionMajor,
     deviceVersionMinor: init.deviceVersionMinor,
     deviceVersionSubminor: init.deviceVersionSubminor,
-    manufacturerName: init.manufacturerName,
-    productName: init.productName,
-    serialNumber: init.serialNumber,
+    manufacturerName: stringToMojoString16(init.manufacturerName),
+    productName: stringToMojoString16(init.productName),
+    serialNumber: stringToMojoString16(init.serialNumber),
     activeConfiguration: init.activeConfigurationValue,
     configurations: []
   };
   init.configurations.forEach(config => {
     var configInfo = {
       configurationValue: config.configurationValue,
-      configurationName: config.configurationName,
+      configurationName: stringToMojoString16(config.configurationName),
       interfaces: []
     };
     config.interfaces.forEach(iface => {
@@ -56,7 +71,7 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
           classCode: alternate.interfaceClass,
           subclassCode: alternate.interfaceSubclass,
           protocolCode: alternate.interfaceProtocol,
-          interfaceName: alternate.interfaceName,
+          interfaceName: stringToMojoString16(alternate.interfaceName),
           endpoints: []
         };
         alternate.endpoints.forEach(endpoint => {
@@ -115,7 +130,7 @@ function convertMojoDeviceFilter(input) {
   if (input.hasProtocolCode)
     output.protocolCode = input.protocolCode;
   if (input.serialNumber)
-    output.serialNumber = input.serialNumber;
+    output.serialNumber = mojoString16ToString(input.serialNumber);
   return output;
 }
 

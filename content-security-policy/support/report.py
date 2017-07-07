@@ -55,9 +55,6 @@ def main(request, response):
     count = request.server.stash.take(key=count_key)
     if count is None:
       count = 0
-    else:
-      # ensure count is int
-      count = int(count)
     count += 1
     request.server.stash.put(key=count_key, value=count)
 

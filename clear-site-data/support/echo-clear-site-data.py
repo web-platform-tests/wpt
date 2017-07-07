@@ -34,7 +34,7 @@ RESPONSE = """
 # embedder whether the data deletion succeeded.
 def main(request, response):
     types = [key for key in request.GET.keys()]
-    header = json.dumps({ "types": types })
+    header = ",".join("\"" + type + "\"" for type in types)
     return ([("Clear-Site-Data", header),
              ("Content-Type", "text/html")],
             RESPONSE)

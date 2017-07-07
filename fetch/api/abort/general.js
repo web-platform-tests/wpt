@@ -8,11 +8,11 @@ if (self.importScripts) {
 
 // This is used to close connections that weren't correctly closed during the tests,
 // otherwise you can end up running out of HTTP connections.
-let requestKeys = [];
+let requestAbortKeys = [];
 
 function abortRequests() {
-  const keys = requestKeys;
-  requestKeys = [];
+  const keys = requestAbortKeys;
+  requestAbortKeys = [];
   return Promise.all(
     keys.map(key => fetch(`../resources/stash-put.py?key=${key}&value=close`))
   );
@@ -36,6 +36,26 @@ promise_test(async () => {
     assert_abort_error(err);
   });
 }, "Aborting rejects with AbortError");
+
+promise_test(async () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const url = new URL('../resources/data.json', location);
+  url.hostname = 'www1.' + url.hostname;
+
+  await fetch(url, { 
+    signal,
+    mode: 'no-cors'
+  }).then(() => {
+    assert_unreached("Fetch must not resolve");
+  }, err => {
+    // Using .catch rather than try/catch to ensure the promise
+    // is rejecting (rather than throwing).
+    assert_abort_error(err);
+  });
+}, "Aborting rejects with AbortError - no-cors");
 
 test(() => {
   // TODO: we may want to discuss this design idea
@@ -197,7 +217,7 @@ promise_test(async () => {
   const signal = controller.signal;
   const stateKey = token();
   const abortKey = token();
-  requestKeys.push(abortKey);
+  requestAbortKeys.push(abortKey);
   controller.abort();
 
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal }).catch(() => {});
@@ -223,7 +243,7 @@ promise_test(async () => {
 
   for (let i = 0; i < 3; i++) {
     const abortKey = token();
-    requestKeys.push(abortKey);
+    requestAbortKeys.push(abortKey);
 
     fetches.push(
       fetch(`../resources/infinite-slow-response.py?${i}&abortKey=${abortKey}`, { signal })
@@ -231,11 +251,10 @@ promise_test(async () => {
   }
 
   for (const fetchPromise of fetches) {
-    await fetchPromise.then(() => {
-      assert_unreached("Fetch must not resolve");
-    }, err => {
-      assert_abort_error(err);
-    });
+    await fetchPromise.then(
+      () => assert_unreached("Fetch must not resolve"),
+      err => assert_abort_error(err)
+    );
   }
 }, "Already aborted signal can be used for many fetches");
 
@@ -253,7 +272,7 @@ promise_test(async () => {
   
   for (let i = 0; i < 3; i++) {
     const abortKey = token();
-    requestKeys.push(abortKey);
+    requestAbortKeys.push(abortKey);
 
     fetches.push(
       fetch(`../resources/infinite-slow-response.py?${i}&abortKey=${abortKey}`, { signal })
@@ -276,7 +295,7 @@ promise_test(async () => {
   const signal = controller.signal;
   const stateKey = token();
   const abortKey = token();
-  requestKeys.push(abortKey);
+  requestAbortKeys.push(abortKey);
   
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
 
@@ -297,6 +316,43 @@ promise_test(async () => {
   }
 }, "Underlying connection is closed when aborting after receiving response");
 
+promise_test(async () => {
+  await abortRequests();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const stateKey = token();
+  const abortKey = token();
+  requestAbortKeys.push(abortKey);
+
+  const url = new URL(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, location);
+  url.hostname = 'www1.' + url.hostname;
+
+  await fetch(url, {
+    signal,
+    mode: 'no-cors'
+  });
+
+  const stashTakeURL = new URL(`../resources/stash-take.py?key=${stateKey}`);
+  stashTakeURL.hostname = 'www1.' + stashTakeURL.hostname;
+
+  const beforeAbortResult = await fetch(stashTakeURL).then(r => r.json());
+  assert_equals(beforeAbortResult, "open", "Connection is open");
+
+  controller.abort();
+
+  // The connection won't close immediately, but it should close at some point:
+  const start = Date.now();
+
+  while (true) {
+    // Stop spinning if 10 seconds have passed
+    if (Date.now() - start > 10000) throw Error('Timed out');
+
+    const afterAbortResult = await fetch(stashTakeURL).then(r => r.json());
+    if (afterAbortResult == 'closed') break;
+  }
+}, "Underlying connection is closed when aborting after receiving response - no-cors");
+
 for (const bodyMethod of bodyMethods) {
   promise_test(async () => {
     await abortRequests();
@@ -305,7 +361,7 @@ for (const bodyMethod of bodyMethods) {
     const signal = controller.signal;
     const stateKey = token();
     const abortKey = token();
-    requestKeys.push(abortKey);
+    requestAbortKeys.push(abortKey);
 
     const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
 
@@ -316,11 +372,10 @@ for (const bodyMethod of bodyMethods) {
 
     controller.abort();
 
-    await bodyPromise.then(() => {
-      assert_unreached("Body read must not resolve");
-    }, err => {
-      assert_abort_error(err);
-    });
+    await bodyPromise.then(
+      () => assert_unreached("Body read must not resolve"),
+      err => assert_abort_error(err)
+    );
 
     const start = Date.now();
 
@@ -333,3 +388,83 @@ for (const bodyMethod of bodyMethods) {
     }
   }, `Fetch aborted & connection closed when aborted after calling response.${bodyMethod}()`);
 }
+
+promise_test(async () => {
+  await abortRequests();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const stateKey = token();
+  const abortKey = token();
+  requestAbortKeys.push(abortKey);
+
+  const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
+  const reader = response.body.getReader();
+
+  controller.abort();
+
+  await reader.read().then(
+    () => assert_unreached("Stream read must not resolve"),
+    err => assert_abort_error(err)
+  );
+
+  // The connection won't close immediately, but it should close at some point:
+  const start = Date.now();
+
+  while (true) {
+    // Stop spinning if 10 seconds have passed
+    if (Date.now() - start > 10000) throw Error('Timed out');
+
+    const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
+    if (afterAbortResult == 'closed') break;
+  }
+}, "Stream errors once aborted. Underlying connection closed.");
+
+promise_test(async () => {
+  await abortRequests();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const stateKey = token();
+  const abortKey = token();
+  requestAbortKeys.push(abortKey);
+
+  const response = await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
+  const reader = response.body.getReader();
+
+  await reader.read();
+
+  controller.abort();
+
+  await reader.read().then(
+    () => assert_unreached("Stream read must not resolve"),
+    err => assert_abort_error(err)
+  );
+
+  // The connection won't close immediately, but it should close at some point:
+  const start = Date.now();
+
+  while (true) {
+    // Stop spinning if 10 seconds have passed
+    if (Date.now() - start > 10000) throw Error('Timed out');
+
+    const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
+    if (afterAbortResult == 'closed') break;
+  }
+}, "Stream errors once aborted, after reading. Underlying connection closed.");
+
+promise_test(async () => {
+  await abortRequests();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const response = await fetch(`../resources/empty.txt`, { signal });
+  const reader = response.body.getReader();
+
+  controller.abort();
+
+  await reader.read();
+
+  assert_true(reader.done, "Stream is done");
+}, "Stream will not error if body is empty. It's closed with an empty queue before it errors.");

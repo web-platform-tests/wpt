@@ -75,6 +75,26 @@ var TestUtils = (function() {
   })();
 
   /**
+   * Ensures that all datatypes are nonempty. Should be called in the test
+   * setup phase.
+   */
+  TestUtils.populateDatatypes = function() {
+    return Promise.all(TestUtils.DATATYPES.map(function(datatype) {
+      return new Promise(function(resolve, reject) {
+        datatype.add().then(function() {
+          datatype.isEmpty().then(function(isEmpty) {
+            assert_false(
+                isEmpty,
+                datatype.name +
+                    " has to be nonempty before the test starts.");
+            resolve();
+          });
+        });
+      });
+    }));
+  };
+
+  /**
    * Get the support server URL that returns a Clear-Site-Data header
    * to clear |datatypes|.
    * @param{Array.<Datatype>} datatypes The list of datatypes to be deleted.

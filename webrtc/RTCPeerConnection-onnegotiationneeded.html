@@ -7,7 +7,7 @@
   'use strict';
 
   // Test is based on the following editor draft:
-  // https://w3c.github.io/webrtc-pc/archives/20170515/webrtc.html
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   /* Helper Functions */
 
@@ -212,15 +212,13 @@
   }, 'negotiationneeded event should not fire if signaling state is not stable');
 
   /*
-    4.3.1.  RTCPeerConnection Operation
-      To set an RTCSessionDescription description
-        10. If connection's signaling state is now stable, update the
-            negotiation-needed flag. If connection's [[needNegotiation]] slot
-            was true both before and after this update, queue a task that runs
-            the following steps:
-          1.  If connection's [[isClosed]] slot is true, abort these steps.
-          2.  If connection's [[needNegotiation]] slot is false, abort these steps.
-          3.  Fire a simple event named negotiationneeded at connection.
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.2.10. If connection's signaling state is now stable, update the negotiation-needed
+              flag. If connection's [[NegotiationNeeded]] slot was true both before and after
+              this update, queue a task that runs the following steps:
+        1.  If connection's [[IsClosed]] slot is true, abort these steps.
+        2.  If connection's [[NegotiationNeeded]] slot is false, abort these steps.
+        3.  Fire a simple event named negotiationneeded at connection.
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();

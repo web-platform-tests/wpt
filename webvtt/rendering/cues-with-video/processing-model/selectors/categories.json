@@ -1,0 +1,8 @@
+{
+    "cue/*.html": ["::cue", "cues"],
+    "cue_function/*.html": ["::cue()", "cues"],
+    "cue-region/*.html": ["::cue-region", "regions"],
+    "cue-region_function/*": ["::cue-region()", "regions"],
+    "default_stypes/*.html": "cues",
+    "*.html": "stylesheets"
+}

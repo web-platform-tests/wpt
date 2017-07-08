@@ -1,0 +1,6 @@
+{
+    ":categories": [
+        ["bidi"]
+    ],
+    "*": ["bidi", "cues"]
+}

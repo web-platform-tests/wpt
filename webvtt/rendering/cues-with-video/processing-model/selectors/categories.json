@@ -2,7 +2,9 @@
     "cue/*.html": ["::cue", "cues"],
     "cue_function/*.html": ["::cue()", "cues"],
     "cue-region/*.html": ["::cue-region", "regions"],
-    "cue-region_function/*": ["::cue-region()", "regions"],
+    "cue-region_function/*.html": ["::cue-region()", "regions"],
+    "past/*.html": [":past"],
+    "future/*.html": [":future"],
     "default_stypes/*.html": "cues",
     "*.html": "stylesheets"
 }

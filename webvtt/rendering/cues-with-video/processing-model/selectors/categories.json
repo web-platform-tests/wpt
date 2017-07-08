@@ -6,5 +6,8 @@
     "past/*.html": [":past"],
     "future/*.html": [":future"],
     "default_stypes/*.html": "cues",
-    "*.html": "stylesheets"
+    "*.html": "stylesheets",
+    ":subcategories": [
+        "cue_function/categories.json"
+    ]
 }

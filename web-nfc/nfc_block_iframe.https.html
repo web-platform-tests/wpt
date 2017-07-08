@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Web NFC: Test NFC blocks iframe</title>
+<link rel="author" title="Intel" href="http://www.intel.com"/>
+<link rel="help" href="https://w3c.github.io/web-nfc/"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="log"></div>
+
+<script>
+
+'use strict';
+
+async_test( t => {
+  let iframe = document.createElement('iframe');
+  iframe.src = 'resources/push-from-iframe.html';
+  iframe.onload = () => {
+    iframe.contentWindow.postMessage('Ready', '*');
+  };
+  document.body.appendChild(iframe);
+  window.onmessage = t.step_func(message => {
+    assert_equals(message.data, 'Success');
+    t.done();
+  });
+}, 'Test that WebNFC API is not accessible from iframe context.');
+
+</script>

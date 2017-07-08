@@ -18,15 +18,27 @@ class Test:
     @classmethod
     def from_json(cls, json):
         file = json["test"]
+
+        # Handle different types of tests separately
+        if isinstance(file, list):
+            test = Test.ref_test_from_json(json)
+            if test is not None:
+                return [test]
+            return []
+        else:
+            return Test.html_tests_from_json(json)
+
+    @classmethod
+    def html_tests_from_json(cls, json):
+        file = json["test"]
+
         if not file.startswith(TEST_DIR):
             return []
         file = file[len(TEST_DIR):]
 
-        status = json["status"]
-        message = json["message"]
+        status, message = json["status"], json["message"]
 
         tests = []
-
         for test in json["subtests"]:
             name = test["name"]
             if status == 'OK':
@@ -38,6 +50,20 @@ class Test:
             tests.append(Test(file, name, test_status, test_message))
 
         return tests
+
+    @classmethod
+    def ref_test_from_json(cls, json):
+        file = json["test"][0]
+
+        if not file.startswith(TEST_DIR):
+            return None
+        file = file[len(TEST_DIR):]
+
+        status = json["status"]
+        if status == 'OK':
+            status = 'PASS'
+
+        return Test(file, file, status, json["message"])
 
 class Category:
     def __init__(self, names):
@@ -68,6 +94,7 @@ def parse_categories(file, tests, categories = None, categories_map = None):
     data = json.load(file)
     basepath = os.path.dirname(file.name)
 
+    # Parse categories into a list and a dict by name
     categories = categories or []
 
     if categories_map:
@@ -83,17 +110,26 @@ def parse_categories(file, tests, categories = None, categories_map = None):
             for name in category.names:
                 categories_map[name] = category
 
+    # Categorize tests
     for pattern, category_name in data.items():
         if pattern.startswith(":"):
             continue
-        category = categories_map[category_name]
 
+        # Categories can be a list of single item
+        if isinstance(category_name, list):
+            target_categories = [(categories_map[name], name) for name in category_name]
+        else:
+            target_categories = [(categories_map[category_name], category_name)]
+
+        # Use glob style matching to match tests to categories
         file_pattern = os.path.normpath(os.path.join(basepath, pattern))
         for test in tests:
             if fnmatch.fnmatch(test.name, file_pattern) or fnmatch.fnmatch(test.file, file_pattern):
-                category.add_test(category_name, test)
-                test.categories.append(category)
+                for category, name in target_categories:
+                    category.add_test(name, test)
+                    test.categories.append(category)
 
+    # recurse for subcategories
     if ":subcategories" in data:
         for subcat_name in data[":subcategories"]:
             path = os.path.join(basepath, subcat_name)
@@ -123,15 +159,35 @@ def main(argv):
     for category in categories:
         tests_by_name = { name: [] for name in category.names }
         for test, name in category.tests.items():
-            tests_by_name[name].append(test)
+            if isinstance(name, list):
+                names = name
+            else:
+                names = [name]
 
-        for name in category.names:
+            for name in names:
+                tests_by_name[name].append(test)
+
+        for index, name in enumerate(category.names):
             test_group = tests_by_name[name]
             amount = len(test_group)
             if amount == 0:
+                print("No tests for {}".format(name))
                 continue
+
             passed = sum(1 for test in test_group if test.passed)
-            print("{}:\t{}/{} - {}%".format(name, passed, amount, round(passed / amount * 100, 2)))
+
+            prefix = ' '
+            if index == 0:
+                prefix = '-'
+            print("{} {}:\t{}/{} - {}%".format(prefix, name, passed, amount, round(passed / amount * 100, 2)))
+
+    total = len(tests)
+    total_passed = sum(1 for test in tests if test.passed)
+    print("TOTAL:\t{}/{} - {}%".format(total_passed, total, round(total_passed / total * 100, 2)))
+
+    for test in tests:
+        if not test.categories:
+            print("Uncategorized: {}".format(test.file))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -19,18 +19,23 @@ extension e.g. `foo-manual.html` will indicate a manual test, but
   <dd><p>Indicates that a test is a non-automated test.
   <dt>`-support`
   <dd><p>Indicates that a file is not a test but a support file.
+         Not required for files in a directory called `resources`,
+         `tools` or `support`.
   <dt>`-visual`
   <dd><p>Indicates that a file is a visual test.
 </dl>
 
 ### Test Features
 
+These flags are preceded by a `.` in the filename, and must
+themselves precede any test type flag, but are otherwise unordered.
+
 <dl>
   <dt>`.https`
-  <dd><p>Indicates that a test is loaded over https
+  <dd><p>Indicates that a test is loaded over HTTPS.
   <dt>`.sub`
-  <dd><p>Indicates that a test uses the server-side substitution
-         feature.
+  <dd><p>Indicates that a test uses the [server-side substitution
+         feature](https://wptserve.readthedocs.io/en/latest/pipes.html#sub).
   <dt>`.window`
   <dd><p>(js files only) Indicates that the file generates a test in
   which it is run in a Window environment.

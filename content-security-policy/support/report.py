@@ -1,16 +1,17 @@
 import time
 import json
 import re
+import math
 
-def retrieve_from_stash(request, key, timeout, default_value):
-#  t0 = time.time()
-#  while time.time() - t0 < timeout:
-#    time.sleep(0.5)
+def retrieve_from_stash(request, key, attempts, default_value):
+  for attempt_no in range(attempts):
     value = request.server.stash.take(key=key)
     if value is not None:
       return value
+    if attempt_no != attempts - 1:
+      time.sleep(0.5)
 
-    return default_value
+  return default_value
 
 def main(request, response):
   op = request.GET.first("op");
@@ -20,18 +21,20 @@ def main(request, response):
 
   try:
     timeout = request.GET.first("timeout")
+    attempts = int(math.ceil(timeout / 0.5))
+    if attempts < 1:
+      attempts = 1
   except:
-    timeout = 0.5
-  timeout = float(timeout)
+    attempts = 1
 
   if op == "retrieve_report":
-    return [("Content-Type", "application/json")], retrieve_from_stash(request, key, timeout, json.dumps({'error': 'No such report.' , 'guid' : key}))
+    return [("Content-Type", "application/json")], retrieve_from_stash(request, key, attempts, json.dumps({'error': 'No such report.' , 'guid' : key}))
 
   if op == "retrieve_cookies":
-    return [("Content-Type", "application/json")], "{ \"reportCookies\" : " + str(retrieve_from_stash(request, cookie_key, timeout, "\"None\"")) + "}"
+    return [("Content-Type", "application/json")], "{ \"reportCookies\" : " + str(retrieve_from_stash(request, cookie_key, attempts, "\"None\"")) + "}"
 
   if op == "retrieve_count":
-    return [("Content-Type", "application/json")], json.dumps({'report_count': str(retrieve_from_stash(request, count_key, timeout, 0))})
+    return [("Content-Type", "application/json")], json.dumps({'report_count': str(retrieve_from_stash(request, count_key, attempts, 0))})
 
   # save cookies
 #  if hasattr(request, 'cookies') and len(request.cookies.keys()) > 0:

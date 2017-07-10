@@ -26,19 +26,6 @@
                  sequence<MediaStream> streams = [];
         required RTCRtpTransceiver     transceiver;
       };
-
-      - Firing an RTCTrackEvent event named e with
-        - an RTCRtpReceiver receiver
-        - a MediaStreamTrack track
-        - a MediaStream[] streams
-      - means that an event with
-        - the name e, which does not bubble (except where otherwise stated)
-        - and is not cancelable (except where otherwise stated),
-        - and which uses the RTCTrackEvent interface with
-          - the receiver attribute set to receiver
-          - track attribute set to track
-          - streams attribute set to streams
-      - MUST be created and dispatched at the given target.
    */
 
   test(t => {
@@ -163,9 +150,9 @@
 
   /*
     Coverage Report
-      Tested        14
-      Not Tested     0
-      Untestable     0
-      Total         14
+      Interface tests are counted as 1 trivial test
+
+      Tested         1
+      Total          1
    */
 </script>

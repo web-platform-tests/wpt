@@ -14,7 +14,7 @@ def test_getting_text_of_a_non_existant_element_is_an_error(new_session):
        "session/%s/element/%s/text" % (session.session_id, id))
 
    assert_error(result, "no such element")
-    
+
 
 def test_read_element_text(new_session):
     _, session = new_session({})

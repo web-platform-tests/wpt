@@ -47,7 +47,7 @@
    */
 
   /*
-    4.4.2.  setLocalDescription
+    4.3.2.  setLocalDescription
       2.  Let lastOffer be the result returned by the last call to createOffer.
       5.  If description.sdp is null and description.type is offer, set description.sdp
           to lastOffer.
@@ -74,7 +74,7 @@
   }, 'setLocalDescription with valid offer should succeed');
 
   /*
-    4.4.2.  setLocalDescription
+    4.3.2.  setLocalDescription
       2.  Let lastOffer be the result returned by the last call to createOffer.
       5.  If description.sdp is null and description.type is offer, set description.sdp
           to lastOffer.
@@ -93,7 +93,7 @@
   }, 'setLocalDescription with type offer and null sdp should use lastOffer generated from createOffer');
 
   /*
-    4.4.2.  setLocalDescription
+    4.3.2.  setLocalDescription
       2.  Let lastOffer be the result returned by the last call to createOffer.
       6.  If description.type is offer and description.sdp does not match lastOffer,
           reject the promise with a newly created InvalidModificationError and abort
@@ -203,7 +203,7 @@
   }, 'setLocalDescription() with valid answer should succeed');
 
   /*
-    4.4.2.  setLocalDescription
+    4.3.2.  setLocalDescription
       3.  Let lastAnswer be the result returned by the last call to createAnswer.
       4.  If description.sdp is null and description.type is answer, set description.sdp
           to lastAnswer.
@@ -231,7 +231,7 @@
   }, 'setLocalDescription() with type answer and null sdp should use lastAnswer generated from createAnswer');
 
   /*
-    4.4.2.  setLocalDescription
+    4.3.2.  setLocalDescription
       3.  Let lastAnswer be the result returned by the last call to createAnswer.
       7.  If description.type is answer and description.sdp does not match lastAnswer,
           reject the promise with a newly created InvalidModificationError and abort these
@@ -330,7 +330,7 @@
 
   /*
     TODO
-      4.4.2.  setLocalDescription
+      4.3.2.  setLocalDescription
         4.  If description.sdp is null and description.type is pranswer, set description.sdp
             to lastAnswer.
         7.  If description.type is pranswer and description.sdp does not match lastAnswer,

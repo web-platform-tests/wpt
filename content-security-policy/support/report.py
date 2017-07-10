@@ -3,14 +3,14 @@ import json
 import re
 
 def retrieve_from_stash(request, key, timeout, default_value):
-  t0 = time.time()
-  while time.time() - t0 < timeout:
-    time.sleep(0.5)
+#  t0 = time.time()
+#  while time.time() - t0 < timeout:
+#    time.sleep(0.5)
     value = request.server.stash.take(key=key)
     if value is not None:
       return value
 
-  return default_value
+    return default_value
 
 def main(request, response):
   op = request.GET.first("op");

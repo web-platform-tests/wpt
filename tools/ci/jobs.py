@@ -13,7 +13,7 @@ job_path_map = {
     "lint_unittest": ["tools/lint/*"],
     "manifest_unittest": ["tools/manifest/*"],
     "build_css": ["css/*"],
-    "update_built": ["2dcontext/*", "assumptions/*", "html/*", "offscreen-canvas/*"],
+    "update_built": ["2dcontext/*", "assumptions/*", "html/*", "offscreen-canvas/*", "*OWNERS"],
     "flake8": ["tools/*"],
     "coverage": ["tools/*"],
 }

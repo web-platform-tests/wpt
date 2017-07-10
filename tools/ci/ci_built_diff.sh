@@ -19,3 +19,6 @@ excluded=(
 ./update-built-tests.sh
 git update-index --assume-unchanged ${excluded[*]}
 git diff --exit-code
+
+./wpt update-owners
+git diff --exit-code

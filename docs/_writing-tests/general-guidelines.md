@@ -31,7 +31,7 @@ regardless of where they are in the directory structure.
 ### HTTPS
 
 By default tests are served over plain http. If a test requires https
-it must be given a filename ending `.https.ext`
+it must be given a filename containing `.https` before the extension,
 e.g. `test-secure.https.html`. For more details see the documentation
 on [file names](file-name-flags).
 

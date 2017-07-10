@@ -34,14 +34,14 @@ def main(request, response):
     return [("Content-Type", "application/json")], json.dumps({'report_count': str(retrieve_from_stash(request, count_key, timeout, 0))})
 
   # save cookies
-  if hasattr(request, 'cookies') and len(request.cookies.keys()) > 0:
+#  if hasattr(request, 'cookies') and len(request.cookies.keys()) > 0:
     # convert everything into strings and dump it into a dict so it can be jsoned
-    temp_cookies_dict = {}
-    for dict_key in request.cookies.keys():
-      temp_cookies_dict[str(dict_key)] = str(request.cookies.get_list(dict_key))
-    with request.server.stash.lock:
-      request.server.stash.take(key=cookie_key)
-      request.server.stash.put(key=cookie_key, value=json.dumps(temp_cookies_dict))
+#    temp_cookies_dict = {}
+#    for dict_key in request.cookies.keys():
+#      temp_cookies_dict[str(dict_key)] = str(request.cookies.get_list(dict_key))
+#    with request.server.stash.lock:
+#      request.server.stash.take(key=cookie_key)
+#      request.server.stash.put(key=cookie_key, value=json.dumps(temp_cookies_dict))
 
   # save latest report
   report = request.body
@@ -50,13 +50,13 @@ def main(request, response):
     request.server.stash.take(key=key)
     request.server.stash.put(key=key, value=report)
 
-  with request.server.stash.lock:
+#  with request.server.stash.lock:
     # increment report count
-    count = request.server.stash.take(key=count_key)
-    if count is None:
-      count = 0
-    count += 1
-    request.server.stash.put(key=count_key, value=count)
+#    count = request.server.stash.take(key=count_key)
+#    if count is None:
+#      count = 0
+#    count += 1
+#    request.server.stash.put(key=count_key, value=count)
 
   # return acknowledgement report
   return [("Content-Type", "text/plain")], "Recorded report " + report

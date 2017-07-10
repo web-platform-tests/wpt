@@ -16,6 +16,10 @@
 <pre id='untested_idl' style='display:none'>
 interface Document {
 };
+
+[TreatNonCallableAsNull]
+callback EventHandlerNonNull = any (Event event);
+typedef EventHandlerNonNull? EventHandler;
 </pre>
 
 <pre id='idl'>

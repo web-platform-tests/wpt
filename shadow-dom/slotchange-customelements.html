@@ -44,7 +44,10 @@ customElements.define('slots-in-callback', SlotsInCallback);
 <slots-in-callback id="callback-parser"><div></div></slots-in-callback>
 <script>
 test(function () {
-    assert_array_equals(calls, ["constructor-parser", "callback-parser", "constructor-upgrade", "callback-upgrade"]);
+    assert_true(calls.includes("constructor-parser"));
+    assert_true(calls.includes("callback-parser"));
+    assert_true(calls.includes("constructor-upgrade"));
+    assert_true(calls.includes("callback-upgrade"));
 }, 'slotchange must fire on initialization of custom elements with slotted children');
 done();
 </script>

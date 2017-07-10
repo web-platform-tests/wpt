@@ -86,8 +86,9 @@ recursively: `a/OWNERS` will get notified for `a/foo.html` and
 `a/b/bar.html`).
 
 If you want to be notified about changes to tests in a directory, feel
-free to add yourself to the OWNERS file: there's no requirement to own
-anything as a result!
+free to add yourself to the OWNERS file. In order for GitHub to pick
+up the changes, you must run the `./wpt update-owners` command after
+updating an OWNERS file.
 
 
 ## Local Setup

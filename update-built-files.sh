@@ -5,3 +5,4 @@ set -ex
 assumptions/tools/build.sh
 html/tools/build.sh
 offscreen-canvas/tools/build.sh
+./wpt update-owners

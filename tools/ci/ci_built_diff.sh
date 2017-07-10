@@ -17,7 +17,7 @@ main() {
         '2dcontext/drawing-text-to-the-canvas/2d.text.draw.stroke.basic.png'
     )
 
-    ./update-built-tests.sh
+    ./update-built-files.sh
     git update-index --assume-unchanged ${excluded[*]}
     git diff --exit-code
 }

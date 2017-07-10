@@ -75,7 +75,7 @@
 
       await Promise.all([
         response[bodyMethod]().then(
-          () => log.push(`${bodyMethod}-resolve`),
+          () => assert_unreached("Fetch must not resolve"),
           err => {
             assert_abort_error(err);
             log.push(`${bodyMethod}-reject`);

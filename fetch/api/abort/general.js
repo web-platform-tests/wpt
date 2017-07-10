@@ -159,7 +159,7 @@ promise_test(async () => {
 
   await Promise.all([
     fetch('../resources/data.json', { signal }).then(
-      () => log.push('fetch-resolve'),
+      () => assert_unreached("Fetch must not resolve"),
       () => log.push('fetch-reject')
     ),
     Promise.resolve().then(() => log.push('next-microtask'))
@@ -197,7 +197,7 @@ for (const bodyMethod of BODY_METHODS) {
 
     await Promise.all([
       response[bodyMethod]().then(
-        () => log.push(`${bodyMethod}-resolve`),
+        () => assert_unreached("Fetch must not resolve"),
         err => {
           assert_abort_error(err);
           log.push(`${bodyMethod}-reject`);

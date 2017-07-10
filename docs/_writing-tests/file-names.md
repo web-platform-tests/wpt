@@ -42,8 +42,8 @@ themselves precede any test type flag, but are otherwise unordered.
   which it is run in a Window environment.
   <dt>`.worker`
   <dd><p>(js files only) Indicates that the file generates a test in
-  which it is run in a decicated worker environment.
+  which it is run in a dedicated worker environment.
   <dt>`.any`
   <dd><p>(js files only) Indicates that the file generates tests in
-  which it is run in Window and decicated worker environments.
+  which it is run in Window and dedicated worker environments.
 </dl>

@@ -10,7 +10,7 @@
     dictionary PaymentItem {
         required DOMString             label;
         required PaymentCurrencyAmount amount;
-                boolean               pending = false;
+                 boolean               pending = false;
     };
 
     dictionary PaymentDetailsBase {
@@ -93,7 +93,7 @@ test(() => {
     assert_equals(err.name, "TypeError", "must be a TypeError");
   }
   assert_true(true, "Didn't crash");
-}, "Don't crash if there is a abusive number of payment methods in the methodData sequence");
+}, "Don't crash if there is an abusive number of payment methods in the methodData sequence");
 
 // PaymentMethodData.supportedMethods
 test(() => {

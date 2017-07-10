@@ -616,7 +616,7 @@ for (const amount of invalidAmounts) {
         );
       }
     );
-  }, `If amount.value of additionalDisplayItems is is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
+  }, `If amount.value of additionalDisplayItems is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
 }
 
 test(() => {
@@ -681,7 +681,7 @@ test(() => {
     itThrows = true;
   }
   assert_false(itThrows, "shouldn't throw when given an object value");
-}, "Modifier data must be JSON-serializable object (a object in this case)");
+}, "Modifier data must be JSON-serializable object (an object in this case)");
 
 test(() => {
   const recursiveDictionary = {};

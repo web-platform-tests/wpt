@@ -21,8 +21,10 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
       2.  If elements of the SDP were modified, then reject p with a newly created
           InvalidModificationError and abort these steps.
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setLocalDescription-offer]
+      [RTCPeerConnection-setLocalDescription-answer]
+      [RTCPeerConnection-setRemoteDescription-offer]
+      [RTCPeerConnection-setRemoteDescription-answer]
       3.  If the description's type is invalid for the current signaling state of
           connection as described in [JSEP] (section 5.5. and section 5.6.), then
           reject p with a newly created InvalidStateError and abort these steps.
@@ -53,11 +55,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
       2.  If description is set as a local description, then run one of the
           following steps:
 
-        [RTCPeerConnection-setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-offer]
         - If description is of type "offer", set connection.pendingLocalDescription
           to description and signaling state to have-local-offer.
 
-        [RTCPeerConnection-setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-answer]
         - If description is of type "answer", then this completes an offer answer
           negotiation.
 
@@ -67,11 +69,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
           Set both pendingRemoteDescription and pendingLocalDescription to null.
           Finally set connection's signaling state to stable
 
-        [TODO setLocalDescription]
+        [TODO RTCPeerConnection-setLocalDescription-rollback]
         - If description is of type "rollback", then this is a rollback. Set
           connection.pendingLocalDescription to null and signaling state to stable.
 
-        [TODO setLocalDescription]
+        [TODO RTCPeerConnection-setLocalDescription-pranswer]
         - If description is of type "pranswer", then set
           connection.pendingLocalDescription to description and signaling state to
           have-local-pranswer.
@@ -80,11 +82,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     3.  Otherwise, if description is set as a remote description, then run one of the
         following steps:
 
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-offer]
       - If description is of type "offer", set connection.pendingRemoteDescription
         attribute to description and signaling state to have-remote-offer.
 
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-answer]
       - If description is of type "answer", then this completes an offer answer
         negotiation.
 
@@ -95,11 +97,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
         Finally setconnection's signaling state to stable
 
-      [TODO setRemoteDescription]
+      [TODO RTCPeerConnection-setRemoteDescription-rollback]
       - If description is of type "rollback", then this is a rollback.
         Set connection.pendingRemoteDescription to null and signaling state to stable.
 
-      [TODO setRemoteDescription]
+      [TODO RTCPeerConnection-setRemoteDescription-rollback]
       - If description is of type "pranswer", then set
         connection.pendingRemoteDescription to description and signaling state
         to have-remote-pranswer.

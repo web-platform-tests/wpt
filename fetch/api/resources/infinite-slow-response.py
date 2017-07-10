@@ -23,7 +23,7 @@ def main(request, response):
 
     # Writing an initial 2k so browsers realise it's there. *shrug*
     response.writer.write("." * 2048)
-    
+
     while True:
         if not response.writer.flush():
             break

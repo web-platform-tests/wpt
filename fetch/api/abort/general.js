@@ -1,3 +1,5 @@
+const BODY_METHODS = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
+
 if (self.importScripts) {
   // Load scripts if being run from a worker
   importScripts(
@@ -45,7 +47,7 @@ promise_test(async () => {
   const url = new URL('../resources/data.json', location);
   url.hostname = 'www1.' + url.hostname;
 
-  await fetch(url, { 
+  await fetch(url, {
     signal,
     mode: 'no-cors'
   }).then(() => {
@@ -183,18 +185,16 @@ promise_test(async () => {
   assert_true(request.bodyUsed, "Body has been used");
 }, "Request is still 'used' if signal is aborted before fetching");
 
-const bodyMethods = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
-
-for (const bodyMethod of bodyMethods) {
+for (const bodyMethod of BODY_METHODS) {
   promise_test(async () => {
     const controller = new AbortController();
     const signal = controller.signal;
-    
+
     const log = [];
     const response = await fetch('../resources/data.json', { signal });
-    
+
     controller.abort();
-  
+
     await Promise.all([
       response[bodyMethod]().then(
         () => log.push(`${bodyMethod}-resolve`),
@@ -205,7 +205,7 @@ for (const bodyMethod of bodyMethods) {
       ),
       Promise.resolve().then(() => log.push('next-microtask'))
     ]);
-  
+
     assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
   }, `response.${bodyMethod}() rejects if already aborted`);
 }
@@ -221,7 +221,7 @@ promise_test(async () => {
   controller.abort();
 
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal }).catch(() => {});
-  
+
   // I'm hoping this will give the browser enough time to (incorrectly) make the request
   // above, if it intends to.
   await fetch('../resources/data.json').then(r => r.json());
@@ -263,13 +263,13 @@ promise_test(async () => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  
+
   await fetch('../resources/data.json', { signal }).then(r => r.json());
-  
+
   controller.abort();
-  
+
   const fetches = [];
-  
+
   for (let i = 0; i < 3; i++) {
     const abortKey = token();
     requestAbortKeys.push(abortKey);
@@ -296,7 +296,7 @@ promise_test(async () => {
   const stateKey = token();
   const abortKey = token();
   requestAbortKeys.push(abortKey);
-  
+
   await fetch(`../resources/infinite-slow-response.py?stateKey=${stateKey}&abortKey=${abortKey}`, { signal });
 
   const beforeAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
@@ -353,7 +353,7 @@ promise_test(async () => {
   }
 }, "Underlying connection is closed when aborting after receiving response - no-cors");
 
-for (const bodyMethod of bodyMethods) {
+for (const bodyMethod of BODY_METHODS) {
   promise_test(async () => {
     await abortRequests();
 

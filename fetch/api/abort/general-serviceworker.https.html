@@ -10,7 +10,7 @@
 <script>
   (async function() {
     const scope = 'does/not/exist';
-  
+
     let reg = await navigator.serviceWorker.getRegistration(scope);
     if (reg) await reg.unregister();
 

@@ -4,8 +4,7 @@ import uuid
 from support.asserts import assert_error, assert_success
 from support.inline import inline
 
-def test_getting_text_of_a_non_existant_element_is_an_error(new_session):
-   _, session = new_session({})
+def test_getting_text_of_a_non_existant_element_is_an_error(session):
    session.url = inline("""<body>Hello world</body>""")
    id = uuid.uuid4()
 
@@ -16,8 +15,7 @@ def test_getting_text_of_a_non_existant_element_is_an_error(new_session):
    assert_error(result, "no such element")
 
 
-def test_read_element_text(new_session):
-    _, session = new_session({})
+def test_read_element_text(session):
     session.url = inline("""
         <body>
           Noise before <span id='id'>This has an ID</span>. Noise after

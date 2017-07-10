@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>time origin value when confirming the navigation </title>
+<link rel="help" href="https://w3c.github.io/hr-time/#time-origin-1">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+var t = async_test('Window time origin is almost equal (<10) to the time of the user confirming the navigation if a confirmation dialog is displayed');
+
+window.onload = t.step_func(function() {
+  var refWindow = preWindow = targetWindow = null;
+  // refWindow is the window where the test case is running, it provides a reference time for the test;
+  // preWindow is to provide a previous document;
+  // targetWindow is the one we want to test its time Origin;
+
+  var unloadTime = loadTime = targetTime = 0;
+
+  var timeStatus = document.getElementById('time');
+
+  t.step_timeout(function() {
+    document.getElementById('open').onclick = function () {
+      refWindow = window;
+      preWindow = window.open('resources/unload_first.html');
+
+      preWindow.onload = function() {
+        preWindow.onunload =  function () {
+          unloadTime = refWindow.performance.now();
+          targetWindow = preWindow.open('unload_second.html');
+
+          targetWindow.onload = function() {
+            targetTime = targetWindow.performance.now();
+            loadTime = refWindow.performance.now();
+
+            assert_less_than((loadTime - unloadTime - targetTime), 10, "");
+
+            timeStatus.innerHTML = "<p>The first page unloaded at: " + unloadTime + "</p><p>The second page loaded at: ref - " + loadTime + ", local - " + targetTime + "</p><p>We assume the timeOrigin of the second page is: " + (loadTime - targetTime) + "</p>";
+
+            t.done();
+          }
+        };
+
+        preWindow.onbeforeunload =  function () {
+          return 'please confirm the unload';
+        };
+      }
+    };
+  }, 1000);
+});
+</script>
+</head>
+<body>
+<h2>Description</h2>
+<p>This test validates that time origin is almost equal (less than 10) to the time of the user confirming the navigation if a confirmation dialog is displayed during the prompt to unload algorithm.</p>
+<hr/>
+
+<h2>Manual Test Steps:</h2>
+<ol>
+<li>Click the "openNewWindow" button below;</li>
+<li>Close the NEW page;</li>
+<li>Confirming the new navigation;</li>
+<li>Done. Thanks!</li>
+</ol>
+<button id="open">openNewWindow</button>
+<div id="time"></div>
+<hr/>
+<div id="log"></div>
+</body>
+</html>

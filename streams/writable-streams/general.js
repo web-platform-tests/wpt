@@ -119,48 +119,48 @@ promise_test(() => {
       resolvers[methodName] = resolve;
     });
   }
-
+  var thisObject = null;
   // Calls to Sink methods after the first are implicitly ignored. Only the first value that is passed to the resolver
   // is used.
   class Sink {
     start() {
-      // Called twice
+      assert_equals(thisObject, this, 'start should be called as a method');
       resolvers.start(this);
     }
 
     write() {
+      assert_equals(thisObject, this, 'write should be called as a method');
       resolvers.write(this);
     }
 
     close() {
+      assert_equals(thisObject, this, 'close should be called as a method');
       resolvers.close(this);
     }
 
     abort() {
+      assert_equals(thisObject, this, 'abort should be called as a method');
       resolvers.abort(this);
     }
   }
 
   const theSink = new Sink();
+  thisObject = theSink;
   const ws = new WritableStream(theSink);
 
   const writer = ws.getWriter();
 
   writer.write('a');
-  writer.close();
+  var closePromise = writer.close();
 
   const ws2 = new WritableStream(theSink);
   const writer2 = ws2.getWriter();
-  writer2.abort();
+  var abortPromise = writer2.abort();
 
-  return promises.start
-      .then(thisValue => assert_equals(thisValue, theSink, 'start should be called as a method'))
-      .then(() => promises.write)
-      .then(thisValue => assert_equals(thisValue, theSink, 'write should be called as a method'))
-      .then(() => promises.close)
-      .then(thisValue => assert_equals(thisValue, theSink, 'close should be called as a method'))
-      .then(() => promises.abort)
-      .then(thisValue => assert_equals(thisValue, theSink, 'abort should be called as a method'));
+  return Promise.all([
+    closePromise,
+    abortPromise
+  ]);
 }, 'WritableStream should call underlying sink methods as methods');
 
 promise_test(t => {
@@ -195,9 +195,11 @@ promise_test(t => {
   const writer3 = ws3.getWriter();
   writer3.abort();
 
-  return writer1.closed
-      .then(() => promise_rejects(t, new TypeError(), writer2.closed, 'writer2.closed should be rejected'))
-      .then(() => promise_rejects(t, new TypeError(), writer3.closed, 'writer3.closed should be rejected'));
+  return writer1.closed.then(() => {
+    promise_rejects(t, new TypeError(), writer2.closed, 'writer2.closed should be rejected');
+  }).then(() => {
+    promise_rejects(t, new TypeError(), writer3.closed, 'writer3.closed should be rejected');
+  });
 }, 'methods should not not have .apply() or .call() called');
 
 promise_test(() => {
@@ -226,16 +228,28 @@ promise_test(() => {
   return writer2.ready;
 }, 'redundant releaseLock() is no-op');
 
-promise_test(() => {
+promise_test(t => {
+  let writeResolve;
   const events = [];
-  const ws = new WritableStream();
+  const ws = new WritableStream({
+    write() {
+      return new Promise((resolve, reject) => {
+        writeResolve = resolve;
+      });
+    }
+  });
   const writer = ws.getWriter();
   return writer.ready.then(() => {
     // Force the ready promise back to a pending state.
     const writerPromise = writer.write('dummy');
     const readyPromise = writer.ready.catch(() => events.push('ready'));
     const closedPromise = writer.closed.catch(() => events.push('closed'));
+
     writer.releaseLock();
+
+    // Now that we have the promises ready, let our write completed.
+    writeResolve();
+
     return Promise.all([readyPromise, closedPromise]).then(() => {
       assert_array_equals(events, ['ready', 'closed'], 'ready promise should fire before closed promise');
       // Stop the writer promise hanging around after the test has finished.

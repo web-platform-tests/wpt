@@ -23,10 +23,9 @@ promise_test(() => {
 
   const closePromise = writer.close();
   return closePromise.then(value => assert_equals(value, undefined, 'fulfillment value must be undefined'));
-}, 'fulfillment value of ws.close() call must be undefined even if the underlying sink returns a non-undefined ' +
-    'value');
+}, 'fulfillment value of ws.close() call must be undefined even if the underlying sink returns a non-undefined value');
 
-promise_test(() => {
+promise_test(t => {
   let controller;
   let resolveClose;
   const ws = new WritableStream({
@@ -55,7 +54,7 @@ promise_test(() => {
   });
 }, 'when sink calls error asynchronously while sink close is in-flight, the stream should not become errored');
 
-promise_test(() => {
+promise_test(t => {
   let controller;
   const passedError = new Error('error me');
   const ws = new WritableStream({
@@ -86,8 +85,7 @@ promise_test(t => {
     promise_rejects(t, error1, writer.close(), 'close() must reject with the error'),
     promise_rejects(t, error1, writer.closed, 'closed must reject with the error')
   ]);
-}, 'when the sink throws during close, and the close is requested while a write is still in-flight, the stream should ' +
-   'become errored during the close');
+}, 'when the sink throws and a write is queued up, the stream should become errored');
 
 promise_test(() => {
   const ws = new WritableStream({
@@ -123,7 +121,7 @@ promise_test(() => {
   return delay(0).then(() => {
     writer.releaseLock();
   });
-}, 'releaseLock on a stream with a pending close in which controller.error() was called');
+}, 'releaseLock on a stream with a pending close in which the stream has been errored');
 
 promise_test(() => {
   const ws = recordingWritableStream();
@@ -134,7 +132,7 @@ promise_test(() => {
     assert_equals(writer.desiredSize, 1, 'desiredSize should be 1');
 
     writer.close();
-    assert_equals(writer.desiredSize, 1, 'desiredSize should be still 1');
+    assert_equals(writer.desiredSize, 1, 'desiredSize should be 1 still.');
 
     return writer.ready.then(v => {
       assert_equals(v, undefined, 'ready promise should be fulfilled with undefined');
@@ -194,8 +192,7 @@ promise_test(() => {
       assert_array_equals(ws.events, ['write', 'a', 'close'], 'sink abort() should not be called');
     });
   });
-}, 'when close is called on a WritableStream in waiting state, ready should be fulfilled immediately even if close ' +
-    'takes a long time');
+}, 'when close is called on a WritableStream in waiting state, ready should be fulfilled immediately even if close takes a long time');
 
 promise_test(t => {
   const rejection = { name: 'letter' };
@@ -304,12 +301,11 @@ promise_test(() => {
       events.push('closed');
     })
   ]).then(() => {
-    assert_array_equals(events, ['closePromise', 'closed'],
-                        'promises must fulfill/reject in the expected order');
+    assert_array_equals(events, ['closePromise', 'closed'], 'promises must fulfill/reject in the expected order');
   });
 }, 'promises must fulfill/reject in the expected order on closure');
 
-promise_test(() => {
+promise_test(t => {
   const ws = new WritableStream({});
 
   // Wait until the WritableStream starts so that the close() call gets processed. Otherwise, abort() will be
@@ -332,8 +328,7 @@ promise_test(() => {
         events.push('closed');
       })
     ]).then(() => {
-      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'],
-                          'promises must fulfill/reject in the expected order');
+      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'], 'promises must fulfill/reject in the expected order');
     });
   });
 }, 'promises must fulfill/reject in the expected order on aborted closure');
@@ -357,15 +352,11 @@ promise_test(t => {
     abortPromise.catch(() => events.push('abortPromise'));
     writer.closed.catch(() => events.push('closed'));
     return Promise.all([
-      promise_rejects(t, error1, closePromise,
-                      'closePromise must reject with the error returned from the sink\'s close method'),
-      promise_rejects(t, error1, abortPromise,
-                      'abortPromise must reject with the error returned from the sink\'s close method'),
-      promise_rejects(t, new TypeError(), writer.closed,
-                      'writer.closed must reject with a TypeError indicating the stream was aborted')
+      promise_rejects(t, error1, closePromise, 'closePromise must reject with the error returned from the sink\'s close method'),
+      promise_rejects(t, error1, abortPromise, 'abortPromise must reject with the error returned from the sink\'s close method'),
+      promise_rejects(t, new TypeError(), writer.closed, 'writer.closed must reject with a TypeError indicating the stream was aborted')
     ]).then(() => {
-      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'],
-                          'promises must fulfill/reject in the expected order');
+      assert_array_equals(events, ['closePromise', 'abortPromise', 'closed'], 'promises must fulfill/reject in the expected order');
     });
   });
 }, 'promises must fulfill/reject in the expected order on aborted and errored closure');

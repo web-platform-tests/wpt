@@ -36,8 +36,7 @@ promise_test(() => {
   const writer = ws.getWriter();
 
   const input = [1, 2, 3, 4, 5];
-  return writeArrayToStream(input, writer)
-      .then(() => assert_array_equals(storage, input, 'correct data should be relayed to underlying sink'));
+  return writeArrayToStream(input, writer).then(() => assert_array_equals(storage, input, 'correct data should be relayed to underlying sink'));
 }, 'WritableStream should complete asynchronous writes before close resolves');
 
 promise_test(() => {
@@ -46,9 +45,7 @@ promise_test(() => {
   const writer = ws.getWriter();
 
   const input = [1, 2, 3, 4, 5];
-  return writeArrayToStream(input, writer)
-      .then(() => assert_array_equals(ws.events, ['write', 1, 'write', 2, 'write', 3, 'write', 4, 'write', 5, 'close'],
-                                      'correct data should be relayed to underlying sink'));
+  return writeArrayToStream(input, writer).then(() => assert_array_equals(ws.events, ['write', 1, 'write', 2, 'write', 3, 'write', 4, 'write', 5, 'close'],'correct data should be relayed to underlying sink'));
 }, 'WritableStream should complete synchronous writes before close resolves');
 
 promise_test(() => {
@@ -61,10 +58,8 @@ promise_test(() => {
   const writer = ws.getWriter();
 
   const writePromise = writer.write('a');
-  return writePromise
-      .then(value => assert_equals(value, undefined, 'fulfillment value must be undefined'));
-}, 'fulfillment value of ws.write() call should be undefined even if the underlying sink returns a non-undefined ' +
-    'value');
+  return writePromise.then(value => assert_equals(value, undefined, 'fulfillment value must be undefined'));
+}, 'fulfillment value of ws.write() call should be undefined even if the underlying sink returns a non-undefined value');
 
 promise_test(() => {
   let resolveSinkWritePromise;
@@ -137,18 +132,15 @@ promise_test(t => {
     assert_equals(writer.desiredSize, -1, 'desiredSize should still be -1');
 
     return Promise.all([
-      promise_rejects(t, error1, closedPromise,
-                      'closedPromise should reject with the error returned from the sink\'s write method')
-          .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
-                                    'sinkWritePromise should reject before closedPromise')),
-      promise_rejects(t, error1, writePromise,
-                      'writePromise should reject with the error returned from the sink\'s write method')
-          .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
-                                    'sinkWritePromise should reject before writePromise')),
-      promise_rejects(t, error1, writePromise2,
-                      'writePromise2 should reject with the error returned from the sink\'s write method')
-          .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
-                                    'sinkWritePromise should reject before writePromise2')),
+      promise_rejects(t, error1, closedPromise, 'closedPromise should reject with the error returned from the sink\'s write method').then(() => {
+        assert_equals(sinkWritePromiseRejectors.length, 0, 'sinkWritePromise should reject before closedPromise');
+      }),
+      promise_rejects(t, error1, writePromise, 'writePromise should reject with the error returned from the sink\'s write method').then(() => {
+        assert_equals(sinkWritePromiseRejectors.length, 0, 'sinkWritePromise should reject before writePromise');
+      }),
+      promise_rejects(t, error1, writePromise2, 'writePromise2 should reject with the error returned from the sink\'s write method').then(() => {
+        assert_equals(sinkWritePromiseRejectors.length, 0, 'sinkWritePromise should reject before writePromise2');
+      }),
       flushAsyncEvents().then(() => {
         sinkWritePromiseRejectors[0](error1);
         sinkWritePromiseRejectors = [];
@@ -166,9 +158,9 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  return promise_rejects(t, error1, writer.write('a'),
-                         'write() should reject with the error returned from the sink\'s write method')
-      .then(() => promise_rejects(t, new TypeError(), writer.close(), 'close() should be rejected'));
+  return promise_rejects(t, error1, writer.write('a'), 'write() should reject with the error returned from the sink\'s write method').then(() => {
+    promise_rejects(t, new TypeError(), writer.close(), 'close() should be rejected');
+  });
 }, 'when sink\'s write throws an error, the stream should become errored and the promise should reject');
 
 promise_test(t => {
@@ -181,18 +173,13 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  return promise_rejects(t, error2, writer.write('a'),
-                         'write() should reject with the error returned from the sink\'s write method ')
-  .then(() => {
+  return promise_rejects(t, error2, writer.write('a'), 'write() should reject with the error returned from the sink\'s write method ').then(() => {
     return Promise.all([
-      promise_rejects(t, error1, writer.ready,
-                      'writer.ready must reject with the error passed to the controller'),
-      promise_rejects(t, error1, writer.closed,
-                      'writer.closed must reject with the error passed to the controller')
+      promise_rejects(t, error1, writer.ready,'writer.ready must reject with the error passed to the controller'),
+      promise_rejects(t, error1, writer.closed,'writer.closed must reject with the error passed to the controller')
     ]);
   });
-}, 'writer.write(), ready and closed reject with the error passed to controller.error() made before sink.write' +
-    ' rejection');
+}, 'writer.write(), ready and closed reject with the error passed to controller.error() made before sink.write rejection');
 
 promise_test(() => {
   const numberOfWrites = 1000;
@@ -222,23 +209,11 @@ promise_test(() => {
 
     resolveFirstWritePromise();
 
-    return writePromise
-        .then(() =>
-        assert_equals(writeCount, numberOfWrites, `should have called sink's write ${numberOfWrites} times`));
+    return writePromise.then(() => {
+      assert_equals(writeCount, numberOfWrites, `should have called sink's write ${numberOfWrites} times`)
+    });
   });
 }, 'a large queue of writes should be processed completely');
-
-promise_test(() => {
-  const stream = recordingWritableStream();
-  const w = stream.getWriter();
-  const WritableStreamDefaultWriter = w.constructor;
-  w.releaseLock();
-  const writer = new WritableStreamDefaultWriter(stream);
-  return writer.ready.then(() => {
-    writer.write('a');
-    assert_array_equals(stream.events, ['write', 'a'], 'write() should be passed to sink');
-  });
-}, 'WritableStreamDefaultWriter should work when manually constructed');
 
 promise_test(() => {
   let thenCalled = false;

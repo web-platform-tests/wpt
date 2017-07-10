@@ -34,8 +34,9 @@ themselves precede any test type flag, but are otherwise unordered.
   <dt>`.https`
   <dd><p>Indicates that a test is loaded over HTTPS.
   <dt>`.sub`
-  <dd><p>Indicates that a test uses the [server-side substitution](https://wptserve.readthedocs.io/en/latest/pipes.html#sub)
-         feature.
+  <dd><p>Indicates that a test uses the 
+         <a href="https://wptserve.readthedocs.io/en/latest/pipes.html#sub">
+         server-side substitution</a> feature.
   <dt>`.window`
   <dd><p>(js files only) Indicates that the file generates a test in
   which it is run in a Window environment.

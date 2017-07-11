@@ -9,7 +9,7 @@ def retrieve_from_stash(request, key, attempts, default_value):
     if value is not None:
       return value
     if attempt_no != attempts - 1:
-      time.sleep(5)
+      time.sleep(3)
 
   return default_value
 
@@ -21,7 +21,7 @@ def main(request, response):
 
   try:
     timeout = float(request.GET.first("timeout"))
-    attempts = int(math.floor(timeout / 5))
+    attempts = int(math.floor(timeout / 3))
     attempts += 1
   except:
     attempts = 1

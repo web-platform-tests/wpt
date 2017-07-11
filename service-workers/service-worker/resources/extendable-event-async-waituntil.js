@@ -43,7 +43,7 @@ self.addEventListener('message', function(event) {
         async_task_waituntil(event).then(reportResultExpecting('InvalidStateError'));
         break;
       case 'script-extendable-event':
-        new_event_waituntil().then(reportResultExpecting('InvalidStateError'));
+        Promise.resolve().then(new_event_waituntil);
         break;
     }
     event.source.postMessage('ACK');
@@ -70,6 +70,15 @@ self.addEventListener('fetch', function(event) {
     }
   });
 
+self.addEventListener('foo', function(event) {
+    try {
+      event.waitUntil(new Promise(() => {}));
+      reportResultExpecting('InvalidStateError')('OK');
+    } catch (error) {
+      reportResultExpecting('InvalidStateError')(error.name);
+    }
+  });
+
 function reportResultExpecting(expectedResult) {
   return function (result) {
     port.postMessage({result : result, expected: expectedResult});
@@ -80,24 +89,16 @@ function reportResultExpecting(expectedResult) {
 function sync_waituntil(event) {
   return new Promise((res, rej) => {
     try {
-        event.waitUntil(Promise.resolve());
-        res('OK');
-      } catch (error) {
-        res(error.name);
-      }
-  });
-}
-
-function new_event_waituntil() {
-  return new Promise((res, rej) => {
-    try {
-      let e = new ExtendableEvent('foo');
-      e.waitUntil(new Promise(() => {}));
+      event.waitUntil(Promise.resolve());
       res('OK');
     } catch (error) {
       res(error.name);
     }
   });
+}
+
+function new_event_waituntil() {
+  self.dispatchEvent(new ExtendableEvent('foo'));
 }
 
 function async_microtask_waituntil(event) {

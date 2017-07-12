@@ -7,7 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
-const basicCard = Object.freeze({ supportedMethods: ["basic-card"] });
+const basicCard = Object.freeze({ supportedMethods: "basic-card" });
 const defaultMethods = Object.freeze([basicCard]);
 const defaultDetails = Object.freeze({
   total: {
@@ -56,7 +56,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
         },
       ],
       {
@@ -94,38 +94,12 @@ test(() => {
 }, "If the length of the methodData sequence is zero, then throw a TypeError");
 
 test(() => {
-  assert_throws(
-    {
-      name: "TypeError",
-    },
-    () => {
-      new PaymentRequest(
-        [
-          {
-            supportedMethods: [],
-          },
-        ],
-        {
-          total: {
-            label: "",
-            amount: {
-              currency: "USD",
-              value: "1.00",
-            },
-          },
-        }
-      );
-    }
-  );
-}, "If the length of the paymentMethod.supportedMethods sequence is zero, " + "then throw a TypeError");
-
-test(() => {
   let itThrows = false;
   try {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
           data: ["some-data"],
         },
       ],
@@ -149,7 +123,7 @@ test(() => {
   new PaymentRequest(
     [
       {
-        supportedMethods: ["basic-card"],
+        supportedMethods: "basic-card",
         data: {
           some: "data",
         },
@@ -178,7 +152,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: recursiveDictionary,
           },
         ],
@@ -202,7 +176,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: "a string",
           },
         ],
@@ -226,7 +200,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: null,
           },
         ],
@@ -287,7 +261,7 @@ for (const amount of invalidTotalAmounts) {
         new PaymentRequest(
           [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
             },
           ],
           {
@@ -325,7 +299,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
           },
         ],
         {
@@ -352,7 +326,7 @@ for (const amount of invalidAmounts) {
         new PaymentRequest(
           [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
             },
           ],
           {
@@ -385,7 +359,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
           data: {
             supportedTypes: ["debit"],
           },
@@ -431,7 +405,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
         },
       ],
       {
@@ -566,7 +540,7 @@ for (const amount of invalidTotalAmounts) {
       },
       () => {
         const invalidModifier = {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
           total: {
             label: "",
             amount: {
@@ -578,7 +552,7 @@ for (const amount of invalidTotalAmounts) {
         new PaymentRequest(
           [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
             },
           ],
           {
@@ -605,7 +579,7 @@ for (const amount of invalidAmounts) {
       },
       () => {
         const invalidModifier = {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
           total: {
             label: "",
             amount: {
@@ -626,7 +600,7 @@ for (const amount of invalidAmounts) {
         new PaymentRequest(
           [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
             },
           ],
           {
@@ -642,7 +616,7 @@ for (const amount of invalidAmounts) {
         );
       }
     );
-  }, `If amount.value of additionalDisplayItems is is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
+  }, `If amount.value of additionalDisplayItems is not a valid decimal monetary value (in this case "${amount}"), then throw a TypeError`);
 }
 
 test(() => {
@@ -651,7 +625,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
         },
       ],
       {
@@ -664,7 +638,7 @@ test(() => {
         },
         modifiers: [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: ["some-data"],
           },
         ],
@@ -682,7 +656,7 @@ test(() => {
     new PaymentRequest(
       [
         {
-          supportedMethods: ["basic-card"],
+          supportedMethods: "basic-card",
         },
       ],
       {
@@ -695,7 +669,7 @@ test(() => {
         },
         modifiers: [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: {
               some: "data",
             },
@@ -707,7 +681,7 @@ test(() => {
     itThrows = true;
   }
   assert_false(itThrows, "shouldn't throw when given an object value");
-}, "Modifier data must be JSON-serializable object (a object in this case)");
+}, "Modifier data must be JSON-serializable object (an object in this case)");
 
 test(() => {
   const recursiveDictionary = {};
@@ -720,7 +694,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
           },
         ],
         {
@@ -733,7 +707,7 @@ test(() => {
           },
           modifiers: [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
               data: recursiveDictionary,
             },
           ],
@@ -749,7 +723,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
           },
         ],
         {
@@ -762,7 +736,7 @@ test(() => {
           },
           modifiers: [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
               data: "a string",
             },
           ],
@@ -778,7 +752,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
           },
         ],
         {
@@ -791,7 +765,7 @@ test(() => {
           },
           modifiers: [
             {
-              supportedMethods: ["basic-card"],
+              supportedMethods: "basic-card",
               data: null,
             },
           ],
@@ -811,7 +785,7 @@ test(() => {
       new PaymentRequest(
         [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
           },
         ],
         {

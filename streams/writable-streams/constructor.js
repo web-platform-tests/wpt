@@ -80,7 +80,8 @@ promise_test(() => {
   assert_equals(writer.desiredSize, Infinity, 'desiredSize should be Infinity');
 
   return writer.ready;
-}, 'WritableStream should be writable and ready should fulfill immediately if the strategy does not apply backpressure');
+}, 'WritableStream should be writable and ready should fulfill immediately if the strategy does not apply ' +
+    'backpressure');
 
 test(() => {
   new WritableStream();
@@ -104,7 +105,8 @@ test(() => {
 }, 'WritableStream instances should have standard methods and properties');
 
 test(() => {
-  ['WritableStreamDefaultWriter', 'WritableStreamDefaultController'].forEach(c => assert_equals(typeof self[c], 'function', `${c} should not be exported`));
+  ['WritableStreamDefaultWriter', 'WritableStreamDefaultController'].forEach(c =>
+      assert_equals(typeof self[c], 'function', `${c} should not be exported`));
 }, 'private constructors should be exposed as functions according to webidl.');
 
 test(() => {
@@ -115,7 +117,8 @@ test(() => {
     }
   });
 
-  assert_throws(new TypeError(), () => new WritableStreamDefaultController({}), 'constructor should throw a TypeError exception');
+  assert_throws(new TypeError(), () => new WritableStreamDefaultController({}),
+                'constructor should throw a TypeError exception');
 }, 'WritableStreamDefaultController constructor should throw unless passed a WritableStream');
 
 test(() => {
@@ -126,7 +129,8 @@ test(() => {
     }
   });
 
-  assert_throws(new TypeError(), () => new WritableStreamDefaultController(stream), 'constructor should throw a TypeError exception');
+  assert_throws(new TypeError(), () => new WritableStreamDefaultController(stream),
+                'constructor should throw a TypeError exception');
 }, 'WritableStreamDefaultController constructor should throw when passed an initialised WritableStream');
 
 test(() => {
@@ -134,14 +138,16 @@ test(() => {
   const writer = stream.getWriter();
   const WritableStreamDefaultWriter = writer.constructor;
   writer.releaseLock();
-  assert_throws(new TypeError(), () => new WritableStreamDefaultWriter({}), 'constructor should throw a TypeError exception');
+  assert_throws(new TypeError(), () => new WritableStreamDefaultWriter({}),
+                'constructor should throw a TypeError exception');
 }, 'WritableStreamDefaultWriter should throw unless passed a WritableStream');
 
 test(() => {
   const stream = new WritableStream();
   const writer = stream.getWriter();
   const WritableStreamDefaultWriter = writer.constructor;
-  assert_throws(new TypeError(), () => new WritableStreamDefaultWriter(stream), 'constructor should throw a TypeError exception');
+  assert_throws(new TypeError(), () => new WritableStreamDefaultWriter(stream),
+                'constructor should throw a TypeError exception');
 }, 'WritableStreamDefaultWriter constructor should throw when stream argument is locked');
 
 done();

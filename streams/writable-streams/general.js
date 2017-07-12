@@ -195,11 +195,9 @@ promise_test(t => {
   const writer3 = ws3.getWriter();
   writer3.abort();
 
-  return writer1.closed.then(() => {
-    promise_rejects(t, new TypeError(), writer2.closed, 'writer2.closed should be rejected');
-  }).then(() => {
-    promise_rejects(t, new TypeError(), writer3.closed, 'writer3.closed should be rejected');
-  });
+  return writer1.closed
+      .then(() => promise_rejects(t, new TypeError(), writer2.closed, 'writer2.closed should be rejected'))
+      .then(() => promise_rejects(t, new TypeError(), writer3.closed, 'writer3.closed should be rejected'));
 }, 'methods should not not have .apply() or .call() called');
 
 promise_test(() => {

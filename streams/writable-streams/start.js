@@ -25,11 +25,14 @@ promise_test(() => {
   assert_equals(writer.desiredSize, 0, 'desiredSize should be 0 after writer.write()');
 
   // Wait and verify that write isn't called.
-  return flushAsyncEvents().then(() => {
-    assert_array_equals(ws.events, [], 'write should not be called until start promise resolves');
-    resolveStartPromise();
-    return writer.ready;
-  }).then(() => assert_array_equals(ws.events, ['write', 'a'], 'write should not be called until start promise resolves'));
+  return flushAsyncEvents()
+      .then(() => {
+        assert_array_equals(ws.events, [], 'write should not be called until start promise resolves');
+        resolveStartPromise();
+        return writer.ready;
+      })
+      .then(() => assert_array_equals(ws.events, ['write', 'a'],
+                                      'write should not be called until start promise resolves'));
 }, 'underlying sink\'s write should not be called until start finishes');
 
 promise_test(() => {
@@ -87,7 +90,8 @@ promise_test(() => {
   });
 
   // Wait and verify that write or close aren't called.
-  return flushAsyncEvents().then(() => assert_array_equals(ws.events, [], 'write and close should not be called'));
+  return flushAsyncEvents()
+      .then(() => assert_array_equals(ws.events, [], 'write and close should not be called'));
 }, 'underlying sink\'s write or close should not be invoked if the promise returned by start is rejected');
 
 promise_test(t => {
@@ -107,9 +111,10 @@ promise_test(t => {
       controller.error(error1);
     }
   });
-  return promise_rejects(t, error1, ws.getWriter().write('a'), 'write() should reject with the error').then(() => {
-    assert_array_equals(ws.events, [], 'sink write() should not have been called');
-  });
+  return promise_rejects(t, error1, ws.getWriter().write('a'), 'write() should reject with the error')
+      .then(() => {
+        assert_array_equals(ws.events, [], 'sink write() should not have been called');
+      });
 }, 'controller.error() during start should cause writes to fail');
 
 promise_test(t => {
@@ -154,9 +159,10 @@ promise_test(t => {
   catchAndRecord(writer.ready, 'ready');
   catchAndRecord(writer.closed, 'closed');
   catchAndRecord(writer.write(), 'write');
-  return Promise.all(promises).then(() => {
-    assert_array_equals(events, ['ready', 'write', 'closed'], 'promises should reject in standard order');
-  });
+  return Promise.all(promises)
+      .then(() => {
+        assert_array_equals(events, ['ready', 'write', 'closed'], 'promises should reject in standard order');
+      });
 }, 'when start() rejects, writer promises should reject in standard order');
 
 done();

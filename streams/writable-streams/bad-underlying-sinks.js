@@ -40,6 +40,7 @@ test(() => {
 }, 'start: errors in start cause WritableStream constructor to throw');
 
 promise_test(t => {
+
   const ws = recordingWritableStream({
     close() {
       throw error1;
@@ -48,11 +49,9 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-
-  return promise_rejects(t, errorToValidate, writer.close(), 'close() promise must reject with the thrown error')
-  .then(() => promise_rejects(t, errorToValidate, writer.ready, 'ready promise must reject with the thrown error'))
-  .then(() => promise_rejects(t, errorToValidate, writer.closed, 'closed promise must reject with the thrown error'))
+  return promise_rejects(t, error1, writer.close(), 'close() promise must reject with the thrown error')
+  .then(() => promise_rejects(t, error1, writer.ready, 'ready promise must reject with the thrown error'))
+  .then(() => promise_rejects(t, error1, writer.closed, 'closed promise must reject with the thrown error'))
   .then(() => {
     assert_array_equals(ws.events, ['close']);
   });
@@ -60,6 +59,7 @@ promise_test(t => {
 }, 'close: throwing method should cause writer close() and ready to reject');
 
 promise_test(t => {
+
   const ws = recordingWritableStream({
     close() {
       return Promise.reject(error1);
@@ -68,12 +68,10 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.close(), 'close() promise must reject with the same error').then(() => {
-    promise_rejects(t, error1, writer.ready, 'ready promise must reject with the same error');
-  }).then(() => {
-    assert_array_equals(ws.events, ['close']);
-  });
+  return promise_rejects(t, error1, writer.close(), 'close() promise must reject with the same error')
+  .then(() => promise_rejects(t, error1, writer.ready, 'ready promise must reject with the same error'))
+  .then(() => assert_array_equals(ws.events, ['close']));
+
 }, 'close: returning a rejected promise should cause writer close() and ready to reject');
 
 promise_test(t => {
@@ -85,8 +83,7 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.close(), 'close should reject with the thrown error');
+  return promise_rejects(t, error1, writer.close(), 'close should reject with the thrown error');
 }, 'close: throwing getter should cause writer close() to reject');
 
 promise_test(t => {
@@ -98,10 +95,8 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.write('a'), 'write should reject with the thrown error').then(() => {
-    promise_rejects(t, errorToValidate, writer.closed, 'closed should reject with the thrown error');
-  });
+  return promise_rejects(t, error1, writer.write('a'), 'write should reject with the thrown error')
+  .then(() => promise_rejects(t, error1, writer.closed, 'closed should reject with the thrown error'));
 }, 'write: throwing getter should cause write() and closed to reject');
 
 promise_test(t => {
@@ -113,10 +108,8 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.write('a'), 'write should reject with the thrown error').then(() => {
-    promise_rejects(t, errorToValidate, writer.closed, 'closed should reject with the thrown error');
-  });
+  return promise_rejects(t, error1, writer.write('a'), 'write should reject with the thrown error')
+  .then(() => promise_rejects(t, error1, writer.closed, 'closed should reject with the thrown error'));
 }, 'write: throwing method should cause write() and closed to reject');
 
 promise_test(t => {
@@ -134,14 +127,13 @@ promise_test(t => {
     }
   });
 
-  var errorToValidate = error1;
   return startPromise.then(() => {
     const writer = ws.getWriter();
     const writePromise = writer.write('a');
     rejectSinkWritePromise(error1);
 
     return Promise.all([
-      promise_rejects(t, errorToValidate, writePromise, 'writer write must reject with the same error'),
+      promise_rejects(t, error1, writePromise, 'writer write must reject with the same error'),
       promise_rejects(t, error1, writer.ready, 'ready promise must reject with the same error')
     ]);
   })
@@ -149,7 +141,8 @@ promise_test(t => {
     assert_array_equals(ws.events, ['write', 'a']);
   });
 
-}, 'write: returning a promise that becomes rejected after the writer write() should cause writer write() and ready to reject');
+}, 'write: returning a promise that becomes rejected after the writer write() should cause writer write() and ready ' +
+   'to reject');
 
 promise_test(t => {
 
@@ -170,12 +163,14 @@ promise_test(t => {
   writer.write('a');
   const readyPromise = writer.ready;
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.write('b'), 'second write must reject with the same error').then(() => {
+  return promise_rejects(t, error1, writer.write('b'), 'second write must reject with the same error').then(() => {
+    assert_equals(writer.ready, readyPromise,
+      'the ready promise must not change, since the queue was full after the first write, so the pending one simply ' +
+      'transitioned');
     return promise_rejects(t, error1, writer.ready, 'ready promise must reject with the same error');
-  }).then(() => {
-    assert_array_equals(ws.events, ['write', 'a', 'write', 'b']);
-  });
+  })
+  .then(() => assert_array_equals(ws.events, ['write', 'a', 'write', 'b']));
+
 }, 'write: returning a rejected promise (second write) should cause writer write() and ready to reject');
 
 promise_test(t => {
@@ -199,8 +194,7 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.abort(abortReason), 'abort should reject with the thrown error')
+  return promise_rejects(t, error1, writer.abort(abortReason), 'abort should reject with the thrown error')
   .then(() => promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'));
 }, 'abort: throwing getter should cause abort() and closed to reject');
 
@@ -214,10 +208,8 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  var errorToValidate = error1;
-  return promise_rejects(t, errorToValidate, writer.abort(abortReason), 'abort should reject with the thrown error').then(() => {
-    promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError');
-  });
+  return promise_rejects(t, error1, writer.abort(abortReason), 'abort should reject with the thrown error')
+  .then(() => promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'));
 }, 'abort: throwing method should cause abort() and closed to reject');
 
 done();

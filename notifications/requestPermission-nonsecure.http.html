@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.requestPermission (permission=denied)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_timeout: true })
+if (Notification.permission == "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are cleared, and then reload this page.")
+} else {
+    async_test(function (t) {
+        t.step(function () {
+            Notification.requestPermission().then(
+                    function(result) {
+                        assert_equals("denied", result, "Notifications must be requested from a secure context.")
+                    });
+            t.done();
+        })
+    })
+}
+</script>
+

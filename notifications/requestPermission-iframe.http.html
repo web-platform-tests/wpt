@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.requestPermission (permission=denied)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+iframe { width: 10px; height: 10px; }
+</style>
+
+<iframe id="frame"></iframe>
+
+<script id="iframe-srcdoc" language="text/html">
+<!doctype html>
+<script>
+window.onload = () => {
+    Notification.requestPermission().then(
+            function(result) {
+                window.parent.postMessage(result, '*');
+            });
+};
+// The script tag is closed in loadFrame().
+</script>
+
+<script>
+function loadFrame(t, selector) {
+  return new Promise((resolve, reject) => {
+    window.addEventListener("message", t.step_func(message => {
+        resolve(message.data);
+    }));
+
+    const frame = document.querySelector(selector);
+    const html = document.querySelector('#iframe-srcdoc').textContent +
+        '<' + '/script>';
+    frame.setAttribute('srcdoc', html);
+  });
+}
+
+setup({explicit_timeout : true});
+if (Notification.permission == "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are cleared, and then reload this page.");
+    this.force_timeout();
+} else {
+  async_test(t => {
+    loadFrame(t, '#frame').then(t.step_func_done(data => {
+      assert_equals(
+          data, "denied",
+          "Notifications must be requested from a top-level context");
+    }))
+  });
+}
+</script>

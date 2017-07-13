@@ -60,13 +60,6 @@ const testArgs = {
   // Blink and Gecko fall back to url, but it's not in the spec.
   '{ iceServers: [{ url: "stun:stun1.example.net" }] }': new TypeError,
 
-  // rtcpMuxPolicy
-  '{ rtcpMuxPolicy: null }': new TypeError,
-  '{ rtcpMuxPolicy: undefined }': false,
-  '{ rtcpMuxPolicy: "negotiate" }': false,
-  '{ rtcpMuxPolicy: "require" }': false,
-  '{ rtcpMuxPolicy: "invalid" }': new TypeError,
-
   // peerIdentity
   '{ peerIdentity: toStringThrows }': new Error,
 

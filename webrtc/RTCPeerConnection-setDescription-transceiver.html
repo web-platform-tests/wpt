@@ -70,20 +70,19 @@
     assert_equals(transceiver.mid, null);
 
     return pc.createOffer()
-    .then(() => {
+    .then(offer => {
       assert_equals(transceiver.mid, null,
         'Expect transceiver.mid to still be null after createOffer');
 
-      return pc.setLocalDescription(offer);
-    })
-    .then(() => {
-      assert_equals(typeof transceiver.mid, 'string',
-        'Expect transceiver.mid to set to valid string value');
+      return pc.setLocalDescription(offer)
+      .then(() => {
+        assert_equals(typeof transceiver.mid, 'string',
+          'Expect transceiver.mid to set to valid string value');
 
-      assert_equals(offer.sdp.includes(`\r\na=mid:${transceiver.mid}`), true,
-        'Expect transceiver mid to be found in offer SDP');
+        assert_equals(offer.sdp.includes(`\r\na=mid:${transceiver.mid}`), true,
+          'Expect transceiver mid to be found in offer SDP');
+      });
     });
-
   }, 'setLocalDescription(offer) with m= section should assign mid to corresponding transceiver');
 
   /*
@@ -164,8 +163,9 @@
     assert_equals(transceiver1.mid, null);
 
     return pc.createOffer()
-    .then(offer => pc.setLocalDescription(offer))
-    .then(() => generateAnswer(offer))
+    .then(offer =>
+       pc.setLocalDescription(offer)
+       .then(() => generateAnswer(offer)))
     .then(answer => pc.setRemoteDescription(answer))
     .then(() => {
       // pc is back to stable state
@@ -209,7 +209,7 @@
     pc1.addTransceiver('audio');
 
     return pc1.createOffer()
-    .then(() => pc2.setRemoteDescription(offer))
+    .then(offer => pc2.setRemoteDescription(offer))
     .then(() => {
       const transceivers = pc2.getTransceivers();
       assert_equals(transceivers.length, 1);

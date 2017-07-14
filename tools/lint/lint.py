@@ -669,7 +669,7 @@ def output_error_count(error_count):
     else:
         logger.info("There were %d errors (%s)" % (count, by_type))
 
-def parse_args():
+def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("paths", nargs="*",
                         help="List of paths to lint")
@@ -681,7 +681,7 @@ def parse_args():
                         help="Run CSS testsuite specific lints")
     parser.add_argument("--repo-root", help="The WPT directory. Use this"
                         "option if the lint script exists outside the repository")
-    return parser.parse_args()
+    return parser
 
 
 def main(**kwargs):
@@ -765,7 +765,7 @@ all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 if __name__ == "__main__":
-    args = parse_args()
+    args = create_parser().parse_args()
     error_count = main(**vars(args))
     if error_count > 0:
         sys.exit(1)

@@ -7,11 +7,14 @@ import sys
 import tarfile
 from distutils.spawn import find_executable
 
+wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
+
 import localpaths
 from browserutils import browser, utils, virtualenv
 logger = None
 
-wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
 
 
 class WptrunError(Exception):
@@ -39,7 +42,9 @@ class WptrunnerHelpAction(argparse.Action):
 
 
 def create_parser():
-    parser = argparse.ArgumentParser()
+    from wptrunner import wptcommandline
+
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("product", action="store",
                         help="Browser to run tests in")
     parser.add_argument("tests", action="store", nargs="*",
@@ -48,9 +53,7 @@ def create_parser():
                         help="Arguments to pass through to wptrunner")
     parser.add_argument("--yes", "-y", dest="prompt", action="store_false", default=True,
                         help="Don't prompt before installing components")
-    parser.add_argument("--wptrunner-help",
-                        action=WptrunnerHelpAction, default=argparse.SUPPRESS,
-                        help="Print wptrunner help")
+    parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
 
@@ -296,6 +299,17 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
     return kwargs
 
 
+def run(venv, **kwargs):
+    kwargs = setup_wptrunner(venv,
+                             kwargs["product"],
+                             kwargs["tests"],
+                             kwargs["wptrunner_args"],
+                             prompt=kwargs["prompt"])
+
+    from wptrunner import wptrunner
+    wptrunner.start(**kwargs)
+
+
 def main():
     try:
         parser = create_parser()
@@ -306,12 +320,9 @@ def main():
         venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
         venv.install("requests")
 
-        kwargs = setup_wptrunner(venv, args.product, args.tests, args.wptrunner_args, prompt=args.prompt)
-        from wptrunner import wptrunner
-        wptrunner.start(**kwargs)
+        run(venv, vars(args))
     except WptrunError as e:
         exit(e.message)
-
 
 if __name__ == "__main__":
     import pdb

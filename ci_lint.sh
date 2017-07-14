@@ -1,4 +1,4 @@
 set -ex
 
-./manifest
-./lint
+./wpt manifest
+./wpt lint

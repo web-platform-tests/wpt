@@ -61,6 +61,23 @@ dictionary EventListenerOptions {
 };
 
 
+[Constructor,
+ Exposed=(Window,Worker)]
+interface AbortController {
+  [SameObject] readonly attribute AbortSignal signal;
+
+  void abort();
+};
+
+
+[Exposed=(Window,Worker)]
+interface AbortSignal : EventTarget {
+  readonly attribute boolean aborted;
+
+  attribute EventHandler onabort;
+};
+
+
 [NoInterfaceObject,
  Exposed=Window]
 interface NonElementParentNode {

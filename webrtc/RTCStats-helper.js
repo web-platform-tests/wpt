@@ -2,6 +2,12 @@
 
 // Test is based on the following editor draft:
 // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+// https://w3c.github.io/webrtc-stats/archives/20170614/webrtc-stats.html
+
+// To improve readability, the WebIDL definitions of the Stats
+// dictionaries are modified to annotate with required fields when
+// they are required by section 8.6 of webrtc-pc. ID fields are
+// also annotated with the stats type that they are linked to.
 
 /*
   [webrtc-stats]
@@ -42,6 +48,10 @@ const statsValidatorTable = {
   'certificate': validateCertificateStats
 };
 
+// Validate that the stats objects in a stats report
+// follows the respective definitions.
+// Stats objects with unknown type are ignored and
+// only basic validation is done.
 function validateStatsReport(statsReport) {
   for(const [id, stats] of statsReport.entries()) {
     assert_equals(stats.id, id,
@@ -50,10 +60,14 @@ function validateStatsReport(statsReport) {
     const validator = statsValidatorTable[stats.type];
     if(validator) {
       validator(statsReport, stats);
+    } else {
+      validateRtcStats(statsReport, stats);
     }
   }
 }
 
+// Assert that the stats report have stats objects of
+// given types
 function assert_stats_report_has_stats(statsReport, statsTypes) {
   const hasTypes = new Set([...statsReport.values()]
     .map(stats => stats.type));
@@ -64,6 +78,8 @@ function assert_stats_report_has_stats(statsReport, statsTypes) {
   }
 }
 
+// Get stats object of type that is expected to be
+// found in the statsReport
 function getRequiredStats(statsReport, type) {
   for(const stats of statsReport.values()) {
     if(stats.type === type) {
@@ -74,12 +90,18 @@ function getRequiredStats(statsReport, type) {
   assert_unreached(`required stats of type ${type} is not found in stats report`);
 }
 
+// Get stats object by the stats ID.
+// This is used to retreive other stats objects
+// linked to a stats object
 function getStatsById(statsReport, statsId) {
   assert_true(statsReport.has(statsId),
     `Expect stats report to have stats object with id ${statsId}`);
 
   return statsReport.get(statsId);
 }
+
+// Field assertion functions that assert a field
+// in a stats object have the required type.
 
 function assert_unsigned_int_field(stats, field) {
   const num = stats[field];
@@ -158,6 +180,11 @@ function assert_optional_enum_field(stats, field, validValues) {
   }
 }
 
+// Validate an ID field in a stats object by making sure
+// that the linked stats object is found in the stats report
+// and have the type field value same as expected type
+// It doesn't validate the other fields of the linked stats
+// as validateStatsReport already does all validations
 function validateIdField(statsReport, stats, field, type) {
   assert_string_field(stats, field);
   const linkedStats = getStatsById(statsReport, stats[field]);
@@ -175,9 +202,9 @@ function validateOptionalIdField(statsReport, stats, field, type) {
   [webrtc-pc]
   8.4.  RTCStats Dictionary
     dictionary RTCStats {
-      DOMHighResTimeStamp timestamp;
-      RTCStatsType        type;
-      DOMString           id;
+      required  DOMHighResTimeStamp timestamp;
+      required  RTCStatsType        type;
+      required  DOMString           id;
     };
  */
 function validateRtcStats(statsReport, stats) {
@@ -472,10 +499,10 @@ function validateContributingSourceStats(statsReport, stats) {
   [webrtc-stats]
   7.10. RTCPeerConnectionStats dictionary
     dictionary RTCPeerConnectionStats : RTCStats {
-      unsigned long dataChannelsOpened;
-      unsigned long dataChannelsClosed;
-      unsigned long dataChannelsRequested;
-      unsigned long dataChannelsAccepted;
+      required  unsigned long dataChannelsOpened;
+      required  unsigned long dataChannelsClosed;
+                unsigned long dataChannelsRequested;
+                unsigned long dataChannelsAccepted;
     };
 
   [webrtc-pc]

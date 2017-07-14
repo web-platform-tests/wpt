@@ -35,14 +35,14 @@ function reading_to_array(sensor) {
 function runGenericSensorTests(sensorType) {
   async_test(t => {
     let sensor = new sensorType();
-    sensor.onchange = t.step_func_done(() => {
+    sensor.onreading = t.step_func_done(() => {
       assert_reading_not_null(sensor);
       sensor.stop();
       assert_reading_null(sensor);
     });
     sensor.onerror = t.step_func_done(unreached);
     sensor.start();
-  }, "Test that 'onchange' is called and sensor reading is valid");
+  }, "Test that 'onreading' is called and sensor reading is valid");
 
   async_test(t => {
     let sensor1 = new sensorType();
@@ -75,7 +75,7 @@ function runGenericSensorTests(sensorType) {
     sensor.onerror = t.step_func_done(unreached);
     sensor.start();
     t.step_timeout(() => {
-      sensor.onchange = t.step_func_done(() => {
+      sensor.onreading = t.step_func_done(() => {
         //sensor.timestamp changes.
         let cachedTimeStamp2 = sensor.timestamp;
         assert_greater_than(cachedTimeStamp2, cachedTimeStamp1);
@@ -88,7 +88,7 @@ function runGenericSensorTests(sensorType) {
     let sensor = new sensorType();
     sensor.onerror = t.step_func_done(unreached);
     assert_false(sensor.activated);
-    sensor.onchange = t.step_func_done(() => {
+    sensor.onreading = t.step_func_done(() => {
       assert_true(sensor.activated);
       sensor.stop();
       assert_false(sensor.activated);

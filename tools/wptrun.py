@@ -1,18 +1,21 @@
 import argparse
 import os
+import platform
 import shutil
 import subprocess
 import sys
 import tarfile
 from distutils.spawn import find_executable
 
-from tools import localpaths
+import localpaths
 from browserutils import browser, utils, virtualenv
-from wptrunner import wptrunner, wptcommandline
 logger = None
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+
+class WptrunError(Exception):
+    pass
 
 class WptrunnerHelpAction(argparse.Action):
     def __init__(self,
@@ -61,17 +64,33 @@ def args_general(kwargs):
     kwargs.set_if_none("metadata_root", wpt_root)
     kwargs.set_if_none("manifest_update", True)
 
+    if kwargs["ssl_type"] == "openssl":
+        if not find_executable(kwargs["openssl_binary"]):
+            if os.uname()[0] == "Windows":
+                raise WptrunError("""OpenSSL binary not found. If you need HTTPS tests, install OpenSSL from
+
+https://slproweb.com/products/Win32OpenSSL.html
+
+Ensuring that libraries are added to /bin and add the resulting bin directory to
+your PATH.
+
+Otherwise run with --ssl-type=none""")
+            else:
+                raise WptrunError("""OpenSSL not found. If you don't need HTTPS support run with --ssl-type=none,
+otherwise install OpenSSL and ensure that it's on your $PATH.""")
+
 
 def check_environ(product):
-    if product != "firefox":
-        expected_hosts = set(["web-platform.test",
-                              "www.web-platform.test",
-                              "www1.web-platform.test",
-                              "www2.web-platform.test",
-                              "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
-                              "xn--lve-6lad.web-platform.test",
-                              "nonexistent-origin.web-platform.test"])
-        if os.uname()[0] != "Windows":
+    if product not in ("firefox", "servo"):
+        expected_hosts = ["web-platform.test",
+                          "www.web-platform.test",
+                          "www1.web-platform.test",
+                          "www2.web-platform.test",
+                          "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
+                          "xn--lve-6lad.web-platform.test",
+                          "nonexistent-origin.web-platform.test"]
+        missing_hosts = set(expected_hosts)
+        if platform.uname()[0] != "Windows":
             hosts_path = "/etc/hosts"
         else:
             hosts_path = "C:\Windows\System32\drivers\etc\hosts"
@@ -81,10 +100,16 @@ def check_environ(product):
                 parts = line.split()
                 if len(parts) == 2:
                     host = parts[1]
-                    expected_hosts.discard(host)
-            if expected_hosts:
-                exit("""Missing hosts file configuration for %s.
-See README.md for more details.""" % ",".join(expected_hosts))
+                    missing_hosts.discard(host)
+            if missing_hosts:
+                raise WptrunError("""Missing hosts file configuration. Expected entries like:
+
+%s
+
+See README.md for more details.""" % "\n".join("%s\t%s" %
+                                               ("127.0.0.1" if "nonexistent" not in host else "0.0.0.0", host)
+                                               for host in expected_hosts))
+
 
 def prompt_install(component, prompt):
     if not prompt:
@@ -101,7 +126,7 @@ def args_firefox(venv, kwargs, firefox, prompt=True):
     if kwargs["binary"] is None:
         binary = firefox.find_binary()
         if binary is None:
-            exit("""Firefox binary not found on $PATH.
+            raise WptrunError("""Firefox binary not found on $PATH.
 
 Install Firefox or use --binary to set the binary path""")
         kwargs["binary"] = binary
@@ -111,7 +136,7 @@ Install Firefox or use --binary to set the binary path""")
 
         if certutil is None:
             # Can't download this for now because it's missing the libnss3 library
-            exit("""Can't find certutil.
+            raise WptrunError("""Can't find certutil.
 
 This must be installed using your OS package manager or directly e.g.
 
@@ -184,7 +209,7 @@ def args_chrome(venv, kwargs, chrome, prompt=True):
         if webdriver_binary:
             kwargs["webdriver_binary"] = webdriver_binary
         else:
-            exit("Unable to locate or install chromedriver binary")
+            raise WptrunError("Unable to locate or install chromedriver binary")
 
 
 def setup_chrome(venv, kwargs, prompt=True):
@@ -193,25 +218,56 @@ def setup_chrome(venv, kwargs, prompt=True):
     venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", chrome.requirements))
 
 
-def setup_edge(kwargs):
-    raise NotImplementedError
+def args_edge(venv, kwargs, edge, prompt=True):
+    if kwargs["webdriver_binary"] is None:
+        webdriver_binary = edge.find_webdriver()
+
+        if webdriver_binary is None:
+            raise WptrunError("""Unable to find WebDriver and we aren't yet clever enough to work out which
+version to download. Please go to the following URL and install the correct
+version for your Edge/Windows release somewhere on the %PATH%:
+
+https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+ """)
+        kwargs["webdriver_binary"] = webdriver_binary
+
+
+def setup_edge(venv, kwargs, prompt=True):
+    edge = browser.Edge()
+    args_edge(venv, kwargs, edge, prompt)
+    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", edge.requirements))
 
 
 def setup_sauce(kwargs):
     raise NotImplementedError
 
 
-def setup_servo(kwargs):
-    raise NotImplementedError
+def args_servo(venv, kwargs, servo, prompt=True):
+    if kwargs["binary"] is None:
+        binary = servo.find_binary()
+
+        if binary is None:
+            raise WptrunError("Unable to find servo binary on the PATH")
+        kwargs["binary"] = binary
+
+
+def setup_servo(venv, kwargs, prompt=True):
+    servo = browser.Servo()
+    args_servo(venv, kwargs, servo, prompt)
+    venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", servo.requirements))
 
 
 product_setup = {
     "firefox": setup_firefox,
-    "chrome": setup_chrome
+    "chrome": setup_chrome,
+    "edge": setup_edge,
+    "servo": setup_servo
 }
 
 
 def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
+    from wptrunner import wptrunner, wptcommandline
+
     global logger
 
     wptparser = wptcommandline.create_parser()
@@ -227,7 +283,7 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
     args_general(kwargs)
 
     if product not in product_setup:
-        exit("Unsupported product %s" % product)
+        raise WptrunError("Unsupported product %s" % product)
 
     product_setup[product](venv, kwargs, prompt)
 
@@ -241,14 +297,20 @@ def setup_wptrunner(venv, product, tests, wptrunner_args, prompt=True,):
 
 
 def main():
-    parser = create_parser()
-    args = parser.parse_args()
+    try:
+        parser = create_parser()
+        args = parser.parse_args()
 
-    venv = virtualenv.Virtualenv(os.path.join(wpt_root, "_venv"))
-    venv.start()
+        venv = virtualenv.Virtualenv(os.path.join(wpt_root, "_venv_%s") % platform.uname()[0])
+        venv.start()
+        venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", "requirements.txt"))
+        venv.install("requests")
 
-    kwargs = setup_wptrunner(venv, args.product, args.tests, args.wptrunner_args, prompt=args.prompt)
-    wptrunner.start(**kwargs)
+        kwargs = setup_wptrunner(venv, args.product, args.tests, args.wptrunner_args, prompt=args.prompt)
+        from wptrunner import wptrunner
+        wptrunner.start(**kwargs)
+    except WptrunError as e:
+        exit(e.message)
 
 
 if __name__ == "__main__":

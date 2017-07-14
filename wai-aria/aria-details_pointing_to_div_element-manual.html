@@ -21,7 +21,7 @@
                   "relation",
                   "RELATION_DETAILS",
                   "is",
-                  "details"
+                  "[details]"
                ]
             ],
             "AXAPI" : [
@@ -34,10 +34,10 @@
             ],
             "IAccessible2" : [
                [
-                  "relation",
-                  "IA2_RELATION_DETAILS",
-                  "is",
-                  "details"
+                  "property",
+                  "relations",
+                  "contains",
+                  "IA2_RELATION_DETAILS"
                ]
             ],
             "UIA" : [
@@ -60,15 +60,15 @@
                   "relation",
                   "RELATION_DETAILS_FOR",
                   "is",
-                  "test"
+                  "[test]"
                ]
             ],
             "IAccessible2" : [
                [
-                  "relation",
-                  "IA2_RELATION_DETAILS_FOR",
-                  "is",
-                  "test"
+                  "property",
+                  "relations",
+                  "contains",
+                  "IA2_RELATION_DETAILS_FOR"
                ]
             ],
             "UIA" : []
@@ -87,7 +87,7 @@
   <p>This test examines the ARIA properties for aria-details pointing to div element.</p>
     <img id="test" src="foo.jpg" aria-details="details">
   <div id="details">
-    <iframe src="http://www.w3.org"/>
+    <iframe src="data:text/html,<body>foo</body>"/>
   </div>
 
 

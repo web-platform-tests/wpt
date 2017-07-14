@@ -20,7 +20,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(**kwargs):
+def browser_kwargs(test_type, run_info_data, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
@@ -44,6 +44,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
             capabilities["chromeOptions"][capability] = kwargs[kwarg]
+    if test_type == "testharness":
+        capabilities["chromeOptions"]["useAutomationExtension"] = False
+        capabilities["chromeOptions"]["excludeSwitches"] = ["enable-automation"]
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 
@@ -72,7 +75,7 @@ class ChromeBrowser(Browser):
                                          binary=webdriver_binary,
                                          args=webdriver_args)
 
-    def start(self):
+    def start(self, **kwargs):
         self.server.start(block=False)
 
     def stop(self, force=False):

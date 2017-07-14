@@ -190,7 +190,7 @@ var gCSSProperties = {
   'border-image-outset': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-outset
     types: [
-      { type: 'discrete', options: [ [ '1 1 1 1', '5 5 5 5' ] ] }
+      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-repeat': {
@@ -202,7 +202,7 @@ var gCSSProperties = {
   'border-image-slice': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-slice
     types: [
-      { type: 'discrete', options: [ [ '1 1 1 1', '5 5 5 5' ] ] }
+      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-source': {
@@ -216,7 +216,7 @@ var gCSSProperties = {
   'border-image-width': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-width
     types: [
-      { type: 'discrete', options: [ [ '1 1 1 1', '5 5 5 5' ] ] }
+      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-left-color': {
@@ -379,7 +379,7 @@ var gCSSProperties = {
   'column-gap': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-gap
     types: [ 'length',
-	     {  type: 'discrete', options: [ [ 'normal', '200px' ] ] }
+            {  type: 'discrete', options: [ [ 'normal', '200px' ] ] }
     ]
   },
   'column-rule-color': {
@@ -471,8 +471,7 @@ var gCSSProperties = {
   },
   'fill-opacity': {
     // https://svgwg.org/svg2-draft/painting.html#FillOpacityProperty
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'fill-rule': {
     // https://svgwg.org/svg2-draft/painting.html#FillRuleProperty
@@ -517,8 +516,7 @@ var gCSSProperties = {
   },
   'flood-opacity': {
     // https://drafts.fxtf.org/filters/#propdef-flood-opacity
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'font-size': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-size
@@ -532,8 +530,7 @@ var gCSSProperties = {
   },
   'font-stretch': {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-stretch
-    types: [
-    ]
+    types: [ 'fontStretch' ]
   },
   'font-style': {
     // https://drafts.csswg.org/css-fonts/#propdef-font-style
@@ -1225,8 +1222,7 @@ var gCSSProperties = {
   },
   'stop-opacity': {
     // https://svgwg.org/svg2-draft/pservers.html#StopOpacityProperty
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'stroke': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeProperty
@@ -1235,8 +1231,7 @@ var gCSSProperties = {
   },
   'stroke-dasharray': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
-    types: [
-    ]
+    types: [ 'dasharray' ]
   },
   'stroke-dashoffset': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDashoffsetProperty
@@ -1260,13 +1255,11 @@ var gCSSProperties = {
   },
   'stroke-miterlimit': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeMiterlimitProperty
-    types: [
-    ]
+    types: [ 'positiveNumber' ]
   },
   'stroke-opacity': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeOpacityProperty
-    types: [
-    ]
+    types: [ 'opacity' ]
   },
   'stroke-width': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeWidthProperty

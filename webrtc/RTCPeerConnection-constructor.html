@@ -49,7 +49,9 @@ const testArgs = {
   '{ iceServers: [{ urls: "turns:turn.example.org", username: "user" }] }': 'InvalidAccessError',
   '{ iceServers: [{ urls: "turns:turn.example.org", credential: "cred" }] }': 'InvalidAccessError',
   '{ iceServers: [{ urls: "relative-url" }] }': 'SyntaxError',
-  '{ iceServers: [{ urls: "http://example.com" }] }': 'SyntaxError',
+  '{ iceServers: [{ urls: ["stun:stun1.example.net", "relative-url"] }] }': 'SyntaxError',
+  '{ iceServers: [{ urls: "http://example.com" }] }': 'NotSupportedError',
+  '{ iceServers: [{ urls: ["stun:stun1.example.net", "http://example.com"] }] }': 'NotSupportedError',
   // credentialType
   '{ iceServers: [{ urls: [] }] }': false,
   '{ iceServers: [{ urls: [], credentialType: "password" }] }': false,
@@ -57,33 +59,6 @@ const testArgs = {
   '{ iceServers: [{ urls: [], credentialType: "invalid" }] }': new TypeError,
   // Blink and Gecko fall back to url, but it's not in the spec.
   '{ iceServers: [{ url: "stun:stun1.example.net" }] }': new TypeError,
-
-  // iceTransportPolicy
-  '{ iceTransportPolicy: null }': new TypeError,
-  '{ iceTransportPolicy: undefined }': false,
-  '{ iceTransportPolicy: "relay" }': false,
-  '{ iceTransportPolicy: "all" }': false,
-  '{ iceTransportPolicy: "invalid" }': new TypeError,
-  // "none" is in Blink and Gecko's IDL, but not in the spec.
-  '{ iceTransportPolicy: "none" }': new TypeError,
-  // iceTransportPolicy is called iceTransports in Blink.
-  '{ iceTransports: "invalid" }': false,
-  '{ iceTransports: "none" }': false,
-
-  // bundlePolicy
-  '{ bundlePolicy: null }': new TypeError,
-  '{ bundlePolicy: undefined }': false,
-  '{ bundlePolicy: "balanced" }': false,
-  '{ bundlePolicy: "max-compat" }': false,
-  '{ bundlePolicy: "max-bundle" }': false,
-  '{ bundlePolicy: "invalid" }': new TypeError,
-
-  // rtcpMuxPolicy
-  '{ rtcpMuxPolicy: null }': new TypeError,
-  '{ rtcpMuxPolicy: undefined }': false,
-  '{ rtcpMuxPolicy: "negotiate" }': false,
-  '{ rtcpMuxPolicy: "require" }': false,
-  '{ rtcpMuxPolicy: "invalid" }': new TypeError,
 
   // peerIdentity
   '{ peerIdentity: toStringThrows }': new Error,
@@ -112,21 +87,6 @@ for (const arg in testArgs) {
     }
   }, expr);
 }
-
-promise_test(function() {
-  return RTCPeerConnection.generateCertificate({ name: "ECDSA", namedCurve: "P-256" })
-      .then(certificate => new RTCPeerConnection({ certificates: [certificate] }));
-}, 'new RTCPeerConnection({ certificates: [certificate] })');
-
-promise_test(function() {
-  return RTCPeerConnection.generateCertificate({ name: "ECDSA", namedCurve: "P-256", expires: 0 })
-      .then(certificate => {
-        assert_less_than_equal(certificate.expires, Date.now());
-        assert_throws('InvalidAccessError', function() {
-          new RTCPeerConnection({ certificates: [certificate] });
-        });
-      });
-}, 'new RTCPeerConnection({ certificates: [expiredCertificate] })');
 
 // The initial values of attributes of RTCPeerConnection.
 const initialState = {

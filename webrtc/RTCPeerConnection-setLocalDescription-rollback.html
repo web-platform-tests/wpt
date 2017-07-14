@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection.prototype.setLocalDescription rollback</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+  'use strict';
+
+  // Test is based on the following editor draft:
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   assert_session_desc_equals
+  //   test_state_change_event
+
+  /*
+    4.3.2.  Interface Definition
+      [Constructor(optional RTCConfiguration configuration)]
+      interface RTCPeerConnection : EventTarget {
+        Promise<void>                      setLocalDescription(
+            RTCSessionDescriptionInit description);
+
+        readonly attribute RTCSessionDescription? localDescription;
+        readonly attribute RTCSessionDescription? currentLocalDescription;
+        readonly attribute RTCSessionDescription? pendingLocalDescription;
+
+        Promise<void>                      setRemoteDescription(
+            RTCSessionDescriptionInit description);
+
+        readonly attribute RTCSessionDescription? remoteDescription;
+        readonly attribute RTCSessionDescription? currentRemoteDescription;
+        readonly attribute RTCSessionDescription? pendingRemoteDescription;
+        ...
+      };
+
+    4.6.2.  RTCSessionDescription Class
+      dictionary RTCSessionDescriptionInit {
+        required RTCSdpType type;
+                 DOMString  sdp = "";
+      };
+
+    4.6.1.  RTCSdpType
+      enum RTCSdpType {
+        "offer",
+        "pranswer",
+        "answer",
+        "rollback"
+      };
+   */
+
+  /*
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.2.2.  If description is set as a local description, then run one of the
+              following steps:
+        - If description is of type "rollback", then this is a rollback. Set
+          connection.pendingLocalDescription to null and signaling state to stable.
+   */
+  promise_test(t=> {
+    const pc = new RTCPeerConnection();
+
+    test_state_change_event(t, pc, ['have-local-offer', 'stable']);
+
+    return pc.createOffer()
+    .then(offer => pc.setLocalDescription(offer))
+    .then(() => {
+      assert_equals(pc.signalingState, 'have-local-offer');
+      assert_not_equals(pc.localDescription, null);
+      assert_not_equals(pc.pendingLocalDescription, null);
+      assert_equals(pc.currentLocalDescription, null);
+
+      return pc.setLocalDescription({ type: 'rollback' });
+    })
+    .then(() => {
+      assert_equals(pc.signalingState, 'stable');
+      assert_equals(pc.localDescription, null);
+      assert_equals(pc.pendingLocalDescription, null);
+      assert_equals(pc.currentLocalDescription, null);
+    });
+  }, 'setLocalDescription(rollback) from have-local-offer state should reset back to stable state');
+
+</script>

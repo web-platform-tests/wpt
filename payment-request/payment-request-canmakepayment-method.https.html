@@ -30,7 +30,7 @@ promise_test(async t => {
       `canMakePaymentPromise should be true`
     );
   } catch (err) {
-    assert_equal(
+    assert_equals(
       err.name,
       "NotAllowedError",
       "if it throws, then it must be a NotAllowedError."
@@ -71,7 +71,7 @@ promise_test(async t => {
       `should have thrown InvalidStateError, but instead returned "${result}"`
     );
   } catch (err) {
-    assert_equal(
+    assert_equals(
       err.name,
       "InvalidStateError",
       "must be an InvalidStateError."
@@ -124,7 +124,7 @@ promise_test(async t => {
     try {
       await request.canMakePayment();
     } catch (err) {
-      assert_equal(
+      assert_equals(
         err.name,
         "NotAllowedError",
         "if it throws, then it must be a NotAllowedError."
@@ -136,7 +136,7 @@ promise_test(async t => {
     try {
       await new PaymentRequest(defaultMethods, defaultDetails).canMakePayment();
     } catch (err) {
-      assert_equal(
+      assert_equals(
         err.name,
         "NotAllowedError",
         "if it throws, then it must be a NotAllowedError."

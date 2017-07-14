@@ -211,7 +211,7 @@ class ServoWebDriverRefTestExecutor(RefTestExecutor):
                                                capabilities=capabilities)
         self.implementation = RefTestImplementation(self)
         self.timeout = None
-        with open(os.path.join(here, "reftest-wait_servodriver.js")) as f:
+        with open(os.path.join(here, "reftest-wait_webdriver.js")) as f:
             self.wait_script = f.read()
 
     def is_alive(self):

@@ -187,7 +187,7 @@ function checkPropertyDescriptor(desc, propName, expectWritable) {
   var isSymbol = (typeof(propName) == "symbol");
   propName = String(propName);
   assert_true(isObject(desc), "property descriptor for " + propName + " should exist");
-  assert_equals(desc.enumerable, false, "property descriptor for " + propName + " should be non-enumerable");
+  assert_equals(desc.enumerable, true, "property descriptor for " + propName + " should be enumerable");
   assert_equals(desc.configurable, true, "property descriptor for " + propName + " should be configurable");
   if (isSymbol) {
     assert_true("value" in desc,
@@ -274,9 +274,15 @@ addTest(function() {
   assert_array_equals(Object.getOwnPropertyNames(C).sort(),
                       whitelistedWindowPropNames,
                       "Object.getOwnPropertyNames() gives the right answer for cross-origin Window");
+  assert_array_equals(Object.keys(C).sort(),
+                      whitelistedWindowPropNames,
+                      "Object.keys() gives the right answer for cross-origin Window");
   assert_array_equals(Object.getOwnPropertyNames(C.location).sort(),
                       whitelistedLocationPropNames,
                       "Object.getOwnPropertyNames() gives the right answer for cross-origin Location");
+  assert_array_equals(Object.keys(C.location).sort(),
+                      whitelistedLocationPropNames,
+                      "Object.keys() gives the right answer for cross-origin Location");
 }, "[[OwnPropertyKeys]] should return all properties from cross-origin objects");
 
 addTest(function() {

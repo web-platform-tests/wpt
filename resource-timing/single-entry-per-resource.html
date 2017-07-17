@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>One resource when reusing data</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../performance-timeline/performanceobservers.js"></script>
+<script>
+  async_test(function (t) {
+    function path(pathname) {
+      var filename = pathname.substring(pathname.lastIndexOf('/')+1);
+      return pathname.substring(0, pathname.length - filename.length);
+    }
+    var img_location = document.location.origin + path(document.location.pathname)
+       + "resources/blue.png";
+    var observer = new PerformanceObserver(
+        t.step_func(function (entryList, obs) {
+          checkEntries(entryList.getEntriesByType("resource"),
+            [{ entryType: "resource", name: img_location}]);
+          observer.disconnect();
+          t.done();
+        })
+      );
+    observer.observe({entryTypes: ["resource"]});
+  }, "Only one resource entry per resource");
+</script>
+<h1>One resource when reusing data</h1>
+<p>
+If the user agent is to reuse the data from another existing or completed fetch initiated from the current document, abort the remaining steps.
+</p>
+<div id="log"></div>
+<img src='resources/blue.png' alt='First appareance of the image'>
+<img src='resources/blue.png' alt='Second appareance of the image'>

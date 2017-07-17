@@ -16,6 +16,8 @@ var makeAsyncTest = function(filename, numTracks) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
+    assert_true('captureStream' in video);
+
     var stream = video.captureStream();
     assert_not_equals(stream, null, "error generating stream");
 

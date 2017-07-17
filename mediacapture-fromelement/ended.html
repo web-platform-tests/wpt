@@ -17,6 +17,8 @@ var makeAsyncTest = function(filename) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
+    assert_true('captureStream' in video);
+
     var stream = video.captureStream();
 
     stream.onremovetrack = this.step_func_done(function() {

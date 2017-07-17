@@ -5,7 +5,6 @@
 <link rel='stylesheet' href='../support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">
-<link rel="help" href="https://www.w3.org/TR/2017/WD-css-tables-3-20170307/#visible-track">
 <style>
     x-table {
       border: 5px solid black;
@@ -23,59 +22,39 @@
     <h1>Visibility collapse</h1>
     <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-height">Spec</a>
     <p>
-    Setting row group to visibility:collapse changes table height but not width.
+    Setting a row to visibility:collapse changes table height but not width.
     </p>
     <x-table id="one">
-      <x-tbody>
         <x-tr>
             <x-td>
                 <span>row 1</span>
             </x-td>
             <x-td>
-                <span></span>
+                <span></span><span></span>
             </x-td>
         </x-tr>
         <x-tr>
             <x-td>
                 <span>row 2</span>
-            </x-td>
-            <x-td>
-                <span></span>
-            </x-td>
-        </x-tr>
-      </x-tbody>
-        <x-tr>
-            <x-td>
-                <span>row 3</span>
             </x-td>
             <x-td>
                 <span></span>
             </x-td>
         </x-tr>
     </x-table>
-    When row group is collapsed, visible rows within the row group are still collapsed and therefore invisible.
+    Bottom table is identical to top except row 2 has been collapsed.
     <x-table id="two">
-      <x-tbody style="visibility:collapse;">
-        <x-tr style="visibility:visible;">
+        <x-tr>
             <x-td>
                 <span>row 1</span>
             </x-td>
             <x-td>
-                <span></span>
+                <span></span><span></span>
             </x-td>
         </x-tr>
-        <x-tr style="visibility:visible;">
+        <x-tr id="collapse">
             <x-td>
                 <span>row 2</span>
-            </x-td>
-            <x-td>
-                <span></span>
-            </x-td>
-        </x-tr>
-    </x-tbody>
-        <x-tr>
-            <x-td>
-                <span>row 3</span>
             </x-td>
             <x-td>
                 <span></span>
@@ -85,18 +64,20 @@
 </main>
 
 <script>
-    tests = [
-    [
-        document.getElementById('two').offsetWidth,
-        document.getElementById('one').offsetWidth,
-        "row group visibility:collapse doesn't change table width"
-    ],
-    [
-        document.getElementById('two').offsetHeight,
-        116,
-        "row group visibility:collapse changes table height"
-    ]];
+    row = document.getElementById("collapse");
+    row.style.visibility = "collapse";
 
+    tests = [
+        [
+            document.getElementById('two').offsetWidth,
+            document.getElementById('one').offsetWidth,
+            "row visibility:collapse doesn't change table width, unlike display:none"
+        ],
+        [
+            document.getElementById('two').offsetHeight,
+            116,
+            "row visibility:collapse changes table height, unlike visibility:hidden"
+        ]];
     for (i = 0; i< tests.length; i++) {
         test(function()
             {

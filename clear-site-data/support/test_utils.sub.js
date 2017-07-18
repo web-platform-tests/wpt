@@ -105,5 +105,22 @@ var TestUtils = (function() {
     return "support/echo-clear-site-data.py?" + names.join("&");
   }
 
+  /**
+   * @param{string} page_scheme Scheme of the page. "http" or "https".
+   * @param{string} resource_scheme Scheme of the resource. "http" or "https".
+   * @return The URL of a page that contains a resource requesting the deletion
+   *     of storage.
+   */
+  TestUtils.getPageWithResourceUrl = function(page_scheme, resource_scheme) {
+      if (page_scheme != "https" && page_scheme != "http")
+        throw "Unsupported scheme: " + page_scheme;
+      if (resource_scheme != "https" && resource_scheme != "http")
+        throw "Unsupported scheme: " + resource_scheme;
+      return page_scheme + "://web-platform.test:" +
+          (page_scheme == "https" ? {{ports[https][0]}} : {{ports[http][0]}}) +
+          "/clear-site-data/support/page_with_resource.sub.html?scheme=" +
+          resource_scheme;
+  }
+
   return TestUtils;
 })();

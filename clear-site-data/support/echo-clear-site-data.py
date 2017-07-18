@@ -5,7 +5,7 @@ RESPONSE = """
 <html>
   <head>
     <title>Clear-Site-Data</title>
-    <script src="test_utils.js"></script>
+    <script src="test_utils.sub.js"></script>
   </head>
   <body>
     <script>

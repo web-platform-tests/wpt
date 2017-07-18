@@ -256,15 +256,23 @@ addTest(function() {
 }, "[[DefineOwnProperty]] Should throw for cross-origin objects");
 
 /*
- * [[Enumerate]]
+ * EnumerateObjectProperties (backed by [[OwnPropertyKeys]])
  */
 
 addTest(function() {
-  for (var prop in C)
-    assert_unreached("Shouldn't have been able to enumerate " + prop + " on cross-origin Window");
-  for (var prop in C.location)
-    assert_unreached("Shouldn't have been able to enumerate " + prop + " on cross-origin Location");
-}, "[[Enumerate]] should return an empty iterator");
+  let i = 0;
+  for (var prop in C) {
+    i++;
+    assert_true(whitelistedWindowPropNames.includes(prop), prop + " is not safelisted for a cross-origin Window");
+  }
+  assert_equals(i, whitelistedWindowPropNames.length, "Enumerate all safelisted cross-origin Window properties");
+  i = 0;
+  for (var prop in C.location) {
+    i++;
+    assert_true(whitelistedLocationPropNames.includes(prop), prop + " is not safelisted for a cross-origin Location");
+  }
+  assert_equals(i, whitelistedLocationPropNames.length, "Enumerate all safelisted cross-origin Location properties");
+}, "Can only enumerate safelisted properties");
 
 /*
  * [[OwnPropertyKeys]]

@@ -11,6 +11,8 @@ test(function() {
 
 function testPlaybackRateHelper(t, newPlaybackRate) {
   var v = document.createElement('video');
+  var initialRate = v.playbackRate;
+
   v.addEventListener('ratechange', function() {
     assert_equals(v.playbackRate, newPlaybackRate);
     t.done();
@@ -20,7 +22,8 @@ function testPlaybackRateHelper(t, newPlaybackRate) {
     v.playbackRate = newPlaybackRate;
   } catch(e) {
     assert_equals(e.name, 'NotSupportedError');
-    assert_equals(v.playbackRate, 1 /* default */);
+    assert_equals(v.playbackRate, initialRate);
+    t.done();
   }
 }
 

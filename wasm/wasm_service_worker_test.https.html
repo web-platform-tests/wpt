@@ -2,7 +2,8 @@
 <title>Service Worker: postMessage with wasm</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/serviceworker/resources/test-helpers.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script>
   promise_test(async test => {
     var registration = await service_worker_unregister_and_register(

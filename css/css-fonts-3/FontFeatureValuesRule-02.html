@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>CSS Test:  CSSFontFeatureValuesRule Object Model</title>
+<link rel="author" title="Chris Lilley" href="chris@w3.org">
+<link rel="match" href="FontFeatureValuesRule-02-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-3/#om-fontfeaturevalues">
+<meta name="assert" content="The CSSFontFeatureValuesRule interface represents a @font-feature-values rule.">
+<style>
+  @font-face {
+    font-family: fwf;
+    src: url(support/fonts/FontWithFancyFeatures.otf);
+  }
+  @font-feature-values fwf {
+    @ornaments {
+      foo: 1;
+      bar: 2;
+      baz: 3;
+    }
+  }
+  .test {
+	  font-family: fwf;
+	  font-size: 2em;
+	  line-height: 1.1;
+  }
+  .high {
+	 font-variant-alternates: ornaments(baz);
+   visibility: hidden;
+  }
+  #result {
+    width: 200px; height: 100px; background-color: red;
+  }
+</style>
+<body>
+
+<p>Test passes if you see a green rectangle and no red.</p>
+<section id="result"> </section>
+<section class="test">
+	<p class="high">Xnophijklmqrstuvwxyz</p>
+</section>
+<script>
+res = document.querySelector("#result");
+if (document.querySelector("style").sheet.cssRules[1] instanceof CSSFontFeatureValuesRule) {
+  res.style.backgroundColor = "green";
+}
+</script>

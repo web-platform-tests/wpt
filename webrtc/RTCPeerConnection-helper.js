@@ -372,3 +372,18 @@ function generateMediaStreamTrack(kind) {
 
   return track;
 }
+
+// Obtain a MediaStreamTrack of kind using getUserMedia.
+// Return Promise of pair of track and associated mediaStream.
+// Assumes that there is at least one available device
+// to generate the track.
+function getTrackFromUserMedia(kind) {
+  return navigator.mediaDevices.getUserMedia({ [kind]: true })
+  .then(mediaStream => {
+    const tracks = mediaStream.getTracks();
+    assert_greater_than(tracks.length, 0,
+      `Expect getUserMedia to return at least one track of kind ${kind}`);
+    const [ track ] = tracks;
+    return [track, mediaStream];
+  });
+}

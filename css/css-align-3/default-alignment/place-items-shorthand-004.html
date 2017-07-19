@@ -34,6 +34,11 @@
     }, "Verify 'auto' value is invalid as first longhand value.");
 
     test(function() {
+       checkInvalidValues("right auto")
+       checkInvalidValues("auto auto")
+    }, "Verify 'auto' value is invalid as second longhand value.");
+
+    test(function() {
         checkInvalidValues("")
     }, "Verify empty declaration is invalid");
 </script>

@@ -10,7 +10,7 @@
 <script>
     var values = ["normal", "stretch"].concat(selfPositionValues, baselineValues);
     values.forEach(function(alignValue) {
-       ["auto"].concat(values).forEach(function(justifyValue) {
+       ["legacy"].concat(values).forEach(function(justifyValue) {
            test(function() {
                checkPlaceShorhandLonghands("place-items", "align-items", "justify-items", alignValue, justifyValue);
            }, "Checking place-items: " + alignValue + " " + justifyValue);

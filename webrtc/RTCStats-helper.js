@@ -4,6 +4,10 @@
 // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 // https://w3c.github.io/webrtc-stats/archives/20170614/webrtc-stats.html
 
+
+// This file depends on dictionary-helper.js which should
+// be loaded from the main HTML file.
+
 // To improve readability, the WebIDL definitions of the Stats
 // dictionaries are modified to annotate with required fields when
 // they are required by section 8.6 of webrtc-pc. ID fields are
@@ -98,86 +102,6 @@ function getStatsById(statsReport, statsId) {
     `Expect stats report to have stats object with id ${statsId}`);
 
   return statsReport.get(statsId);
-}
-
-// Field assertion functions that assert a field
-// in a stats object have the required type.
-
-function assert_unsigned_int_field(stats, field) {
-  const num = stats[field];
-  assert_true(Number.isInteger(num) && (num >= 0),
-    `Expect stats field ${field} to be unsigned integer`);
-}
-
-function assert_int_field(stats, field) {
-  const num = stats[field];
-  assert_true(Number.isInteger(num),
-    `Expect stats field ${field} to be unsigned integer`);
-}
-
-function assert_string_field(stats, field) {
-  const str = stats[field];
-  assert_equals(typeof str, 'string',
-    `Expect stats field ${field} to be string`);
-}
-
-function assert_number_field(stats, field) {
-  const num = stats[field];
-  assert_equals(typeof num, 'number',
-    `Expect stats field ${field} to be number`);
-}
-
-function assert_boolean_field(stats, field) {
-  const bool = stats[field];
-  assert_equals(typeof bool, 'boolean',
-    `Expect stats field ${field} to be boolean`);
-}
-
-function assert_array_field(stats, field) {
-  assert_true(Array.isArray(stats[field]),
-    `Expect stats field ${field} to be array`);
-}
-
-function assert_enum_field(stats, field, validValues) {
-  assert_string_field(stats, field);
-  assert_true(validValues.includes(stats[field]),
-    `Expect stats field ${field} has one of the valid enum values: ${validValues}`);
-}
-
-function assert_optional_unsigned_int_field(stats, field) {
-  if(stats[field] !== undefined) {
-    assert_unsigned_int_field(stats, field);
-  }
-}
-
-function assert_optional_int_field(stats, field) {
-  if(stats[field] !== undefined) {
-    assert_int_field(stats, field);
-  }
-}
-
-function assert_optional_string_field(stats, field) {
-  if(stats[field] !== undefined) {
-    assert_string_field(stats, field);
-  }
-}
-
-function assert_optional_number_field(stats, field) {
-  if(stats[field] !== undefined) {
-    assert_number_field(stats, field);
-  }
-}
-
-function assert_optional_boolean_field(stats, field) {
-  if(stats[field] !== undefined) {
-    assert_boolean_field(stats, field);
-  }
-}
-
-function assert_optional_enum_field(stats, field, validValues) {
-  if(stats[field] !== undefined) {
-    assert_enum_field(stats, field, validValues);
-  }
 }
 
 // Validate an ID field in a stats object by making sure

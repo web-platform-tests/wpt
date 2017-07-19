@@ -187,14 +187,16 @@ function checkPropertyDescriptor(desc, propName, expectWritable) {
   var isSymbol = (typeof(propName) == "symbol");
   propName = String(propName);
   assert_true(isObject(desc), "property descriptor for " + propName + " should exist");
-  assert_equals(desc.enumerable, true, "property descriptor for " + propName + " should be enumerable");
   assert_equals(desc.configurable, true, "property descriptor for " + propName + " should be configurable");
   if (isSymbol) {
+    assert_equals(desc.enumerable, false, "symbol-property descriptor for " + propName + " should not be enumerable");
     assert_true("value" in desc,
                 "property descriptor for " + propName + " should be a value descriptor");
     assert_equals(desc.value, undefined,
                   "symbol-named cross-origin visible prop " + propName +
                   " should come back as undefined");
+  } else {
+    assert_equals(desc.enumerable, true, "property descriptor for " + propName + " should be enumerable");
   }
   if ('value' in desc)
     assert_equals(desc.writable, expectWritable, "property descriptor for " + propName + " should have writable: " + expectWritable);

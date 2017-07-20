@@ -156,7 +156,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
       2.  Set transceiver's mid value to the mid of the corresponding media
           description.
 
-    [TODO]
+    [RTCPeerConnection-ontrack]
     8.  If description is set as a remote description, then run the following steps
         for each media description in description:
 
@@ -164,26 +164,26 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
       1.  As described by [JSEP] (section 5.9.), attempt to find an existing
           RTCRtpTransceiver object, transceiver, to represent the media description.
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       2.  If no suitable transceiver is found (transceiver is unset), run the following
           steps:
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         1.  Create an RTCRtpSender, sender, from the media description.
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         2.  Create an RTCRtpReceiver, receiver, from the media description.
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         3.  Create an RTCRtpTransceiver with sender, receiver and direction, and let
             transceiver be the result.
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       3.  Set transceiver's mid value to the mid of the corresponding media description.
           If the media description has no MID, and transceiver's mid is unset, generate
           a random value as described in [JSEP] (section 5.9.).
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       4.  If the direction of the media description is sendrecv or sendonly, and
           transceiver.receiver.track has not yet been fired in a track event, process
           the remote track for the media description, given transceiver.
@@ -234,7 +234,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
 Coverage Report
 
-  Tested        28
-  Not Tested    22
+  Tested        35
+  Not Tested    15
   Untestable     8
   Total         58

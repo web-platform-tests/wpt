@@ -77,7 +77,12 @@ var tests_arr = [
   {input: '0', expected: [0, 'refresh.sub.html']},
   {input: '1.9; url=foo', expected: [1, 'foo']},
   {input: '1.9..5.; url=foo', expected: [1, 'foo']},
-  {input: '.9; url=foo', expected: []},
+  {input: '.9; url=foo', expected: [0, 'foo']},
+  {input: '0.9; url=foo', expected: [0, 'foo']},
+  {input: '1e0; url=foo', expected: []},
+  {input: '1e1; url=foo', expected: []},
+  {input: '10e-1; url=foo', expected: []},
+  {input: '-0.1; url=foo', expected: []},
 ];
 
 tests_arr.forEach(function(test_obj) {

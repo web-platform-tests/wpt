@@ -285,7 +285,7 @@
     return promise_rejects(t, 'InvalidModificationError',
       sender.setParameters(param));
 
-  }, `setParameters() with modified encoding.rtx field should reject with InvalidModificationError`);
+  }, `setParameters() with modified encoding.fec field should reject with InvalidModificationError`);
 
   promise_test(t => {
     const pc = new RTCPeerConnection();

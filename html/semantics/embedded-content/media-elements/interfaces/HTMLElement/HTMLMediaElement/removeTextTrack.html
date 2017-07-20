@@ -1,0 +1,53 @@
+<!doctype html>
+<title>HTMLMediaElement.removeTextTrack</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+var video = document.createElement('video');
+test(function(){
+    var t = video.addTextTrack('captions');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 1);
+    video.removeTextTrack(t);
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' captions');
+
+test(function(){
+    var t = video.addTextTrack('subtitles');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 1);
+    video.removeTextTrack(t);
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' subtitles');
+
+test(function(){
+    var t = video.addTextTrack('chapters');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 1);
+    video.removeTextTrack(t);
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' chapters');
+
+test(function(){
+    var t = video.addTextTrack('metadata');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 1);
+    video.removeTextTrack(t);
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' metadata');
+
+test(function(){
+    var t = video.addTextTrack('descriptions');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 1);
+    video.removeTextTrack(t);
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' descriptions');
+</script>
+

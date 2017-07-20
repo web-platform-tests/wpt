@@ -60,5 +60,17 @@ test(function(){
     assert_equals(video.textTracks, video.textTracks);
     assert_equals(video.textTracks.length, 0);
 }, document.title + ' orphaned track');
+
+
+test(function() {
+    var tel = document.createElement('track');
+    video.appendChild(tel);
+    assert_equals(video.textTracks.length, 1);
+    assert_true(video.contains(tel));
+    video.removeTextTrack(tel.track);
+    assert_false(video.contains(tel));
+    assert_equals(video.textTracks.length, 0);
+
+}, document.title + ' also remove associated track element');
 </script>
 

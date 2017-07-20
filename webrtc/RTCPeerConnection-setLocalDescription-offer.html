@@ -52,10 +52,10 @@
           to lastOffer.
 
     4.3.1.6.  Set the RTCSessionSessionDescription
-      2.2.  If description is set as a local description, then run one of the following
-            steps:
-            - If description is of type "offer", set connection.pendingLocalDescription
-              to description and signaling state to have-local-offer.
+      2.2.2.  If description is set as a local description, then run one of the following
+              steps:
+        - If description is of type "offer", set connection.pendingLocalDescription
+          to description and signaling state to have-local-offer.
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();

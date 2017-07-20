@@ -12,7 +12,7 @@
 var makeAsyncTest = function(filename, numTracks) {
   async_test(function() {
     var video = document.createElement('video');
-    video.src = "webm/" + filename;
+    video.src = "/media/" + filename;
     video.onerror = this.unreached_func("<video> error");
     video.play();
 

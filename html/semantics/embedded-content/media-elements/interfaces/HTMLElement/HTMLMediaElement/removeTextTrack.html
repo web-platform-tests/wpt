@@ -49,5 +49,16 @@ test(function(){
     assert_equals(video.textTracks, video.textTracks);
     assert_equals(video.textTracks.length, 0);
 }, document.title + ' descriptions');
+
+test(function(){
+    var t = document.createElement('track').track;
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+    assert_throws('NOT_FOUND_ERROR', function() {
+        video.removeTextTrack(t);
+    }, 'standalone');
+    assert_equals(video.textTracks, video.textTracks);
+    assert_equals(video.textTracks.length, 0);
+}, document.title + ' orphaned track');
 </script>
 

@@ -1,23 +1,22 @@
 import pytest
-
-
-def assert_status_response(http_status, res):
-        assert http_status == 200
-        assert res["ready"] in [True, False]
-        assert isinstance(res["message"], basestring)
+import json
 
 
 # TODO: figure out if geckodriver supports sessionless status
 # currently response body for GET /status without a session is
 # coming back empty
 def test_get_status_no_session(http):
-    # with http.get("status", use_json=True) as result:
-        # [status, obj] = result
-        # assert_status_response(status, obj)
-    pass
+    with http.get("status", use_json=True) as response:
+        # GET /status should never return an error
+        assert response.status == 200
 
+        parsed_obj = json.loads(response.read().decode('utf-8'))
 
-def test_get_status_with_session(session):
-    response = session.transport.send("GET", "status")
-    result = response.body["value"]
-    assert_status_response(response.status, result)
+        # Let body be a new JSON Object with the following properties:
+        # "ready"
+        #       The remote end’s readiness state.
+        assert parsed_obj["ready"] in [True, False]
+        # "message"
+        #       An implementation-defined string explaining the remote end’s
+        #       readiness state.
+        assert isinstance(parsed_obj["message"], basestring)

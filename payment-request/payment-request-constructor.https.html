@@ -9,14 +9,16 @@
 "use strict";
 const basicCard = Object.freeze({ supportedMethods: "basic-card" });
 const defaultMethods = Object.freeze([basicCard]);
+const amount = Object.freeze({
+  currency: "USD",
+  value: "1.00",
+});
+const total = Object.freeze({
+  label: "",
+  amount,
+});
 const defaultDetails = Object.freeze({
-  total: {
-    label: "",
-    amount: {
-      currency: "USD",
-      value: "1.00",
-    },
-  },
+  total,
 });
 
 test(() => {

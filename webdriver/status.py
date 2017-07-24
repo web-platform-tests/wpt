@@ -2,9 +2,6 @@ import pytest
 import json
 
 
-# TODO: figure out if geckodriver supports sessionless status
-# currently response body for GET /status without a session is
-# coming back empty
 def test_get_status_no_session(http):
     with http.get("/status") as response:
         # GET /status should never return an error

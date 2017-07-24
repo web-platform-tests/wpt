@@ -15,10 +15,17 @@ def get_parser():
 
 def run(venv, **kwargs):
     browser = kwargs["browser"]
-    if venv and kwargs["destination"] is None:
-        destination = venv.bin_path
-    else:
-        destination = kwargs["destination"]
+    destination = kwargs["destination"]
+
+    if destination is None:
+        if venv:
+            if kwargs["component"] == "browser":
+                destination = venv.path
+            else:
+                destination = venv.bin_path
+        else:
+            raise argparse.ArgumentError(None,
+                                         "No --destination argument, and no default for the environment")
 
     install(browser, kwargs["component"], destination)
 

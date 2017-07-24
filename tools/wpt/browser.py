@@ -24,7 +24,7 @@ class Browser(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def install(self):
+    def install(self, dest=None):
         return NotImplemented
 
     @abstractmethod
@@ -213,6 +213,9 @@ class Chrome(Browser):
     binary = "/usr/bin/google-chrome"
     requirements = "requirements_chrome.txt"
 
+    def install(self, dest=None):
+        raise NotImplementedError
+
     def platform_string(self):
         platform = {
             "Linux": "linux",
@@ -231,9 +234,6 @@ class Chrome(Browser):
             bits = "32"
 
         return "%s%s" % (platform, bits)
-
-    def install(self):
-        return None
 
     def find_webdriver(self):
         return find_executable("chromedriver")
@@ -287,8 +287,8 @@ class Edge(Browser):
     product = "edge"
     requirements = "requirements_edge.txt"
 
-    def install(self):
-        return None
+    def install(self, dest=None):
+        raise NotImplementedError
 
     def find_webdriver(self):
         return find_executable("MicrosoftWebDriver")
@@ -310,8 +310,7 @@ class Servo(Browser):
     product = "servo"
     requirements = "requirements_servo.txt"
 
-    def install(self, platform, dest=None):
-        """Install Servo."""
+    def install(self, dest=None):
         raise NotImplementedError
 
     def find_binary(self, path=None):
@@ -336,8 +335,7 @@ class Sauce(Browser):
     product = "sauce"
     requirements = "requirements_sauce.txt"
 
-    def install(self, platform, dest=None):
-        """Install Servo."""
+    def install(self, dest=None):
         raise NotImplementedError
 
     def find_binary(self, path=None):

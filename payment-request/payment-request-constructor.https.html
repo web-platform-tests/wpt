@@ -30,6 +30,13 @@ test(() => {
   const request1 = new PaymentRequest(defaultMethods, defaultDetails);
   const request2 = new PaymentRequest(defaultMethods, defaultDetails);
   assert_not_equals(request1.id, request2.id, "UA generated ID must be unique");
+  const seen = new Set();
+  // Let's try creating lots of request, and make sure they are all unique
+  for (let i = 0; i < 1024; i++) {
+    const request = new PaymentRequest(defaultMethods, defaultDetails);
+    assert_false(seen.has(request.id), `UA generated ID must be unique, but got duplicate! (${request.id})`);
+    seen.add(request.id);
+  }
 }, "If details.id is missing, assign a unique identifier");
 
 test(() => {
@@ -54,26 +61,11 @@ test(() => {
 }, "Use ids even if they are strange");
 
 test(() => {
-  assert_equals(
-    new PaymentRequest(
-      [
-        {
-          supportedMethods: "basic-card",
-        },
-      ],
-      {
-        id: "foo",
-        total: {
-          label: "",
-          amount: {
-            currency: "USD",
-            value: "1.00",
-          },
-        },
-      }
-    ).id,
-    "foo"
+  const request = new PaymentRequest(
+    defaultMethods,
+    Object.assign({}, defaultDetails, { id: "foo" })
   );
+  assert_equals(request.id, "foo");
 }, "Use provided request ID");
 
 test(() => {

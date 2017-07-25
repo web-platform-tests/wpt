@@ -14,8 +14,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     1.  If the process to apply description fails for any reason, then user agent
         MUST queue a task that runs the following steps:
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [Untestable]
       1.  If connection's [[IsClosed]] slot is true, then abort these steps.
 
       [Untestable]
@@ -47,8 +46,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     2.  If description is applied successfully, the user agent MUST queue a task
         that runs the following steps:
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [Untestable]
       1.  If connection's [[isClosed]] slot is true, then abort these steps.
 
       [RTCPeerConnection-setLocalDescription]
@@ -218,7 +216,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
             flag. If connection's [[NegotiationNeeded]] slot was true both before and after
             this update, queue a task that runs the following steps:
 
-      [RTCPeerConnection-onnegotiationneeded]
+      [Untestable]
       1.  If connection's [[IsClosed]] slot is true, abort these steps.
 
       [RTCPeerConnection-onnegotiationneeded]

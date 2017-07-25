@@ -120,20 +120,6 @@
     return awaitNegotiation(pc);
   }, 'task for negotiationneeded event should be enqueued for next tick');
 
-  /*
-    4.7.3.  Updating the Negotiation-Needed flag
-
-      To update the negotiation-needed flag
-      6.  Queue a task that runs the following steps:
-          1.  If connection's [[isClosed]] slot is true, abort these steps.
-   */
-  test_never_resolve(t => {
-    const pc = new RTCPeerConnection();
-    pc.createDataChannel('test');
-    pc.close();
-    return awaitNegotiation(pc);
-  }, 'negotiationneeded event should not fire if connection is closed');
-
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
     pc.createDataChannel('foo');
@@ -216,7 +202,6 @@
       2.2.10. If connection's signaling state is now stable, update the negotiation-needed
               flag. If connection's [[NegotiationNeeded]] slot was true both before and after
               this update, queue a task that runs the following steps:
-        1.  If connection's [[IsClosed]] slot is true, abort these steps.
         2.  If connection's [[NegotiationNeeded]] slot is false, abort these steps.
         3.  Fire a simple event named negotiationneeded at connection.
    */
@@ -241,7 +226,6 @@
     4.7.3.  Updating the Negotiation-Needed flag
 
       To update the negotiation-needed flag
-      1.  If connection's [[isClosed]] slot is true, abort these steps.
       3.  If the result of checking if negotiation is needed is "false",
           clear the negotiation-needed flag by setting connection's
           [[needNegotiation]] slot to false, and abort these steps.
@@ -291,6 +275,12 @@
 
       stop
         11. Update the negotiation-needed flag for connection.
+
+    Untestable
+    4.7.3.  Updating the Negotiation-Needed flag
+      1.  If connection's [[isClosed]] slot is true, abort these steps.
+      6.  Queue a task that runs the following steps:
+          1.  If connection's [[isClosed]] slot is true, abort these steps.
    */
 
 </script>

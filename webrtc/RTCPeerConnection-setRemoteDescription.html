@@ -91,21 +91,6 @@
 
   /*
     4.3.1.6.  Set the RTCSessionSessionDescription
-      2.2.1.  If connection's [[IsClosed]] slot is true, then abort these steps.
-   */
-  test_never_resolve(t => {
-    const pc = new RTCPeerConnection();
-
-    return generateOffer()
-    .then(offer => {
-      const promise = pc.setRemoteDescription(offer);
-      pc.close();
-      return promise;
-    });
-  }, 'setRemoteDescription(offer) should never resolve if connection is closed in parallel')
-
-  /*
-    4.3.1.6.  Set the RTCSessionSessionDescription
       2.1.4.  If the content of description is not valid SDP syntax, then reject p with
               an RTCError (with errorDetail set to "sdp-syntax-error" and the
               sdpLineNumber attribute set to the line number in the SDP where the syntax

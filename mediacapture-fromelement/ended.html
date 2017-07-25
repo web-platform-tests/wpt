@@ -17,9 +17,8 @@ var makeAsyncTest = function(filename) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
-    assert_true('captureStream' in video);
-
-    var stream = video.captureStream() || video.mozCaptureStream();
+    var captureStream = (video.captureStream || video.mozCaptureStream);
+    var stream = captureStream.call();
 
     stream.onremovetrack = this.step_func_done(function() {
       assert_true(video.ended, 'video must be ended');

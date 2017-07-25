@@ -16,9 +16,8 @@ var makeAsyncTest = function(filename, numTracks) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
-    assert_true('captureStream' in video);
-
-    var stream = video.captureStream() || video.mozCaptureStream();
+    var captureStream = (video.captureStream || video.mozCaptureStream);
+    var stream = captureStream.call();
     assert_not_equals(stream, null, "error generating stream");
 
     // onactive event is marked for deprecation (https://crbug.com/649328)

@@ -16,7 +16,8 @@ var makeAsyncTest = function(filename) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
-    var stream = video.captureStream() || video.mozCaptureStream();
+    var captureStream = (video.captureStream || video.mozCaptureStream);
+    var stream = captureStream.call();
 
     // onactive event is marked for deprecation (https://crbug.com/649328)
     stream.onactive = this.step_func_done(function() {

@@ -13,10 +13,6 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
   var noCookies = "{{GET[noCookies]}}";
-//  var reportCookieName = "{{GET[reportCookieName]}}";
-//  var testName = "{{GET[testName]}}";
-//  var cookiePresent = "{{GET[cookiePresent]}}";
-//  var reportCount = "{{GET[reportCount]}}";
 
   var location = window.location;
 //  if (true) {
@@ -76,17 +72,40 @@
     report.send();
   });
 
-  if (noCookies) {
-      var cookieTest = async_test("No cookies sent with report.");
+  if (noCookies/* || cookiePresent*/) {
+      var cookieTest = async_test("Test report cookies.");
       var cookieReport = new XMLHttpRequest();
+      // timeout = 0.1;
       cookieReport.onload = cookieTest.step_func(function () {
           var data = JSON.parse(cookieReport.responseText);
-          assert_equals(data.reportCookies, "None");
+  //      if (noCookies) {
+          assert_equals(data.reportCookies, "None", "Report should not contain any cookies");
+    //    }
+
+//        if (cookiePresent) {
+//          assert_true(data.reportCookies.hasOwnProperty(cookiePresent), "Report should contain cookie: " + cookiePresent);
+//        }
           cookieTest.done();
       });
       var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=cookies&timeout=" + timeout + "&reportID=" + reportID;
       cookieReport.open("GET", cReportLocation, true);
       cookieReport.send();
   };
+
+//  if (reportCount) {
+//      var reportCountTest = async_test("Test number of sent reports.");
+//      var reportCountReport = new XMLHttpRequest();
+//      // timeout = 0.1;
+//      reportCountReport.onload = reportCountTest.step_func(function () {
+//        var data = JSON.parse(reportCountReport.responseText);
+//
+//        assert_equals(data.report_count, reportCount, "Report count was not what was expected.");
+//
+//        reportCountTest.done();
+//      });
+//      var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_count&timeout=" + timeout + "&reportID=" + reportID;
+//      reportCountReport.open("GET", cReportLocation, true);
+//      reportCountReport.send();
+//  }
 
 })();

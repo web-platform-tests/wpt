@@ -76,7 +76,7 @@
     report.send();
   });
 
-  if (noCookies || cookiePresent) {
+  if (noCookies/* || cookiePresent*/) {
       var cookieTest = async_test("Test report cookies.");
       var cookieReport = new XMLHttpRequest();
       // timeout = 0.1;
@@ -86,15 +86,15 @@
           assert_equals(data.reportCookies, "None", "Report should not contain any cookies");
         }
 
-        if (cookiePresent) {
-          assert_true(data.reportCookies.hasOwnProperty(cookiePresent), "Report should contain cookie: " + cookiePresent);
-        }
+//        if (cookiePresent) {
+//          assert_true(data.reportCookies.hasOwnProperty(cookiePresent), "Report should contain cookie: " + cookiePresent);
+//        }
         cookieTest.done();
       });
       var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_cookies&timeout=" + timeout + "&reportID=" + reportID;
       cookieReport.open("GET", cReportLocation, true);
       cookieReport.send();
-  }
+  };
 
 //  if (reportCount) {
 //      var reportCountTest = async_test("Test number of sent reports.");

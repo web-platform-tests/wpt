@@ -13,9 +13,16 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
   var noCookies = "{{GET[noCookies]}}";
+//  var reportCookieName = "{{GET[reportCookieName]}}";
+//  var testName = "{{GET[testName]}}";
+//  var cookiePresent = "{{GET[cookiePresent]}}";
+//  var reportCount = "{{GET[reportCount]}}";
 
   var location = window.location;
-  var thisTestName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
+//  if (true) {
+    // fallback on test file name if cookie name not specified
+  var reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
+//  }
 
   var reportID = "";
 
@@ -24,7 +31,7 @@
     var cookieName = cookies[i].split('=')[0].trim();
     var cookieValue = cookies[i].split('=')[1].trim();
 
-    if (cookieName == thisTestName) {
+    if (cookieName == reportCookieName) {
       reportID = cookieValue;
       var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
       document.cookie = cookieToDelete;
@@ -35,6 +42,7 @@
   var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
+  //if (testName == "") testName = "Violation report status OK.";
   var reportTest = async_test("Violation report status OK.");
   reportTest.step(function () {
 

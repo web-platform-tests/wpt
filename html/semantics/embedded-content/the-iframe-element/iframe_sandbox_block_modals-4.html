@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="uft-8">
+<title>iframe sandbox without allow_modals (print)</title>
+<link rel="author" title="Igalia" href="https://www.igalia.com/">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-iframe-sandbox">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-iframe-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe sandbox="allow-scripts"></iframe>
+<script>
+    let modaleName = "print";
+    let expectedValue = undefined;
+
+    let timeOutForFailingToOpenModal = 500;
+    let startTime;
+    async_test(t => {
+        let iframe = document.querySelector("iframe");
+        iframe.onload = function() {
+            window.addEventListener("message", t.step_func_done(e => {
+                e.source.close();
+                assert_less_than(new Date().getTime() - startTime, timeOutForFailingToOpenModal, "Call to open modal dialog did not returned immediately");
+                assert_equals(e.data, expectedValue, "Call to open modal dialog did not return expected value");
+            }));
+            setTimeout(t.step_func_done(e => {
+                assert_unreached("Call to open modal dialog did not returned immediately");
+            }), timeOutForFailingToOpenModal);
+            startTime = new Date().getTime();
+            iframe.contentWindow.postMessage(modaleName, "*");
+        }
+        iframe.src = "support/iframe-that-opens-modals.html";
+    }, "Frames without `allow-modals` should not be able to open modal dialogs");
+</script>

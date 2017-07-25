@@ -1,0 +1,30 @@
+<html>
+<body>
+<script>
+function openModal(name) {
+    switch (name) {
+    case "alert":
+        return alert("MESSAGE");
+    break;
+    case "confirm":
+        return confirm("MESSAGE?");
+    break;
+    case "prompt":
+        return prompt("MESSAGE:", "DEFAULT VALUE");
+    break;
+    case "print":
+        return print();
+    break;
+    case "execCommandPrint":
+        return document.execCommand("print", true, null);
+    break;
+  }
+}
+
+onmessage = function(e) {
+    let name = e.data;
+    parent.postMessage(openModal(name), "*");
+}
+</script>
+</body>
+</html>

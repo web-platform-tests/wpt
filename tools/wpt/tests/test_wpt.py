@@ -44,7 +44,7 @@ def test_run_firefox():
 
 def test_run_chrome():
     with pytest.raises(SystemExit) as excinfo:
-        wpt.main(argv=["run", "--no-pause", "--binary-arg", "headless", "chrome", "/dom/nodes/Element-tagName.html"])
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless", "chrome", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 

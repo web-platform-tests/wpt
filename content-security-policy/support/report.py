@@ -29,6 +29,7 @@ def main(request, response):
 
     report = request.body
     report.rstrip()
-    request.server.stash.take(key=key)
-    request.server.stash.put(key=key, value=report)
+    with request.server.stash.lock:
+        request.server.stash.take(key=key)
+        request.server.stash.put(key=key, value=report)
     return [("Content-Type", "text/plain")], "Recorded report " + report

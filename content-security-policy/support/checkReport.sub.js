@@ -79,7 +79,7 @@
   if (noCookies || cookiePresent) {
       var cookieTest = async_test("Test report cookies.");
       var cookieReport = new XMLHttpRequest();
-      timeout = 0.1;
+      // timeout = 0.1;
       cookieReport.onload = cookieTest.step_func(function () {
         var data = JSON.parse(cookieReport.responseText);
         if (noCookies) {
@@ -96,10 +96,10 @@
       cookieReport.send();
   }
 
-  if (reportCount != "") {
+  if (reportCount) {
       var reportCountTest = async_test("Test number of sent reports.");
       var reportCountReport = new XMLHttpRequest();
-      timeout = 0.1;
+      // timeout = 0.1;
       reportCountReport.onload = reportCountTest.step_func(function () {
         var data = JSON.parse(reportCountReport.responseText);
 

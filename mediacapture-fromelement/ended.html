@@ -19,7 +19,7 @@ var makeAsyncTest = function(filename) {
 
     assert_true('captureStream' in video);
 
-    var stream = video.captureStream();
+    var stream = video.captureStream() || video.mozCaptureStream();
 
     stream.onremovetrack = this.step_func_done(function() {
       assert_true(video.ended, 'video must be ended');

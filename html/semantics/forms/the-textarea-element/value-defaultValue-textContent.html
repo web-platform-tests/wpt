@@ -178,4 +178,13 @@ test(() => {
   assert_equals(textarea.value, "baz\0", "value after setting value");
 
 }, "tests for U+0000 NULL");
+
+test(() => {
+
+  const textarea = document.createElement("textarea");
+
+  textarea.defaultValue = "foo\r\nbar\rbaz\nqux";
+  assert_equals(textarea.defaultValue, "foo\r\nbar\rbaz\nqux");
+
+}, "Setting defaultValue should not normalize line endings");
 </script>

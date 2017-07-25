@@ -763,8 +763,8 @@ def get_parser():
 
 
 def run(**kwargs):
-    config = load_config("config.default.json",
-                         "config.json",
+    config = load_config(os.path.join(repo_root, "config.default.json"),
+                         os.path.join(repo_root, "config.json"),
                          **kwargs)
 
     setup_logger(config["log_level"])

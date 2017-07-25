@@ -8,7 +8,7 @@ def main(request, response):
     cookie_key = re.sub('^....', 'cccc', key)
     count_key = re.sub('^....', 'dddd', key)
 
-    if op == "retrieve_report":
+    if op == "take":
         timeout = float(request.GET.first("timeout"))
         t0 = time.time()
         while time.time() - t0 < timeout:
@@ -19,7 +19,7 @@ def main(request, response):
 
         return [("Content-Type", "application/json")], json.dumps({'error': 'No such report.' , 'guid' : key})
 
-    if op == "retrieve_cookies":
+    if op == "cookies":
         cval = request.server.stash.take(key=cookie_key)
         if cval is None:
             cval = "\"None\""

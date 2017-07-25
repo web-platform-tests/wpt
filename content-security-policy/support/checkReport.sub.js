@@ -13,10 +13,10 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
   var noCookies = "{{GET[noCookies]}}";
-  var reportCookieName = "{{GET[reportCookieName]}}";
-  var testName = "{{GET[testName]}}";
-  var cookiePresent = "{{GET[cookiePresent]}}";
-  var reportCount = "{{GET[reportCount]}}";
+//  var reportCookieName = "{{GET[reportCookieName]}}";
+//  var testName = "{{GET[testName]}}";
+//  var cookiePresent = "{{GET[cookiePresent]}}";
+//  var reportCount = "{{GET[reportCount]}}";
 
   var location = window.location;
 //  if (true) {
@@ -42,7 +42,7 @@
   var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
-  if (testName == "") testName = "Violation report status OK.";
+  /*if (testName == "")*/ testName = "Violation report status OK.";
   var reportTest = async_test(testName);
   reportTest.step(function () {
 
@@ -82,9 +82,9 @@
       // timeout = 0.1;
       cookieReport.onload = cookieTest.step_func(function () {
         var data = JSON.parse(cookieReport.responseText);
-        if (noCookies) {
+  //      if (noCookies) {
           assert_equals(data.reportCookies, "None", "Report should not contain any cookies");
-        }
+    //    }
 
 //        if (cookiePresent) {
 //          assert_true(data.reportCookies.hasOwnProperty(cookiePresent), "Report should contain cookie: " + cookiePresent);

@@ -21,7 +21,7 @@
   var location = window.location;
 //  if (true) {
     // fallback on test file name if cookie name not specified
-    reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
+  var reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
 //  }
 
   var reportID = "";
@@ -42,8 +42,8 @@
   var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
-  /*if (testName == "")*/ testName = "Violation report status OK.";
-  var reportTest = async_test(testName);
+  //if (testName == "") testName = "Violation report status OK.";
+  var reportTest = async_test("Violation report status OK.");
   reportTest.step(function () {
 
     var report = new XMLHttpRequest();
@@ -81,7 +81,7 @@
       var cookieReport = new XMLHttpRequest();
       // timeout = 0.1;
       cookieReport.onload = cookieTest.step_func(function () {
-        var data = JSON.parse(cookieReport.responseText);
+          var data = JSON.parse(cookieReport.responseText);
   //      if (noCookies) {
           assert_equals(data.reportCookies, "None", "Report should not contain any cookies");
     //    }
@@ -89,7 +89,7 @@
 //        if (cookiePresent) {
 //          assert_true(data.reportCookies.hasOwnProperty(cookiePresent), "Report should contain cookie: " + cookiePresent);
 //        }
-        cookieTest.done();
+          cookieTest.done();
       });
       var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=cookies&timeout=" + timeout + "&reportID=" + reportID;
       cookieReport.open("GET", cReportLocation, true);

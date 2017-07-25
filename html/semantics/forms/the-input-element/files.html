@@ -45,4 +45,22 @@ test(function() {
   var files = input.files;
   assert_equals(input.files, files, "files should return the same object");
 }, "files for input type=file");
+
+test(() => {
+  const i1 = document.createElement("input"),
+        i2 = document.createElement("input");
+  i1.type = "file";
+  i2.type = "file";
+
+  const files = i2.files;
+  i1.files = i2.files;
+  assert_equals(i1.files, files);
+  assert_equals(i2.files, files);
+
+  i1.files = null;
+  assert_equals(i1.files, files);
+
+  assert_throws(new TypeError(), () => i1.files = []);
+  assert_throws(new TypeError(), () => i1.files = [new File([], "x")]);
+}, "setting <input type=file>.files");
 </script>

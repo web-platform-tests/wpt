@@ -96,20 +96,20 @@
       cookieReport.send();
   }
 
-  if (reportCount) {
-      var reportCountTest = async_test("Test number of sent reports.");
-      var reportCountReport = new XMLHttpRequest();
-      // timeout = 0.1;
-      reportCountReport.onload = reportCountTest.step_func(function () {
-        var data = JSON.parse(reportCountReport.responseText);
-
-        assert_equals(data.report_count, reportCount, "Report count was not what was expected.");
-
-        reportCountTest.done();
-      });
-      var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_count&timeout=" + timeout + "&reportID=" + reportID;
-      reportCountReport.open("GET", cReportLocation, true);
-      reportCountReport.send();
-  }
+//  if (reportCount) {
+//      var reportCountTest = async_test("Test number of sent reports.");
+//      var reportCountReport = new XMLHttpRequest();
+//      // timeout = 0.1;
+//      reportCountReport.onload = reportCountTest.step_func(function () {
+//        var data = JSON.parse(reportCountReport.responseText);
+//
+//        assert_equals(data.report_count, reportCount, "Report count was not what was expected.");
+//
+//        reportCountTest.done();
+//      });
+//      var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_count&timeout=" + timeout + "&reportID=" + reportID;
+//      reportCountReport.open("GET", cReportLocation, true);
+//      reportCountReport.send();
+//  }
 
 })();

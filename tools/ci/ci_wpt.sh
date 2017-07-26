@@ -8,6 +8,7 @@ cd $WPT_ROOT
 source tools/ci/lib.sh
 
 main() {
+    git fetch --unshallow https://github.com/w3c/web-platform-tests.git +refs/heads/*:refs/remotes/origin/*
     hosts_fixup
     install_chrome unstable
     pip install -U tox codecov

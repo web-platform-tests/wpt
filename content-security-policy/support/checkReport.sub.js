@@ -15,10 +15,7 @@
   var noCookies = "{{GET[noCookies]}}";
 
   var location = window.location;
-//  if (true) {
-    // fallback on test file name if cookie name not specified
   var reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
-//  }
 
   var reportID = "";
 
@@ -38,7 +35,6 @@
   var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
-  //if (testName == "") testName = "Violation report status OK.";
   var reportTest = async_test("Violation report status OK.");
   reportTest.step(function () {
 

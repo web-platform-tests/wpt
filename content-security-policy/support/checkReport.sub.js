@@ -13,10 +13,6 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
   var noCookies = "{{GET[noCookies]}}";
-//  var reportCookieName = "{{GET[reportCookieName]}}";
-//  var testName = "{{GET[testName]}}";
-//  var cookiePresent = "{{GET[cookiePresent]}}";
-//  var reportCount = "{{GET[reportCount]}}";
 
   var location = window.location;
 //  if (true) {

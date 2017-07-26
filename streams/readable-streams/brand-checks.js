@@ -148,4 +148,26 @@ test(() => {
 
 }, 'ReadableStreamController.prototype.error enforces a brand check');
 
+promise_test(t => {
+
+  return Promise.all([
+    methodRejects(t, ReadableStream.prototype, 'cancel', null),
+    methodRejects(t, ReadableStream.prototype, 'cancel', undefined)
+  ]);
+
+}, 'ReadableStream brand checks do not throw on null or undefined');
+
+promise_test(t => {
+
+  return Promise.all([
+    methodRejects(t, ReadableStreamDefaultReader.prototype, 'read', undefined),
+    methodRejects(t, ReadableStreamDefaultReader.prototype, 'read', null)
+  ]);
+
+}, 'ReadableStreamDefaultReader brand checks do not throw on null or undefined');
+
+// There is no way to check ReadableStreamDefaultController brand checks for
+// null or undefined behaviour because all methods throw for a failed brand
+// check.
+
 done();

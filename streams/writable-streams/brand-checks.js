@@ -60,7 +60,7 @@ promise_test(t => {
     getterRejects(t, WriterProto, 'ready', realReadableStreamDefaultWriter())]);
 }, 'WritableStreamDefaultWriter.prototype.ready enforces a brand check');
 
-test(t => {
+promise_test(t => {
   return Promise.all([methodRejects(t, WriterProto, 'abort', fakeWritableStreamDefaultWriter()),
     methodRejects(t, WriterProto, 'abort', realReadableStreamDefaultWriter())]);
 
@@ -75,5 +75,22 @@ promise_test(t => {
   return Promise.all([methodRejects(t, WriterProto, 'close', fakeWritableStreamDefaultWriter()),
     methodRejects(t, WriterProto, 'close', realReadableStreamDefaultWriter())]);
 }, 'WritableStreamDefaultWriter.prototype.close enforces a brand check');
+
+promise_test(t => {
+  return Promise.all([
+    methodRejects(t, WritableStream.prototype, 'abort', undefined),
+    methodRejects(t, WritableStream.prototype, 'abort', null)]);
+}, 'WritableStream brand checks do not throw on null or undefined');
+
+promise_test(t => {
+  return Promise.all([
+    methodRejects(t, WriterProto, 'abort', undefined),
+    methodRejects(t, WriterProto, 'abort', null)]);
+
+}, 'WritableStreamDefaultWriter brand checks do not throw on null or undefined');
+
+// WritableStreamDefaultController brand checks cannot be tested for undefined
+// or null behaviour because error() always throws TypeError on a branding check
+// failure.
 
 done();

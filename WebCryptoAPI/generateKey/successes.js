@@ -1,5 +1,5 @@
 
-function run_test(algorithmNames) {
+function run_test(algorithmNames, slowTest) {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
     setup({explicit_timeout: true});
@@ -16,7 +16,7 @@ function run_test(algorithmNames) {
 // helper functions that generate all possible test parameters for
 // different situations.
 
-    var testVectors = [ // Parameters that should work for generateKey
+    var allTestVectors = [ // Parameters that should work for generateKey
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
@@ -29,6 +29,15 @@ function run_test(algorithmNames) {
         {name: "ECDH",     resultType: "CryptoKeyPair", usages: ["deriveKey", "deriveBits"], mandatoryUsages: ["deriveKey", "deriveBits"]}
     ];
 
+    var testVectors = [];
+    if (algorithmNames && !Array.isArray(algorithmNames)) {
+        algorithmNames = [algorithmNames];
+    };
+    allTestVectors.forEach(function(vector) {
+        if (!algorithmNames || algorithmNames.includes(vector.name)) {
+            testVectors.push(vector);
+        }
+    });
 
     function parameterString(algorithm, extractable, usages) {
         var result = "(" +
@@ -65,7 +74,7 @@ function run_test(algorithmNames) {
     // Test all valid sets of parameters for successful
     // key generation.
     testVectors.forEach(function(vector) {
-        allNameVariants(vector.name).forEach(function(name) {
+        allNameVariants(vector.name, slowTest).forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
                 allValidUsages(vector.usages, false, vector.mandatoryUsages).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {

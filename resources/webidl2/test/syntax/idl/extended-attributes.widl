@@ -1,0 +1,11 @@
+// Extracted from http://www.w3.org/TR/2015/WD-service-workers-20150205/
+
+[Global=(Worker,ServiceWorker), Exposed=ServiceWorker]
+interface ServiceWorkerGlobalScope : WorkerGlobalScope {
+  
+};
+
+// Conformance with ExtendedAttributeList grammar in http://www.w3.org/TR/WebIDL/#idl-extended-attributes
+// Section 3.11
+[IntAttr=0, FloatAttr=3.14, StringAttr="abc"]
+interface IdInterface {};

@@ -15,7 +15,7 @@
   var noCookies = "{{GET[noCookies]}}";
 
   var location = window.location;
-  var reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
+  var thisTestName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
 
   var reportID = "";
 
@@ -24,7 +24,7 @@
     var cookieName = cookies[i].split('=')[0].trim();
     var cookieValue = cookies[i].split('=')[1].trim();
 
-    if (cookieName == reportCookieName) {
+    if (cookieName == thisTestName) {
       reportID = cookieValue;
       var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
       document.cookie = cookieToDelete;

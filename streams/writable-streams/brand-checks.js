@@ -86,7 +86,6 @@ promise_test(t => {
   return Promise.all([
     methodRejects(t, WriterProto, 'abort', undefined),
     methodRejects(t, WriterProto, 'abort', null)]);
-
 }, 'WritableStreamDefaultWriter brand checks do not throw on null or undefined');
 
 // WritableStreamDefaultController brand checks cannot be tested for undefined

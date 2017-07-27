@@ -74,20 +74,20 @@ function realRSDefaultController() {
 promise_test(t => {
 
   return methodRejectsForAll(t, ReadableStream.prototype, 'cancel',
-                             [fakeRS(), realRSDefaultReader(), realRSDefaultController()]);
+                             [fakeRS(), realRSDefaultReader(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStream.prototype.cancel enforces a brand check');
 
 test(() => {
 
   methodThrowsForAll(ReadableStream.prototype, 'getReader',
-                     [fakeRS(), realRSDefaultReader(), realRSDefaultController()]);
+                     [fakeRS(), realRSDefaultReader(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStream.prototype.getReader enforces a brand check');
 
 test(() => {
 
-  methodThrowsForAll(ReadableStream.prototype, 'tee', [fakeRS(), realRSDefaultReader(), realRSDefaultController()]);
+  methodThrowsForAll(ReadableStream.prototype, 'tee', [fakeRS(), realRSDefaultReader(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStream.prototype.tee enforces a brand check');
 
@@ -101,28 +101,28 @@ test(() => {
 promise_test(t => {
 
   return getterRejectsForAll(t, ReadableStreamDefaultReader.prototype, 'closed',
-                             [fakeRSDefaultReader(), realRS(), realRSDefaultController()]);
+                             [fakeRSDefaultReader(), realRS(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStreamDefaultReader.prototype.closed enforces a brand check');
 
 promise_test(t => {
 
-  return methodRejects(t, ReadableStreamDefaultReader.prototype, 'cancel',
-                       [fakeRSDefaultReader(), realRS(), realRSDefaultController()]);
+  return methodRejectsForAll(t, ReadableStreamDefaultReader.prototype, 'cancel',
+                             [fakeRSDefaultReader(), realRS(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStreamDefaultReader.prototype.cancel enforces a brand check');
 
 promise_test(t => {
 
-  return methodRejects(t, ReadableStreamDefaultReader.prototype, 'read',
-                       [fakeRSDefaultReader(), realRS(), realRSDefaultController()]);
+  return methodRejectsForAll(t, ReadableStreamDefaultReader.prototype, 'read',
+                             [fakeRSDefaultReader(), realRS(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStreamDefaultReader.prototype.read enforces a brand check');
 
 test(() => {
 
   methodThrowsForAll(ReadableStreamDefaultReader.prototype, 'releaseLock',
-                     [fakeRSDefaultReader(), realRS(), realRSDefaultController()]);
+                     [fakeRSDefaultReader(), realRS(), realRSDefaultController(), undefined, null]);
 
 }, 'ReadableStreamDefaultReader.prototype.releaseLock enforces a brand check');
 
@@ -143,21 +143,21 @@ test(() => {
 test(() => {
 
   methodThrowsForAll(ReadableStreamDefaultController.prototype, 'close',
-                     [fakeRSDefaultController(), realRS(), realRSDefaultReader()]);
+                     [fakeRSDefaultController(), realRS(), realRSDefaultReader(), undefined, null]);
 
 }, 'ReadableStreamDefaultController.prototype.close enforces a brand check');
 
 test(() => {
 
   methodThrowsForAll(ReadableStreamDefaultController.prototype, 'enqueue',
-                     [fakeRSDefaultController(), realRS(), realRSDefaultReader()]);
+                     [fakeRSDefaultController(), realRS(), realRSDefaultReader(), undefined, null]);
 
 }, 'ReadableStreamDefaultController.prototype.enqueue enforces a brand check');
 
 test(() => {
 
   methodThrowsForAll(ReadableStreamDefaultController.prototype, 'error',
-                     [fakeRSDefaultController(), realRS(), realRSDefaultReader()]);
+                     [fakeRSDefaultController(), realRS(), realRSDefaultReader(), undefined, null]);
 
 }, 'ReadableStreamDefaultController.prototype.error enforces a brand check');
 

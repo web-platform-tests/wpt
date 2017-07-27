@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>RTCRtpParameters degrationPreference</title>
+<title>RTCRtpParameters degradationPreference</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="dictionary-helper.js"></script>
@@ -47,20 +47,19 @@
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
-    assert_equals(param.degrationPreference, 'balanced',
-      'Expect initial param.degrationPreference to be balanced');
+    assert_equals(param.degradationPreference, 'balanced',
+      'Expect initial param.degradationPreference to be balanced');
 
-    param.degrationPreference = 'maintain-framerate';
+    param.degradationPreference = 'maintain-framerate';
 
     return pc.setParameters(param)
     .then(() => {
       const param = sender.getParameters();
       validateSenderRtpParameters(param);
 
-      assert_equals(param.degrationPreference, 'maintain-framerate');
+      assert_equals(param.degradationPreference, 'maintain-framerate');
     });
-
-  }, 'setParameters with degrationPreference set should succeed');
+  }, 'setParameters with degradationPreference set should succeed');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -69,19 +68,18 @@
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
-    assert_equals(param.degrationPreference, 'balanced',
-      'Expect initial param.degrationPreference to be balanced');
+    assert_equals(param.degradationPreference, 'balanced',
+      'Expect initial param.degradationPreference to be balanced');
 
-    param.degrationPreference = undefined;
+    param.degradationPreference = undefined;
 
     return pc.setParameters(param)
     .then(() => {
       const param = sender.getParameters();
       validateSenderRtpParameters(param);
 
-      assert_equals(param.degrationPreference, undefined);
+      assert_equals(param.degradationPreference, undefined);
     });
-
-  }, 'setParameters with degrationPreference unset should succeed');
+  }, 'setParameters with degradationPreference unset should succeed');
 
 </script>

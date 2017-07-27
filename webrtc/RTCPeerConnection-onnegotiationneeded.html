@@ -3,13 +3,16 @@
 <title>Test RTCPeerConnection.prototype.onnegotiationneeded</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
   // Test is based on the following editor draft:
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
-  /* Helper Functions */
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   generateAnswer
+  //   test_never_resolve
 
   // Listen to the negotiationneeded event on a peer connection
   // Returns a promise that resolves when the first event is fired.
@@ -57,33 +60,6 @@
         secondResolved = true;
       }, reject);
     });
-  }
-
-  // Run a test function that return a promise that should
-  // never be resolved. For lack of better options,
-  // we wait for a time out and pass the test if the
-  // promise doesn't resolve within that time.
-  function test_never_resolve(testFunc, testName) {
-    async_test(t => {
-      testFunc(t)
-      .then(
-        t.step_func(result => {
-          assert_unreached(`Pending promise should never be resolved. Instead it is fulfilled with: ${result}`);
-        }),
-        t.step_func(err => {
-          assert_unreached(`Pending promise should never be resolved. Instead it is rejected with: ${err}`);
-        }));
-
-      t.step_timeout(t.step_func_done(), 200)
-    }, testName);
-  }
-
-  // Helper function to generate answer based on given offer using a freshly
-  // created RTCPeerConnection object
-  function generateAnswer(offer) {
-    const pc = new RTCPeerConnection();
-    return pc.setRemoteDescription(offer)
-    .then(() => pc.createAnswer());
   }
 
   /*

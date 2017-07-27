@@ -6,7 +6,7 @@ if (self.importScripts) {
 }
 
 let ReadableStreamDefaultReader;
-let ReadableStreamController;
+let ReadableStreamDefaultController;
 
 test(() => {
 
@@ -20,20 +20,20 @@ test(() => {
   // It's not exposed globally, but we test a few of its properties here.
   new ReadableStream({
     start(c) {
-      ReadableStreamController = c.constructor;
+      ReadableStreamDefaultController = c.constructor;
     }
   });
 
-}, 'Can get the ReadableStreamController constructor indirectly');
+}, 'Can get the ReadableStreamDefaultController constructor indirectly');
 
 function fakeReadableStream() {
-  return {
+  return Object.setPrototypeOf({
     cancel() { return Promise.resolve(); },
     getReader() { return new ReadableStreamDefaultReader(new ReadableStream()); },
     pipeThrough(obj) { return obj.readable; },
     pipeTo() { return Promise.resolve(); },
     tee() { return [realReadableStream(), realReadableStream()]; }
-  };
+  }, ReadableStream.prototype);
 }
 
 function realReadableStream() {
@@ -41,20 +41,20 @@ function realReadableStream() {
 }
 
 function fakeReadableStreamDefaultReader() {
-  return {
+  return Object.setPrototypeOf({
     get closed() { return Promise.resolve(); },
     cancel() { return Promise.resolve(); },
     read() { return Promise.resolve({ value: undefined, done: true }); },
     releaseLock() { return; }
-  };
+  }, ReadableStreamDefaultReader.prototype);
 }
 
-function fakeReadableStreamController() {
-  return {
+function fakeReadableStreamDefaultController() {
+  return Object.setPrototypeOf({
     close() { },
     enqueue() { },
     error() { }
-  };
+  }, ReadableStreamDefaultController.prototype);
 }
 
 promise_test(t => {
@@ -118,56 +118,34 @@ test(() => {
 
 test(() => {
 
-  assert_throws(new TypeError(), () => new ReadableStreamController(fakeReadableStream()),
-                'Constructing a ReadableStreamController should throw');
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultController(fakeReadableStream()),
+                'Constructing a ReadableStreamDefaultController should throw');
 
-}, 'ReadableStreamController enforces a brand check on its argument');
-
-test(() => {
-
-  assert_throws(new TypeError(), () => new ReadableStreamController(realReadableStream()),
-                'Constructing a ReadableStreamController should throw');
-
-}, 'ReadableStreamController can\'t be given a fully-constructed ReadableStream');
+}, 'ReadableStreamDefaultController enforces a brand check on its argument');
 
 test(() => {
 
-  methodThrows(ReadableStreamController.prototype, 'close', fakeReadableStreamController());
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultController(realReadableStream()),
+                'Constructing a ReadableStreamDefaultController should throw');
 
-}, 'ReadableStreamController.prototype.close enforces a brand check');
-
-test(() => {
-
-  methodThrows(ReadableStreamController.prototype, 'enqueue', fakeReadableStreamController());
-
-}, 'ReadableStreamController.prototype.enqueue enforces a brand check');
+}, 'ReadableStreamDefaultController can\'t be given a fully-constructed ReadableStream');
 
 test(() => {
 
-  methodThrows(ReadableStreamController.prototype, 'error', fakeReadableStreamController());
+  methodThrows(ReadableStreamDefaultController.prototype, 'close', fakeReadableStreamDefaultController());
 
-}, 'ReadableStreamController.prototype.error enforces a brand check');
+}, 'ReadableStreamDefaultController.prototype.close enforces a brand check');
 
-promise_test(t => {
+test(() => {
 
-  return Promise.all([
-    methodRejects(t, ReadableStream.prototype, 'cancel', null),
-    methodRejects(t, ReadableStream.prototype, 'cancel', undefined)
-  ]);
+  methodThrows(ReadableStreamDefaultController.prototype, 'enqueue', fakeReadableStreamDefaultController());
 
-}, 'ReadableStream brand checks do not throw on null or undefined');
+}, 'ReadableStreamDefaultController.prototype.enqueue enforces a brand check');
 
-promise_test(t => {
+test(() => {
 
-  return Promise.all([
-    methodRejects(t, ReadableStreamDefaultReader.prototype, 'read', undefined),
-    methodRejects(t, ReadableStreamDefaultReader.prototype, 'read', null)
-  ]);
+  methodThrows(ReadableStreamDefaultController.prototype, 'error', fakeReadableStreamDefaultController());
 
-}, 'ReadableStreamDefaultReader brand checks do not throw on null or undefined');
-
-// There is no way to check ReadableStreamDefaultController brand checks for
-// null or undefined behaviour because all methods throw for a failed brand
-// check.
+}, 'ReadableStreamDefaultController.prototype.error enforces a brand check');
 
 done();

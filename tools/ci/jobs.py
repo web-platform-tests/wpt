@@ -3,6 +3,9 @@ import os
 import re
 from ..wpt.testfiles import branch_point, files_changed, affected_testfiles
 
+from tools import localpaths
+from six import iteritems
+
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
@@ -83,12 +86,12 @@ def get_jobs(paths, **kwargs):
     includes = kwargs.get("includes")
     if includes is not None:
         includes = set(includes)
-    for key, value in job_path_map.iteritems():
+    for key, value in iteritems(job_path_map):
         if includes is None or key in includes:
             rules[key] = Ruleset(value)
 
     for path in paths:
-        for job in rules.keys():
+        for job in list(rules.keys()):
             ruleset = rules[job]
             if ruleset(path):
                 rules.pop(job)

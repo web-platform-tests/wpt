@@ -3,7 +3,7 @@ import sys
 import logging
 from distutils.spawn import find_executable
 
-from utils import call
+from tools.wpt.utils import call
 
 logger = logging.getLogger(__name__)
 

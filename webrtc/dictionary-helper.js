@@ -39,8 +39,8 @@ function assert_array_field(object, field) {
 }
 
 function assert_dict_field(object, field) {
-  assert_true(typeof object, 'object',
-    `Expect dictionary.${field} to be plain object`);
+  assert_equals(typeof object, 'object',
+    `Expect dictionary to be plain object`);
 
   assert_not_equals(object, null,
     `Expect dictionary.${field} to not be null`);

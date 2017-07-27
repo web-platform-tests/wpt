@@ -16,10 +16,10 @@ logger = logging.getLogger()
 def get_git_cmd(repo_path):
     """Create a function for invoking git commands as a subprocess."""
     def git(cmd, *args):
-        full_cmd = ["git", cmd] + list(args)
+        full_cmd = ["git", cmd] + list(item.decode("utf8") if isinstance(item, bytes) else item for item in args)
         try:
             logger.debug(" ".join(full_cmd))
-            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).strip()
+            return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).decode("utf8").strip()
         except subprocess.CalledProcessError as e:
             logger.error("Git command exited with status %i" % e.returncode)
             logger.error(e.output)

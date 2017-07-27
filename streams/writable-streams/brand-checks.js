@@ -109,6 +109,6 @@ promise_test(t => {
 test(() => {
   methodThrowsForAll(WritableStreamDefaultController.prototype, 'error',
                      [fakeWSDefaultController(), realWS(), realWSDefaultWriter(), undefined, null]);
-}, 'WritableStreamDefaultController.prototype.error enforces a branch check');
+}, 'WritableStreamDefaultController.prototype.error enforces a brand check');
 
 done();

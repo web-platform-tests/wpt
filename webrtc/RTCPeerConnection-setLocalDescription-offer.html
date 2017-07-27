@@ -15,7 +15,6 @@
   //   assert_session_desc_not_equals
   //   assert_session_desc_equals
   //   test_state_change_event
-  //   test_never_resolve
 
   /*
     4.3.2.  Interface Definition
@@ -144,20 +143,5 @@
             assert_equals(pc.currentLocalDescription, null);
           }))));
   }, 'Creating and setting offer multiple times should succeed');
-
-  /*
-    4.3.1.6.  Set the RTCSessionSessionDescription
-      2.2.1.  If connection's [[IsClosed]] slot is true, then abort these steps.
-   */
-  test_never_resolve(t => {
-    const pc = new RTCPeerConnection();
-
-    return pc.createOffer()
-    .then(offer => {
-      const promise = pc.setLocalDescription(offer);
-      pc.close();
-      return promise;
-    });
-  }, 'setLocalDescription(offer) should never resolve if connection is closed in parallel')
 
 </script>

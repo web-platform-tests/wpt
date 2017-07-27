@@ -174,9 +174,11 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
             with open(test_full_path, "rb") as fh:
                 file_contents = fh.read()
                 if file_contents.startswith("\xfe\xff"):
-                    file_contents = file_contents.decode("utf-16be")
+                    file_contents = file_contents.decode("utf-16be", "replace")
                 elif file_contents.startswith("\xff\xfe"):
-                    file_contents = file_contents.decode("utf-16le")
+                    file_contents = file_contents.decode("utf-16le", "replace")
+                else:
+                    file_contents = file_contents.decode("utf8", "replace")
                 for full_path, repo_path in nontest_changed_paths:
                     rel_path = os.path.relpath(full_path, root).replace(os.path.sep, "/")
                     if rel_path in file_contents or repo_path in file_contents:

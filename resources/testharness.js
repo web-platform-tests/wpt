@@ -579,12 +579,21 @@ policies and contribution forms [3].
 
         var waitingFor = null;
 
+        // This is null unless we are recording all events, in which case it
+        // will be an Array object.
+        var recordedEvents = null;
+
         var eventHandler = test.step_func(function(evt) {
             assert_true(!!waitingFor,
                         'Not expecting event, but got ' + evt.type + ' event');
             assert_equals(evt.type, waitingFor.types[0],
                           'Expected ' + waitingFor.types[0] + ' event, but got ' +
                           evt.type + ' event instead');
+
+            if (Array.isArray(recordedEvents)) {
+                recordedEvents.push(evt);
+            }
+
             if (waitingFor.types.length > 1) {
                 // Pop first event from array
                 waitingFor.types.shift();
@@ -595,7 +604,10 @@ policies and contribution forms [3].
             // need to set waitingFor.
             var resolveFunc = waitingFor.resolve;
             waitingFor = null;
-            resolveFunc(evt);
+            // Likewise, we should reset the state of recordedEvents.
+            var result = recordedEvents || evt;
+            recordedEvents = null;
+            resolveFunc(result);
         });
 
         for (var i = 0; i < eventTypes.length; i++) {
@@ -605,13 +617,35 @@ policies and contribution forms [3].
         /**
          * Returns a Promise that will resolve after the specified event or
          * series of events has occured.
+         *
+         * @param options An optional options object. If the 'record' property
+         *                on this object has the value 'all', when the Promise
+         *                returned by this function is resolved,  *all* Event
+         *                objects that were waited for will be returned as an
+         *                array.
+         *
+         * For example,
+         *
+         * ```js
+         * const watcher = new EventWatcher(t, div, [ 'animationstart',
+         *                                            'animationiteration',
+         *                                            'animationend' ]);
+         * return watcher.wait_for([ 'animationstart', 'animationend' ],
+         *                         { record: 'all' }).then(evts => {
+         *   assert_equals(evts[0].elapsedTime, 0.0);
+         *   assert_equals(evts[1].elapsedTime, 2.0);
+         * });
+         * ```
          */
-        this.wait_for = function(types) {
+        this.wait_for = function(types, options) {
             if (waitingFor) {
                 return Promise.reject('Already waiting for an event or events');
             }
             if (typeof types == 'string') {
                 types = [types];
+            }
+            if (options && options.record && options.record === 'all') {
+                recordedEvents = [];
             }
             return new Promise(function(resolve, reject) {
                 waitingFor = {

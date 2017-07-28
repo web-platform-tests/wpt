@@ -3,6 +3,10 @@
 <head>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src="/common/vendor-prefix.js"
+        data-prefixed-prototypes=
+        '[{"ancestors":["HTMLMediaElement"],"name":"captureStream"}]'>
+</script>
 </head>
 <body>
 <script>
@@ -16,8 +20,7 @@ var makeAsyncTest = function(filename) {
     video.onerror = this.unreached_func("<video> error");
     video.play();
 
-    var captureStream = (video.captureStream || video.mozCaptureStream);
-    var stream = captureStream.call();
+    var stream = video.captureStream();
 
     // onactive event is marked for deprecation (https://crbug.com/649328)
     stream.onactive = this.step_func_done(function() {

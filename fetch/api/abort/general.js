@@ -20,26 +20,17 @@ function abortRequests() {
   );
 }
 
-function assert_abort_error(err) {
-  assert_equals(err.constructor, DOMException);
-  assert_equals(err.name, 'AbortError');
-}
-
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
 
-  await fetch('../resources/data.json', { signal }).then(() => {
-    assert_unreached("Fetch must not resolve");
-  }, err => {
-    // Using .catch rather than try/catch to ensure the promise
-    // is rejecting (rather than throwing).
-    assert_abort_error(err);
-  });
+  const fetchPromise = fetch('../resources/data.json', { signal });
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Aborting rejects with AbortError");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -47,44 +38,37 @@ promise_test(async () => {
   const url = new URL('../resources/data.json', location);
   url.hostname = 'www1.' + url.hostname;
 
-  await fetch(url, {
+  const fetchPromise = fetch(url, {
     signal,
     mode: 'no-cors'
-  }).then(() => {
-    assert_unreached("Fetch must not resolve");
-  }, err => {
-    // Using .catch rather than try/catch to ensure the promise
-    // is rejecting (rather than throwing).
-    assert_abort_error(err);
   });
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Aborting rejects with AbortError - no-cors");
 
 test(() => {
-  // TODO: we may want to discuss this design idea
   const request = new Request('');
   assert_true(Boolean(request.signal), "Signal member is present & truthy");
   assert_equals(request.signal.constructor, AbortSignal);
 }, "Request objects have a signal property");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
 
   const request = new Request('../resources/data.json', { signal });
 
-  // TODO: we may want to discuss this design idea
   assert_true(Boolean(request.signal), "Signal member is present & truthy");
   assert_equals(request.signal.constructor, AbortSignal);
   assert_not_equals(request.signal, signal, 'Request has a new signal, not a reference');
 
-  await fetch(request).then(
-    () => assert_unreached("Fetch must not resolve"),
-    err => assert_abort_error(err)
-  );
+  const fetchPromise = fetch(request);
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Signal on request object");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -92,13 +76,12 @@ promise_test(async () => {
   const request = new Request('../resources/data.json', { signal });
   const requestFromRequest = new Request(request);
 
-  await fetch(requestFromRequest).then(
-    () => assert_unreached("Fetch must not resolve"),
-    err => assert_abort_error(err)
-  );
+  const fetchPromise = fetch(requestFromRequest);
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Signal on request object created from request object");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -106,13 +89,12 @@ promise_test(async () => {
   const request = new Request('../resources/data.json');
   const requestFromRequest = new Request(request, { signal });
 
-  await fetch(requestFromRequest).then(
-    () => assert_unreached("Fetch must not resolve"),
-    err => assert_abort_error(err)
-  );
+  const fetchPromise = fetch(requestFromRequest);
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Signal on request object created from request object, with signal on second request");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -120,26 +102,24 @@ promise_test(async () => {
   const request = new Request('../resources/data.json', { signal: new AbortController().signal });
   const requestFromRequest = new Request(request, { signal });
 
-  await fetch(requestFromRequest).then(
-    () => assert_unreached("Fetch must not resolve"),
-    err => assert_abort_error(err)
-  );
+  const fetchPromise = fetch(requestFromRequest);
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Signal on request object created from request object, with signal on second request overriding another");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
 
   const request = new Request('../resources/data.json', { signal });
 
-  await fetch(request, {method: 'POST'}).then(
-    () => assert_unreached("Fetch must not resolve"),
-    err => assert_abort_error(err)
-  );
+  const fetchPromise = fetch(request, {method: 'POST'});
+
+  await promise_rejects(t, "AbortError", fetchPromise);
 }, "Signal retained after unrelated properties are overridden by fetch");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -150,7 +130,7 @@ promise_test(async () => {
   assert_equals(data.key, 'value', 'Fetch fully completes');
 }, "Signal removed by setting to null");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -168,7 +148,7 @@ promise_test(async () => {
   assert_array_equals(log, ['fetch-reject', 'next-microtask']);
 }, "Already aborted signal rejects immediately");
 
-promise_test(async () => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -186,7 +166,7 @@ promise_test(async () => {
 }, "Request is still 'used' if signal is aborted before fetching");
 
 for (const bodyMethod of BODY_METHODS) {
-  promise_test(async () => {
+  promise_test(async t => {
     const controller = new AbortController();
     const signal = controller.signal;
 
@@ -195,22 +175,20 @@ for (const bodyMethod of BODY_METHODS) {
 
     controller.abort();
 
+    const bodyPromise = response[bodyMethod]();
+
     await Promise.all([
-      response[bodyMethod]().then(
-        () => assert_unreached("Fetch must not resolve"),
-        err => {
-          assert_abort_error(err);
-          log.push(`${bodyMethod}-reject`);
-        }
-      ),
+      bodyPromise.catch(() => log.push(`${bodyMethod}-reject`)),
       Promise.resolve().then(() => log.push('next-microtask'))
     ]);
+
+    await promise_rejects(t, "AbortError", bodyPromise);
 
     assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
   }, `response.${bodyMethod}() rejects if already aborted`);
 }
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -232,7 +210,7 @@ promise_test(async () => {
   assert_equals(data, null, "Request hasn't been made to the server");
 }, "Already aborted signal does not make request");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -251,14 +229,11 @@ promise_test(async () => {
   }
 
   for (const fetchPromise of fetches) {
-    await fetchPromise.then(
-      () => assert_unreached("Fetch must not resolve"),
-      err => assert_abort_error(err)
-    );
+    await promise_rejects(t, "AbortError", fetchPromise);
   }
 }, "Already aborted signal can be used for many fetches");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -280,15 +255,11 @@ promise_test(async () => {
   }
 
   for (const fetchPromise of fetches) {
-    await fetchPromise.then(() => {
-      assert_unreached("Fetch must not resolve");
-    }, err => {
-      assert_abort_error(err);
-    });
+    await promise_rejects(t, "AbortError", fetchPromise);
   }
 }, "Signal can be used to abort other fetches, even if another fetch succeeded before aborting");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -316,7 +287,7 @@ promise_test(async () => {
   }
 }, "Underlying connection is closed when aborting after receiving response");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -354,7 +325,7 @@ promise_test(async () => {
 }, "Underlying connection is closed when aborting after receiving response - no-cors");
 
 for (const bodyMethod of BODY_METHODS) {
-  promise_test(async () => {
+  promise_test(async t => {
     await abortRequests();
 
     const controller = new AbortController();
@@ -372,10 +343,7 @@ for (const bodyMethod of BODY_METHODS) {
 
     controller.abort();
 
-    await bodyPromise.then(
-      () => assert_unreached("Body read must not resolve"),
-      err => assert_abort_error(err)
-    );
+    await promise_rejects(t, "AbortError", bodyPromise);
 
     const start = Date.now();
 
@@ -389,7 +357,7 @@ for (const bodyMethod of BODY_METHODS) {
   }, `Fetch aborted & connection closed when aborted after calling response.${bodyMethod}()`);
 }
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -403,10 +371,8 @@ promise_test(async () => {
 
   controller.abort();
 
-  await reader.read().then(
-    () => assert_unreached("Stream read must not resolve"),
-    err => assert_abort_error(err)
-  );
+  await promise_rejects(t, "AbortError", reader.read());
+  await promise_rejects(t, "AbortError", reader.closed);
 
   // The connection won't close immediately, but it should close at some point:
   const start = Date.now();
@@ -420,7 +386,7 @@ promise_test(async () => {
   }
 }, "Stream errors once aborted. Underlying connection closed.");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -436,10 +402,8 @@ promise_test(async () => {
 
   controller.abort();
 
-  await reader.read().then(
-    () => assert_unreached("Stream read must not resolve"),
-    err => assert_abort_error(err)
-  );
+  await promise_rejects(t, "AbortError", reader.read());
+  await promise_rejects(t, "AbortError", reader.closed);
 
   // The connection won't close immediately, but it should close at some point:
   const start = Date.now();
@@ -453,7 +417,7 @@ promise_test(async () => {
   }
 }, "Stream errors once aborted, after reading. Underlying connection closed.");
 
-promise_test(async () => {
+promise_test(async t => {
   await abortRequests();
 
   const controller = new AbortController();
@@ -464,7 +428,7 @@ promise_test(async () => {
 
   controller.abort();
 
-  await reader.read();
+  const item = await reader.read();
 
-  assert_true(reader.done, "Stream is done");
+  assert_true(item.done, "Stream is done");
 }, "Stream will not error if body is empty. It's closed with an empty queue before it errors.");

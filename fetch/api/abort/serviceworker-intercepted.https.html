@@ -9,11 +9,7 @@
 </head>
 <body>
 <script>
-  function assert_abort_error(err) {
-    assert_equals(err.constructor, DOMException);
-    assert_equals(err.name, 'AbortError');
-  }
-
+  // Duplicating this resource to make service worker scoping simpler.
   const SCOPE = '../resources/basic.html';
   const BODY_METHODS = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
 
@@ -49,10 +45,9 @@
       })
     });
 
-    await w.fetch('data.json', { signal }).then(
-      () => assert_unreached("Fetch must not resolve"),
-      err => assert_abort_error(err)
-    );
+    const fetchPromise = w.fetch('data.json', { signal });
+
+    await promise_rejects(t, "AbortError", fetchPromise);
 
     await w.fetch('data.json?no-abort');
 
@@ -73,16 +68,14 @@
 
       controller.abort();
 
+      const bodyPromise = response[bodyMethod]();
+
       await Promise.all([
-        response[bodyMethod]().then(
-          () => assert_unreached("Fetch must not resolve"),
-          err => {
-            assert_abort_error(err);
-            log.push(`${bodyMethod}-reject`);
-          }
-        ),
+        bodyPromise.catch(() => log.push(`${bodyMethod}-reject`)),
         Promise.resolve().then(() => log.push('next-microtask'))
       ]);
+
+      await promise_rejects(t, "AbortError", bodyPromise);
 
       assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
     }, `response.${bodyMethod}() rejects if already aborted`);
@@ -101,10 +94,8 @@
 
     controller.abort();
 
-    await reader.read().then(
-      () => assert_unreached("Stream read must not resolve"),
-      err => assert_abort_error(err)
-    );
+    await promise_rejects(t, "AbortError", reader.read());
+    await promise_rejects(t, "AbortError", reader.closed);
   }, "Stream errors once aborted.");
 </script>
 </body>

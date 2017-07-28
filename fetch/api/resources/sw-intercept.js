@@ -5,6 +5,6 @@ async function broadcast(msg) {
 }
 
 addEventListener('fetch', event => {
-  even.waitUntil(broadcast(event.request.url));
+  event.waitUntil(broadcast(event.request.url));
   event.respondWith(fetch(event.request));
 });

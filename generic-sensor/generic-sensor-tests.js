@@ -141,12 +141,32 @@ function runGenericSensorTests(sensorType) {
     }
   }, "no exception is thrown when calling stop() on already stopped sensor");
 
-  async_test(t => {
-    window.onmessage = t.step_func(e => {
-      assert_equals(e.data, "SecurityError");
-      t.done();
+  promise_test(() => {
+    return new Promise((resolve,reject) => {
+      let iframe = document.createElement('iframe');
+      iframe.srcdoc = '<script>' +
+                      '  window.onmessage = message => {' +
+                      '    if (message.data === "LOADED") {' +
+                      '      try {' +
+                      '        new ' + sensorType.name + '();' +
+                      '        parent.postMessage("FAIL", "*");' +
+                      '      } catch (e) {' +
+                      '        parent.postMessage(e.name, "*");' +
+                      '      }' +
+                      '    }' +
+                      '   };' +
+                      '<\/script>';
+      iframe.onload = () => iframe.contentWindow.postMessage('LOADED', '*');
+      document.body.appendChild(iframe);
+      window.onmessage = message => {
+        if (message.data == 'SecurityError') {
+          resolve();
+        } else {
+          reject();
+        }
+      }
     });
-  }, "throw a 'SecurityError' when firing sensor readings within iframes");
+  }, "throw a 'SecurityError' when constructing sensor object within iframe");
 
   async_test(t => {
     let sensor = new sensorType();

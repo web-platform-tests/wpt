@@ -20,6 +20,11 @@ function abortRequests() {
   );
 }
 
+// Add the global name to the test name
+function contextualTestName(name) {
+  return `${self.constructor.name}: ${name}`;
+}
+
 promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
@@ -28,7 +33,7 @@ promise_test(async t => {
   const fetchPromise = fetch('../resources/data.json', { signal });
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Aborting rejects with AbortError");
+}, contextualTestName("Aborting rejects with AbortError"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -44,13 +49,13 @@ promise_test(async t => {
   });
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Aborting rejects with AbortError - no-cors");
+}, contextualTestName("Aborting rejects with AbortError - no-cors"));
 
 test(() => {
   const request = new Request('');
   assert_true(Boolean(request.signal), "Signal member is present & truthy");
   assert_equals(request.signal.constructor, AbortSignal);
-}, "Request objects have a signal property");
+}, contextualTestName("Request objects have a signal property"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -66,7 +71,7 @@ promise_test(async t => {
   const fetchPromise = fetch(request);
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Signal on request object");
+}, contextualTestName("Signal on request object"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -79,7 +84,7 @@ promise_test(async t => {
   const fetchPromise = fetch(requestFromRequest);
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Signal on request object created from request object");
+}, contextualTestName("Signal on request object created from request object"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -92,7 +97,7 @@ promise_test(async t => {
   const fetchPromise = fetch(requestFromRequest);
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Signal on request object created from request object, with signal on second request");
+}, contextualTestName("Signal on request object created from request object, with signal on second request"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -105,7 +110,7 @@ promise_test(async t => {
   const fetchPromise = fetch(requestFromRequest);
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Signal on request object created from request object, with signal on second request overriding another");
+}, contextualTestName("Signal on request object created from request object, with signal on second request overriding another"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -117,7 +122,7 @@ promise_test(async t => {
   const fetchPromise = fetch(request, {method: 'POST'});
 
   await promise_rejects(t, "AbortError", fetchPromise);
-}, "Signal retained after unrelated properties are overridden by fetch");
+}, contextualTestName("Signal retained after unrelated properties are overridden by fetch"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -128,7 +133,7 @@ promise_test(async t => {
 
   const data = await fetch(request, { signal: null }).then(r => r.json());
   assert_equals(data.key, 'value', 'Fetch fully completes');
-}, "Signal removed by setting to null");
+}, contextualTestName("Signal removed by setting to null"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -146,7 +151,7 @@ promise_test(async t => {
   ]);
 
   assert_array_equals(log, ['fetch-reject', 'next-microtask']);
-}, "Already aborted signal rejects immediately");
+}, contextualTestName("Already aborted signal rejects immediately"));
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -163,7 +168,7 @@ promise_test(async t => {
   await fetch(request).catch(() => {});
 
   assert_true(request.bodyUsed, "Body has been used");
-}, "Request is still 'used' if signal is aborted before fetching");
+}, contextualTestName("Request is still 'used' if signal is aborted before fetching"));
 
 for (const bodyMethod of BODY_METHODS) {
   promise_test(async t => {
@@ -185,7 +190,7 @@ for (const bodyMethod of BODY_METHODS) {
     await promise_rejects(t, "AbortError", bodyPromise);
 
     assert_array_equals(log, [`${bodyMethod}-reject`, 'next-microtask']);
-  }, `response.${bodyMethod}() rejects if already aborted`);
+  }, contextualTestName(`response.${bodyMethod}() rejects if already aborted`));
 }
 
 promise_test(async t => {
@@ -208,7 +213,7 @@ promise_test(async t => {
   const data = await response.json();
 
   assert_equals(data, null, "Request hasn't been made to the server");
-}, "Already aborted signal does not make request");
+}, contextualTestName("Already aborted signal does not make request"));
 
 promise_test(async t => {
   await abortRequests();
@@ -231,7 +236,7 @@ promise_test(async t => {
   for (const fetchPromise of fetches) {
     await promise_rejects(t, "AbortError", fetchPromise);
   }
-}, "Already aborted signal can be used for many fetches");
+}, contextualTestName("Already aborted signal can be used for many fetches"));
 
 promise_test(async t => {
   await abortRequests();
@@ -257,7 +262,7 @@ promise_test(async t => {
   for (const fetchPromise of fetches) {
     await promise_rejects(t, "AbortError", fetchPromise);
   }
-}, "Signal can be used to abort other fetches, even if another fetch succeeded before aborting");
+}, contextualTestName("Signal can be used to abort other fetches, even if another fetch succeeded before aborting"));
 
 promise_test(async t => {
   await abortRequests();
@@ -285,7 +290,7 @@ promise_test(async t => {
     const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
     if (afterAbortResult == 'closed') break;
   }
-}, "Underlying connection is closed when aborting after receiving response");
+}, contextualTestName("Underlying connection is closed when aborting after receiving response"));
 
 promise_test(async t => {
   await abortRequests();
@@ -322,7 +327,7 @@ promise_test(async t => {
     const afterAbortResult = await fetch(stashTakeURL).then(r => r.json());
     if (afterAbortResult == 'closed') break;
   }
-}, "Underlying connection is closed when aborting after receiving response - no-cors");
+}, contextualTestName("Underlying connection is closed when aborting after receiving response - no-cors"));
 
 for (const bodyMethod of BODY_METHODS) {
   promise_test(async t => {
@@ -354,7 +359,7 @@ for (const bodyMethod of BODY_METHODS) {
       const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
       if (afterAbortResult == 'closed') break;
     }
-  }, `Fetch aborted & connection closed when aborted after calling response.${bodyMethod}()`);
+  }, contextualTestName(`Fetch aborted & connection closed when aborted after calling response.${bodyMethod}()`));
 }
 
 promise_test(async t => {
@@ -384,7 +389,7 @@ promise_test(async t => {
     const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
     if (afterAbortResult == 'closed') break;
   }
-}, "Stream errors once aborted. Underlying connection closed.");
+}, contextualTestName("Stream errors once aborted. Underlying connection closed."));
 
 promise_test(async t => {
   await abortRequests();
@@ -415,7 +420,7 @@ promise_test(async t => {
     const afterAbortResult = await fetch(`../resources/stash-take.py?key=${stateKey}`).then(r => r.json());
     if (afterAbortResult == 'closed') break;
   }
-}, "Stream errors once aborted, after reading. Underlying connection closed.");
+}, contextualTestName("Stream errors once aborted, after reading. Underlying connection closed."));
 
 promise_test(async t => {
   await abortRequests();
@@ -431,7 +436,7 @@ promise_test(async t => {
   const item = await reader.read();
 
   assert_true(item.done, "Stream is done");
-}, "Stream will not error if body is empty. It's closed with an empty queue before it errors.");
+}, contextualTestName("Stream will not error if body is empty. It's closed with an empty queue before it errors."));
 
 
 test(t => {
@@ -461,4 +466,4 @@ test(t => {
   assert_true(!!cancelReason, 'Cancel called sync');
   assert_equals(err.constructor, DOMException);
   assert_equals(err.name, 'AbortError');
-}, "Readable stream synchronously cancels with AbortError if aborted before reading");
+}, contextualTestName("Readable stream synchronously cancels with AbortError if aborted before reading"));

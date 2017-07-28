@@ -432,3 +432,34 @@ promise_test(async t => {
 
   assert_true(item.done, "Stream is done");
 }, "Stream will not error if body is empty. It's closed with an empty queue before it errors.");
+
+
+test(t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  let cancelReason;
+
+  const body = new ReadableStream({
+    pull(controller) {
+      controller.enqueue(new Uint8Array([42]));
+    },
+    cancel(reason) {
+      cancelReason = reason;
+    }
+  });
+
+  fetch('../resources/empty.txt', {
+    body, signal,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': '2097152'
+    }
+  });
+
+  assert_true(!!cancelReason, 'Cancel called sync');
+  assert_equals(err.constructor, DOMException);
+  assert_equals(err.name, 'AbortError');
+}, "Readable stream synchronously cancels with AbortError if aborted before reading");

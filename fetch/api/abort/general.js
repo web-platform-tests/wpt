@@ -454,8 +454,7 @@ test(t => {
     body, signal,
     method: 'POST',
     headers: {
-      'Content-Type': 'text/plain',
-      'Content-Length': '2097152'
+      'Content-Type': 'text/plain'
     }
   });
 

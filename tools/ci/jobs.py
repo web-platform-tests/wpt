@@ -11,7 +11,6 @@ wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
 # match for the job
 job_path_map = {
-    "testharness_unittest": ["resources/"],
     "stability": [".*/.*",
                   "!tools/",
                   "!docs/",
@@ -22,6 +21,7 @@ job_path_map = {
                   "!.*/README",
                   "!css/[^/]*$"],
     "lint": [".*"],
+    "resources_unittest": ["resources/"],
     "tools_unittest": ["tools/"],
     "wptrunner_unittest": ["tools/wptrunner/*"],
     "build_css": ["css/"],

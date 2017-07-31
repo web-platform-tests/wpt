@@ -1,11 +1,11 @@
 from tools.ci import jobs
 
 def test_testharness():
-    assert jobs.get_jobs(["resources/testharness.js"]) == set(["lint", "testharness_unittest"])
+    assert jobs.get_jobs(["resources/testharness.js"]) == set(["lint", "resources_unittest"])
     assert jobs.get_jobs(["resources/testharness.js"],
-                         includes=["testharness_unittest"]) == set(["testharness_unittest"])
+                         includes=["resources_unittest"]) == set(["resources_unittest"])
     assert jobs.get_jobs(["foo/resources/testharness.js"],
-                         includes=["testharness_unittest"]) == set()
+                         includes=["resources_unittest"]) == set()
 
 def test_stability():
     assert jobs.get_jobs(["dom/historical.html"],

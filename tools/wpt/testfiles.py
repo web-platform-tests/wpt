@@ -71,23 +71,40 @@ def branch_point():
     return branch_point
 
 
-def files_changed(revish, ignore_dirs=None):
+def files_changed(revish, ignore_dirs=None, include_uncommitted=False, include_new=False):
     """Get and return files changed since current branch diverged from master,
     excluding those that are located within any directory specifed by
     `ignore_changes`."""
     if ignore_dirs is None:
         ignore_dirs = []
 
-    root = os.path.abspath(os.curdir)
     git = get_git_cmd(wpt_root)
-    files = git("diff", "--name-only", "-z", revish)
+    files = git("diff", "--name-only", "-z", revish).split("\0")
+    assert not files[-1]
+    files = set(files[:-1])
+
+    if include_uncommitted:
+        entries = git("status", "-z").split("\0")
+        assert not entries[-1]
+        entries = entries[:-1]
+        for item in entries:
+            status, path = item.split()
+            if status == "??" and not include_new:
+                continue
+            else:
+                if not os.path.isdir(path):
+                    files.add(path)
+                else:
+                    for dirpath, dirnames, filenames in os.walk(path):
+                        for filename in filenames:
+                            files.add(os.path.join(dirpath, filename))
+
     if not files:
         return [], []
-    assert files[-1] == "\0"
 
     changed = []
     ignored = []
-    for item in files[:-1].split("\0"):
+    for item in sorted(files):
         fullpath = os.path.join(wpt_root, item)
         topmost_dir = item.split(os.sep, 1)[0]
         if topmost_dir in ignore_dirs:
@@ -193,6 +210,10 @@ def get_parser():
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the commits on the current branch", nargs="?")
     parser.add_argument("--ignore-dirs", nargs="*", type=set, default=set(["resources"]),
                         help="Directories to exclude from the list of changes")
+    parser.add_argument("--modified", action="store_true",
+                        help="Include files under version control that have been modified or staged")
+    parser.add_argument("--new", action="store_true",
+                        help="Include files in the worktree that are not in version control")
     return parser
 
 
@@ -214,14 +235,18 @@ def get_revish(**kwargs):
 
 def run_changed_files(**kwargs):
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish, kwargs["ignore_dirs"])
+    changed, _ = files_changed(revish, kwargs["ignore_dirs"],
+                               include_uncommitted=kwargs["modified"],
+                               include_new=kwargs["new"])
     for item in sorted(changed):
         print(os.path.relpath(item, wpt_root))
 
 
 def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
-    changed, _ = files_changed(revish, kwargs["ignore_dirs"])
+    changed, _ = files_changed(revish, kwargs["ignore_dirs"],
+                               include_uncommitted=kwargs["modified"],
+                               include_new=kwargs["new"])
     tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]),
                                                    manifest_path=os.path.join(kwargs["metadata_root"], "MANIFEST.json"))
     for item in sorted(tests_changed | dependents):

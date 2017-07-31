@@ -400,6 +400,18 @@ def test_main_no_args():
     try:
         sys.argv = ['./lint']
         with _mock_lint('lint', return_value=True) as m:
+            with _mock_lint('changed_files', return_value=['foo', 'bar']) as m2:
+                lint_mod.main(**vars(create_parser().parse_args()))
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", False)
+    finally:
+        sys.argv = orig_argv
+
+
+def test_main_all():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint', '--all']
+        with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']) as m2:
                 lint_mod.main(**vars(create_parser().parse_args()))
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal", False)

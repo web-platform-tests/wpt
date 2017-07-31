@@ -1,0 +1,156 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDtmfSender.prototype.ontonechange</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script src="RTCDTMFSender-helper.js"></script>
+<script>
+  'use strict';
+
+  // Test is based on the following editor draft:
+  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+
+  // The following helper functions are called from RTCDTMFSender-helper.js
+  //   test_tone_change_events
+  //   getTransceiver
+
+  /*
+    7.2.  insertDTMF
+      11. If a Playout task is scheduled to be run; abort these steps; otherwise queue
+          a task that runs the following steps (Playout task):
+        3.  If toneBuffer is an empty string, fire an event named tonechange with an
+            empty string at the RTCDTMFSender object and abort these steps.
+        4.  Remove the first character from toneBuffer and let that character be tone.
+        5.  Queue a task to be executed in duration + interToneGap ms from now that
+            runs the steps labelled Playout task.
+        6.  Fire an event named tonechange with a string consisting of tone at the
+            RTCDTMFSender object.
+   */
+  test_tone_change_events(dtmfSender => {
+    dtmfSender.insertDTMF('123');
+  }, [
+    ['1', '23', 0],
+    ['2', '3', 170],
+    ['3', '', 170],
+    ['', '', 170]
+  ], 'insertDTMF with default duration and intertoneGap should fire tonechange events at the expected time');
+
+  test_tone_change_events(dtmfSender => {
+    dtmfSender.insertDTMF('abc', 100, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 170],
+    ['C', '', 170],
+    ['', '', 170]
+  ], 'insertDTMF with explicit duration and intertoneGap should fire tonechange events at the expected time');
+
+  /*
+    7.2.  insertDTMF
+      11.8. If the value of the duration parameter is less than 40, set it to 40.
+            If, on the other hand, the value is greater than 6000, set it to 6000.
+   */
+  test_tone_change_events(dtmfSender => {
+      dtmfSender.insertDTMF('ABC', 10, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 110],
+    ['C', '', 110],
+    ['', '', 110]
+  ], 'insertDTMF with duration less than 40 should be clamped to 40');
+
+  /*
+    7.2.  insertDTMF
+      11.9. If the value of the interToneGap parameter is less than 30, set it to 30.
+   */
+  test_tone_change_events(dtmfSender => {
+    dtmfSender.insertDTMF('ABC', 100, 10);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 130],
+    ['C', '', 130],
+    ['', '', 130]
+  ],
+  'insertDTMF with interToneGap less than 30 should be clamped to 30');
+
+  /*
+    [w3c/webrtc-pc#1373]
+    This step is added to handle the "," character correctly. "," supposed to delay the next
+    tonechange event by 2000ms.
+
+    7.2.  insertDTMF
+      11.5. If tone is "," delay sending tones for 2000 ms on the associated RTP media
+            stream, and queue a task to be executed in 2000 ms from now that runs the
+            steps labelled Playout task.
+   */
+  test_tone_change_events(dtmfSender => {
+    dtmfSender.insertDTMF('A,B', 100, 70);
+
+  }, [
+    ['A', ',B', 0],
+    [',', 'B', 170],
+    ['B', '', 2000],
+    ['', '', 170]
+  ], 'insertDTMF with comma should delay next tonechange event for a constant 2000ms');
+
+  /*
+    7.2.  insertDTMF
+      11.1. If transceiver.stopped is true, abort these steps.
+   */
+  test_tone_change_events((dtmfSender, pc) => {
+    const transceiver = getTransceiver(pc);
+    dtmfSender.addEventListener('tonechange', ev => {
+      if(ev.tone === 'B') {
+        transceiver.stop();
+      }
+    });
+
+    dtmfSender.insertDTMF('ABC', 100, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 170]
+  ], 'insertDTMF with transceiver stopped in the middle should stop future tonechange events from firing');
+
+  /*
+    7.2.  insertDTMF
+      3.  If a Playout task is scheduled to be run, abort these steps;
+          otherwise queue a task that runs the following steps (Playout task):
+   */
+  test_tone_change_events((dtmfSender, pc) => {
+    dtmfSender.addEventListener('tonechange', ev => {
+      if(ev.tone === 'B') {
+        setTimeout(() =>
+          dtmfSender.insertDTMF('12', 100, 70),
+          10);
+      }
+    });
+
+    dtmfSender.insertDTMF('ABC', 100, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 170],
+    ['1', '2', 170],
+    ['2', '', 170],
+    ['', '', 170]
+  ], 'Changing toneBuffer in the middle of tonechange events should cause future tonechanges to be updated to new tones');
+
+  /*
+    7.2.  insertDTMF
+      3.  If a Playout task is scheduled to be run, abort these steps;
+          otherwise queue a task that runs the following steps (Playout task):
+   */
+  test_tone_change_events((dtmfSender, pc) => {
+    dtmfSender.addEventListener('tonechange', ev => {
+      if(ev.tone === 'B') {
+        dtmfSender.insertDTMF('');
+      }
+    });
+
+    dtmfSender.insertDTMF('ABC', 100, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 170],
+    ['', '', 170]
+  ], `Calling insertDTMF('') in the middle of tonechange events should stop future tonechange events from firing`);
+
+</script>

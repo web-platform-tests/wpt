@@ -464,6 +464,6 @@ test(t => {
   });
 
   assert_true(!!cancelReason, 'Cancel called sync');
-  assert_equals(err.constructor, DOMException);
-  assert_equals(err.name, 'AbortError');
+  assert_equals(cancelReason.constructor, DOMException);
+  assert_equals(cancelReason.name, 'AbortError');
 }, contextualTestName("Readable stream synchronously cancels with AbortError if aborted before reading"));

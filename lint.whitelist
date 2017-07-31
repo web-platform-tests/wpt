@@ -780,3 +780,6 @@ WEBIDL2.JS:.gitmodules
 
 # Manual test that uses console.logs for feedback
 CONSOLE:payment-request/payment-request-response-id.html
+
+# Generated files
+*: CODEOWNERS

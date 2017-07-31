@@ -28,7 +28,8 @@ job_path_map = {
     "update_built": ["2dcontext/",
                      "assumptions/",
                      "html/",
-                     "offscreen-canvas/"],
+                     "offscreen-canvas/",
+                     ".*/OWNERS"],
     "wpt_integration": ["tools/"],
 }
 

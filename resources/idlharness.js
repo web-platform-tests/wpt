@@ -423,8 +423,8 @@ IdlArray.prototype.is_json_type = function(type)
                                throw new Error("Interface " + id + " not found (implemented by " + thing.name + ")");
                            }
                            return mixin;
-                       });
-                       if (mixins.some(function(m) { m.has_to_json_regular_operation() } )) { return true; }
+                       }, this);
+                       if (mixins.some(function(m) { return m.has_to_json_regular_operation() } )) { return true; }
                    }
                    if (!thing.base) { return false; }
                    base = this.members[thing.base];

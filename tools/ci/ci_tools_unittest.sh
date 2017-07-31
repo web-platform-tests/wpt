@@ -18,18 +18,8 @@ if [[ $(./wpt test-jobs --includes wptrunner_unittest; echo $?) -eq 0 ]]; then
     if [ $TOXENV == "py27" ] || [ $TOXENV == "pypy" ]; then
         cd wptrunner
         tox
-
-        cd $WPT_ROOT
-        pip install --requirement tools/wpt/requirements.txt
-        ./wpt install firefox browser --destination $HOME
-        ./wpt install firefox webdriver --destination $HOME/firefox
-        export PATH=$HOME/firefox:$PATH
-
-        cd $WPT_ROOT/resources/test
-        tox
     fi
 else
     echo "Skipping wptrunner unittest"
 fi
 
-cd $WPT_ROOT

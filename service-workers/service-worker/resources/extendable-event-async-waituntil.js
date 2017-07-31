@@ -46,6 +46,7 @@ self.addEventListener('message', function(event) {
         self.dispatchEvent(new ExtendableEvent('nontrustedevent'));
         break;
     }
+
     event.source.postMessage('ACK');
   });
 

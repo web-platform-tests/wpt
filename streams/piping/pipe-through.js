@@ -30,7 +30,9 @@ function duckTypedPassThroughTransform() {
   };
 }
 
-const uninterestingReadableWritablePair = { writable: new WritableStream(), readable: new ReadableStream() };
+function uninterestingReadableWritablePair() {
+  return { writable: new WritableStream(), readable: new ReadableStream() };
+}
 
 promise_test(() => {
   const readableEnd = sequentialReadableStream(5).pipeThrough(duckTypedPassThroughTransform());
@@ -84,7 +86,7 @@ test(() => {
     }
   };
 
-  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair);
+  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair());
 
   // Test passes if this doesn't throw or crash.
 
@@ -100,7 +102,7 @@ test(() => {
     }
   };
 
-  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair);
+  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair());
 
   // Test passes if this doesn't throw or crash.
 
@@ -113,7 +115,7 @@ promise_test(() => {
     }
   };
 
-  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair);
+  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair());
 
   // The test harness should complain about unhandled rejections by then.
   return flushAsyncEvents();
@@ -138,7 +140,7 @@ test(() => {
   };
 
   // An incorrect implementation which uses an internal method to mark the promise as handled will throw or crash here.
-  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair);
+  ReadableStream.prototype.pipeThrough.call(dummy, uninterestingReadableWritablePair());
 
   // An incorrect implementation that tries to mark the promise as handled by calling .then() or .catch() on the object
   // will fail these tests.

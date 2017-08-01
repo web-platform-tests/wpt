@@ -155,10 +155,11 @@ test(() => {
     { writable: 'writable' },
     { readable: undefined, writable: 'writable' }
   ];
-  for (const pair of pairs) {
+  for (let i = 0; i < pairs.length; ++i) {
+    const pair = pairs[i];
     const rs = new ReadableStream();
     assert_throws(new TypeError(), () => rs.pipeThrough(pair),
-                  'pipeThrough should throw for argument ' + JSON.stringify(pair) + ';');
+                  `pipeThrough should throw for argument ${JSON.stringify(pair)} (index ${i});`);
   }
 }, 'undefined readable or writable arguments should cause pipeThrough() to throw');
 
@@ -166,8 +167,11 @@ test(() => {
   const invalidArguments = [null, 0, NaN, '', [], {}, false, () => {}];
   for (const arg of invalidArguments) {
     const rs = new ReadableStream();
-    assert_equals(arg, rs.pipeThrough({ writable: arg, readable: arg }),
-                  'pipeThrough() should not throw for ' + JSON.stringify(arg));
+    assert_equals(arg, rs.pipeThrough({ writable: new WritableStream(), readable: arg }),
+                  'pipeThrough() should not throw for readable: ' + JSON.stringify(arg));
+    const rs2 = new ReadableStream();
+    assert_equals(rs2, rs.pipeThrough({ writable: arg, readable: rs2 }),
+                  'pipeThrough() should not throw for writable: ' + JSON.stringify(arg));
   }
 }, 'invalid but not undefined arguments should not cause pipeThrough() to throw');
 

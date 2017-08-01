@@ -31,7 +31,7 @@ test(() => {
   smokeTest();
   const request = new PaymentRequest(defaultMethods, defaultDetails);
   assert_true(Boolean(request.id), "must be some truthy value");
-}, "If details.id is missing, assign a identifier");
+}, "If details.id is missing, assign an identifier");
 
 test(() => {
   smokeTest();
@@ -39,7 +39,7 @@ test(() => {
   const request2 = new PaymentRequest(defaultMethods, defaultDetails);
   assert_not_equals(request1.id, request2.id, "UA generated ID must be unique");
   const seen = new Set();
-  // Let's try creating lots of request, and make sure they are all unique
+  // Let's try creating lots of requests, and make sure they are all unique
   for (let i = 0; i < 1024; i++) {
     const request = new PaymentRequest(defaultMethods, defaultDetails);
     assert_false(
@@ -111,7 +111,7 @@ test(() => {
       new PaymentRequest([invalidMethod], defaultDetails);
     } catch (err) {
       assert_unreached(
-        `Unexpected error processing invalid PMI "${invalidMEthod}". ${err.message}`
+        `Unexpected error processing invalid PMI "${invalidMethod}". ${err.message}`
       );
     }
   }
@@ -239,7 +239,7 @@ test(() => {
       assert_unreached(`PaymentDetailsBase.${prop} can be zero length`);
     } catch (err) {}
   }
-}, `PaymentDetailsBase memebers can be 0 length`);
+}, `PaymentDetailsBase members can be 0 length`);
 
 test(() => {
   smokeTest();
@@ -388,7 +388,7 @@ test(() => {
       `Expected TypeError for option.amount.value: "${amount}"`
     );
   }
-}, `For each option in details.shippingOptions: if option.amount.value is not 'a valid decimal monetary value, then throw a TypeError`);
+}, `For each option in details.shippingOptions: if option.amount.value is not a valid decimal monetary value, then throw a TypeError`);
 
 test(() => {
   smokeTest();
@@ -518,7 +518,7 @@ test(() => {
     new PaymentRequest(defaultMethods, modifiedDetails);
   } catch (err) {
     assert_unreached(
-      `Unexpected exeception thrown when given a list: ${err.message}`
+      `Unexpected exception thrown when given a list: ${err.message}`
     );
   }
 }, "Modifier data must be JSON-serializable object (an Array in this case)");

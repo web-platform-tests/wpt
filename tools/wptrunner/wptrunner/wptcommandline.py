@@ -47,8 +47,10 @@ def create_parser(product_choices=None):
 
 TEST is either the full path to a test file to run, or the URL of a test excluding
 scheme host and port.""")
-    parser.add_argument("--manifest-update", action="store_true", default=False,
+    parser.add_argument("--manifest-update", action="store_true",
                         help="Regenerate the test manifest.")
+    parser.add_argument("--no-manifest-update", action="store_false", dest="manifest_update",
+                        help="Prevent regeneration of the test manifest.")
 
     parser.add_argument("--timeout-multiplier", action="store", type=float, default=None,
                         help="Multiplier relative to standard test timeout to use")

@@ -24,7 +24,7 @@
 function parseQueryString(urlStr) {
   const url = new URL(urlStr);
   const result = {};
-  for(const [key, value] of url.searchParams.entries()) {
+  for(const [key, value] of url.searchParams) {
     result[key] = value;
   }
   return result;

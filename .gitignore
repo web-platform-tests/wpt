@@ -16,3 +16,4 @@ webdriver/.idea
 *.rej
 _venv
 webdriver/.cache
+LINT.json

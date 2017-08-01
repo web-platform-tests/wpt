@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>RTCDtmfSender.prototype.ontonechange</title>
+<title>RTCDTMFSender.prototype.ontonechange</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
@@ -11,9 +11,32 @@
   // Test is based on the following editor draft:
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
+  // The following helper functions are called from RTCPeerConnection-helper.js
+  //   generateAnswer
+
   // The following helper functions are called from RTCDTMFSender-helper.js
   //   test_tone_change_events
   //   getTransceiver
+
+  /*
+    7.  Peer-to-peer DTMF
+      partial interface RTCRtpSender {
+        readonly attribute RTCDTMFSender? dtmf;
+      };
+
+      interface RTCDTMFSender : EventTarget {
+        void insertDTMF(DOMString tones,
+                        optional unsigned long duration = 100,
+                        optional unsigned long interToneGap = 70);
+                 attribute EventHandler ontonechange;
+        readonly attribute DOMString    toneBuffer;
+      };
+
+      [Constructor(DOMString type, RTCDTMFToneChangeEventInit eventInitDict)]
+      interface RTCDTMFToneChangeEvent : Event {
+        readonly attribute DOMString tone;
+      };
+   */
 
   /*
     7.2.  insertDTMF
@@ -34,7 +57,7 @@
     ['2', '3', 170],
     ['3', '', 170],
     ['', '', 170]
-  ], 'insertDTMF with default duration and intertoneGap should fire tonechange events at the expected time');
+  ], 'insertDTMF() with default duration and intertoneGap should fire tonechange events at the expected time');
 
   test_tone_change_events(dtmfSender => {
     dtmfSender.insertDTMF('abc', 100, 70);
@@ -43,7 +66,26 @@
     ['B', 'C', 170],
     ['C', '', 170],
     ['', '', 170]
-  ], 'insertDTMF with explicit duration and intertoneGap should fire tonechange events at the expected time');
+  ], 'insertDTMF() with explicit duration and intertoneGap should fire tonechange events at the expected time');
+
+  /*
+    7.2.  insertDTMF
+      10. If toneBuffer is an empty string, abort these steps.
+   */
+  async_test(t => {
+    createDtmfSender()
+    .then(dtmfSender => {
+      dtmfSender.addEventListener('tonechange',
+        t.unreached_func('Expect no tonechange event to be fired'));
+
+      dtmfSender.insertDTMF('', 100, 70);
+
+      t.step_timeout(t.step_func_done(), 300);
+    })
+    .catch(t.step_func(err => {
+      assert_unreached(`Unexpected promise rejection: ${err}`);
+    }));
+  }, `insertDTMF('') should not fire any tonechange event, including for '' tone`);
 
   /*
     7.2.  insertDTMF
@@ -57,7 +99,7 @@
     ['B', 'C', 110],
     ['C', '', 110],
     ['', '', 110]
-  ], 'insertDTMF with duration less than 40 should be clamped to 40');
+  ], 'insertDTMF() with duration less than 40 should be clamped to 40');
 
   /*
     7.2.  insertDTMF
@@ -71,7 +113,7 @@
     ['C', '', 130],
     ['', '', 130]
   ],
-  'insertDTMF with interToneGap less than 30 should be clamped to 30');
+  'insertDTMF() with interToneGap less than 30 should be clamped to 30');
 
   /*
     [w3c/webrtc-pc#1373]
@@ -109,19 +151,23 @@
   }, [
     ['A', 'BC', 0],
     ['B', 'C', 170]
-  ], 'insertDTMF with transceiver stopped in the middle should stop future tonechange events from firing');
+  ], 'insertDTMF() with transceiver stopped in the middle should stop future tonechange events from firing');
 
   /*
     7.2.  insertDTMF
       3.  If a Playout task is scheduled to be run, abort these steps;
           otherwise queue a task that runs the following steps (Playout task):
    */
-  test_tone_change_events((dtmfSender, pc) => {
+  test_tone_change_events(dtmfSender => {
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
-        setTimeout(() =>
-          dtmfSender.insertDTMF('12', 100, 70),
-          10);
+        // Set a timeout to make sure the toneBuffer
+        // is changed after the tonechange event listener
+        // by test_tone_change_events is called.
+        // This is to correctly test the expected toneBuffer.
+        setTimeout(() => {
+          dtmfSender.insertDTMF('12', 100, 70);
+        }, 10);
       }
     });
 
@@ -132,17 +178,44 @@
     ['1', '2', 170],
     ['2', '', 170],
     ['', '', 170]
-  ], 'Changing toneBuffer in the middle of tonechange events should cause future tonechanges to be updated to new tones');
+  ], 'Calling insertDTMF() in the middle of tonechange events should cause future tonechanges to be updated to new tones');
+
 
   /*
     7.2.  insertDTMF
       3.  If a Playout task is scheduled to be run, abort these steps;
           otherwise queue a task that runs the following steps (Playout task):
    */
-  test_tone_change_events((dtmfSender, pc) => {
+  test_tone_change_events(dtmfSender => {
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
-        dtmfSender.insertDTMF('');
+        setTimeout(() => {
+          dtmfSender.insertDTMF('12', 100, 70);
+          dtmfSender.insertDTMF('34', 100, 70);
+        }, 10);
+      }
+    });
+
+    dtmfSender.insertDTMF('ABC', 100, 70);
+  }, [
+    ['A', 'BC', 0],
+    ['B', 'C', 170],
+    ['3', '4', 170],
+    ['4', '', 170],
+    ['', '', 170]
+  ], 'Calling insertDTMF() multiple times in the middle of tonechange events should cause future tonechanges to be updated the last provided tones');
+
+  /*
+    7.2.  insertDTMF
+      3.  If a Playout task is scheduled to be run, abort these steps;
+          otherwise queue a task that runs the following steps (Playout task):
+   */
+  test_tone_change_events(dtmfSender => {
+    dtmfSender.addEventListener('tonechange', ev => {
+      if(ev.tone === 'B') {
+        setTimeout(() => {
+          dtmfSender.insertDTMF('');
+        }, 10);
       }
     });
 
@@ -152,5 +225,61 @@
     ['B', 'C', 170],
     ['', '', 170]
   ], `Calling insertDTMF('') in the middle of tonechange events should stop future tonechange events from firing`);
+
+  /*
+    7.2.  insertDTMF
+      11.2.  If transceiver.currentDirection is recvonly or inactive, abort these steps.
+   */
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    const transceiver = pc.addTransceiver('audio', { direction: 'sendrecv' });
+    const dtmfSender = transceiver.sender.dtmf;
+
+    // Since setRemoteDescription happens in parallel with tonechange event,
+    // We use a flag and allow tonechange events to be fired as long as
+    // the promise returned by setRemoteDescription is not yet resolved.
+    let remoteDescriptionIsSet = false;
+
+    // We only do basic tone verification and not check timing here
+    let expectedTones = ['A', 'B', 'C', 'D', ''];
+
+    const onToneChange = t.step_func(ev => {
+      assert_false(remoteDescriptionIsSet,
+        'Expect no tonechange event to be fired after currentDirection is changed to recvonly');
+
+      const { tone } = ev;
+      const expectedTone = expectedTones.shift();
+      assert_equals(tone, expectedTone,
+        `Expect fired event.tone to be ${expectedTone}`);
+
+      // Only change transceiver.currentDirection after the first
+      // tonechange event, to make sure that tonechange is triggered
+      // then stopped
+      if(tone === 'A') {
+        transceiver.setDirection('recvonly');
+
+        pc.createOffer()
+        .then(offer =>
+          pc.setLocalDescription(offer)
+          .then(() => generateAnswer(offer)))
+        .then(answer => pc.setRemoteDescription(answer))
+        .then(() => {
+          assert_equals(transceiver.currentDirection, 'recvonly');
+          remoteDescriptionIsSet = true;
+
+          // Pass the test if no further tonechange event is
+          // fired in the next 300ms
+          t.step_timeout(t.step_func_done(), 300);
+        })
+        .catch(t.step_func(err => {
+          assert_unreached(`Unexpected promise rejection: ${err}`);
+        }));
+      }
+    });
+
+    dtmfSender.addEventListener('tonechange', onToneChange);
+    dtmfSender.insertDTMF('ABCD', 100, 70);
+
+  }, `Setting transceiver.currentDirection to recvonly in the middle of tonechange events should stop future tonechange events from firing`);
 
 </script>

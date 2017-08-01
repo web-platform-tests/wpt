@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name="timeout" content="long">
-<title>RTCDtmfSender.prototype.ontonechange (Long Timeout)</title>
+<title>RTCDTMFSender.prototype.ontonechange (Long Timeout)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
@@ -14,6 +14,26 @@
 
   // The following helper functions are called from RTCDTMFSender-helper.js
   //   test_tone_change_events
+
+  /*
+    7.  Peer-to-peer DTMF
+      partial interface RTCRtpSender {
+        readonly attribute RTCDTMFSender? dtmf;
+      };
+
+      interface RTCDTMFSender : EventTarget {
+        void insertDTMF(DOMString tones,
+                        optional unsigned long duration = 100,
+                        optional unsigned long interToneGap = 70);
+                 attribute EventHandler ontonechange;
+        readonly attribute DOMString    toneBuffer;
+      };
+
+      [Constructor(DOMString type, RTCDTMFToneChangeEventInit eventInitDict)]
+      interface RTCDTMFToneChangeEvent : Event {
+        readonly attribute DOMString tone;
+      };
+   */
 
   /*
     7.2.  insertDTMF

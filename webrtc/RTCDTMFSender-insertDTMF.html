@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>RTCDtmfSender</title>
+<title>RTCDTMFSender.prototype.insertDTMF</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
@@ -31,11 +31,6 @@
                         optional unsigned long interToneGap = 70);
                  attribute EventHandler ontonechange;
         readonly attribute DOMString    toneBuffer;
-      };
-
-      [Constructor(DOMString type, RTCDTMFToneChangeEventInit eventInitDict)]
-      interface RTCDTMFToneChangeEvent : Event {
-        readonly attribute DOMString tone;
       };
    */
 

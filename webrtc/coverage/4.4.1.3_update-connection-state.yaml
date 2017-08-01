@@ -1,0 +1,42 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.3
+desc: Update the connection state
+steps:
+  - status: untestable
+    desc: >
+      An RTCPeerConnection object has an aggregated connection state. Whenever
+      the state of an RTCDtlsTransport or RTCIceTransport changes or when the
+      [[IsClosed]] slot turns true, the user agent MUST update the connection
+      state by queueing a task that runs the following steps
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be this RTCPeerConnection object.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-connectionState
+        desc: >
+          Let newState be the value of deriving a new state value as described by
+          the RTCPeerConnectionState enum.
+
+      - step: 3
+        status: untestable
+        desc: >
+          If connection's connection state is equal to newState, abort these steps.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-connectionState
+        desc: >
+          Let connection's connection state be newState.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-connectionState
+        desc: >
+          Fire a simple event named connectionstatechange at connection.

@@ -1,0 +1,62 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: setRemoteDescription
+steps:
+  - status: tested
+    files:
+      - RTCPeerConnection-setRemoteDescription-offer
+      - RTCPeerConnection-setRemoteDescription-answer
+      - RTCPeerConnection-setRemoteDescription-pranswer
+      - RTCPeerConnection-setRemoteDescription-rollback
+    desc: >
+      When the method is invoked, the user agent MUST return the result of
+      setting the RTCSessionDescription indicated by the method's first argument.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+    desc: >
+      In addition, a remote description is processed to determine and verify the
+      identity of the peer.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+    desc: >
+      If an a=identity attribute is present in the session description, the
+      browser validates the identity assertion.
+
+  - status: tested
+    files:
+      RTCPeerConnection-peerIdentity
+    desc: >
+      If the "peerIdentity" configuration is applied to the RTCPeerConnection,
+      this establishes a target peer identity of the provided value.
+
+  - status: tested
+    files:
+      RTCPeerConnection-peerIdentity
+    desc: >
+      Alternatively, if the RTCPeerConnection has previously authenticated the
+      identity of the peer (that is, there is a current value for peerIdentity),
+      then this also establishes a target peer identity.
+
+  - status: tested
+    files:
+      RTCPeerConnection-peerIdentity
+    desc: >
+      The target peer identity cannot be changed once set.
+
+      Once set, if a different value is provided, the user agent MUST reject the
+      returned promise with a newly created InvalidModificationError and abort
+      this operation.
+
+      The RTCPeerConnection MUST be closed if the validated peer identity does
+      not match the target peer identity.
+
+  - status: tested
+    files:
+      RTCPeerConnection-peerIdentity
+    desc: >
+      If there is no target peer identity, then setRemoteDescription does not
+      await the completion of identity validation.

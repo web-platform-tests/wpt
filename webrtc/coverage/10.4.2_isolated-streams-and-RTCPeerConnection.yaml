@@ -1,0 +1,59 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 10.4.2
+desc: Isolated Streams and RTCPeerConnection
+steps:
+  - status: todo
+    desc: >
+      A MediaStreamTrack with a peerIdentity option set can be added to any
+      RTCPeerConnection. However, the content of an isolated track MUST NOT be
+      transmitted unless all of the following constraints are met.
+    steps:
+      - status: todo
+        desc: >
+          A MediaStreamTrack from a stream acquired using the peerIdentity
+          option can be transmitted if the RTCPeerConnection has successfully
+          validated the identity of the peer AND that identity is the same
+          identity that was used in the peerIdentity option associated with the
+          track. That is, the name attribute of the peerIdentity attribute of
+          the RTCPeerConnection instance MUST match the value of the
+          peerIdentity option passed to getUserMedia().
+
+          Rules for matching identity are described in [RTCWEB-SECURITY-ARCH].
+
+      - status: todo
+        desc: >
+          The peer has indicated that it will respect the isolation properties
+          of streams. That is, a DTLS connection with a promise to respect
+          stream confidentiality, as defined in [RTCWEB-ALPN] has been
+          established.
+
+  - status: todo
+    desc: >
+      Failing to meet these conditions means that no media can be sent for the
+      affected MediaStreamTrack. Video MUST be replaced by black frames, audio
+      MUST be replaced by silence, and equivalently information-free content
+      MUST be provided for other media types.
+
+  - status: todo
+    desc: >
+      Remotely sourced MediaStreamTracks MUST be isolated if they are received
+      over a DTLS connection that has been negotiated with track isolation.
+      This protects isolated media from the application in the receiving browser.
+      These tracks MUST only be displayed to a user using the appropriate media
+      element (e.g., <video> or <audio>).
+
+  - status: todo
+    desc: >
+      Any MediaStreamTrack that has the peerIdentity option set causes all
+      tracks sent using the same RTCPeerConnection to be isolated at the
+      receiving peer. All DTLS connections created for an RTCPeerConnection with
+      isolated local streams MUST be negotiated so that media remains isolated
+      at the remote peer. This causes non-isolated media to become isolated at
+      the receiving peer if any isolated tracks are added to the same
+      RTCPeerConnection.
+
+  - status: todo
+    desc: >
+      If a stream becomes isolated after initially being accessible, or an
+      isolated stream is added to an active session, then media for that stream
+      is replaced by information-free content (e.g., black frames or silence).

@@ -1,0 +1,29 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.3.2
+desc: Legacy configuration extensions
+steps:
+  - status: todo
+    desc: >
+      offerToReceiveAudio
+
+      Whenever this is given a non-false value, and the RTCPeerConnection has no
+      non-stopped "sendrecv" or "recvonly" audio transceivers, createOffer()
+      MUST as its first step invoke the equivalent of addTransceiver("audio") on
+      the RTCPeerConnection object, except that this MUST NOT Update the
+      negotiation-needed flag, and, provided this does not fail, proceed with
+      createOffer()'s regular steps.
+
+      In all other situations, it will be disregarded.
+
+  - status: todo
+    desc: >
+      offerToReceiveVideo
+
+      Whenever this is given a non-false value, and the RTCPeerConnection has no
+      non-stopped "sendrecv" or "recvonly" video transceivers, createOffer()
+      MUST as its first step invoke the equivalent of addTransceiver("video") on
+      the RTCPeerConnection object, except that this MUST NOT Update the
+      negotiation-needed flag, and, provided this does not fail, proceed with
+      createOffer()'s regular steps.
+
+      In all other situations, it will be disregarded.

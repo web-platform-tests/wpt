@@ -1,0 +1,41 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.5
+desc: Update the ICE connection state
+steps:
+  - status: trivial
+    desc: >
+      To update the ICE connection state of an RTCPeerConnection instance
+      connection, the user agent MUST queue a task that runs the following steps
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-iceConnectionState
+        desc: >
+          Let newState be the value of deriving a new state value as described by
+          the RTCIceConnectionState enum.
+
+      - step: 3
+        status: untestable
+        desc: >
+          If connection's ICE connection state is equal to newState, abort these
+          steps.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-iceConnectionState
+        desc: >
+          Set connection's ice connection state to newState.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-iceConnectionState
+        desc: >
+          Fire a simple event named iceconnectionstatechange at connection.

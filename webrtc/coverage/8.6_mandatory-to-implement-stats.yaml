@@ -1,0 +1,73 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 8.6
+desc:  Mandatory To Implement Stats
+steps:
+  - status: trivial
+    desc: >
+      The stats listed in [WEBRTC-STATS] are intended to cover a wide range of
+      use cases. Not all of them have to be implemented by every WebRTC
+      implementation.
+
+  - status: tested
+    files:
+      - RTCStats-helper.js
+    desc: >
+      An implementation MUST support generating statistics of the following
+      types when the corresponding objects exist on a PeerConnection, with the
+      attributes that are listed when they are valid for that object.
+
+          RTCRTPStreamStats, with attributes ssrc, mediaType, trackId,
+          transportId, codecId, nackCount
+
+          RTCReceivedRTPStreamStats, with all required attributes from its
+          inherited dictionaries, and also attributes packetsReceived,
+          bytesReceived, packetsLost, jitter, packetsDiscarded
+
+          RTCInboundRTPStreamStats, with all required attributes from its
+          inherited dictionaries, and also attributes remoteId, framesDecoded
+
+          RTCRemoteInboundRTPStreamStats, with all required attributes from its
+          inherited dictionaries, and also attributes localId, roundTripTime
+
+          RTCSentRTPStreamStats, with all required attributes from its inherited
+          dictionaries, and also attributes packetsSent, bytesSent
+
+          RTCOutboundRTPStreamStats, with all required attributes from its
+          inherited dictionaries, and also attributes remoteId, framesEncoded
+
+          RTCRemoteOutboundRTPStreamStats, with all required attributes from its
+          inherited dictionaries, and also attributes localId, remoteTimestamp
+
+          RTCPeerConnectionStats, with attributes dataChannelsOpened,
+          dataChannelsClosed
+
+          RTCDataChannelStats, with attributes label, protocol, datachannelId,
+          state, messagesSent, bytesSent, messagesReceived, bytesReceived
+
+          RTCMediaStreamStats, with attributes streamIdentifer, trackIds
+
+          RTCMediaStreamTrackStats, with attributes trackIdentifier,
+          remoteSource, ended, detached, frameWidth, frameHeight,
+          framesPerSecond, framesSent, framesReceived, framesDecoded,
+          framesDropped, framesCorrupted, audioLevel
+
+          RTCCodecStats, with attributes payloadType, codec, clockRate,
+          channels, sdpFmtpLine
+
+          RTCTransportStats, with attributes bytesSent, bytesReceived,
+          rtcpTransportStatsId, selectedCandidatePairId, localCertificateId,
+          remoteCertificateId
+
+          RTCIceCandidatePairStats, with attributes transportId,
+          localCandidateId, remoteCandidateId, state, priority, nominated,
+          bytesSent, bytesReceived, totalRoundTripTime, currentRoundTripTime
+
+          RTCIceCandidateStats, with attributes ip, port, protocol,
+          candidateType, priority, url
+
+          RTCCertificateStats, with attributes fingerprint, fingerprintAlgorithm,
+          base64Certificate, issuerCertificateId
+
+  - status: untestable
+    desc: >
+      An implementation MAY support generating any other statistic defined in [WEBRTC-STATS], and MAY generate statistics that are not documented.

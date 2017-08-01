@@ -1,0 +1,15 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 10.2.1
+desc: id
+steps:
+  - status: todo
+    desc: >
+      The id attribute specified in MediaStream returns an id that is unique to
+      this stream, so that streams can be recognized at the remote end of the
+      RTCPeerConnection API.
+
+  - status: todo
+    desc: >
+      When a MediaStream is created to represent a stream obtained from a remote
+      peer, the id attribute is initialized from information provided by the
+      remote source.

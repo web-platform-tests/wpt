@@ -1,0 +1,106 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1.1
+desc: Processing Remote MediaStreamTracks
+steps:
+  - status: todo
+    desc: >
+      To process the addition of a remote track for an incoming media
+      description [JSEP] (section 5.9.) given RTCRtpTransceiver transceiver and
+      trackEvents, the user agent MUST run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let receiver be transceiver's [[Receiver]].
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let track be receiver's [[ReceiverTrack]].
+
+      - step: 3
+        status: todo
+        desc: >
+          Set the associated remote streams given receiver and a list of the
+          MSIDs that the media description indicates track is to be associated
+          with.
+
+      - step: 4
+        status: trivial
+        desc: >
+          Let streams be receiver's [[AssociatedRemoteMediaStreams]] slot.
+
+      - step: 5
+        status: todo
+        desc: >
+          Add a new RTCTrackEvent with transceiver, track, and streams to
+          trackEvents.
+
+  - status: todo
+    desc: >
+      To process the removal of a remote track for an incoming media description
+      [JSEP] (section 5.9.) given RTCRtpTransceiver transceiver, the user agent
+      MUST run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let receiver be transceiver's [[Receiver]].
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let track be receiver's [[ReceiverTrack]].
+
+      - step: 3
+        status: todo
+        desc: >
+          Set the associated remote streams for the media description, given
+          receiver and an empty list.
+
+      - step: 4
+        status: todo
+        desc: >
+          If track.muted is false, update the muted state of track with the
+          value true.
+
+  - status: todo
+    desc: >
+      To set the associated remote streams given RTCRtpReceiver receiver and a
+      list msids, the user agent MUST run the following steps
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with
+          receiver.
+
+      - step: 2
+        status: todo
+        desc: >
+          For each MSID in msids, unless a MediaStream object has previously
+          been created with that id for this connection, create a MediaStream
+          object with that id.
+
+      - step: 3
+        status: todo
+        desc: >
+          Let streams be a list of the MediaStream objects created for this
+          connection with the ids corresponding to msids.
+
+      - step: 4
+        status: todo
+        desc: >
+          For each stream in receiver's [[AssociatedRemoteMediaStreams]] that is
+          not present in streams, remove track from stream.
+
+      - step: 5
+        status: todo
+        desc: >
+          For each stream in streams that is not present in receiver's
+          [[AssociatedRemoteMediaStreams]], add track to stream.
+
+      - step: 6
+        status: todo
+        desc: >
+          Set receiver's [[AssociatedRemoteMediaStreams]] slot to streams.

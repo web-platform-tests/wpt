@@ -1,0 +1,57 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.4
+desc: RTCRtpTransceiver Interface
+steps:
+  - status: trivial
+    desc: >
+      To create an RTCRtpTransceiver with an RTCRtpReceiver object, receiver,
+      RTCRtpSender object, sender, and an RTCRtpTransceiverDirection value,
+      direction, run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let transceiver be a new RTCRtpTransceiver object.
+
+      - step: 2
+        status: tested
+        files:
+          RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceiver have a [[Sender]] internal slot, initialized to sender.
+
+      - step: 3
+        status: tested
+        files:
+          RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceiver have a [[Receiver]] internal slot, initialized to
+          receiver.
+
+      - step: 4
+        status: tested
+        files:
+          RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceiver have a [[Stopped]] internal slot, initialized to false.
+
+      - step: 5
+        status: tested
+        files:
+          RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceiver have a [[Direction]] internal slot, initialized to
+          direction.
+
+      - step: 6
+        status: tested
+        files:
+          RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceiver have a [[CurrentDirection]] internal slot, initialized
+          to null.
+
+      - step: 7
+        status: trivial
+        desc: >
+          Return transceiver.

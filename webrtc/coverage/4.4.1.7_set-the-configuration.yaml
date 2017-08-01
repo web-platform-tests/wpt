@@ -1,0 +1,198 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.7
+desc: Set the configuration
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let configuration be the RTCConfiguration dictionary to be processed.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let connection be the target RTCPeerConnection object.
+
+  - step: 3
+    status: todo
+    desc: >
+      If configuration.peerIdentity is set and its value differs from the target
+      peer identity, throw an InvalidModificationError.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCCertificate
+    desc: >
+      If configuration.certificates is set and the set of certificates differs
+      from the ones used when connection was constructed, throw an
+      InvalidModificationError.
+
+  - step: 5
+    status: tested
+    files:
+      - RTCConfiguration-bundlePolicy
+    desc: >
+      If the value of configuration.bundlePolicy differs from the connection's
+      bundle policy, throw an InvalidModificationError.
+
+  - step: 6
+    status: tested
+    files:
+      - RTCConfiguration-rtcpMuxPolicy
+    desc: >
+      If the value of configuration.rtcpMuxPolicy differs from the connection's
+      rtcpMux policy, throw an InvalidModificationError.
+
+  - step: 7
+    status: todo
+    desc: >
+      If the value of configuration.iceCandidatePoolSize differs from the
+      connection's previously set iceCandidatePoolSize, and setLocalDescription
+      has already been called, throw an InvalidModificationError.
+
+  - step: 8
+    status: tested
+    files:
+      - RTCConfiguration-iceTransportPolicy
+    desc: >
+      Set the ICE Agent's ICE transports setting to the value of
+      configuration.iceTransportPolicy.
+
+  - step: 8
+    status: untestable
+    desc: >
+      As defined in [JSEP] (section 4.1.16.), if the new ICE transports setting
+      changes the existing setting, no action will be taken until the next
+      gathering phase. If a script wants this to happen immediately, it should
+      do an ICE restart.
+
+  - step: 9
+    status: untesteable
+    desc: >
+      Set the ICE Agent's prefetched ICE candidate pool size as defined in
+      [JSEP] (section 3.5.4. and section 4.1.1.) to the value of
+      configuration.iceCandidatePoolSize . If the new ICE candidate pool size
+      changes the existing setting, this may result in immediate gathering of
+      new pooled candidates, or discarding of existing pooled candidates, as
+      defined in [JSEP] (section 4.1.16.).
+
+  - step: 10
+    status: trivial
+    desc: >
+      Let validatedServers be an empty list.
+
+  - step: 11
+    status: tested
+    files:
+      - RTCConfiguration-iceServers
+    desc: >
+      If configuration.iceServers is defined, then run the following steps for
+      each element
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let server be the current list element.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCConfiguration-iceServers
+        desc: >
+          If server.urls is a string, let server.urls be a list consisting of
+          just that string.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCConfiguration-iceServers
+        desc: >
+          For each url in server.urls run the following steps
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              Parse the url using the generic URI syntax defined in [RFC3986]
+              and obtain the scheme name. If the parsing based on the syntax
+              defined in [RFC3986] fails, throw a SyntaxError.
+
+          - step: 1
+            status: todo
+            desc: >
+              If the scheme name is not implemented by the browser throw a
+              NotSupportedError.
+
+          - step: 1
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              If scheme name is turn or turns, and parsing the url using the
+              syntax defined in [RFC7064] fails, throw a SyntaxError.
+
+          - step: 1
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              If scheme name is stun or stuns, and parsing the url using the
+              syntax defined in [RFC7065] fails, throw a SyntaxError.
+
+          - step: 2
+            status: todo
+            desc: >
+              If scheme name is turn or turns, and either of server.username or
+              server.credential are omitted, then throw an InvalidAccessError.
+
+          - step: 3
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              If scheme name is turn or turns, and server.credentialType is
+              "password", and server.credential is not a DOMString, then throw
+              an InvalidAccessError and abort these steps.
+
+          - step: 4
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              If scheme name is turn or turns, and server.credentialType is
+              "oauth", and server.credential is not an RTCOAuthCredential, then
+              throw an InvalidAccessError and abort these steps.
+
+          - step: 5
+            status: tested
+            files:
+              - RTCConfiguration-iceServers
+            desc: >
+              Append server to validatedServers.
+
+          - status: untestable
+            desc: >
+              Let validatedServers be the ICE Agent's ICE servers list.
+
+          - status: untestable
+            desc: >
+              As defined in [JSEP] (section 4.1.16.), if a new list of servers
+              replaces the ICE Agent's existing ICE servers list, no action will
+              be taken until the next gathering phase. If a script wants this
+              to happen immediately, it should do an ICE restart.
+
+              However, if the ICE candidate pool has a nonzero size, any
+              existing pooled candidates will be discarded, and new candidates
+              will be gathered from the new servers.
+
+  - step: 12
+    status: tested
+    files:
+      - RTCConfiguration-bundlePolicy
+      - RTCConfiguration-iceCandidatePoolSize
+      - RTCConfiguration-iceServers
+      - RTCConfiguration-iceTransportPolicy
+      - RTCConfiguration-rtcpMuxPolicy
+    desc: >
+      Store the configuration in the [[Configuration]] internal slot.

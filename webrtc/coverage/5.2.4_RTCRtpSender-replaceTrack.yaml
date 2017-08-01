@@ -1,0 +1,139 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: replaceTrack
+steps:
+  - status: todo
+    desc: >
+      To avoid track identifiers changing on the remote receiving end when a
+      track is replaced, the sender MUST retain the original track identifier
+      and stream associations and use these in subsequent negotiations.
+
+  - status: trivial
+    desc: >
+      When the replaceTrack method is invoked, the user agent MUST run the
+      following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let sender be the RTCRtpSender object on which replaceTrack is invoked.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let transceiver be the RTCRtpTransceiver object associated with sender.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object that created sender.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCRtpSender-replaceTrack
+        desc: >
+          If connection's [[IsClosed]] slot is true, return a promise rejected
+          with a newly created InvalidStateError and abort these steps.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCRtpSender-replaceTrack
+        desc: >
+          If transceiver's [[Stopped]] slot is true, return a promise rejected
+          with a newly created InvalidStateError.
+
+      - step: 6
+        status: trivial
+        desc: >
+          Let withTrack be the argument to this method.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCRtpSender-replaceTrack
+        desc: >
+          If withTrack is non-null and withTrack.kind differs from the
+          transceiver kind of transceiver, return a promise rejected with a
+          newly created TypeError.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCRtpSender-replaceTrack
+        desc: >
+          If transceiver is not yet associated with a media description, then
+          set sender's track attribute to withTrack, and return a promise
+          resolved with undefined.
+
+      - step: 9
+        status: trivial
+        desc: >
+          Let p be a new promise.
+
+      - step: 10
+        status: trivial
+        desc: >
+          Run the following steps in parallel.
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCRtpSender-replaceTrack
+            desc: >
+              Determine if negotiation is needed to transmit withTrack in place
+              of the sender's existing track.
+
+              Negotiation is not needed if withTrack is null or if the sender's
+              existing track is ended (which appears as though the track was
+              muted).
+
+          - step: 1
+            status: todo
+            desc: >
+              Ignore which MediaStream the track resides in and the id attribute
+              of the track in this determination.
+
+          - step: 1
+            status: todo
+            desc: >
+              If negotiation is needed, then reject p with a newly created
+              InvalidModificationError and abort these steps.
+
+          - step: 2
+            status: todo
+            desc: >
+              If withTrack is null, have the sender stop sending, without
+              negotiating.
+
+              Otherwise, have the sender switch seamlessly to transmitting
+              withTrack instead of the sender's existing track, without
+              negotiating.
+
+          - step: 3
+            status: trivial
+            desc: >
+              Queue a task that runs the following steps.
+            steps:
+              - step: 1
+                status: todo
+                desc: >
+                  If connection's [[IsClosed]] slot is true, abort these steps.
+
+              - step: 2
+                status: tested
+                files:
+                  - RTCRtpSender-replaceTrack
+                desc: >
+                  Set sender's track attribute to withTrack.
+
+              - step: 3
+                status: todo
+                desc: >
+                  Resolve p with undefined.
+
+      - step: 11
+        status: trivial
+        desc: >
+          Return p.

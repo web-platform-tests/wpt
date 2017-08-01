@@ -1,0 +1,48 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.4
+desc: Update the ICE gathering state
+steps:
+  - status: trivial
+    desc: >
+      To update the ICE gathering state of an RTCPeerConnection instance
+      connection, the user agent MUST queue a task that runs the following steps
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-iceGatheringState
+        desc: >
+          Let newState be the value of deriving a new state value as described
+          by the RTCIceGatheringState enum.
+
+
+      - step: 3
+        status: untestable
+        desc: >
+          If connection's ICE gathering state is equal to newState, abort these
+          steps.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-iceGatheringState
+        desc: >
+          Set connection's ice gathering state to newState.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-iceGatheringState
+        desc: >
+          Fire a simple event named icegatheringstatechange at connection.
+
+      - step: 6
+        status: todo
+        desc: >
+          If newState is "completed", fire an ice candidate event named
+          icecandidate with null at connection.

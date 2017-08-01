@@ -1,0 +1,165 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1
+desc: addTrack
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object on which this method was
+      invoked.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let track be the MediaStreamTrack object indicated by the method's first
+      argument.
+
+  - step: 3
+    desc: >
+      Let streams be a list of MediaStream objects constructed from the method's
+      remaining arguments, or an empty list if the method was called with a
+      single argument.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-addTrack
+    desc: >
+      If connection's [[IsClosed]] slot is true, throw an InvalidStateError.
+
+  - step: 5
+    status: tested
+    files:
+      - RTCPeerConnection-addTrack
+    desc: >
+      Let senders be the result of executing the CollectSenders algorithm. If an
+      RTCRtpSender for track already exists in senders, throw an
+      InvalidAccessError.
+
+  - step: 6
+    status: todo
+    desc: >
+      The steps below describe how to determine if an existing sender can be
+      reused. Doing so will cause future calls to createOffer and createAnswer
+      to mark the corresponding media description as sendrecv or sendonly and
+      add the MSID of the track added, as defined in [JSEP] (section 5.2.2. and
+      section 5.3.2.).
+
+  - step: 6
+    status: tested
+    files:
+      - RTCPeerConnection-addTrack
+    desc: >
+      If any RTCRtpSender object in senders matches all the following criteria,
+      let sender be that object, or null otherwise.
+
+      - The sender's track is null.
+
+      - The transceiver kind of the RTCRtpTransceiver , associated with the
+        sender, matches track's kind.
+
+      - The sender has never been used to send. More precisely, the
+        [[CurrentDirection]] slot of the RTCRtpTransceiver associated with the
+        sender has never had a value of sendrecv or sendonly.
+
+  - step: 7
+    status: tested
+    files:
+      - RTCPeerConnection-addTrack
+    desc: >
+      If sender is not null, run the following steps to use that sender
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-addTrack
+        desc: >
+          Set sender's [[SenderTrack]] to track.
+
+      - step: 2
+        status: todo
+        desc: >
+          Set sender's [[AssociatedMediaStreams]] to streams.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-addTrack
+        desc: >
+          Let transceiver be the RTCRtpTransceiver associated with sender.
+
+      - step: 4
+        status: tested
+        desc: >
+          If transceiver's [[Direction]] slot is recvonly, set transceiver's
+          [[Direction]] slot to sendrecv.
+
+      - step: 5
+        status: todo
+        desc: >
+          If transceiver's [[Direction]] slot is inactive, set transceiver's
+          [[Direction]] slot to sendonly.
+
+  - step: 8
+    status: tested
+    files:
+      - RTCPeerConnection-addTrack
+    desc: >
+      If sender is null, run the following steps.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-addTrack
+        desc: >
+          Create an RTCRtpSender with track and streams and let sender be the
+          result.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-addTrack
+        desc: >
+          Create an RTCRtpReceiver with track.kind as kind and let receiver be
+          the result.
+
+      - step: 3
+        status: todo
+        desc: >
+          Create an RTCRtpTransceiver with sender, receiver and an
+          RTCRtpTransceiverDirection value of sendrecv, and let transceiver be
+          the result.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-addTrack
+        desc: >
+          Add transceiver to connection's set of transceivers.
+
+  - step: 9
+    status: todo
+    desc: >
+      A track could have contents that are inaccessible to the application. This
+      can be due to being marked with a peerIdentity option or anything that
+      would make a track CORS cross-origin. These tracks can be supplied to the
+      addTrack method, and have an RTCRtpSender created for them, but content
+      MUST NOT be transmitted, unless they are also marked with peerIdentity and
+      they meet the requirements for sending (see isolated streams and
+      RTCPeerConnection).
+
+      All other tracks that are not accessible to the application MUST NOT be
+      sent to the peer, with silence (audio), black frames (video) or
+      equivalently absent content being sent in place of track content.
+
+      Note that this property can change over time.
+
+  - step: 10
+    status: todo
+    desc: >
+      Update the negotiation-needed flag for connection.
+
+  - step: 11
+    status: trivial
+    desc: >
+      Return sender.

@@ -1,0 +1,246 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 7.2
+desc:  insertDTMF
+steps:
+  - status: trivial
+    desc: >
+      An RTCDTMFSender object's insertDTMF method is used to send DTMF tones.
+
+  - status: tested
+    files:
+      - RTCDTMFSender-insertDTMF
+    desc: >
+      The tones parameter is treated as a series of characters.
+
+      The characters 0 through 9, A through D, #, and * generate the associated
+      DTMF tones.
+
+      The characters a to d MUST be normalized to uppercase on entry and are
+      equivalent to A to D.
+
+      As noted in [ RTCWEB-AUDIO] Section 3, support for the characters 0
+      through 9, A through D, #, and * are required.
+
+      The character ',' MUST be supported, and indicates a delay of 2 seconds
+      before processing the next character in the tones parameter.
+
+      All other characters (and only those other characters) MUST be considered
+      unrecognized.
+
+  - status: tested
+    files:
+      - RTCDTMFSender-ontonechange
+      - RTCDTMFSender-ontonechange-long
+    desc: >
+      The duration parameter indicates the duration in ms to use for each
+      character passed in the tones parameters. The duration cannot be more than
+      6000 ms or less than 40 ms. The default duration is 100 ms for each tone.
+
+  - status: tested
+    files:
+      - RTCDTMFSender-ontonechange
+      - RTCDTMFSender-ontonechange-long
+    desc: >
+      The interToneGap parameter indicates the gap between tones in ms. The user
+      agent clamps it to at least 30 ms and at most 6000 ms. The default value
+      is 70 ms.
+
+  - status: untestable
+    desc: >
+      The browser MAY increase the duration and interToneGap times to cause the
+      times that DTMF start and stop to align with the boundaries of RTP packets
+      but it MUST not increase either of them by more than the duration of a
+      single RTP audio packet.
+
+  - status: trivial
+    desc: >
+      When the insertDTMF() method is invoked, the user agent MUST run the
+      following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let sender be the RTCRtpSender used to send DTMF.
+
+      - step: 2
+        desc: >
+          Let transceiver be the RTCRtpTransceiver object associated with sender.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCDTMFSender-insertDTMF
+        desc: >
+          If transceiver's [[Stopped]] slot is true, throw an InvalidStateError.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCDTMFSender-insertDTMF
+        desc: >
+          If transceiver's [[CurrentDirection]] slot is recvonly or inactive,
+          throw an InvalidStateError.
+
+      - step: 5
+        status: trivial
+        desc: >
+          Let dtmf be the RTCDTMFSender associated with sender.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCDTMFSender-insertDTMF
+        desc: >
+          If dtmf's [[CanInsertDTMF]] internal slot is false, throw an
+          InvalidStateError.
+
+      - step: 7
+        status: trivial
+        desc: >
+          Let tones be the method's first argument.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCDTMFSender-insertDTMF
+        desc: >
+          If tones contains any unrecognized characters, throw an
+          InvalidCharacterError.
+
+      - step: 9
+        status: tested
+        files:
+          - RTCDTMFSender-insertDTMF
+          - RTCDTMFSender-ontonechange
+        desc: >
+          Set the object's [[ToneBuffer]] slot to tones.
+
+      - step: 10
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          Set dtmf's [[Duration]] slot to the value of the duration parameter.
+
+      - step: 11
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          Set dtmf's [[InterToneGap]] slot to the value of the interToneGap
+          parameter.
+
+      - step: 12
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          If the value of the duration parameter is less than 40 ms, set dtmf's
+          [[Duration]] slot to 40 ms.
+
+      - step: 13
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange-long
+        desc: >
+          If the value of the duration parameter is greater than 6000 ms, set
+          dtmf's [[Duration]] slot to 6000 ms.
+
+      - step: 14
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          If the value of the interToneGap parameter is less than 30 ms, set
+          dtmf's [[InterToneGap]] slot to 30 ms.
+
+      - step: 15
+        status: todo
+        desc: >
+          If the value of the interToneGap parameter is greater than 6000 ms,
+          set dtmf's [[InterToneGap]] slot to 6000 ms.
+
+      - step: 16
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          If [[ToneBuffer]] slot is an empty string, abort these steps.
+
+      - step: 17
+        status: tested
+        files:
+          - RTCDTMFSender-ontonechange
+        desc: >
+          If a Playout task is scheduled to be run, abort these steps; otherwise
+          queue a task that runs the following steps (Playout task).
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              If transceiver's [[Stopped]] slot is true, abort these steps.
+
+          - step: 2
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              If transceiver's [[CurrentDirection]] slot is recvonly or inactive,
+              abort these steps.
+
+          - step: 3
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              If the [[ToneBuffer]] slot contains the empty string, fire an
+              event named tonechange with an empty string at the RTCDTMFSender
+              object and abort these steps.
+
+          - step: 4
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              Remove the first character from the [[ToneBuffer]] slot and let
+              that character be tone.
+
+          - step: 5
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              If tone is "," delay sending tones for 2000 ms on the associated
+              RTP media stream, and queue a task to be executed in 2000 ms from
+              now that runs the steps labelled Playout task.
+
+          - step: 6
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              If tone is not "," start playout of tone for [[Duration]] ms on
+              the associated RTP media stream, using the appropriate codec, then
+              queue a task to be executed in [[Duration]] + [[InterToneGap]] ms
+              from now that runs the steps labelled Playout task.
+
+          - step: 7
+            status: tested
+            files:
+              - RTCDTMFSender-ontonechange
+            desc: >
+              Fire a tonechange event named tonechange with a string consisting
+              of tone at the RTCDTMFSender object.
+
+  - status: todo
+    files:
+      - RTCDTMFSender-ontonechange
+    desc: >
+      Since insertDTMF replaces the tone buffer, in order to add to the DTMF
+      tones being played, it is necessary to call insertDTMF with a string
+      containing both the remaining tones (stored in the [[ToneBuffer]] slot)
+      and the new tones appended together. Calling insertDTMF with an empty
+      tones parameter can be used to cancel all tones queued to play after the
+      currently playing tone.

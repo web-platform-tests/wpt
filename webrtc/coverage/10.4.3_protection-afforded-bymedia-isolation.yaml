@@ -1,0 +1,36 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 10.4.3
+desc: Protection Afforded by Media Isolation
+steps:
+  - status: untestable
+    desc: >
+      Media isolation ensures that the content of a MediaStreamTrack is not
+      accessible to web applications. However, to ensure that media with a
+      peerIdentity option set can be sent to peers, some meta-information
+      about the media will be exposed to applications.
+
+  - status: untestable
+    desc: >
+        Applications will be able to observe the parameters of the media that
+        affect session negotiation and conversion into RTP. This includes the
+        codecs that might be supported by the track, the bitrate, the number of
+        packets, and the current settings that are set on the MediaStreamTrack.
+
+  - status: untestable
+    desc: >
+        In particular, the statistics that RTCPeerConnection records are not
+        reduced in capability. New statistics that might compromise isolation
+        MUST be avoided, or explicitly suppressed for isolated streams.
+
+  - status: untestable
+    desc: >
+        Most of these data are exposed to the network when the media is
+        transmitted. Only the settings for the MediaStreamTrack present a new
+        source of information. This can includes the frame rate and resolution
+        of video tracks, the bandwidth of audio tracks, and other information
+        about the source, which would not otherwise be revealed to a network
+        observer. Since settings don't change at a high frequency or in response
+        to changes in media content, settings only reveal limited reveal
+        information about the content of a track. However, any setting that
+        might change dynamically in response to the content of an isolated
+        MediaStreamTrack MUST have changes suppressed.

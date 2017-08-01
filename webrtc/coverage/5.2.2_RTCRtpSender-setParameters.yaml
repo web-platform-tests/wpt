@@ -1,0 +1,137 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: setParameters
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let parameters be the method's first argument.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let sender be the RTCRtpSender object on which setParameters is invoked.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Let transceiver be the RTCRtpTransceiver object associated with sender
+      (i.e. sender is transceiver's [[Sender]]).
+
+  - step: 4
+    status: tested
+    files:
+      - RTCRtpParameters-encodings
+    desc: >
+      Let N be the number of RTCRtpEncodingParameters stored in sender's
+      internal [[SendEncodings]] slot.
+
+  - step: 5
+    status: tested
+    files:
+      - RTCRtpSender-setParameters
+    desc: >
+      If transceiver's [[Stopped]] slot is true, return a promise rejected with
+      a newly created InvalidStateError.
+
+  - step: 6
+    status: todo
+    desc: >
+      If sender's [[LastReturnedParameters]] internal slot is empty, meaning
+      getParameters has never been called, return a promise rejected with a
+      newly created InvalidStateError.
+
+  - step: 7
+    status: tested
+    files:
+      - RTCRtpParameters-encodings
+      - RTCRtpParameters-codecs
+      - RTCRtpParameters-headerExtensions
+      - RTCRtpParameters-rtcp
+    desc: >
+      If parameters.encodings.length is different from N, or if any parameter in
+      parameters, is marked as a Read-only parameter, has a value that is
+      different from the corresponding parameter value in sender's
+      [[LastReturnedParameters]] internal slot, return a promise rejected with a
+      newly created InvalidModificationError. Note that this also applies to
+      transactionId.
+
+  - step: 8
+    status: todo
+    desc: >
+      For each value of i from 0 to the number of encodings, check whether
+      parameters.encodings[i].codecPayloadType (if set) corresponds to a value
+      of parameters.codecs[j].payloadType where j goes from 0 to the number of
+      codecs. If there is no correspondence, or if the MIME subtype portion of
+      parameters.codecs[j].mimeType is equal to "red", "cn", "telephone-event",
+      "rtx" or a forward error correction codec ("ulpfec" [RFC5109] or "flexfec"
+      [FLEXFEC]), reject p with a newly created InvalidAccessError.
+
+  - step: 9
+    status: tested
+    files:
+      - RTCRtpParameters-encodings
+    desc: >
+      If the scaleResolutionDownBy parameter in the parameters argument has a
+      value less than 1.0, return a promise rejected with a newly created
+      RangeError.
+
+  - step: 10
+    status: trivial
+    desc: >
+      Let p be a new promise.
+
+  - step: 11
+    status: untestable
+    desc: >
+      In parallel, configure the media stack to use parameters to transmit
+      sender's [[SenderTrack]].
+    steps:
+      - step: 1
+        desc: >
+          If the media stack is successfully configured with parameters, queue a
+          task to run the following steps.
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCRtpParameters-encodings
+            desc: >
+              Set sender's internal [[SendEncodings]] slot to
+              parameters.encodings.
+
+          - step: 2
+            status: todo
+            desc: >
+              Resolve p with undefined.
+
+      - step: 2
+        status: todo
+        desc: >
+          If any error occurred while configuring the media stack, queue a task
+          to run the following steps
+        steps:
+          - step: 1
+            status: untestable
+            desc: >
+              If an error occurred due to hardware resources not being available,
+              reject p with a newly created RTCError whose errorDetail is set to
+              "hardware-encoder-not-available" and abort these steps.
+
+          - step: 2
+            status: todo
+            desc: >
+              If an error occurred due to a hardware encoder not supporting
+              parameters, reject p with a newly created RTCError whose
+              errorDetail is set to "hardware-encoder-error" and abort these
+              steps.
+
+          - step: 3
+            status: untestable
+            desc: >
+              For all other errors, reject p with a newly created OperationError.
+
+  - step: 12
+    status: trivial
+    desc: >
+      Return p.

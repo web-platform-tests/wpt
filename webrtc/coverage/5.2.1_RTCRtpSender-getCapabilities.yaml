@@ -1,0 +1,22 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: getCapabilities
+steps:
+  - status: untestable
+    desc: >
+      The getCapabilities() method returns the most optimistic view of the
+      capabilities of the system for sending media of the given kind. It does
+      not reserve any resources, ports, or other state but is meant to provide a
+      way to discover the types of capabilities of the browser including which
+      codecs may be supported.
+
+  - status: tested
+    files:
+      - RTCRtpSender-getCapabilities
+    desc: >
+      User agents MUST support kind values of "audio" and "video".
+
+  - status: todo
+    desc: >
+      If the system has no capabilities corresponding to the value  of the kind
+      argument, getCapabilities returns null.

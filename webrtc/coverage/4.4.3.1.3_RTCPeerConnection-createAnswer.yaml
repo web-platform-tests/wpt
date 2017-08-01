@@ -1,0 +1,42 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.3.1
+desc: createAnswer
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let successCallback be the method's first argument.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let failureCallback be the callback indicated by the method's second
+      argument.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Let options be the callback indicated by the method's third argument.
+
+  - step: 4
+    status: todo
+    desc: >
+      Run the steps specified by RTCPeerConnection 's createAnswer() method with
+      no arguments, and let p be the resulting promise.
+
+  - step: 5
+    status: todo
+    desc: >
+      Upon fulfillment of p with value answer, invoke successCallback with
+      answer as the argument.
+
+  - step: 6
+    status: todo
+    desc: >
+      Upon rejection of p with reason r, invoke failureCallback with r as the
+      argument.
+
+  - step: 7
+    status: todo
+    desc: >
+      Return a promise resolved with undefined.

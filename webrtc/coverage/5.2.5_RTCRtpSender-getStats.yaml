@@ -1,0 +1,34 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: replaceTrack
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let selector be the RTCRtpSender object on which the method was invoked.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let p be a new promise, and run the following steps in parallel.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCRtpSender-getStats
+        desc: >
+          Gather the stats indicated by selector according to the stats selection
+          algorithm.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCRtpSender-getStats
+        desc: >
+          Resolve p with the resulting RTCStatsReport object, containing the
+          gathered stats.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Return p.

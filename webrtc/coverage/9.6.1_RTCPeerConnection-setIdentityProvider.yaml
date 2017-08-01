@@ -1,0 +1,20 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 9.6
+desc: setIdentityProvider
+steps:
+  - step: 1
+    status: todo
+    desc: >
+      If the RTCPeerConnection object's [[IsClosed]] slot is true, throw an
+      InvalidStateError.
+
+  - step: 2
+    status: untestable
+    desc: >
+      Set the current identity provider values to the tuple (provider, options).
+
+  - step: 3
+    status: untestable
+    desc: >
+      If any identity provider value has changed, discard any stored identity
+      assertion.

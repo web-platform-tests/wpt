@@ -1,0 +1,119 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 9.3
+desc: Requesting Identity Assertions
+steps:
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+      - RTCPeerConnection-getIdentityAssertion
+    desc: >
+      The identity assertion request process is triggered by a call to
+      createOffer, createAnswer, or getIdentityAssertion. When these calls are
+      invoked and an identity provider has been set, the following steps are
+      executed.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          The RTCPeerConnection instantiates an IdP as described in Identity
+          Provider Selection and Registering an IdP Proxy. If the IdP cannot be
+          loaded, instantiated, or the IdP proxy is not registered, this process
+          fails.
+
+      - step: 2
+        status: untestable
+        desc: >
+          If the RTCPeerConnection was not constructed with a set of
+          certificates, and one has not yet been generated, wait for it to be
+          generated.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          The RTCPeerConnection invokes the generateAssertion method on the
+          RTCIdentityProvider methods registered by the IdP.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          The RTCPeerConnection generates the contents parameter to this method
+          as described in [RTCWEB-SECURITY-ARCH].
+
+          The value of contents includes the fingerprint of the certificate that
+          was selected or generated during the construction of the
+          RTCPeerConnection.
+
+          The origin parameter contains the origin of the script that calls the
+          RTCPeerConnection method that triggers this behavior.
+
+          The usernameHint value is the same value that is provided to
+          setIdentityProvider, if any such value was provided.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          The IdP proxy returns a Promise to the RTCPeerConnection. The IdP
+          proxy is expected to generate the identity assertion asynchronously.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          If the user has been authenticated by the IdP, and the IdP is able to
+          generate an identity assertion, the IdP resolves the promise with an
+          identity assertion in the form of an RTCIdentityAssertionResult .
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          This step depends entirely on the IdP. The methods by which an IdP
+          authenticates users or generates assertions is not specified, though
+          they could involve interacting with the IdP server or other servers.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          If the IdP proxy produces an error or returns a promise that does not
+          resolve to a valid RTCIdentityAssertionResult (see 9.5 IdP Error
+          Handling), then assertion generation fails.
+
+      - step: 6
+        status: untestable
+        desc: >
+          The RTCPeerConnection MAY store the identity assertion for use with
+          future offers or answers. If a fresh identity assertion is needed for
+          any reason, applications can create a new RTCPeerConnection.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          If the identity request was triggered by a createOffer() or
+          createAnswer(), then the assertion is converted to a JSON string,
+          base64-encoded and inserted into an a=identity attribute in the
+          session description.
+
+  - status: todo
+    desc: >
+      If assertion generation fails, then the promise for the corresponding
+      function call is rejected with a newly created OperationError.

@@ -1,0 +1,41 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.4
+desc: setCodecPreferences
+steps:
+  - status: untestable
+    desc: >
+      The setCodecPreferences method overrides the default codec preferences
+      used by the user agent. When generating a session description using either
+      createOffer or createAnswer, the user agent MUST use the indicated codecs,
+      in the order specified in the codecs argument, for the media section
+      corresponding to this RTCRtpTransceiver. Note that calls to createAnswer
+      will use only the common subset of these codecs and the codecs that appear
+      in the offer.
+
+  - status: untestable
+    desc: >
+      This method allows applications to disable the negotiation of specific
+      codecs. It also allows an application to cause a remote peer to prefer the
+      codec that appears first in the list for sending.
+
+  - status: untestable
+    desc: >
+      Codec preferences remain in effect for all calls to createOffer and
+      createAnswer that include this RTCRtpTransceiver until this method is
+      called again. Setting codecs to an empty sequence resets codec preferences
+      to any default value.
+
+  - status: tested
+    files:
+      - RTCRtpTransceiver-setCodecPreferences
+    desc: >
+      The codecs sequence passed into setCodecPreferences can only contain
+      codecs that are returned by RTCRtpSender.getCapabilities(kind) or
+      RTCRtpReceiver.getCapabilities(kind), where kind is the kind of the
+      RTCRtpTransceiver on which the method is called. Additionally, the
+      RTCRtpCodecParameters dictionary members cannot be modified.
+
+  - status: todo
+    desc: >
+      If codecs does not fulfill these requirements, the user agent MUST throw
+      an InvalidAccessError.

@@ -1,0 +1,141 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 9.4
+desc: Verifying Identity Assertions
+steps:
+  - status: trivial
+    desc: >
+      The identity assertion request process involves the following asynchronous
+      steps.
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          The RTCPeerConnection awaits any prior identity validation. Only one
+          identity validation can run at a time for an RTCPeerConnection. This
+          can happen because the resolution of setRemoteDescription is not
+          blocked by identity validation unless there is a target peer identity.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection loads the identity assertion from the session
+          description and decodes the base64 value, then parses the resulting
+          JSON. The idp parameter of the resulting dictionary contains a domain
+          and an optional protocol value that identifies the IdP, as described
+          in [ RTCWEB-SECURITY-ARCH].
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection instantiates the identified IdP as described in
+          9.1.1 Identity Provider Selection and 9.2 Registering an IdP Proxy.
+          If the IdP cannot be loaded, instantiated or the IdP proxy is not
+          registered, this process fails.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection invokes the validateAssertion method registered
+          by the IdP.
+
+          The assertion parameter is taken from the decoded identity assertion.
+          The origin parameter contains the origin of the script that calls the
+          RTCPeerConnection method that triggers this behavior.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The IdP proxy returns a promise and performs the validation process
+          asynchronously.
+
+          The IdP proxy verifies the identity assertion using whatever means
+          necessary. Depending on the authentication protocol this could involve
+          interacting with the IdP server.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          If the IdP proxy produces an error or returns a promise that does not
+          resolve to a valid RTCIdentityValidationResult (see 9.5 IdP Error
+          Handling), then identity validation fails.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          Once the assertion is successfully verified, the IdP proxy resolves
+          the promise with an RTCIdentityValidationResult containing the
+          validated identity and the original contents that are the payload of
+          the assertion.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection decodes the contents and validates that it
+          contains a fingerprint value for every a=fingerprint attribute in the
+          session description. This ensures that the certificate used by the
+          remote peer for communications is covered by the identity assertion.
+
+      - step: 9
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection validates that the domain portion of the
+          identity matches the domain of the IdP as described in
+          [RTCWEB-SECURITY-ARCH]. If this check fails then the identity
+          validation fails.
+
+      - step: 10
+        status: tested
+        files:
+          - RTCPeerConnection-peerIdentity
+        desc: >
+          The RTCPeerConnection resolves the peerIdentity attribute with a new
+          instance of RTCIdentityAssertion that includes the IdP domain and peer
+          identity.
+
+      - step: 11
+        status: untestable
+        desc: >
+          The user agent MAY display identity information to a user in its UI.
+          Any user identity information that is displayed in this fashion MUST
+          use a mechanism that cannot be spoofed by content.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+    desc: >
+      If identity validation fails, the peerIdentity promise is rejected with a
+      newly created OperationError.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+    desc: >
+      If identity validation fails and there is a target peer identity for the
+      RTCPeerConnection, the promise returned by setRemoteDescription MUST be
+      rejected with the same DOMException.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-peerIdentity
+    desc: >
+      If identity validation fails and there is no a target peer identity, the
+      value of the peerIdentity MUST be set to a new, unresolved promise
+      instance. This permits the use of renegotiation (or a subsequent answer,
+      if the session description was a provisional answer) to resolve or reject
+      the identity.

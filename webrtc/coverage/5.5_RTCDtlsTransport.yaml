@@ -1,0 +1,35 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.5
+desc: RTCDtlsTransport Interface
+steps:
+  - status: todo
+    desc: >
+      An RTCDtlsTransport has a [[DtlsTransportState]] internal slot initialized
+      to new.
+
+  - status: untestable
+    desc: >
+      When the underlying DTLS transport needs to update the state of the
+      corresponding RTCDtlsTransport object, the user agent MUST queue a task
+      that runs the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let transport be the RTCDtlsTransport object to receive the state
+          update.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let newState be the new state.
+
+      - step: 3
+        status: todo
+        desc: >
+          Set transport's [[DtlsTransportState]] slot to newState.
+
+      - step: 4
+        status: todo
+        desc: >
+          Fire a simple event named statechange at transport.

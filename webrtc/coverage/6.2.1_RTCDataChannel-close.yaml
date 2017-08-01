@@ -1,0 +1,23 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 6.2
+desc:  close
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let channel be the RTCDataChannel object which is about to be closed.
+
+  - step: 2
+    status: todo
+    desc: >
+      If channel's [[ReadyState]] slot is closing or closed, then abort these steps.
+
+  - step: 3
+    status: todo
+    desc: >
+      Set channel's [[ReadyState]] slot to closing.
+
+  - step: 4
+    status: todo
+    desc: >
+      If the closing procedure has not started yet, start it.

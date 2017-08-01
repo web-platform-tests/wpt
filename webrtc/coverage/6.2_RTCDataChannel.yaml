@@ -1,0 +1,181 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 6.2
+desc: RTCDataChannel
+steps:
+  - status: tested
+    files:
+      - RTCPeerConnection-ondatachannel
+      - RTCPeerConnection-createDataChannel
+    desc: >
+      An RTCDataChannel, created with createDataChannel or dispatched via an
+      RTCDataChannelEvent, MUST initially be in the connecting state.
+
+  - status: untestable
+    desc: >
+      When the RTCDataChannel object's underlying data transport is ready, the
+      user agent MUST announce the RTCDataChannel as open.
+
+  - status: todo
+    desc: >
+      When the user agent is to announce an RTCDataChannel as open, the user
+      agent MUST queue a task to run the following steps.
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          If the associated RTCPeerConnection object's [[IsClosed]] slot is
+          true, abort these steps.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let channel be the RTCDataChannel object to be announced.
+
+      - step: 3
+        status: todo
+        desc: >
+          Set channel's [[ReadyState]] slot to open.
+
+      - step: 4
+        status: todo
+        desc: >
+          Fire a simple event named open at channel.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-ondatachannel
+    desc: >
+      When an underlying data transport is to be announced (the other peer
+      created a channel with negotiated unset or set to false), the user agent
+      of the peer that did not initiate the creation process MUST queue a task
+      to run the following steps.
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          If the associated RTCPeerConnection object's [[IsClosed]] slot is
+          true, abort these steps.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let channel be a newly created RTCDataChannel object.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-ondatachannel
+        desc: >
+          Let configuration be an information bundle received from the other
+          peer as a part of the process to establish the underlying data
+          transport described by the WebRTC DataChannel Protocol specification
+          [RTCWEB-DATA-PROTOCOL].
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-ondatachannel
+        desc: >
+          Initialize channel's [[DataChannelLabel]], [[Ordered]],
+          [[MaxPacketLifeTime]], [[MaxRetransmits]], [[DataChannelProtocol]],
+          and [[DataChannelId]] internal slots to the corresponding values in
+          configuration.
+
+      - step: 5
+        status: todo
+        desc: >
+          Initialize channel's [[Negotiated]] internal slot to false.
+
+      - step: 6
+        status: todo
+        desc: >
+          Initialize channel's [[DataChannelPriority]] internal slot based on
+          the integer priority value in configuration, according to the
+          following mapping.
+
+            configuration priority value  |	  RTCPriorityType value
+            ==============================|========================
+            0 to 128 	                    |   very-low
+            129 to 256 	                  |   low
+            257 to 512 	                  |   medium
+            513 and greater 	            |   high
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-ondatachannel
+        desc: >
+          Set channel's [[ReadyState]] slot to connecting.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-ondatachannel
+        desc: >
+          Fire a datachannel event named datachannel with channel at the
+          RTCPeerConnection object.
+
+  - status: todo
+    desc: >
+      An RTCDataChannel object's underlying data transport may be torn down in a
+      non-abrupt manner by running the closing procedure. When that happens the
+      user agent MUST, unless the procedure was initiated by the close method,
+      queue a task that sets the object's [[ReadyState]] slot to closing. This
+      will eventually render the data transport closed.
+
+  - status: todo
+    desc: >
+      When an RTCDataChannel object's underlying data transport has been closed,
+      the user agent MUST queue a task to run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let channel be the RTCDataChannel object whose transport was closed.
+
+      - step: 2
+        status: todo
+        desc: >
+          Set channel's [[ReadyState]] slot to closed.
+
+      - step: 3
+        status: todo
+        desc: >
+          If the transport was closed with an error, fire an RTCError event at
+          channel with errorDetail set to "sctp-failure".
+
+      - step: 4
+        status: todo
+        desc: >
+          Fire a simple event named close at channel.
+
+  - status: untestable
+    desc: >
+      In some cases, the user agent may be unable to create an RTCDataChannel's
+      underlying data transport. For example, the data channel's id may be
+      outside the range negotiated by the [RTCWEB-DATA] implementations in the
+      SCTP handshake. When the user agent determines that an RTCDataChannel's
+      underlying data transport cannot be created, the user agent MUST queue a
+      task to run the following steps.
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          Let channel be the RTCDataChannel object for which the user agent
+          could not create an underlying data transport.
+
+      - step: 2
+        status: untestable
+        desc: >
+          Set channel's [[ReadyState]] slot to closed.
+
+      - step: 3
+        status: untestable
+        desc: >
+          Fire an RTCError event at channel with errorDetail set to
+          "data-channel-failure".
+
+      - step: 4
+        status: untestable
+        desc: >
+          Fire a simple event named close at channel.

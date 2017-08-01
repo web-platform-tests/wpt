@@ -1,0 +1,121 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.1
+desc: RTCPeerConnection Constructor
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let connection be a newly created RTCPeerConnection object.
+
+  - step: 2
+    status: tested
+    files:
+      - RTCCertificate
+    desc: >
+      If the certificates value in configuration is non-empty, check that the
+      expires on each value is in the future. If a certificate has expired,
+      throw an InvalidAccessError; otherwise, store the certificates.
+
+  - step: 2
+    status: untestable
+    desc: >
+      If no certificates value was specified, one or more new RTCCertificate
+      instances are generated for use with this RTCPeerConnection instance.
+
+      This MAY happen asynchronously and the value of certificates remains
+      undefined for the subsequent steps.
+
+  - step: 3
+    status: tested
+    files:
+      - RTCConfiguration-rtcpMuxPolicy
+    desc: >
+      If configuration.rtcpMuxPolicy is "negotiate", and the user agent does not
+      implement non-muxed RTCP, throw a NotSupportedError.
+
+  - step: 4
+    status: untestable
+    desc: >
+      Initialize connection's ICE Agent.
+
+  - step: 5
+    status: todo
+    desc: >
+      Let connection have a [[Configuration]] internal slot. Set the
+      configuration specified by configuration.
+
+  - step: 6
+    status: todo
+    desc: >
+      Let connection have an [[IsClosed]] internal slot, initialized to false.
+
+  - step: 7
+    status: todo
+    desc: >
+      Let connection have a [[NegotiationNeeded]] internal slot, initialized to
+      false.
+
+  - step: 8
+    status: tested
+    files:
+      - RTCSctpTransport-constructor
+    desc: >
+      Let connection have an [[SctpTransport]] internal slot, initialized to
+      null.
+
+  - step: 9
+    status: todo
+    desc: >
+      Let connection have an [[Operations]] internal slot, representing an
+      operations queue, initialized to an empty list.
+
+  - step: 10
+    status: todo
+    desc: >
+      Let connection have an [[LastOffer]] internal slot, initialized to "".
+
+  - step: 10
+    status: todo
+    desc: >
+      Let connection have an [[LastAnswer]] internal slot, initialized to "".
+
+  - step: 12
+    status: tested
+    files:
+      RTCPeerConnection-constructor
+    desc: >
+      Set connection's signaling state to "stable".
+
+  - step: 13
+    status: tested
+    files:
+      RTCPeerConnection-constructor
+    desc: >
+      Set connection's ICE connection state to "new".
+
+  - step: 14
+    status: tested
+    files:
+      RTCPeerConnection-constructor
+    desc: >
+      Set connection's ICE gathering state to "new".
+
+  - step: 15
+    status: tested
+    files:
+      RTCPeerConnection-constructor
+    desc: >
+      Set connection's connection state to "new".
+
+  - step: 16
+    status: tested
+    files:
+      RTCPeerConnection-constructor
+    desc: >
+      Set connection's pendingLocalDescription, currentLocalDescription,
+      pendingRemoteDescription and currentRemoteDescription to null.
+
+  - step: 17
+    status: trivial
+    desc: >
+      Return connection.

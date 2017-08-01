@@ -1,0 +1,10 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.3
+desc: getSynchronizationSources
+steps:
+  - status: tested
+    files:
+      - RTCRtpReceiver-getSynchronizationSources
+    desc: >
+      Returns an RTCRtpSynchronizationSource for each unique SSRC identifier
+      received by this RTCRtpReceiver in the last 10 seconds.

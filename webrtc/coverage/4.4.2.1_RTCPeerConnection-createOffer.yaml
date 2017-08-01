@@ -1,0 +1,156 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: createOffer
+steps:
+  - status: todo
+    desc: >
+      If the RTCPeerConnection is configured to generate Identity assertions by
+      calling setIdentityProvider , then the session description SHALL contain
+      an appropriate assertion.
+
+  - step: 1
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object on which the method was
+      invoked.
+
+  - step: 2
+    status: tested
+    files:
+      - RTCPeerConnection-createOffer
+    desc: >
+      If connection's [[IsClosed]] slot is true, return a promise rejected with
+      a newly created InvalidStateError.
+
+  - step: 3
+    status: tested
+    files:
+      - RTCPeerConnection-getIdentityAssertion
+    desc: >
+      If connection is configured with an identity provider, then begin the
+      identity assertion request process if it has not already begun.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-createOffer
+    desc: >
+      Return the result of enqueuing the following steps to connection's
+      operation queue
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let p be a new promise.
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-createOffer
+        desc: >
+          In parallel, begin the steps to create an offer, given p.
+      - step: 3
+        status: trivial
+        desc: >
+          Return p.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-createOffer
+    desc: >
+      The steps to create an offer given a promise p are as follows
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If connection was not constructed with a set of certificates,
+          and one has not yet been generated, wait for it to be generated.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let provider be connection's currently configured identity provider
+          if one has been configured, or null otherwise.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          If provider is non-null, wait for the identity assertion request
+          process to complete.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-getIdentityAssertion
+        desc: >
+          If provider was unable to produce an identity assertion, reject p
+          with a newly created NotReadableError and abort these steps.
+
+      - step: 5
+        status: untestable
+        desc: >
+          Inspect the system state to determine the currently available
+          resources as necessary for generating the offer, as described in
+          [JSEP] (section 4.1.6.).
+
+      - step: 6
+        status: untestable
+        desc: >
+          If this inspection failed for any reason, reject p with a newly
+          created OperationError and abort these steps.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-createOffer
+        desc: >
+          Queue a task that runs the final steps to create an offer, given p.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-createOffer
+    desc: >
+      The final steps to create an offer given a promise p are as follows
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If connection's [[IsClosed]] slot is true, then abort these steps.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection was modified in such a way that additional inspection
+          of the system state is necessary, or if its configured indentity
+          provider is no longer provider, then in parallel begin the steps to
+          create an offer again, given p, and abort these steps.
+
+      - step: 3
+        status: untestable
+        desc: >
+          Given the information that was obtained from previous inspection,
+          the current state of connection and its RTCRtpTransceiver
+          s, and the identity assertion from provider (if non-null), generate
+          an SDP offer, sdpString, as described in [JSEP] (section 5.2.).
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-createOffer
+        desc: >
+          Let offer be a newly created RTCSessionDescriptionInit dictionary
+          with its type member initialized to the string "offer" and its sdp
+          member initialized to sdpString.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-setLocalDescription-offer
+        desc: >
+          Set the [[LastOffer]] internal slot to sdpString.
+
+      - step: 6
+        status: trivial
+        desc: >
+          Resolve p with offer.

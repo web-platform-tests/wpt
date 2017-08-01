@@ -1,0 +1,168 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1
+desc: addTransceiver
+steps:
+  - status: trivial
+    desc: >
+      Create a new RTCRtpTransceiver and add it to the set of transceivers.
+
+  - status: todo
+    desc: >
+      Adding a transceiver will cause future calls to createOffer to add a media
+      description for the corresponding transceiver, as defined in [JSEP]
+      (section 5.2.2.).
+
+  - status: todo
+    desc: >
+      The initial value of mid is null. Setting a new RTCSessionDescription may
+      change it to a non-null value, as defined in [JSEP] (section 5.5. and
+      section 5.6.).
+
+  - status: todo
+    desc: >
+      The sendEncodings argument can be used to specify the number of offered
+      simulcast encodings, and optionally their RIDs and encoding parameters.
+
+  - status: tested
+    desc: >
+      When this method is invoked, the user agent MUST run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let init be the second argument.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let streams be init's streams member.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let sendEncodings be init's sendEncodings member.
+
+      - step: 4
+        status: trivial
+        desc: >
+          Let direction be init's direction member.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          If the first argument is a string, let it be kind and run the
+          following steps
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCPeerConnection-addTransceiver
+            desc: >
+              If kind is not a legal MediaStreamTrack kind, throw a TypeError.
+
+          - step: 2
+            status: tested
+            files:
+              - RTCPeerConnection-addTransceiver
+            desc: >
+              Let track be null.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          If the first argument is a MediaStreamTrack , let it be track and let
+          kind be track.kind.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Verify that each rid value in sendEncodings is composed only of
+          alphanumeric characters (a-z, A-Z, 0-9) up to a maximum of 16
+          characters. If one of the RIDs does not meet these requirements, throw
+          a TypeError.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          If any RTCRtpEncodingParameters dictionary in sendEncodings contains
+          a read-only parameter other than rid , throw an InvalidAccessError.
+
+      - step: 9
+        status: todo
+        desc: >
+          Verify that each scaleResolutionDownBy value in sendEncodings is
+          greater than or equal to 1.0. If one of the scaleResolutionDownBy
+          values does not meet this requirement, throw a RangeError.
+
+      - step: 10
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Create an RTCRtpSender with track, streams and sendEncodings and let
+          sender be the result.
+
+      - step: 10
+        status: todo
+        desc: >
+          If sendEncodings is set, then subsequent calls to createOffer will be
+          configured to send multiple RTP encodings as defined in [JSEP]
+          (section 5.2.2. and section 5.2.1.). When setRemoteDescription is
+          called with a corresponding remote description that is able to receive
+          multiple RTP encodings as defined in [JSEP] (section 3.7.), the
+          RTCRtpSender may send multiple RTP encodings and the parameters
+          retrieved via the transceiver's sender.getParameters() will reflect
+          the encodings negotiated.
+
+      - step: 11
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Create an RTCRtpReceiver with kind and let receiver be the result.
+
+      - step: 11
+        status: todo
+        desc: >
+          This specification does not define how to configure createOffer to
+          receive multiple RTP encodings. However when setRemoteDescription is
+          called with a corresponding remote description that is able to send
+          multiple RTP encodings as defined in [JSEP], the RTCRtpReceiver may
+          receive multiple RTP encodings and the parameters retrieved via the
+          transceiver's receiver.getParameters() will reflect the encodings
+          negotiated.
+
+      - step: 12
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Create an RTCRtpTransceiver with sender, receiver and direction, and
+          let transceiver be the result.
+
+      - step: 13
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Add transceiver to connection's set of transceivers
+
+      - step: 14
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          Update the negotiation-needed flag for connection.
+
+      - step: 15
+        status: trivial
+        desc: >
+          Return transceiver.

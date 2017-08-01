@@ -1,0 +1,150 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.7.3
+desc: Updating the Negotiation-Needed flag
+steps:
+  - status: tested
+    desc: >
+      To update the negotiation-needed flag for connection, run the following
+      steps
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          If connection's signaling state is not "stable", abort these steps.
+
+      - step: 3
+        status: todo
+        desc: >
+          If the result of checking if negotiation is needed is false, clear the
+          negotiation-needed flag by setting connection's [[NegotiationNeeded]]
+          slot to false, and abort these steps.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          If connection's [[NegotiationNeeded]] slot is already true, abort
+          these steps.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          Set connection's [[NegotiationNeeded]] slot to true.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          Queue a task that runs the following steps
+        steps:
+          - step: 1
+            status: todo
+            desc: >
+              If connection's [[IsClosed]] slot is true, abort these steps.
+
+          - step: 2
+            status: todo
+            desc: >
+              If connection's [[NegotiationNeeded]] slot is false, abort these
+              steps.
+
+          - step: 3
+            status: tested
+            files:
+              - RTCPeerConnection-onnegotiationneeded
+            desc: >
+              Fire a simple event named negotiationneeded at connection.
+
+  - status: tested
+    desc: >
+      To check if negotiation is needed for connection, perform the following
+      checks
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If any implementation-specific negotiation is required, as described
+          at the start of this section, return true.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let description be connection's currentLocalDescription.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          If connection has created any RTCDataChannels, and no m= section in
+          description has been negotiated yet for data, return true.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-onnegotiationneeded
+        desc: >
+          For each transceiver in connection's set of transceivers, perform the
+          following checks
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCPeerConnection-onnegotiationneeded
+            desc: >
+              If transceiver isn't stopped and isn't yet associated with an
+              m= section in description, return true.
+
+          - step: 2
+            status: todo
+            desc: >
+              If transceiver isn't stopped and is associated with an m= section
+              in description then perform the following checks
+            steps:
+              - step: 1
+                status: todo
+                desc: >
+                  If transceiver's [[Direction]] slot is "sendrecv" or
+                  "sendonly", and the associated m= section in description
+                  doesn't contain an "a=msid" line, return true.
+
+              - step: 2
+                status: todo
+                desc: >
+                  If description is of type "offer", and the direction of the
+                  associated m= section in neither connection's
+                  currentLocalDescription nor currentRemoteDescription matches
+                  transceiver's [[Direction]] slot, return true.
+
+              - step: 3
+                status: todo
+                desc: >
+                  If description is of type "answer", and the direction of the
+                  associated m= section in the description does not match
+                  transceiver's [[Direction]] slot intersected with the offered
+                  direction (as described in [JSEP] (section 5.3.1.)), return
+                  true.
+
+          - step: 3
+            status: todo
+            desc: >
+              If transceiver is stopped and is associated with an m= section,
+              but the associated m= section is not yet rejected in connection's
+              currentLocalDescription or currentRemoteDescription , return true.
+
+      - step: 5
+        status: todo
+        desc: >
+          If all the preceding checks were performed and true was not returned,
+          nothing remains to be negotiated; return false.

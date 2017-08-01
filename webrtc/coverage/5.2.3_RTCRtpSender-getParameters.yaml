@@ -1,0 +1,64 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: getParameters
+steps:
+  - status: trivial
+    desc: >
+      When getParameters is called, the RTCRtpParameters dictionary is
+      constructed as follows.
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          transactionId is set to a new unique identifier, used to match this
+          getParameters call to a setParameters call that may occur later.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCRtpParameters-encodings
+        desc: >
+          encodings is set to the value of the [[SendEncodings]] internal slot.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCRtpParameters-headerExtensions
+        desc: >
+          The headerExtensions sequence is populated based on the header
+          extensions that have been negotiated for sending.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCRtpParameters-codecs
+        desc: >
+          The codecs sequence is populated based on the codecs that have been
+          negotiated for sending, and which the user agent is currently capable
+          of sending.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCRtpParameters-rtcp
+        desc: >
+          rtcp.cname is set to the CNAME of the associated RTCPeerConnection.
+          rtcp.reducedSize is set to true if reduced-size RTCP has been
+          negotiated for sending, and false otherwise.
+
+      - step: 6
+        status: tested
+        desc: >
+          degradationPreference is set to the last value passed into
+          setParameters, or the default value of "balanced" if setParameters
+          hasn't been called.
+
+  - status: tested
+    files:
+      - RTCRtpParameters-encodings
+      - RTCRtpParameters-codecs
+      - RTCRtpParameters-headerExtensions
+      - RTCRtpParameters-rtcp
+    desc: >
+      The returned RTCRtpParameters dictionary MUST be stored in the
+      RTCRtpSender object's [[LastReturnedParameters]] internal slot.

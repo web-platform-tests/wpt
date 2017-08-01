@@ -1,0 +1,36 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 10.3
+desc: MediaStreamTrack
+steps:
+  - status: trivial
+    desc: >
+      A MediaStreamTrack object's reference to its MediaStream in the non-local
+      media source case (an RTP source, as is the case for MediaStreamTracks
+      received over an RTCPeerConnection) is always strong.
+
+  - status: todo
+    desc: >
+      When an RTCPeerConnection receives data on an RTP source for the first
+      time, it MUST update the muted state of the corresponding MediaStreamTrack
+      with the value false.
+
+  - status: todo
+    desc: >
+      When one of the SSRCs for RTP source media streams received by an
+      RTCPeerConnection is removed (either due to reception of a BYE or via
+      timeout), it MUST update the muted state of the corresponding
+      MediaStreamTrack with the value true.
+
+      If and when packets are received again, the muted state MUST be updated
+      with the value false.
+
+  - status: trivial
+    desc: >
+      The procedure update a track's muted state is specified in [GETUSERMEDIA].
+
+  - status: untestable
+    desc: >
+      When a MediaStreamTrack track produced by an RTCRtpReceiver receiver has
+      ended [GETUSERMEDIA] (such as via a call to receiver.track.stop), the user
+      agent MAY choose to free resources allocated for the incoming stream, by
+      for instance turning off the decoder of receiver.

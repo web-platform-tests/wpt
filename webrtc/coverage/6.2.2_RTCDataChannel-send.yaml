@@ -1,0 +1,72 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 6.2
+desc: send
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let channel be the RTCDataChannel object on which data is to be sent.
+
+  - step: 2
+    status: tested
+    files:
+      RTCDataChannel-send
+    desc: >
+      If channel's [[ReadyState]] slot is not open, throw an InvalidStateError.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Execute the sub step that corresponds to the type of the methods argument.
+    steps:
+      - status: tested
+        files:
+          RTCDataChannel-send
+        desc: >
+          string object.
+
+          Let data be the object and increase the bufferedAmount attribute by
+          the number of bytes needed to express data as UTF-8.
+
+      - status: tested
+        files:
+          RTCDataChannel-send
+        desc: >
+          Blob object.
+
+          Let data be the raw data represented by the Blob object and increase
+          the bufferedAmount attribute by the size of data, in bytes.
+
+      - status: tested
+        files:
+          RTCDataChannel-send
+        desc: >
+          ArrayBuffer object.
+
+          Let data be the data stored in the buffer described by the ArrayBuffer
+          object and increase the bufferedAmount attribute by the length of the
+          ArrayBuffer in bytes.
+
+      - status: tested
+        files:
+          RTCDataChannel-send
+        desc: >
+          ArrayBufferView object.
+
+          Let data be the data stored in the section of the buffer described by
+          the ArrayBuffer object that the ArrayBufferView object references and
+          increase the bufferedAmount attribute by the length of the
+          ArrayBufferView in bytes.
+
+  - step: 4
+    status: todo
+    desc: >
+      If the size of data exceeds the value of maxMessageSize on channel's
+      associated RTCSctpTransport, throw a TypeError.
+
+  - step: 5
+    status: untestable
+    desc: >
+      Queue data for transmission on channel's underlying data transport. If
+      queuing data is not possible because not enough buffer space is available,
+      throw an OperationError.

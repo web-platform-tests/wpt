@@ -1,0 +1,38 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.10.2
+desc: >
+  The RTCCertificate object can be stored and retrieved from persistent storage
+  by an application. When a user agent is required to obtain a structured clone
+  [HTML51] of an RTCCertificate object, it performs the following steps.
+steps:
+  - step: 1
+    status: todo
+    desc: >
+      Let input and memory be the corresponding inputs defined by the internal
+      structured cloning algorithm, where input represents an RTCCertificate
+      object to be cloned.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let output be a newly constructed RTCCertificate object.
+
+  - step: 3
+    status: todo
+    desc: >
+      Copy the value of the expires attribute from input to output.
+
+  - step: 4
+    status: todo
+    desc: >
+      Let the [[Certificate]] internal slot of output be set to the result of
+      invoking the internal structured clone algorithm recursively on the
+      corresponding internal slots of input, with the slot contents as the new
+      "input" argument and memory as the new " memory" argument.
+
+  - step: 5
+    status: todo
+    desc: >
+      Let the [[KeyingMaterial]] internal slot of output refer to the same
+      private keying material represented by the [[KeyingMaterial]] internal
+      slot of input.

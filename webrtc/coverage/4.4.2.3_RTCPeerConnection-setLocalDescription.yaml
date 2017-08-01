@@ -1,0 +1,45 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: setLocalDescription
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let description be the first argument to setLocalDescription.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let lastOffer be the result returned by the last call to createOffer.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Let lastAnswer be the result returned by the last call to createAnswer.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-setLocalDescription-answer
+    desc: >
+      If description.sdp is null and description.type is answer or pranswer,
+      set description.sdp to lastAnswer.
+
+  - step: 5
+    status: tested
+    files:
+      - RTCPeerConnection-setLocalDescription-offer
+    desc: >
+      If description.sdp is null and description.type is offer, set
+      description.sdp to lastOffer.
+
+  - step: 8
+    status: tested
+    files:
+      - RTCPeerConnection-setLocalDescription-offer
+      - RTCPeerConnection-setLocalDescription-answer
+      - RTCPeerConnection-setLocalDescription-pranswer
+      - RTCPeerConnection-setLocalDescription-rollback
+    desc: >
+      Return the result of setting the RTCSessionDescription indicated by the
+      method's first argument.

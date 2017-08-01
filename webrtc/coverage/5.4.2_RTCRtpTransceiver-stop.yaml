@@ -1,0 +1,86 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.4
+desc: stop
+steps:
+  - status: todo
+    desc: >
+      Stopping a transceiver will cause future calls to createOffer to generate
+      a zero port in the media description for the corresponding transceiver, as
+      defined in [JSEP] (section 4.2.1).
+
+  - status: trivial
+    desc: >
+      When this method is invoked, to stop the RTCRtpTransceiver transceiver,
+      the user agent MUST run the following steps.
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          If transceiver's [[Stopped]] slot is true, abort these steps.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object on which the
+          transceiver is to be stopped.
+
+      - step: 3
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, throw an InvalidStateError.
+
+      - step: 4
+        status: trivial
+        desc: >
+          Let sender be transceiver's [[Sender]].
+
+      - step: 5
+        status: trivial
+        desc: >
+          Let receiver be transceiver's [[Receiver]].
+
+      - step: 6
+        status: untestable
+        desc: >
+          Stop sending media with sender.
+
+      - step: 7
+        status: untestable
+        desc: >
+          Send an RTCP BYE for each RTP stream that was being sent by sender, as
+          specified in [RFC3550].
+
+      - step: 8
+        status: untestable
+        desc: >
+          Stop receiving media with receiver.
+
+      - step: 9
+        status: todo
+        desc: >
+          receiver's [[ReceiverTrack]] is now said to be ended.
+
+      - step: 10
+        status: todo
+        desc: >
+          Set transceiver's [[Stopped]] slot to true.
+
+      - step: 11
+        status: todo
+        desc: >
+          Set transceiver's [[CurrentDirection]] slot to null.
+
+      - step: 12
+        status: todo
+        desc: >
+          Update the negotiation-needed flag for connection.
+
+  - status: todo
+    desc: >
+      When a remote description is applied with a zero port in the media
+      description for the corresponding transceiver, as defined in [JSEP]
+      (section 4.2.2), the user agent MUST run the above steps as if stop had
+      been called.
+
+      In addition, since the receiver's [[ReceiverTrack]] has ended, the steps
+      described in track ended MUST be followed.

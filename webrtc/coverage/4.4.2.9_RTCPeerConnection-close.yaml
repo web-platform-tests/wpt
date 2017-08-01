@@ -1,0 +1,102 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: close
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object on which the method was
+      invoked.
+
+  - step: 2
+    status: todo
+    desc: >
+      If connection's [[IsClosed]] slot is true, abort these steps.
+
+  - step: 3
+    status: todo
+    desc: >
+      Set connection's [[IsClosed]] slot to true.
+
+  - step: 4
+    status: todo
+    desc: >
+      Set connection's signaling state to "closed".
+
+  - step: 5
+    status: todo
+    desc: >
+      Let transceivers be the result of executing the CollectTransceivers
+      algorithm. For every RTCRtpTransceiver transceiver in transceivers,
+      run the following steps
+    steps:
+      - step: 1
+        status: todo
+        desc: >
+          If transceiver's [[Stopped]] slot is true, abort these steps.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let sender be transceiver's [[Sender]].
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let receiver be transceiver's [[Receiver]].
+
+      - step: 4
+        status: untestable
+        desc: >
+          Stop sending media with sender.
+
+      - step: 5
+        status: untestable
+        desc: >
+          Send an RTCP BYE for each RTP stream that was being sent by sender,
+          as specified in [RFC3550].
+
+      - step: 6
+        status: untestable
+        desc: >
+          Stop receiving media with receiver.
+
+      - step: 7
+        status: todo
+        desc: >
+          Set the readyState of receiver's [[ReceiverTrack]] to "ended".
+
+      - step: 8
+        status: todo
+        desc: >
+          Set transceiver's [[Stopped]] slot to true.
+
+  - step: 6
+    status: todo
+    desc: >
+      Set the [[ReadyState]] slot of each of connection's RTCDataChannel s to
+      "closed".
+
+  - step: 7
+    status: todo
+    desc: >
+      Set the [[SctpTransportState]] slot of each of connection's
+      RTCSctpTransport s to "closed".
+
+  - step: 8
+    status: todo
+    desc: >
+      Set the [[DtlsTransportState]] slot of each of connection's
+      RTCDtlsTransport s to "closed".
+
+  - step: 9
+    status: untestable
+    desc: >
+      Destroy connection's ICE Agent, abruptly ending any active ICE processing
+      and releasing any relevant resources (e.g. TURN permissions).
+
+  - step: 10
+    status: todo
+    desc: >
+      Set the [[IceTransportState]] slot of each of connection's
+      RTCIceTransports to "closed".

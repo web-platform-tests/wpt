@@ -1,0 +1,168 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: addIceCandidate
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let candidate be the method's argument.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object on which the method was
+      invoked.
+
+  - step: 3
+    status: tested
+    files:
+      - RTCPeerConnection-addIceCandidate
+    desc: >
+      If both sdpMid and sdpMLineIndex are null, return a promise rejected with
+      a newly created TypeError.
+
+  - step: 4
+    status: tested
+    desc: >
+      Return the result of enqueuing the following steps
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-addIceCandidate
+        desc: >
+          If remoteDescription is null return a promise rejected with a newly
+          created InvalidStateError.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let p be a new promise.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-addIceCandidate
+        desc: >
+          If candidate.sdpMid is not null, run the following steps
+        steps:
+          - step: 1
+            status: tested
+            files: RTCPeerConnection-addIceCandidate
+            desc: >
+              If candidate.sdpMid is not equal to the mid of any media
+              description in remoteDescription, reject p with a newly created
+              OperationError and abort these steps.
+
+      - step: 4
+        status: tested
+        fiels:
+          RTCPeerConnection-addIceCandidate
+        desc: >
+          Else, if candidate.sdpMLineIndex is not null, run the following steps
+        steps:
+          - step: 1
+            status: tested
+            files:
+              RTCPeerConnection-addIceCandidate
+            desc: >
+              If candidate.sdpMLineIndex is equal to or larger than the number
+              of media descriptions in remoteDescription , reject p with a newly
+              created OperationError and abort these steps.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-addIceCandidate
+        desc: >
+          If candidate.usernameFragment is neither undefined nor null, and is
+          not equal to any username fragment present in the corresponding media
+          description of an applied remote description, reject p with a newly
+          created OperationError and abort these steps.
+
+      - step: 6
+        status: todo
+        desc: >
+          In parallel, add the ICE candidate candidate as described in [JSEP]
+          (section 4.1.17.). Use candidate.usernameFragment to identify the
+          ICE generation;
+
+      - step: 6
+        status: todo
+        desc: >
+          If usernameFragment is null, process the candidate for the most recent
+          ICE generation.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-addIceCandidate
+        desc: >
+          If candidate.candidate is an empty string, process candidate as an
+          end-of-candidates indication for the corresponding media description
+          and ICE candidate generation.
+
+        steps:
+          - step: 1
+            status: tested
+            files:
+              - RTCPeerConnection-addIceCandidate
+            desc: >
+              If candidate could not be successfully added the user agent MUST
+              queue a task that runs the following steps
+            steps:
+              - step: 1
+                status: untestable
+                desc: >
+                  If connection's [[isClosed]] slot is true, then abort these
+                  steps.
+
+              - step: 2
+                status: tested
+                files:
+                  - RTCPeerConnection-addIceCandidate
+                desc: >
+                  Reject p with a DOMException object whose name attribute has
+                  the value OperationError and abort these steps.
+
+          - step: 2
+            status: tested
+            files:
+              - RTCPeerConnection-addIceCandidate
+            desc: >
+              If candidate is applied successfully, the user agent MUST queue
+              a task that runs the following steps
+            steps:
+              - step: 1
+                status: untestable
+                desc: >
+                  If connection's [[isClosed]] slot is true, then abort these
+                  steps.
+
+              - step: 2
+                status: tested
+                files:
+                  - RTCPeerConnection-addIceCandidate
+                desc: >
+                  If connection.pendingRemoteDescription is non-null, and
+                  represents the ICE generation for which candidate was
+                  processed, add candidate to connection.pendingRemoteDescription.
+
+              - step: 3
+                status: tested
+                files:
+                  - RTCPeerConnection-addIceCandidate
+                desc: >
+                  If connection.currentRemoteDescription is non-null, and
+                  represents the ICE generation for which candidate was
+                  processed, add candidate to connection.currentRemoteDescription.
+
+              - step: 4
+                status: trivial
+                desc: >
+                  Resolve p with undefined.
+
+      - step: 7
+        status: trivial
+        desc: >
+          Return p.

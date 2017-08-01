@@ -1,0 +1,82 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.2
+desc: RTCRtpSender Interface
+steps:
+  - status: trivial
+    desc: >
+      To create an RTCRtpSender with a MediaStreamTrack, track, a list of
+      MediaStream objects, streams, and optionally a list of
+      RTCRtpEncodingParameters objects, sendEncodings, run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let sender be a new RTCRtpSender object.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let sender have a [[SenderTrack]] internal slot initialized to track.
+
+      - step: 3
+        status: todo
+        desc: >
+          Let sender have a [[SenderTransport]] internal slot initialized to
+          null.
+
+      - step: 4
+        status: todo
+        desc: >
+          Let sender have a [[SenderRtcpTransport]] internal slot initialized to
+          null.
+
+      - step: 5
+        status: todo
+        desc: >
+          Let sender have an [[AssociatedMediaStreams]] internal slot,
+          representing a list of MediaStream objects that the MediaStreamTrack
+          object of this sender is associated with. The
+          [[AssociatedMediaStreams]] slot is used when sender is represented in
+          SDP as described in [JSEP] (section 5.2.1.).
+
+      - step: 6
+        status: todo
+        desc: >
+          Set sender's [[AssociatedMediaStreams]] slot to streams.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCRtpParameters-encodings
+        desc: >
+          Let sender have a [[SendEncodings]] internal slot, representing a list
+          of RTCRtpEncodingParameters dictionaries.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCRtpParameters-encodings
+        desc: >
+          If sendEncodings is given as input to this algorithm, and is non-empty,
+          set the [[SendEncodings]] slot to sendEncodings.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCRtpParameters-encodings
+        desc: >
+          Otherwise, set it to a list containing a single
+          RTCRtpEncodingParameters with active set to true.
+
+      - step: 9
+        status: todo
+        desc: >
+          Let sender have a [[LastReturnedParameters]] internal slot, which will
+          be used to match getParameters and setParameters transactions.
+
+      - step: 10
+        status: trivial
+        desc: >
+          Return sender.

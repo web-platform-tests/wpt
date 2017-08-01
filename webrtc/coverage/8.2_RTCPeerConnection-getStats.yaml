@@ -1,0 +1,69 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 8.2
+desc:  getStats
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let selectorArg be the method's first argument.
+
+  - step: 2
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object on which the method was
+      invoked.
+
+  - step: 3
+    status: tested
+    files:
+      - RTCPeerConnection-getStats
+    desc: >
+      If selectorArg is null, let selector be null.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-getStats
+    desc: >
+      If selectorArg is a MediaStreamTrack let selector be an RTCRtpSender or
+      RTCRtpReceiver on connection which track member matches selectorArg.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-getStats
+    desc: >
+      If no such sender or receiver exists, or if more than one sender or
+      receiver fit this criteria, return a promise rejected with a newly created
+      InvalidAccessError.
+
+  - step: 5
+    status: trivial
+    desc: >
+      Let p be a new promise.
+
+  - step: 6
+    status: trivial
+    desc: >
+      Run the following steps in parallel.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+        desc: >
+          Gather the stats indicated by selector according to the stats
+          selection algorithm.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+        desc: >
+          Resolve p with the resulting RTCStatsReport object, containing the
+          gathered stats.
+
+  - step: 7
+    status: trivial
+    desc: >
+      Return p.

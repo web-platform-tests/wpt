@@ -1,0 +1,39 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1
+desc: getTransceivers
+steps:
+  - status: tested
+    files:
+      - RTCPeerConnection-getTransceivers
+    desc: >
+      An RTCPeerConnection object contains a set of RTCRtpTransceivers,
+      representing the paired senders and receivers with some shared state.
+      This set is initialized to the empty set when the RTCPeerConnection object
+      is created.
+
+  - status: tested
+    files:
+      - RTCPeerConnection-getTransceivers
+      - RTCPeerConnection-addTransceiver
+    desc: >
+      The getTransceivers method MUST return the result of executing the
+      CollectTransceivers algorithm.
+
+      We define the CollectTransceivers algorithm as follows.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-getTransceivers
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceivers be a new sequence that represents a snapshot of all the
+          RTCRtpTransceiver objects in this RTCPeerConnection object's set of
+          transceivers. The conversion from the transceiver set to the sequence is
+          user agent defined and the order does not have to be stable between
+          calls.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Return transceivers.

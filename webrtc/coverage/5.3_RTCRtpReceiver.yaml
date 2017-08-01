@@ -1,0 +1,92 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.3
+desc: RTCRtpReceiver Interface
+steps:
+  - status: trival
+    desc: >
+      To create an RTCRtpReceiver with kind, kind, and optionally an id string,
+      id, run the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let receiver be a new RTCRtpReceiver object.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let track be a new MediaStreamTrack object [GETUSERMEDIA]. The source
+          of track is a remote source provided by receiver.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Initialize track.kind to kind.
+
+      - step: 4
+        status: todo
+        desc: >
+          If an id string, id, was given as input to this algorithm, initialize
+          track.id to id. (Otherwise the value generated when track was created
+          will be used.)
+
+      - step: 5
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Initialize track.label to the result of concatenating the string
+          "remote " with kind.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Initialize track.readyState to live.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Initialize track.muted to true. See the MediaStreamTrack section about
+          how the muted attribute reflects if a MediaStreamTrack is receiving
+          media data or not.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let receiver have a [[ReceiverTrack]] internal slot initialized to
+          track.
+
+      - step: 9
+        status: todo
+        desc: >
+          Let receiver have a [[ReceiverTransport]] internal slot initialized to
+          null.
+
+      - step: 10
+        status: todo
+        desc: >
+          Let receiver have a [[ReceiverRtcpTransport]] internal slot
+          initialized to null.
+
+      - step: 11
+        status: todo
+        desc: >
+          Let receiver have an [[AssociatedRemoteMediaStreams]] internal slot,
+          representing a list of MediaStream objects that the MediaStreamTrack
+          object of this receiver is associated with, and initialized to an
+          empty list.
+
+      - step: 12
+        status: trivial
+        desc: >
+          Return receiver.

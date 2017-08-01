@@ -1,0 +1,69 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.8.1
+desc: RTCIceCandidate constructor
+steps:
+  - status: trivial
+    desc: >
+      The RTCIceCandidate() constructor takes a dictionary argument,
+      candidateInitDict, whose content is used to initialize the new
+      RTCIceCandidate object.
+
+      When invoked, run the following steps
+    steps:
+      - step: 1
+        status: tested
+        desc: >
+          If both the sdpMid and sdpMLineIndex dictionary members in
+          candidateInitDict are null, throw a TypeError.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let iceCandidate be a newly created RTCIceCandidate object.
+
+      - step: 3
+        status: todo
+        desc: >
+          Initialize the following attributes of iceCandidate to null.
+          foundation, component, priority, ip, protocol, port, type, tcpType,
+          relatedAddress, and relatedPort.
+
+      - step: 4
+        status: tested
+        desc: >
+          Set the candidate, sdpMid, sdpMLineIndex, usernameFragment attributes
+          of iceCandidate with the corresponding dictionary member values of
+          candidateInitDict.
+
+      - step: 5
+        status: todo
+        desc: >
+          Let candidate be the candidate dictionary member of candidateInitDict.
+          If candidate is not an empty string, run the following steps.
+        steps:
+          - step: 1
+            status: todo
+            desc: >
+              Parse candidate using the candidate-attribute grammar.
+
+          - step: 2
+            status: todo
+            desc: >
+              If parsing of candidate-attribute has failed, abort these steps.
+
+          - step: 3
+            status: todo
+            desc: >
+              If any field in the parse result represents an invalid value for
+              the corresponding attribute in iceCandidate, abort these steps.
+
+          - step: 4
+            status: todo
+            desc: >
+              Set the corresponding attributes in iceCandidate to the field
+              values of the parsed result.
+
+      - step: 6
+        status: trivial
+        desc: >
+          Return iceCandidate.

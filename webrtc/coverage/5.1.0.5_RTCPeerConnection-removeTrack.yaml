@@ -1,0 +1,105 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1
+desc: removeTrack
+steps:
+  - status: trivial
+    desc: >
+      Stops sending media from sender.
+
+  - status: todo
+    desc: >
+      The RTCRtpSender will still appear in getSenders.
+
+  - status: todo
+    desc: >
+      Doing so will cause future calls to createOffer to mark the media
+      description for the corresponding transceiver as recvonly or inactive, as
+      defined in [JSEP] (section 5.2.2.).
+
+  - status: todo
+    desc: >
+      When the other peer stops sending a track in this manner, the track is
+      removed from any remote MediaStreams that were initially revealed in the
+      track event, and if the MediaStreamTrack is not already muted, a muted
+      event is fired at the track.
+
+  - status: tested
+    desc: >
+      When the removeTrack method is invoked, the user agent MUST run the
+      following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let sender be the argument to removeTrack.
+
+      - step: 2
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object on which the method was
+          invoked.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-removeTrack
+        desc: >
+          If connection's [[IsClosed]] slot is true, throw an InvalidStateError.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCPeerConnection-removeTrack
+        desc: >
+          If sender was not created by connection, throw an InvalidAccessError.
+
+      - step: 5
+        status: trivial
+        desc: >
+          Let senders be the result of executing the CollectSenders algorithm.
+
+      - step: 6
+        status: todo
+        desc: >
+          If sender is not in senders (which indicates that it was removed due
+          to setting an RTCSessionDescription of type "rollback"), then abort
+          these steps.
+
+      - step: 7
+        status: todo
+        desc: >
+          If sender's [[SenderTrack]] is null, abort these steps.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-removeTrack
+        desc: >
+          Set sender's [[SenderTrack]] to null.
+
+      - step: 9
+        status: trivial
+        desc: >
+          Let transceiver be the RTCRtpTransceiver object corresponding to
+          sender.
+
+      - step: 10
+        status: tested
+        files:
+          - RTCPeerConnection-removeTrack
+        desc: >
+          If transceiver's [[Direction]] slot is sendrecv, set transceiver's
+          [[Direction]] slot to recvonly.
+
+      - step: 11
+        status: tested
+        files:
+          - RTCPeerConnection-removeTrack
+        desc: >
+          If transceiver's [[Direction]] slot is sendonly, set transceiver's
+          [[Direction]] slot to inactive.
+
+      - step: 12
+        status: todo
+        desc: >
+          Update the negotiation-needed flag for connection.

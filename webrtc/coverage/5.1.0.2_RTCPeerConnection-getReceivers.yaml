@@ -1,0 +1,62 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.1
+desc: getReceivers
+steps:
+  - status: tested
+    files:
+      - RTCPeerConnection-getTransceivers
+      - RTCPeerConnection-addTransceiver
+    desc: >
+      The getReceivers method MUST return the result of executing the
+      CollectReceivers algorithm.
+
+      We define the CollectReceivers algorithm as follows.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-getTransceivers
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let transceivers be the result of executing the CollectTransceivers
+          algorithm.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-getTransceivers
+        desc: >
+          Let receiverset be a new empty set.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          For each transceiver in transceivers,
+        steps:
+          - step: 1
+            files:
+              - RTCPeerConnection-addTransceiver
+            desc: >
+              Let receiver be transceiver's [[Receiver]].
+
+          - step: 2
+            files:
+              - RTCPeerConnection-addTransceiver
+            desc: >
+              Add receiver to receiverset.
+
+      - step: 4
+        files:
+          - RTCPeerConnection-addTransceiver
+        desc: >
+          Let receivers be a new sequence consisting of all the RTCRtpReceiver
+          objects in receiverset. The conversion from the receivers set to the
+          sequence is user agent defined and the order does not have to be
+          stable between calls.
+
+      - step: 5
+        status: trivial
+        desc: >
+          Return receivers.

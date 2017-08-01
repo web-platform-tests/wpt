@@ -1,0 +1,49 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.3
+desc: getParameters
+steps:
+  - status: trivial
+    desc: >
+      When getParameters is called, the RTCRtpParameters dictionary is
+      constructed as follows.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCRtpReceiver-getParameters
+        desc: >
+          encodings is populated based on RIDs present in the current remote
+          description. Every member of the RTCRtpEncodingParameters dictionaries
+          other than the RID fields is left undefined.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCRtpReceiver-getParameters
+        desc: >
+          The headerExtensions sequence is populated based on the header
+          extensions that the receiver is currently prepared to receive.
+
+      - step: 3
+        status: tested
+        files:
+          - RTCRtpReceiver-getParameters
+        desc: >
+          The codecs sequence is populated based on the codecs that the receiver
+          is currently prepared to receive.
+
+      - step: 4
+        status: tested
+        files:
+          - RTCRtpReceiver-getParameters
+        desc: >
+          rtcp.reducedSize is set to true if the receiver is currently prepared
+          to receive reduced-size RTCP packets, and false otherwise. rtcp.cname
+          is left undefined.
+
+      - step: 5
+        status: tested
+        files:
+          - RTCRtpReceiver-getParameters
+        desc: >
+          transactionId and degradationPreference are left undefined.

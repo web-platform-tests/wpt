@@ -1,0 +1,83 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.1.2
+desc: Enqueue an operation
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let connection be the RTCPeerConnection object.
+
+  - step: 2
+    status: todo
+    desc: >
+      If connection's [[isClosed]] slot is true, return a promise rejected with
+      a newly created InvalidStateError.
+
+  - step: 3
+    status: trivial
+    desc: >
+      Let operation be the operation to be enqueued.
+
+  - step: 4
+    status: trivial
+    desc: >
+      Let p be a new promise.
+
+  - step: 5
+    status: untestable
+    desc: >
+      Append operation to [[Operations]].
+
+  - step: 6
+    status: todo
+    desc: >
+      If the length of [[Operations]] is exactly 1, execute operation.
+
+  - step: 7
+    status: todo
+    desc: >
+      Upon fulfillment or rejection of the promise returned by the operation,
+      run the following steps
+    steps:
+      - step: 1
+        status: untestable
+        desc: >
+          If connection's [[isClosed]] slot is true, abort these steps.
+
+      - step: 2
+        status: trivial
+        desc: >
+          If the promise returned by operation was fulfilled with a value,
+          fulfill p with that value.
+
+      - step: 3
+        status: trivial
+        desc: >
+          If the promise returned by operation was rejected with a value,
+          reject p with that value.
+
+      - step: 4
+        status: todo
+        desc: >
+          Upon fulfillment or rejection of p, execute the following steps
+        steps:
+          - step: 1
+            status: untestable
+            desc: >
+              If connection's [[isClosed]] slot is true, abort these steps.
+
+          - step: 2
+            status: untestable
+            desc: >
+              Remove the first element of [[Operations]].
+
+          - step: 3
+            status: todo
+            desc: >
+              If [[Operations]] is non-empty, execute the operation represented
+              by the first element of [[Operations]].
+
+      - step: 5
+        status: trivial
+        desc: >
+          Return p.

@@ -1,0 +1,17 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 4.4.2
+desc: getConfiguration
+steps:
+  - status: tested
+    files:
+      - RTCConfiguration-bundlePolicy
+      - RTCConfiguration-iceCandidatePoolSize
+      - RTCConfiguration-iceServers
+      - RTCConfiguration-iceTransportPolicy
+      - RTCConfiguration-rtcpMuxPolicy
+    desc: >
+      Returns an RTCConfiguration object representing the current configuration
+      of this RTCPeerConnection object.
+
+      When this method is called, the user agent MUST return the
+      RTCConfiguration object stored in the [[Configuration]] internal slot.

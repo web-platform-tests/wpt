@@ -1,0 +1,74 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 8.5
+desc:  The stats selection algorithm
+steps:
+  - step: 1
+    status: trivial
+    desc: >
+      Let result be an empty RTCStatsReport.
+
+  - step: 2
+    status: tested
+    files:
+      - RTCPeerConnection-getStats
+    desc: >
+      If selector is null, gather stats for the whole connection, add them to
+      result, return result, and abort these steps.
+
+  - step: 3
+    files:
+      - RTCPeerConnection-getStats
+      - RTCRtpSender-getStats
+    desc: >
+      If selector is an RTCRtpSender, gather stats for and add the following
+      objects to result.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+          - RTCRtpSender-getStats
+        desc: >
+          All RTCOutboundRTPStreamStats objects representing RTP streams being
+          sent by selector.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+          - RTCRtpSender-getStats
+        desc: >
+          All stats objects referenced directly or indirectly by the
+          RTCOutboundRTPStreamStats objects added.
+
+  - step: 4
+    status: tested
+    files:
+      - RTCPeerConnection-getStats
+      - RTCRtpReceiver-getStats
+    desc: >
+      If selector is an RTCRtpReceiver, gather stats for and add the following
+      objects to result.
+    steps:
+      - step: 1
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+          - RTCRtpReceiver-getStats
+        desc: >
+          All RTCInboundRTPStreamStats objects representing RTP streams being
+          received by selector.
+
+      - step: 2
+        status: tested
+        files:
+          - RTCPeerConnection-getStats
+          - RTCRtpReceiver-getStats
+        desc: >
+          All stats objects referenced directly or indirectly by the
+          RTCInboundRTPStreamStats added.
+
+  - step: 5
+    status: trivial
+    desc: >
+      Return result.

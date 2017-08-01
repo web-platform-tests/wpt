@@ -1,0 +1,273 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 5.6
+desc: RTCIceTransport Interface
+steps:
+  - status: todo
+    desc: >
+      When the ICE Agent indicates that it began gathering a generation of
+      candidates for an RTCIceTransport , the user agent MUST queue a task that
+      runs the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with this
+          ICE Agent.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let transport be the RTCIceTransport for which candidate gathering
+          began.
+
+      - step: 4
+        status: todo
+        desc: >
+          Set transport's [[IceGathererState]] slot to gathering .
+
+      - step: 5
+        status: todo
+        desc: >
+          Fire a simple event named gatheringstatechange at transport.
+
+      - step: 6
+        status: tested
+        files:
+          - RTCPeerConnection-iceGatheringState
+        desc: >
+          Update the ICE gathering state of connection.
+
+  - status: todo
+    desc: >
+      When the ICE Agent indicates that it finished gathering a generation of
+      candidates for an RTCIceTransport , the user agent MUST queue a task that
+      runs the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with this
+          ICE Agent.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let transport be the RTCIceTransport for which candidate gathering
+          finished.
+
+      - step: 4
+        status: todo
+        desc: >
+          Create an RTCIceCandidate instance newCandidate, with sdpMid and
+          sdpMLineIndex set to the values associated with this RTCIceTransport,
+          with usernameFragment set to the username fragment of the generation
+          of candidates for which gathering finished, with candidate set to an
+          empty string, and with all other nullable members set to null.
+
+      - step: 5
+        status: todo
+        desc: >
+          Fire an ice candidate event named icecandidate with newCandidate at
+          connection.
+
+      - step: 6
+        status: todo
+        desc: >
+          If another generation of candidates is still being gathered, abort
+          these steps.
+
+      - step: 7
+        status: todo
+        desc: >
+          Set transport's [[IceGathererState]] slot to complete .
+
+      - step: 8
+        status: todo
+        desc: >
+          Fire a simple event named gatheringstatechange at transport.
+
+      - step: 9
+        status: tested
+        files:
+          - RTCPeerConnection-iceGatheringState
+        desc: >
+          Update the ICE gathering state of connection.
+
+  - status: todo
+    desc: >
+      When the ICE Agent indicates that a new ICE candidate is available for an
+      RTCIceTransport , either by taking one from the ICE candidate pool or
+      gathering it from scratch, the user agent MUST queue a task that runs the
+      following steps.
+
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with this
+          ICE Agent.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let transport be the RTCIceTransport for which this candidate is being
+          made available.
+
+      - step: 4
+        status: todo
+        desc: >
+          If connection.pendingLocalDescription is non-null, and represents the
+          ICE generation for which candidate was gathered, add candidate to
+          connection.pendingLocalDescription .
+
+      - step: 5
+        status: todo
+        desc: >
+          If connection.currentLocalDescription is non-null, and represents the
+          ICE generation for which candidate was gathered, add candidate to
+          connection.currentLocalDescription .
+
+      - step: 6
+        status: todo
+        desc: >
+          Create an RTCIceCandidate instance to represent the candidate. Let
+          newCandidate be that object.
+
+      - step: 7
+        status: todo
+        desc: >
+          Add newCandidate to transport's set of local candidates.
+
+      - step: 8
+        status: todo
+        desc: >
+          Fire an ice candidate event named icecandidate with newCandidate at
+          connection.
+
+  - status: todo
+    desc: >
+      When the ICE Agent indicates that the RTCIceTransportState for an
+      RTCIceTransport has changed, the user agent MUST queue a task that runs
+      the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with this
+          ICE Agent.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let transport be the RTCIceTransport whose state is changing.
+
+      - step: 4
+        status: trivial
+        desc: >
+          Let newState be the new indicated RTCIceTransportState .
+
+      - step: 5
+        status: todo
+        desc: >
+          Set transport's [[IceTransportState]] slot to newState.
+
+      - step: 6
+        status: todo
+        desc: >
+          Fire a simple event named statechange at transport.
+
+      - step: 7
+        status: tested
+        files:
+          - RTCPeerConnection-iceConnectionState
+        desc: >
+          Update the ICE connection state of connection.
+
+      - step: 8
+        status: tested
+        files:
+          - RTCPeerConnection-connectionState
+        desc: >
+          Update the connection state of connection.
+
+  - status: todo
+    desc: >
+      When the ICE Agent indicates that the selected candidate pair for an
+      RTCIceTransport has changed, the user agent MUST queue a task that runs
+      the following steps.
+    steps:
+      - step: 1
+        status: trivial
+        desc: >
+          Let connection be the RTCPeerConnection object associated with this
+          ICE Agent.
+
+      - step: 2
+        status: todo
+        desc: >
+          If connection's [[IsClosed]] slot is true, abort these steps.
+
+      - step: 3
+        status: trivial
+        desc: >
+          Let transport be the RTCIceTransport whose selected candidate pair is
+          changing.
+
+      - step: 4
+        status: trivial
+        desc: >
+          Let newCandidatePair be a newly created RTCIceCandidatePair
+          representing the indicated pair if one is selected, and null otherwise.
+
+      - step: 5
+        status: todo
+        desc: >
+          Set transport's [[SelectedCandidatePair]] slot to newCandidatePair.
+
+      - step: 6
+        status: todo
+        desc: >
+          Fire a simple event named selectedcandidatepairchange at transport.
+
+  - status: tested
+    files:
+      - RTCIceTransport
+    desc: >
+      An RTCIceTransport object has the following internal slots.
+    steps:
+      - status: tested
+        files:
+          - RTCIceTransport
+        desc: >
+          [[IceTransportState]] initialized to new
+
+      - status: tested
+        files:
+          - RTCIceTransport
+        desc: >
+          [[IceGathererState]] initialized to new
+
+      - status: tested
+        files:
+          - RTCIceTransport
+        desc: >
+          [[SelectedCandidatePair]] initialized to null

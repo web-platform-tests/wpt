@@ -1,0 +1,70 @@
+spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
+section: 10.4
+desc: Isolated Media Streams
+steps:
+  - status: trivial
+    desc: >
+      A MediaStream acquired using getUserMedia() is, by default, accessible to
+      an application. This means that the application is able to access the
+      contents of tracks, modify their content, and send that media to any peer
+      it chooses.
+
+  - status: trivial
+    desc: >
+      WebRTC supports calling scenarios where media is sent to a specifically
+      identified peer, without the contents of media streams being accessible to
+      applications. This is enabled by use of the peerIdentity parameter to
+      getUserMedia().
+
+  - status: todo
+    desc: >
+      An application willingly relinquishes access to media by including a
+      peerIdentity parameter in the MediaStreamConstraints. This attribute is
+      set to a DOMString containing the identity of a specific peer.
+
+  - status: todo
+    desc: >
+      The MediaStreamConstraints dictionary is expanded to include the
+      peerIdentity parameter.
+
+  - status: todo
+    desc: >
+      A user that is prompted to provide consent for access to a camera or
+      microphone can be shown the value of the peerIdentity parameter, so that
+      they can be informed that the consent is more narrowly restricted.
+
+  - status: todo
+    desc: >
+      When the peerIdentity option is supplied to getUserMedia(), all of the
+      MediaStreamTracks in the resulting MediaStream are isolated so that
+      content is not accessible to any application. Isolated MediaStreamTracks
+      can be used for two purposes.
+
+      - status: untestable
+        desc: >
+          Displayed in an appropriate media tag (e.g., a video or audio element).
+          The browser MUST ensure that content is inaccessible to the
+          application by ensuring that the resulting content is given the same
+          protections as content that is CORS cross-origin, as described in the
+          relevant Security and privacy considerations section of [HTML51].
+
+      - status: todo
+        desc: >
+          Used as the argument to addTrack on an RTCPeerConnection instance,
+          subject to the restrictions in isolated streams and RTCPeerConnection.
+
+  - status: todo
+    desc: >
+      A MediaStreamTrack that is added to another MediaStream remains isolated.
+
+      When an isolated MediaStreamTrack is added to a MediaStream with a
+      different peerIdentity, the MediaStream gets a combination of isolation
+      restrictions.
+
+      A MediaStream containing MediaStreamTrack instances with mixed isolation
+      properties can be displayed, but cannot be sent using RTCPeerConnection.
+
+  - status: todo
+    desc: >
+      Any peerIdentity property MUST be retained on cloned copies of
+      MediaStreamTracks.

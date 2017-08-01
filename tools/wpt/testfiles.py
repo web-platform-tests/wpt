@@ -115,6 +115,7 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
         manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     test_types = ["testharness", "reftest", "wdspec"]
 
+    global wpt_manifest
     wpt_manifest = manifest.load(wpt_root, manifest_path)
     if wpt_manifest is None:
         wpt_manifest = manifest.Manifest()
@@ -193,6 +194,8 @@ def get_parser():
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the commits on the current branch", nargs="?")
     parser.add_argument("--ignore-dirs", nargs="*", type=set, default=set(["resources"]),
                         help="Directories to exclude from the list of changes")
+    parser.add_argument("--show-type", action="store_true",
+                        help="Print the test type along with each affected test")
     return parser
 
 
@@ -225,4 +228,14 @@ def run_tests_affected(**kwargs):
     tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]),
                                                    manifest_path=os.path.join(kwargs["metadata_root"], "MANIFEST.json"))
     for item in sorted(tests_changed | dependents):
-        print(os.path.relpath(item, wpt_root))
+        message = "{path}"
+        results = {
+            "path": os.path.relpath(item, wpt_root)
+        }
+        if kwargs["show_type"]:
+            message = "{item_type}\t{path}"
+            item_types = {i.item_type for i in wpt_manifest.iterpath(results["path"])}
+            if len(item_types) != 1:
+                item_types = [" ".join(item_types)]
+            results["item_type"] = item_types.pop()
+        print(message.format(**results))

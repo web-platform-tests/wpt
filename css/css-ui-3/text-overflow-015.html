@@ -5,7 +5,7 @@
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#ellipsing-details">
 <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="ahem">
-<meta name="assert" content="Ellipsing occurs after relative positioning and other graphical transformations">
+<meta name="assert" content="Ellipsing occurs after relative positioning">
 <style>
 div {
   overflow: hidden;
@@ -15,7 +15,7 @@ div {
   white-space: pre;
   font: 20px/1 ahem;
   color: green;
-  background: url("support/1x1-red.png") top right / 1em 2em no-repeat, green;
+  background: url("support/1x1-red.png") top right / 1em 1em no-repeat, green;
 }
 .rel {
   position: relative;
@@ -27,5 +27,4 @@ div {
 </style>
 
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div><span class=rel>     </span><br>
-<span class=trans>     </span></div>
+<div><span class=rel>     </span></div>

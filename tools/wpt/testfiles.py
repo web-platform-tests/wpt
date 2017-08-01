@@ -103,6 +103,26 @@ def _in_repo_root(full_path):
     path_components = rel_path.split(os.sep)
     return len(path_components) < 2
 
+def _init_manifest_cache():
+    c = {}
+
+    def load(manifest_path=None):
+        if manifest_path is None:
+            manifest_path = os.path.join(wpt_root, "MANIFEST.json")
+        if c.get(manifest_path):
+            return c[manifest_path]
+        # cache at most one path:manifest
+        c.clear()
+        wpt_manifest = manifest.load(wpt_root, manifest_path)
+        if wpt_manifest is None:
+            wpt_manifest = manifest.Manifest()
+        update.update(wpt_root, wpt_manifest)
+        c[manifest_path] = wpt_manifest
+        return c[manifest_path]
+    return load
+
+load_manifest = _init_manifest_cache()
+
 
 def affected_testfiles(files_changed, skip_tests, manifest_path=None):
     """Determine and return list of test files that reference changed files."""
@@ -111,16 +131,9 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
     # they are not part of any test.
     files_changed = [f for f in files_changed if not _in_repo_root(f)]
     nontests_changed = set(files_changed)
-    if manifest_path is None:
-        manifest_path = os.path.join(wpt_root, "MANIFEST.json")
+    wpt_manifest = load_manifest(manifest_path)
+
     test_types = ["testharness", "reftest", "wdspec"]
-
-    global wpt_manifest
-    wpt_manifest = manifest.load(wpt_root, manifest_path)
-    if wpt_manifest is None:
-        wpt_manifest = manifest.Manifest()
-    update.update(wpt_root, wpt_manifest)
-
     support_files = {os.path.join(wpt_root, path)
                      for _, path, _ in wpt_manifest.itertypes("support")}
     wdspec_test_files = {os.path.join(wpt_root, path)
@@ -225,15 +238,22 @@ def run_changed_files(**kwargs):
 def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
     changed, _ = files_changed(revish, kwargs["ignore_dirs"])
-    tests_changed, dependents = affected_testfiles(changed, set(["conformance-checkers", "docs", "tools"]),
-                                                   manifest_path=os.path.join(kwargs["metadata_root"], "MANIFEST.json"))
+    manifest_path = os.path.join(kwargs["metadata_root"], "MANIFEST.json")
+    tests_changed, dependents = affected_testfiles(
+        changed,
+        set(["conformance-checkers", "docs", "tools"]),
+        manifest_path=manifest_path
+    )
+    message = "{path}"
+    if kwargs["show_type"]:
+        wpt_manifest = load_manifest(manifest_path)
+        message = "{path}\t{item_type}"
+
     for item in sorted(tests_changed | dependents):
-        message = "{path}"
         results = {
             "path": os.path.relpath(item, wpt_root)
         }
         if kwargs["show_type"]:
-            message = "{item_type}\t{path}"
             item_types = {i.item_type for i in wpt_manifest.iterpath(results["path"])}
             if len(item_types) != 1:
                 item_types = [" ".join(item_types)]

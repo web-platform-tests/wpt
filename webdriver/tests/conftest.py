@@ -1,5 +1,5 @@
 import pytest
-from support.fixtures import (
+from tests.support.fixtures import (
     configuration, create_dialog, create_frame, create_window, http,
     new_session, server_config, session, url)
 

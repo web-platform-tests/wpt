@@ -1,12 +1,7 @@
 import pytest
-import urllib
 
-from support.refine import get_events, filter_dict
-
-
-# TODO use support.inline module once available from upstream
-def inline(doc):
-    return "data:text/html;charset=utf-8,%s" % urllib.quote(doc)
+from tests.support.inline import inline
+from tests.actions.support.refine import get_events, filter_dict
 
 
 def link_doc(dest):
@@ -70,7 +65,7 @@ def test_click_element_center(session, test_actions_page, mouse_chain):
 
 
 def test_click_navigation(session, url):
-    destination = url("/webdriver/actions/support/test_actions_wdspec.html")
+    destination = url("/webdriver/tests/actions/support/test_actions_wdspec.html")
     start = link_doc(destination)
 
     def click(link):

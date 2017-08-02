@@ -12,7 +12,8 @@ the various flags avaiable and their meaning.
 
 These flags must be the last element in the filename before the
 extension e.g. `foo-manual.html` will indicate a manual test, but
-`foo-manual-other.html` will not.
+`foo-manual-other.html` will not. Unlike test features, test types
+are mutually exclusive.
 
 <dl>
   <dt>`-manual`

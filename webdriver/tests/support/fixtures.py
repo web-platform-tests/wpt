@@ -5,9 +5,9 @@ import re
 
 import webdriver
 
-from support.asserts import assert_error
-from support.http_request import HTTPRequest
-from support import merge_dictionaries
+from tests.support.asserts import assert_error
+from tests.support.http_request import HTTPRequest
+from tests.support import merge_dictionaries
 
 default_host = "http://127.0.0.1"
 default_port = "4444"

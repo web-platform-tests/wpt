@@ -12,9 +12,7 @@
 <script>
 
 //IEEE 754: single precision retricts to 7 decimal digits
-//          double precision retricts to 15 decimal digits
 const float_precision = 1e-7;
-const double_precision = 1e-15;
 
 function create_matrix(quat) {
   let X = quat[0];
@@ -74,31 +72,16 @@ function checkPopulateMatrix(t, sensorType) {
 
     let mat_64 = new Float64Array(16);
     sensor.populateMatrix(mat_64);
-    assert_array_approx_equals(mat_64, mat_expect, double_precision);
+    assert_array_equals(mat_64, mat_expect);
 
     let mat_dom = new DOMMatrix();
     sensor.populateMatrix(mat_dom);
-    assert_approx_equals(mat_dom.m11, mat_expect[0], double_precision);
-    assert_approx_equals(mat_dom.m12, mat_expect[1], double_precision);
-    assert_approx_equals(mat_dom.m13, mat_expect[2], double_precision);
-    assert_approx_equals(mat_dom.m14, mat_expect[3], double_precision);
-    assert_approx_equals(mat_dom.m21, mat_expect[4], double_precision);
-    assert_approx_equals(mat_dom.m22, mat_expect[5], double_precision);
-    assert_approx_equals(mat_dom.m23, mat_expect[6], double_precision);
-    assert_approx_equals(mat_dom.m24, mat_expect[7], double_precision);
-    assert_approx_equals(mat_dom.m31, mat_expect[8], double_precision);
-    assert_approx_equals(mat_dom.m32, mat_expect[9], double_precision);
-    assert_approx_equals(mat_dom.m33, mat_expect[10], double_precision);
-    assert_approx_equals(mat_dom.m34, mat_expect[11], double_precision);
-    assert_approx_equals(mat_dom.m41, mat_expect[12], double_precision);
-    assert_approx_equals(mat_dom.m42, mat_expect[13], double_precision);
-    assert_approx_equals(mat_dom.m43, mat_expect[14], double_precision);
-    assert_approx_equals(mat_dom.m44, mat_expect[15], double_precision);
+    assert_array_equals(mat_dom.toFloat64Array(), mat_expect);
 
     // Sets every matrix element.
     mat_64.fill(123);
     sensor.populateMatrix(mat_64);
-    assert_array_approx_equals(mat_64, mat_expect, double_precision);
+    assert_array_equals(mat_64, mat_expect);
 
     sensor.stop();
   });

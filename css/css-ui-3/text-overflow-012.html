@@ -4,7 +4,7 @@
 <title>CSS Basic User Interface Test: ellipsis and grapheme cluster</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#text-overflow">
-<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<link rel="match" href="reference/text-overflow-012-ref.html">
 <meta name="flags" content="ahem should">
 <!-- This is SHOULD because although CSS-UI defines "character" as "grapheme cluster" in a non optional manner
   UAX29 itself defines grapheme cluster as either legacy or extended grapheme clusters,
@@ -17,63 +17,34 @@
   -->
 <meta name="assert" content="Implementations must hide characters, i.e. entire garpheme clusters, not part of them, to make room for the ellipsis">
 <style>
+#sizer {
+  font-size: 50px;
+  white-space: pre;
+  color: white;
+  float: left;
+  position: relative;
+}
+
 #test {
-  font: 50px/1 ahem;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: pre;
+  position: absolute;
+  top: 0; right: 2px; bottom: 0; left: 0;
   color: green;
-  /* width to be set by script, see below */
 }
-.red {
-  position: absolute;
-  background: red;
-  width: 100px;
-  height: 50px;
-  z-index: -1;
-}
-.green {
-  position: absolute;
-  background: green;
-  width: 100px;
-  height: 100px;
-  z-index: -2;
+span {
+  color: red;
 }
 
-.size-ref {
-  position: absolute; /* shrinkwrap*/
-  visibility: hidden; /* measurable width but invisible*/
-
-  /* Same settings as the #test element for things that affect horizontal font-metrics*/
-  font-size: 50px;
-  font-family: ahem;
-}
 </style>
 
-<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div class=red></div>
-<div class=green></div>
-<div id=test lang=th>X&#x0E01;&#x0E33;filler text to make things overflow</div>
-<!--Starting the line with an X because the first character on the line is clipped rather than ellided, so we need the tested grapheme cluster to be non-first-->
+<p>Test passes if there are three green dots below and <strong>no red</strong>.</p>
 
-<!-- Invisible elements for glyph measuring purposes -->
-<div id=part-cluster class=size-ref>&#x0E01;<div>
-<div id=full-cluster class=size-ref>&#x0E01;&#x0E33;<div>
+<!--Starting the line with an space because the first character on the line is clipped rather than ellided, so we need the tested grapheme cluster to be non-first-->
+<!--
+sizer shrikwraps to the size of a space, plus the grapheme cluster, plus the ellipsis.
+test is 2px shorter than that, so it can only fit part of the grapheme cluster.
+The whole grapheme cluster should be removed, not just its second character.
+-->
 
-<script>
-/* We want to set the width of the #test element to something that's enough to fit:
-   - the 1em (50px) ahem X at the beginning of the line
-   - the 1em (50px) ahem … at then end of the line
-   - Part of the &#x0E01;&#x0E33; grapheme cluster, but not all of it
-   As the third item is font dependent, we need to measure it.
-*/
-var p = document.getElementById("part-cluster");
-var wp = parseFloat(getComputedStyle(p).width);
-
-var f = document.getElementById("full-cluster");
-var wf = parseFloat(getComputedStyle(f).width);
-
-document.getElementById("test").style.width = 50 + 50 + (wp + wf) / 2 + "px";
-
-document.documentElement.className = "";
-</script>
+<div id=sizer> &#x0E01;&#x0E33;…<div id=test> <span>&#x0E01;&#x0E33;filler text to make things overflow</span></div><div>

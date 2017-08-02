@@ -100,4 +100,4 @@ notifications:
   email:
     on_success: never
     on_failure: always
-  webhooks: https://w3c-test.org/prbuildbot.py
+  webhooks: https://pulls.web-platform-tests.org/api/build

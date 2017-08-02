@@ -1,8 +1,7 @@
 <!doctype html>
 <head>
-  <title>CSS OM: CSS Values</title>
-  <link rel="author" title="Divya Manian" href="mailto:manian@adobe.com">
-  <link rel="help" href="http://www.w3.org/TR/cssom-1/#the-cssrulelist-interface">
+  <title>CSS OM: CSS Rule Types and Order</title>
+  <link rel="help" href="https://drafts.csswg.org/cssom-1/#the-cssrule-interface">
   <meta name="flags" content="dom">
   <meta name="assert" content="Testing Serialization of Style Rules">
   <script src="/resources/testharness.js"></script>
@@ -44,52 +43,33 @@
   </style>
 </head>
 <body>
-    <div id="log"></div>
-    <script>
+  <div id="log"></div>
+  <script type="text/javascript">
+    "use strict";
+
     var stylesheets = document.styleSheets;
-    var ruletypes = {
-      1: 'Style Rule',
+
+    var expectedOrderOfTypes = [10, 3, 1, 1, 5, 4, 6];
+
+    var typesText = {
+      1: 'style rule',
       3: '@import rule',
       4: 'media rule',
       5: '@font-face rule',
       6: 'page rule',
-      10: 'Namespace rule',
-      11: 'unrecognized rule'
+      10: 'namespace rule'
     };
 
-    var types = {
-      's-0': '@namespace svg "http://www.w3.org/2000/svg"',
-      's-1': '@import url("main.css")',
-      's-2': 'h1',
-      's-3': 'svg|a',
-      's-4': '@font-face',
-      's-5': '@media (min-width: 200px)',
-      's-6': '@page :first'
+    for (var i = 0; i < stylesheets.length; i++) {
+      test( function () {
+          if (i === 3) {
+            var cssType = stylesheets[i].cssRules[1].type;
+          } else {
+            var cssType = stylesheets[i].cssRules[0].type;
+          }
+          assert_equals(typesText[cssType], typesText[expectedOrderOfTypes[i]]);
+      }, 'Type of #s-' + i + ' is expected to be ' + typesText[expectedOrderOfTypes[i]]);
     }
-
-   var ruleOrder = [10, 3, 1, 1, 5, 4, 6];
-
-    var results = [];
-
-
-    for (i = 0; i < stylesheets.length; i++) {
-      if(i == 3) {
-        cssType = stylesheets[i].cssRules.length > 0 && stylesheets[i].cssRules[1] ? stylesheets[i].cssRules[1].type : 11;
-      } else {
-        cssType = stylesheets[i].cssRules.length > 0 ? stylesheets[i].cssRules[0].type : 11;
-      }
-
-        results.push([
-          ruletypes[ruleOrder[i]] + ' is expected to be ' + types['s-' + i],
-          ruletypes[cssType],
-          ruletypes[ruleOrder[i]]
-        ]);
-
-    }
-
-    generate_tests(assert_equals, results);
-
-    </script>
- </body>
- </html>
-
+  </script>
+</body>
+</html>

@@ -683,6 +683,11 @@ asserts that `actual` and `expected` have the same
 length and the value of each indexed property in `actual` is the strictly equal
 to the corresponding property value in `expected`
 
+### `assert_array_approx_equals(actual, expected, epsilon, description)`
+asserts that `actual` and `expected` have the same
+length and each indexed property in `actual` is a number
+within ±`epsilon` of the corresponding property in `expected`
+
 ### `assert_approx_equals(actual, expected, epsilon, description)`
 asserts that `actual` is a number within ±`epsilon` of `expected`
 

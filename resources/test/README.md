@@ -16,9 +16,9 @@ by executing the following command from this directory:
 
     tox
 
-Currently, the tests should be run with FirefoxNightly.
+Currently, the tests should be run with Firefox Nightly.
 
-In order to specify the path to FirefoxNightly, use the following command-line option:
+In order to specify the path to Firefox Nightly, use the following command-line option:
 
     tox -- --binary=/path/to/FirefoxNightly
 

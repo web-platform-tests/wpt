@@ -16,6 +16,12 @@ by executing the following command from this directory:
 
     tox
 
+Currently, the tests should be run with FirefoxNightly.
+
+In order to specify the path to FirefoxNightly, use the following command-line option:
+
+    tox -- --binary-path=/path/to/FirefoxNightly
+
 ## Authoring Tests
 
 Test cases are expressed as `.html` files located within the `tests/`

@@ -37,6 +37,9 @@ below to fix all errors reported.
   `<script src='/resources/testharnessreport.js'>` prior to
   `<script src='/resources/testharness.js'>`; **fix**: flip the order.
 
+* **GENERATE_TESTS**: Test file line has a generate_tests call; **fix**: remove
+  the call and call `test()` a number of times instead.
+
 * **INDENT TABS**: Test-file line starts with one or more tab characters;
   **fix**: use spaces to replace any tab characters at beginning of lines.
 

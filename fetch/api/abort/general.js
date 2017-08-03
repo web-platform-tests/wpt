@@ -4,7 +4,8 @@ if (self.importScripts) {
   // Load scripts if being run from a worker
   importScripts(
     '/resources/testharness.js',
-    '/common/utils.js'
+    '/common/utils.js',
+    '../request/request-error.js'
   );
 }
 
@@ -45,6 +46,27 @@ promise_test(async t => {
 
   await promise_rejects(t, "AbortError", fetchPromise);
 }, "Aborting rejects with AbortError - no-cors");
+
+// Test that errors thrown from the request constructor take priority over abort errors.
+// badRequestArgTests is from response-error.js
+for (const { args, testName } of badRequestArgTests) {
+  promise_test(async t => {
+    try {
+      // If this doesn't throw, we'll effectively skip the test.
+      // It'll fail properly in ../request/request-error.html
+      new Request(...args);
+    }
+    catch (err) {
+      const controller = new AbortController();
+      controller.abort();
+
+      // Add signal to 2nd arg
+      args[1] = args[1] || {};
+      args[1].signal = controller.signal;
+      await promise_rejects(t, err, fetch(...args));
+    }
+  }, `TypeError from request constructor takes priority - ${testName}`);
+}
 
 test(() => {
   const request = new Request('');
@@ -433,7 +455,7 @@ promise_test(async t => {
   assert_true(item.done, "Stream is done");
 }, "Stream will not error if body is empty. It's closed with an empty queue before it errors.");
 
-test(t => {
+promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
   controller.abort();
@@ -449,7 +471,7 @@ test(t => {
     }
   });
 
-  fetch('../resources/empty.txt', {
+  const fetchPromise = fetch('../resources/empty.txt', {
     body, signal,
     method: 'POST',
     headers: {
@@ -460,4 +482,10 @@ test(t => {
   assert_true(!!cancelReason, 'Cancel called sync');
   assert_equals(cancelReason.constructor, DOMException);
   assert_equals(cancelReason.name, 'AbortError');
+
+  await promise_rejects(t, "AbortError", fetchPromise);
+
+  const fetchErr = await fetchPromise.catch(e => e);
+
+  assert_equals(cancelReason, fetchErr, "Fetch rejects with same error instance");
 }, "Readable stream synchronously cancels with AbortError if aborted before reading");

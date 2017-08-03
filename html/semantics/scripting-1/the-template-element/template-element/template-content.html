@@ -37,25 +37,25 @@ HTML5_ELEMENTS.forEach(function(value) {
 var parameters = [];
 
 HTML5_ELEMENTS.forEach(function(value) {
-   if (value !== 'body' && value !== 'html' && value !== 'head' && value !== 'frameset') {
+    if (value !== 'body' && value !== 'html' && value !== 'head' && value !== 'frameset') {
 
-      test(function() {
-         var doc = newHTMLDocument();
+        test(function() {
+            var doc = newHTMLDocument();
 
-         if (isVoidElement(value)) {
-            doc.body.innerHTML = '<template><' + value + '/></template>';
-         } else {
-            doc.body.innerHTML = '<template><' + value + '></' + value + '></template>';
-         }
+            if (isVoidElement(value)) {
+                doc.body.innerHTML = '<template><' + value + '/></template>';
+            } else {
+                doc.body.innerHTML = '<template><' + value + '></' + value + '></template>';
+            }
 
-         var template = doc.querySelector('template');
-         var element = template.content.querySelector(value);
+            var template = doc.querySelector('template');
+            var element = template.content.querySelector(value);
 
-         assert_not_equals(element, null);
-      }, 'Template may contain ' + value + ' element. '
-           + 'The template element and contents are added via body.innerHTML');
+            assert_not_equals(element, null);
+        }, 'Template may contain ' + value + ' element. '
+             + 'The template element and contents are added via body.innerHTML');
 
-   }
+    }
 });
 
 </script>

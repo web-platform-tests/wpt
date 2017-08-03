@@ -1,9 +1,9 @@
 import pytest
 import time
 
-from support.asserts import assert_error, assert_success, assert_dialog_handled
-from support.fixtures import create_dialog
-from support.inline import inline
+from tests.support.asserts import assert_error, assert_success, assert_dialog_handled
+from tests.support.fixtures import create_dialog
+from tests.support.inline import inline
 
 def read_global(session, name):
     return session.execute_script("return %s;" % name)

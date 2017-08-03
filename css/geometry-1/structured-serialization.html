@@ -160,6 +160,6 @@ function defineThrowingGetters(object, attrs) {
 
 promise_test((t) => {
   const object = document.getElementById('log').getClientRects();
-  return clone(object).then(() => assert_unreached()).catch(() => t.done());
-}, 'DOMRectList clone');
+  return promise_rejects(t, "DataCloneError", clone(object));
+}, 'DOMRectList clone');0
 </script>

@@ -174,7 +174,7 @@ self.GLOBAL = {
 
 
 class AnyWorkerHandler(WrapperHandler):
-    headers = [('Content-Type', 'application/javascript')]
+    headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {

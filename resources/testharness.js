@@ -2412,12 +2412,16 @@ policies and contribution forms [3].
             "<th>Message</th></tr></thead>" +
             "<tbody>";
         for (var i = 0; i < tests.length; i++) {
+            var link_name = tests[i].properties.link_name || "spec";
+            var link_url = tests[i].properties.link_to_spec;
+            var link_to_spec = link_url ?
+                " (<a href=" + JSON.stringify(link_url) + ">see " + escape_html(link_name) + "</a>)" : "";
             html += '<tr class="' +
                 escape_html(status_class(status_text[tests[i].status])) +
                 '"><td>' +
                 escape_html(status_text[tests[i].status]) +
                 "</td><td>" +
-                escape_html(tests[i].name) +
+                escape_html(tests[i].name) + link_to_spec
                 "</td><td>" +
                 (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "") +
                 escape_html(tests[i].message ? tests[i].message : " ") +

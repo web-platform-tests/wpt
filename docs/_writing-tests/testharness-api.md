@@ -63,8 +63,24 @@ test(function() {
 The function passed in is run in the `test()` call.
 
 `properties` is a javascript object for passing extra options to the
-test. Currently it is only used to provide test-specific
+test. `properties` can be used to provide test-specific
 metadata, as described in the [metadata](#metadata) section below.
+
+*   `properties.link_to_spec` can be used to provide a link to the relevant spec section,
+    definiton, or algorithm under test. It is displayed in the test results,
+    right after the test name like so: ([see spec](#)).
+    The link's text can be changed using `properties.link_name`.
+*   `properties.link_name` can be use to provide the name of the spec section,
+    definiton, or algorithm referenced by `properties.link_to_spec`.
+    It defaults to "spec" when missing.
+    Note that `properties.link_name` is prefixed by "see " when displayed
+    and the whole is enclosed in parentheses.
+
+It is recommended to consider link rot when adding reference to spec using
+`properties.link_to_spec` and `properties.link_name`.
+Only link to definitions, section names, etc. that you intend to keep stable.
+Avoid mentioning section numbers in `properties.link_name` as these tend
+to change faster than their title.
 
 ## Asynchronous Tests ##
 

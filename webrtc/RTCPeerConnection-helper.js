@@ -361,7 +361,7 @@ function assert_equals_array_buffer(buffer1, buffer2) {
 function generateMediaStreamTrack(kind) {
   const pc = new RTCPeerConnection();
 
-  assert_own_property(pc, 'addTransceiver',
+  assert_idl_attribute(pc, 'addTransceiver',
     'Expect pc to have addTransceiver() method');
 
   const transceiver = pc.addTransceiver(kind);

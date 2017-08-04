@@ -4,11 +4,11 @@ title: Lint Tool
 order: 9
 ---
 We have a lint tool for catching common mistakes in test files. You can run
-it manually by starting the `lint` executable from the root of your local
+it manually by running the `wpt lint` command from the root of your local
 web-platform-tests working directory like this:
 
 ```
-./lint
+./wpt lint
 ```
 
 The lint tool is also run automatically for every submitted pull request,

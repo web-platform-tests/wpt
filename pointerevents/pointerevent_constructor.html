@@ -20,91 +20,80 @@
         async_test(function() {
             var target0 = document.getElementById("target0");
             // set values for non-default constructor
-            var testBubbles = true;
-            var testCancelable = true;
-            var testPointerId = 42;
-            var testPointerType = 'pen';
-            var testClientX = 300;
-            var testClientY = 500;
-            var testWidth = 3;
-            var testHeight = 5;
-            var testTiltX = -45;
-            var testTiltY = 30;
-            var testButton = 0;
-            var testButtons = 1;
-            var testPressure = 0.4;
-            var testTangentialPressure = 0.5;
-            var testTwist = 286;
-            var testIsPrimary = true;
+            var init = {
+                bubbles: true,
+                cancelable: true,
+                pointerId: 42,
+                pointerType: "pen",
+                width: 3,
+                height: 5,
+                clientX: 300,
+                clientY: 500,
+                tiltX: -45,
+                tiltY: 30,
+                button: 0,
+                buttons: 1,
+                pressure: 0.4,
+                tangentialPressure: 0.5,
+                twist: 286,
+                isPrimary: true
+            };
+
+            // default constructor values (i.e., PointerEventInit)
+            var default_init = {
+                pointerId: 0,
+                width: 1,
+                height: 1,
+                pressure: 0,
+                tangentialPressure: 0,
+                tiltX: 0,
+                tiltY: 0,
+                twist: 0,
+                pointerType: "",
+                isPrimary: false
+            };
 
             on_event(target0, "pointerover", this.step_func(function(event) {
                 detected_pointertypes[ event.pointerType ] = true;
-                generate_tests(assert_equals, [
-                    ["custom bubbles", event.bubbles, testBubbles],
-                    ["custom cancelable", event.cancelable, testCancelable],
-                    ["custom pointerId", event.pointerId, testPointerId],
-                    ["custom pointerType", event.pointerType, testPointerType],
-                    ["custom button", event.button, testButton],
-                    ["custom buttons", event.buttons, testButtons],
-                    ["custom width", event.width, testWidth],
-                    ["custom height", event.height, testHeight],
-                    ["custom clientX", event.clientX, testClientX],
-                    ["custom clientY", event.clientY, testClientY],
-                    ["custom tiltX", event.tiltX, testTiltX],
-                    ["custom tiltY", event.tiltY, testTiltY],
-                    ["custom twist", event.twist, testTwist],
-                    ["custom isPrimary", event.isPrimary, testIsPrimary]
-                ]);
-                test(function() {
-                    assert_approx_equals(event.pressure, testPressure, 0.00000001, "custom pressure: ");
-                    assert_approx_equals(event.tangentialPressure, testTangentialPressure, 0.00000001, "custom tangential pressure: ");
-                }, "custom pressure: ");
+                for (var prop in init) {
+                    if (!init.hasOwnProperty(prop)) {
+                        continue;
+                    }
+                    test(function() {
+                        if (prop === "pressure" || prop === "tangentialPressure") {
+                            assert_approx_equals(event[prop], init[prop], 0.00000001);
+                        } else {
+                            assert_equals(event[prop], init[prop]);
+                        }
+                    }, "custom " + prop);
+                }
             }));
 
             on_event(target0, "pointerout", this.step_func(function(event) {
-                generate_tests(assert_equals, [
-                    ["default pointerId", event.pointerId, 0],
-                    ["default pointerType", event.pointerType, ""],
-                    ["default width", event.width, 1],
-                    ["default height", event.height, 1],
-                    ["default tiltX", event.tiltX, 0],
-                    ["default tiltY", event.tiltY, 0],
-                    ["default pressure", event.pressure, 0],
-                    ["default tangentialPressure", event.tangentialPressure, 0],
-                    ["default twist", event.twist, 0],
-                    ["default isPrimary", event.isPrimary, false]
-                ]);
+                for (var prop in default_init) {
+                    if (!default_init.hasOwnProperty(prop)) {
+                        continue;
+                    }
+                    test(function() {
+                        assert_equals(event[prop], default_init[prop]);
+                    }, "default " + prop);
+                }
             }));
 
             on_event(window, "load", this.step_func_done(function() {
                 assert_not_equals(window.PointerEvent, undefined);
 
-                var pointerEventCustom = new PointerEvent("pointerover",
-                {bubbles: testBubbles,
-                cancelable: testCancelable,
-                pointerId: testPointerId,
-                pointerType: testPointerType,
-                width: testWidth,
-                height: testHeight,
-                clientX: testClientX,
-                clientY: testClientY,
-                tiltX: testTiltX,
-                tiltY: testTiltY,
-                button: testButton,
-                buttons: testButtons,
-                pressure: testPressure,
-                tangentialPressure: testTangentialPressure,
-                twist: testTwist,
-                isPrimary: testIsPrimary
-                });
+                var pointerEventCustom = new PointerEvent("pointerover", init);
                 // A PointerEvent created with a PointerEvent constructor must have all its attributes set to the corresponding values provided to the constructor.
                 // For attributes where values are not provided to the constructor, the corresponding default values must be used.
                 // TA: 12.1
                 target0.dispatchEvent(pointerEventCustom);
                 var pointerEventDefault = new PointerEvent("pointerout");
                 target0.dispatchEvent(pointerEventDefault);
+
+                assert_equals(Object.keys(detected_pointertypes), ["pen"]);
             }, "PointerEvent constructor"));
-        })
+        });
     </script>
     <div id="complete-notice">
     <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>

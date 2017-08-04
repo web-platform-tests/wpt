@@ -143,45 +143,6 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 """
 
 
-class SharedWorkersHandler(HtmlWrapperHandler):
-    path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js"),
-                    (".sharedworker.html", ".sharedworker.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
-fetch_tests_from_worker(new SharedWorker("%(path)s"));
-</script>
-"""
-
-
-class ServiceWorkersHandler(HtmlWrapperHandler):
-    path_replace = [(".any.serviceworker.https.html", ".any.js", ".any.worker.js"),
-                    (".serviceworker.https.html", ".serviceworker.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
-(async function() {
-    const scope = 'does/not/exist';
-
-    let reg = await navigator.serviceWorker.getRegistration(scope);
-    if (reg) await reg.unregister();
-
-    reg = await navigator.serviceWorker.register("%(path)s", {scope});
-
-    fetch_tests_from_worker(reg.installing);
-})();
-</script>
-"""
-
-
 class WindowHandler(HtmlWrapperHandler):
     path_replace = [(".window.html", ".window.js")]
     wrapper = """<!doctype html>
@@ -279,8 +240,6 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
-            ("GET", "*.sharedworker.html", SharedWorkersHandler),
-            ("GET", "*.serviceworker.https.html", ServiceWorkersHandler),
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),

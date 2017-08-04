@@ -35,7 +35,7 @@ function testContentTypeHeader(what, contentType, title) {
     assert_true(navigator.sendBeacon(testUrl, what), "SendBeacon Succeeded");
     return pollResult(test, id) .then(result => {
       if (contentType == "multipart/form-data") {
-        assert_true(result.startsWith(contentType), "Correct referrer header result");
+        assert_true(result.startsWith(contentType), "Correct Content-Type header result");
       } else {
         assert_equals(result, contentType, "Correct Content-Type header result");
       }

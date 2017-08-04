@@ -145,7 +145,7 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 
 class SharedWorkersHandler(HtmlWrapperHandler):
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js"),
-                    (".sharedworker.html", ".worker.js")]
+                    (".sharedworker.html", ".sharedworker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -160,7 +160,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s"));
 
 class ServiceWorkersHandler(HtmlWrapperHandler):
     path_replace = [(".any.serviceworker.https.html", ".any.js", ".any.worker.js"),
-                    (".serviceworker.https.html", ".worker.js")]
+                    (".serviceworker.https.html", ".serviceworker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s

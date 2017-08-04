@@ -34,7 +34,11 @@ function testContentTypeHeader(what, contentType, title) {
   promise_test(function(test) {
     assert_true(navigator.sendBeacon(testUrl, what), "SendBeacon Succeeded");
     return pollResult(test, id) .then(result => {
-      assert_true(result.startsWith(contentType), "Correct referrer header result");
+      if (contentType.length == 0) {
+        assert_true(result.length == 0, "Content-Type header for ArrayBuffer should be empty");
+      } else {
+        assert_true(result.startsWith(contentType), "Correct Content-Type header result");
+      }
     });
   }, "Test content-type header for a body " + title);
 }

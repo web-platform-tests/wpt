@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>CSS Grid Layout Test: Support for 'grid-auto-columns' and 'grid-auto-rows' properties accepting track listing as value</title>
+        <link rel="author" title="Rachel Andrew" href="mailto:me@rachelandrew.co.uk"/>
+        <style>
+         #grid {
+             position: relative;
+         }
+         .position {
+             position: absolute;
+             top: 0;
+             left: 0;
+         }
+          #first-column-first-row {
+             width: 25px;
+             height: 25px;
+             background-color: purple;
+         }
+         #second-column-first-row {
+             width: 50px;
+             height: 25px;
+             left: 25px;
+             background-color: orange;
+         }
+         #first-column-second-row {
+             width: 25px;
+             height: 50px;
+             top: 25px;
+             background-color: green;
+         }
+         #second-column-second-row {
+             width: 50px;
+             height: 50px;
+             top: 25px;
+             left: 25px;
+             background-color: pink;
+         }
+         #first-and-second-column-third-row {
+             width: 75px;
+             height: 25px;
+             top: 75px;
+             background-color: silver;
+         }
+         #third-column-all-rows {
+             left: 75px;
+             height: 100px;
+             width: 25px;
+             background-color: blue;
+         }
+        </style>
+    </head>
+    <body>
+        <p>The test passes if it has the same visual effect as reference.</p>
+        <div id="grid">
+            <div class="position" id="first-column-first-row"></div>
+            <div class="position" id="second-column-first-row"></div>
+            <div class="position" id="first-column-second-row"></div>
+            <div class="position" id="second-column-second-row"></div>
+            <div class="position" id="first-and-second-column-third-row"></div>
+            <div class="position" id="third-column-all-rows"></div>
+        </div>
+    </body>
+</html>

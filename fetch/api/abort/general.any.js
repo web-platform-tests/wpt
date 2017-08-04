@@ -1,13 +1,7 @@
-const BODY_METHODS = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
+// META: script=/common/utils.js
+// META: script=../request/request-error.js
 
-if (self.importScripts) {
-  // Load scripts if being run from a worker
-  importScripts(
-    '/resources/testharness.js',
-    '/common/utils.js',
-    '../request/request-error.js'
-  );
-}
+const BODY_METHODS = ['arrayBuffer', 'blob', 'formData', 'json', 'text'];
 
 // This is used to close connections that weren't correctly closed during the tests,
 // otherwise you can end up running out of HTTP connections.

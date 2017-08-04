@@ -40,6 +40,8 @@ class WrapperHandler(object):
 
     __meta__ = abc.ABCMeta
 
+    headers = ()
+
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -49,6 +51,9 @@ class WrapperHandler(object):
         self.handler(request, response)
 
     def handle_request(self, request, response):
+        for header_name, header_value in self.headers:
+            response.headers.set(header_name, header_value)
+
         path = self._get_path(request.url_parts.path, True)
         meta = "\n".join(self._get_meta(request))
         response.content = self.wrapper % {"meta": meta, "path": path}
@@ -138,6 +143,45 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 """
 
 
+class SharedWorkersHandler(HtmlWrapperHandler):
+    path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js"),
+                    (".sharedworker.html", ".worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new SharedWorker("%(path)s"));
+</script>
+"""
+
+
+class ServiceWorkersHandler(HtmlWrapperHandler):
+    path_replace = [(".any.serviceworker.https.html", ".any.js", ".any.worker.js"),
+                    (".serviceworker.https.html", ".worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+(async function() {
+    const scope = 'does/not/exist';
+
+    let reg = await navigator.serviceWorker.getRegistration(scope);
+    if (reg) await reg.unregister();
+
+    reg = await navigator.serviceWorker.register("%(path)s", {scope});
+
+    fetch_tests_from_worker(reg.installing);
+})();
+</script>
+"""
+
+
 class WindowHandler(HtmlWrapperHandler):
     path_replace = [(".window.html", ".window.js")]
     wrapper = """<!doctype html>
@@ -169,6 +213,7 @@ self.GLOBAL = {
 
 
 class AnyWorkerHandler(WrapperHandler):
+    headers = [('Content-Type', 'application/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {
@@ -234,6 +279,8 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
+            ("GET", "*.sharedworker.html", SharedWorkersHandler),
+            ("GET", "*.serviceworker.https.html", ServiceWorkersHandler),
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),

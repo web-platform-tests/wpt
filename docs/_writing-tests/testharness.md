@@ -57,6 +57,12 @@ creating a `FileAPI/FileReaderSync.worker.js` as follows:
 
 This test could then be run from `FileAPI/FileReaderSync.worker.html`.
 
+In addition to `.worker.js`, the following worker type extensions are
+supported:
+
+* Shared workers: `.sharedworker.js`, mapping to `.sharedworker.html`.
+* Service workers: `.serviceworker.js`, mapping to `.serviceworker.html`.
+
 ### Multi-global tests
 
 Tests for features that exist in multiple global scopes can be written
@@ -77,8 +83,12 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
       assert_false(blob.isClosed);
     }, "The Blob constructor.");
 
-This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
-as `FileAPI/Blob-constructor.any.html`.
+This test could then be run from:
+
+* `FileAPI/Blob-constructor.any.html`.
+* `FileAPI/Blob-constructor.any.worker.html`.
+* `FileAPI/Blob-constructor.any.sharedworker.html`.
+* `FileAPI/Blob-constructor.any.serviceworker.https.html`.
 
 To check if your test is run from a window or worker you can use the following two methods that will
 be made available by the framework:

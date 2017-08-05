@@ -28,13 +28,6 @@ function create_matrix(quat) {
   return mat;
 }
 
-function assert_array_approx_equals(actual, expected, epsilon) {
-  assert_true(actual.length === expected.length);
-  for (let i = 0; i < expected.length; i++) {
-    assert_approx_equals(actual[i], expected[i], epsilon)
-  }
-}
-
 function checkQuaternion(t, sensorType) {
   let sensor = new sensorType();
   sensor.onreading = t.step_func_done(() => {

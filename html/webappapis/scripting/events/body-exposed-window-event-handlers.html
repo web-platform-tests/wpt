@@ -35,7 +35,7 @@ elements.forEach(function (elementName) {
 
       var d = (new DOMParser).parseFromString('', 'text/html');
       var b = d.createElement(elementName);
-      b[handlerName] = function() { return "Handler attached to windowless element"; };
+      b[handlerName] = function () { return "Handler attached to windowless element"; };
 
       assert_equals(window[handlerName], windowHandler);
       assert_equals(b[handlerName], null);

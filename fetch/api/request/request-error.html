@@ -12,54 +12,54 @@
   <body>
     <script>
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"window" : "http://test.url"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"window" : "http://test.url"}); },
           "Expect TypeError exception");
       },"RequestInit's window is not null");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("http://:not a valid URL"); },
+        assert_throws(new TypeError() , function () { new Request("http://:not a valid URL"); },
           "Expect TypeError exception");
       },"Input URL is not valid")
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("http://user:pass@test.url"); },
+        assert_throws(new TypeError() , function () { new Request("http://user:pass@test.url"); },
           "Expect TypeError exception");
       },"Input URL has credentials");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"mode" : "navigate"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"mode" : "navigate"}); },
           "Expect TypeError exception");
       },"RequestInit's mode is navigate");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"referrer" : "http://:not a valid URL"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"referrer" : "http://:not a valid URL"}); },
           "Expect TypeError exception");
       },"RequestInit's referrer is invalid");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"method" : "IN VALID"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"method" : "IN VALID"}); },
           "Expect TypeError exception");
       }, "RequestInit's method is invalid");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"method" : "TRACE"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"method" : "TRACE"}); },
           "Expect TypeError exception");
       }, "RequestInit's method is forbidden");
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"mode" : "no-cors", "method" : "PUT"}); },
+        assert_throws(new TypeError() , function () { new Request("", {"mode" : "no-cors", "method" : "PUT"}); },
           "Expect TypeError exception");
       },"RequestInit's mode is no-cors and method is not simple");
 
       test(function() {
         assert_throws(new TypeError() ,
-                      function() { new Request("", {"mode" : "no-cors", "integrity" : "not  an empty string"}); },
+                      function () { new Request("", {"mode" : "no-cors", "integrity" : "not  an empty string"}); },
                       "Expect TypeError exception");
       },"RequestInit's mode is no-cors and integrity is not empty");
 
       test(function() {
         assert_throws(new TypeError() ,
-                      function() { new Request("", {"mode" : "cors", "cache" : "only-if-cached"}); },
+                      function () { new Request("", {"mode" : "cors", "cache" : "only-if-cached"}); },
                       "Expect TypeError exception");
       },"RequestInit's cache mode is only-if-cached and mode is not same-origin");
 
@@ -97,7 +97,7 @@
         test(function() {
           var options = { };
           options[parameter] = "BAD";
-          assert_throws(new TypeError(), function() { new Request("", options); });
+          assert_throws(new TypeError(), function () { new Request("", options); });
         },"Bad " + parameter +" init parameter value");
       });
 
@@ -107,7 +107,7 @@
           if (ok)
             new Request("test", options);
           else
-            assert_throws(new TypeError(), function() { new Request("test", options); });
+            assert_throws(new TypeError(), function () { new Request("test", options); });
         }, "Request with cache mode: only-if-cached and fetch mode: " + fetchMode);
       }
       testOnlyIfCachedMode("same-origin", true);

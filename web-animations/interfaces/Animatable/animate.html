@@ -100,7 +100,7 @@ gKeyframeSequenceTests.forEach(function(subtest) {
 gInvalidKeyframesTests.forEach(function(subtest) {
   test(function(t) {
     var div = createDiv(t);
-    assert_throws(subtest.expected, function() {
+    assert_throws(subtest.expected, function () {
       div.animate(subtest.input, 2000);
     });
   }, 'Element.animate() does not accept ' + subtest.desc);

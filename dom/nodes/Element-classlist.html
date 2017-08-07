@@ -22,6 +22,10 @@ function checkModification(e, funcName, args, expectedRes, before, after,
   if (!Array.isArray(args)) {
     args = [args];
   }
+  if (before === null) {
+    assert_not_equals(after, "", "Test bug: we should never expect an empty " +
+                                 "string attribute to be added");
+  }
 
   test(function() {
     var shouldThrow = typeof(expectedException) === "string";
@@ -363,6 +367,7 @@ function testClassList(e, desc) {
                       after, expectedException, desc);
   }
 
+  checkForceToggle(null, "a", false, false, null);
   checkForceToggle("", "a", true, true, "a");
   checkForceToggle("a", "a", true, true, "a");
   checkForceToggle("a", "b", true, true, "a b");

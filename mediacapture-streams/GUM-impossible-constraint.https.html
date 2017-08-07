@@ -25,8 +25,8 @@ t.step(function() {
     assert_unreached("a Video stream of width 100M cannot be created");
     t.done();
   }), t.step_func(function(error) {
-    assert_equals(error.name, "ConstraintNotSatisfiedError", "An impossible constraint triggers a ConstraintNotSatisfiedError");
-    assert_equals(error.constraintName, "width", "The name of the not satisfied error is given in error.constraintName");
+    assert_equals(error.name, "OverconstrainedError", "An impossible constraint triggers a OverconstrainedError");
+    assert_equals(error.constraint, "width", "The name of the not satisfied error is given in error.constraint");
     t.done();
   }));
 });

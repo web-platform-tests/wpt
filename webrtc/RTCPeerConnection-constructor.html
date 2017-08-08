@@ -42,7 +42,7 @@ for (const arg in testArgs) {
   test(function() {
     const throws = testArgs[arg];
     if (throws) {
-      assert_throws(throws, function() {
+      assert_throws(throws, function () {
         eval(expr);
       });
     } else {

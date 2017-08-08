@@ -75,7 +75,7 @@ function do_test(aSelector, aElementId, aTargetId) {
 function do_scope_test(aSelector, aElementId) {
   test(function() {
     var el = document.getElementById(aElementId);
-    assert_throws("SYNTAX_ERR", function() {
+    assert_throws("SYNTAX_ERR", function () {
       el.closest(aSelector);
     });
   }, "Element.closest with context node '" + aElementId + "' and selector '" + aSelector + "' should throw");

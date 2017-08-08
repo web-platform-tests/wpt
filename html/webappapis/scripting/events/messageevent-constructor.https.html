@@ -35,7 +35,7 @@ test(function() {
 }, "MessageEventInit dictionary")
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws(new TypeError(), function () {
     new MessageEvent("test", { ports: null })
   })
 }, "Passing null for ports member")
@@ -63,7 +63,7 @@ test(function() {
 
 test(function() {
   var ev = document.createEvent("messageevent")
-  assert_throws(new TypeError(), function() {
+  assert_throws(new TypeError(), function () {
     ev.initMessageEvent("test", true, false, "testData", "testOrigin", "testId", window, null)
   })
 }, "Passing null for ports parameter to initMessageEvent")

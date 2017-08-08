@@ -14,7 +14,7 @@ self.testSettingImmutablePrototypeToNewValueOnly =
   }
 
   test(() => {
-    assert_throws(dunderProtoError, function() {
+    assert_throws(dunderProtoError, function () {
       target.__proto__ = newValue;
     });
   }, `${prefix}: setting the prototype to ${newValueString} via __proto__ should throw a ${dunderProtoErrorName}`);
@@ -44,7 +44,7 @@ self.testSettingImmutablePrototype =
     }, `${prefix}: setting the prototype to ${originalValueString} via __proto__ should not throw`);
   } else {
     test(() => {
-      assert_throws("SecurityError", function() {
+      assert_throws("SecurityError", function () {
         target.__proto__ = newValue;
       });
     }, `${prefix}: setting the prototype to ${originalValueString} via __proto__ should throw a "SecurityError" since ` +

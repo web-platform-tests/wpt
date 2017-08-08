@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Legacy platform objects [[OwnPropertyKeys]] method</title>
+<link rel="help" href="https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    function custom_assert_array_equals(actual, expected, msg) {
+        assert_array_equals(actual, expected, " actual " + JSON.stringify(actual) + " expected " + JSON.stringify(expected));
+    }
+
+    test(function() {
+        var element = document.createElement("div");
+        element.appendChild(document.createElement("div"));
+        element.appendChild(document.createElement("div"));
+        element.appendChild(document.createElement("div"));
+        custom_assert_array_equals(Reflect.ownKeys(element.childNodes), ["0", "1", "2"]);
+    }, "must enumerate property indices in ascending numerical order");
+
+    test(function() {
+        var element = document.createElement("div");
+        element.setAttribute("data-foo", "foo content");
+        element.setAttribute("data-bar", "bar content");
+        element.setAttribute("data-baz", "baz content");
+        custom_assert_array_equals(Reflect.ownKeys(element.dataset), ["foo", "bar", "baz"]);
+    }, "must enumerate property names in list order");
+
+
+    test(function() {
+        var element = document.createElement("div");
+        element.setAttribute("id", "foo");
+        element.setAttribute("class", "bar");
+        custom_assert_array_equals(Reflect.ownKeys(element.attributes), ["0", "1", "id", "class"]);
+    }, "must first enumerate property indices in ascending numerical order, then named properties in list order");
+
+
+    test(function() {
+        var element = document.createElement("div");
+        element.attributes.foo = "some value";
+        element.attributes.bar = "and another";
+        element.setAttribute("id", "foo");
+        element.setAttribute("class", "bar");
+        custom_assert_array_equals(Reflect.ownKeys(element.attributes), ["0", "1", "id", "class", "foo", "bar"]);
+    }, "must enumerate own properties after indexed and named properties even when they're added first");
+</script>

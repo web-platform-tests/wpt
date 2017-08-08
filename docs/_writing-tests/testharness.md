@@ -21,31 +21,29 @@ all test types.
 
 ## Auto-generated test boilerplate
 
-While most JavaScript tests require a certain amount of HTML
-boilerplate to include the test library, etc., tests which are
-expressible purely in script (e.g. tests for workers) can have all the
-needed HTML and script boilerplate auto-generated.
+Tests for HTML documents, and dedicated, shared, and service workers, can be written as simple
+JavaScript files without boilerplate by following conventions established below.
 
-### Standalone window tests
+### Standalone HTML document tests (Window global object)
 
-Tests that only require a script file running in window scope can use
-standalone window tests. In this case the test is a javascript file
-with the extension `.window.js`. This is sourced from a generated
-document which sources `testharness.js`, `testharnessreport.js` and
-the test script. For a source script with the name
-`example.window.js`, the corresponding test resource will be
-`example.window.html`.
+Tests that only require JavaScript running in an HTML document can be written using a `*.window.js`
+resource. The boilerplate will be generated automatically when you load `*.window.html`. E.g., for
+`example.window.js` the corresponding (generated) test resource will be `example.window.html`.
 
-### Standalone workers tests
+### Standalone worker tests (DedicatedWorkerGlobalScope, SharedWorkerGlobalScope, and ServiceWorkerGlobalScope global objects)
 
-Tests that only require assertions in a dedicated worker scope can use
-standalone workers tests. In this case, the test is a JavaScript file
-with extension `.worker.js` that imports `testharness.js`. The test can
-then use all the usual APIs, and can be run from the path to the
-JavaScript file with the `.js` removed.
+Tests that need to run in dedicated, shared, and service workers can be written using a
+`*.worker.js` resource (with boilerplate at `*.worker.html`, `*.worker.sharedworker.html`, and
+`*.worker.serviceworker.https.html`). To exclude service workers, use a `*.worker-no-sw.js` resource
+(with boilerplate at `*.worker-no-sw.html` and `*.worker-no-sw.sharedworker.html`). To
+exclusively target service workers, use `*.serviceworker.js` (with boilerplate at
+`*.serviceworker.https.html`).
 
-For example, one could write a test for the `FileReaderSync` API by
-creating a `FileAPI/FileReaderSync.worker.js` as follows:
+Note that service workers also require the `.https` signifier as they only work in
+[secure contexts](https://w3c.github.io/webappsec-secure-contexts/).
+
+For example, one could write a test for the `FileReaderSync` API by creating a
+`FileAPI/FileReaderSync.worker-no-sw.js` as follows:
 
     importScripts("/resources/testharness.js");
     test(function () {
@@ -55,20 +53,20 @@ creating a `FileAPI/FileReaderSync.worker.js` as follows:
     }, "FileReaderSync#readAsText.");
     done();
 
-This test could then be run from `FileAPI/FileReaderSync.worker.html`.
+This test could then be run from `FileAPI/FileReaderSync.worker-no-sw.html` and
+`FileAPI/FileReaderSync.worker-no-sw.sharedworker.html`.
 
-### Multi-global tests
+### Standalone HTML document and worker tests
 
-Tests for features that exist in multiple global scopes can be written
-in a way that they are automatically run in a window scope and a
-worker scope.
-
-In this case, the test is a JavaScript file with extension `.any.js`.
-The test can then use all the usual APIs, and can be run from the path to the
-JavaScript file with the `.js` replaced by `.worker.html` or `.html`.
+Tests for features that span HTML documents and workers can be written using a `*.window-worker.js`
+resource (with boilerplate at `*.window-worker.html`, `*.window-worker.worker.html`,
+`*.window-worker.sharedworker.html`, and `*.window-worker.serviceworker.https.html`). To exclude
+service workers, use a `*.window-worker-no-sw.js` resource (with boilerplate at
+`*.window-worker-no-sw.html`, `*.window-worker-no-sw.worker.html`, and
+`*.window-worker-no-sw.sharedworker.html`).
 
 For example, one could write a test for the `Blob` constructor by
-creating a `FileAPI/Blob-constructor.any.js` as follows:
+creating a `FileAPI/Blob-constructor.window-worker.js` as follows:
 
     test(function () {
       var blob = new Blob();
@@ -77,8 +75,9 @@ creating a `FileAPI/Blob-constructor.any.js` as follows:
       assert_false(blob.isClosed);
     }, "The Blob constructor.");
 
-This test could then be run from `FileAPI/Blob-constructor.any.worker.html` as well
-as `FileAPI/Blob-constructor.any.html`.
+This test could then be run from `FileAPI/Blob-constructor.window-worker.html` as well as
+`FileAPI/Blob-constructor.window-worker.serviceworker.https.html` and the other worker locations as
+per above.
 
 To check if your test is run from a window or worker you can use the following two methods that will
 be made available by the framework:

@@ -201,10 +201,10 @@ class SourceFile(object):
         return self.type_flag == "visual"
 
     @property
-    def name_is_multi_global(self):
+    def name_is_window(self):
         """Check if the file name matches the conditions for the file to
-        be a multi-global js test file"""
-        return "any" in self.meta_flags and self.ext == ".js"
+        be a window js test file"""
+        return "window" in self.meta_flags and self.ext == ".js"
 
     @property
     def name_is_worker(self):
@@ -213,10 +213,28 @@ class SourceFile(object):
         return "worker" in self.meta_flags and self.ext == ".js"
 
     @property
-    def name_is_window(self):
+    def name_is_worker_no_sw(self):
         """Check if the file name matches the conditions for the file to
-        be a window js test file"""
-        return "window" in self.meta_flags and self.ext == ".js"
+        be a worker-excluding-service-workers js test file"""
+        return "worker-no-sw" in self.meta_flags and self.ext == ".js"
+
+    @property
+    def name_is_serviceworker(self):
+        """Check if the file name matches the conditions for the file to
+        be a service worker js test file"""
+        return "serviceworker" in self.meta_flags and self.ext == ".js"
+
+    @property
+    def name_is_window_worker(self):
+        """Check if the file name matches the conditions for the file to
+        be a window/worker js test file"""
+        return "window-worker" in self.meta_flags and self.ext == ".js"
+
+    @property
+    def name_is_window_worker_no_sw(self):
+        """Check if the file name matches the conditions for the file to
+        be a window/worker-excluding-service-workers js test file"""
+        return "window-worker-no-sw" in self.meta_flags and self.ext == ".js"
 
     @property
     def name_is_webdriver(self):
@@ -284,7 +302,9 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
+        if self.name_is_window or self.name_is_worker or self.name_is_worker_no_sw or \
+           self.name_is_serviceworker or self.name_is_window_worker or \
+           self.name_is_window_worker_no_sw:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
@@ -494,23 +514,57 @@ class SourceFile(object):
         elif self.name_is_visual:
             rv = VisualTest.item_type, [VisualTest(self, self.url)]
 
-        elif self.name_is_multi_global:
+        elif self.name_is_window:
             rv = TestharnessTest.item_type, [
-                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.html"),
-                                timeout=self.timeout),
-                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.worker.html"),
-                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
+                                timeout=self.timeout)
             ]
 
         elif self.name_is_worker:
-            rv = (TestharnessTest.item_type,
-                  [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"),
-                                   timeout=self.timeout)])
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.sharedworker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.serviceworker.https.html"),
+                                timeout=self.timeout)
+            ]
 
-        elif self.name_is_window:
-            rv = (TestharnessTest.item_type,
-                  [TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
-                                   timeout=self.timeout)])
+        elif self.name_is_worker_no_sw:
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".worker-no-sw.js", ".worker-no-sw.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".worker-no-sw.js", ".worker-no-sw.sharedworker.html"),
+                                timeout=self.timeout)
+            ]
+
+        elif self.name_is_serviceworker:
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".serviceworker.js", ".serviceworker.html"),
+                                timeout=self.timeout)
+            ]
+
+        elif self.name_is_window_worker:
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".window-worker.js", ".window-worker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window-worker.js", ".window-worker.worker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window-worker.js", ".window-worker.sharedworker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window-worker.js", ".window-worker.serviceworker.https.html"),
+                                timeout=self.timeout)
+            ]
+
+        elif self.name_is_window_worker_no_sw:
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".window-worker-no-sw.js", ".window-worker-no-sw.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window-worker-no-sw.js", ".window-worker-no-sw.worker.html"),
+                                timeout=self.timeout),
+                TestharnessTest(self, replace_end(self.url, ".window-worker-no-sw.js", ".window-worker-no-sw.sharedworker.html"),
+                                timeout=self.timeout)
+            ]
 
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,

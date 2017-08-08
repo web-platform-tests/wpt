@@ -40,7 +40,8 @@ var invalidSelectors = [
   {name: "Undeclared namespace",         selector: "ns|div"},
   {name: "Undeclared namespace",         selector: ":not(ns|div)"},
   {name: "Invalid namespace",            selector: "^|div"},
-  {name: "Invalid namespace",            selector: "$|div"}
+  {name: "Invalid namespace",            selector: "$|div"},
+  {name: "Relative selector",            selector: ">*"},
 ];
 
 /*
@@ -436,9 +437,6 @@ var scopedSelectors = [
   //{name: "", selector: "", ctx: "", ref: "", expect: [], level: 1, testType: TEST_FIND | TEST_MATCH},
 
   // Universal Selector
-  {name: "Universal selector, matching all children of the specified reference element",       selector: ">*",   ctx: "#universal", expect: ["universal-p1", "universal-hr1", "universal-pre1", "universal-p2", "universal-address1"], unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND | TEST_MATCH},
-  {name: "Universal selector, matching all grandchildren of the specified reference element",  selector: ">*>*", ctx: "#universal", expect: ["universal-code1", "universal-span1", "universal-a1", "universal-code2"],                 unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND | TEST_MATCH},
-  {name: "Universal selector, matching all children of the specified empty reference element", selector: ">*",   ctx: "#empty",     expect: [] /*no matches*/,                                                                         unexpected: ["universal", "empty"], level: 2, testType: TEST_QSA},
   {name: "Universal selector, matching all descendants of the specified reference element",    selector: "*",    ctx: "#universal", expect: ["universal-p1", "universal-code1", "universal-hr1", "universal-pre1", "universal-span1",
                                                                                                                                              "universal-p2", "universal-a1", "universal-address1", "universal-code2", "universal-a2"], unexpected: ["universal", "empty"], level: 2, testType: TEST_FIND | TEST_MATCH},
 

@@ -600,7 +600,7 @@ class Element(object):
                 "value": selector}
 
         elem = self.send_element_command("POST", "element", body)
-        return self.session.element(elem)
+        return self.session._element(elem)
 
     @command
     def click(self):
@@ -637,10 +637,17 @@ class Element(object):
     def rect(self):
         return self.send_element_command("GET", "rect")
 
+    @property
     @command
-    def property(self, name):
-        return self.send_element_command("GET", "property/%s" % name)
+    def selected(self):
+        return self.send_element_command("GET", "selected")
 
     @command
     def attribute(self, name):
         return self.send_element_command("GET", "attribute/%s" % name)
+
+    # This MUST come last because otherwise @property decorators above
+    # will be overridden by this.
+    @command
+    def property(self, name):
+        return self.send_element_command("GET", "property/%s" % name)

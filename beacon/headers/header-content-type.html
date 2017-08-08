@@ -34,7 +34,11 @@ function testContentTypeHeader(what, contentType, title) {
   promise_test(function(test) {
     assert_true(navigator.sendBeacon(testUrl, what), "SendBeacon Succeeded");
     return pollResult(test, id) .then(result => {
-      assert_true(result.startsWith(contentType), "Correct referrer header result");
+      if (contentType == "multipart/form-data") {
+        assert_true(result.startsWith(contentType), "Correct Content-Type header result");
+      } else {
+        assert_equals(result, contentType, "Correct Content-Type header result");
+      }
     });
   }, "Test content-type header for a body " + title);
 }

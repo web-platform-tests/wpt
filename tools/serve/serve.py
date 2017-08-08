@@ -174,7 +174,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s"));
 """
 
 class ServiceWorkerHandler(HtmlWrapperHandler):
-    path_replace = [(".serviceworker.https.html", ".serviceworker.js", ".serviceworker.worker.js")
+    path_replace = [(".serviceworker.https.html", ".serviceworker.js", ".serviceworker.worker.js"),
                     (".worker.serviceworker.https.html", ".worker.js", ".worker.worker.js"),
                     (".window-worker.serviceworker.https.html", ".window-worker.js", ".window-worker.worker.js")]
     wrapper = """<!doctype html>

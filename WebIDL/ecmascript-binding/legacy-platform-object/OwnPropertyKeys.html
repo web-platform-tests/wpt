@@ -6,7 +6,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
     function custom_assert_array_equals(actual, expected, msg) {
-        assert_array_equals(actual, expected, " actual " + JSON.stringify(actual) + " expected " + JSON.stringify(expected));
+        function replacer(k, v) {
+          if (typeof v === "symbol") {
+            return v.toString();
+          }
+          return v;
+        }
+        assert_array_equals(actual, expected, " actual " + JSON.stringify(actual, replacer) + " expected " + JSON.stringify(expected, replacer));
     }
 
     test(function() {
@@ -42,4 +48,18 @@
         element.setAttribute("class", "bar");
         custom_assert_array_equals(Reflect.ownKeys(element.attributes), ["0", "1", "id", "class", "foo", "bar"]);
     }, "must enumerate own properties after indexed and named properties even when they're added first");
+
+    test(function() {
+        var symb1 = Symbol();
+        var symb2 = Symbol();
+        var element = document.createElement("div");
+        element.attributes.foo = "some value";
+        element.attributes[symb1] = "symb1";
+        element.attributes[symb2] = "symb2";
+        element.attributes.bar = "and another";
+        element.setAttribute("id", "foo");
+        element.setAttribute("class", "bar");
+        custom_assert_array_equals(Reflect.ownKeys(element.attributes),
+            ["0", "1", "id", "class", "foo", "bar", symb1, symb2]);
+    }, "must enumerate symbols after strings, regardless of which ones got added first");
 </script>

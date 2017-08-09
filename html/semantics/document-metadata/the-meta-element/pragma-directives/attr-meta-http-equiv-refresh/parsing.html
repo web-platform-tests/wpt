@@ -15,14 +15,14 @@ iframe { display:none }
 
 var tests_arr = [
   {input: '', expected: []},
-  {input: '1', expected: [1, 'refresh.sub.html']},
-  {input: '1 ', expected: [1, 'refresh.sub.html']},
-  {input: '1\t', expected: [1, 'refresh.sub.html']},
-  {input: '1\r', expected: [1, 'refresh.sub.html']},
-  {input: '1\n', expected: [1, 'refresh.sub.html']},
-  {input: '1\f', expected: [1, 'refresh.sub.html']},
-  {input: '1;', expected: [1, 'refresh.sub.html']},
-  {input: '1,', expected: [1, 'refresh.sub.html']},
+  {input: '1', expected: [1, '__filename__']},
+  {input: '1 ', expected: [1, '__filename__']},
+  {input: '1\t', expected: [1, '__filename__']},
+  {input: '1\r', expected: [1, '__filename__']},
+  {input: '1\n', expected: [1, '__filename__']},
+  {input: '1\f', expected: [1, '__filename__']},
+  {input: '1;', expected: [1, '__filename__']},
+  {input: '1,', expected: [1, '__filename__']},
   {input: '1; url=foo', expected: [1, 'foo']},
   {input: '1, url=foo', expected: [1, 'foo']},
   {input: '1 url=foo', expected: [1, 'foo']},
@@ -76,7 +76,7 @@ var tests_arr = [
   {input: '-1', expected: []},
   {input: '+0', expected: []},
   {input: '-0', expected: []},
-  {input: '0', expected: [0, 'refresh.sub.html']},
+  {input: '0', expected: [0, '__filename__']},
   {input: '1.9; url=foo', expected: [1, 'foo']},
   {input: '1.9..5.; url=foo', expected: [1, 'foo']},
   {input: '.9; url=foo', expected: [0, 'foo']},
@@ -91,15 +91,15 @@ var tests_arr = [
 
 tests_arr.forEach(function(test_obj) {
   ["<meta>", "Refresh header"].forEach(type => {
-    if(type === "Refresh header" && test_obj.input.match("[\n\r]")) {
+    if(type === "Refresh header" && test_obj.input.match("[\n\r\f]")) { // See https://github.com/w3c/wptserve/issues/111 for why \f as well
       return;
     }
+    const filename = type === "<meta>" ? "refresh.sub.html" : "refresh.py";
     async_test(function(t) {
       var iframe = document.createElement('iframe');
       t.add_cleanup(function() {
         document.body.removeChild(iframe);
       });
-      const filename = type === "<meta>" ? "refresh.sub.html" : "refresh.py";
       iframe.src = "support/" + filename + "?input=" + encodeURIComponent(test_obj.input);
       document.body.appendChild(iframe);
       var loadCount = 0;
@@ -109,7 +109,7 @@ tests_arr.forEach(function(test_obj) {
         if (test_obj.expected.length === 0) {
           assert_equals(got, filename);
           if (loadCount === 1) {
-            setTimeout(function() {
+            t.step_timeout(function() {
               t.done();
             }, 3000); // want to make sure it doesn't redirect when it shouldn't
           } else {
@@ -117,7 +117,7 @@ tests_arr.forEach(function(test_obj) {
           }
         } else {
           if (loadCount === 2) {
-            if(type === "Refresh header" && test_obj.expected[1] === "refresh.sub.html") {
+            if(test_obj.expected[1] === "__filename__") {
               assert_equals(got, filename);
             } else {
               assert_equals(got, test_obj.expected[1]);

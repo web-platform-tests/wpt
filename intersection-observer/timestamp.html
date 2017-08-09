@@ -18,14 +18,14 @@ pre, #log {
 <div id="trailing-space" class="spacer"></div>
 
 <script>
-// Pick this number to be comfortably greater than the length of two frames at 60Hz.
-var timeSkew = 40;
-
 var topWindowEntries = [];
 var iframeWindowEntries = [];
 var targetIframe;
+var topWindowTimeOnTestStart;
+var topWindowTimeBeforeCreatingIframe;
 var topWindowTimeBeforeNotification;
 var iframeWindowTimeBeforeNotification;
+var timeSkew;
 
 async_test(function(t) {
   t.step_timeout(function() {
@@ -55,7 +55,7 @@ async_test(function(t) {
       runTestCycle(step1, "First rAF after iframe is loaded.");
       t.done();
     };
-  }, timeSkew);
+  });
 }, "Check that timestamps correspond to the to execution context that created the observer.");
 
 function step1() {

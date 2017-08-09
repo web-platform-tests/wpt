@@ -401,9 +401,11 @@ IdlArray.prototype.is_json_type = function(type)
                var map = new Map();
                while (stack.length)
                {
-                   stack.pop().members.forEach(m => map.set(m.name, m.idlType));
+                   stack.pop().members.forEach(function(m) {
+                       map.set(m.name, m.idlType)
+                   });
                }
-               return [...map.values()].every(this.is_json_type, this);
+               return Array.from(map.values()).every(this.is_json_type, this);
            }
            
            //  interface types that have a toJSON operation declared on themselves or
@@ -415,14 +417,14 @@ IdlArray.prototype.is_json_type = function(type)
                    if (thing.has_to_json_regular_operation()) { return true; }
                    var mixins = this.implements[thing.name];
                    if (mixins) {
-                       mixins = mixins.map(id => {
+                       mixins = mixins.map(function(id) {
                            var mixin = this.members[id];
                            if (!mixin) {
                                throw new Error("Interface " + id + " not found (implemented by " + thing.name + ")");
                            }
                            return mixin;
-                       });
-                       if (mixins.some(m => m.has_to_json_regular_operation())) { return true; }
+                       }, this);
+                       if (mixins.some(function(m) { return m.has_to_json_regular_operation() } )) { return true; }
                    }
                    if (!thing.base) { return false; }
                    base = this.members[thing.base];
@@ -1006,7 +1008,7 @@ function _traverse_inherited_and_consequential_interfaces(stack, callback) {
     callback(I);
     var mixins = I.array["implements"][I.name];
     if (mixins) {
-        mixins.forEach(id => {
+        mixins.forEach(function(id) {
             var mixin = I.array.members[id];
             if (!mixin) {
                 throw new Error("Interface " + id + " not found (implemented by " + I.name + ")");

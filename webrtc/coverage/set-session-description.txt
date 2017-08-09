@@ -14,22 +14,21 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     1.  If the process to apply description fails for any reason, then user agent
         MUST queue a task that runs the following steps:
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [Untestable]
       1.  If connection's [[IsClosed]] slot is true, then abort these steps.
 
       [Untestable]
       2.  If elements of the SDP were modified, then reject p with a newly created
           InvalidModificationError and abort these steps.
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setLocalDescription-answer]
+      [RTCPeerConnection-setRemoteDescription-offer]
+      [RTCPeerConnection-setRemoteDescription-answer]
       3.  If the description's type is invalid for the current signaling state of
           connection as described in [JSEP] (section 5.5. and section 5.6.), then
           reject p with a newly created InvalidStateError and abort these steps.
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-offer]
       4.  If the content of description is not valid SDP syntax, then reject p
           with an RTCError (with errorDetail set to "sdp-syntax-error" and the
           sdpLineNumber attribute set to the line number in the SDP where the
@@ -47,19 +46,18 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     2.  If description is applied successfully, the user agent MUST queue a task
         that runs the following steps:
 
-      [RTCPeerConnection-setLocalDescription]
-      [RTCPeerConnection-setRemoteDescription]
+      [Untestable]
       1.  If connection's [[isClosed]] slot is true, then abort these steps.
 
       [RTCPeerConnection-setLocalDescription]
       2.  If description is set as a local description, then run one of the
           following steps:
 
-        [RTCPeerConnection-setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-offer]
         - If description is of type "offer", set connection.pendingLocalDescription
           to description and signaling state to have-local-offer.
 
-        [RTCPeerConnection-setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-answer]
         - If description is of type "answer", then this completes an offer answer
           negotiation.
 
@@ -69,11 +67,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
           Set both pendingRemoteDescription and pendingLocalDescription to null.
           Finally set connection's signaling state to stable
 
-        [TODO setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-rollback]
         - If description is of type "rollback", then this is a rollback. Set
           connection.pendingLocalDescription to null and signaling state to stable.
 
-        [TODO setLocalDescription]
+        [RTCPeerConnection-setLocalDescription-pranswer]
         - If description is of type "pranswer", then set
           connection.pendingLocalDescription to description and signaling state to
           have-local-pranswer.
@@ -82,11 +80,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
     3.  Otherwise, if description is set as a remote description, then run one of the
         following steps:
 
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-offer]
       - If description is of type "offer", set connection.pendingRemoteDescription
         attribute to description and signaling state to have-remote-offer.
 
-      [RTCPeerConnection-setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-answer]
       - If description is of type "answer", then this completes an offer answer
         negotiation.
 
@@ -97,11 +95,11 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
         Finally setconnection's signaling state to stable
 
-      [TODO setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-rollback]
       - If description is of type "rollback", then this is a rollback.
         Set connection.pendingRemoteDescription to null and signaling state to stable.
 
-      [TODO setRemoteDescription]
+      [RTCPeerConnection-setRemoteDescription-rollback]
       - If description is of type "pranswer", then set
         connection.pendingRemoteDescription to description and signaling state
         to have-remote-pranswer.
@@ -145,71 +143,71 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
             [Untestable]
             4.  Fire a simple event named close at channel.
 
-    [TODO]
+    [TODO RTCPeerConnection-setDescription-transceiver]
     7.  If description is set as a local description, then run the following steps for
         each media description in description that is not yet associated with an
         RTCRtpTransceiver object:
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       1.  Let transceiver be the RTCRtpTransceiver used to create the media
           description.
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       2.  Set transceiver's mid value to the mid of the corresponding media
           description.
 
-    [TODO]
+    [RTCPeerConnection-ontrack]
     8.  If description is set as a remote description, then run the following steps
         for each media description in description:
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       1.  As described by [JSEP] (section 5.9.), attempt to find an existing
           RTCRtpTransceiver object, transceiver, to represent the media description.
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       2.  If no suitable transceiver is found (transceiver is unset), run the following
           steps:
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         1.  Create an RTCRtpSender, sender, from the media description.
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         2.  Create an RTCRtpReceiver, receiver, from the media description.
 
-        [TODO]
+        [RTCPeerConnection-ontrack]
         3.  Create an RTCRtpTransceiver with sender, receiver and direction, and let
             transceiver be the result.
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       3.  Set transceiver's mid value to the mid of the corresponding media description.
           If the media description has no MID, and transceiver's mid is unset, generate
           a random value as described in [JSEP] (section 5.9.).
 
-      [TODO]
+      [RTCPeerConnection-ontrack]
       4.  If the direction of the media description is sendrecv or sendonly, and
           transceiver.receiver.track has not yet been fired in a track event, process
           the remote track for the media description, given transceiver.
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       5.  If the media description is rejected, and transceiver is not already stopped,
           stop the RTCRtpTransceiver transceiver.
 
 
-    [TODO]
+    [TODO RTCPeerConnection-setDescription-transceiver]
     9.  If description is of type "rollback", then run the following steps:
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       1.  If the mid value of an RTCRtpTransceiver was set to a non-null value by
           the RTCSessionDescription that is being rolled back, set the mid value
           of that transceiver to null, as described by [JSEP] (section 4.1.8.2.).
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       2.  If an RTCRtpTransceiver was created by applying the RTCSessionDescription
           that is being rolled back, and a track has not been attached to it via
           addTrack, remove that transceiver from connection's set of transceivers,
           as described by [JSEP] (section 4.1.8.2.).
 
-      [TODO]
+      [TODO RTCPeerConnection-setDescription-transceiver]
       3.  Restore the value of connection's [[SctpTransport]] internal slot to its
           value at the last stable signaling state.
 
@@ -218,7 +216,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
             flag. If connection's [[NegotiationNeeded]] slot was true both before and after
             this update, queue a task that runs the following steps:
 
-      [RTCPeerConnection-onnegotiationneeded]
+      [Untestable]
       1.  If connection's [[IsClosed]] slot is true, abort these steps.
 
       [RTCPeerConnection-onnegotiationneeded]
@@ -236,7 +234,7 @@ https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
 Coverage Report
 
-  Tested        28
-  Not Tested    22
+  Tested        35
+  Not Tested    15
   Untestable     8
   Total         58

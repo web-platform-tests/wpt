@@ -80,4 +80,32 @@
     });
   }, 'setRemoteDescription(rollback) in have-remote-offer state should revert to stable state');
 
+  /*
+    4.3.1.6.  Set the RTCSessionSessionDescription
+      2.3.  If the description's type is invalid for the current signaling state of
+            connection, then reject p with a newly created InvalidStateError and abort
+            these steps.
+
+    [jsep]
+      4.1.8.2.  Rollback
+        - Rollback can only be used to cancel proposed changes;
+          there is no support for rolling back from a stable state to a
+          previous stable state
+   */
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return promise_rejects(t, 'InvalidStateError',
+      pc.setRemoteDescription({ type: 'rollback' }));
+  }, `setRemoteDescription(rollback) from stable state should reject with InvalidStateError`);
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return generateOffer({ audio: true })
+    .then(offer => pc.setRemoteDescription(offer))
+    .then(() => pc.setRemoteDescription({
+      type: 'rollback',
+      sdp: '!<Invalid SDP Content>;'
+    }));
+  }, `setRemoteDescription(rollback) should ignore invalid sdp content and succeed`);
+
 </script>

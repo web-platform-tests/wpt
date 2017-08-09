@@ -111,7 +111,6 @@ class WrapperHandler(object):
         # a specific metadata key: value pair.
         pass
 
-
 class HtmlWrapperHandler(WrapperHandler):
     def _meta_replacement(self, key, value):
         if key == b"timeout":
@@ -122,36 +121,8 @@ class HtmlWrapperHandler(WrapperHandler):
             return '<script src="%s"></script>' % attribute
         return None
 
-
-class WorkersHandler(HtmlWrapperHandler):
-    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js"),
-                    (".worker.html", ".worker.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
-fetch_tests_from_worker(new Worker("%(path)s"));
-</script>
-"""
-
-
 class WindowHandler(HtmlWrapperHandler):
-    path_replace = [(".window.html", ".window.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script src="%(path)s"></script>
-"""
-
-
-class AnyHtmlHandler(HtmlWrapperHandler):
-    path_replace = [(".any.html", ".any.js")]
+    path_replace = [(".global.html", ".global.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -167,9 +138,75 @@ self.GLOBAL = {
 <script src="%(path)s"></script>
 """
 
+    def _meta_replacement(self, key, value):
+        if key == b"global":
+            if b"window" not in value.split(b","):
+                raise ValueError("This test cannot be loaded in window mode")
+        else:
+            HtmlWrapperHandler._meta_replacement(self, key, value)
 
-class AnyWorkerHandler(WrapperHandler):
-    path_replace = [(".any.worker.js", ".any.js")]
+class WorkerHandler(HtmlWrapperHandler):
+    path_replace = [(".global.worker.html", ".global.js", ".global.worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new Worker("%(path)s"));
+</script>
+"""
+
+    def _meta_replacement(self, key, value):
+        if key == b"global":
+            if b"worker" not in value.split(b","):
+                raise ValueError("This test cannot be loaded in dedicated/shared worker mode")
+        else:
+            HtmlWrapperHandler._meta_replacement(self, key, value)
+
+class SharedWorkerHandler(WorkerHandler):
+    path_replace = [(".global.sharedworker.html", ".global.js", ".global.worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new SharedWorker("%(path)s"));
+</script>
+"""
+
+class ServiceWorkerHandler(HtmlWrapperHandler):
+    path_replace = [(".global.serviceworker.https.html", ".global.js", ".global.worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+(async function() {
+  const scope = 'does/not/exist';
+  let reg = await navigator.serviceWorker.getRegistration(scope);
+  if (reg) await reg.unregister();
+  reg = await navigator.serviceWorker.register("%(path)s", {scope});
+  fetch_tests_from_worker(reg.installing);
+})();
+</script>
+"""
+
+    def _meta_replacement(self, key, value):
+        if key == b"global":
+            values = value.split(b",")
+            if (b"worker" not in values and b"serviceworker" not in values) or b"!serviceworker" in values:
+                raise ValueError("This test cannot be loaded in service worker mode")
+        else:
+            HtmlWrapperHandler._meta_replacement(self, key, value)
+
+class WorkerJavaScriptHandler(WrapperHandler):
+    path_replace = [(".global.worker.js", ".global.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {
   isWindow: function() { return false; },
@@ -181,8 +218,10 @@ done();
 """
 
     def _meta_replacement(self, key, value):
-        if key == b"timeout":
-            return None
+        if key == b"global":
+            values = value.split(b",")
+            if b"worker" not in values and "serviceworker" not in values:
+                raise ValueError("This test doesn't need a worker script")
         if key == b"script":
             attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
@@ -233,10 +272,11 @@ class RoutesBuilder(object):
         self.mountpoint_routes[url_base] = []
 
         routes = [
-            ("GET", "*.worker.html", WorkersHandler),
-            ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.any.html", AnyHtmlHandler),
-            ("GET", "*.any.worker.js", AnyWorkerHandler),
+            ("GET", "*.global.html", WindowHandler),
+            ("GET", "*.global.worker.html", WorkerHandler),
+            ("GET", "*.global.sharedworker.html", SharedWorkerHandler),
+            ("GET", "*.global.serviceworker.https.html", ServiceWorkerHandler),
+            ("GET", "*.global.worker.js", WorkerJavaScriptHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)

@@ -201,22 +201,10 @@ class SourceFile(object):
         return self.type_flag == "visual"
 
     @property
-    def name_is_multi_global(self):
+    def name_is_global(self):
         """Check if the file name matches the conditions for the file to
         be a multi-global js test file"""
-        return "any" in self.meta_flags and self.ext == ".js"
-
-    @property
-    def name_is_worker(self):
-        """Check if the file name matches the conditions for the file to
-        be a worker js test file"""
-        return "worker" in self.meta_flags and self.ext == ".js"
-
-    @property
-    def name_is_window(self):
-        """Check if the file name matches the conditions for the file to
-        be a window js test file"""
-        return "window" in self.meta_flags and self.ext == ".js"
+        return "global" in self.meta_flags and self.ext == ".js"
 
     @property
     def name_is_webdriver(self):
@@ -284,7 +272,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
+        if self.name_is_global:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
@@ -494,23 +482,33 @@ class SourceFile(object):
         elif self.name_is_visual:
             rv = VisualTest.item_type, [VisualTest(self, self.url)]
 
-        elif self.name_is_multi_global:
-            rv = TestharnessTest.item_type, [
-                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.html"),
-                                timeout=self.timeout),
-                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.worker.html"),
-                                timeout=self.timeout),
-            ]
+        elif self.name_is_global:
+            rv = TestharnessTest.item_type, []
+            valueTypeSuffixes = []
+            for (key, value) in self.script_metadata:
+                if key == b"global":
+                    valueTypes = value.split(b",")
+                    for valueType in valueTypes:
+                        if valueType == b"window":
+                            valueTypeSuffixes.append((".global.js", ".global.html"))
+                        elif valueType == b"serviceworker":
+                            valueTypeSuffixes.append((".global.js", ".global.serviceworker.https.html"))
+                        elif valueType == b"worker":
+                            valueTypeSuffixes.append((".global.js", ".global.worker.html"))
+                            valueTypeSuffixes.append((".global.js", ".global.sharedworker.html"))
+                            if b"!serviceworker" not in valueTypes:
+                                valueTypeSuffixes.append((".global.js", ".global.serviceworker.https.html"))
+                        elif valueType == b"!serviceworker":
+                            if b"serviceworker" in valueTypes:
+                                raise ValueError("Cannot have `serviceworker` and `!serviceworker` at the same time")
+                        else:
+                            raise ValueError("Unknown value for the global meta")
 
-        elif self.name_is_worker:
-            rv = (TestharnessTest.item_type,
-                  [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"),
-                                   timeout=self.timeout)])
+            if valueTypeSuffixes == []:
+                raise ValueError("You need to use `// META: global=...` in your resource")
 
-        elif self.name_is_window:
-            rv = (TestharnessTest.item_type,
-                  [TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
-                                   timeout=self.timeout)])
+            for suffixes in valueTypeSuffixes:
+                rv[1].append(TestharnessTest(self, replace_end(self.url, suffixes[0], suffixes[1]), timeout=self.timeout))
 
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,

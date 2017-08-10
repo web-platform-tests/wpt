@@ -549,7 +549,7 @@ broken_python_metadata = re.compile(b"#\s*META:")
 
 
 def check_script_metadata(repo_root, path, f, css_mode):
-    if path.endswith((".worker.js", ".any.js")):
+    if path.endswith(".global.js"):
         meta_re = js_meta_re
         broken_metadata = broken_js_metadata
     elif path.endswith(".py"):
@@ -566,7 +566,19 @@ def check_script_metadata(repo_root, path, f, css_mode):
         m = meta_re.match(line)
         if m:
             key, value = m.groups()
-            if key == b"timeout":
+            if key == b"global":
+                valid_global_values = ["window", "worker", "serviceworker", "!serviceworker"]
+                global_values = value.split(b",")
+                for global_value in global_values:
+                    if global_value not in valid_global_values:
+                        errors.append(("UNKNOWN-GLOBAL-METADATA", "Unexpected value for global metadata", path, idx + 1))
+                    if global_value == b"serviceworker" and b"!serviceworker" in global_values:
+                        errors.append(("BROKEN-GLOBAL-METADATA", "Cannot specify both serviceworker and !serviceworker", path, idx + 1))
+                    elif global_value == b"serviceworker" and b"worker" in global_values:
+                        errors.append(("BROKEN-GLOBAL-METADATA", "Cannot specify both serviceworker and worker", path, idx + 1))
+                    elif global_value == b"!serviceworker" and b"worker" not in global_values:
+                         errors.append(("BROKEN-GLOBAL-METADATA", "Cannot specify !serviceworker without worker", path, idx + 1))
+            elif key == b"timeout":
                 if value != b"long":
                     errors.append(("UNKNOWN-TIMEOUT-METADATA", "Unexpected value for timeout metadata", path, idx + 1))
             elif key == b"script":

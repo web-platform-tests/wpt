@@ -484,31 +484,22 @@ class SourceFile(object):
 
         elif self.name_is_global:
             rv = TestharnessTest.item_type, []
-            valueTypeSuffixes = []
+            global_value_paths = []
             for (key, value) in self.script_metadata:
                 if key == b"global":
-                    valueTypes = value.split(b",")
-                    for valueType in valueTypes:
-                        if valueType == b"window":
-                            valueTypeSuffixes.append((".global.js", ".global.html"))
-                        elif valueType == b"serviceworker":
-                            valueTypeSuffixes.append((".global.js", ".global.serviceworker.https.html"))
-                        elif valueType == b"worker":
-                            valueTypeSuffixes.append((".global.js", ".global.worker.html"))
-                            valueTypeSuffixes.append((".global.js", ".global.sharedworker.html"))
-                            if b"!serviceworker" not in valueTypes:
-                                valueTypeSuffixes.append((".global.js", ".global.serviceworker.https.html"))
-                        elif valueType == b"!serviceworker":
-                            if b"serviceworker" in valueTypes:
-                                raise ValueError("Cannot have `serviceworker` and `!serviceworker` at the same time")
-                        else:
-                            raise ValueError("Unknown value for the global meta")
-
-            if valueTypeSuffixes == []:
-                raise ValueError("You need to use `// META: global=...` in your resource")
-
-            for suffixes in valueTypeSuffixes:
-                rv[1].append(TestharnessTest(self, replace_end(self.url, suffixes[0], suffixes[1]), timeout=self.timeout))
+                    global_values = value.split(b",")
+                    for global_value in global_values:
+                        if global_value == b"window":
+                            global_value_paths.append((".global.js", ".global.html"))
+                        elif global_value == b"serviceworker":
+                            global_value_paths.append((".global.js", ".global.serviceworker.https.html"))
+                        elif global_value == b"worker":
+                            global_value_paths.append((".global.js", ".global.worker.html"))
+                            global_value_paths.append((".global.js", ".global.sharedworker.html"))
+                            if b"!serviceworker" not in global_values:
+                                global_value_paths.append((".global.js", ".global.serviceworker.https.html"))
+            for paths in global_value_paths:
+                rv[1].append(TestharnessTest(self, replace_end(self.url, paths[0], paths[1]), timeout=self.timeout))
 
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,

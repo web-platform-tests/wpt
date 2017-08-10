@@ -483,10 +483,6 @@ TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/p
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-mbp-horiz-001-rtl-reverse.xhtml
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/multicol3/moz-multicol3-column-balancing-break-inside-avoid-1.html
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/multicol3/moz-multicol3-column-balancing-break-inside-avoid-1-ref.html
-TRAILING WHITESPACE: css/css-text-3/white-space/textarea-pre-wrap-011.html
-TRAILING WHITESPACE: css/css-text-3/white-space/textarea-pre-wrap-012.html
-TRAILING WHITESPACE: css/css-text-3/white-space/textarea-pre-wrap-013.html
-TRAILING WHITESPACE: css/css-text-3/white-space/textarea-pre-wrap-014.html
 
 SET TIMEOUT: css/compositing-1/mix-blend-mode/mix-blend-mode-parent-with-3D-transform-and-transition.html
 SET TIMEOUT: css/compositing-1/mix-blend-mode/mix-blend-mode-sibling-with-3D-transform-and-transition.html

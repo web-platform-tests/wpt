@@ -4,21 +4,21 @@
 <title>Check End Position of scrollIntoView when arg is not fully specified</title>
 
 <style>
-#container {
- position: relative;
- height: 1000px;
- width: 800px;
- overflow: scroll;
-}
+  #container {
+    position: relative;
+    height: 1000px;
+    width: 800px;
+    overflow: scroll;
+  }
 
-#content {
- position: absolute;
- height: 500px;
- width: 400px;
- left: 1000px;
- top: 1000px;
- background-color: red;
-}
+  #content {
+    position: absolute;
+    height: 500px;
+    width: 400px;
+    left: 1000px;
+    top: 1000px;
+    background-color: red;
+  }
 </style>
 
 <div id="container">
@@ -27,52 +27,57 @@
 </div>
 
 <script>
-add_completion_callback(() => document.getElementById("container").remove());
-var content = document.getElementById("content");
-var container = document.getElementById("container");
+  add_completion_callback(() => document.getElementById("container").remove());
+  var content = document.getElementById("content");
+  var container = document.getElementById("container");
 
-var remaining_width = container.clientWidth - content.clientWidth;
-var remaining_height = container.clientHeight - content.clientHeight;
+  var remaining_width = container.clientWidth - content.clientWidth;
+  var remaining_height = container.clientHeight - content.clientHeight;
 
-function instantScrollToTestArgs(arg, expected_x, expected_y) {
-  test(t => {
-    container.scrollTo(0, 0);
+  function instantScrollToTestArgs(arg, expected_x, expected_y) {
+    test(t => {
+      container.scrollTo(0, 0);
 
-    assert_not_equals(container.scrollLeft, expected_x);
-    assert_not_equals(container.scrollTop, expected_y);
-    if (arg == "omitted")
-      content.scrollIntoView();
-    else
-      content.scrollIntoView(arg);
-    assert_approx_equals(container.scrollTop, expected_y, 1, "verify scroll top");
-    assert_approx_equals(container.scrollLeft, expected_x, 1, "verify scroll left");
+      assert_not_equals(container.scrollLeft, expected_x);
+      assert_not_equals(container.scrollTop, expected_y);
+      if (arg == "omitted")
+        content.scrollIntoView();
+      else
+        content.scrollIntoView(arg);
+      assert_approx_equals(container.scrollTop, expected_y, 1, "verify scroll top");
+      assert_approx_equals(container.scrollLeft, expected_x, 1, "verify scroll left");
 
-  }, "scrollIntoView should behave correctly when the arg is " + arg);
-}
+    }, "scrollIntoView should behave correctly when the arg is " + arg);
+  }
 
-// expected alignment: inline => nearest, block => start 
-instantScrollToTestArgs("omitted",
-  content.offsetLeft - remaining_width ,
-  content.offsetTop);
+  // expected alignment: inline => nearest, block => start 
+  instantScrollToTestArgs("omitted",
+    content.offsetLeft - remaining_width,
+    content.offsetTop);
 
-// expected alignment: inline => nearest, block => start 
-instantScrollToTestArgs(true,
-  content.offsetLeft - remaining_width,
-  content.offsetTop);
+  // expected alignment: inline => nearest, block => start 
+  instantScrollToTestArgs(true,
+    content.offsetLeft - remaining_width,
+    content.offsetTop);
 
-// expected alignment: inline => nearest, block => end 
-instantScrollToTestArgs(false,
-  content.offsetLeft - remaining_width,
-  content.offsetTop - remaining_height);
+  // expected alignment: inline => nearest, block => end 
+  instantScrollToTestArgs(false,
+    content.offsetLeft - remaining_width,
+    content.offsetTop - remaining_height);
 
-// expected alignment: inline => center, block => center 
-instantScrollToTestArgs({},
-  content.offsetLeft - remaining_width / 2,
-  content.offsetTop - remaining_height / 2);
+  // expected alignment: inline => center, block => center 
+  instantScrollToTestArgs({},
+    content.offsetLeft - remaining_width / 2,
+    content.offsetTop - remaining_height / 2);
 
-// expected alignment: inline => center, block => center 
-instantScrollToTestArgs(null,
-  content.offsetLeft - remaining_width / 2,
-  content.offsetTop - remaining_height / 2);
+  // expected alignment: inline => center, block => center 
+  instantScrollToTestArgs(null,
+    content.offsetLeft - remaining_width / 2,
+    content.offsetTop - remaining_height / 2);
+
+  // expected alignment: inline => nearest, block => start 
+  instantScrollToTestArgs(undefined,
+    content.offsetLeft - remaining_width,
+    content.offsetTop);
 
 </script>

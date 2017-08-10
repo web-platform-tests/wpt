@@ -80,7 +80,6 @@ function CreateArrayBufferFromPayload(payload) {
 
 // Helper function to create an empty FormData object.
 function CreateEmptyFormDataPayload() {
-    // http://osgvsowi/8344051 - DOM: Workers: Add FormData support to Web Workers
     if (self.document === undefined) {
         return null;
     }
@@ -90,7 +89,6 @@ function CreateEmptyFormDataPayload() {
 
 // Helper function to create a FormData representation of a string.
 function CreateFormDataFromPayload(payload) {
-    // http://osgvsowi/8344051 - DOM: Workers: Add FormData support to Web Workers
     if (self.document === undefined) {
         return null;
     }
@@ -321,6 +319,9 @@ function runSendInIframeAndNavigateTests(funcName) {
     iframe.onload = function() {
         var tests = Array();
 
+        // Clear our onload handler to prevent re-running the tests as we navigate away.
+        this.onload = null;
+
         // Implement the self.buildId extension to identify the parameterized
         // test in the report.
         self.buildId = function(baseId) {
@@ -348,6 +349,6 @@ function runSendInIframeAndNavigateTests(funcName) {
         runTests(sampleTests);
     };
 
+    iframe.src = "navigate.iFrame.sub.html";
     document.body.appendChild(iframe);
-    iframe.src = "fetch-keepalive-navigate.iFrame.html";
 }

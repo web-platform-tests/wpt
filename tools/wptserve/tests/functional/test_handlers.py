@@ -285,7 +285,8 @@ class TestDirectoryHandler(TestUsingServer):
         with pytest.raises(HTTPError) as cm:
             self.request("/subdir")
 
-        assert cm.value.code == 404
+        assert resp.getcode() == 301
+        assert resp.info()["Location"].endswith("/subdir/")
 
 
 class TestAsIsHandler(TestUsingServer):

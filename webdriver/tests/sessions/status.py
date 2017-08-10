@@ -19,3 +19,27 @@ def test_get_status_no_session(http):
         #       An implementation-defined string explaining the remote end's
         #       readiness state.
         assert isinstance(value["message"], basestring)
+
+
+def test_status_with_session_running_on_endipoint_node(new_session):
+    # For an endpoint node, the maximum number of active
+    # sessions is 1: https://www.w3.org/TR/webdriver/#dfn-maximum-active-sessions
+    # A session is open, so we expect `ready` to be False
+    # 8.3 step 1.
+
+    _, session = new_session("{}")  # we don't care what we're using
+    value = session.send_command("GET", "status")
+
+    assert value["ready"] == False
+    assert "message" in value
+
+    session.end()
+
+    # Active session count is 0, meaning that the
+    # readiness state of the server should be True
+    # 8.3 step 1. Again
+    value = session.send_command("GET", "status")
+
+    assert value["ready"] == True
+    assert "message" in value
+

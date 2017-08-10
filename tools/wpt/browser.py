@@ -154,9 +154,9 @@ class Firefox(Browser):
         dest = os.path.join(dest, "profiles")
         if not os.path.exists(dest):
             os.makedirs(dest)
-        with open(os.path.join(dest, "prefs_general.js"), "wb") as f:
-            resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
-            f.write(resp.content)
+        #with open(os.path.join(dest, "prefs_general.js"), "wb") as f:
+        #    resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
+        #    f.write(resp.content)
 
         return dest
 

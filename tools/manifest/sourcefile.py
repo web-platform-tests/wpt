@@ -507,6 +507,11 @@ class SourceFile(object):
             for paths in global_value_paths:
                 rv[1].append(TestharnessTest(self, replace_end(self.url, paths[0], paths[1]), timeout=self.timeout))
 
+        elif self.name_is_window:
+            rv = TestharnessTest.item_type, [
+                TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
+                                timeout=self.timeout)]
+
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,
                                                                  timeout=self.timeout)]

@@ -207,6 +207,12 @@ class SourceFile(object):
         return "global" in self.meta_flags and self.ext == ".js"
 
     @property
+    def name_is_window(self):
+        """Check if the file name matches the conditions for the file to
+        be a window js test file"""
+        return "window" in self.meta_flags and self.ext == ".js"
+
+    @property
     def name_is_webdriver(self):
         """Check if the file name matches the conditions for the file to
         be a webdriver spec test file"""
@@ -272,7 +278,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_global:
+        if self.name_is_global or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re

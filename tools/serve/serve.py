@@ -122,7 +122,8 @@ class HtmlWrapperHandler(WrapperHandler):
         return None
 
 class WindowHandler(HtmlWrapperHandler):
-    path_replace = [(".global.html", ".global.js")]
+    path_replace = [(".global.html", ".global.js"),
+                    (".window.html", ".window.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -273,6 +274,7 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.global.html", WindowHandler),
+            ("GET", "*.window.html", WindowHandler),
             ("GET", "*.global.worker.html", WorkerHandler),
             ("GET", "*.global.sharedworker.html", SharedWorkerHandler),
             ("GET", "*.global.serviceworker.https.html", ServiceWorkerHandler),

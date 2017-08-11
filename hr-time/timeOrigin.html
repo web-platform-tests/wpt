@@ -17,7 +17,7 @@ test(() => {
 const workerScript = 'postMessage({timeOrigin: performance.timeOrigin})';
 const blob = new Blob([workerScript]);
 
-async_test(function(t) {
+async_test(function(l) {
   const worker = new Worker(URL.createObjectURL(blob));
   worker.addEventListener('message', t.step_func_done(function(event) {
     const workerOrigin = event.data.timeOrigin;

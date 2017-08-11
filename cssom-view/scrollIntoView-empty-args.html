@@ -36,7 +36,7 @@
 
   function instantScrollToTestArgs(arg, expected_x, expected_y) {
     test(t => {
-      container.scrollTo(0, 0);
+      container.scrollTop = container.scrollLeft = 0;
 
       assert_not_equals(container.scrollLeft, expected_x);
       assert_not_equals(container.scrollTop, expected_y);

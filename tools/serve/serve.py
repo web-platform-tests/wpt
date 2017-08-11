@@ -40,7 +40,7 @@ class WrapperHandler(object):
 
     __meta__ = abc.ABCMeta
 
-    headers = ()
+    headers = []
 
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path

@@ -7,6 +7,31 @@
 <script>
     setup({ explicit_done: true, explicit_timeout: true })
 
+    /**
+     * This gets run when the user clicks a button (below). It is used
+     * to run each test in order, disabling tests one at a time.
+     * If any test throws/fails, then all all the test buttons are disabled.
+     */
+    async function runClickTest(data, button, done = () => { }) {
+        try {
+            await runPromiseTest(data, button.textContent.trim());
+            button.disabled = true;
+            button.innerHTML = `✅  ${button.textContent}`;
+        } catch (err) {
+            // Something went wrong, so disable all the tests, show results.
+            Array.from(button.closest("ol").querySelectorAll("button"))
+                .forEach(button => button.disabled = true);
+            button.innerHTML = `❌  ${button.textContent}`;
+            done = window.done;
+        } finally {
+            done();
+        }
+    }
+
+    /**
+     * All tests expect the same return data, so we can just check the
+     * same result over and over again.
+     */
     function runPromiseTest(data, msg) {
         return new Promise((resolve, reject) => {
             promise_test(async () => {
@@ -33,22 +58,6 @@
         });
     }
 
-    async function runClickTest(data, button, done = () => { }) {
-        try {
-            await runPromiseTest(data, button.textContent.trim());
-            button.disabled = true;
-            button.innerHTML = `✅  ${button.textContent}`;
-        } catch (err) {
-            // Something went wrong, so disable all the tests, show results.
-            Array.from(button.closest("ol").querySelectorAll("button"))
-                .forEach(button => button.disabled = true);
-            button.innerHTML = `❌  ${button.textContent}`;
-            done = window.done;
-        } finally {
-            done();
-        }
-    }
-
 </script>
 
 <h2>Instructions</h2>
@@ -58,7 +67,7 @@
 <ol>
     <li>Add credit card:
         <dt>
-            <dt>Cardhold Name:</dt>
+            <dt>Cardhold name:</dt>
             <dd>web platform test</dd>
             <dt>Card number:</dt>
             <dd>4111111111111111</dd>

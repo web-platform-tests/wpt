@@ -1687,7 +1687,7 @@ IdlInterface.prototype.test_member_operation = function(member)
 {
     var a_test = async_test(this.name + " interface: operation " + member.name +
                             "(" + member.arguments.map(
-                                function(m) {return m.idlType.idlType; } )
+                                function(m) {return m.idlType.idlType; } ).join(", ")
                             +")");
     a_test.step(function()
     {
@@ -2182,6 +2182,11 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         || member.type == "operation")
         && member.name)
         {
+            var described_name = member.name;
+            if (member.type == "operation")
+            {
+                described_name += "(" + member.arguments.map(arg => arg.idlType.idlType).join(", ") + ")";
+            }
             test(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
@@ -2221,7 +2226,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                         assert_equals(typeof obj[member.name], "function");
                     }
                 }
-            }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + member.name + '" with the proper type (' + i + ')');
+            }.bind(this), this.name + " interface: " + desc + ' must inherit property "' + described_name + '" with the proper type');
         }
         // TODO: This is wrong if there are multiple operations with the same
         // identifier.
@@ -2229,7 +2234,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         if (member.type == "operation" && member.name && member.arguments.length)
         {
             var a_test = async_test( this.name + " interface: calling " + member.name +
-            "(" + member.arguments.map(function(m) { return m.idlType.idlType; }) +
+            "(" + member.arguments.map(function(m) { return m.idlType.idlType; }).join(", ") +
             ") on " + desc + " with too few arguments must throw TypeError");
             a_test.step(function()
             {

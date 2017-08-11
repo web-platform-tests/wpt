@@ -10,6 +10,7 @@
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#iso-2022-jp">
 <meta name="assert" content="The browser produces the expected byte sequences for all characters in the iso-2022-jp encoding after 0x9F when writing characters to an href value, using the encoder steps in the specification.">
+<meta name="timeout" content="long">
 <script>
 
 function encode(input, expected, desc) {
@@ -28,20 +29,20 @@ function encode(input, expected, desc) {
  // create a simple list of just those code points for which there is an encoding possible
 codepoints = []
 for (var i=0x80;i<0xFFFF;i++) {
-	var result = iso2022jpEncoder(String.fromCodePoint(i))
-	if (result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%'+result.replace(/ /g,'%')
-		item.expected = item.expected.replace(/%1B%28%42$/,'')
-		}
-	}
+    var result = iso2022jpEncoder(String.fromCodePoint(i))
+    if (result) {
+        var item = {}
+        codepoints.push(item)
+        item.cp = i
+        item.expected = '%'+result.replace(/ /g,'%')
+        item.expected = item.expected.replace(/%1B%28%42$/,'')
+        }
+    }
 
 // run the tests
 for (var x=0;x<codepoints.length;x++) {
-	encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected, "U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected)
-	}
+    encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected, "U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected)
+    }
 
 
 // NOTES

@@ -10,6 +10,7 @@
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#iso-2022-jp">
 <meta name="assert" content="The browser produces percent-escaped character references for a URL produced by a form when encoding miscellaneous characters that are not in the iso-2022-jp encoding.">
+<meta name="timeout" content="long">
 <style>
  iframe { display:none }
  form { display:none }
@@ -33,64 +34,64 @@ var currentChunkIndex = 0
 
 
 setup(function() {
-	 // set up a simple array of unicode codepoints that are not encoded
-	var codepoints = []
+     // set up a simple array of unicode codepoints that are not encoded
+    var codepoints = []
 
-	for (var i=0xA0;i<0x4FF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'latin, greek, cyrillic, etc '
-			}
-		}
+    for (var i=0xA0;i<0x4FF;i++) {
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+        if (!result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%26%23'+item.cp+'%3B'
+            item.desc = 'latin, greek, cyrillic, etc '
+            }
+        }
 
-	 for (i=0x2000;i<0x23FF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'punctuation, currency, symbols '
-			}
-		}
-	 
-	
-	 for (i=0x2460;i<0x26FF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'enclosed chars and boxes '
-			}
-		}
-	 
-	 for (i=0x3000;i<0x33FF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'various asian '
-			}
-		}
-	 
-	 for (i=0xFF00;i<0xFFEF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-		if (!result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%26%23'+item.cp+'%3B'
-			item.desc = 'half/full width '
-			}
-		}
+     for (i=0x2000;i<0x23FF;i++) {
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+        if (!result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%26%23'+item.cp+'%3B'
+            item.desc = 'punctuation, currency, symbols '
+            }
+        }
+
+
+     for (i=0x2460;i<0x26FF;i++) {
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+        if (!result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%26%23'+item.cp+'%3B'
+            item.desc = 'enclosed chars and boxes '
+            }
+        }
+
+     for (i=0x3000;i<0x33FF;i++) {
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+        if (!result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%26%23'+item.cp+'%3B'
+            item.desc = 'various asian '
+            }
+        }
+
+     for (i=0xFF00;i<0xFFEF;i++) {
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+        if (!result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%26%23'+item.cp+'%3B'
+            item.desc = 'half/full width '
+            }
+        }
 
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
@@ -103,14 +104,14 @@ setup(function() {
             cplist.push(currentChunk)
             currentTests = []
             tests.push(currentTests)
-			}
-		var item = {}
-		currentChunk.push(item)
-		item.cp = codepoints[i].cp
-		item.expected = codepoints[i].expected
-		item.desc = codepoints[i].desc
-		currentTests.push(async_test(item.desc+" U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +normalizeStr(item.expected)))
-		}
+            }
+        var item = {}
+        currentChunk.push(item)
+        item.cp = codepoints[i].cp
+        item.expected = codepoints[i].expected
+        item.desc = codepoints[i].desc
+        currentTests.push(async_test(item.desc+" U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +normalizeStr(item.expected)))
+        }
 
     numChunks = cplist.length
 
@@ -121,14 +122,14 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "iso-2022-jp"
         form.target = frame.id
         var input = document.createElement("input")
         input.id = input.name = "input-" + i
         form.appendChild(input)
         document.body.appendChild(form)
-		}
+        }
 
     addEventListener("load", function () {
         frames = Array.prototype.slice.call(document.getElementsByTagName("iframe"))
@@ -136,10 +137,10 @@ setup(function() {
         inputs = Array.prototype.slice.call(document.getElementsByTagName("input"))
         for (var i=0; i<Math.min(numFrames, numChunks); i++) {
             runNext(i)
-			}
-		})
+            }
+        })
 
-	})
+    })
 
 function runNext(id) {
     var i = currentChunkIndex
@@ -151,7 +152,7 @@ function runNext(id) {
 
     input.value = cplist[i].map(function(x) {
         return String.fromCodePoint(x.cp)
-		}).join(seperator);
+        }).join(seperator);
     form.submit()
 
     iframe.onload = function () {
@@ -164,14 +165,14 @@ function runNext(id) {
             var t = tests[i][j]
             t.step(function() {
                 assert_equals(normalizeStr(results[j]), normalizeStr(cplist[i][j].expected))
-				})
+                })
             t.done()
             }
         if (currentChunkIndex < numChunks) {
             runNext(id)
-			}
-		}
-	}
+            }
+        }
+    }
 
 </script>
 </body>

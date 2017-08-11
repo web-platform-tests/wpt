@@ -10,19 +10,20 @@
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#iso-2022-jp">
 <meta name="assert" content="The browser produces percent-escaped character references when writing characters to an href value and encoding hangul characters that are not in the iso-2022-jp encoding.">
+<meta name="timeout" content="long">
 <script>
 
 
  function encode(input, expected, desc) {
  // tests whether a Unicode character is converted to an equivalent byte sequence by href
  // input: a Unicode character
- // expected: expected byte sequence 
+ // expected: expected byte sequence
  // desc: what's being tested
    test(function() {
      var a = document.createElement("a"); // <a> uses document encoding for URL's query
-     a.href = "https://example.com/?" + input; 
+     a.href = "https://example.com/?" + input;
      result = a.search.substr(1)  // remove leading "?"
-     assert_equals(normalizeStr(result), normalizeStr(expected)); 
+     assert_equals(normalizeStr(result), normalizeStr(expected));
    },  desc);
  }
 
@@ -31,21 +32,21 @@
 var codepoints = []
 
 for (i=0xAC00;i<0xD7AF;i++) {
-		result = iso2022jpEncoder(String.fromCodePoint(i))
-	if (!result) {
-		var item = {}
-		codepoints.push(item)
-		item.cp = i
-		item.expected = '%26%23'+item.cp+'%3B'
-		item.desc = 'hangul '
-		}
-	}
+        result = iso2022jpEncoder(String.fromCodePoint(i))
+    if (!result) {
+        var item = {}
+        codepoints.push(item)
+        item.cp = i
+        item.expected = '%26%23'+item.cp+'%3B'
+        item.desc = 'hangul '
+        }
+    }
 
 
 // run the tests
 for (var x=0;x<codepoints.length;x++) {
-	encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected, codepoints[x].desc+" U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected)
-	}
+    encode(String.fromCodePoint(codepoints[x].cp), codepoints[x].expected, codepoints[x].desc+" U+"+codepoints[x].cp.toString(16).toUpperCase()+' '+String.fromCodePoint(codepoints[x].cp)+" "+codepoints[x].expected)
+    }
 
 
 // NOTES

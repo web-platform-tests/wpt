@@ -483,3 +483,38 @@ promise_test(async t => {
 
   assert_equals(cancelReason, fetchErr, "Fetch rejects with same error instance");
 }, "Readable stream synchronously cancels with AbortError if aborted before reading");
+
+test(() => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  controller.abort();
+
+  const request = new Request('.', { signal });
+  const requestSignal = request.signal;
+
+  const clonedRequest = request.clone();
+
+  assert_equals(requestSignal, request.signal, "Original request signal the same after cloning");
+  assert_true(request.signal.aborted, "Original request signal aborted");
+  assert_not_equals(clonedRequest.signal, request.signal, "Cloned request has different signal");
+  assert_true(clonedRequest.signal.aborted, "Cloned request signal aborted");
+}, "Signal state is cloned");
+
+test(() => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const request = new Request('.', { signal });
+  const clonedRequest = request.clone();
+
+  let requestAborted = false;
+  let clonedRequestAborted = false;
+
+  request.signal.addEventListener('abort', () => requestAborted = true);
+  clonedRequest.signal.addEventListener('abort', () => clonedRequestAborted = true);
+
+  controller.abort();
+
+  assert_true(requestAborted, "Original request signal aborted");
+  assert_true(clonedRequestAborted, "Cloned request signal aborted");
+}, "Clone aborts with original controller");

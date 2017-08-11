@@ -50,32 +50,32 @@
     }, "scrollIntoView should behave correctly when the arg is " + arg);
   }
 
-  // expected alignment: inline => nearest, block => start 
+  // expected alignment: inline => nearest, block => start
   instantScrollToTestArgs("omitted",
     content.offsetLeft - remaining_width,
     content.offsetTop);
 
-  // expected alignment: inline => nearest, block => start 
+  // expected alignment: inline => nearest, block => start
   instantScrollToTestArgs(true,
     content.offsetLeft - remaining_width,
     content.offsetTop);
 
-  // expected alignment: inline => nearest, block => end 
+  // expected alignment: inline => nearest, block => end
   instantScrollToTestArgs(false,
     content.offsetLeft - remaining_width,
     content.offsetTop - remaining_height);
 
-  // expected alignment: inline => center, block => center 
+  // expected alignment: inline => center, block => center
   instantScrollToTestArgs({},
     content.offsetLeft - remaining_width / 2,
     content.offsetTop - remaining_height / 2);
 
-  // expected alignment: inline => center, block => center 
+  // expected alignment: inline => center, block => center
   instantScrollToTestArgs(null,
     content.offsetLeft - remaining_width / 2,
     content.offsetTop - remaining_height / 2);
 
-  // expected alignment: inline => nearest, block => start 
+  // expected alignment: inline => nearest, block => start
   instantScrollToTestArgs(undefined,
     content.offsetLeft - remaining_width,
     content.offsetTop);

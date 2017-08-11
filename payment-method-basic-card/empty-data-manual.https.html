@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf8">
+<title>Manual return any card type</title>
+<script src="helpers_and_defaults.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+    setup({ explicit_done: true, explicit_timeout: true })
+
+    function runPromiseTest(data, msg) {
+        return new Promise((resolve, reject) => {
+            promise_test(async () => {
+                const {
+                    cardNumber,
+                    cardSecurityCode,
+                    expiryMonth,
+                    expiryYear,
+                    billingAddress,
+                } = await getCardResponse(data);
+                try {
+                    assert_equals(cardNumber, "4111111111111111", "Card number must match");
+                    assert_equals(cardSecurityCode, "123", "Security code must match");
+                    assert_equals(expiryMonth, "01", "Expiry month must match");
+                    assert_equals(expiryYear, "2026", "Expiry year must match");
+                    assert_true(billingAddress instanceof PaymentAddress, "billingAddress must be an instance of PaymentAddress");
+                    assert_equals(billingAddress.recipient, "web platform test");
+                } catch (err) {
+                    reject(err);
+                    throw err;
+                }
+                resolve();
+            }, msg);
+        });
+    }
+
+    async function runClickTest(data, button, done = () => { }) {
+        try {
+            await runPromiseTest(data, button.textContent.trim());
+            button.disabled = true;
+            button.innerHTML = `✅  ${button.textContent}`;
+        } catch (err) {
+            // Something went wrong, so disable all the tests, show results.
+            Array.from(button.closest("ol").querySelectorAll("button"))
+                .forEach(button => button.disabled = true);
+            button.innerHTML = `❌  ${button.textContent}`;
+            done = window.done;
+        } finally {
+            done();
+        }
+    }
+
+</script>
+
+<h2>Instructions</h2>
+<p>
+    This test checks that the Basic Card payment handler can accept any card.
+</p>
+<ol>
+    <li>Add credit card:
+        <dt>
+            <dt>Cardhold Name:</dt>
+            <dd>web platform test</dd>
+            <dt>Card number:</dt>
+            <dd>4111111111111111</dd>
+            <dt>Security code (CVV):</dt>
+            <dd>123</dd>
+            <dt>Expiry month:</dt>
+            <dd>01</dd>
+            <dt>Expiry year:</dt>
+            <dd>2026</dd>
+        </dt>
+    </li>
+    <li>Add billing address:
+        <dt>
+            <dt>Recipient:</dt>
+            <dd>web platform test</dd>
+            <dt>Address:</dt>
+            <dd>1 web st</dd>
+            <dt>Post code:</dt>
+            <dd>1234</dd>
+            <dt>Country:</dt>
+            <dd>Afghanistan</dd>
+            <dt>City:</dt>
+            <dd>w3c</dd>
+            <dt>Phone</dt>
+            <dd>+12345678910</dd>
+        </dt>
+    </li>
+</ol>
+<hr>
+<h2>
+    Manual Tests - run in order
+</h2>
+<ol>
+    <li>
+        <button onclick="runClickTest({}, this)">
+            When passed BasicCardRequest without members, allow the user to input of any credit card type.
+        </button>
+    </li>
+    <li>
+        <button onclick="runClickTest({ supportedNetworks: [], supportedTypes: [] }, this)">
+            Returns any card type on any network, because zero length supportedNetworks and supportedTypes.
+        </button>
+    </li>
+    <li>
+        <button onclick="runClickTest({ supportedNetworks: [] }, this)">
+            Returns any card type on any network, because supportedNetworks is missing and supportedTypes is empty.
+        </button>
+    </li>
+    <li>
+        <button onclick="runClickTest({ supportedTypes: [] }, this, window.done)">
+            Returns any card type on any network missing supportedTypes, and empty supportedNetwork.
+        </button>
+    </li>
+</ol>

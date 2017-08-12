@@ -137,7 +137,6 @@ interface HTMLElement : Element {
   readonly attribute DOMString accessKeyLabel;
   [CEReactions] attribute boolean draggable;
   [CEReactions] attribute boolean spellcheck;
-  void forceSpellCheck();
 
   [CEReactions, TreatNullAs=EmptyString] attribute DOMString innerText;
 };

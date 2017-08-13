@@ -310,7 +310,7 @@ var validSelectors = [
    * These tests are commented out until a final decision is made on whether to
    * keep the feature in the spec.
    */
-  
+
   // // - Descendant combinator '>>'
   // {name: "Descendant combinator '>>', matching element that is a descendant of an element with id",                 selector: "#descendant>>div",                   expect: ["descendant-div1", "descendant-div2", "descendant-div3", "descendant-div4"], level: 1, testType: TEST_QSA | TEST_MATCH},
   // {name: "Descendant combinator '>>', matching element with id that is a descendant of an element",                 selector: "body>>#descendant-div1",             expect: ["descendant-div1"], exclude: ["detached", "fragment"], level: 1, testType: TEST_QSA | TEST_MATCH},

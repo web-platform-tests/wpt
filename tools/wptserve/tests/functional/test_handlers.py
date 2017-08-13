@@ -282,9 +282,7 @@ class TestDirectoryHandler(TestUsingServer):
         assert resp.info()["Content-Type"] == "text/html"
 
     def test_subdirectory_no_trailing_slash(self):
-        with pytest.raises(HTTPError) as cm:
-            self.request("/subdir")
-
+        resp = self.request("/subdir")
         assert resp.getcode() == 301
         assert resp.info()["Location"].endswith("/subdir/")
 

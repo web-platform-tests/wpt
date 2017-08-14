@@ -2240,16 +2240,19 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
+                var fn;
                 if (!member["static"]) {
                     if (!this.is_global() && !member.isUnforgeable) {
                         assert_inherits(obj, member.name);
                     } else {
                         assert_own_property(obj, member.name);
                     }
+                    fn = obj[member.name];
                 }
                 else
                 {
-                    assert_false(member.name in obj);
+                    assert_own_property(obj.constructor, member.name, "interface object must have static operation as own property");
+                    fn = obj.constructor[member.name];
                 }
 
                 var minLength = minOverloadLength(this.members.filter(function(m) {
@@ -2258,7 +2261,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 var args = [];
                 var cb = awaitNCallbacks(minLength, a_test.done.bind(a_test));
                 for (var i = 0; i < minLength; i++) {
-                    throwOrReject(a_test, member, obj[member.name], obj, args,  "Called with " + i + " arguments", cb);
+                    throwOrReject(a_test, member, fn, obj, args, "Called with " + i + " arguments", cb);
 
                     args.push(create_suitable_object(member.arguments[i].idlType));
                 }

@@ -507,14 +507,14 @@ test(() => {
   const request = new Request('.', { signal });
   const clonedRequest = request.clone();
 
-  let requestAborted = false;
-  let clonedRequestAborted = false;
+  const log = [];
 
-  request.signal.addEventListener('abort', () => requestAborted = true);
-  clonedRequest.signal.addEventListener('abort', () => clonedRequestAborted = true);
+  request.signal.addEventListener('abort', () => log.push('original-aborted'));
+  clonedRequest.signal.addEventListener('abort', () => log.push('clone-aborted'));
 
   controller.abort();
 
-  assert_true(requestAborted, "Original request signal aborted");
-  assert_true(clonedRequestAborted, "Cloned request signal aborted");
+  assert_array_equals(log, ['clone-aborted', 'original-aborted'], "Abort events fired in correct order");
+  assert_true(request.signal.aborted, 'Signal aborted');
+  assert_true(clonedRequest.signal.aborted, 'Signal aborted');
 }, "Clone aborts with original controller");

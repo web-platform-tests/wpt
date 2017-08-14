@@ -75,7 +75,7 @@ function minOverloadLength(overloads)
 }
 
 //@}
-function throwOrReject(a_test, operation, fn, obj, args,  message, cb)
+function throwOrReject(a_test, operation, fn, obj, args, message, cb)
 //@{
 {
     if (operation.idlType.generic !== "Promise") {
@@ -85,7 +85,7 @@ function throwOrReject(a_test, operation, fn, obj, args,  message, cb)
         cb();
     } else {
         try {
-            promise_rejects(a_test, new TypeError(), fn.apply(obj, args)).then(cb, cb);
+            promise_rejects(a_test, new TypeError(), fn.apply(obj, args), message).then(cb, cb);
         } catch (e){
             a_test.step(function() {
                 assert_unreached("Throws \"" + e + "\" instead of rejecting promise");

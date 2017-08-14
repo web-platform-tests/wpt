@@ -41,10 +41,13 @@ test(() => {
       supportedMethods: "basic-💳",
     },
     {
-      supportedMethods: "https://wpt.fyi/payment-request",
+      supportedMethods: "not-https://wpt.fyi/payment-request",
     },
     {
       supportedMethods: "¡basic-*-card!",
+    },
+    {
+      supportedMethods: "Basic-Card",
     },
   ];
   for (const invalidMethod of invalidMethods) {

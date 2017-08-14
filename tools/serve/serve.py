@@ -122,60 +122,89 @@ class HtmlWrapperHandler(WrapperHandler):
             return '<script src="%s"></script>' % attribute
         return None
 
-
-class WorkersHandler(HtmlWrapperHandler):
-    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js"),
-                    (".worker.html", ".worker.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
-fetch_tests_from_worker(new Worker("%(path)s"));
-</script>
-"""
-
-
 class WindowHandler(HtmlWrapperHandler):
-    path_replace = [(".window.html", ".window.js")]
+    path_replace = [(".window.html", ".window.js"),
+                    (".window-worker.html", ".window-worker.js"),
+                    (".window-worker-no-sw.html", ".window-worker-no-sw.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
-%(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script src="%(path)s"></script>
-"""
-
-
-class AnyHtmlHandler(HtmlWrapperHandler):
-    path_replace = [(".any.html", ".any.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
 %(meta)s
+<div id=log></div>
 <script>
 self.GLOBAL = {
   isWindow: function() { return true; },
   isWorker: function() { return false; },
 };
 </script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
 <script src="%(path)s"></script>
 """
 
+class WorkerHandler(HtmlWrapperHandler):
+    path_replace = [(".worker-no-sw.html", ".worker-no-sw.js", ".worker-no-sw.w.js"),
+                    (".window-worker.worker.html", ".window-worker.js", ".window-worker.w.js"),
+                    (".window-worker-no-sw.worker.html", ".window-worker-no-sw.js", ".window-worker-no-sw.w.js"),
+                    (".worker.html", ".worker.js", ".worker.w.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+%(meta)s
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new Worker("%(path)s"));
+</script>
+"""
 
-class AnyWorkerHandler(WrapperHandler):
-    path_replace = [(".any.worker.js", ".any.js")]
-    wrapper = """%(meta)s
+class SharedWorkerHandler(HtmlWrapperHandler):
+    path_replace = [(".worker.sharedworker.html", ".worker.js", ".worker.w.js"),
+                    (".worker-no-sw.sharedworker.html", ".worker-no-sw.js", ".worker-no-sw.w.js"),
+                    (".window-worker.sharedworker.html", ".window-worker.js", ".window-worker.w.js"),
+                    (".window-worker-no-sw.sharedworker.html", ".window-worker-no-sw.js", ".window-worker-no-sw.w.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new SharedWorker("%(path)s"));
+</script>
+"""
+
+class ServiceWorkerHandler(HtmlWrapperHandler):
+    path_replace = [(".worker.serviceworker.https.html", ".worker.js", ".worker.w.js"),
+                    (".window-worker.serviceworker.https.html", ".window-worker.js", ".window-worker.w.js"),
+                    (".serviceworker.https.html", ".serviceworker.js", ".serviceworker.w.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+(async function() {
+  const scope = 'does/not/exist';
+
+  let reg = await navigator.serviceWorker.getRegistration(scope);
+  if (reg) await reg.unregister();
+
+  reg = await navigator.serviceWorker.register("%(path)s", {scope});
+
+  fetch_tests_from_worker(reg.installing);
+})();
+</script>
+"""
+
+class WorkerJavaScriptHandler(WrapperHandler):
+    path_replace = [(".w.js", ".js")]
+    wrapper = """importScripts("/resources/testharness.js");
+%(meta)s
 self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
 };
-importScripts("/resources/testharness.js");
 importScripts("%(path)s");
 done();
 """
@@ -233,10 +262,21 @@ class RoutesBuilder(object):
         self.mountpoint_routes[url_base] = []
 
         routes = [
-            ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.any.html", AnyHtmlHandler),
-            ("GET", "*.any.worker.js", AnyWorkerHandler),
+            ("GET", "*.worker.sharedworker.html", SharedWorkerHandler),
+            ("GET", "*.worker.serviceworker.https.html", ServiceWorkerHandler),
+            ("GET", "*.worker-no-sw.html", WorkerHandler),
+            ("GET", "*.worker-no-sw.sharedworker.html", SharedWorkerHandler),
+            ("GET", "*.window-worker.html", WindowHandler),
+            ("GET", "*.window-worker.worker.html", WorkerHandler),
+            ("GET", "*.window-worker.sharedworker.html", SharedWorkerHandler),
+            ("GET", "*.window-worker.serviceworker.https.html", ServiceWorkerHandler),
+            ("GET", "*.window-worker-no-sw.html", WindowHandler),
+            ("GET", "*.window-worker-no-sw.worker.html", WorkerHandler),
+            ("GET", "*.window-worker-no-sw.sharedworker.html", SharedWorkerHandler),
+            ("GET", "*.worker.html", WorkerHandler),
+            ("GET", "*.serviceworker.https.html", ServiceWorkerHandler),
+            ("GET", "*.w.js", WorkerJavaScriptHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)

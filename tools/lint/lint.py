@@ -325,6 +325,11 @@ class W3CTestOrgRegexp(Regexp):
     error = "W3C-TEST.ORG"
     description = "External w3c-test.org domain used"
 
+class WebPlatformTestRegexp(Regexp):
+    pattern = b"web\-platform\.test"
+    error = "WEB-PLATFORM.TEST"
+    description = "Internal web-platform.test domain used"
+
 class Webidl2Regexp(Regexp):
     pattern = b"webidl2\.js"
     error = "WEBIDL2.JS"
@@ -354,6 +359,7 @@ regexps = [item() for item in
             CRRegexp,
             SetTimeoutRegexp,
             W3CTestOrgRegexp,
+            WebPlatformTestRegexp,
             Webidl2Regexp,
             ConsoleRegexp,
             GenerateTestsRegexp,

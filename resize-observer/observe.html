@@ -1,6 +1,6 @@
 <!doctype html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="./resources/resizeTestHelper.js"></script>
 <p>ResizeObserver tests</p>
 <div id="target1" style="width:100px;height:100px;">t1</div>
@@ -143,10 +143,8 @@ function test6() {
     switch(event.data) {
     case 'readyToTest':
       if (!testRequested) {
-        //iframe.contentWindow.postMessage('startTest', '*');
+        iframe.contentWindow.postMessage('startTest', '*');
         testRequested = true;
-        test.step(()=>{test.done()});
-        resolvePromise();
       }
     break;
     case 'success':

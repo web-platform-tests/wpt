@@ -68,7 +68,6 @@ ResizeTestHelper.prototype = {
       this._steps[this._stepIdx].setup(this._observer);
     }
     catch(err) {
-      console.error(err);
       this._harnessTest.step(() => {
         assert_unreached("Caught a throw, possible syntax error");
       });

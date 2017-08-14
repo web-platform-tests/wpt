@@ -27,7 +27,7 @@ window.addEventListener('message', function(ev) {
     }
 });
 // How does parent know we've loaded problem is solved by
-// broadcasting readyToTest message.
+// broadcasting readyToTest message repeatedly until test starts.
 function broadcastReady() {
   if (!testStarted) {
     window.parent.postMessage('readyToTest', '*');

@@ -433,15 +433,25 @@ policies and contribution forms [3].
         // all imported scripts have been fetched and executed. It's the
         // equivalent of an onload event for a document. All tests should have
         // been added by the time this event is received, thus it's not
-        // necessary to wait until the onactivate event.
-        on_event(self, "install",
-                function(event) {
-                    this_obj.all_loaded = true;
-                    if (this_obj.on_loaded_callback) {
-                        this_obj.on_loaded_callback();
-                    }
-                });
+        // necessary to wait until the onactivate event. However, tests for
+        // installed service workers need another event which is equivalent to
+        // the onload event because oninstall is fired only on installation. The
+        // onmessage event is used for that purpose since tests using
+        // testharness.js should ask the result to its service worker by
+        // PostMessage. If the onmessage event is triggered on the service
+        // worker's context, that means the worker's script has been evaluated.
+        on_event(self, "install", on_all_loaded);
+        on_event(self, "message", on_all_loaded);
+        function on_all_loaded() {
+            if (this_obj.all_loaded)
+                return;
+            this_obj.all_loaded = true;
+            if (this_obj.on_loaded_callback) {
+              this_obj.on_loaded_callback();
+            }
+        }
     }
+
     ServiceWorkerTestEnvironment.prototype = Object.create(WorkerTestEnvironment.prototype);
 
     ServiceWorkerTestEnvironment.prototype.add_on_loaded_callback = function(callback) {

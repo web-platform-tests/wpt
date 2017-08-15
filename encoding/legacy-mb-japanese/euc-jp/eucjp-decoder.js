@@ -57,13 +57,12 @@ function eucjpDecoder (stream) {
 				else cp = jis0208[ptr]
 				}
 			jis0212flag = false
-			if (byte < 0xA1 || byte > 0xFE) bytes.unshift(byte)
-			if (cp == null) { 
-				out += '�'
+			if (cp != null) {
+				out += dec2char(cp)
 				continue
 				}
-			out += dec2char(cp)
-			continue
+			if (byte >= 0x00 && byte <= 0x7F) bytes.unshift(byte)
+			out += '�'
 			}
 		if (byte >= 0x00 && byte <= 0x7F) { out += dec2char(byte); continue }
 		if (byte == 0x8E || byte == 0x8F || (byte >= 0xA1 && byte <= 0xFE)) { eucjpLead = byte; continue }

@@ -1348,7 +1348,7 @@ IdlInterface.prototype.test_self = function()
             } else if (this.has_extended_attribute('LegacyArrayClass')) {
                 inherit_interface = 'Array';
                 inherit_interface_has_interface_object = true;
-            } else if (this.name == "DOMException") {
+            } else if (this.name === "DOMException") {
                 inherit_interface = 'Error';
                 inherit_interface_has_interface_object = true;
             } else {
@@ -2285,8 +2285,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 IdlInterface.prototype.has_stringifier = function()
 //@{
 {
-    if (this.name == "DOMException")
-    {
+    if (this.name === "DOMException") {
         // Stringifier is inherited from Error
         return true;
     }

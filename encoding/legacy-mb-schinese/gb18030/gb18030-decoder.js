@@ -101,12 +101,12 @@ function gbDecoder (stream) {
             if ((byte >= 0x40 && byte <= 0x7E) || (byte >= 0x80 && byte <= 0xFE)) ptr = (lead - 0x81) * 190 + (byte - offset)
             if (ptr == null) cp = null
             else cp = gb18030[ptr]
-            if (cp == null && byte >= 0x00 && byte <= 0x7F) bytes.unshift(byte)
-            if (cp == null) {
-                out += '\uFFFD'
+            if (cp !== null) {
+                out += dec2char(cp)
                 continue
                 }
-            out += dec2char(cp)
+            if (byte >= 0x00 && byte <= 0x7F) bytes.unshift(byte)
+            out += '\uFFFD'
             continue
             }
         if (byte >= 0x00 && byte <= 0x7F) {

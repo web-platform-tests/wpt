@@ -453,6 +453,26 @@ def test_testharness_ext(filename):
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
+def test_testautomation(ext):
+    content = b"<script src=/resources/testautomation.js></script>"
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert s.has_testautomation
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
+def test_relative_testautomation(ext):
+    content = b"<script src=../resources/testautomation.js></script>"
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert not s.has_testautomation
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
 def test_reftest_node(ext):
     content = b"<link rel=match href=ref.html>"
 

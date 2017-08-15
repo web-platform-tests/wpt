@@ -102,17 +102,20 @@ class URLManifestItem(ManifestItem):
 class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
-    def __init__(self, source_file, url, url_base="/", timeout=None, manifest=None):
+    def __init__(self, source_file, url, url_base="/", timeout=None, automation=False, manifest=None):
         URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
         self.timeout = timeout
+        self.automation = automation
 
     def meta_key(self):
-        return (self.timeout,)
+        return (self.timeout, self.automation)
 
     def to_json(self):
         rv = URLManifestItem.to_json(self)
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
+        if self.automation:
+            rv[-1]["automation"] = self.automation
         return rv
 
     @classmethod
@@ -124,6 +127,7 @@ class TestharnessTest(URLManifestItem):
                    url,
                    url_base=manifest.url_base,
                    timeout=extras.get("timeout"),
+                   automation=bool(extras.get("automation")),
                    manifest=manifest)
 
 

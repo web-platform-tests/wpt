@@ -26,37 +26,36 @@ function iframeRef( frameRef ) {
     return frameRef.contentWindow
         ? frameRef.contentWindow.document
         : frameRef.contentDocument
-	}
+    }
 
 function showNodes () {
-	var iframe = iframeRef( document.getElementById('scrwin') )
-	var nodes = iframe.querySelectorAll('span')
-	
-	var t=-1; 
-	t++; tests[t] = async_test("step 2: 82 30 C3") 
-	t++; tests[t] = async_test("step 3.5: 82 30 C3 53") 
-	t++; tests[t] = async_test("step 4.2: 83 30 FF 33") 
-	t++; tests[t] = async_test("step 5.7: 82 FF C3 33") 
-	t++; tests[t] = async_test("step 9: FF 30 C3 33") 
+    var iframe = iframeRef( document.getElementById('scrwin') )
+    var nodes = iframe.querySelectorAll('span')
 
-	
-	
-	t=-1; 
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0肧') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�3') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '��') } )
-	tests[t].done()
-	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�') } )
-	tests[t].done()
+    var t=-1;
+    t++; tests[t] = async_test("step 2: 82 30 C3")
+    t++; tests[t] = async_test("step 3.5: 82 30 C3 53")
+    t++; tests[t] = async_test("step 4.2: 83 30 FF 33")
+    t++; tests[t] = async_test("step 5.7: 82 FF C3 33")
+    t++; tests[t] = async_test("step 9: FF 30 C3 33")
 
-	}
+
+
+    t=-1;
+    t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
+    tests[t].done()
+    t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0肧') } )
+    tests[t].done()
+    t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�3') } )
+    tests[t].done()
+    t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '��') } )
+    tests[t].done()
+    t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�') } )
+    tests[t].done()
+
+    }
 
 </script>
-<p style="font-size: 70%;">You can raise issues with this test at <a target="_blank" href="https://github.com/w3c/encodingtests/issues">https://github.com/w3c/encodingtests/issues</a></p>
 </body>
 </html>
 

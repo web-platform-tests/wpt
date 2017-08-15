@@ -9,6 +9,7 @@
 <script src="gb18030-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#shift_jis">
+<meta name="timeout" content="long">
 <meta name="assert" content="The browser produces the expected byte sequences for han characters not in the gb18030 index when encoding bytes for a URL produced by a form, using the  encoder steps in the specification.">
 <style>
  iframe { display:none }
@@ -33,56 +34,56 @@ var currentChunkIndex = 0
 
 
 setup(function() {
-	 // create a simple list of just those code points for which there is no entry in the index, from a representative subset of the BMP
-	codepoints = [ ]
-	 
-	for (i=0x4E00;i<0x9FBA;i++) {
-		result =gbEncoder(String.fromCodePoint(i))
-		if (result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%'+result.replace(/ /g,'%')
-			item.desc = 'cjk '
-			}
-		}
-	 
-	for (i=0xF900;i<0xFA6E;i++) { // compatibility
-		result =gbEncoder(String.fromCodePoint(i))
-		if (result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%'+result.replace(/ /g,'%')
-			item.desc = 'compatibility '
-			}
-		}
-	
-	for (i=0xFA70;i<0xFADA;i++) {
-		result =gbEncoder(String.fromCodePoint(i))
-		if (result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%'+result.replace(/ /g,'%')
-			item.desc = 'compatibility '
-			}
-		}
-	
-	for (i=0x3400;i<0x4DBF;i++) { // cjk extension A
-		result =gbEncoder(String.fromCodePoint(i))
-		if (result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%'+result.replace(/ /g,'%')
-			item.desc = 'extension A '
-			}
-		}
+     // create a simple list of just those code points for which there is no entry in the index, from a representative subset of the BMP
+    codepoints = [ ]
+
+    for (i=0x4E00;i<0x9FBA;i++) {
+        result =gbEncoder(String.fromCodePoint(i))
+        if (result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%'+result.replace(/ /g,'%')
+            item.desc = 'cjk '
+            }
+        }
+
+    for (i=0xF900;i<0xFA6E;i++) { // compatibility
+        result =gbEncoder(String.fromCodePoint(i))
+        if (result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%'+result.replace(/ /g,'%')
+            item.desc = 'compatibility '
+            }
+        }
+
+    for (i=0xFA70;i<0xFADA;i++) {
+        result =gbEncoder(String.fromCodePoint(i))
+        if (result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%'+result.replace(/ /g,'%')
+            item.desc = 'compatibility '
+            }
+        }
+
+    for (i=0x3400;i<0x4DBF;i++) { // cjk extension A
+        result =gbEncoder(String.fromCodePoint(i))
+        if (result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%'+result.replace(/ /g,'%')
+            item.desc = 'extension A '
+            }
+        }
 
 
 
- 
+
 
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
@@ -95,13 +96,13 @@ setup(function() {
             cplist.push(currentChunk)
             currentTests = []
             tests.push(currentTests)
-			}
-		var item = {}
-		currentChunk.push(item)
-		item.cp = codepoints[i].cp
-		item.expected = codepoints[i].expected
-		currentTests.push(async_test("U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +item.expected))
-		}
+            }
+        var item = {}
+        currentChunk.push(item)
+        item.cp = codepoints[i].cp
+        item.expected = codepoints[i].expected
+        currentTests.push(async_test("U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +item.expected))
+        }
 
     numChunks = cplist.length
 
@@ -112,14 +113,14 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "gb18030"
         form.target = frame.id
         var input = document.createElement("input")
         input.id = input.name = "input-" + i
         form.appendChild(input)
         document.body.appendChild(form)
-		}
+        }
 
     addEventListener("load", function () {
         frames = Array.prototype.slice.call(document.getElementsByTagName("iframe"))
@@ -127,10 +128,10 @@ setup(function() {
         inputs = Array.prototype.slice.call(document.getElementsByTagName("input"))
         for (var i=0; i<Math.min(numFrames, numChunks); i++) {
             runNext(i)
-			}
-		})
+            }
+        })
 
-	})
+    })
 
 function runNext(id) {
     var i = currentChunkIndex
@@ -142,7 +143,7 @@ function runNext(id) {
 
     input.value = cplist[i].map(function(x) {
         return String.fromCodePoint(x.cp)
-		}).join(seperator);
+        }).join(seperator);
     form.submit()
 
     iframe.onload = function () {
@@ -154,16 +155,16 @@ function runNext(id) {
         for (var j=0; j<cplist[i].length; j++) {
             var t = tests[i][j]
             t.step(function() {
-			   //if (results[j].length != 6) results[j] = results[j].substr(0,3)+'%'+results[j].charCodeAt(3).toString(16).toUpperCase()  // handles trailing ASCII
+               //if (results[j].length != 6) results[j] = results[j].substr(0,3)+'%'+results[j].charCodeAt(3).toString(16).toUpperCase()  // handles trailing ASCII
                 assert_equals(normalizeStr(results[j]), normalizeStr(cplist[i][j].expected))
-				})
+                })
             t.done()
             }
         if (currentChunkIndex < numChunks) {
             runNext(id)
-			}
-		}
-	}
+            }
+        }
+    }
 
 </script>
 </body>

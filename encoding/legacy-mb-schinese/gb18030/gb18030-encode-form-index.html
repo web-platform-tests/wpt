@@ -9,6 +9,7 @@
 <script src="gb18030-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="http://www.w3.org/TR/encoding/#shift_jis">
+<meta name="timeout" content="long">
 <meta name="assert" content="The browser produces the expected byte sequences for all characters in the gb18030 index after 0x9F when writing characters to an href value, using the encoder steps in the specification.">
 <style>
  iframe { display:none }
@@ -33,18 +34,18 @@ var currentChunkIndex = 0
 
 
 setup(function() {
-	 // create a simple list of just those code points for which there is an encoding described , in this case, in the index
-	codepoints = []
-	
-	for (var i=0x80;i<0xFFFF;i++) {
-		result =gbIndexEncoder(String.fromCodePoint(i))
-		if (result) {
-			var item = {}
-			codepoints.push(item)
-			item.cp = i
-			item.expected = '%'+result.replace(/ /g,'%')
-			}
-		}
+     // create a simple list of just those code points for which there is an encoding described , in this case, in the index
+    codepoints = []
+
+    for (var i=0x80;i<0xFFFF;i++) {
+        result =gbIndexEncoder(String.fromCodePoint(i))
+        if (result) {
+            var item = {}
+            codepoints.push(item)
+            item.cp = i
+            item.expected = '%'+result.replace(/ /g,'%')
+            }
+        }
 
     // convert the information into a simple array of objects that can be easily traversed
     var currentChunk = []
@@ -57,13 +58,13 @@ setup(function() {
             cplist.push(currentChunk)
             currentTests = []
             tests.push(currentTests)
-			}
-		var item = {}
-		currentChunk.push(item)
-		item.cp = codepoints[i].cp
-		item.expected = codepoints[i].expected
-		currentTests.push(async_test("U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +normalizeStr(item.expected)))
-		}
+            }
+        var item = {}
+        currentChunk.push(item)
+        item.cp = codepoints[i].cp
+        item.expected = codepoints[i].expected
+        currentTests.push(async_test("U+"+item.cp.toString(16).toUpperCase()+' '+ String.fromCodePoint(item.cp) + " " +normalizeStr(item.expected)))
+        }
 
     numChunks = cplist.length
 
@@ -74,14 +75,14 @@ setup(function() {
         var form = document.createElement("form")
         form.id = 'form-' + i
         form.method = "GET"
-        form.action = "dummy.html"
+        form.action = "/common/blank.html"
         form.acceptCharset = "gb18030"
         form.target = frame.id
         var input = document.createElement("input")
         input.id = input.name = "input-" + i
         form.appendChild(input)
         document.body.appendChild(form)
-		}
+        }
 
     addEventListener("load", function () {
         frames = Array.prototype.slice.call(document.getElementsByTagName("iframe"))
@@ -89,10 +90,10 @@ setup(function() {
         inputs = Array.prototype.slice.call(document.getElementsByTagName("input"))
         for (var i=0; i<Math.min(numFrames, numChunks); i++) {
             runNext(i)
-			}
-		})
+            }
+        })
 
-	})
+    })
 
 function runNext(id) {
     var i = currentChunkIndex
@@ -104,7 +105,7 @@ function runNext(id) {
 
     input.value = cplist[i].map(function(x) {
         return String.fromCodePoint(x.cp)
-		}).join(seperator);
+        }).join(seperator);
     form.submit()
 
     iframe.onload = function () {
@@ -117,14 +118,14 @@ function runNext(id) {
             var t = tests[i][j]
             t.step(function() {
                 assert_equals(normalizeStr(results[j]), normalizeStr(cplist[i][j].expected))
-				})
+                })
             t.done()
             }
         if (currentChunkIndex < numChunks) {
             runNext(id)
-			}
-		}
-	}
+            }
+        }
+    }
 
 </script>
 </body>

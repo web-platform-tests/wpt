@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- Copyright © 2017 Mozilla and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<meta charset="utf-8">
+<title>Test for validity of payment method identifiers during construction</title>
+<link rel="help" href="https://w3c.github.io/browser-payment-api/#constructor">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+"use strict";
+const testMethod = Object.freeze({
+  supportedMethods: "https://wpt.fyi/payment-request",
+});
+const defaultMethods = Object.freeze([testMethod]);
+const defaultAmount = Object.freeze({
+  currency: "USD",
+  value: "1.0",
+});
+const defaultTotal = Object.freeze({
+  label: "Default Total",
+  amount: defaultAmount,
+});
+const defaultDetails = Object.freeze({
+  total: defaultTotal,
+});
+
+// Avoid false positives, this should always pass
+function smokeTest() {
+  new PaymentRequest(defaultMethods, defaultDetails);
+}
+
+test(() => {
+  smokeTest();
+  const invalidMethods = [
+    {
+      supportedMethods: "http://username:password@example.com/pay",
+    },
+    {
+      supportedMethods: "http://foo.com:100000000/pay",
+    },
+    {
+      supportedMethods: "basic-💳",
+    },
+    {
+      supportedMethods: "not-https://wpt.fyi/payment-request",
+    },
+    {
+      supportedMethods: "¡basic-*-card!",
+    },
+    {
+      supportedMethods: "Basic-Card",
+    },
+  ];
+  for (const invalidMethod of invalidMethods) {
+    assert_throws(
+      new RangeError(),
+      () => {
+        new PaymentRequest([invalidMethod], defaultDetails);
+      },
+      `expected RangeError processing invalid PMI "${invalidMethod}"`
+    );
+  }
+}, "Constructor MUST throw if given an invalid payment method identifier");
+
+</script>

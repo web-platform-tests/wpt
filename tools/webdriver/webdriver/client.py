@@ -239,9 +239,14 @@ class Window(object):
 
     @property
     @command
+    def rect(self):
+        return self.session.send_session_command("GET", "window/rect")
+
+    @property
+    @command
     def size(self):
-        resp = self.session.send_session_command("GET", "window/rect")
-        return (resp["width"], resp["height"])
+        rect = self.rect
+        return (rect["width"], rect["height"])
 
     @size.setter
     @command
@@ -253,8 +258,8 @@ class Window(object):
     @property
     @command
     def position(self):
-        resp = self.session.send_session_command("GET", "window/rect")
-        return (resp["x"], resp["y"])
+        rect = self.rect
+        return (rect["x"], rect["y"])
 
     @position.setter
     @command
@@ -265,8 +270,20 @@ class Window(object):
 
     @property
     @command
+    def state(self):
+        return self.rect["state"]
+
+    @command
     def maximize(self):
         return self.session.send_session_command("POST", "window/maximize")
+
+    @command
+    def minimize(self):
+        return self.session.send_session_command("POST", "window/minimize")
+
+    @command
+    def fullscreen(self):
+        return self.session.send_session_command("POST", "window/fullscreen")
 
 
 class Find(object):
@@ -376,6 +393,7 @@ class Session(object):
 
         value = self.send_command("POST", "session", body=body)
         self.session_id = value["sessionId"]
+        self.capabilities = value["capabilities"]
 
         if self.extension_cls:
             self.extension = self.extension_cls(self)
@@ -390,10 +408,6 @@ class Session(object):
         self.send_command("DELETE", url)
 
         self.session_id = None
-        self.timeouts = None
-        self.window = None
-        self.find = None
-        self.extension = None
 
     def send_command(self, method, url, body=None):
         """

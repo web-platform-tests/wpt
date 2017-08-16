@@ -5,8 +5,10 @@
 <link rel="author" title="Chris Lilley" href="chris@w3.org">
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#font-variant-ligatures-prop">
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#font-feature-settings-prop">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-3/#default-features">
 <link rel="match" href="font-variant-ligatures-04-ref.html">
 <meta name="assert" content="Disables display of common ligatures (OpenType features: liga, clig)">
+<meta name="assert" content=" Individual features are only disabled when explicitly overridden by the author, as when ‘font-variant-ligatures’ is set to ‘no-common-ligatures’">
 <style>
   @font-face {
     font-family: fwf;

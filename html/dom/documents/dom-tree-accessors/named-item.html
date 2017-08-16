@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Named getter on document</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-nameditem">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-window-nameditem">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="testDiv"></div>
+<script>
+// TODO:
+// * Restrictions on exposed object/embed
+// * Testing frames/iframes with changed window names
+function aOrAn(type) {
+  switch (type) {
+    case "applet":
+    case "embed":
+    case "iframe":
+    case "img":
+    case "object":
+      return `an ${type}`;
+
+    case "form":
+    case "frame":
+    case "frameset":
+      return `a ${type}`;
+
+    default:
+      throw `Unknown type ${type}`;
+  }
+}
+
+function AOrAn(type) {
+  switch (type) {
+    case "applet":
+    case "embed":
+    case "iframe":
+    case "img":
+    case "object":
+      return `An ${type}`;
+
+    case "form":
+    case "frame":
+    case "frameset":
+      return `A ${type}`;
+
+    default:
+      throw `Unknown type ${type}`;
+  }
+}
+
+function plural(type) {
+  switch (type) {
+    case "img":
+      return `${type}'s`;
+
+    case "applet":
+    case "embed":
+    case "form":
+    case "frame":
+    case "frameset":
+    case "iframe":
+    case "object":
+      return `${type}s`;
+
+    default:
+      throw `Unknown type ${type}`;
+  }
+}
+
+function close(type) {
+  switch (type) {
+    case "applet":
+    case "form":
+    case "frameset":
+    case "iframe":
+    case "object":
+      return `</${type}>`;
+
+    case "embed":
+    case "frame":
+    case "img":
+      return "";
+
+    default:
+      throw `Unknown type ${type}`;
+  }
+}
+
+function th(idx) {
+  switch (Math.abs(idx) % 10) {
+    case 1: return `${idx}st`;
+    case 2: return `${idx}nd`;
+    default: return `${idx}th`;
+  }
+}
+
+function truncate(str) {
+  if (str.length < 100) {
+    return str;
+  }
+  return str.substr(0, 99) + "...";
+}
+
+function isArrayIndexPropertyName(str) {
+  // No leading zeros!
+  return (str === "0" || /[1-9][0-9]*/.test(str)) &&
+         0 <= Number(str) && Number(str) < 4294967295;
+}
+
+const testDiv = document.getElementById("testDiv");
+
+const supportedTypes = ["applet", "embed", "form", "frame", "frameset",
+                        "iframe", "img", "object"];
+
+const unsupportedOnDocument = ["frame", "frameset"];
+
+const unsupportedTypes = [
+  "a",
+  "abbr",
+  "address",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "bdi",
+  "bdo",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "data",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "footer",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "head",
+  "header",
+  "hgroup",
+  "hr",
+  "html",
+  "i",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "math",
+  "menu",
+  "meta",
+  "meter",
+  "nav",
+  "noscript",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "picture",
+  "pre",
+  "progress",
+  "q",
+  "rp",
+  "rt",
+  "ruby",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "slot",
+  "small",
+  "source",
+  "span",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "svg",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "track",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "unsupportedelement",
+  "acronym",
+  "bgsound",
+  "dir",
+  "noframes",
+  "isindex",
+  "keygen",
+  "listing",
+  "menuitem",
+  "nextid",
+  "noembed",
+  "plaintext",
+  "rb",
+  "rtc",
+  "strike",
+  "xmp",
+  "basefont",
+  "big",
+  "blink",
+  "center",
+  "font",
+  "marquee",
+  "multicol",
+  "nobr",
+  "spacer",
+  "tt",
+];
+
+function runDefaultTest(win = window, root = testDiv) {
+  const doc = win.document;
+
+  let windowExpected = new Map();
+  let documentExpected = new Map();
+  let windowUnexpected = new Set();
+  let documentUnexpected = new Set();
+
+  const addToWindow = (key, val) => {
+    if (!windowExpected.has(key)) {
+      windowExpected.set(key, [val]);
+    } else if (Array.isArray(windowExpected.get(key))) {
+      windowExpected.get(key).push(val);
+    } // else it's present but not an array, so it's a WindowProxy, so we
+      // don't expect val to be on the window.
+  };
+
+  const addToDocument = (key, val) => {
+    if (!documentExpected.has(key)) {
+      documentExpected.set(key, [val]);
+    } else {
+      documentExpected.get(key).push(val);
+    }
+  };
+
+  for (const elem of root.querySelectorAll("*")) {
+    // We don't use the IDL attributes in case the browser doesn't support the
+    // element at all (like applet at the time of writing).
+    if (elem.hasAttribute("id")) {
+      const id = elem.getAttribute("id");
+      if (id === "") {
+        windowUnexpected.add(id);
+        documentUnexpected.add(id);
+      } else {
+        if (isArrayIndexPropertyName(id)) {
+          // WindowProxy has special behavior for these
+          // https://html.spec.whatwg.org/#windowproxy-getownproperty
+          windowUnexpected.add(id);
+        } else {
+          addToWindow(id, elem);
+        }
+        if (elem.localName == "applet" || elem.localName == "object" ||
+            (elem.localName == "img" && elem.name !== null &&
+             elem.name !== "")) {
+          addToDocument(id, elem);
+        } else {
+          documentUnexpected.add(id);
+        }
+      }
+    }
+
+    if (elem.hasAttribute("name")) {
+      const name = elem.getAttribute("name");
+      if (name === "") {
+        windowUnexpected.add(name);
+        documentUnexpected.add(name);
+      } else {
+        // XXX embed/object not tested correctly
+        if (supportedTypes.includes(elem.localName) &&
+            !unsupportedOnDocument.includes(elem.localName)) {
+          addToDocument(name, elem);
+        } else {
+          documentUnexpected.add(name);
+        }
+
+        if (isArrayIndexPropertyName(name)) {
+          // WindowProxy has special behavior for these
+          // https://html.spec.whatwg.org/#windowproxy-getownproperty
+          windowUnexpected.add(name);
+        } else if (["frame", "iframe"].includes(elem.localName)
+            && elem.contentWindow) {
+          // Replace everything else, unless we already have an iframe
+          if (!windowExpected.has(name) ||
+              Array.isArray(windowExpected.get(name))) {
+            windowExpected.set(name, elem.contentWindow);
+          }
+        } else if (supportedTypes.includes(elem.localName)) {
+          addToWindow(name, elem);
+        } else {
+          windowUnexpected.add(name);
+        }
+      }
+    }
+  }
+
+  for (const [key, val] of documentExpected) {
+    documentUnexpected.delete(key);
+    if (val.length > 1) {
+      assert_array_equals(doc[key], val, `document["${key}"]`);
+      assert_class_string(doc[key], "HTMLCollection",
+                          `document[${key}] must be HTMLCollection`);
+    } else if (val[0].localName == "iframe" && val[0].contentWindow) {
+      assert_equals(doc[key], val[0].contentWindow, `document["${key}"]`);
+    } else {
+      assert_equals(doc[key], val[0], `document["${key}"]`);
+    }
+    assert_true(key in doc, `"${key}" in document`);
+  }
+
+  for (const [key, val] of windowExpected) {
+    windowUnexpected.delete(key);
+    if (!Array.isArray(val)) {
+      // WindowProxy case
+      assert_equals(win[key], val, `window["${key}"]`);
+    } else if (val.length > 1) {
+      assert_array_equals(win[key], val, `window["${key}"]`);
+      assert_class_string(win[key], "HTMLCollection",
+                          `window[${key}] must be HTMLCollection`);
+    } else {
+      assert_equals(win[key], val[0], `window["${key}"]`);
+    }
+    assert_true(key in win, `"${key}" in window`);
+  }
+
+  for (const key of documentUnexpected) {
+    assert_equals(doc[key], undefined, `document["${key}"]`);
+    assert_false(key in doc, `"${key}" in document`);
+  }
+
+  for (const key of windowUnexpected) {
+    if (isArrayIndexPropertyName(key)) {
+      // These have special behavior that is out of scope of these tests
+      continue;
+    }
+    assert_equals(win[key], undefined, `window["${key}"]`);
+    assert_false(key in win, `"${key}" in window`);
+  }
+}
+
+let tests = [
+  {html: '<img id="a" name="b">',
+   fn: () => {
+     const img = document.querySelector("img");
+     assert_equals(document.a, img);
+     assert_equals(document['a'], img);
+     assert_equals(document.b, img);
+     assert_equals(document['b'], img);
+   },
+   desc: "img elements that have a name and id attribute must be accessible " +
+         "by both values"
+  },
+  {html: `<img id="foo" name="bar"><img id="foo">` +
+         `<img id="baz" name=" "><img id="baz">`,
+   desc: "An img must be returned by id if it has a non-empty name (named first)",
+  },
+  {html: `<img id="foo"><img id="foo" name="bar">` +
+         `<img id="baz"><img id="baz" name=" ">`,
+   desc: "An img must be returned by id if it has a non-empty name (named last)",
+  },
+  {html: '<img id="foo" name="">',
+   desc: "An img with empty name must not be returned by id",
+  },
+  {html: '<form name="foo"></form><form name="foo"></form><form name="foo"></form>',
+   fn: () => {
+     const collection = document.foo;
+     assert_equals(collection, document.foo,
+                   "Must return same HTMLCollection object originally");
+     assert_equals(collection.length, 3, "Original .length");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection, document.foo,
+                   "Must return same HTMLCollection object after one remove");
+     assert_equals(collection.length, 2, ".length after one remove");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection.length, 1, ".length after two removes");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection.length, 0, ".length after three removes");
+   },
+   desc: "Document collection is live and the same object every time",
+  },
+  {html: '<form name="foo"></form><form name="foo"></form><form name="foo"></form>',
+   fn: () => {
+     const collection = window.foo;
+     assert_equals(collection, window.foo,
+                   "Must return same HTMLCollection object originally");
+     assert_equals(collection.length, 3, "Original .length");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection, window.foo,
+                   "Must return same HTMLCollection object after one remove");
+     assert_equals(collection.length, 2, ".length after one remove");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection.length, 1, ".length after two removes");
+     testDiv.removeChild(testDiv.lastChild);
+     assert_equals(collection.length, 0, ".length after three removes");
+   },
+   desc: "Window collection is live and the same object every time",
+  },
+  // A corollary of the collection being live and the same object every time is
+  // that the window and document collections cannot be equal.  If they were,
+  // they would have to remain equal if something is added that's in the
+  // document collection but not the window collection or vice versa, which
+  // isn't possible.
+  {html: '<form name="foo"></form><form name="foo"></form>',
+   fn: () => {
+     assert_not_equals(document.foo, window.foo, "Must not be equal");
+     assert_class_string(document.foo, "HTMLCollection",
+                         "document.foo must be HTMLCollection");
+     assert_class_string(window.foo, "HTMLCollection",
+                         "window.foo must be HTMLCollection");
+   },
+   desc: "Returned collections for window and document cannot be equal",
+  },
+  {html: "",
+   fn: () => {
+     for (const type of unsupportedTypes) {
+       const elem = document.createElement(type);
+       elem.setAttribute("id", "foo");
+       testDiv.appendChild(elem);
+     }
+     runDefaultTest();
+   },
+   desc: `Assorted elements must be returned by id on window but not ` +
+         `document (one id)`,
+  },
+  {html: "",
+   fn: () => {
+     for (const type of unsupportedTypes) {
+       const elem = document.createElement(type);
+       elem.setAttribute("id", `id-${type}`);
+       testDiv.appendChild(elem);
+     }
+     runDefaultTest();
+   },
+   desc: `Assorted elements must be returned by id on window but not ` +
+         `document (many id's)`,
+  },
+  {html: "",
+   fn: () => {
+     for (const type of unsupportedTypes) {
+       const elem = document.createElement(type);
+       elem.setAttribute("name", `name-${type}`);
+       testDiv.appendChild(elem);
+     }
+     runDefaultTest();
+   },
+   desc: `Assorted elements must not be returned by name`,
+  },
+];
+
+const variableTests = [
+  {html: type => `<${type} name="foo">`,
+   desc: type => type == "iframe"
+     ? "If the only named item is an iframe, the contentWindow must be returned"
+     : unsupportedOnDocument.includes(type)
+     ? `${AOrAn(type)} is returned by name on window but not document`
+     : `If there is one ${type}, it must be returned (name)`
+  },
+  {html: type => `<${type} id="foo">`,
+   desc: type => type == "applet" || type == "object"
+     ? `If there is one ${type} with id, it must be returned`
+     : `If there is one ${type} with id, it must be returned on window but not document`
+  },
+  {html: type => `<${type} name="foo">${close(type)}<${type} name="foo">`,
+   desc: type => unsupportedOnDocument.includes(type)
+     ? `If there are two ${plural(type)}, a collection must be returned ` +
+       `from window but not document (name)`
+     : `If there are two ${plural(type)}, a collection must be returned ` +
+       `(name)`,
+  },
+  {html: type => `<${type} id="foo">${close(type)}<${type} id="foo">`,
+   desc: type => type == "applet" || type == "object"
+     ? `If there are two ${plural(type)}, a collection must be returned (id)`
+     : `If there are two ${plural(type)}, a collection must be returned ` +
+       `from window but not document (id)`,
+  },
+  {html: type => `<${type} name="foo">${close(type)}<${type} id="foo">`,
+   desc: type => type == "applet" || type == "object"
+     ? `If there are two ${plural(type)}, a collection must be returned ` +
+       `(name and id)`
+     : `${type} is returned only by name and not id (name and id)`
+  },
+  {html: type => `<${type} id="foo">${close(type)}<${type} name="foo">`,
+   desc: type => type == "applet" || type == "object"
+     ? `If there are two ${plural(type)}, a collection must be returned (id ` +
+       `and name)`
+     : `${type} is returned only by name and not id (id and name)`
+  },
+  {html: type => type == "img"
+    ? '<img name="foo"><form name="foo">'
+    : `<${type} name="foo">${close(type)}<img name="foo">`,
+   desc: type => `If there is ${aOrAn(type)} and another element (${type} ` +
+                 `first), a collection must be returned (name)`,
+  },
+  {html: type => type == "img"
+    ? '<form name="foo"><img name="foo">'
+    : `<img name="foo"><${type} name="foo">${close(type)}`,
+   desc: type => `If there is ${aOrAn(type)} and another element (${type} ` +
+                 `last), a collection must be returned`,
+  },
+  {html: type => `<${type} name="foo" id="bar">`,
+   desc: type => `${type} with different name and id`
+  },
+  {html: type => `<${type} name="" id="">`,
+   desc: type => `${type} with empty name/id must not be exposed`,
+  },
+  {html: type => `<${type} name=" ">`,
+   desc: type => `${type} with whitespace as name must be exposed`,
+  },
+  {html: type => `<${type} name="foo" id=" ">`,
+   desc: type => type == "applet" || type == "img" || type == "object"
+     ? `${type} with whitespace as id must be exposed`
+     : `${type} with whitespace as id must be exposed on window but not ` +
+       `document`,
+  },
+  {html: type => `<${type} name="0">${close(type)}` +
+                 `<${type} name="42">${close(type)}` +
+                 `<${type} name="-1">${close(type)}` +
+                 `<${type} name="4294967295">${close(type)}` +
+                 `<${type} name="4294967296">${close(type)}` +
+                 `<${type} name="4294967297">${close(type)}`,
+   desc: type => `${AOrAn(type)} with numeric name`,
+  },
+  {cond: type => !unsupportedOnDocument.includes(type),
+   html: type => "",
+   fn: type => () => {
+     const doc = document.implementation.createHTMLDocument("");
+
+     const elem = doc.createElement(type);
+     elem.name = "foo";
+     doc.body.appendChild(elem);
+     // iframe is no different, because its browsing context is null
+     assert_equals(doc.foo, elem);
+   },
+   desc: type => `${type} must be exposed in detached document (name)`,
+  },
+  {html: type => type == "img"
+    ? '<div id=foo></div><img id=foo name=bar>'
+    : `<div id=foo></div><${type} id=foo>`,
+   desc: type => type == "applet" || type == "img" || type == "object"
+     ? `If there are a div and ${type} with the same id, the ${type} must ` +
+       `be returned on document and both on window`
+     : `If there are a div and ${type} with the same id, both must be ` +
+       `returned on window and neither on document`,
+  },
+];
+
+for (const type of supportedTypes) {
+  for (const variableTest of variableTests) {
+    if (variableTest.cond && !variableTest.cond(type)) {
+      continue;
+    }
+    let obj = {};
+    obj.html = variableTest.html(type);
+    if ("fn" in variableTest) {
+      obj.fn = variableTest.fn(type);
+    }
+    obj.desc = variableTest.desc(type);
+    tests.push(obj);
+
+  }
+}
+
+for (const curTest of tests) {
+  testDiv.innerHTML = curTest.html;
+  // Put runDefaultTest inside a lambda so it doesn't receive parameters
+  test("fn" in curTest ? curTest.fn : () => runDefaultTest(),
+       `${curTest.desc} ${truncate(curTest.html)}`);
+}
+
+  // We also have one async test per type, which we'll write separately
+let asyncTests = [];
+for (const type of supportedTypes) {
+  asyncTests.push([type,
+                   async_test(`${type} must be exposed properly in nested ` +
+                              `browsing context <${type} name="foo" ` +
+                              `id="bar">${close(type)}`)]);
+}
+
+const iframe = document.createElement("iframe");
+iframe.addEventListener("load", runAsyncTests);
+document.body.appendChild(iframe);
+
+function runAsyncTests() {
+  for (const [type, t] of asyncTests) {
+    t.step(() => {
+      const doc = iframe.contentDocument;
+      const elem = doc.createElement(type);
+      elem.name = "foo";
+      elem.id = "bar";
+      doc.body.textContent = "";
+      doc.body.appendChild(elem);
+
+      runDefaultTest(iframe.contentWindow, iframe.contentDocument.body);
+    });
+    t.done();
+  }
+}
+</script>

@@ -35,7 +35,6 @@
    */
 
   test(() => {
-    assert_idl_attribute(RTCPeerConnection, 'getDefaultIceServers');
     const iceServers = RTCPeerConnection.getDefaultIceServers();
 
     assert_true(Array.isArray(iceServers),

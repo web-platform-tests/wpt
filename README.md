@@ -92,8 +92,8 @@ line syntax is:
 ./wpt run product [tests]
 ```
 
-**On Windows**: for technical reasons the above will not work and you
-must instead run `python tools/wpt/wpt.py run products [tests]`.
+**On Windows**: You will need to preceed the prior command with
+`python` or the path to the python binary.
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
@@ -184,8 +184,12 @@ then remove the `tools` and `resources` directories, as above.
 <span id="windows-notes">Windows Notes</span>
 =============================================
 
-Running wptserve with SSL enabled on Windows typically requires
-installing an OpenSSL distribution.
+On Windows `wpt` commands mut bre prefixed with `python` or the path
+to the python binary (if `python` is not in your `%PATH%`).
+
+Running `wpt serve` or `wpt run` with SSL enabled on Windows typically
+requires installing an OpenSSL
+distribution.
 [Shining Light](https://slproweb.com/products/Win32OpenSSL.html)
 provide a convenient installer that is known to work, but requires a
 little extra setup, i.e.:
@@ -210,7 +214,7 @@ will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
 Alternatively, you may also use
 [Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
 in the Windows 10 Anniversary Update build, then access your windows
-partition from there to launch wptserve.
+partition from there to launch `wpt` commands.
 
 Publication
 ===========

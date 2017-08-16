@@ -186,5 +186,7 @@ test(() => {
   shadowRoot2.appendChild(input2);
 
   assert_equals(document.querySelector("#form2").elements.length, 0);
+  assert_equals(input1.form, null);
+  assert_equals(input2.form, null);
 }, "form.elements only includes elements from the same shadow tree");
 </script>

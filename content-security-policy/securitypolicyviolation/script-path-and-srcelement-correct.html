@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-abc'">
+    <script nonce="abc" src='/resources/testharness.js'></script>
+    <script nonce="abc" src='/resources/testharnessreport.js'></script>
+
+    <script nonce="abc">
+      var t1 = async_test("Securityviolationevent for script has correct srcElement and path");
+      document.addEventListener("securitypolicyviolation", t1.step_func(function(e) {
+        if (e.srcElement.id == "script1") {
+          assert_array_equals(e.path, [document.getElementById("script1"), document.getElementById("div1"), document.body, document.documentElement, document, window]);
+          t1.done();
+        }
+      }));
+
+      var t2 = async_test("Securityviolationevent for inserted script has correct srcElement and path");
+      document.addEventListener("securitypolicyviolation", t2.step_func(function(e) {
+        if (e.srcElement.id == "script2") {
+          assert_array_equals(e.path, [document.getElementById("script2"),  document.body, document.documentElement, document, window]);
+          t2.done();
+        }
+      }));
+
+      var t3 = async_test("Securityviolationevent for inline script has correct srcElement and path");
+      document.addEventListener("securitypolicyviolation", t3.step_func(function(e) {
+        if (e.srcElement.id == "script3") {
+          assert_array_equals(e.path, [document.getElementById("script3"),  document.body, document.documentElement, document, window]);
+          t3.done();
+        }
+      }));
+    </script>
+
+</head>
+<body>
+  <!-- t1 -->
+  <div id="div1">
+    <script id="script1" src="../support/fail.js"></script>
+  </div>
+
+  <!-- t2 -->
+  <script nonce="abc">
+    const s = document.createElement('script');
+    s.id = "script2";
+    s.src = "../support/fail.js";
+    document.body.appendChild(s);
+  </script>
+
+  <!-- t3 -->
+  <script id="script3">
+    test(function() { assert_unreached("FAIL")});
+  </script>
+</body>
+</html>

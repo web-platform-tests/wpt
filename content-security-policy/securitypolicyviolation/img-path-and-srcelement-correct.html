@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Security-Policy" content="img-src 'none'">
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+
+    <script>
+      var t1 = async_test("Securityviolationevent for inserted img has correct srcElement and path");
+      document.addEventListener("securitypolicyviolation", t1.step_func(function(e) {
+        if (e.srcElement.id == "img1") {
+          assert_array_equals(e.path, [document.getElementById("img1"),  document.body, document.documentElement, document, window]);
+          t1.done();
+        }
+      }));
+
+      var t2 = async_test("Securityviolationevent for img has correct srcElement and path");
+      document.addEventListener("securitypolicyviolation", t2.step_func(function(e) {
+        if (e.srcElement.id == "img2") {
+          assert_array_equals(e.path, [document.getElementById("img2"), document.getElementById("div1"), document.body, document.documentElement, document, window]);
+          t2.done();
+        }
+      }));
+    </script>
+
+</head>
+<body>
+  <!-- t1 -->
+  <script>
+    const img = new Image();
+    img.id = "img1";
+    img.src = "../support/fail.png";
+    document.body.appendChild(img);
+  </script>
+
+  <!-- t2 -->
+  <div id = "div1">
+    <img id = "img2" src="../support/fail.png">
+  </div>
+</body>
+</html>

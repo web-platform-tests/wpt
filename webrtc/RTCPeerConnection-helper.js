@@ -384,7 +384,6 @@ function getTrackFromUserMedia(kind) {
     const tracks = mediaStream.getTracks();
     assert_greater_than(tracks.length, 0,
       `Expect getUserMedia to return at least one track of kind ${kind}`);
-
     const [ track ] = tracks;
     return [track, mediaStream];
   });

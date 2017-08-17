@@ -4,6 +4,7 @@ import urlparse
 import re
 
 import webdriver
+import mozlog
 
 from tests.support.asserts import assert_error
 from tests.support.http_request import HTTPRequest
@@ -12,6 +13,20 @@ from tests.support import merge_dictionaries
 default_host = "http://127.0.0.1"
 default_port = "4444"
 
+logger = mozlog.get_default_logger()
+
+
+def ignore_exceptions(f):
+    def inner(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except webdriver.error.WebDriverException as e:
+            logger.warning("Ignored exception %s" % e)
+    inner.__name__ = f.__name__
+    return inner
+
+
+@ignore_exceptions
 def _ensure_valid_window(session):
     """If current window is not open anymore, ensure to have a valid
     one selected.
@@ -23,6 +38,7 @@ def _ensure_valid_window(session):
         session.window_handle = session.handles[0]
 
 
+@ignore_exceptions
 def _dismiss_user_prompts(session):
     """Dismisses any open user prompts in windows."""
     current_window = session.window_handle
@@ -37,6 +53,7 @@ def _dismiss_user_prompts(session):
     session.window_handle = current_window
 
 
+@ignore_exceptions
 def _restore_normal_window_state(session):
     """If the window is maximized, minimized, or fullscreened it will
     be returned to normal state.
@@ -51,6 +68,7 @@ def _restore_normal_window_state(session):
         session.window.fullscreen()
 
 
+@ignore_exceptions
 def _restore_windows(session):
     """Closes superfluous windows opened by the test without ending
     the session implicitly by closing the last window.
@@ -140,12 +158,13 @@ def session(configuration, request):
     does not demand that we start a new session per test."""
     global _current_session
     if _current_session is None:
+        print configuration
         _current_session = webdriver.Session(configuration["host"],
                                              configuration["port"],
                                              capabilities={"alwaysMatch": configuration["capabilities"]})
     try:
         _current_session.start()
-    except webdriver.errors.SessionNotCreatedException:
+    except webdriver.error.SessionNotCreatedException:
         if not _current_session.session_id:
             raise
 

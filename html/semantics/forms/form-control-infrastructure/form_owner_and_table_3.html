@@ -12,6 +12,6 @@ test(() => {
   document.getElementById("2").appendChild(form.parentNode);
   assert_equals(input.form, form);
   document.getElementById("2").appendChild(input);
-  assert_equals(form.input, null);
-}, "parser inserted flag is only reset sometimes");
+  assert_equals(input.form, null);
+}, "parser inserted flag is not reset by insertions with the owner form, but reset by by removal from the owner form");
 </script>

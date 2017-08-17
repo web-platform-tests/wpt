@@ -8,7 +8,7 @@
 &amp
 #errors
 #document-fragment
-| "&amp"
+| "&"
 
 #data
 &amp;
@@ -20,7 +20,7 @@
 &AMP;
 #errors
 #document-fragment
-| "&AMP;"
+| "&"
 
 #data
 &lt;
@@ -50,7 +50,7 @@ a&rlm;b
 &quot;
 #errors
 #document-fragment
-| "&quot;"
+| "\u0022"
 
 #data
 &nbsp;
@@ -62,7 +62,7 @@ a&rlm;b
 &copy;
 #errors
 #document-fragment
-| "&copy;"
+| "\u00A9"
 
 #data
 &&
@@ -99,16 +99,52 @@ a&rlm;b
 &#32;
 #errors
 #document-fragment
-| "&#32;"
+| " "
 
 #data
 &#x20;
 #errors
 #document-fragment
-| "&#x20;"
+| " "
 
 #data
 &;
 #errors
 #document-fragment
 | "&;"
+
+#data
+&ClockwiseContourIntegral;
+#errors
+#document-fragment
+| "\u2232"
+
+#data
+&nsubE;
+#errors
+#document-fragment
+| "\u2AC5\u0338"
+
+#data
+&notin;
+#errors
+#document-fragment
+| "\u2209"
+
+#data
+&not;
+#errors
+#document-fragment
+| "\u00AC"
+
+#data
+&not
+#errors
+#document-fragment
+| "\u00AC"
+
+#data
+&notit;
+#errors
+#document-fragment
+| "\u00ACit"

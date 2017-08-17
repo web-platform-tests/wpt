@@ -36,21 +36,13 @@ def test_desired(new_session):
         resp, _ = new_session({"desiredCapbilities": {}})
 
 
-def test_required(new_session):
-    with pytest.raises(error.InvalidArgumentException):
-        resp, _ = new_session({"requiredCapbilities": {}})
-
-
-def test_required_desired(new_session):
-    with pytest.raises(error.InvalidArgumentException):
-        resp, _ = new_session({"requiredCapbilities": {},
-                                               "desiredCapbilities": {}})
-
-
-def test_ignore_required(new_session):
-    new_session({"capabilities": {"requiredCapbilities": {"browserName": "invalid"}}})
-
-
-def test_ignore_desired(new_session):
+def test_ignore_non_spec_fields_in_capabilities(new_session):
     resp, _ = new_session({"capabilities": {"desiredCapbilities": {"pageLoadStrategy": "eager"}}})
     assert resp["capabilities"]["pageLoadStrategy"] == "normal"
+
+
+def test_valid_but_unmatchable_key(new_session):
+    resp, _ = new_session({"capabilities": {
+      "firstMatch": [{"pageLoadStrategy": "eager", "foo:unmatchable": True},
+                     {"pageLoadStrategy": "none"}]}})
+    assert resp["capabilities"]["pageLoadStrategy"] == "none"

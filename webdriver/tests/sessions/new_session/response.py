@@ -30,19 +30,19 @@ def test_resp_data(new_session, platform_name):
     assert isinstance(resp["capabilities"]["browserVersion"], unicode)
     if platform_name:
         assert resp["capabilities"]["platformName"] == platform_name
+    else:
+        assert "platformName" in resp["capabilities"]
     assert resp["capabilities"]["acceptInsecureCerts"] is False
     assert isinstance(resp["capabilities"]["setWindowRect"], bool)
-    assert resp["capabilities"]["timeouts"] == {
-        "implicit": 0,
-        "pageLoad": 300000,
-        "script": 30000
-    }
+    assert resp["capabilities"]["timeouts"]["implicit"] == 0
+    assert resp["capabilities"]["timeouts"]["pageLoad"] == 300000
+    assert resp["capabilities"]["timeouts"]["script"] == 30000
     assert resp["capabilities"]["proxy"] == {}
     assert resp["capabilities"]["pageLoadStrategy"] == "normal"
 
 
 def test_timeouts(new_session, platform_name):
-    resp, _ = new_session({"capabilities": {"alwaysMatch": {"timeouts": {"implict": 1000}}}})
+    resp, _ = new_session({"capabilities": {"alwaysMatch": {"timeouts": {"implicit": 1000}}}})
     assert resp["capabilities"]["timeouts"] == {
         "implicit": 1000,
         "pageLoad": 300000,

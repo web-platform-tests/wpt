@@ -12,6 +12,9 @@ valid_data = [
     ("browserVersion", [None]),
     ("platformName", [None]),
     ("pageLoadStrategy", ["none", "eager", "normal", None]),
+    ("proxy", [None]),
+    ("unhandledPromptBehavior", ["dismiss", "accept", None]),
+    ("test:extension", [True, "abc", 123, [], {"key": "value"}, None]),
 ]
 
 

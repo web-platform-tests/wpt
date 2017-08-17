@@ -1,8 +1,12 @@
+import json
 import urlparse
 
 import error
 import transport
 
+from mozlog import get_default_logger
+
+logger = get_default_logger()
 
 element_key = "element-6066-11e4-a52e-4f735466cecf"
 
@@ -425,7 +429,26 @@ class Session(object):
             an error.
         """
         response = self.transport.send(method, url, body)
-        value = response.body["value"]
+
+        if "value" in response.body:
+            value = response.body["value"]
+        elif "error" in response.body:
+            logger.warning("'value' key not found in response but 'error' key "
+                           "found in root. This is a compliance issue, but the tests are "
+                           "working around it.")
+            value = response.body
+        else:
+            raise error.UnknownErrorException("No 'value' key in response body:\n%s" %
+                                              json.dumps(response.body))
+
+        if (method == "POST" and
+            url == "session" and
+            "sessionId" in response.body and
+            "sessionId" not in value):
+            logger.warning("sessionId not found under 'value' key in New Session response but "
+                           "found in root. This is a compliance issue, but the tests are "
+                           "working around it.")
+            value["sessionId"] = response.body["sessionId"]
 
         if response.status != 200:
             cls = error.get(value.get("error"))

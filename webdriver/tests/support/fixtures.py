@@ -126,8 +126,8 @@ def create_window(session):
     return create_window
 
 
-def http(session):
-    return HTTPRequest(session.transport.host, session.transport.port)
+def http(configuration):
+    return HTTPRequest(configuration["host"], configuration["port"])
 
 
 def server_config():

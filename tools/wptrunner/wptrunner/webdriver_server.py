@@ -125,7 +125,7 @@ class SeleniumServer(WebDriverServer):
 
 
 class ChromeDriverServer(WebDriverServer):
-    default_base_path = "/wd/hub"
+    default_base_path = "/"
 
     def __init__(self, logger, binary="chromedriver", port=None,
                  base_path="", args=None):

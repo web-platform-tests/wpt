@@ -13,6 +13,9 @@ from .base import (ExecutorException,
                    RefTestImplementation,
                    TestExecutor,
                    TestharnessExecutor,
+                   WdspecExecutor,
+                   WdspecRun,
+                   extra_timeout,
                    testharness_result_converter,
                    reftest_result_converter,
                    strip_server)
@@ -24,7 +27,6 @@ webdriver = None
 exceptions = None
 RemoteConnection = None
 
-extra_timeout = 5
 
 def do_delayed_imports():
     global webdriver
@@ -33,6 +35,7 @@ def do_delayed_imports():
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
+
 
 class SeleniumProtocol(Protocol):
     def __init__(self, executor, browser, capabilities, **kwargs):
@@ -202,6 +205,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                            "window_id": self.window_id,
                            "timeout_multiplier": self.timeout_multiplier,
                            "timeout": timeout * 1000})
+
 
 class SeleniumRefTestExecutor(RefTestExecutor):
     def __init__(self, browser, server_config, timeout_multiplier=1,

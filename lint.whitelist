@@ -220,6 +220,7 @@ SET TIMEOUT: XMLHttpRequest/resources/init.htm
 SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 
 # generate_tests usage (should be got rid of)
+GENERATE_TESTS: 2dcontext/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes-1/shape-outside/values/*
 GENERATE_TESTS: css/work-in-progress/microsoft/css-tables/*
 GENERATE_TESTS: css/work-in-progress/ttwf_sf/divya/index-002.html

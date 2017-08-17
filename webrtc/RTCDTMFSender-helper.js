@@ -27,8 +27,10 @@ function createDtmfSender(pc = new RTCPeerConnection()) {
   Create an RTCDTMFSender and test tonechange events on it.
     testFunc
       Test function that is going to manipulate the DTMFSender.
-      It will be called with an RTCDTMFSender as first argument
-      and the associated RTCPeerConnection as second argument.
+      It will be called with:
+        t - the test object
+        sender - the created RTCDTMFSender
+        pc - the associated RTCPeerConnection as second argument.
     toneChanges
       Array of expected tonechange events fired. The elements
       are array of 3 items:
@@ -93,7 +95,7 @@ function test_tone_change_events(testFunc, toneChanges, desc) {
 
       dtmfSender.addEventListener('tonechange', onToneChange);
 
-      testFunc(dtmfSender, pc);
+      testFunc(t, dtmfSender, pc);
     })
     .catch(t.step_func(err => {
       assert_unreached(`Unexpected promise rejection: ${err}`);

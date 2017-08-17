@@ -40,7 +40,7 @@
       11.8. If the value of the duration parameter is less than 40, set it to 40.
             If, on the other hand, the value is greater than 6000, set it to 6000.
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.insertDTMF('A', 8000, 70);
   }, [
     ['A', '', 0],

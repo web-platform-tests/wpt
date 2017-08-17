@@ -92,7 +92,7 @@
       11.8. If the value of the duration parameter is less than 40, set it to 40.
             If, on the other hand, the value is greater than 6000, set it to 6000.
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
       dtmfSender.insertDTMF('ABC', 10, 70);
   }, [
     ['A', 'BC', 0],
@@ -105,7 +105,7 @@
     7.2.  insertDTMF
       11.9. If the value of the interToneGap parameter is less than 30, set it to 30.
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.insertDTMF('ABC', 100, 10);
   }, [
     ['A', 'BC', 0],
@@ -125,7 +125,7 @@
             stream, and queue a task to be executed in 2000 ms from now that runs the
             steps labelled Playout task.
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.insertDTMF('A,B', 100, 70);
 
   }, [
@@ -139,7 +139,7 @@
     7.2.  insertDTMF
       11.1. If transceiver.stopped is true, abort these steps.
    */
-  test_tone_change_events((dtmfSender, pc) => {
+  test_tone_change_events((t, dtmfSender, pc) => {
     const transceiver = getTransceiver(pc);
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
@@ -158,14 +158,14 @@
       3.  If a Playout task is scheduled to be run, abort these steps;
           otherwise queue a task that runs the following steps (Playout task):
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
         // Set a timeout to make sure the toneBuffer
         // is changed after the tonechange event listener
         // by test_tone_change_events is called.
         // This is to correctly test the expected toneBuffer.
-        setTimeout(() => {
+        t.step_timeout(() => {
           dtmfSender.insertDTMF('12', 100, 70);
         }, 10);
       }
@@ -186,10 +186,10 @@
       3.  If a Playout task is scheduled to be run, abort these steps;
           otherwise queue a task that runs the following steps (Playout task):
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
-        setTimeout(() => {
+        t.step_timeout(() => {
           dtmfSender.insertDTMF('12', 100, 70);
           dtmfSender.insertDTMF('34', 100, 70);
         }, 10);
@@ -210,10 +210,10 @@
       3.  If a Playout task is scheduled to be run, abort these steps;
           otherwise queue a task that runs the following steps (Playout task):
    */
-  test_tone_change_events(dtmfSender => {
+  test_tone_change_events((t, dtmfSender) => {
     dtmfSender.addEventListener('tonechange', ev => {
       if(ev.tone === 'B') {
-        setTimeout(() => {
+        t.step_timeout(() => {
           dtmfSender.insertDTMF('');
         }, 10);
       }

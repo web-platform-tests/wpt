@@ -45,9 +45,9 @@
         3.  If toneBuffer is an empty string, fire an event named tonechange with an
             empty string at the RTCDTMFSender object and abort these steps.
         4.  Remove the first character from toneBuffer and let that character be tone.
-        5.  Queue a task to be executed in duration + interToneGap ms from now that
+        6.  Queue a task to be executed in duration + interToneGap ms from now that
             runs the steps labelled Playout task.
-        6.  Fire an event named tonechange with a string consisting of tone at the
+        7.  Fire an event named tonechange with a string consisting of tone at the
             RTCDTMFSender object.
    */
   test_tone_change_events(dtmfSender => {
@@ -89,8 +89,8 @@
 
   /*
     7.2.  insertDTMF
-      11.8. If the value of the duration parameter is less than 40, set it to 40.
-            If, on the other hand, the value is greater than 6000, set it to 6000.
+      8. If the value of the duration parameter is less than 40, set it to 40.
+         If, on the other hand, the value is greater than 6000, set it to 6000.
    */
   test_tone_change_events((t, dtmfSender) => {
       dtmfSender.insertDTMF('ABC', 10, 70);
@@ -103,7 +103,7 @@
 
   /*
     7.2.  insertDTMF
-      11.9. If the value of the interToneGap parameter is less than 30, set it to 30.
+      9. If the value of the interToneGap parameter is less than 30, set it to 30.
    */
   test_tone_change_events((t, dtmfSender) => {
     dtmfSender.insertDTMF('ABC', 100, 10);

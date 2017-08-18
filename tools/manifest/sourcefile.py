@@ -201,10 +201,10 @@ class SourceFile(object):
         return self.type_flag == "visual"
 
     @property
-    def name_is_global(self):
+    def name_is_any(self):
         """Check if the file name matches the conditions for the file to
         be a multi-global js test file"""
-        return "global" in self.meta_flags and self.ext == ".js"
+        return "any" in self.meta_flags and self.ext == ".js"
 
     @property
     def name_is_window(self):
@@ -278,7 +278,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_global or self.name_is_window:
+        if self.name_is_any or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
@@ -488,7 +488,7 @@ class SourceFile(object):
         elif self.name_is_visual:
             rv = VisualTest.item_type, [VisualTest(self, self.url)]
 
-        elif self.name_is_global:
+        elif self.name_is_any:
             rv = TestharnessTest.item_type, []
             global_value_paths = []
             for (key, value) in self.script_metadata:
@@ -496,16 +496,16 @@ class SourceFile(object):
                     global_values = value.split(b",")
                     for global_value in global_values:
                         if global_value == b"window":
-                            global_value_paths.append((".global.js", ".global.html"))
+                            global_value_paths.append(".any.html")
                         elif global_value == b"serviceworker":
-                            global_value_paths.append((".global.js", ".global.serviceworker.https.html"))
+                            global_value_paths.append(".any.serviceworker.https.html")
                         elif global_value == b"worker":
-                            global_value_paths.append((".global.js", ".global.worker.html"))
-                            global_value_paths.append((".global.js", ".global.sharedworker.html"))
+                            global_value_paths.append(".any.worker.html")
+                            global_value_paths.append(".any.sharedworker.html")
                             if b"!serviceworker" not in global_values:
-                                global_value_paths.append((".global.js", ".global.serviceworker.https.html"))
-            for paths in global_value_paths:
-                rv[1].append(TestharnessTest(self, replace_end(self.url, paths[0], paths[1]), timeout=self.timeout))
+                                global_value_paths.append(".any.serviceworker.https.html")
+            for path in global_value_paths:
+                rv[1].append(TestharnessTest(self, replace_end(self.url, ".any.js", path), timeout=self.timeout))
 
         elif self.name_is_window:
             rv = TestharnessTest.item_type, [

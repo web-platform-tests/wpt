@@ -177,6 +177,7 @@ SET TIMEOUT: payment-request/payment-request-response-id.html
 SET TIMEOUT: pointerevents/pointerevent_support.js
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: resource-timing/resource-timing.js
+SET TIMEOUT: resource-timing/single-entry-per-resource.html
 SET TIMEOUT: screen-orientation/lock-bad-argument.html
 SET TIMEOUT: screen-orientation/onchange-event.html
 SET TIMEOUT: screen-orientation/resources/sandboxed-iframe-locking.html

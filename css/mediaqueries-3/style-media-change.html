@@ -1,0 +1,76 @@
+co<!DOCTYPE html>
+<html>
+ <head>
+  <title>Dynamically changing HTMLStyleElement.prototyoe.media should change the rendering accordingly</title>
+  <meta name="assert" content="dynamically changing HTMLStyleElement.prototyoe.media should change rendering accordingly" />
+  <link rel="match" href="reference/style-media-change-ref.html" />
+  <style>
+  .text1, .text2, .text3, .text4, .text5, .text6 {
+   color: red;
+  }
+  </style>
+  <style id="immediate-change" media="none">
+  .text1 {
+   color: green;
+  }
+  </style>
+  <style id="short-10-milliseconds-timer-change" media="none">
+  .text2 {
+   color: green;
+  }
+  </style>
+  <style id="long-500-milliseconds-timer-change" media="none">
+  .text3 {
+   color: green;
+  }
+  </style>
+  <style id="on-dom-content-loaded-change" media="none">
+  .text4 {
+   color: green;
+  }
+  </style>
+  <style id="on-load-change" media="none">
+  .text5 {
+   color: green;
+  }
+  </style>
+  <style id="on-load-plus-1-millisecond-timer-change" media="none">
+  .text6 {
+   color: green;
+  }
+  </style>
+
+ </head>
+ <body class="reftest-wait">
+  A bit after the "load" event, the text below must be green and nothing must be red.<br/>
+  <span class="text1">text1</span>
+  <span class="text2">text2</span>
+  <span class="text3">text3</span>
+  <span class="text4">text4</span>
+  <span class="text5">text5</span>
+  <span  class="text6">text6</span>
+  <script>
+   var counter = 1;
+   function changeMedia(id) {
+     counter++;
+     document.getElementById(id).media = 'all';
+     if (counter === 6) {
+     	document.body.className = document.body.className.replace(/ ?reftest-wait|reftest-wait ?/g, "");
+     }
+   }
+   function getChangeMedia(id) {
+     return function () {
+     	changeMedia(id);
+ 	 };
+   }
+   changeMedia("immediate-change");
+   window.addEventListener("load", getChangeMedia("on-load-change"));
+   window.addEventListener("DOMContentLoaded", getChangeMedia("on-dom-content-loaded-change"));
+   setTimeout(getChangeMedia("short-10-milliseconds-timer-change"), 10);
+   setTimeout(getChangeMedia("long-500-milliseconds-timer-change"), 500);
+   window.addEventListener("load", function () {
+     setTimeout(getChangeMedia("on-load-plus-1-millisecond-timer-change"), 1);
+   });
+  </script>
+ </body>
+</html>

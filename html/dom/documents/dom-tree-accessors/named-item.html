@@ -296,8 +296,7 @@ function runDefaultTest(win = window, root = testDiv) {
           addToWindow(id, elem);
         }
         if (elem.localName == "applet" || elem.localName == "object" ||
-            (elem.localName == "img" && elem.name !== null &&
-             elem.name !== "")) {
+            (elem.localName == "img" && elem.name !== "")) {
           addToDocument(id, elem);
         } else {
           documentUnexpected.add(id);

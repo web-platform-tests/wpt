@@ -962,7 +962,7 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
-        assert(actual && "length" in actual,
+        assert(typeof actual === "object" && actual !== null && "length" in actual,
                "assert_array_equals", description,
                "value is ${actual}, expected array",
                {actual:actual});

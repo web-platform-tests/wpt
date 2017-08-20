@@ -2286,7 +2286,8 @@ IdlInterface.prototype.has_stringifier = function()
 //@{
 {
     if (this.name === "DOMException") {
-        // Stringifier is inherited from Error
+        // toString is inherited from Error, so don't assume we have the
+        // default stringifer
         return true;
     }
     if (this.members.some(function(member) { return member.stringifier; })) {

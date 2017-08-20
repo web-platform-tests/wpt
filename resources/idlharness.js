@@ -1324,6 +1324,14 @@ IdlInterface.prototype.test_self = function()
         // "Otherwise, if A is declared with the [LegacyArrayClass] extended
         // attribute, then return %ArrayPrototype%.
         // "Otherwise, return %ObjectPrototype%.
+        //
+        // "In the ECMAScript binding, the DOMException type has some additional
+        // requirements:
+        //
+        //     "Unlike normal interface types, the interface prototype object
+        //     for DOMException must have as its [[Prototype]] the intrinsic
+        //     object %ErrorPrototype%."
+        //
         if (this.name === "Window") {
             assert_class_string(Object.getPrototypeOf(self[this.name].prototype),
                                 'WindowProperties',
@@ -1339,6 +1347,9 @@ IdlInterface.prototype.test_self = function()
                          .has_extended_attribute("NoInterfaceObject");
             } else if (this.has_extended_attribute('LegacyArrayClass')) {
                 inherit_interface = 'Array';
+                inherit_interface_has_interface_object = true;
+            } else if (this.name === "DOMException") {
+                inherit_interface = 'Error';
                 inherit_interface_has_interface_object = true;
             } else {
                 inherit_interface = 'Object';
@@ -2277,6 +2288,11 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 IdlInterface.prototype.has_stringifier = function()
 //@{
 {
+    if (this.name === "DOMException") {
+        // toString is inherited from Error, so don't assume we have the
+        // default stringifer
+        return true;
+    }
     if (this.members.some(function(member) { return member.stringifier; })) {
         return true;
     }

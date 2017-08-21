@@ -215,6 +215,7 @@ def url(server_config):
         host = "%s:%s" % (server_config["host"], port)
         return urlparse.urlunsplit((protocol, host, path, query, fragment))
 
+    inner.__name__ = "url"
     return inner
 
 def create_dialog(session):

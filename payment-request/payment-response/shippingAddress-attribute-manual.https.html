@@ -8,7 +8,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="helpers.js"></script>
 <script>
-async function checkNullShippingAddress(button, options = {}) {
+async function checkNullShippingAddress(button, options) {
   button.disabled = true;
   const { request, response } = await getPaymentRequestResponse(options);
   await response.complete();
@@ -34,7 +34,7 @@ async function runManualTest(button, options = {}, expected = {}, id) {
     assert_equals(response.requestId, request.id, `Expected ids to match`);
     const { shippingAddress: addr } = request;
     assert_true(
-      addr.addressLine instanceof PaymentAddress,
+      addr instanceof PaymentAddress,
       "Expect instance of PaymentAddress"
     );
     try {
@@ -69,9 +69,14 @@ async function runManualTest(button, options = {}, expected = {}, id) {
 </p>
 <ol>
   <li>
-      <button onclick="checkNullShippingAddress(this, {})">
-        If the requestShipping member is missing, then shippingAddress must be null.
-      </button>
+    <button onclick="checkNullShippingAddress(this, undefined)">
+      If options is undefined, then shippingAddress must be null.
+    </button>
+  </li>
+  <li>
+    <button onclick="checkNullShippingAddress(this, {})">
+      If the requestShipping member is missing, then shippingAddress must be null.
+    </button>
   </li>
   <li>
     <button onclick="checkNullShippingAddress(this, {requestShipping: false})">
@@ -79,8 +84,8 @@ async function runManualTest(button, options = {}, expected = {}, id) {
     </button>
   </li>
   <li>
-    <button onclick="runManualTest(this, {requestShipping: true}, { shippingAddress: 'pass' }).then(done)">
-      If the requestShipping member is true, then shippingAddress will be the full and final shipping address is "wpt street" in "Kabul, Afghanistan", zip/postal code 1001.
+    <button onclick="runManualTest(this, {requestShipping: true}).then(done)">
+      If the requestShipping member is true, then shippingAddress must be "1 wpt street" in "Kabul, Afghanistan", zip code 1001.
     </button>
   </li>
 </ol>

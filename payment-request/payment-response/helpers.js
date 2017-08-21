@@ -1,16 +1,23 @@
+setup({ explicit_done: true, explicit_timeout: true });
+
 /**
  * Pops up a payment sheet, allowing options to be
  * passed in if particular values are needed.
  *
  * @param PaymentOptions options
  */
-setup({ explicit_done: true, explicit_timeout: true });
-
 async function getPaymentResponse(options, id) {
   const { response } = getPaymentRequestResponse(options, id);
   return response;
 }
 
+/**
+ * Creates a payment request and response pair.
+ * It also shows the payment sheet.
+ *
+ * @param {PaymentOptions?} options
+ * @param {String?} id
+ */
 async function getPaymentRequestResponse(options, id) {
   const methods = [{ supportedMethods: ["basic-card"] }];
   const details = {
@@ -47,6 +54,14 @@ async function getPaymentRequestResponse(options, id) {
   return { request, response };
 }
 
+/**
+ * Runs a manual test for payment
+ *
+ * @param {HTMLButtonElement} button The HTML button.
+ * @param {PaymentOptions?} options.
+ * @param {Object} expected What property values are expected to pass the test.
+ * @param {String?} id And id for the request/response pair.
+ */
 async function runManualTest(button, options = {}, expected = {}, id) {
   button.disabled = true;
   const { request, response } = await getPaymentRequestResponse(options, id);

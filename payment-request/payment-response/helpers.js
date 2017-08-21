@@ -62,7 +62,7 @@ async function getPaymentRequestResponse(options, id) {
  * @param {Object} expected What property values are expected to pass the test.
  * @param {String?} id And id for the request/response pair.
  */
-async function runManualTest(button, options = {}, expected = {}, id) {
+async function runManualTest(button, options, expected = {}, id = undefined) {
   button.disabled = true;
   const { request, response } = await getPaymentRequestResponse(options, id);
   await response.complete();

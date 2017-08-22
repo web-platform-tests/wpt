@@ -171,6 +171,8 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                                      debug_info=debug_info)
         self.protocol = SeleniumProtocol(self, browser, capabilities)
         with open(os.path.join(here, "testharness_webdriver.js")) as f:
+            self.script_resume = f.read()
+        with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
             self.script = f.read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
@@ -196,12 +198,31 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(*data), [])
 
     def do_testharness(self, webdriver, url, timeout):
-        return webdriver.execute_async_script(
-            self.script % {"abs_url": url,
-                           "url": strip_server(url),
-                           "window_id": self.window_id,
-                           "timeout_multiplier": self.timeout_multiplier,
-                           "timeout": timeout * 1000})
+        format_map = {"abs_url": url,
+                      "url": strip_server(url),
+                      "window_id": self.window_id,
+                      "timeout_multiplier": self.timeout_multiplier,
+                      "timeout": timeout * 1000}
+        webdriver.execute_script(self.script % format_map)
+        while True:
+            result = webdriver.execute_async_script(
+                self.script_resume % format_map)
+            if result[1] == "complete":
+                break
+            elif result[1] == "action":
+                parent = webdriver.current_window_handle
+                try:
+                    webdriver.switch_to.window(self.window_id)
+                    action = result[2]["action"]
+                    if action == "click":
+                        selector = result[2]["selector"]
+                        elements = webdriver.find_elements_by_css_selector(selector)
+                        assert len(elements) == 1  # the JS should ensure this
+                        elements[0].click()
+                finally:
+                    webdriver.switch_to.window(parent)
+        return result
+            
 
 class SeleniumRefTestExecutor(RefTestExecutor):
     def __init__(self, browser, server_config, timeout_multiplier=1,

@@ -1,4 +1,3 @@
-var callback = arguments[arguments.length - 1];
 window.timeout_multiplier = %(timeout_multiplier)d;
 
 window.message_queue = [];

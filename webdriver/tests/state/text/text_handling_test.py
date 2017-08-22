@@ -2,6 +2,16 @@ import pytest
 
 from tests.support.inline import inline
 
+# This test was derived from the Selenium project's test suite, which
+# is copyright the Software Freedom Conservancy. The original source
+# license was the Apache 2.0 licese, a copy of which can be found at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# The original source for this can be found at:
+#
+# https://github.com/SeleniumHQ/selenium/blob/selenium-3.5.2/java/client/test/org/openqa/selenium/TextHandlingTest.java
+
 def test_ignore_script_tags(session):
     session.url = inline("""
         <form id="form1" action="javascriptEnhancedForm.html" method="post">
@@ -33,7 +43,9 @@ def test_does_not_collapse_non_breaking_spaces(session):
     assert element.text == "This line has a   non-breaking space and spaces"
 
 def test_does_not_trim_non_breaking_spaces_at_the_start_of_a_line_in_the_middle_of_text(session):
-    session.url = inline("""<p id="multilinenbsp">These lines &nbsp<br />&nbsp have leading and trailing NBSPs&nbsp;&nbsp;</p>""")
+    session.url = inline("""
+        <p id="multilinenbsp">These lines &nbsp<br />&nbsp have leading
+         and trailing NBSPs&nbsp;&nbsp;</p>""")
     text = session.find.css("#multilinenbsp", all=False).text
     assert text.startswith("These lines  \n")
     assert "\n  have" in text
@@ -48,39 +60,56 @@ def test_does_not_trim_whitespace_when_line_wraps(session):
     assert element.text == "beforeSpace afterSpace"
 
 def test_whitespace_in_inline_elements(session):
-    session.url = inline("""<p>This <span id="inlinespan">    line has <em>text</em></span> within elements that are meant to be displayed
-        <!-- not as a block but --> inline</p>""")
+    session.url = inline("""
+       <p>This <span id="inlinespan">    line has <em>text</em></span> within """)
     element = session.find.css("#inlinespan", all=False)
     assert element.text == "line has text"
 
 def test_only_include_visible_text(session):
-    session.url = inline("""<p id="suppressedParagraph" style="display: none">A paragraph suppressed using CSS display=none</p>""")
+    session.url = inline("""
+        <p id="suppressedParagraph" style="display: none">A paragraph
+        suppressed using CSS display=none</p>""")
     element = session.find.css("#suppressedParagraph", all=False)
     assert element.text == ""
 
-    session.url = inline("""<p id="outer" style="visibility: hidden">A <b id="visibleSubElement" style="visibility: visible">sub-element that is explicitly visible</b> using CSS visibility=visible</p>""")
+    session.url = inline(
+        """<p id="outer" style="visibility: hidden">
+           A <b id="visibleSubElement" style="visibility: visible">sub-element that is explicitly visible</b> using 
+           CSS visibility=visible</p>""")
     element = session.find.css("#outer", all=False)
     assert element.text == "sub-element that is explicitly visible"
 
 def test_text_of_an_input_element_should_be_empty(session):
-    session.url = inline("""<form method="get" name="disable"><input type="text" id="inputWithText" value="Example text"/></form>""")
+    session.url = inline("""
+        <form method="get" name="disable">
+          <input type="text" id="inputWithText" value="Example text"/>
+        </form>""")
     element = session.find.css("#inputWithText", all=False)
     assert element.text == ""
 
 def test_text_of_a_textarea_should_be_equal_to_its_default_text(session):
-    session.url = inline("""<form><textarea id="withText" rows="5" cols="5">Example text</textarea></form>""")
+    session.url = inline("""
+        <form>
+          <textarea id="withText" rows="5" cols="5">Example text</textarea>
+        </form>""")
     element = session.find.css("#withText", all=False)
     assert element.text == "Example text"
 
 def test_text_of_a_textarea_should_be_equal_to_its_default_text_even_after_typing(session):
-    session.url = inline("""<form><textarea id="withText" rows="5" cols="5">Example text</textarea></form>""")
+    session.url = inline("""
+        <form>
+          <textarea id="withText" rows="5" cols="5">Example text</textarea>
+        </form>""")
     element = session.find.css("#withText", all=False)
     element.clear()
     element.send_keys("New Text")
     assert element.text == "Example text"
 
 def test_text_of_a_textarea_should_be_equal_to_its_default_text_even_after_changing_the_value(session):
-    session.url = inline("""<form><textarea id="withText" rows="5" cols="5">Example text</textarea></form>""")
+    session.url = inline("""
+        <form>
+          <textarea id="withText" rows="5" cols="5">Example text</textarea>
+        </form>""")
     element = session.find.css("#withText", all=False)
     session.execute_script("arguments[0].value = arguments[1]", args=[element.json(), "New Text"])
     assert element.text == "Example text"

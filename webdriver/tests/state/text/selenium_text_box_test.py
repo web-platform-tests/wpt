@@ -3,9 +3,16 @@ import pytest
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
-# These tests are derived from the Selenium project's JS tests found
-# at //javascript/atoms/test/text_box_test.html The name of this file
-# matches this for easy reference.
+# This test was derived from the Selenium project's test suite, which
+# is copyright the Software Freedom Conservancy. The original source
+# license was the Apache 2.0 licese, a copy of which can be found at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# The original source for this can be found at:
+#
+# https://github.com/SeleniumHQ/selenium/blob/selenium-3.5.2/javascript/atoms/test/text_box_test.html
+
 
 def header():
     return """

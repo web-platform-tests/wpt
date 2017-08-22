@@ -2,6 +2,17 @@ import pytest
 
 from tests.support.inline import inline
 
+
+# This test was derived from the Selenium project's test suite, which
+# is copyright the Software Freedom Conservancy. The original source
+# license was the Apache 2.0 licese, a copy of which can be found at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# The original source for this can be found at:
+#
+# https://github.com/SeleniumHQ/selenium/blob/selenium-3.5.2/javascript/atoms/test/text_table_test.html
+
 def body(text):
     return "<body>%s" % text
 

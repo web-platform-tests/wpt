@@ -39,6 +39,11 @@ class Response(object):
         return cls(status, body)
 
 
+class ToJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return getattr(obj.__class__, "json", json.JSONEncoder().default)(obj)
+
+
 class HTTPWireProtocol(object):
     """Transports messages (commands and responses) over the WebDriver
     wire protocol.
@@ -76,7 +81,7 @@ class HTTPWireProtocol(object):
             body = {}
 
         if isinstance(body, dict):
-            body = json.dumps(body)
+            body = json.dumps(body, cls=ToJsonEncoder)
 
         if isinstance(body, unicode):
             body = body.encode("utf-8")

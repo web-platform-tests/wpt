@@ -20,14 +20,15 @@ from multiprocessing import Process, Event
 from localpaths import repo_root
 
 import sslutils
-from manifest.sourcefile import read_script_metadata, js_meta_re
+from manifest.sourcefile import read_script_metadata, js_meta_re, global_variants
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
 from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
-from wptserve.utils import get_port
+from wptserve.utils import get_port, HTTPException
 from mod_pywebsocket import standalone as pywebsocket
+
 
 def replace_end(s, old, new):
     """
@@ -85,6 +86,9 @@ class WrapperHandler(object):
                 path = replace_end(path, src, dest)
         return path
 
+    def _validate_meta(self, key, value):
+        pass
+
     def _get_meta(self, request):
         """Get an iterator over strings to inject into the wrapper document
         based on //META comments in the associated js file.
@@ -94,6 +98,7 @@ class WrapperHandler(object):
         path = self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
         with open(path, "rb") as f:
             for key, value in read_script_metadata(f, js_meta_re):
+                self._validate_meta(key, value)
                 replacement = self._meta_replacement(key, value)
                 if replacement:
                     yield replacement
@@ -118,7 +123,16 @@ class WrapperHandler(object):
         # a specific metadata key: value pair.
         pass
 
+
 class HtmlWrapperHandler(WrapperHandler):
+    global_type = None
+
+    def _validate_meta(self, key, value):
+        if key == b"global":
+            if self.global_type not in global_variants(value):
+                raise HTTPException(404, "This test cannot be loaded in %s mode" %
+                                    self.global_type)
+
     def _meta_replacement(self, key, value):
         if key == b"timeout":
             if value == b"long":
@@ -128,7 +142,9 @@ class HtmlWrapperHandler(WrapperHandler):
             return '<script src="%s"></script>' % attribute
         return None
 
+
 class WindowHandler(HtmlWrapperHandler):
+    global_type = "window"
     path_replace = [(".any.html", ".any.js"),
                     (".window.html", ".window.js")]
     wrapper = """<!doctype html>
@@ -146,14 +162,9 @@ self.GLOBAL = {
 <script src="%(path)s"></script>
 """
 
-    def _meta_replacement(self, key, value):
-        if key == b"global":
-            if b"window" not in value.split(b","):
-                raise ValueError("This test cannot be loaded in window mode")
-        else:
-            HtmlWrapperHandler._meta_replacement(self, key, value)
 
 class WorkerHandler(HtmlWrapperHandler):
+    global_type = "worker"
     path_replace = [(".any.worker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -166,14 +177,9 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 </script>
 """
 
-    def _meta_replacement(self, key, value):
-        if key == b"global":
-            if b"worker" not in value.split(b","):
-                raise ValueError("This test cannot be loaded in dedicated/shared worker mode")
-        else:
-            HtmlWrapperHandler._meta_replacement(self, key, value)
 
 class SharedWorkerHandler(WorkerHandler):
+    global_type = "sharedworker"
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -186,8 +192,10 @@ fetch_tests_from_worker(new SharedWorker("%(path)s"));
 </script>
 """
 
+
 class ServiceWorkerHandler(HtmlWrapperHandler):
-    path_replace = [(".any.serviceworker.https.html", ".any.js", ".any.worker.js")]
+    global_type = "serviceworker"
+    path_replace = [(".https.any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -205,13 +213,6 @@ class ServiceWorkerHandler(HtmlWrapperHandler):
 </script>
 """
 
-    def _meta_replacement(self, key, value):
-        if key == b"global":
-            values = value.split(b",")
-            if (b"worker" not in values and b"serviceworker" not in values) or b"!serviceworker" in values:
-                raise ValueError("This test cannot be loaded in service worker mode")
-        else:
-            HtmlWrapperHandler._meta_replacement(self, key, value)
 
 class WorkerJavaScriptHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
@@ -227,10 +228,6 @@ done();
 """
 
     def _meta_replacement(self, key, value):
-        if key == b"global":
-            values = value.split(b",")
-            if b"worker" not in values and "serviceworker" not in values:
-                raise ValueError("This test doesn't need a worker script")
         if key == b"script":
             attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
@@ -284,7 +281,7 @@ class RoutesBuilder(object):
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.worker.html", WorkerHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkerHandler),
-            ("GET", "*.any.serviceworker.https.html", ServiceWorkerHandler),
+            ("GET", "*.https.any.serviceworker.html", ServiceWorkerHandler),
             ("GET", "*.any.worker.js", WorkerJavaScriptHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),

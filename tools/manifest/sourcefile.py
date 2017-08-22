@@ -1,7 +1,7 @@
 import hashlib
 import re
 import os
-from six import binary_type
+from six import binary_type, itervalues
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 try:
@@ -45,6 +45,44 @@ def read_script_metadata(f, regexp):
             break
 
         yield (m.groups()[0], m.groups()[1])
+
+
+any_variants = {"window": {"suffix": ".any.html"},
+                "serviceworker": {},
+                "worker": {"globals": {"worker", "sharedworker", "serviceworker"}}}
+skip_variants = {"!serviceworker"}
+force_https = {"serviceworker"}
+
+
+def global_variants(value):
+    rv = {}
+    global_values = set(item.strip() for item in value.split(","))
+    for item in global_values:
+        if item in any_variants:
+            variant = any_variants[item]
+            global_types = variant.get("globals", {item})
+            for global_type in global_types:
+                suffix = variant.get("suffix", ".any.%s.html" % global_type)
+                if global_type in force_https:
+                    suffix = ".https" + suffix
+                rv[global_type] = suffix
+    for item in skip_variants:
+        variant = item[1:]
+        if item in global_values and variant in rv:
+            del rv[variant]
+    return rv
+
+
+def global_variant_url(url, suffix):
+    # Ensure that .any. is the last flag
+    if not url.endswith(".any.js"):
+        url = url.replace(".any.", ".")
+        replace_end(url, ".js", ".any.js")
+    # If the url must be loaded over https, ensure that it will have
+    # the form .https.any.js
+    if ".https." in url and suffix.startswith(".https."):
+        url = url.replace(".https.", ".")
+    return replace_end(url, ".any.js", suffix)
 
 
 class SourceFile(object):
@@ -490,23 +528,14 @@ class SourceFile(object):
 
         elif self.name_is_any:
             rv = TestharnessTest.item_type, []
-            global_value_paths = []
             for (key, value) in self.script_metadata:
                 if key == b"global":
-                    global_values = value.split(b",")
-                    for global_value in global_values:
-                        if global_value == b"window":
-                            global_value_paths.append(".any.html")
-                        elif global_value == b"serviceworker":
-                            global_value_paths.append(".any.serviceworker.https.html")
-                        elif global_value == b"worker":
-                            global_value_paths.append(".any.worker.html")
-                            global_value_paths.append(".any.sharedworker.html")
-                            if b"!serviceworker" not in global_values:
-                                global_value_paths.append(".any.serviceworker.https.html")
-            for path in global_value_paths:
-                rv[1].append(TestharnessTest(self, replace_end(self.url, ".any.js", path), timeout=self.timeout))
-
+                    for suffix in itervalues(global_variants(value)):
+                        url = global_variant_url(self.url, suffix)
+                        rv[1].append(TestharnessTest(self, url,
+                                                     timeout=self.timeout))
+                    break
+            print rv
         elif self.name_is_window:
             rv = TestharnessTest.item_type, [
                 TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),

@@ -462,8 +462,8 @@ class USBTest {
       return;
 
     internal.deviceManager = new FakeDeviceManager();
-    internal.deviceManagerInterceptor =
-        new MojoInterfaceInterceptor(device.mojom.UsbDeviceManager.name);
+    internal.deviceManagerInterceptor = new MojoInterfaceInterceptor({
+        interfaceName: device.mojom.UsbDeviceManager.name });
     internal.deviceManagerInterceptor.oninterfacerequest =
         e => internal.deviceManager.addBinding(e.handle);
     internal.deviceManagerInterceptor.start();
@@ -471,8 +471,8 @@ class USBTest {
         handle => internal.deviceManager.addBinding(handle));
 
     internal.chooser = new FakeChooserService();
-    internal.chooserInterceptor =
-        new MojoInterfaceInterceptor(device.mojom.UsbChooserService.name);
+    internal.chooserInterceptor = new MojoInterfaceInterceptor({
+        interfaceName: device.mojom.UsbChooserService.name });
     internal.chooserInterceptor.oninterfacerequest =
         e => internal.chooser.addBinding(e.handle);
     internal.chooserInterceptor.start();
@@ -490,15 +490,15 @@ class USBTest {
       throw new Error('Call initialize() before attachToWindow().');
 
     otherWindow.deviceManagerInterceptor =
-        new otherWindow.MojoInterfaceInterceptor(
-            device.mojom.UsbDeviceManager.name);
+        new otherWindow.MojoInterfaceInterceptor({
+            interfaceName: device.mojom.UsbDeviceManager.name });
     otherWindow.deviceManagerInterceptor.oninterfacerequest =
         e => internal.deviceManagerCrossFrameProxy.forwardHandle(e.handle);
     otherWindow.deviceManagerInterceptor.start();
 
     otherWindow.chooserInterceptor =
-        new otherWindow.MojoInterfaceInterceptor(
-            device.mojom.UsbChooserService.name);
+        new otherWindow.MojoInterfaceInterceptor({
+            interfaceName: device.mojom.UsbChooserService.name });
     otherWindow.chooserInterceptor.oninterfacerequest =
         e => internal.chooserCrossFrameProxy.forwardHandle(e.handle);
     otherWindow.chooserInterceptor.start();

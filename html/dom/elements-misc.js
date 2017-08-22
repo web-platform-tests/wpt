@@ -23,6 +23,11 @@ var miscElements = {
   },
   noscript: {},
 
+  template: {},
+  slot: {
+    name: "string",
+  },
+
   // "Edits" section
   ins: {
     cite: "url",

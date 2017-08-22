@@ -185,7 +185,9 @@ class TestEnvironment(object):
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
                 (self.options.get("testharnessreport", "testharnessreport.js"),
                  {"output": self.pause_after_test}, "text/javascript",
-                 "/resources/testharnessreport.js")]:
+                 "/resources/testharnessreport.js"),
+                (self.options.get("testautomation", "testautomation.js"),
+                 {}, "text/javascript", "/resources/testautomation.js")]:
             path = os.path.normpath(os.path.join(here, path))
             route_builder.add_static(path, format_args, content_type, route)
 

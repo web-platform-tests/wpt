@@ -19,7 +19,7 @@ async function getPaymentResponse(options, id) {
  * @param {String?} id
  */
 async function getPaymentRequestResponse(options, id) {
-  const methods = [{ supportedMethods: ["basic-card"] }];
+  const methods = [{ supportedMethods: "basic-card" }];
   const details = {
     id,
     total: {

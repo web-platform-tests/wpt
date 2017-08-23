@@ -60,7 +60,6 @@ class InternetExplorerBrowser(Browser):
         self.webdriver_port = self.server.port
 
     def start(self, **kwargs):
-        print self.server.url
         self.server.start()
 
     def stop(self, force=False):

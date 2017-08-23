@@ -12,8 +12,8 @@ import mozprocess
 
 
 __all__ = ["SeleniumServer", "ChromeDriverServer",
-           "GeckoDriverServer", "ServoDriverServer",
-           "WebDriverServer"]
+           "GeckoDriverServer", "InternetExplorerDriverServer",
+           "ServoDriverServer", "WebDriverServer"]
 
 
 class WebDriverServer(object):
@@ -140,6 +140,17 @@ class ChromeDriverServer(WebDriverServer):
 
 class EdgeDriverServer(WebDriverServer):
     def __init__(self, logger, binary="MicrosoftWebDriver.exe", port=None,
+                 base_path="", host="localhost", args=None):
+        WebDriverServer.__init__(
+            self, logger, binary, host=host, port=port, args=args)
+
+    def make_command(self):
+        return [self.binary,
+                "--port=%s" % str(self.port)] + self._args
+
+
+class InternetExplorerDriverServer(WebDriverServer):
+    def __init__(self, logger, binary="IEDriverServer.exe", port=None,
                  base_path="", host="localhost", args=None):
         WebDriverServer.__init__(
             self, logger, binary, host=host, port=port, args=args)

@@ -2,14 +2,13 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='support/base.css' />
 <link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
 <style>
-    x-table {
+    table {
       border: 5px solid black;
     }
-    x-table span {
+    table span {
         display: inline-block;
         vertical-align: top;
         background: lime;
@@ -23,65 +22,37 @@
     <a href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">Spec</a>
     <p>
     Setting a column to visibility:collapse changes table width but not height.
-    </p>
-    <x-table id="one">
-      <x-tbody>
-        <x-tr>
-            <x-td>
-                <span>row 1</span>
-            </x-td>
-            <x-td>
-                <span></span>
-            </x-td>
-        </x-tr>
-        <x-tr>
-            <x-td>
-                <span>row 2</span>
-            </x-td>
-            <x-td>
-                <span></span>
-            </x-td>
-        </x-tr>
-        <x-tr>
-            <x-td>
-                <span>row 3</span>
-            </x-td>
-            <x-td>
-                <span style="height:50px"></span>
-            </x-td>
-        </x-tr>
-      </x-tbody>
-    </x-table>
     Bottom table is identical to top except left column has been collapsed.
-    <x-table id="two">
-      <x-colgroup id="collapse"></x-colgroup>
-      <x-tbody>
-        <x-tr>
-            <x-td>
+    </p>
+    <table id="test">
+      <colgroup id="collapse"></colgroup>
+      <tbody>
+        <tr>
+            <td>
                 <span>row 1</span>
-            </x-td>
-            <x-td>
+            </td>
+            <td>
                 <span></span>
-            </x-td>
-        </x-tr>
-        <x-tr>
-            <x-td>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <span>row 2</span>
-            </x-td>
-            <x-td>
+            </td>
+            <td>
                 <span></span>
-            </x-td>
-        </x-tr>
-        <x-tr>
-            <x-td>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <span>row 3</span>
-            </x-td>
-            <x-td>
+            </td>
+            <td>
                 <span style="height:50px"></span>
-            </x-td>
-        </x-tr>
-      </x-tbody>
-    </x-table>
+            </td>
+        </tr>
+      </tbody>
+    </table>
 </main>
 
 <script>
@@ -90,13 +61,13 @@
 
     tests = [
         [
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight,
+            document.getElementById('test').offsetHeight,
+            342,
             "col visibility:collapse doesn't change table height",
         ],
         [
-            document.getElementById('two').offsetWidth,
-            116,
+            document.getElementById('test').offsetWidth,
+            122,
             "col visibility:collapse changes table width"
         ]];
     for (i = 0; i< tests.length; i++) {

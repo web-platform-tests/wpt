@@ -264,6 +264,27 @@ https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class InternetExplorer(BrowserSetup):
+    name = "ie"
+    browser_cls = browser.InternetExplorer
+
+    def install(self, venv):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                raise WptrunError("""Unable to find WebDriver and we aren't yet clever enough to work out which
+version to download. Please go to the following URL and install the driver for Internet Explorer
+somewhere on the %PATH%:
+
+https://selenium-release.storage.googleapis.com/index.html
+""")
+            kwargs["webdriver_binary"] = webdriver_binary
+
+
 class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
@@ -297,6 +318,7 @@ product_setup = {
     "firefox": Firefox,
     "chrome": Chrome,
     "edge": Edge,
+    "ie": InternetExplorer,
     "servo": Servo,
     "sauce": Sauce,
 }

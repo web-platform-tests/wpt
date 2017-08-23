@@ -40,7 +40,8 @@ partial interface Document {
   [SameObject] readonly attribute StyleSheetList styleSheets;
 };
 
-[NoInterfaceObject]
+[Exposed=Window,
+ NoInterfaceObject]
 interface LinkStyle {
   readonly attribute StyleSheet? sheet;
 };
@@ -122,7 +123,8 @@ interface CSSStyleDeclaration {
   [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString cssFloat;
 };
 
-[NoInterfaceObject]
+[Exposed=Window,
+ NoInterfaceObject]
 interface ElementCSSInlineStyle {
   [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };

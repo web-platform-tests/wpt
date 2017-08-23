@@ -1,5 +1,7 @@
 ["a",
  "area"].forEach(type => {
+
+  const followed = type === "a" ? true : false;
   async_test(t => {
     const target = document.createElement("iframe"),
           link = document.createElement(type);
@@ -11,11 +13,15 @@
     target.onload = t.step_func(() => {
       if(target.contentWindow.location.href === "about:blank")
         return;
-      assert_unreached();
+      if(followed) {
+        assert_equals(target.contentWindow.location.pathname, "/");
+      } else {
+        assert_unreached();
+      }
     });
     link.click();
     t.step_timeout(() => t.done(), 500);
-  }, "<" + type + "> that is not connected should not be followed");
+  }, "<" + type + "> that is not connected should " + (followed ? "" : "not ") + "be followed");
 
   async_test(t => {
     const target = document.createElement("iframe"),

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tests that 'Save-Data' header is treated as a simple header and preflight request is not created.</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+    async_test(function(test) {
+      window.internals.settings.setDataSaverEnabled(true);
+      const xhr = new XMLHttpRequest;
+
+      xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN +
+          "/XMLHttpRequest/resources/access-control-preflight-request-invalid-status.py?code=400");
+
+      xhr.onerror = test.unreached_func("FAIL");
+
+      xhr.onload = test.step_func_done(function() {
+        assert_equals(xhr.status, 200);
+      });
+
+      xhr.send();
+    }, "Request with data saver enabled");
+    </script>
+  </body>
+</html>

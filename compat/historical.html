@@ -7,4 +7,12 @@
 test(function() {
   assert_false("getMatchedCSSRules" in window);
 }, "getMatchedCSSRules() should not exist");
+
+test(function() {
+  assert_false("webkitHidden" in window);
+}, "webkitHidden should not exist");
+
+test(function() {
+  assert_false("webkitVisibilityState" in window);
+}, "webkitVisibilityState should not exist");
 </script>

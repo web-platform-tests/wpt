@@ -14,6 +14,7 @@ function trusted_click(test, callback, container)
         container.removeChild(button);
     });
     container.appendChild(button);
+    test_automation.click(button);
 }
 
 // Invokes element.requestFullscreen() from a trusted click.

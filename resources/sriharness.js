@@ -1,9 +1,10 @@
-var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
+var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue, nonce) {
     this.pass = pass;
     this.name = "Script: " + name;
     this.src = src;
     this.integrityValue = integrityValue;
     this.crossoriginValue = crossoriginValue;
+    this.nonce = nonce;
 }
 
 SRIScriptTest.prototype.execute = function() {
@@ -13,6 +14,9 @@ SRIScriptTest.prototype.execute = function() {
     e.setAttribute("integrity", this.integrityValue);
     if(this.crossoriginValue) {
         e.setAttribute("crossorigin", this.crossoriginValue);
+    }
+    if(this.nonce) {
+      e.setAttribute("nonce", this.nonce);
     }
     if(this.pass) {
         e.addEventListener("load", function() {test.done()});

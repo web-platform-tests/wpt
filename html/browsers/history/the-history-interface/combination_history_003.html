@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>combination_history_003(After calling of pushState and replaceState methods, check length.)</title>
+    <title>combination_history_003(After calling of pushState and replaceState methods, check length and index.)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -9,18 +9,26 @@
     <div id="log"></div>
     <script>
     test(function () {
-      var first;
-      var second;
-      var third;
-      first = window.history.length;
+      var first_length;
+      var second_length;
+      var third_length;
+      var first_index;
+      var second_index;
+      var third_index;
+      first_length = window.history.length;
+      first_index = window.history.index;
       window.history.pushState(1, document.title, '?x=1');
-      second = window.history.length;
+      second_length = window.history.length;
+      second_index = window.history.index;
       window.history.replaceState(2, document.title, '?x=2');
-      third = window.history.length;
+      third_length = window.history.length;
+      third_index = window.history.index;
 
-      assert_equals(second - first, 1, "second - first");
-      assert_equals(third, second, "third");
-    }, "After calling of pushState and replaceState methods, check length");
+      assert_equals(second_length - first_length, 1, "second_length - first_length");
+      assert_equals(third_length, second_length, "third_length");
+      assert_equals(second_index - first_index, 1, "second_index - first_index");
+      assert_equals(third_index, second_index, "third_index");
+    }, "After calling of pushState and replaceState methods, check length and index");
     </script>
   </body>
 </html>

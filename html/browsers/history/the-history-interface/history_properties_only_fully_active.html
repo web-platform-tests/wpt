@@ -10,6 +10,7 @@
     var ifr = document.getElementById("child");
     var cached_history = ifr.contentWindow.history;
     ifr.remove();
+    assert_throws("SecurityError", function() { cached_history.index; });
     assert_throws("SecurityError", function() { cached_history.length; });
     assert_throws("SecurityError", function() { cached_history.scrollRestoration; });
     assert_throws("SecurityError", function() { cached_history.state; });

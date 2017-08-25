@@ -4,11 +4,15 @@ var o = opener;
 
 var frameloaded = null;
 
-o.t.step(function() {o.assert_equals(history.length, 1)});
+o.t.step(function() {
+  o.assert_equals(history.length, 1);
+  o.assert_equals(history.index, 0);
+});
 
 onload = function () {
   o.t.step(function() {
     o.assert_equals(history.length, 1);
+    o.assert_equals(history.index, 0);
     o.t.done();
   });
 
@@ -17,12 +21,14 @@ onload = function () {
     iframe.src = "filler.html?id=2";
     document.body.appendChild(iframe);
     o.assert_equals(history.length, 1);
+    o.assert_equals(history.index, 0);
     frameloaded = o.t2.step_func(function() {
       iframe.contentDocument.open();
       iframe.contentDocument.write("3<script>onpageshow = function() {alert('pageshow'); parent.frameloaded()}<\/script>");
       iframe.contentDocument.close();
       frameloaded = o.t2.step_func(function () {
         o.assert_equals(history.length, 2);
+        o.assert_equals(history.index, 1);
         o.t2.done();
       });
     });

@@ -1,21 +1,23 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>combination_history_005(After calling of forward method, check length.)</title>
+    <title>combination_history_005(After calling of forward method, check length and index.)</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
   <body>
     <div id="log"></div>
     <script>
-    var t = async_test("After calling of forward method, check length");
+    var t = async_test("After calling of forward method, check length and index");
 
-    var last;
+    var last_length;
+    var last_index;
     var fired = false;
     t.step(function () {
       window.history.pushState(1, document.title, '?x=1');
       window.history.pushState(2, document.title, '?x=2');
-      last = window.history.length;
+      last_length = window.history.length;
+      last_index = window.history.index;
 
       window.history.back();
     });
@@ -23,10 +25,12 @@
     window.addEventListener('popstate', t.step_func(function(e) {
       if(fired) {
         assert_equals(e.state, 2, "state");
-        assert_equals(window.history.length, last, "last");
+        assert_equals(window.history.length, last_length, "last_length");
+        assert_equals(window.history.index, last_index, "last_index");
         t.done();
       }
       fired = true;
+      assert_equals(window.history.index, last_index - 1, "last_index - 1");
       window.history.forward();
     }), false);
     </script>

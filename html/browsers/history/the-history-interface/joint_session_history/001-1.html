@@ -4,11 +4,15 @@ var o = opener;
 
 var frameloaded = null;
 
-o.t.step(function() {o.assert_equals(history.length, 1)});
+o.t.step(function() {
+  o.assert_equals(history.length, 1);
+  o.assert_equals(history.index, 0);
+});
 
 onload = function () {
   o.t.step(function() {
     o.assert_equals(history.length, 1);
+    o.assert_equals(history.index, 0);
     o.t.done();
   });
 
@@ -18,14 +22,18 @@ onload = function () {
     document.body.appendChild(iframe);
     frameloaded = o.t1.step_func(function () {
       o.assert_equals(history.length, 1);
+      o.assert_equals(history.index, 0);
       setTimeout(o.t1.step_func(function () {
         o.assert_equals(history.length, 1);
+        o.assert_equals(history.index, 0);
         iframe.src = "filler.html?id=3";
         frameloaded = o.t2.step_func(function() {
           o.assert_equals(history.length, 2);
+          o.assert_equals(history.index, 1);
           history.go(-1);
           frameloaded = o.t3.step_func(function() {
             o.assert_equals(history.length, 2);
+            o.assert_equals(history.index, 0);
             var parts = iframe.contentWindow.location.href.split("/")
             o.assert_equals(parts[parts.length - 1], "filler.html?id=2");
             o.t3.done();
@@ -34,12 +42,14 @@ onload = function () {
               iframe0.src = "filler.html?id=4"
               frameloaded = o.t4.step_func(function() {
                 o.assert_equals(history.length, 2);
+                o.assert_equals(history.index, 1);
                 var parts = iframe0.contentWindow.location.href.split("/")
                 o.assert_equals(parts[parts.length - 1], "filler.html?id=4");
                 //This is the point at which gecko and webkit stop running tests
                 history.go(-1);
                 frameloaded = o.t5.step_func(function() {
                   o.assert_equals(history.length, 2);
+                  o.assert_equals(history.index, 0);
                   var parts = iframe0.contentWindow.location.href.split("/")
                   o.assert_equals(parts[parts.length - 1], "filler.html?id=1");
                   var parts = iframe.contentWindow.location.href.split("/")
@@ -47,6 +57,7 @@ onload = function () {
                   history.go(1);
                   frameloaded = o.t6.step_func(function() {
                     o.assert_equals(history.length, 2);
+                    o.assert_equals(history.index, 1);
                     var parts = iframe0.contentWindow.location.href.split("/")
                     o.assert_equals(parts[parts.length - 1], "filler.html?id=4");
                     var parts = iframe.contentWindow.location.href.split("/")

@@ -33,17 +33,17 @@ def test_return_number(session):
 
 
 def test_return_boolean(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert True == session.execute_script("return true")
 
 
 def test_return_string(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert "foo" == session.execute_script("return 'foo'")
 
 
 def test_return_array(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert [1, 2] ==  session.execute_script("return [1, 2]")
     assert [1.25, 1.75] ==  session.execute_script("return [1.25, 1.75]")
     assert [True, False] == session.execute_script("return [true, false]")
@@ -53,7 +53,7 @@ def test_return_array(session):
 
 
 def test_return_object(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert {"foo": 1} == session.execute_script("return {foo: 1}")
     assert {"foo": 1.5} == session.execute_script("return {foo: 1.5}")
     assert {"foo": True} == session.execute_script("return {foo: true}")
@@ -64,53 +64,49 @@ def test_return_object(session):
 
 
 def test_no_return_value(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert None == session.execute_script("true")
 
 
 def test_argument_null(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert None == session.execute_script("return arguments[0]", args=[None])
 
 
 def test_argument_number(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert 1 == session.execute_script("return arguments[0]", args=[1])
     assert 1.5 == session.execute_script("return arguments[0]", args=[1.5])
 
 
 def test_argument_boolean(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert True == session.execute_script("return arguments[0]", args=[True])
 
 
 def test_argument_string(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert "foo" == session.execute_script("return arguments[0]", args=["foo"])
 
 
 def test_argument_array(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert [1, 2] == session.execute_script("return arguments[0]", args=[[1, 2]])
 
 
 def test_argument_object(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     assert {"foo": 1} == session.execute_script(
             "return arguments[0]", args=[{"foo": 1}])
 
 globals = set([
-              "atob",
-              "Audio",
-              "btoa",
               "document",
               "navigator",
-              "URL",
               "window",
               ])
 
-def test_default_sandbox_globals(session):
-    session.url= inline("""<title>JS testing</title>""")
+def test_access_todefault_globals(session):
+    session.url = inline("""<title>JS testing</title>""")
     for property in globals:
         assert property == session.execute_script(
             "return typeof arguments[0] != 'undefined' ? arguments[0] : null",
@@ -148,13 +144,13 @@ def test_sandbox_reuse(session):
 
 
 def test_no_args(session):
-    session.url= inline("""<title>JS testing</title>""")
-    assert True == session.execute_script(
+    session.url = inline("""<title>JS testing</title>""")
+    assert session.execute_script(
         "return typeof arguments[0] == 'undefined'")
 
 
 def test_toJSON(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     foo = session.execute_script("""
             return {
               toJSON () {
@@ -165,7 +161,7 @@ def test_toJSON(session):
 
 
 def test_unsafe_toJSON(session):
-    session.url= inline("""<title>JS testing</title>""")
+    session.url = inline("""<title>JS testing</title>""")
     el = session.execute_script("""
             return {
               toJSON () {

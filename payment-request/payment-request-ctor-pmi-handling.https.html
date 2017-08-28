@@ -8,7 +8,7 @@
 <script>
 "use strict";
 const testMethod = Object.freeze({
-  supportedMethods: "https://wpt.fyi/payment-request",
+  supportedMethods: "https://:@wpt.fyi:443/payment-request",
 });
 const defaultMethods = Object.freeze([testMethod]);
 const defaultAmount = Object.freeze({
@@ -31,6 +31,15 @@ function smokeTest() {
 test(() => {
   smokeTest();
   const invalidMethods = [
+    {
+      supportedMethods: "https://username@example.com/pay",
+    },
+    {
+      supportedMethods: "https://:password@example.com/pay",
+    },
+    {
+      supportedMethods: "https://username:password@example.com/pay",
+    },
     {
       supportedMethods: "http://username:password@example.com/pay",
     },

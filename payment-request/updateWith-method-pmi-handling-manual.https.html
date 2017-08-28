@@ -95,7 +95,7 @@ function manualTest(button, { invalidMethod }) {
       Must throw if the URL has a password.
     </button>
   </li>
-      <li>
+  <li>
     <button onclick="manualTest(this, {invalidMethod: 'https://username@example.com'});">
       Must throw if the URL has a username.
     </button>
@@ -114,7 +114,7 @@ function manualTest(button, { invalidMethod }) {
     <button onclick="manualTest(this, {invalidMethod: 'http://foo.com:100000000/pay'});">
       Must throw if the URL is invalid (port range).
     </button>
-    </li>
+  </li>
   <li>
     <button onclick="manualTest(this, {invalidMethod: 'basic-💳'});">
       Must throw if the PMI contains characters that are out of range.

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Dynamically changing HTMLStyleElement.prototyoe.media should change the rendering accordingly</title>
+  <meta name="assert" content="dynamically changing HTMLStyleElement.prototyoe.media should change rendering accordingly" />
+  <style>
+  .text1, .text2, .text3, .text4, .text5, .text6 {
+   color: green;
+  }
+  </style>
+ </head>
+ <body>
+  A bit after the "load" event, the text below must be green and nothing must be red.<br/>
+  <span class="text1">text1</span>
+  <span class="text2">text2</span>
+  <span class="text3">text3</span>
+  <span class="text4">text4</span>
+  <span class="text5">text5</span>
+  <span class="text6">text6</span>
+ </body>
+</html>

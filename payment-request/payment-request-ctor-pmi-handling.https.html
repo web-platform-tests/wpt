@@ -37,14 +37,8 @@ test(() => {
   ];
   for (const validMethod of validMethods) {
     try {
-      new PaymentRequest(
-        [
-          {
-            supportedMethods: validMethod,
-          },
-        ],
-        defaultDetails
-      );
+      const methods = [{ supportedMethods: validMethod }];
+      new PaymentRequest(methods, defaultDetails);
     } catch (err) {
       assert_unreached(
         `Unexpected exception with valid standardized PMI: ${validMethod}. ${err}`
@@ -69,14 +63,8 @@ test(() => {
   ];
   for (const validMethod of validMethods) {
     try {
-      new PaymentRequest(
-        [
-          {
-            supportedMethods: validMethod,
-          },
-        ],
-        defaultDetails
-      );
+      const methods = [{ supportedMethods: validMethod }];
+      new PaymentRequest(methods, defaultDetails);
     } catch (err) {
       assert_unreached(
         `Unexpected exception with valid standardized PMI: ${validMethod}. ${err}`
@@ -113,10 +101,8 @@ test(() => {
     assert_throws(
       new RangeError(),
       () => {
-        new PaymentRequest(
-          [{ supportedMethods: invalidMethod }],
-          defaultDetails
-        );
+        const methods = [{ supportedMethods: invalidMethod }];
+        new PaymentRequest(methods, defaultDetails);
       },
       `expected RangeError processing invalid standardized PMI "${invalidMethod}"`
     );
@@ -139,10 +125,8 @@ test(() => {
     assert_throws(
       new RangeError(),
       () => {
-        new PaymentRequest(
-          [{ supportedMethods: invalidMethod }],
-          defaultDetails
-        );
+        const methods = [{ supportedMethods: invalidMethod }];
+        new PaymentRequest(methods, defaultDetails);
       },
       `expected RangeError processing invalid URL PMI "${invalidMethod}"`
     );

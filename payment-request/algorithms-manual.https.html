@@ -101,7 +101,6 @@ function testFireEvent(button, details, eventName, expectRequestProps) {
       const response = await request.show();
       response.complete("success");
     } catch (err) {
-      await request.abort();
       assert_unreached("Unexpected exception: " + err.message);
     }
     const [handler, listener1, listener2] = await Promise.all([p1, p2, p3]);

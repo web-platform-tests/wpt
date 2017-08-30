@@ -76,9 +76,13 @@ test(function testPerformanceResourceTiming () {  // Resource timing
         "startTime", "fetchStart", "requestStart", "responseStart", "responseEnd"
     ].forEach((name) => {
         var timestamp = entries[0][name];
-        assert_greater_than_equal(timestamp, currentTimestamp, "Resource entry " + name + " is after " + currentTimestampName);
-        currentTimestamp = timestamp;
-        currentTimestampName = name;
+        // We want to skip over values that are 0 because of TAO securty rescritions
+        // Or else this test will fail. This can happen for "requestStart", "responseStart".
+        if (timestamp != 0) {
+            assert_greater_than_equal(timestamp, currentTimestamp, "Resource entry " + name + " is after " + currentTimestampName);
+            currentTimestamp = timestamp;
+            currentTimestampName = name;
+        }
     });
     assert_greater_than(entries[0].responseEnd, entries[0].startTime, "The resource request should have taken at least some time");
     assert_approx_equals(entries[0].responseEnd - entries[0].responseStart, 250, 50, "Resource timing numbers reflect reality somewhat");

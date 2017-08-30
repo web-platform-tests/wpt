@@ -24,64 +24,53 @@ const validTotal = Object.freeze({
   amount: validAmount,
 });
 
-const validShippingOption = {
+const validShippingOption = Object.freeze({
   id: "standard",
   label: "Shipping option",
   amount: validAmount,
   selected: true,
-};
+});
 
 const validDetails = Object.freeze({
   total: validTotal,
   shippingOptions: [validShippingOption],
 });
 
-const validModifier = [
-  {
-    supportedMethods: "basic-card",
-    total: validTotal,
-  },
-];
+const validModifier = Object.freeze({
+  supportedMethods: "basic-card",
+  total: validTotal,
+});
 
-// Avoid false positives, this should always pass
-function smokeTest() {
-  new PaymentRequest(validMethods, validDetails);
-}
+test(() => {
+  try {
+    new PaymentRequest(validMethods, validDetails);
+  } catch (err) {
+    done();
+    throw err;
+  }
+}, "smoke test");
 
 function manualTest(button, { invalidMethod }) {
   button.disabled = true;
   promise_test(async t => {
-    smokeTest();
     const request = new PaymentRequest(
       [{ supportedMethods: "basic-card" }],
       validDetails,
       { requestShipping: true }
     );
+    const listener = ev => {
+      const invalidModifier = Object.assign({}, validModifier, {
+        supportedMethods: invalidMethod,
+      });
+      const invalidDetails = Object.assign({}, validDetails, {
+        modifiers: [validModifier, invalidModifier],
+      });
+      ev.updateWith(invalidDetails);
+    };
     // We test against a valid and an invalid modifier
-    // expecting the invalid one to throw the RangeError.
-    const shippingChangedPromise = new Promise((resolve, reject) => {
-      request.addEventListener(
-        "shippingaddresschange",
-        ev => {
-          const invalidModifier = Object.assign({}, validModifier, {
-            supportedMethods: invalidMethod,
-          });
-          const invalidDetails = Object.assign({}, validDetails, {
-            modifiers: [validModifier, invalidModifier],
-          });
-          try {
-            ev.updateWith(invalidDetails);
-            resolve(); // This is bad.
-          } catch (err) {
-            reject(err); // this is good.
-          }
-        },
-        { once: true }
-      );
-    });
+    request.addEventListener("shippingaddresschange", listener, { once: true });
     const showPromise = request.show();
-    await promise_rejects(t, new RangeError(), shippingChangedPromise);
-    await promise_rejects(t, "AbortError", showPromise);
+    await promise_rejects(t, new RangeError(), showPromise);
   }, button.textContent.trim());
 }
 </script>

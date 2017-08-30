@@ -440,6 +440,10 @@ promise_test(async t => {
   const signal = controller.signal;
 
   const response = await fetch(`../resources/empty.txt`, { signal });
+
+  // Read whole response to ensure close signal has sent.
+  await response.clone().text();
+
   const reader = response.body.getReader();
 
   controller.abort();

@@ -7,58 +7,130 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
-const testMethod = Object.freeze({
-  supportedMethods: "https://wpt.fyi/payment-request",
-});
-const defaultMethods = Object.freeze([testMethod]);
-const defaultAmount = Object.freeze({
+const validAmount = Object.freeze({
   currency: "USD",
   value: "1.0",
 });
-const defaultTotal = Object.freeze({
+const validTotal = Object.freeze({
   label: "Default Total",
-  amount: defaultAmount,
+  amount: validAmount,
 });
 const defaultDetails = Object.freeze({
-  total: defaultTotal,
+  total: validTotal,
 });
 
-// Avoid false positives, this should always pass
-function smokeTest() {
-  new PaymentRequest(defaultMethods, defaultDetails);
-}
+test(() => {
+  const validMethods = [
+    "https://wpt",
+    "https://wpt.fyi/",
+    "https://wpt.fyi/payment",
+    "https://wpt.fyi/payment-request",
+    "https://wpt.fyi/payment-request?",
+    "https://wpt.fyi/payment-request?this=is",
+    "https://wpt.fyi/payment-request?this=is&totally",
+    "https://wpt.fyi:443/payment-request?this=is&totally",
+    "https://wpt.fyi:443/payment-request?this=is&totally#fine",
+    "https://:@wpt.fyi:443/payment-request?this=is&totally#👍",
+    " \thttps://wpt\n ",
+    "https://xn--c1yn36f",
+    "https://點看",
+  ];
+  for (const validMethod of validMethods) {
+    try {
+      const methods = [{ supportedMethods: validMethod }];
+      new PaymentRequest(methods, defaultDetails);
+    } catch (err) {
+      assert_unreached(
+        `Unexpected exception with valid standardized PMI: ${validMethod}. ${err}`
+      );
+    }
+  }
+}, "Must support valid standard URL PMIs");
 
 test(() => {
-  smokeTest();
+  const validMethods = [
+    "e",
+    "n6jzof05mk2g4lhxr-u-q-w1-c-i-pa-ty-bdvs9-ho-ae7-p-md8-s-wq3-h-qd-e-q-sa",
+    "a-b-q-n-s-pw0",
+    "m-u",
+    "s-l5",
+    "k9-f",
+    "m-l",
+    "u4-n-t",
+    "i488jh6-g18-fck-yb-v7-i",
+    "x-x-t-t-c34-o",
+    "basic-card",
+  ];
+  for (const validMethod of validMethods) {
+    try {
+      const methods = [{ supportedMethods: validMethod }];
+      new PaymentRequest(methods, defaultDetails);
+    } catch (err) {
+      assert_unreached(
+        `Unexpected exception with valid standardized PMI: ${validMethod}. ${err}`
+      );
+    }
+  }
+}, "Must not throw on syntactically valid standardized payment method identifiers, even if they are not supported");
+
+test(() => {
   const invalidMethods = [
-    {
-      supportedMethods: "http://username:password@example.com/pay",
-    },
-    {
-      supportedMethods: "http://foo.com:100000000/pay",
-    },
-    {
-      supportedMethods: "basic-💳",
-    },
-    {
-      supportedMethods: "not-https://wpt.fyi/payment-request",
-    },
-    {
-      supportedMethods: "¡basic-*-card!",
-    },
-    {
-      supportedMethods: "Basic-Card",
-    },
+    "basic-💳",
+    "¡basic-*-card!",
+    "Basic-Card",
+    "0",
+    "-",
+    "--",
+    "a--b",
+    "-a--b",
+    "a-b-",
+    "0-",
+    "0-a",
+    "a0--",
+    "A-",
+    "A-B",
+    "A-b",
+    "a-0",
+    "a-0b",
+    " a-b",
+    "\t\na-b",
+    "a-b ",
+    "a-b\n\t",
   ];
   for (const invalidMethod of invalidMethods) {
     assert_throws(
       new RangeError(),
       () => {
-        new PaymentRequest([invalidMethod], defaultDetails);
+        const methods = [{ supportedMethods: invalidMethod }];
+        new PaymentRequest(methods, defaultDetails);
       },
-      `expected RangeError processing invalid PMI "${invalidMethod}"`
+      `expected RangeError processing invalid standardized PMI "${invalidMethod}"`
     );
   }
-}, "Constructor MUST throw if given an invalid payment method identifier");
+});
+
+test(() => {
+  const invalidMethods = [
+    "https://username@example.com/pay",
+    "https://:password@example.com/pay",
+    "https://username:password@example.com/pay",
+    "http://username:password@example.com/pay",
+    "http://foo.com:100000000/pay",
+    "not-https://wpt.fyi/payment-request",
+    "../realitive/url",
+    "/absolute/../path?",
+    "https://",
+  ];
+  for (const invalidMethod of invalidMethods) {
+    assert_throws(
+      new RangeError(),
+      () => {
+        const methods = [{ supportedMethods: invalidMethod }];
+        new PaymentRequest(methods, defaultDetails);
+      },
+      `expected RangeError processing invalid URL PMI "${invalidMethod}"`
+    );
+  }
+}, "Constructor MUST throw if given an invalid URL-based payment method identifier");
 
 </script>

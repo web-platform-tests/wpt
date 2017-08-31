@@ -69,7 +69,7 @@ function assert_is_session_description(sessionDesc) {
   assert_true(typeof(sessionDesc.type) === 'string',
     'Expect sessionDescription.type to be a string');
 
-  assert_true(typeof(sessionDesc.type) === 'string',
+  assert_true(typeof(sessionDesc.sdp) === 'string',
     'Expect sessionDescription.sdp to be a string');
 }
 

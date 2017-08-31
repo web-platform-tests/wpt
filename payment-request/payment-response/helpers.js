@@ -94,16 +94,14 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
   button.disabled = true;
   const { request, response } = await getPaymentRequestResponse(options, id);
   await response.complete();
-  Object.keys(expected).forEach(attrName =>
-    assert_idl_attribute(
-      response,
-      attrName,
-      `Expected a ${attrName} IDL attribute`
-    )
-  );
   test(() => {
     assert_equals(response.requestId, request.id, `Expected ids to match`);
     for (const [attribute, value] of Object.entries(expected)) {
+      assert_idl_attribute(
+        response,
+        attribute,
+        `Expected a ${attribute} IDL attribute`
+      );
       assert_equals(
         response[attribute],
         value,

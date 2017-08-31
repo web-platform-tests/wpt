@@ -27,19 +27,8 @@ var topWindowTimeBeforeNotification;
 var iframeWindowTimeBeforeNotification;
 var timeSkew;
 
-function waitFor(numFrames, callback) {
-  if (numFrames <= 0) {
-    callback();
-    return;
-  }
-  window.requestAnimationFrame(waitFor.bind(null, numFrames - 1, callback));
-}
-
 async_test(function(t) {
-  topWindowTimeOnTestStart = performance.now();
-  waitFor(3, function () {
-    topWindowTimeBeforeCreatingIframe = performance.now();
-    timeSkew = topWindowTimeBeforeCreatingIframe - topWindowTimeOnTestStart;
+  t.step_timeout(function() {
     targetIframe = document.createElement("iframe");
     assert_true(!!targetIframe, "iframe exists");
     targetIframe.src = "resources/timestamp-subframe.html";
@@ -84,16 +73,11 @@ function step2() {
   var topWindowTimeAfterNotification = performance.now();
   var iframeWindowTimeAfterNotification = targetIframe.contentWindow.performance.now();
 
-  // Test results are only significant if there's a gap between
-  // top window time and iframe window time.
-  assert_greater_than(topWindowTimeBeforeNotification, iframeWindowTimeAfterNotification,
-    "Time ranges for top and iframe windows are disjoint. Times: " +
-      [topWindowTimeOnTestStart, topWindowTimeBeforeCreatingIframe,
-       topWindowTimeBeforeNotification, topWindowTimeAfterNotification,
-       iframeWindowTimeBeforeNotification, iframeWindowTimeAfterNotification,
-       topWindowEntries[1].time - topWindowTimeBeforeNotification,
-       iframeWindowEntries[1].time - iframeWindowTimeBeforeNotification
-      ]);
+  assert_approx_equals(
+      topWindowEntries[1].time - topWindowTimeBeforeNotification,
+      iframeWindowEntries[1].time - iframeWindowTimeBeforeNotification,
+      16,
+      "Notification times are relative to the expected time origins");
 
   assert_equals(topWindowEntries.length, 2, "Top window observer has two notifications.");
   assert_between_inclusive(

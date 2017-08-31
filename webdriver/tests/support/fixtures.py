@@ -54,18 +54,13 @@ def _dismiss_user_prompts(session):
 
 
 @ignore_exceptions
-def _restore_normal_window_state(session):
+def _restore_window_state(session):
     """If the window is maximized, minimized, or fullscreened it will
     be returned to normal state.
 
     """
-    state = session.window.state
-    if state == "maximized":
-        session.window.maximize()
-    elif state == "minimized":
-        session.window.minimize()
-    elif state == "fullscreen":
-        session.window.fullscreen()
+    if session.window.state in ("maximized", "minimized", "fullscreen"):
+        session.window.size = (800, 600)
 
 
 @ignore_exceptions
@@ -170,7 +165,7 @@ def session(configuration, request):
     # finalisers are popped off a stack,
     # making their ordering reverse
     request.addfinalizer(lambda: _switch_to_top_level_browsing_context(_current_session))
-    request.addfinalizer(lambda: _restore_normal_window_state(_current_session))
+    request.addfinalizer(lambda: _restore_window_state(_current_session))
     request.addfinalizer(lambda: _restore_windows(_current_session))
     request.addfinalizer(lambda: _dismiss_user_prompts(_current_session))
     request.addfinalizer(lambda: _ensure_valid_window(_current_session))

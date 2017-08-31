@@ -14,11 +14,11 @@ const validAmount = Object.freeze({
   value: "1.0",
 });
 const validTotal = Object.freeze({
-    label: "Total due",
-    amount: validAmount,
-})
+  label: "Total due",
+  amount: validAmount,
+});
 const validMethod = Object.freeze({
-  supportedMethods: "basic-card"
+  supportedMethods: "basic-card",
 });
 const validMethods = Object.freeze([validMethod]);
 const validDetails = Object.freeze({
@@ -27,7 +27,7 @@ const validDetails = Object.freeze({
 
 test(() => {
   try {
-    new PaymentRequest(validMethods, validDetails)
+    new PaymentRequest(validMethods, validDetails);
   } catch (err) {
     done();
     throw err;

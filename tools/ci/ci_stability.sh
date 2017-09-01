@@ -13,6 +13,7 @@ test_stability() {
 
 main() {
     hosts_fixup
+    install_fonts
     if [ $(echo $PRODUCT | grep '^chrome:') ]; then
        install_chrome $(echo $PRODUCT | grep --only-matching '\w\+$')
     fi

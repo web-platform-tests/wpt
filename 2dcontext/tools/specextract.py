@@ -58,7 +58,7 @@ def extract():
         e.setAttribute('src', make_absolute(e.getAttribute('src')))
     for e in doc.getElementsByTagName('a'):
         e.setAttribute('href', make_absolute(e.getAttribute('href')))
-    
+
     # Convert to XHTML, because it's quicker to re-parse than HTML5
     doc.documentElement.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml')
     doc.removeChild(doc.firstChild) # remove the DOCTYPE

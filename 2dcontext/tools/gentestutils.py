@@ -183,7 +183,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         except: pass # ignore if it already exists
 
     used_images = {}
-    
+
     def map_name(name):
         mapped_name = None
         for mn in sorted(name_mapping.keys(), key=len, reverse=True):
@@ -282,7 +282,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             else:
                 mapped_name = name
 
-        
+
         cat_total = ''
         for cat_part in [''] + name.split('.')[:-1]:
             cat_total += cat_part+'.'
@@ -335,7 +335,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         next = tests[i+1]['name'] if i != len(tests)-1 else 'index'
 
         name_wrapped = name.replace('.', '.&#8203;')
-        
+
         refs = ''.join('<li><a href="%s/annotated-spec.html#testrefs.%s">%s</a>\n' % (SPECOUTPUTPATH, n,n) for n in test.get('testing', []))
 
         notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
@@ -584,6 +584,6 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         f = codecs.open('%s/annotated-spec.html' % SPECOUTPUTDIR, 'w', 'utf-8')
         f.write(htmlSerializer(doc))
-    
+
 
     write_annotated_spec()

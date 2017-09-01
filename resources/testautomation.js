@@ -14,6 +14,6 @@ var test_automation = {
      *                    the cases the WebDriver command errors
      */
     click: function(element) {
-        throw new Error("not implemented");
+        return Promise.reject(new Error("not implemented"));
     }
 };

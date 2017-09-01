@@ -43,3 +43,9 @@ install_chrome() {
       sudo dpkg --install $deb_archive
     fi
 }
+
+install_fonts() {
+    mkdir -p $HOME/.fonts
+    cp $WPT_ROOT/fonts/Ahem.ttf $HOME/.fonts
+    fc-cache -f -v
+}

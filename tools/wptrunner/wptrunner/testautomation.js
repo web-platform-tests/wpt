@@ -12,14 +12,14 @@
             return;
         }
 
-	if (data.type !== "testautomation-complete") {
+        if (data.type !== "testautomation-complete") {
             return;
         }
 
         if (data.status === "success") {
             pending_resolve();
         } else {
-	    pending_reject();
+            pending_reject();
         }
     });
 
@@ -53,16 +53,16 @@
             selector = "." + new_class;
         }
 
-	return selector;
+        return selector;
     };
 
     global.test_automation = {
         click: function(element) {
             const selector = get_selector(element);
             const pending_promise = new Promise(function(resolve, reject) {
-		pending_resolve = resolve;
-		pending_reject = reject;
-	    });
+                pending_resolve = resolve;
+                pending_reject = reject;
+            });
             window.opener.postMessage({"type": "action", "action": "click", "selector": selector}, "*");
             return pending_promise;
         }

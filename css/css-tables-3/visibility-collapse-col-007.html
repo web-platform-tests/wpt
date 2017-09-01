@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: Nested relatively positioned cells in collapsed columns</title>
+<link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#visibility-collapse-cell-rendering">
+<link rel="match" href="visibility-collapse-col-007-ref.html">
+<p>Nothing should be seen below.</p>
+<table>
+    <col style="visibility:collapse">
+    <tr>
+        <td>
+          <table style="position:relative;">
+            <tr>
+              <td style="position:relative;">FAIL</td>
+              <td style="position:relative;">FAIL</td>
+            </tr>
+          </table>
+        </td>
+    </tr>
+</table>

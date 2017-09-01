@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: Relatively positioned divs in collapsed columns</title>
+<link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#visibility-collapse-cell-rendering">
+<link rel="match" href="visibility-collapse-col-006-ref.html">
+<p>Nothing should be seen below.</p>
+<table>
+    <col style="visibility:collapse;">
+    <tr>
+        <td>
+            <div style="position:relative;">FAIL<div style="position:relative;">nested FAIL</div></div>
+        </td>
+    </tr>
+</table>

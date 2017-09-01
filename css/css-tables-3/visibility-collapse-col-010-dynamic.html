@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test Reference: Dynamic Relatively positioned objects in collapsed columns</title>
+<link rel="author" title="Joy Yu" href="mailto:joysyu@mit.edu">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
+<link rel="match" href="visibility-collapse-col-010-dynamic-ref.html">
+<table>
+    <col style="background:#00F";>
+    <col span="2" id="toChange" style="background:#F00; visibility: collapse;"/>
+    <tr>
+        <td><div style="width: 50px; height: 50px;"></div></td>
+        <td><div style="width: 50px; height: 50px; position: relative;"></div></td>
+        <td><div style="width: 50px; height: 50px"></div></td>
+    </tr>
+    <tr>
+        <td><div style="width: 50px; height: 50px"></div></td>
+        <td colspan="2"><div style="width: 100px; height: 50px; position: relative;"></div></td>
+    </tr>
+</table>
+<script>
+    col = document.getElementById("toChange");
+    col.style.visibility = "visible";
+</script>
+</html>

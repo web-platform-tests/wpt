@@ -5,7 +5,7 @@
 
     let pending_resolve = null;
     let pending_reject = null;
-    window.addEventListener("message", function f(event) {
+    window.addEventListener("message", function(event) {
         const data = event.data;
 
         if (typeof data !== "object" && data !== null) {

@@ -14,9 +14,9 @@ function process_event(event) {
       return [x.name, x.status, x.message, x.stack];
     });
     payload = [status.status,
-	       status.message,
-	       status.stack,
-	       subtest_results];
+               status.message,
+               status.stack,
+               subtest_results];
     clearTimeout(window.timer);
     break;
 

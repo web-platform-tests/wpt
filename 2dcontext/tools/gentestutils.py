@@ -586,4 +586,5 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         f.write(htmlSerializer(doc))
 
 
-    write_annotated_spec()
+    if not ISOFFSCREENCANVAS:
+        write_annotated_spec()

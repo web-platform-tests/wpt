@@ -1,0 +1,197 @@
+<!doctype html>
+<meta charset="utf8">
+<link rel="help" href="">
+<title>
+</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_done: true, explicit_timeout: true });
+const methods = [{ supportedMethods: "basic-card" }];
+const details = {
+  total: {
+    label: "Total due",
+    amount: { currency: "USD", value: "1.0" },
+  },
+  shippingOptions: [
+    {
+      id: "option1",
+      label: "Option 1",
+      amount: { currency: "USD", value: "5.00" },
+      selected: true,
+    },
+    {
+      id: "option2",
+      label: "Option 2",
+      amount: { currency: "USD", value: "5.00" },
+    },
+  ],
+};
+
+const options = {
+  requestShipping: true,
+};
+
+test(() => {
+  const request = new PaymentRequest(methods, details, options);
+}, "Must construct a PaymentRequest (smoke test)");
+
+function testFireEvents(button) {
+  promise_test(async function () {
+    const request = new PaymentRequest(methods, details, options);
+    const events = [];
+    const p1 = new Promise(resolve => {
+      request.onshippingaddresschange = event => {
+        events.push(event);
+        resolve("handler");
+      }
+    });
+    const p2 = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", event => {
+        events.push(event);
+        resolve("listener-1");
+      });
+    });
+    const p3 = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", event => {
+        events.push(event);
+        resolve("listener-2");
+      });
+    });
+    try {
+      const response = await request.show();
+      response.complete("success");
+    } catch (err) {
+      await request.abort();
+      assertion_unreached("Unexpected exception: " + err.message);
+    }
+    const [handler, listener1, listener2] = await Promise.all([p1, p2, p3]);
+    assert_equals(
+      handler,
+      "handler",
+      "Expected p1 to have resolved with 'handler'"
+    );
+    assert_equals(
+      listener1,
+      "listener-1",
+      "Expected p2 to have resolved with 'listener-1'"
+    );
+    assert_equals(
+      listener2,
+      "listener-2",
+      "Expected p3 to have resolved with 'listener-2'"
+    );
+    const [e1, e2, e3] = events;
+    assert_equals(e1, e2);
+    assert_equals(e2, e3);
+    assert_equals(e1, e3);
+    assert_true(ev1 instanceof PaymentRequestUpdateEvent, "Expected instance of PaymentRequestUpdateEvent");
+  }, button.textContent.trim());
+}
+
+async function testWaitForUpdateExceptions(button) {
+  const request = new PaymentRequest(methods, details, options);
+
+  request.addEventListener("shippingaddresschange", event => {
+    // Set event.[[waitForUpdate]] = true;
+    // Set request.[[updating]] = true;
+    event.updateWith(details);
+  });
+
+  request.onshippingaddresschange = async event => {
+    test(() => {
+      assert_true(event.isTrusted, "Event must be trusted");
+      assert_throws(
+        "InvalidStateError",
+        () => {
+          event.updateWith({});
+        },
+        "Expected InvalidStateError because [[waitForUpdate]] is true"
+      );
+
+      assert_throws(
+        "InvalidStateError",
+        () => {
+          event.updateWith(Promise.resolve({}));
+        },
+        "Expected InvalidStateError because [[waitForUpdate]] is true"
+      );
+    }, button.textContent.trim());
+  };
+  await request.show();
+}
+
+async function testRequestStateChanged(button) {
+  const request = new PaymentRequest(methods, details, options);
+
+  request.onshippingaddresschange = async event => {
+    // Sets request.[[state]] = "closed"
+    await request.abort();
+    test(() => {
+      assert_true(event.isTrusted, "Event must be trusted");
+      assert_throws(
+        "InvalidStateError",
+        () => {
+          event.updateWith({});
+        },
+        "Expected InvalidStateError"
+      );
+    }, button.textContent.trim());
+  };
+  await request.show();
+}
+
+async function testUpdatingIsTrue(button) {
+
+  const request = new PaymentRequest(methods, details, options);
+
+  request.addEventListener("shippingaddresschange", event => {
+    event.updateWith(
+      new Promise(resolve => setTimeout(() => resolve(details), 0))
+    );
+  });
+
+  request.onshippingaddresschange = event => {
+    test(() => {
+      assert_true(event.isTrusted, "Event must be trusted");
+      // Updating in the future
+      assert_throws(
+        "InvalidStateError",
+        () => {
+          event.updateWith({});
+        },
+        "Expected InvalidStateError because request.[[updating]] is true"
+      );
+    }, button.textContent.trim());
+  };
+  await request.show();
+  await request.abort();
+}
+
+</script>
+<h2>updateWith() method</h2>
+<p>
+  When the payment sheet is shown, select a shipping address. Then hit pay.
+</p>
+<ol>
+  <li id="test-0">
+    <button onclick="testFireEvents(this)">
+      Both event listeners and event handler must fire.
+    </button>
+  </li>
+  <li id="test-a">
+    <button onclick="testWaitForUpdateExceptions(this)">
+      If event.[[waitForUpdate]] is true, throw an "InvalidStateError" DOMException.
+    </button>
+  </li>
+  <li id="test-b">
+    <button onclick="testRequestStateChanged(this)">
+      If request.[[state]] is not "interactive", then throw an "InvalidStateError" DOMException.
+    </button>
+  </li>
+  <li id="test-c">
+    <button onclick="testUpdatingIsTrue(this).then(done)">
+        If request.[[updating]] is true, then throw an "InvalidStateError" DOMException.
+    </button>
+  </li>
+</ol>

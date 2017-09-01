@@ -1,0 +1,218 @@
+<!doctype html>
+<meta charset="utf8">
+<link rel="help" href="https://w3c.github.io/payment-request/#dfn-abort-the-update">
+<title>
+</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_done: true, explicit_timeout: true });
+const methods = [{ supportedMethods: ["basic-card"] }];
+const details = {
+  total: {
+    label: "Total due",
+    amount: { currency: "USD", value: "1.0" },
+  },
+};
+const options = {
+  requestShipping: true,
+};
+
+const RANGE_ERROR = new RangeError();
+
+const negativeAmount = Object.freeze({
+  currency: "USD",
+  value: "-1.00",
+});
+
+const validAmount = Object.freeze({
+  currency: "USD",
+  value: "1.00",
+});
+
+const invalidAmount = Object.freeze({
+  currency: "¡INVALID!",
+  value: "1.00",
+});
+
+const invalidTotal = {
+  total: {
+    label: "Invalid total",
+    amount: invalidAmount,
+  },
+};
+
+const validTotal = {
+  total: {
+    label: "Valid total",
+    amount: invalidAmount,
+  },
+};
+
+const negativeTotal = {
+  total: {
+    label: "Invalid total",
+    amount: negativeAmount,
+  },
+};
+
+const validDisplayItem = {
+  amount: validAmount,
+  label: "Valid display item",
+};
+
+const invalidDisplayItem = {
+  amount: invalidAmount,
+  label: "invalid currency",
+};
+
+const invalidDisplayItems = {
+  displayItems: [invalidDisplayItem, validDisplayItem],
+};
+
+const invalidShippingOption = {
+  id: "abc",
+  label: "invalid shipping option",
+  amount: invalidAmount,
+  selected: true,
+};
+
+const validShippingOption = {
+  id: "abc",
+  label: "valid shipping option",
+  amount: validAmount,
+};
+
+const invalidShippingOptions = {
+  shippingOptions: [invalidShippingOption, validShippingOption],
+};
+
+// Modifiers apply when the user chooses to pay with
+// a credit card.
+const modifierWithInvalidDisplayItems = {
+  modifiers: [
+    {
+      additionalDisplayItems: [invalidDisplayItem, validDisplayItem],
+      supportedMethods: "basic-card",
+      total: {
+        label: "total",
+        amount: validAmount,
+      },
+    },
+  ],
+};
+
+const modifierWithInvalidTotal = {
+  modifiers: [
+    {
+      additionalDisplayItems: [validDisplayItem],
+      supportedMethods: "basic-card",
+      total: {
+        label: "total",
+        amount: invalidAmount,
+      },
+    },
+  ],
+};
+
+const invalidData = {};
+invalidData.foo = invalidData;
+
+const modifierWithRecursiveData = {
+  modifiers: [
+    {
+      supportedMethods: "basic-card",
+      total: {
+        label: "total",
+        amount: invalidAmount,
+      },
+      data: invalidData,
+    },
+  ],
+};
+
+function testBadUpdate(button, badDetails, expectedError, errorCode) {
+  promise_test(async () => {
+    const request = new PaymentRequest(methods, details, options);
+    request.onshippingaddresschange = event => {
+      event.updateWith(badDetails);
+    };
+    try {
+      await request.show();
+      assert_unreached("Expected show() to throw after address changed");
+    } catch (actualError) {
+      assert_true(
+        actualError instanceof expectedError,
+        "Expected TypeError from conversion, but got: " + actualError
+      );
+      if (errorCode) {
+        assert_equals(
+          actualError.code,
+          errorCode,
+          "Expected error code: " + errorCode
+        );
+      }
+    }
+    // request [[state]] is now "closed", so let's confirm that
+    try {
+      await request.show();
+      assert_unreached(
+        "request [[state]] is now 'closed', so expected show to throw"
+      );
+    } catch (err) {
+      assert_equals(
+        err.code,
+        DOMException.INVALID_STATE_ERR,
+        "Expected InvalidStateError"
+      );
+    }
+  }, button.innerText.trim());
+}
+
+</script>
+<h2>updateWith() method - "abort the update"</h2>
+<p>
+  When the payment sheet is shown, change the shipping address.
+</p>
+<ol>
+  <li id="test-0">
+    <button onclick="testBadUpdate(this, Promise.reject(new SyntaxError('test')).catch(err => err), DOMException, DOMException.ABORT_ERR);">
+      Rejection of detailsPromise must abort the update with an "AbortError" DOMException.
+    </button>
+  </li>
+  <li>
+    <button onclick="testBadUpdate(this, {total: `this will cause a TypeError!`}, TypeError);">
+      Total in the update is a string, so converting to IDL must abort the update with a TypeError.
+    </button>
+  </li>
+  <li>
+    <button onclick="testBadUpdate(this, {...details, ...negativeTotal}, TypeError);">
+      Updating with a negative total results in a TypeError.
+    </button>
+  </li>
+  <li>
+    <button onclick="testBadUpdate(this, {...details, ...invalidDisplayItems}, RangeError);">
+      Updating with an invalidDisplayItem currency results in TypeError.
+    </button>
+  </li>
+  <li>
+    <button onclick="testBadUpdate(this, {...details, ...invalidShippingOptions}, RangeError);">
+      Updating with a shippingOption with an invalid currency value results in a RangError.
+    </button>
+  </li>
+  <li>
+    <button onclick="testBadUpdate(this, {...details, ...modifierWithInvalidTotal}, RangeError);">
+      Must throw a RangeError when a modifier's total item has an invalid currency.
+    </button>
+  </li>
+ <li>
+   <button onclick="testBadUpdate(this, {...details, ...modifierWithInvalidDisplayItems}, RangeError);">
+      Must throw a RangeError when a modifier display item has an invalid currency.
+   </button>
+  </li>
+ <li>
+    <button onclick="testBadUpdate(this, {...details, ...modifierWithRecursiveData}, TypeError); done();">
+      Must throw as Modifier has a recursive dictionary.
+    </button>
+  </li>
+</ol>

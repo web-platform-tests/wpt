@@ -138,6 +138,9 @@ scheme host and port.""")
                               default=None, help="Browser against which to run tests")
     config_group.add_argument("--config", action="store", type=abs_path, dest="config",
                               help="Path to config file")
+    config_group.add_argument("--install-fonts", action="store_true",
+                              default=None,
+                              help="Allow the wptrunner to install the Ahem font on your system")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",

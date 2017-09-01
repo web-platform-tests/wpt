@@ -4,6 +4,7 @@ import json
 import os
 import sys
 
+from ahem import Ahem
 import environment as env
 import products
 import testloader
@@ -128,7 +129,10 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
+    ahem = Ahem()
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
+        if kwargs["install_fonts"]:
+            ahem.install()
         env.do_delayed_imports(logger, test_paths)
 
         (check_args,
@@ -251,7 +255,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 logger.suite_end()
-
+        ahem.remove()
     return unexpected_total == 0
 
 def start(**kwargs):

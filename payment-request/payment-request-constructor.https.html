@@ -418,6 +418,25 @@ test(() => {
   assert_equals(request.shippingOption, null, "selected option must be null");
 }, "If there are any duplicate shipping option ids, then there are no shipping options");
 
+test(() => {
+  smokeTest();
+  const dupShipping1 = Object.assign({}, defaultShippingOption, {
+    selected: true,
+    id: "DUPLICATE",
+    label: "Fail 1",
+  });
+  const dupShipping2 = Object.assign({}, defaultShippingOption, {
+    selected: false,
+    id: "DUPLICATE",
+    label: "Fail 2"
+  });
+  const shippingOptions = [dupShipping1, defaultShippingOption, dupShipping2];
+  const details = Object.assign({}, defaultDetails, { shippingOptions });
+  assert_throws(new TypeError(), () => {
+    new PaymentRequest(defaultMethods, details);
+  }, "Expected to throw a TypeError because duplicate IDs");
+}, "Throw when there are duplicate shippingOption ids, even if other values are different");
+
 // Process payment details modifiers:
 test(() => {
   smokeTest();

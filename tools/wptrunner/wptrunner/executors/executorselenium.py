@@ -201,7 +201,11 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "window_id": self.window_id,
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
+        before = set(webdriver.window_handles)
         webdriver.execute_script(self.script % format_map)
+        after = set(webdriver.window_handles)
+        assert len(after - before) == 1
+        test_window = list(after - before)[0]
         while True:
             result = webdriver.execute_async_script(
                 self.script_resume % format_map)
@@ -212,7 +216,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             elif result[1] == "action":
                 parent = webdriver.current_window_handle
                 try:
-                    webdriver.switch_to.window(self.window_id)
+                    webdriver.switch_to.window(test_window)
                     action = result[2]["action"]
                     self.logger.debug("Got action: %s" % action)
                     if action == "click":

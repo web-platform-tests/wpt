@@ -33,7 +33,7 @@ This HTML page is served as ISO 8859-1 and uses a different byte sequence for th
 
 The class ids will therefore only match if the CSS is read as UTF-8.
 
-The style sheet has a UTF-8 signature at the start, but the HTTP header for the style sheet says ISO 8859-1. If the HTTP header overrides the @charset rule, the CSS will not be read as UTF-8, the selector will not match the class name, and the test will fail.
+The style sheet has a UTF-8 signature at the start, but the HTTP header for the style sheet says ISO 8859-1. If the HTTP header overrides the bom, the CSS will not be read as UTF-8, the selector will not match the class name, and the test will fail.
 
 -->
 <script>

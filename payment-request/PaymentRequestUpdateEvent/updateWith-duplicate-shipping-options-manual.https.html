@@ -1,7 +1,8 @@
 <!doctype html>
 <meta charset="utf8">
-<link rel="help" href="">
+<link rel="help" href="https://w3c.github.io/payment-request/#updatewith()-method">
 <title>
+  updateWith() method - duplicate shippingOption ids
 </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -42,6 +43,7 @@ test(() => {
 }, "Must construct a PaymentRequest (smoke test)");
 
 function testFireEvents(button) {
+  button.disabled = true;
   promise_test(async t => {
     const request = new PaymentRequest(
       validMethods,
@@ -71,7 +73,7 @@ function testFireEvents(button) {
   }, button.textContent.trim());
 }
 </script>
-<h2>updateWith() method - duplicate shippingOptions</h2>
+<h2>updateWith() method - duplicate shippingOptions ids</h2>
 <p>
   When the payment sheet is shown, select a different shipping address.
 </p>

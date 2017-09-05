@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Subresources and fragment preservation</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<img data-desc="Redirect with the original URL containing a fragment"
+     src=../api/resources/redirect.py?location=/images/green.svg#svgView(viewBox(25,25,50,50))>
+<img data-desc="Redirect with the response Location header containing a fragment"
+     src=../api/resources/redirect.py?location=/images/green.svg%23svgView(viewBox(25,25,50,50))>
+<img data-desc="Redirect with both the original URL and response Location header containing a fragment"
+     src=../api/resources/redirect.py?location=/images/green.svg%23svgView(viewBox(25,25,50,50))#svgView(viewBox(0,0,50,50))>
+<canvas width=100 height=50></canvas>
+<script>
+const ctx = document.querySelector("canvas").getContext("2d"),
+      isColor = (data, r, g, b, a) => {
+  for(let i = 0; i < data.length; i += 4) {
+    if(data[i] !== r || data[i+1] !== g || data[i+2] !== b || data[i+3] !== a) {
+      return false;
+    }
+  }
+  return true;
+};
+document.querySelectorAll("img").forEach(img => {
+  async_test(t => {
+    t.add_cleanup(() => {
+      img.remove();
+      ctx.clearRect(0, 0, 100, 50);
+    });
+    self.addEventListener("load", t.step_func_done(() => {
+      ctx.drawImage(img, 0, 0);
+      assert_true(isColor(ctx.getImageData(0, 0, 100, 25).data, 0, 255, 0, 255));
+      assert_true(isColor(ctx.getImageData(0, 25, 100, 25).data, 0, 0, 0, 0));
+    }));
+  }, img.dataset.desc);
+});
+</script>

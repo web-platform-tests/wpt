@@ -31,12 +31,13 @@ promise_test(() => {
 }, "* for credentialed fetches only matches literally")
 
 promise_test(() => {
-  const headers = "?pipe=header(Access-Control-Allow-Origin,*)|header(Access-Control-Expose-Headers,*)|header(Access-Control-Expose-Headers,set-cookie)|header(Test,X)|header(Set-Cookie,X)"
-  return fetch(url + headers).then(resp => {
+  const headers =  "header(Access-Control-Allow-Origin,*)|header(Access-Control-Expose-Headers,set-cookie)"
+  return fetch(url + sharedHeaders + headers).then(resp => {
     assert_equals(resp.status, 200)
     assert_equals(resp.type , "cors")
     assert_equals(resp.headers.get("test"), "X")
     assert_equals(resp.headers.get("set-cookie"), null)
+    assert_equals(resp.headers.get("*"), "whoa")
   })
 }, "* can be one of several values")
 

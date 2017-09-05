@@ -219,22 +219,22 @@ test(function() {
 }, "legacy caller with no argument");
 
 test(function() {
-  if (typeof Proxy !== "undefined") {
-    assert_throws(new TypeError(), function() {
-      new (new Proxy(document.all, {
-        construct: function() {
-          return {};
-        }
-      }));
-    });
-  }
   assert_throws(new TypeError(), function() {
     new document.all("picture");
+  });
+  assert_throws(new TypeError(), function() {
+    new (new Proxy(document.all, {
+      construct: function() {
+        return {};
+      }
+    }));
   });
 }, "legacy caller is not a constructor");
 
 test(function() {
-  assert_equals(Function.prototype.call.call(document.all, {}, "043"), spans[1]);
+  ;[undefined, null, {}, document.body].forEach(function(thisValue) {
+    assert_equals(Function.prototype.call.call(document.all, thisValue, "043"), spans[1]);
+  });
 }, "legacy caller with arbitrary this value");
 
 // item method

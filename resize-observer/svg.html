@@ -311,7 +311,12 @@ function test10() {
   return helper.start();
 }
 
-let guard = async_test('guard');
+let guard;
+test(_ => {
+  assert_own_property(window, "ResizeObserver");
+  guard = async_test('guard');
+}, "ResizeObserver implemented")
+
 test0()
   .then(() => { return test1(); })
   .then(() => { return test2(); })

@@ -1,5 +1,33 @@
 setup({ explicit_done: true, explicit_timeout: true });
 
+const validMethod = Object.freeze({
+  supportedMethods: "basic-card",
+});
+
+const validMethods = Object.freeze([validMethod]);
+
+const validAmount = Object.freeze({
+  currency: "USD",
+  value: "1.00",
+});
+
+const validTotal = Object.freeze({
+  label: "Valid total",
+  amount: validAmount,
+});
+const validDetails = {
+  total: validTotal,
+};
+
+test(() => {
+  try {
+    new PaymentRequest(validMethods, validDetails);
+  } catch (err) {
+    done();
+    throw err;
+  }
+}, "Can construct a payment request (smoke test).");
+
 /**
  * Pops up a payment sheet, allowing options to be
  * passed in if particular values are needed.
@@ -69,6 +97,11 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
   test(() => {
     assert_equals(response.requestId, request.id, `Expected ids to match`);
     for (const [attribute, value] of Object.entries(expected)) {
+      assert_idl_attribute(
+        response,
+        attribute,
+        `Expected a ${attribute} IDL attribute`
+      );
       assert_equals(
         response[attribute],
         value,

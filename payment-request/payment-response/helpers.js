@@ -100,7 +100,11 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
       assert_idl_attribute(
         response,
         attribute,
+<<<<<<< HEAD
         `Expected a ${attribute} IDL attribute`
+=======
+        `Expected ${attribute} to be an IDL attribute.`
+>>>>>>> Check payment response IDL attributes
       );
       assert_equals(
         response[attribute],

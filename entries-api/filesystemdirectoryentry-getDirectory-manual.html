@@ -27,7 +27,6 @@ EMPTY_PATHS.forEach(path => {
       path,
       {},
       t.step_func(dir => {
-        console.log('got dir');
         assert_true(dir.isDirectory,
                     'empty path should yield FileSystemDirectoryEntry');
         assert_equals(dir.name, entry.name,

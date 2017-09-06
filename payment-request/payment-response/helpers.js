@@ -69,6 +69,11 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
   test(() => {
     assert_equals(response.requestId, request.id, `Expected ids to match`);
     for (const [attribute, value] of Object.entries(expected)) {
+      assert_idl_attribute(
+        response,
+        attribute,
+        `Expected ${attribute} to be an IDL attribute.`
+      );
       assert_equals(
         response[attribute],
         value,

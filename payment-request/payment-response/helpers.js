@@ -1,5 +1,20 @@
 setup({ explicit_done: true, explicit_timeout: true });
 
+test(() => {
+  try {
+    const details = {
+      total: {
+        label: "",
+        amount: { currency: "USD", value: "1.0" },
+      },
+    };
+    const request = new PaymentRequest([{ supportedMethods: "basic-card" }]);
+  } catch (err) {
+    done();
+    throw err;
+  }
+}, "Smoke test");
+
 /**
  * Pops up a payment sheet, allowing options to be
  * passed in if particular values are needed.

@@ -32,7 +32,6 @@ test(function() {
 }, "Check if the first nested browsing context is returned by window['c']");
 
 test(function() {
-  assert_equals(window['a'].length, 5, "The length should be 5.");
   assert_true(window['a'] instanceof HTMLCollection);
   assert_array_equals(window['a'],
                       [ document.getElementById('embed1'),

@@ -108,12 +108,6 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
         `Expected response ${attribute} attribute to be ${value}`
       );
     }
-    // Special handling for option.requestShipping
-    assert_equals(
-      request.shippingOption,
-      "pass",
-      "request.shippingOption must be 'pass'"
-    );
     if (options && options.requestShipping) {
       assert_equals(
         response.shippingOption,
@@ -121,6 +115,11 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
         "request.shippingOption must be 'pass'"
       );
     } else {
+      assert_equals(
+        request.shippingOption,
+        null,
+        "If requestShipping is falsy, request.shippingOption must be null"
+      );
       assert_equals(
         response.shippingOption,
         null,

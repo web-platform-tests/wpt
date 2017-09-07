@@ -95,12 +95,17 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
   const { request, response } = await getPaymentRequestResponse(options, id);
   await response.complete();
   test(() => {
+    assert_idl_attribute(
+      response,
+      "requestId",
+      "Expected requestId to be an IDL attribute."
+    );
     assert_equals(response.requestId, request.id, `Expected ids to match`);
     for (const [attribute, value] of Object.entries(expected)) {
       assert_idl_attribute(
         response,
         attribute,
-        `Expected a ${attribute} IDL attribute`
+        `Expected ${attribute} to be an IDL attribute.`
       );
       assert_equals(
         response[attribute],

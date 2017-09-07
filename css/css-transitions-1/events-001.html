@@ -16,27 +16,6 @@
 <body>
 
 <script>
-function assert_end_events_equal(evt, propertyName, elapsedTime,
-                                 pseudoElement = '') {
-  assert_equals(evt.propertyName, propertyName);
-  assert_times_equal(evt.elapsedTime, elapsedTime);
-  assert_equals(evt.pseudoElement, pseudoElement);
-}
-
-function assert_end_event_batch_equal(evts, propertyNames, elapsedTime,
-                                      pseudoElement = '') {
-  assert_equals(evts.length, propertyNames.length,
-                'Test harness error: should have waited for the correct'
-                + ' number of events');
-
-  evts.sort((a, b) => a.propertyName.localeCompare(b.propertyName));
-  propertyNames.sort((a, b) => a.localeCompare(b));
-  for (let evt of evts) {
-    assert_end_events_equal(evt, propertyNames.shift(), elapsedTime,
-                            pseudoElement);
-  }
-}
-
 promise_test(t => {
   const div = addDiv(t, { style: 'transition: all .01s linear; ' +
                                  'padding-left: 1px' });

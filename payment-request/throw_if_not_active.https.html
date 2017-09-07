@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>PaymentRequest show() throws if doc is not fully active</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://w3c.github.io/payment-request/#dom-paymentrequest-show()">
+<script>
+const validMethod = Object.freeze({
+  supportedMethods: "basic-card",
+});
+const validMethods = Object.freeze([validMethod]);
+const validAmount = Object.freeze({
+  currency: "USD",
+  value: "5.00",
+});
+const validDetails = {
+  total: {
+    label: "Total due",
+    amount: validAmount,
+  },
+};
+
+promise_test(async t => {
+  assert_false(
+    document.readyState === "complete",
+    "Document shouldn't be fully active"
+  );
+  const request = new PaymentRequest(validMethods, validDetails);
+  const p = new Promise((resolve, reject) => {
+    request.show().then(resolve);
+    setTimeout(() => {
+      request.abort();
+      reject(new Error("Payment sheet probably popped up"));
+    }, 1000);
+  });
+  await promise_rejects(t, "AbortError", p, "Expected AbortError");
+});
+
+</script>
+<body>
+<script>
+promise_test(async t => {
+  new PaymentRequest(validMethods, validDetails);
+  const blankURL = "/payment-request/resources/blank.html";
+  const iframe = document.createElement("iframe");
+  iframe.allowPaymentRequest = true;
+  const loadPromise = new Promise(resolve => {
+    iframe.addEventListener(
+      "load",
+      () => {
+        const { contentWindow } = iframe;
+        const customDetails = Object.assign({}, validDetails, { id: "test" });
+        // We make a request belonging to "blank.html"
+        const req = new contentWindow.PaymentRequest(
+          validMethods,
+          customDetails
+        );
+        assert_equals(req.id, "test", "Expected test as the id");
+        iframe.src = "/payment-request/resources/blank.html?test";
+        // second load
+        iframe.onload = () => {
+          iframe.remove();
+          // Original iframe document is no longer fully active
+          resolve(req);
+        };
+      },
+      { once: true }
+    );
+  });
+  iframe.src = blankURL;
+  document.body.appendChild(iframe);
+  const stolenRequest = await loadPromise;
+  await promise_rejects(t, "AbortError", stolenRequest.show(), "");
+}, "PaymentRequest show() throws if the document is not fully active");
+
+done();
+
+</script>

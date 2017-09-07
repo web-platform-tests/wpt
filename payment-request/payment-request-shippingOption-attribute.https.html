@@ -21,6 +21,10 @@ const validShippingOption = Object.freeze({
   selected: false,
 });
 
+const requestShipping = Object.freeze({
+  requestShipping: true,
+});
+
 test(() => {
   const request = new PaymentRequest(validMethods, validDetails);
   assert_idl_attribute(request, "shippingOption");
@@ -35,7 +39,11 @@ test(() => {
   const detailsWithShippingOptions = Object.assign({}, validDetails, {
     shippingOptions: [validShippingOption],
   });
-  const request = new PaymentRequest(validMethods, detailsWithShippingOptions);
+  const request = new PaymentRequest(
+    validMethods,
+    detailsWithShippingOptions,
+    requestShipping
+  );
   assert_equals(request.shippingOption, null, "expected null");
 }, "If there is a single shipping option, but selected is false, then .shippingOption must be null.");
 
@@ -46,7 +54,11 @@ test(() => {
   const detailsWithShippingOptions = Object.assign({}, validDetails, {
     shippingOptions: [validShippingOption, shippingOption2],
   });
-  const request = new PaymentRequest(validMethods, detailsWithShippingOptions);
+  const request = new PaymentRequest(
+    validMethods,
+    detailsWithShippingOptions,
+    requestShipping
+  );
   assert_equals(request.shippingOption, null, "expected null");
 }, "If there are multiple shipping options all with `selected` set to false, then .shippingOption is null.");
 
@@ -58,7 +70,11 @@ test(() => {
   const detailsWithShippingOptions = Object.assign({}, validDetails, {
     shippingOptions: [shippingOption2, validShippingOption],
   });
-  const request = new PaymentRequest(validMethods, detailsWithShippingOptions);
+  const request = new PaymentRequest(
+    validMethods,
+    detailsWithShippingOptions,
+    requestShipping
+  );
   assert_equals(request.shippingOption, "pass", "expected 'pass'");
 }, "Given multiple shipping options, it must use the selected shipping option for .shippingOption value.");
 
@@ -74,7 +90,11 @@ test(() => {
   const detailsWithShippingOptions = Object.assign({}, validDetails, {
     shippingOptions: [shippingOption1, shippingOption2, validShippingOption],
   });
-  const request = new PaymentRequest(validMethods, detailsWithShippingOptions);
+  const request = new PaymentRequest(
+    validMethods,
+    detailsWithShippingOptions,
+    requestShipping
+  );
   assert_equals(request.shippingOption, "pass", "expected 'pass'");
 }, "If there are multiple of the shipping options with selected true, then .shippingOption is the last selected shipping option in order.");
 </script>

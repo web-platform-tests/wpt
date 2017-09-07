@@ -4,13 +4,13 @@ import json
 import os
 import sys
 
-from ahem import Ahem
 import environment as env
 import products
 import testloader
 import wptcommandline
 import wptlogging
 import wpttest
+from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
 
@@ -129,10 +129,7 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
-    ahem = Ahem()
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
-        if kwargs["install_fonts"]:
-            ahem.install()
         env.do_delayed_imports(logger, test_paths)
 
         (check_args,
@@ -144,6 +141,12 @@ def run_tests(config, test_paths, product, **kwargs):
         env_extras = get_env_extras(**kwargs)
 
         check_args(**kwargs)
+
+        if kwargs["install_fonts"]:
+            env_extras.append(FontInstaller(
+                font_dir=kwargs["font_dir"],
+                ahem=os.path.join(kwargs["tests_root"], "fonts/Ahem.ttf")
+            ))
 
         if "test_loader" in kwargs:
             run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=None,
@@ -174,6 +177,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                  ssl_env,
                                  kwargs["pause_after_test"],
                                  kwargs["debug_info"],
+                                 kwargs["install_fonts"],
                                  env_options,
                                  env_extras) as test_environment:
             try:
@@ -255,7 +259,6 @@ def run_tests(config, test_paths, product, **kwargs):
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 logger.suite_end()
-        ahem.remove()
     return unexpected_total == 0
 
 def start(**kwargs):

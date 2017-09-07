@@ -207,7 +207,7 @@ test(function() {
 }, "legacy caller with invalid \"array index property name\"");
 
 test(function() {
-  assert_equals(document.all(undefined), divs[3]);
+  assert_equals(document.all(undefined), null);
 }, "legacy caller with undefined");
 
 test(function() {
@@ -221,18 +221,20 @@ test(function() {
 test(function() {
   assert_throws(new TypeError(), function() {
     new document.all("picture");
-  });
+  }, "New should not work on document.all()");
+
+  // https://esdiscuss.org/topic/isconstructor#content-11
   assert_throws(new TypeError(), function() {
     new (new Proxy(document.all, {
       construct: function() {
         return {};
       }
     }));
-  });
+  }, "Proxies should treat document.all() as not-a-constructor");
 }, "legacy caller is not a constructor");
 
 test(function() {
-  ;[undefined, null, {}, document.body].forEach(function(thisValue) {
+  [undefined, null, {}, document.body].forEach(function(thisValue) {
     assert_equals(Function.prototype.call.call(document.all, thisValue, "043"), spans[1]);
   });
 }, "legacy caller with arbitrary this value");
@@ -284,7 +286,7 @@ test(function() {
 }, "item method with invalid \"array index property name\"");
 
 test(function() {
-  assert_equals(document.all.item(undefined), divs[3]);
+  assert_equals(document.all.item(undefined), null);
 }, "item method with undefined");
 
 test(function() {

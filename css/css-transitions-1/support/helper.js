@@ -124,23 +124,45 @@ root.assert_end_events_equal = function(evt, propertyName, elapsedTime,
 /**
  * Assert that array of simultaneous CSSTransition events, |evts|, have the
  * corresponding property names listed in |propertyNames|, and the expected
- * |elapsedTime| and |pseudoElement| members.
+ * |elapsedTimes| and |pseudoElement| members.
+ *
+ * |elapsedTimes| may be a single value if all events are expected to have the
+ * same elapsedTime, or an array parallel to |propertyNames|.
  */
-root.assert_end_event_batch_equal = function(evts, propertyNames, elapsedTime,
+root.assert_end_event_batch_equal = function(evts, propertyNames, elapsedTimes,
                                              pseudoElement = '') {
   assert_equals(
     evts.length,
     propertyNames.length,
     'Test harness error: should have waited for the correct number of events'
   );
+  assert_true(
+    typeof elapsedTimes === 'number' ||
+      (Array.isArray(elapsedTimes) &&
+        elapsedTimes.length === propertyNames.length),
+    'Test harness error: elapsedTimes must either be a number or an array of' +
+      ' numbers with the same length as propertyNames'
+  );
 
-  evts.sort((a, b) => a.propertyName.localeCompare(b.propertyName));
-  propertyNames.sort((a, b) => a.localeCompare(b));
+  if (typeof elapsedTimes === 'number') {
+    elapsedTimes = Array(propertyNames.length).fill(elapsedTimes);
+  }
+  const testPairs = propertyNames.map((propertyName, index) => ({
+    propertyName,
+    elapsedTime: elapsedTimes[index]
+  }));
+
+  const sortByPropertyName = (a, b) =>
+    a.propertyName.localeCompare(b.propertyName);
+  evts.sort(sortByPropertyName);
+  testPairs.sort(sortByPropertyName);
+
   for (let evt of evts) {
+    const expected = testPairs.shift();
     assert_end_events_equal(
       evt,
-      propertyNames.shift(),
-      elapsedTime,
+      expected.propertyName,
+      expected.elapsedTime,
       pseudoElement
     );
   }

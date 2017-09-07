@@ -356,7 +356,7 @@ test(() => {
     assert_equals(
       request.shippingOption,
       null,
-      "As no shipping is requested, shippingOption is null"
+      "shippingOption must be null, because requestShipping is false"
     );
     assert_throws(
       new TypeError(),
@@ -376,7 +376,7 @@ test(() => {
   assert_equals(
     request.shippingOption,
     null,
-    "request.shippingOption must be null"
+    "shippingOption must be null, as requestShipping is missing"
   );
 }, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
 
@@ -439,7 +439,7 @@ test(() => {
   assert_equals(
     requestNoShipping.shippingOption,
     null,
-    "selected option must null, as requestShipping is false"
+    "shippingOption must be null, as requestShipping is false"
   );
   const requestWithShipping = new PaymentRequest(defaultMethods, details, {
     requestShipping: true,
@@ -465,7 +465,7 @@ test(() => {
   assert_equals(
     requestNoShipping.shippingOption,
     null,
-    "selected option must null, because no shipping requested"
+    "shippingOption must be null, because requestShipping is false"
   );
   assert_throws(() => {
     const request = new PaymentRequest(defaultMethods, details, {
@@ -492,7 +492,7 @@ test(() => {
   assert_equals(
     requestNoShipping.shippingOption,
     null,
-    "selected option must null, because no shipping requested"
+    "shippingOption must be null, because requestShipping is false"
   );
   assert_throws(
     new TypeError(),

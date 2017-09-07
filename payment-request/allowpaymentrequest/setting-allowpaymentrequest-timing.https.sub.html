@@ -23,7 +23,7 @@ async_test((t) => {
 
   window.onmessage = t.step_func_done((e) => {
     assert_equals(e.data.message, 'Exception');
-    assert_array_equals(e.data.details, [true /* ex instanceof DOMException*/, 18 /* ex.code */, 'SecurityError' /* ex.name */]);
+    assert_array_equals(e.data.details, [true /* ex instanceof DOMException */, DOMException.SECURITY_ERR, 'SecurityError']);
   });
 
   document.body.appendChild(iframe);

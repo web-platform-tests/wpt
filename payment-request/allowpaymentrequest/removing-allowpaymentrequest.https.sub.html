@@ -21,6 +21,7 @@ async_test((t) => {
       // The allowpaymentrequest flag is *still set* for the document.
     }
     // 4. (first load) Ask the subdocument to invoke PaymentRequest and post back the result.
+    // (See below for steps 5 and 6.)
     // 7. (second load) Ask the subdocument to invoke PaymentRequest and post back the result.
     iframe.contentWindow.postMessage('What is the result of new PaymentRequest(...)?', '*');
   });

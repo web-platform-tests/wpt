@@ -181,7 +181,9 @@ test(function() {
 }, "legacy caller with invalid \"array index property name\"");
 
 test(function() {
-  assert_equals(document.all(), null);
+  assert_throws(new TypeError, function() {
+    document.all();
+  });
 }, "legacy caller with no argument");
 
 // item method
@@ -229,8 +231,10 @@ test(function() {
 }, "item method with invalid \"array index property name\"");
 
 test(function() {
-  assert_equals(document.all.item.length, 0);
-  assert_equals(document.all.item(), null);
+  assert_equals(document.all.item.length, 1);
+  assert_throws(new TypeError, function() {
+    document.all.item();
+  });
 }, "item method with no argument");
 
 // live HTMLCollection

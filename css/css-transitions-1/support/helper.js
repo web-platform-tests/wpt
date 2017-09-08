@@ -111,6 +111,64 @@ root.assert_times_equal = function(actual, expected, description) {
 }
 
 /**
+ * Assert that CSSTransition event, |evt|, has the expected property values
+ * defined by |propertyName|, |elapsedTime|, and |pseudoElement|.
+ */
+root.assert_end_events_equal = function(evt, propertyName, elapsedTime,
+                                        pseudoElement = '') {
+  assert_equals(evt.propertyName, propertyName);
+  assert_times_equal(evt.elapsedTime, elapsedTime);
+  assert_equals(evt.pseudoElement, pseudoElement);
+}
+
+/**
+ * Assert that array of simultaneous CSSTransition events, |evts|, have the
+ * corresponding property names listed in |propertyNames|, and the expected
+ * |elapsedTimes| and |pseudoElement| members.
+ *
+ * |elapsedTimes| may be a single value if all events are expected to have the
+ * same elapsedTime, or an array parallel to |propertyNames|.
+ */
+root.assert_end_event_batch_equal = function(evts, propertyNames, elapsedTimes,
+                                             pseudoElement = '') {
+  assert_equals(
+    evts.length,
+    propertyNames.length,
+    'Test harness error: should have waited for the correct number of events'
+  );
+  assert_true(
+    typeof elapsedTimes === 'number' ||
+      (Array.isArray(elapsedTimes) &&
+        elapsedTimes.length === propertyNames.length),
+    'Test harness error: elapsedTimes must either be a number or an array of' +
+      ' numbers with the same length as propertyNames'
+  );
+
+  if (typeof elapsedTimes === 'number') {
+    elapsedTimes = Array(propertyNames.length).fill(elapsedTimes);
+  }
+  const testPairs = propertyNames.map((propertyName, index) => ({
+    propertyName,
+    elapsedTime: elapsedTimes[index]
+  }));
+
+  const sortByPropertyName = (a, b) =>
+    a.propertyName.localeCompare(b.propertyName);
+  evts.sort(sortByPropertyName);
+  testPairs.sort(sortByPropertyName);
+
+  for (let evt of evts) {
+    const expected = testPairs.shift();
+    assert_end_events_equal(
+      evt,
+      expected.propertyName,
+      expected.elapsedTime,
+      pseudoElement
+    );
+  }
+}
+
+/**
  * Appends a div to the document body.
  *
  * @param t  The testharness.js Test object. If provided, this will be used

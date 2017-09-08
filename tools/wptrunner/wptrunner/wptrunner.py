@@ -177,7 +177,6 @@ def run_tests(config, test_paths, product, **kwargs):
                                  ssl_env,
                                  kwargs["pause_after_test"],
                                  kwargs["debug_info"],
-                                 kwargs["install_fonts"],
                                  env_options,
                                  env_extras) as test_environment:
             try:

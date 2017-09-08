@@ -141,7 +141,7 @@ scheme host and port.""")
     config_group.add_argument("--install-fonts", action="store_true",
                               default=None,
                               help="Allow the wptrunner to install fonts on your system")
-    config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir"
+    config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
 
     build_type = parser.add_mutually_exclusive_group()

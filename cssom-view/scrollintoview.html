@@ -34,9 +34,9 @@ var expectedYCenter = 4000 - (window.innerHeight / 2) + (testDiv.clientHeight / 
   ["omitted argument", "nearest", expectedYTop],
   [true, "nearest", expectedYTop],
   [false, "nearest", expectedYBottom],
-  [undefined, "nearest", expectedYTop], // like omitted argument
-  [null, expectedXCenter, expectedYCenter], // like {}
-  [{}, expectedXCenter, expectedYCenter],
+  [undefined, "nearest", expectedYTop],
+  [null, "nearest", expectedYTop],
+  [{}, "nearest", expectedYTop],
   [{block: "center", inline: "center"}, expectedXCenter, expectedYCenter],
   [{block: "start", inline: "start"}, expectedXLeft, expectedYTop],
   [{block: "end", inline: "end"}, expectedXRight, expectedYBottom],

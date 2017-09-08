@@ -128,7 +128,7 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
       assert_equals(
         response.shippingOption,
         null,
-        "request.shippingOption must be 'pass'"
+        "request.shippingOption must be null"
       );
     }
   }, button.textContent.trim());

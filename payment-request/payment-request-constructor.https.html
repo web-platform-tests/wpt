@@ -378,6 +378,15 @@ test(() => {
     null,
     "shippingOption must be null, as requestShipping is missing"
   );
+  // defaultDetails lacks shipping options
+  const request2 = new PaymentRequest(defaultMethods, defaultDetails, {
+    requestShipping: true,
+  });
+  assert_equals(
+    request2.shippingOption,
+    null,
+    `request.shippingOption must be null`
+  );
 }, "If there is no selected shipping option, then PaymentRequest.shippingOption remains null");
 
 test(() => {

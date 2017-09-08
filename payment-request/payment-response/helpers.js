@@ -113,5 +113,23 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
         `Expected response ${attribute} attribute to be ${value}`
       );
     }
+    if (options && options.requestShipping) {
+      assert_equals(
+        response.shippingOption,
+        "pass",
+        "request.shippingOption must be 'pass'"
+      );
+    } else {
+      assert_equals(
+        request.shippingOption,
+        null,
+        "If requestShipping is falsy, request.shippingOption must be null"
+      );
+      assert_equals(
+        response.shippingOption,
+        null,
+        "request.shippingOption must be 'pass'"
+      );
+    }
   }, button.textContent.trim());
 }

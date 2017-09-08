@@ -11,7 +11,6 @@ SYSTEM = platform.system().lower()
 
 
 class FontInstaller(object):
-
     def __init__(self, font_dir=None, **fonts):
         self.font_dir = font_dir
         self.installed_fonts = False

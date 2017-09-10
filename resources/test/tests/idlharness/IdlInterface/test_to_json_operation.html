@@ -13,11 +13,15 @@
 <script>
     "use strict";
     function wrap(obj) {
-        return {
-            toJSON: function() {
-                return obj;
-            }
+        function F(obj) {
+            this._obj = obj;
         }
+
+        F.prototype.toJSON = function() {
+            return this._obj;
+        }
+
+        return new F(obj);
     }
 
     var i, obj;

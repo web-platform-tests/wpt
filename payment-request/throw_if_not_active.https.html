@@ -77,6 +77,8 @@ promise_test(async t => {
 }, "PaymentRequest.show() throws if the document is not active");
 
 promise_test(async t => {
+  // check that PaymentRequests can be constructed.
+  new PaymentRequest(validMethods, validDetails);
   // We create two iframes, and nest them. Wait for both of them to load.
   const iframe = document.createElement("iframe");
   iframe.allowPaymentRequest = true;
@@ -90,7 +92,6 @@ promise_test(async t => {
         innerIframe.addEventListener(
           "load",
           () => {
-            debugger;
             // We create an instance of the inner iframe's PaymentRequest()
             const { PaymentRequest } = innerIframe.contentWindow;
             const request = new PaymentRequest(validMethods, validDetails);

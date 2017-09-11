@@ -19,6 +19,7 @@ promise_test(async () => {
   idlArray.add_objects({
     PaymentRequest: [`new PaymentRequest(${methods}, ${details})`],
   });
+  idlArray.add_untested_idls('interface EventHandler {};');
   idlArray.test();
 }, "Setup for Payment Request API IDL tests.");
 </script>

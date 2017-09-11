@@ -65,17 +65,10 @@ const options = {
   requestShipping: true,
 };
 
-test(() => {
-  const request = new PaymentRequest(
-    methods,
-    detailsNoShippingOptions,
-    options
-  );
-}, "Smoke test");
-
 function testFireEvent(button, details, eventName, expectRequestProps) {
   button.disabled = true;
   promise_test(async t => {
+    new PaymentRequest(methods, detailsNoShippingOptions, options);
     const request = new PaymentRequest(methods, details, options);
     const events = [];
     const p1 = new Promise(resolve => {
@@ -97,12 +90,8 @@ function testFireEvent(button, details, eventName, expectRequestProps) {
         resolve("listener-2");
       });
     });
-    try {
-      const response = await request.show();
-      response.complete("success");
-    } catch (err) {
-      assert_unreached("Unexpected exception: " + err.message);
-    }
+    const response = await request.show();
+    response.complete("success");
     const [handler, listener1, listener2] = await Promise.all([p1, p2, p3]);
     assert_equals(
       handler,
@@ -164,7 +153,7 @@ async function runAbortTest(button) {
   <h2 id="shipping-address-changed-algo">Shipping address changed algorithm</h2>
   <link rel="help" href="https://www.w3.org/TR/payment-request/#shipping-address-changed-algorithm">
   <p>
-    When prompted, please enter or select "web platform test" as recipient, at address "1 wpt street" in "Kabul, Afghanistan", zip/postal code 1001.
+    When prompted, please change or enter a new shipping address and then select Pay.
   </p>
   <ol>
     <li>
@@ -179,7 +168,7 @@ async function runAbortTest(button) {
   <h2 id="shipping-option-changed-algo">Shipping option changed algorithm</h2>
   <link rel="help" href="https://w3c.github.io/payment-request/#shipping-option-changed-algorithm">
   <p>
-    When prompted, please select "shipping option 2".
+    Finally, when prompted, please select "shipping option 2" and then select Pay.
   </p>
   <ol>
     <li>

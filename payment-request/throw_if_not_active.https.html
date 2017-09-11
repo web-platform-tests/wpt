@@ -74,7 +74,7 @@ promise_test(async t => {
     "Abort already called, so InvalidStateError"
   );
   iframe.remove();
-}, "PaymentRequest.show() throws if the document is not active");
+}, "PaymentRequest.show() aborts if the document is not active");
 
 promise_test(async t => {
   // check that PaymentRequests can be constructed.
@@ -123,9 +123,39 @@ promise_test(async t => {
     "Active, but not fully active, so must throw AbortError"
   );
   iframe.remove();
-}, "PaymentRequest.show() throws if the document is active, but not fully active");
+}, "PaymentRequest.show() aborts if the document is active, but not fully active");
+
+promise_test(async t => {
+  // check that PaymentRequests can be constructed.
+  new PaymentRequest(validMethods, validDetails);
+  const iframe = document.createElement("iframe");
+  iframe.allowPaymentRequest = true;
+  document.body.appendChild(iframe);
+  // Make a request in the iframe.
+  const request = await new Promise(resolve => {
+    iframe.addEventListener("load", () => {
+      const { PaymentRequest } = iframe.contentWindow;
+      const request = new PaymentRequest(validMethods, validDetails);
+      resolve(request);
+    });
+    iframe.src = "/payment-request/resources/page1.html";
+  });
+  // Present the payment sheet
+  const showPromise = request.show();
+  // Navigate the iframe to a new location. Wait for the load event to fire.
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve);
+    iframe.src = "/payment-request/resources/page2.html";
+  });
+  // Because we navigated away, the showPromise must now reject.
+  await promise_rejects(
+    t,
+    "AbortError",
+    showPromise,
+    "The iframe was navigated away, so AbortError"
+  );
+  iframe.remove();
+}, "If a payment sheet is showing, but its document is navigated (so no longer fully active), the payment request aborts.");
 
 done();
-
-
 </script>

@@ -19,9 +19,8 @@
 <script id="code" type="text/worklet">
 var testsPassed = false;
 try {
-    registerPaint('foo13', class {
-        static get contextOptions() { return {alpha: true}; }
-        paint() { }
+    registerPaint('foo', class {
+        paint() {}
     });
     testsPassed = true;
 } catch(ex) {

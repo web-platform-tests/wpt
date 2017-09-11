@@ -7,18 +7,12 @@
 <script src=/resources/idlharness.js></script>
 <script>
 promise_test(async () => {
+  const idlURLs = ["/interfaces/dom.idl", "/interfaces/payment-request.idl"];
   const idlArray = new IdlArray();
-  const untestedIDL = `
-    interface EventHandler {};
-    interface Event {};
-    interface EventInit {};
-    interface EventTarget {};
-  `;
-  idlArray.add_untested_idls(untestedIDL);
-  const testedIdl = await fetch("/interfaces/payment-request.idl").then(r =>
-    r.text()
-  );
-  idlArray.add_idls(testedIdl);
+  for(const url of idlURLs){
+    const idlText = await fetch(url).then(r => r.text());
+    idlArray.add_idls(idlText);
+  }
   const methods = "[{supportedMethods: 'foo'}]";
   const amount = "{currency: 'USD', value: '0'}";
   const details = `{total: {label: 'bar', amount: ${amount} }}`;

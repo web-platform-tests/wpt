@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-setsize=-1</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,45 +20,39 @@
             "ATK" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "setsize:2"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_INDETERMINATE"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXARIASetSize",
                   "is",
-                  "true"
+                  "-1"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "setsize:-1"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "AriaProperties.setsize",
                   "is",
-                  "false"
+                  "-1"
                ]
             ]
          },
@@ -66,15 +60,18 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-setsize=-1"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-setsize=-1.</p>
+    <div role='list'>
+    <div role='listitem' id='test' aria-setsize='-1'>content</div>
+    <div role='listitem' aria-setsize='-1'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

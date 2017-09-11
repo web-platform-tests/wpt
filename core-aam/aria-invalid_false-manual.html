@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-invalid=false</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -21,14 +21,8 @@
                [
                   "property",
                   "states",
-                  "contains",
+                  "doesNotContain",
                   "STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
                ]
             ],
             "AXAPI" : [
@@ -36,21 +30,15 @@
                   "property",
                   "AXInvalid",
                   "is",
-                  "true"
+                  "false"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
                   "states",
-                  "contains",
+                  "doesNotContain",
                   "IA2_STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
                ]
             ],
             "UIA" : [
@@ -58,7 +46,7 @@
                   "property",
                   "IsDataValidForForm",
                   "is",
-                  "false"
+                  "true"
                ]
             ]
          },
@@ -66,15 +54,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-invalid=false"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-invalid=false.</p>
+    <div role='group' id='test' aria-invalid='false'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

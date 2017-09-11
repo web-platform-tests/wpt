@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-checked=false on checkbox</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,45 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_CHECKABLE"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "states",
+                  "doesNotContain",
+                  "STATE_CHECKED"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXValue",
                   "is",
-                  "true"
+                  "0"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
+                  "checkable:true"
+               ]
+            ],
+            "MSAA" : [
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "states",
+                  "doesNotContain",
+                  "STATE_SYSTEM_CHECKED"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Toggle.ToggleState",
                   "is",
-                  "false"
+                  "Off (0)"
                ]
             ]
          },
@@ -66,15 +68,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-checked=false on checkbox"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-checked=false on checkbox.</p>
+    <div role='checkbox' id='test' aria-checked='false'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-sort=descending</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,45 +20,39 @@
             "ATK" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "sort:descending"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXSortDirection",
                   "is",
-                  "true"
+                  "AXDescendingSortDirection"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "sort:descending"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "AriaProperties.sort",
                   "is",
-                  "false"
+                  "descending"
+               ],
+               [
+                  "property",
+                  "ItemStatus",
+                  "is",
+                  "descending"
                ]
             ]
          },
@@ -66,15 +60,19 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-sort=descending"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-sort=descending.</p>
+    <div role='grid'>
+    <div role='row'>
+      <div role='columnheader' id='test' aria-sort='descending'>content</div>
+    </div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

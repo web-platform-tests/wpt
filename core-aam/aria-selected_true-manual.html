@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-selected=true</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,43 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_SELECTABLE"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_SELECTED"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXSelected",
                   "is",
-                  "true"
+                  "YES"
                ]
             ],
-            "IAccessible2" : [
+            "MSAA" : [
                [
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "STATE_SYSTEM_SELECTABLE"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_SELECTED"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "SelectionItem.IsSelected",
                   "is",
-                  "false"
+                  "true"
                ]
             ]
          },
@@ -66,15 +66,19 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-selected=true"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-selected=true.</p>
+    <div role='grid'>
+    <div role='row'>
+      <div role='gridcell' id='test' aria-selected='true'>content</div>
+    </div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

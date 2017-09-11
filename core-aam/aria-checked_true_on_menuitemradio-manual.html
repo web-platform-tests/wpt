@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-checked=true on menuitemradio</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,57 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_CHECKABLE"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_CHECKED"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXValue",
                   "is",
-                  "true"
+                  "1"
+               ],
+               [
+                  "property",
+                  "AXMenuItemMarkChar",
+                  "is",
+                  "✓"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
+                  "checkable:true"
+               ]
+            ],
+            "MSAA" : [
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_CHECKED"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Toggle.ToggleState",
                   "is",
-                  "false"
+                  "On (1)"
+               ],
+               [
+                  "property",
+                  "SelectionItem.IsSelected",
+                  "is",
+                  "True"
                ]
             ]
          },
@@ -66,15 +80,17 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-checked=true on menuitemradio"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-checked=true on menuitemradio.</p>
+    <div role='menu'>
+    <div role='menuitemradio' id='test' aria-checked='true'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

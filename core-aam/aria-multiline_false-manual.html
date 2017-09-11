@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-multiline=false</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,21 +22,13 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_SINGLE_LINE"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
-               ]
-            ],
-            "AXAPI" : [
-               [
-                  "property",
-                  "AXInvalid",
-                  "is",
-                  "true"
+                  "states",
+                  "doesNotContain",
+                  "STATE_MULTI_LINE"
                ]
             ],
             "IAccessible2" : [
@@ -44,21 +36,13 @@
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "IA2_STATE_SINGLE_LINE"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
-               ]
-            ],
-            "UIA" : [
-               [
-                  "property",
-                  "IsDataValidForForm",
-                  "is",
-                  "false"
+                  "states",
+                  "doesNotContain",
+                  "IA2_STATE_MULTI_LINE"
                ]
             ]
          },
@@ -66,15 +50,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-multiline=false"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-multiline=false.</p>
+    <div role='textbox' id='test' aria-multiline='false'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

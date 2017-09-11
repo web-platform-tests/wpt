@@ -15,7 +15,7 @@ const validTotal = Object.freeze({
   label: "label",
   amount: validAmount,
 });
-const validShippingOption = Object.freeze({
+const validshippingOption = Object.freeze({
   id: "valid",
   label: "Shipping Option",
   amount: validAmount,
@@ -71,7 +71,7 @@ function testShippingAddressChange() {
 <ol>
   <li>
     <button onclick="testShippingAddressChange()">
-      When the shipping option is manually changed, request.shippingOption represents the user's choice.
+      When the shipping address is manually changed, request.shippingOption is a PaymentAddress.
     </button>
   </li>
 </ol>

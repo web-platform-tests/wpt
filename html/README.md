@@ -12,6 +12,7 @@ For historical reasons, parts of HTML have their own directories:
 * [/custom-elements](/custom-elements)
 * [/eventsource](/eventsource)
 * [/imagebitmap-renderingcontext](/imagebitmap-renderingcontext)
+* [/innerText](/innerText)
 * [/offscreen-canvas](/offscreen-canvas)
 * [/webmessaging](/webmessaging)
 * [/websockets](/websockets)

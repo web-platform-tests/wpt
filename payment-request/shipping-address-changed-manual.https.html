@@ -21,8 +21,10 @@ const validShippingOption = Object.freeze({
   amount: validAmount,
   selected: false,
 });
-const validDetails = Object.freeze({ total: validTotal, shippingOptions: [validShippingOption] });
-
+const validDetails = Object.freeze({
+  total: validTotal,
+  shippingOptions: [validShippingOption],
+});
 const requestShipping = Object.freeze({
   requestShipping: true,
 });
@@ -33,6 +35,11 @@ function testShippingAddressChange() {
       validMethods,
       validDetails,
       requestShipping
+    );
+    assert_equals(
+      request.shippingAddress,
+      null,
+      "request.shippingAddress must initially be null"
     );
     const listenerPromise = new Promise(resolve => {
       request.addEventListener("shippingaddresschange", () => {
@@ -54,6 +61,7 @@ function testShippingAddressChange() {
     done();
   });
 }
+
 </script>
 
 <h2>PaymentRequest shippingAddress attribute</h2>

@@ -29,10 +29,10 @@ def test_element_not_found(session):
 
 def test_element_not_editable(session):
     # 14.2 Step 3
-    session.url = inline("""        
+    session.url = inline("""
         <p id="para" contenteditable="false">This is not an editable paragraph.</p>
         """)
-     
+
     element = session.find.css("#para", all=False)
     result = clear(session, element.id)
     assert_error(result, "invalid element state")
@@ -40,10 +40,10 @@ def test_element_not_editable(session):
 
 def test_element_not_resettable(session):
     # 14.2 Step 3
-    session.url = inline("""        
+    session.url = inline("""
         <input id="box1" type="button" value="Federer"/><br>
         """)
-     
+
     element = session.find.css("#box1", all=False)
     result = clear(session, element.id)
     assert_error(result, "invalid element state")
@@ -54,14 +54,14 @@ def test_scroll_into_element_view(session):
     session.url = inline("""
         <input id="box1" type="text" value="Federer"/><br>
         <div style="height: 10000px"><br>
-        """)   
-    
+        """)
+
     # Scroll to the bottom of the page
     session.execute_script("""window.scrollTo(0, document.body.scrollHeight);""")
     element = session.find.css("#box1", all=False)
     # Clear and scroll back to the top of the page
     result = clear(session, element.id)
-    
+
     # Check if element cleared is scrolled into view
     rect = session.execute_script("""return document.getElementById("box1").getBoundingClientRect()""")
 

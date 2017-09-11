@@ -13,13 +13,19 @@ promise_test(async () => {
     const idlText = await fetch(url).then(r => r.text());
     idlArray.add_idls(idlText);
   }
+  // typedef EventHandler from HTML
+  // https://html.spec.whatwg.org/#eventhandler
+  idlArray.add_idls(`
+    [TreatNonObjectAsNull]
+    callback EventHandlerNonNull = any (Event event);
+    typedef EventHandlerNonNull? EventHandler;
+  `);
   const methods = "[{supportedMethods: 'foo'}]";
   const amount = "{currency: 'USD', value: '0'}";
-  const details = `{total: {label: 'bar', amount: ${amount} }}`;
+  const details = `{total: {label: 'bar', amount: ${amount}} }`;
   idlArray.add_objects({
     PaymentRequest: [`new PaymentRequest(${methods}, ${details})`],
   });
-  idlArray.add_untested_idls('interface EventHandler {};');
   idlArray.test();
 }, "Setup for Payment Request API IDL tests.");
 </script>

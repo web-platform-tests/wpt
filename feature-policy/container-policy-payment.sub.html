@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<title>Payment allowed by container policy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="same-origin" src="resources/payment-enabled.html" allow="payment"></iframe>
+<iframe id="cross-origin" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/payment-enabled.html" allow="payment"></iframe>
+<iframe id="same-origin-allowpaymentrequest" src="resources/payment-enabled.html" allowpaymentrequest allow="payment"></iframe>
+<iframe id="cross-origin-allowpaymentrequest" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/payment-enabled.html" allowpaymentrequest allow="payment"></iframe>

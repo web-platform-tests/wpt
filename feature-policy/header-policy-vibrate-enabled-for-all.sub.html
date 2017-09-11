@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="same-origin" src="resources/vibrate-enabled.html"></iframe>
+<iframe id="cross-origin" src="{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/vibrate-enabled.html"></iframe>

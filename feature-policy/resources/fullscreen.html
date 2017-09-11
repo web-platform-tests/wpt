@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<title>Feature Policy Fullscreen (manual click triggers fullscreen request)</title>
+<script src="/resources/testharness.js"></script>
+<script>
+setup({explicit_timeout: true})
+document.onfullscreenerror = function() {
+  parent.postMessage({ type: 'error', enabled: document.fullscreenEnabled }, '*');
+};
+document.onwebkitfullscreenerror = function() {
+  parent.postMessage({ type: 'error', enabled: document.webkitFullscreenEnabled }, '*');
+};
+document.onmozfullscreenerror = function() {
+  parent.postMessage({ type: 'error', enabled: document.mozFullscreenEnabled }, '*');
+};
+document.onmsfullscreenerror = function() {
+  parent.postMessage({ type: 'error', enabled: document.msFullscreenEnabled }, '*');
+};
+document.onfullscreenchange = function() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+    parent.postMessage({ type: 'change', enabled: document.fullscreenEnabled }, '*');
+  }
+};
+document.onwebkitfullscreenchange = function() {
+  if (document.webkitFullscreenElement) {
+    document.webkitExitFullscreen();
+    parent.postMessage({ type: 'change', enabled: document.webkitFullscreenEnabled }, '*');
+  }
+};
+document.onmozfullscreenchange = function() {
+  if (document.mozFullscreenElement) {
+    document.mozExitFullscreen();
+    parent.postMessage({ type: 'change', enabled: document.mozFullscreenEnabled }, '*');
+  }
+};
+document.onmsfullscreenchange = function() {
+  if (document.msFullscreenElement) {
+    document.msExitFullscreen();
+    parent.postMessage({ type: 'change', enabled: document.msFullscreenEnabled }, '*');
+  }
+};
+
+function fullscreen() {
+  var element = document.querySelector('div');
+  if (typeof element.requestFullscreen !== 'undefined') {
+    element.requestFullscreen();
+  } else if (typeof element.webkitRequestFullscreen !== 'undefined') {
+    element.webkitRequestFullscreen();
+  } else if (typeof element.mozRequestFullscreen !== 'undefined') {
+    element.mozRequestFullscreen();
+  } else if (typeof element.msRequestFullscreen !== 'undefined') {
+    element.msRequestFullscreen();
+  }
+}
+</script>
+<div>
+<p>Click on the button below. If a "PASS" result appears the test passes, otherwise it fails</p>
+<button onclick="fullscreen()">Click Here</button>
+</div>

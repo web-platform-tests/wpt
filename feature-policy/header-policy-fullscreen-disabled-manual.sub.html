@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="f1"></iframe>
+<iframe id="f2" allowfullscreen></iframe>
+<script>
+var srcs = [
+  'resources/fullscreen.html',
+  '{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/fullscreen.html'
+];
+
+function loadFrame(id) {
+  var frame = document.getElementById(id);
+  for (var src of srcs) {
+  promise_test(function(t) {
+    frame.src = src;
+    return new Promise(function(resolve, reject) {
+      window.addEventListener('message', function(e) {
+        resolve(e.data);
+      }, { once: true });
+    }).then(function(data) {
+      assert_false(data.enabled, 'Document.fullscreenEnabled:');
+      assert_equals(data.type, 'error', 'Document.requestFullscreen():');
+    });
+  }, (src === srcs[0] ? 'same origin' : 'cross origin') +
+    ' iframe with allowfullscreen = ' + frame.allowFullscreen +
+    ' may not call document.requestFullscreen() when disabled by feature policy');
+  }
+}
+
+loadFrame('f1');
+loadFrame('f2');
+</script>

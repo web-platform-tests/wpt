@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Fullscreen allowed by container policy with relocation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="f1" allow="fullscreen"></iframe>
+<iframe id="f2" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="f3" allowfullscreen></iframe>
+<iframe id="f4" allow="fullscreen"></iframe>
+<iframe id="f5" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="f6" allowfullscreen></iframe>
+<script>
+function loadFrame(id, src, is_feature_allowed) {
+  var iframe = document.getElementById(id);
+  promise_test(function(t) {
+    iframe.src =src;
+    return new Promise(function(resolve, reject) {
+      window.addEventListener('message', function(e) {
+        if (e.data.type === 'change' || e.data.type === 'error') {
+          resolve(e.data);
+        }
+      }, { once: true });
+    }).then(function(data) {
+      if (is_feature_allowed) {
+        assert_true(data.enabled, 'Document.fullscreenEnabled:');
+        assert_equals(data.type, 'change', 'Document.requestFullscreen():');
+      } else {
+        assert_false(data.enabled, 'Document.fullscreenEnabled:');
+        assert_equals(data.type, 'error', 'Document.requestFullscreen():');
+      }
+    });
+  }, 'iframe ' + id + ' relocated to URL: ' + src + ' with allowfullscreen = ' + iframe.allowFullscreen + ' is ' + (is_feature_allowed ? 'enabled' : 'disabled') + ' by container policy.');
+}
+
+loadFrame('f1', '{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/fullscreen.html', true);
+loadFrame('f2', '{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/fullscreen.html', true);
+loadFrame('f3', '{{location[scheme]}}://{{domains[www]}}:{{location[port]}}/feature-policy/resources/fullscreen.html', true);
+loadFrame('f4', 'resources/fullscreen-relocate.html', false);
+loadFrame('f5', 'resources/fullscreen-relocate.html', false);
+loadFrame('f6', 'resources/fullscreen-relocate.html', true);
+</script>
+
+

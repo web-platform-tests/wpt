@@ -14,6 +14,7 @@ For historical reasons, parts of HTML have their own directories:
 * [/imagebitmap-renderingcontext](/imagebitmap-renderingcontext)
 * [/innerText](/innerText)
 * [/offscreen-canvas](/offscreen-canvas)
+* [/shadow-dom](/shadow-dom)
 * [/webmessaging](/webmessaging)
 * [/websockets](/websockets)
 * [/webstorage](/webstorage)

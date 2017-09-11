@@ -8,12 +8,12 @@ multipage-version specification. For example, The URL of
 
 For historical reasons, parts of HTML have their own directories:
 
-* /2dcontext
-* /custom-elements
-* /eventsource
-* /imagebitmap-renderingcontext
-* /offscreen-canvas
-* /webmessaging
-* /websockets
-* /webstorage
-* /workers
+* [/2dcontext](/2dcontext)
+* [/custom-elements](/custom-elements)
+* [/eventsource](/eventsource)
+* [/imagebitmap-renderingcontext](/imagebitmap-renderingcontext)
+* [/offscreen-canvas](/offscreen-canvas)
+* [/webmessaging](/webmessaging)
+* [/websockets](/websockets)
+* [/webstorage](/webstorage)
+* [/workers](/workers)

@@ -529,7 +529,8 @@ sub build_test() {
   $fileName =~ s/\s*$//;
   $fileName =~ s/\///g;
   $fileName =~ s/\s+/_/g;
-  $fileName =~ s/[",=]/_/g;
+  $fileName =~ s/[,=]/_/g;
+  $fileName =~ s/['"]//g;
 
   my $count = 2;
   if ($testNames->{$fileName}) {

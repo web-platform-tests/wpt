@@ -7,14 +7,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
-<style>
-  pre {
-    display: none;
-  }
-</style>
 <div id="log"></div>
 
-<pre id="idl">
+<script id="idl" type="text/plain">
 interface Event {
 };
 
@@ -24,7 +19,7 @@ interface Error {
 dictionary EventInit {
 };
 
-[SecureContext]
+[SecureContext, Exposed=Window]
 interface Sensor : EventTarget {
   readonly attribute boolean activated;
   readonly attribute DOMHighResTimeStamp? timestamp;
@@ -38,10 +33,11 @@ interface Sensor : EventTarget {
 dictionary SensorOptions {
   double? frequency;
 };
-</pre>
+</script>
 
-<pre id="generic-idl">
-[SecureContext, Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
+<script id="generic-idl" type="text/plain">
+[Constructor(DOMString type, SensorErrorEventInit errorEventInitDict),
+ SecureContext, Exposed=Window]
 interface SensorErrorEvent : Event {
   readonly attribute Error error;
 };
@@ -49,12 +45,12 @@ interface SensorErrorEvent : Event {
 dictionary SensorErrorEventInit : EventInit {
   required Error error;
 };
-</pre>
+</script>
 
 <script>
-(function() {
+(() => {
   "use strict";
-  var idl_array = new IdlArray();
+  let idl_array = new IdlArray();
   idl_array.add_untested_idls(document.getElementById('idl').textContent);
   idl_array.add_idls(document.getElementById('generic-idl').textContent);
 

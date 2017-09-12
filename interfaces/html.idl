@@ -1610,9 +1610,7 @@ dictionary PromiseRejectionEventInit : EventInit {
   any reason;
 };
 
-[TreatNonObjectAsNull]
-callback EventHandlerNonNull = any (Event event);
-typedef EventHandlerNonNull? EventHandler;
+// typedef EventHandler was moved to eventhandler.idl
 
 [TreatNonObjectAsNull]
 callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, optional DOMString source, optional unsigned long lineno, optional unsigned long colno, optional any error);

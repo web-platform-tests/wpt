@@ -12,8 +12,9 @@
 "use strict";
 setup({ explicit_done: true });
 
-fetch("/interfaces/html.idl").then(res => res.text()).then(htmlIDL => {
-  const parsedHTMLIDL = WebIDL2.parse(htmlIDL);
+fetch("/interfaces/html.idl").then(res => res.text()).then(async htmlIDL => {
+  const eventHandler = await fetch("/interfaces/eventhandler.idl").then(res => res.text());
+  const parsedHTMLIDL = WebIDL2.parse(htmlIDL + eventHandler);
   const globalEventHandlers = parsedHTMLIDL.find(idl => idl.name === "GlobalEventHandlers");
 
   // onerror is too special

@@ -68,7 +68,7 @@ Reconfiguration
 */
 
 test(() => {
-  const pc = new RTCPeerConnection({});
+  const pc = new RTCPeerConnection();
   assert_idl_attribute(pc, "getConfiguration");
   assert_idl_attribute(pc, "setConfiguration");
   pc.setConfiguration({
@@ -78,10 +78,10 @@ test(() => {
 }, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to 0");
 
 test(() => {
-  const pc = new RTCPeerConnection({});
+  const pc = new RTCPeerConnection();
   assert_idl_attribute(pc, "getConfiguration");
   assert_idl_attribute(pc, "setConfiguration");
-    pc.setConfiguration({
+  pc.setConfiguration({
     iceCandidatePoolSize: 255
   });
   assert_equals(pc.getConfiguration().iceCandidatePoolSize, 255);
@@ -96,8 +96,7 @@ been implemented). Without this check, these tests will pass incorrectly.
 */
 
 test(() => {
-  const pc = new RTCPeerConnection({});
-  assert_idl_attribute(pc, "setConfiguration");
+  const pc = new RTCPeerConnection();
   assert_equals(typeof pc.setConfiguration, "function", "RTCPeerConnection.prototype.setConfiguration is not implemented");
   assert_throws(new TypeError(), () => {
     pc.setConfiguration({
@@ -107,8 +106,7 @@ test(() => {
 }, "Reconfigure RTCPeerConnection instance iceCandidatePoolSize to -1 (Out Of Range)");
 
 test(() => {
-  const pc = new RTCPeerConnection({});
-  assert_idl_attribute(pc, "setConfiguration");
+  const pc = new RTCPeerConnection();
   assert_equals(typeof pc.setConfiguration, "function", "RTCPeerConnection.prototype.setConfiguration is not implemented");
   assert_throws(new TypeError(), () => {
     pc.setConfiguration({

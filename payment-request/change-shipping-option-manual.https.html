@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <title>Test for PaymentRequest shippingOption attribute</title>
 <link rel="help" href="https://w3c.github.io/payment-request/#shippingoption-attribute">
-<link rel="help" href="https://w3c.github.io/payment-request/#onshippingaddresschange-attribute">
+<link rel="help" href="https://w3c.github.io/payment-request/#onshippingoptionchange-attribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -25,7 +25,7 @@ const validShippingOption1 = Object.freeze({
 });
 
 const validShippingOption2 = Object.freeze({
-  id: "fail",
+  id: "initially-selected",
   label: "Valid shipping option 2",
   amount: validAmount,
   selected: true,
@@ -45,6 +45,11 @@ function testShippingOptionChanged() {
       detailsWithShippingOptions,
       requestShipping
     );
+    assert_equals(
+      request.shippingOption,
+      "initially-selected",
+      "Must be 'initially-selected', as the selected member is true"
+    );
     const listenerPromise = new Promise(resolve => {
       request.addEventListener("shippingoptionchange", () => {
         resolve(request.shippingOption);
@@ -63,8 +68,8 @@ function testShippingOptionChanged() {
       "Expected valid-1 as the shippingOption"
     );
     await request.abort();
-    done();
   });
+  done();
 }
 </script>
 

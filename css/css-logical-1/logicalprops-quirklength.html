@@ -25,6 +25,6 @@ var tests = [
   {cssText:"max-inline-size: 1"},
 ];
 tests.forEach(function(t) {
-  test(() => assert_false(isValidDeclaration(t.cssText)), "Check that unitless lengths are not valid for logical properties in quirks mode");
+  test(() => assert_false(isValidDeclaration(t.cssText)), 'Check that "' + t.cssText + '" is not valid in quirks mode');
 });
 </script>

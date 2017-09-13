@@ -2,7 +2,7 @@ import os
 import time
 
 def main(request, response):
-    body = open(os.path.join(os.path.dirname(__file__), "../../css/fonts/ahem/ahem.ttf"), "rb").read()
+    body = open(os.path.join(os.path.dirname(__file__), "../../../css/fonts/ahem/ahem.ttf"), "rb").read()
     delay = float(request.GET.first("ms", 500))
     if delay > 0:
         time.sleep(delay / 1E3);

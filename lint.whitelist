@@ -28,6 +28,7 @@ INDENT TABS: XMLHttpRequest/*
 INDENT TABS: encoding/legacy*/*
 INDENT TABS: encrypted-media/polyfill/Makefile
 
+TRAILING WHITESPACE: 2dcontext/tools/current-work-canvas.xhtml
 TRAILING WHITESPACE: app-uri/*
 TRAILING WHITESPACE: battery-status/*
 TRAILING WHITESPACE: conformance-checkers/*
@@ -151,7 +152,7 @@ SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
-SET TIMEOUT: css-font-display/font-display.html
+SET TIMEOUT: css-fonts/font-display/font-display.html
 SET TIMEOUT: encrypted-media/Google/migrated_to_root_disabled/encrypted-media-utils.js
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
@@ -177,6 +178,7 @@ SET TIMEOUT: payment-request/payment-request-response-id.html
 SET TIMEOUT: pointerevents/pointerevent_support.js
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: resource-timing/resource-timing.js
+SET TIMEOUT: resource-timing/single-entry-per-resource.html
 SET TIMEOUT: screen-orientation/lock-bad-argument.html
 SET TIMEOUT: screen-orientation/onchange-event.html
 SET TIMEOUT: screen-orientation/resources/sandboxed-iframe-locking.html
@@ -220,6 +222,7 @@ SET TIMEOUT: XMLHttpRequest/resources/init.htm
 SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 
 # generate_tests usage (should be got rid of)
+GENERATE_TESTS: 2dcontext/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes-1/shape-outside/values/*
 GENERATE_TESTS: css/work-in-progress/microsoft/css-tables/*
 GENERATE_TESTS: css/work-in-progress/ttwf_sf/divya/index-002.html

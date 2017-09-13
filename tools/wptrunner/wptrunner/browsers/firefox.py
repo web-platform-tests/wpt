@@ -93,9 +93,6 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
     if test_type == "wdspec":
-        executor_kwargs["binary"] = kwargs["binary"]
-        executor_kwargs["webdriver_binary"] = kwargs.get("webdriver_binary")
-        executor_kwargs["webdriver_args"] = kwargs.get("webdriver_args")
         fxOptions = {}
         if kwargs["binary"]:
             fxOptions["binary"] = kwargs["binary"]
@@ -122,7 +119,8 @@ def env_options():
 
 
 def run_info_extras(**kwargs):
-    return {"e10s": kwargs["gecko_e10s"]}
+    return {"e10s": kwargs["gecko_e10s"],
+            "headless": "MOZ_HEADLESS" in os.environ}
 
 
 def update_properties():
@@ -176,6 +174,8 @@ class FirefoxBrowser(Browser):
             self.used_ports.add(self.marionette_port)
 
         env = os.environ.copy()
+        env["MOZ_CRASHREPORTER"] = "1"
+        env["MOZ_CRASHREPORTER_SHUTDOWN"] = "1"
         env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
         env["STYLO_THREADS"] = str(self.stylo_threads)
 
@@ -309,6 +309,14 @@ class FirefoxBrowser(Browser):
     def executor_browser(self):
         assert self.marionette_port is not None
         return ExecutorBrowser, {"marionette_port": self.marionette_port}
+
+    def check_for_crashes(self):
+        dump_dir = os.path.join(self.profile.profile, "minidumps")
+
+        return bool(mozcrash.check_for_crashes(dump_dir,
+                                               symbols_path=self.symbols_path,
+                                               stackwalk_binary=self.stackwalk_binary,
+                                               quiet=True))
 
     def log_crash(self, process, test):
         dump_dir = os.path.join(self.profile.profile, "minidumps")

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-multiselectable=true</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,29 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "STATE_MULTISELECTABLE"
                ]
             ],
-            "AXAPI" : [
-               [
-                  "property",
-                  "AXInvalid",
-                  "is",
-                  "true"
-               ]
-            ],
-            "IAccessible2" : [
+            "MSAA" : [
                [
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "STATE_SYSTEM_MULTISELECTABLE"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_EXTSELECTABLE"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Selection.CanSelectMultiple",
                   "is",
-                  "false"
+                  "true"
                ]
             ]
          },
@@ -66,15 +52,19 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-multiselectable=true"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-multiselectable=true.</p>
+    <div role='grid' id='test' aria-multiselectable='true'>
+    <div role='row'>
+      <div role='cell'>content</div>
+    </div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-haspopup=tree NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,45 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_HAS_POPUP"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "objectAttributes",
                   "contains",
-                  "invalid:true"
+                  "haspopup:tree"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
-                  "is",
-                  "true"
+                  "actions",
+                  "contains",
+                  "AXShowMenu"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
+                  "haspopup:tree"
+               ]
+            ],
+            "MSAA" : [
                [
                   "property",
-                  "textAttributes",
+                  "states",
                   "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_HASPOPUP"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Control Pattern",
                   "is",
-                  "false"
+                  "ExpandCollapse"
                ]
             ]
          },
@@ -66,15 +68,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-haspopup=tree NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-haspopup=tree NEW.</p>
+    <div role='group' id='test' aria-haspopup='tree'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

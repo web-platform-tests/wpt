@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-orientation=vertical</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,21 +22,21 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_VERTICAL"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "states",
+                  "doesNotContain",
+                  "STATE_HORIZONTAL"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXOrientation",
                   "is",
-                  "true"
+                  "AXVerticalOrientation"
                ]
             ],
             "IAccessible2" : [
@@ -44,21 +44,21 @@
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "IA2_STATE_VERTICAL"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "states",
+                  "doesNotContain",
+                  "IA2_STATE_HORIZONTAL"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Orientation",
                   "is",
-                  "false"
+                  "vertical"
                ]
             ]
          },
@@ -66,15 +66,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-orientation=vertical"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-orientation=vertical.</p>
+    <div role='scrollbar' id='test' aria-orientation='vertical'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-expanded=false</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,43 +22,37 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
+                  "STATE_EXPANDABLE"
                ],
                [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "states",
+                  "doesNotContain",
+                  "STATE_EXPANDED"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXExpanded",
                   "is",
-                  "true"
+                  "NO"
                ]
             ],
-            "IAccessible2" : [
+            "MSAA" : [
                [
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_COLLAPSED"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "ExpandCollapse.ExpandCollapseState",
                   "is",
-                  "false"
+                  "Collapsed"
                ]
             ]
          },
@@ -66,15 +60,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-expanded=false"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-expanded=false.</p>
+    <div role='button' id='test' aria-expanded='false'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

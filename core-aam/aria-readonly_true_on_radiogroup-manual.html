@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>aria-readonly=true on radiogroup</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,59 +22,65 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "STATE_READ_ONLY"
                ]
             ],
             "AXAPI" : [
                [
-                  "property",
-                  "AXInvalid",
+                  "result",
+                  "AXUIElementIsAttributeSettable(AXValue)",
                   "is",
-                  "true"
+                  "NO"
                ]
             ],
-            "IAccessible2" : [
+            "MSAA" : [
                [
                   "property",
                   "states",
                   "contains",
-                  "IA2_STATE_INVALID_ENTRY"
-               ],
-               [
-                  "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "STATE_SYSTEM_READONLY"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "Value.IsReadOnly",
                   "is",
-                  "false"
+                  "true"
                ]
             ]
          },
          "title" : "step 1",
          "type" : "test"
+      },
+      {
+         "element" : "radio",
+         "test" : {
+            "ATK" : [
+               [
+                  "property",
+                  "states",
+                  "doesNotContain",
+                  "STATE_CHECKABLE"
+               ]
+            ],
+            "AXAPI" : []
+         },
+         "title" : "step 2",
+         "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "aria-readonly=true on radiogroup"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for aria-readonly=true on radiogroup.</p>
+    <div role='radiogroup' id='test' aria-readonly='true'>
+    <div role='radio' id='radio'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -85,10 +85,14 @@ test(function testPerformanceResourceTiming () {  // Resource timing
         }
     });
     assert_greater_than(entries[0].responseEnd, entries[0].startTime, "The resource request should have taken at least some time");
-    assert_approx_equals(entries[0].responseEnd - entries[0].responseStart, 250, 50, "Resource timing numbers reflect reality somewhat");
+     // We requested a delay of 250ms, but it could be a little bit less, and could be significantly more.
+    assert_greater_than(entries[0].responseEnd - entries[0].responseStart, 230, "Resource timing numbers reflect reality somewhat");
+}, "Resource timing seems to work in workers");
+
+test(function testPerformanceClearResourceTimings () {
     performance.clearResourceTimings();
     assert_equals(performance.getEntriesByType("resource").length, 0, "clearResourceTimings cleared the resource timings");
-}, "Resource timing seems to work in workers");
+}, "performance.clearResourceTimings in workers");
 
 test(function testPerformanceSetResourceTimingBufferSize () {
     performance.setResourceTimingBufferSize(0);

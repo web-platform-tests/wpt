@@ -10,7 +10,34 @@
 setup(() => {
   window.canvas = document.getElementById('canvas');
   window.ctx = canvas.getContext('2d');
+  window.ctx.fillStyle = '#000';
 });
+
+function clearCanvas(ctx) {
+  ctx.resetTransform();
+  ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+}
+
+function drawRectWithSetTransform(ctx, transform) {
+  clearCanvas(ctx);
+  ctx.setTransform(transform);
+  ctx.fillRect(20, 20, 30, 30);
+  return window.canvas.toDataURL();
+}
+
+function drawRectWithAddPathTransform(ctx, transform) {
+  clearCanvas(ctx);
+  var path = new Path2D();
+  path.rect(20, 20, 30, 30);
+  var transformedPath = new Path2D();
+  if (transform === undefined) {
+    transformedPath.addPath(path);
+  } else {
+    transformedPath.addPath(path, transform);
+  }
+  ctx.fill(transformedPath);
+  return window.canvas.toDataURL();
+}
 
 [
   {a: 1, m11: 2},
@@ -23,7 +50,11 @@ setup(() => {
   test(() => {
     ctx.resetTransform();
     assert_throws(new TypeError(), () => ctx.setTransform(dict));
-  }, `${format_dict(dict)} (invalid)`);
+  }, `setTransform(${format_dict(dict)}) (invalid)`);
+
+  test(() => {
+    assert_throws(new TypeError(), () => drawRectWithAddPathTransform(ctx, dict));
+  }, `addPath(${format_dict(dict)}) (invalid)`);
 });
 
 test(() => {
@@ -31,7 +62,14 @@ test(() => {
   ctx.setTransform(1, 2, 3, 4, 5, 6);
   const matrix = ctx.getTransform();
   checkMatrix(matrix, matrix2D({m11: 1, m12: 2, m21: 3, m22: 4, m41: 5, m42: 6}));
-}, `Sanity check without dictionary`);
+}, `setTransform (Sanity check without dictionary)`);
+
+test(() => {
+  var ident = matrix2D({});
+  var expectedResultURL = drawRectWithSetTransform(ctx, ident);
+  var actualResultURL = drawRectWithAddPathTransform(ctx);
+  assert_equals(actualResultURL, expectedResultURL);
+}, `addPath (Sanity check without second parameter)`);
 
 [
   // Input dict that would throw if ignore3D was false
@@ -137,28 +175,9 @@ test(() => {
   }, `setTransform(${format_dict(dict)})`);
 
   test(() => {
-    // Clear the canvas and draw a rectangle going through a transformation
-    // set with setTransform (we know this one's results are correct if the
-    // setTransform test above passed).
-    ctx.resetTransform();
-    ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
-    ctx.fillStyle = '#000';
-    ctx.setTransform(expected);
-    ctx.fillRect(20, 20, 30, 30);
-    var expectedResult = window.canvas.toDataURL();
-
-    // Now clear the canvas and draw a rectangle going through the same
-    // transformation but using addPath.
-    ctx.resetTransform();
-    ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
-    var path = new Path2D();
-    path.rect(20, 20, 30, 30);
-    var transformedPath = new Path2D();
-    transformedPath.addPath(path, expected);
-    ctx.fill(transformedPath);
-
-    // If the results are the same, then addPath also works.
-    assert_equals(window.canvas.toDataURL(), expectedResult);
+    var expectedResultURL = drawRectWithSetTransform(ctx, expected);
+    var actualResultURL = drawRectWithAddPathTransform(ctx, expected);
+    assert_equals(actualResultURL, expectedResultURL);
   }, `addPath(${format_dict(dict)})`);
 });
 </script>

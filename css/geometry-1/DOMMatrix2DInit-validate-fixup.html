@@ -57,10 +57,10 @@ test(() => {
   [{c: 0, m21: -0},                matrix2D({m21: -0})],
   [{c: -0, m21: 0},                matrix2D({m21: 0})],
   [{c: -0, m21: -0},               matrix2D({m21: -0})],
-  [{d: Infinity, m22: Infinity},   matrix2D({m22: Infinity})],
-  [{e: -Infinity, m41: -Infinity}, matrix2D({m41: -Infinity})],
-  [{f: NaN, m42: NaN},             matrix2D({m42: NaN})],
-  [{f: NaN, m42: NaN, is2D: true}, matrix2D({m42: NaN})],
+  [{d: Infinity, m22: Infinity},   matrix2D({})], // should be silently ignored
+  [{e: -Infinity, m41: -Infinity}, matrix2D({})], // should be silently ignored
+  [{f: NaN, m42: NaN},             matrix2D({})], // should be silently ignored
+  [{f: NaN, m42: NaN, is2D: true}, matrix2D({})], // should be silently ignored
   [{f: 0, m42: null},              matrix2D({m42: 0})], // null is converted to 0
   [{f: -0, m42: null},             matrix2D({m42: 0})], // null is converted to 0
   [{a: 2},                         matrix2D({m11: 2})],
@@ -134,6 +134,31 @@ test(() => {
     ctx.setTransform(dict);
     const matrix = ctx.getTransform();
     checkMatrix(matrix, expected);
-  }, `${format_dict(dict)}`);
+  }, `setTransform(${format_dict(dict)})`);
+
+  test(() => {
+    // Clear the canvas and draw a rectangle going through a transformation
+    // set with setTransform (we know this one's results are correct if the
+    // setTransform test above passed).
+    ctx.resetTransform();
+    ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+    ctx.fillStyle = '#000';
+    ctx.setTransform(expected);
+    ctx.fillRect(20, 20, 30, 30);
+    var expectedResult = window.canvas.toDataURL();
+
+    // Now clear the canvas and draw a rectangle going through the same
+    // transformation but using addPath.
+    ctx.resetTransform();
+    ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+    var path = new Path2D();
+    path.rect(20, 20, 30, 30);
+    var transformedPath = new Path2D();
+    transformedPath.addPath(path, expected);
+    ctx.fill(transformedPath);
+
+    // If the results are the same, then addPath also works.
+    assert_equals(window.canvas.toDataURL(), expectedResult);
+  }, `addPath(${format_dict(dict)})`);
 });
 </script>

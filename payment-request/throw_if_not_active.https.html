@@ -79,46 +79,42 @@ promise_test(async t => {
 }, "PaymentRequest.show() aborts if the document is not active");
 
 promise_test(async t => {
-  // check that PaymentRequests can be constructed.
+  // check that PaymentRequests can be constructed (smoke test).
   new PaymentRequest(validMethods, validDetails);
-  // We create two iframes, and nest them. Wait for both of them to load.
-  const iframe = document.createElement("iframe");
-  iframe.allowPaymentRequest = true;
-  document.body.appendChild(iframe);
-  // We get the request from the inner-most iframe.
-  const request = await new Promise(resolve => {
-    iframe.addEventListener(
-      "load",
-      () => {
-        const innerIframe = iframe.contentDocument.createElement("iframe");
-        innerIframe.allowPaymentRequest = true;
-        innerIframe.addEventListener(
-          "load",
-          () => {
-            // We create an instance of the inner iframe's PaymentRequest()
-            const { PaymentRequest } = innerIframe.contentWindow;
-            const request = new PaymentRequest(validMethods, validDetails);
-            resolve(request);
-          },
-          { once: true }
-        );
-        innerIframe.src = "/payment-request/resources/page2.html";
-        iframe.contentDocument.body.appendChild(innerIframe);
-      },
-      { once: true }
-    );
-    iframe.src = "/payment-request/resources/page1.html";
-  });
 
-  // Navigate the outer iframe to a new location. Wait for the load event to fire.
+  // We nest two iframes and wait for them to load.
+  const outerIframe = document.createElement("iframe");
+  outerIframe.allowPaymentRequest = true;
+  document.body.appendChild(outerIframe);
+  // Load the outer iframe (we don't care about the awaited request)
+  await getLoadedPaymentRequest(
+    outerIframe,
+    "/payment-request/resources/page1.html"
+  );
+
+  // Now we create the inner iframe
+  const innerIframe = outerIframe.contentDocument.createElement("iframe");
+  innerIframe.allowPaymentRequest = true;
+
+  // nest them
+  outerIframe.contentDocument.body.appendChild(innerIframe);
+
+  // load innerIframe, and get the PaymentRequest instance
+  const request = await getLoadedPaymentRequest(
+    innerIframe,
+    "/payment-request/resources/page2.html"
+  );
+
+  // Navigate the outer iframe to a new location.
+  // Wait for the load event to fire.
   await new Promise(resolve => {
-    iframe.addEventListener("load", resolve);
-    iframe.src = "/payment-request/resources/page2.html";
+    outerIframe.addEventListener("load", resolve);
+    outerIframe.src = "/payment-request/resources/page2.html";
   });
   // Now, request's relevant global object's document is still active
   // (it is the active document of the inner iframe), but is not fully active
   // (since the parent of the inner iframe is itself no longer active).
-  // So, call pr.show() and make sure it rejects appropriately.
+  // So, call request.show() and make sure it rejects appropriately.
   await promise_rejects(
     t,
     "AbortError",
@@ -136,14 +132,10 @@ promise_test(async t => {
   iframe.allowPaymentRequest = true;
   document.body.appendChild(iframe);
   // Make a request in the iframe.
-  const request = await new Promise(resolve => {
-    iframe.addEventListener("load", () => {
-      const { PaymentRequest } = iframe.contentWindow;
-      const request = new PaymentRequest(validMethods, validDetails);
-      resolve(request);
-    });
-    iframe.src = "/payment-request/resources/page1.html";
-  });
+  const request = await getLoadedPaymentRequest(
+    iframe,
+    "/payment-request/resources/page1.html"
+  );
   // Present the payment sheet.
   const showPromise = request.show();
   // Navigate the iframe to a new location. Wait for the load event to fire.
@@ -151,16 +143,16 @@ promise_test(async t => {
     iframe.addEventListener("load", resolve);
     iframe.src = "/payment-request/resources/page2.html";
   });
-  // Because we navigated away, the showPromise must have rejected.
   await promise_rejects(
     t,
     "AbortError",
     showPromise,
-    "The iframe was navigated away, so AbortError"
+    "The iframe was navigated away, so showPromise must reject with AbortError"
   );
   // We are done, so clean up.
   iframe.remove();
 }, "If a payment request is showing, but its document is navigated away (so no longer fully active), the payment request aborts.");
 
 done();
+
 </script>

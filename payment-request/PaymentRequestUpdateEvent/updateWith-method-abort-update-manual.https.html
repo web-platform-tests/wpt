@@ -19,6 +19,7 @@ const details = {
 const options = {
   requestShipping: true,
 };
+
 const negativeAmount = {
   currency: "USD",
   value: "-1.00",
@@ -154,7 +155,6 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   }, button.innerText.trim());
 }
 
-
 </script>
 <h2>updateWith() method - "abort the update"</h2>
 <p>
@@ -227,10 +227,10 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
     </button>
   </li>
  <li>
-   <button onclick="
-    const badDetails = Object.assign({}, details, modifierWithInvalidDisplayItems);
-    testBadUpdate(this, badDetails, new RangeError());
-  ">
+    <button onclick="
+      const badDetails = Object.assign({}, details, modifierWithInvalidDisplayItems);
+      testBadUpdate(this, badDetails, new RangeError());
+    ">
       Must throw a RangeError when a modifier display item has an invalid currency.
    </button>
   </li>

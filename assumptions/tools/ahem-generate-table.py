@@ -18,7 +18,7 @@ def grouper(n, iterable):
     iterable = iter(iterable)
     return iter(lambda: list(itertools.islice(iterable, n)), [])
 
-ttf = TTFont("../../css/fonts/ahem/ahem.ttf")
+ttf = TTFont("../../fonts/Ahem.ttf")
 
 chars = {char for table in ttf['cmap'].tables for char in table.cmap.keys()}
 
@@ -48,7 +48,7 @@ def build_header(is_test):
         rv.append("""
 @font-face {
   font-family: Ahem;
-  src: url("../css/fonts/ahem/ahem.ttf");
+  src: url("../fonts/Ahem.ttf");
 }""")
 
     rv.append("""

@@ -49,7 +49,8 @@ promise_test(async t => {
     await canMakePaymentPromise,
     "Expected canMakePaymentPromise smoke test to resolve with false"
   );
-  // Actual test
+  // Actual test - Make a big array with random PMIs,
+  // put basic-card in the middle of it!
   const pmis = []
     .concat(Array.from(pmiGenerator(250)))
     .concat(basicCard)
@@ -85,5 +86,4 @@ promise_test(async t => {
     );
   }
 }, `If basic-card is supported, then return a promise that resolves to true.`);
-
 </script>

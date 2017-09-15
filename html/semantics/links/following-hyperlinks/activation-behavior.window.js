@@ -15,12 +15,19 @@
         return;
       if(followed) {
         assert_equals(target.contentWindow.location.pathname, "/");
+        t.done();
       } else {
         assert_unreached();
       }
     });
     link.click();
-    t.step_timeout(() => t.done(), 500);
+    t.step_timeout(() => {
+      if(followed) {
+        assert_unreached();
+      } else {
+        t.done();
+      }
+    }, 500);
   }, "<" + type + "> that is not connected should " + (followed ? "" : "not ") + "be followed");
 
   async_test(t => {

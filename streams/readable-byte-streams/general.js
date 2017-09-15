@@ -1897,6 +1897,52 @@ promise_test(t => {
 }, 'ReadableStream with byte source: Throwing in pull in response to read(view) must be ignored if the stream is ' +
    'errored in it');
 
+promise_test(t => {
+  const stream = new ReadableStream({
+    start(c) {
+      c.close();
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const view = new Uint8Array([1, 2, 3]);
+  return reader.read(view).then(({ value, done }) => {
+    // Sanity checks
+    assert_true(value instanceof Uint8Array);
+    assert_not_equals(value, view);
+    assert_array_equals(value, []);
+    assert_true(done);
+
+    // The important assertions
+    assert_not_equals(value.buffer, view.buffer, 'a different ArrayBuffer must underlie the value');
+    assert_equals(view.buffer.byteLength, 0, 'the original buffer must be detached');
+  })
+}, 'ReadableStream with byte source: read()ing from a closed stream still transfers the buffer');
+
+promise_test(t => {
+  const stream = new ReadableStream({
+    start(c) {
+      c.enqueue(new Uint8Array([1, 2, 3]));
+    },
+    type: 'bytes'
+  });
+
+  const reader = stream.getReader({ mode: 'byob' });
+  const view = new Uint8Array([4, 5, 6]);
+  return reader.read(view).then(({ value, done }) => {
+    // Sanity checks
+    assert_true(value instanceof Uint8Array);
+    assert_not_equals(value, view);
+    assert_array_equals(value, [1, 2, 3]);
+    assert_false(done);
+
+    // The important assertions
+    assert_not_equals(value.buffer, view.buffer, 'a different ArrayBuffer must underlie the value');
+    assert_equals(view.buffer.byteLength, 0, 'the original buffer must be detached');
+  })
+}, 'ReadableStream with byte source: read()ing from a stream with queued chunks still transfers the buffer');
+
 promise_test(() => {
   // Tests https://github.com/whatwg/streams/issues/686
 

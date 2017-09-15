@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <link rel="help" href="https://w3c.github.io/payment-request/#show()-method">
-<title>PaymentRequest show() throws if doc is not fully active</title>
+<title>PaymentRequest show() rejects if doc is not fully active</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://w3c.github.io/payment-request/#dom-paymentrequest-show()">
@@ -153,7 +153,4 @@ promise_test(async t => {
   // We are done, so clean up.
   iframe.remove();
 }, "If a payment request is showing, but its document is navigated away (so no longer fully active), the payment request aborts.");
-
-done();
-
 </script>

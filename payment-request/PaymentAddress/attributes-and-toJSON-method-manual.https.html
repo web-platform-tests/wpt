@@ -28,27 +28,34 @@ function runManualTest(button, expected = {}) {
       addr.addressLine instanceof Array,
       "Expected addressLine to be an array"
     );
-    assert_throws(()=>{
-      addr.addressLine.push("this must throw");
-    }, "Array must be frozen");
-    for(let [attr, expectedValue] of Object.entries(expected)){
+    assert_throws(
+      new TypeError(),
+      () => {
+        addr.addressLine.push("this must throw");
+      },
+      "Array must be frozen"
+    );
+    for (let [attr, expectedValue] of Object.entries(expected)) {
       assert_idl_attribute(addr, attr);
       const msg = `Expected paymentAddress.${attr} to equal ${expectedValue}.`;
       //.toString() flattens array addressLine,
       //.toLowerCase() because case can't be enforced for some attributes
       const actualValue = addr[attr].toString().toLowerCase();
-      expectedValue = expectedValue.toString().toLowerCase()
+      expectedValue = expectedValue.toString().toLowerCase();
       assert_equals(actualValue, expectedValue, msg);
     }
-    const jsonText = addr.toJSON().toLowerCase();
-    const expectJSON = json.stringify(expected).toLowerCase();
-    assert_equals(jsonText, expectJSON, "JSON strings must match");
+    // Check toJSON result
+    for (let [prop, jsonValue] of Object.entries(addr.toJSON())) {
+      const actualValue = jsonValue.toString().toLowerCase();
+      const expectedValue = expected[prop].toString().toLowerCase();
+      const msg = `Expected JSON ${prop} to be ${expectedValue}`;
+      assert_equals(actualValue, expectedValue, msg);
+    }
   }, button.textContent.trim());
   done();
 }
-
 </script>
-<h2>shippingAddress attribute</h2>
+<h2>PaymentAddress inteface</h2>
 <p>
   When prompted, please enter enter addresses as follows...
 </p>
@@ -69,7 +76,7 @@ function runManualTest(button, expected = {}) {
       phone: '+9312345678910',
     };
     runManualTest(this, expectedAddress);">
-      If the requestShipping member is true, then shippingAddress must match the expected values.
+      If the requestShipping member is true, then shippingAddress's PaymentAddress must match the expected values.
     </button>
     "web platform test" as recipient, at address "1 wpt street" in "Kabul, Afghanistan", zip/postal code 1001.
     Set the organization to "w3c". Set the phone number to "+9312345678910"

@@ -1,0 +1,180 @@
+<!doctype html>
+<meta charset="utf8">
+<link rel="help" href="https://www.w3.org/TR/payment-request/#updatewith()-method">
+<title>
+</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_done: true, explicit_timeout: true });
+const validMethod = Object.freeze({ supportedMethods: "basic-card" });
+const validMethods = Object.freeze([validMethod]);
+const validAmount = Object.freeze({ currency: "USD", value: "5.00" });
+const validTotal = Object.freeze({
+  label: "label",
+  amount: validAmount,
+});
+const validShippingOption = Object.freeze({
+  id: "a-shipping-option",
+  label: "A shipping option",
+  amount: validAmount,
+  selected: true,
+});
+const validDisplayItem = {
+  label: "A display item",
+  amount: { currency: "USD", value: "55.00" },
+};
+const validDetails = Object.freeze({
+  total: validTotal,
+  shippingOptions: [validShippingOption],
+  displayItems: [validDisplayItem],
+});
+const validOptions = Object.freeze({
+  requestShipping: true,
+});
+
+function testUponFulfillment(
+  { textContent: testName },
+  updateDetails = validDetails,
+  expectedResponse = {},
+  expectedRequest = {}
+) {
+  promise_test(async t => {
+    const request = new PaymentRequest(
+      validMethods,
+      validDetails,
+      validOptions
+    );
+    const eventPromise = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", resolve);
+    });
+    const responsePromise = request.show();
+    const event = await eventPromise;
+    event.updateWith(updateDetails);
+    const response = await responsePromise;
+    await response.complete("success");
+    for (const [attr, expectedValue] of Object.entries(expectedResponse)) {
+      const msg = `Expected response.${attr} to equal ${expectedValue}`;
+      assert_equals(response[attr], expectedValue, msg);
+    }
+    for (const [attr, expectedValue] of Object.entries(expectedRequest)) {
+      const msg = `Expected request.${attr} to equal ${expectedValue}`;
+      assert_equals(request[attr], expectedValue, msg);
+    }
+  }, testName.trim());
+}
+
+</script>
+<h2>updateWith() method - Upon Fulfillment</h2>
+
+<ol>
+  <li>
+    <button onclick="
+      testUponFulfillment(this);
+    ">
+      Must update with valid details.
+    </button> Select a different shipping address once. Then pay.
+  </li>
+  <li>
+    <button onclick="
+      const newShippingOption = Object.assign({}, validShippingOption, {
+        id: 'pass',
+      });
+      const newUnselectedShippingOption = Object.assign({}, validShippingOption, {
+        id: 'fail',
+        selected: false,
+      });
+      const updateDetails = Object.assign({}, validDetails, {
+        shippingOptions: [newUnselectedShippingOption, newShippingOption],
+      });
+      const expectedResponse = { shippingOption: 'pass' };
+      const expectedRequest = { shippingOption: 'pass' };
+      testUponFulfillment(
+        this,
+        updateDetails,
+        expectedResponse,
+        expectedRequest
+      );
+    ">
+      Must update the shippingOption.
+    </button> Select a different shipping address once. Then pay.
+  </li>
+  <li>
+    <button onclick="
+      const newAmount = { currency: 'XXX', value: '1000.00' };
+      const newTotal = {
+        label: 'NEW TOTAL',
+        amount: newAmount,
+      };
+      const updateDetails = Object.assign({}, validDetails, {
+        total: newTotal
+      });
+      testUponFulfillment(
+        this,
+        updateDetails
+      );
+    ">
+      Must update total.
+    </button>
+      After the address changes, the total's label must be "NEW TOTAL", currency must be "XXX",
+      value must be 1000.00. Hit abort if it's not! Otherwise, pay.
+  </li>
+  <li>
+    <button onclick="
+      const newAmount = { currency: 'XXX', value: '1000.00' };
+      const newDisplayItem = {
+        label: 'NEW DISPLAY ITEM',
+        amount: newAmount,
+      };
+      const updateDetails = Object.assign({}, validDetails, {
+        displayItems: [ newDisplayItem ]
+      });
+      testUponFulfillment(
+        this,
+        updateDetails
+      );
+    ">
+      Must update display item.
+    </button>
+      After the address changes, a new display item must be added with label "NEW ITEM",
+      currency must be "XXX", value must be 1000.00. Hit abort if it's not!. Otherwise, pay.
+  </li>
+    <li>
+    <button onclick="
+      const newAmount = { currency: 'XXX', value: '1000.00' };
+      const modifierDisplayItem = {
+        label: 'MODIFIER DISPLAY ITEM',
+        amount: newAmount,
+      };
+      const newDisplayItem = {
+        label: 'DISPLAY ITEM',
+        amount: newAmount,
+      };
+      const newTotal = {
+        label: 'NEW MODIFIER TOTAL',
+        amount: newAmount,
+      };
+      const modifiers = [{
+        additionalDisplayItems: [modifierDisplayItem],
+        supportedMethods: 'basic-card',
+        total: newTotal,
+      }];
+      const updateDetails = Object.assign({}, validDetails, {
+        displayItems: [ newDisplayItem ],
+        modifiers
+      });
+      testUponFulfillment(
+        this,
+        updateDetails
+      );
+    ">
+      Must update display item.
+    </button>
+    After the address changes, the total's label must be "NEW MODIFIER TOTAL" and
+    a new display item must be added with label "NEW MODIFIER ITEM".
+    Both must have currency of "XXX" and value of 1000.00. Hit abort if it's not!. Otherwise, pay.
+  </li>
+  <li>
+    <button onclick="done();">Done!</button>
+  </li>
+</ol>

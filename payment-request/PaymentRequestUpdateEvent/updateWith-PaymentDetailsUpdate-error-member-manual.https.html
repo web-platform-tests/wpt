@@ -1,0 +1,119 @@
+<!doctype html>
+<meta charset="utf8">
+<link rel="help" href="https://www.w3.org/TR/payment-request/#updatewith()-method">
+<title>
+</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_done: true, explicit_timeout: true });
+const validMethod = Object.freeze({ supportedMethods: "basic-card" });
+const validMethods = Object.freeze([validMethod]);
+const validAmount = Object.freeze({ currency: "USD", value: "5.00" });
+const validTotal = Object.freeze({
+  label: "label",
+  amount: validAmount,
+});
+const validShippingOption = Object.freeze({
+  id: "a-shipping-option",
+  label: "A shipping option",
+  amount: validAmount,
+  selected: true,
+});
+const validDisplayItem = {
+  label: "A display item",
+  amount: { currency: "USD", value: "55.00" },
+};
+const validDetails = Object.freeze({
+  total: validTotal,
+  shippingOptions: [validShippingOption],
+  displayItems: [validDisplayItem],
+});
+const validOptions = Object.freeze({
+  requestShipping: true,
+});
+
+function testErrorMemberAbort({ textContent: testName }) {
+  promise_test(async t => {
+    const request = new PaymentRequest(
+      validMethods,
+      validDetails,
+      validOptions
+    );
+    const eventPromise = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", resolve);
+    }, {once: true});
+    const responsePromise = request.show();
+    const event = await eventPromise;
+    const updateDetails = Object.assign({}, validDetails, {
+      shippingOptions: [],
+      error: 'THIS IS THE ERROR MESSAGE',
+    });
+    event.updateWith(updateDetails);
+    await promise_rejects(t, "AbortError", responsePromise);
+  }, testName.trim());
+}
+
+function testErrorMemberAbortRecover({ textContent: testName }, updateDetails) {
+  promise_test(async t => {
+    const request = new PaymentRequest(
+      validMethods,
+      validDetails,
+      validOptions
+    );
+    const responsePromise = request.show();
+    const firstEventPromise = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", resolve);
+    }, {once: true});
+    const firstEvent = await firstEventPromise;
+    // We pretend we can't ship there.
+    const updateDetails = Object.assign({}, validDetails, {
+      shippingOptions: [],
+      error: 'THIS IS THE ERROR MESSAGE',
+    });
+    firstEvent.updateWith(updateDetails);
+    // We now wait for a different address.
+    const secondEventPromise = new Promise(resolve => {
+      request.addEventListener("shippingaddresschange", resolve);
+    }, { once: true });
+    const secondEvent = await secondEventPromise;
+    // We pretend that it's all ok.
+    const okToContinueDetails = Object.assign({}, validDetails, {
+      shippingOptions: [ validShippingOption ],
+      // Note that this should have no effect, but we can't test it directly.
+      error: 'THIS MESSAGE SHOULD NOT BE DISPLAYED',
+    });
+    secondEvent.updateWith(okToContinueDetails);
+    const response = await responsePromise;
+    response.complete("success");
+    // Final checks, everything finished according to spec.
+    assert_equals(response.shippingOption, "a-shipping-option");
+    assert_equals(request.shippingOption, "a-shipping-option");
+  }, testName.trim());
+}
+</script>
+<h2>updateWith() method - handling PaymentDetailsUpdate error member</h2>
+<ol>
+  <li>
+    <button onclick="
+      testErrorMemberAbort(this);
+    ">
+      Error is shown when there is no shipping option (and should be possible to abort).
+    </button>
+      After changing shipping address, the user agent should display an error with "THE ERROR MESSAGE".
+      Abort the payment request.
+  </li>
+  <li>
+    <button onclick="
+      testErrorMemberAbortRecover(this);
+    ">
+      Must be possible for user to recover by entering a new address.
+    </button>
+      Select a new shipping address.
+      The error "THIS IS THE ERROR MESSAGE" will be shown. Select a different shipping address.
+      No error message should be shown. Hit pay and complete the payment.
+  </li>
+  <li>
+    <button onclick="done();">Done!</button>
+  </li>
+</ol>

@@ -42,7 +42,7 @@ function testRequestIsClosed({ textContent: testName }) {
     const { eventPromise, responsePromise } = getPaymentPromises();
     const event = await eventPromise;
     // Set request.[[state]] to closed
-    const abortPromise = event.target.abort();
+    await event.target.abort();
     assert_throws(
       "InvalidStateError",
       () => {
@@ -50,7 +50,6 @@ function testRequestIsClosed({ textContent: testName }) {
       },
       "request.[[state]] is not interactive, must throw an InvalidStateError."
     );
-    await abortPromise;
     responsePromise.catch(err => err);
   }, testName.trim());
 }

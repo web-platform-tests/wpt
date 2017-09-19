@@ -24,14 +24,22 @@ def test_no_user_prompt(session):
     assert_error(response, "no such alert")
 
 
-def test_dismiss_user_prompt(session):
+def test_dismiss_alert(session):
     # 18.1 step 3
-    session.url = inline("""
-        <SCRIPT Language="JavaScript">
-            document.write(prompt("Enter Your Name: "));
-        </SCRIPT>
-        """)
+    session.execute_script("window.alert(\"Hello\");")
     response = dismiss_alert(session)
-    element = session.find.css("body", all=False)
-    assert element.text == "null"
+    assert_success(response)
+
+
+def test_dismiss_confirm(session):
+    # 18.1 step 3
+    session.execute_script("window.confirm(\"Hello\");")
+    response = dismiss_alert(session)
+    assert_success(response)
+
+
+def test_dismiss_prompt(session):
+    # 18.1 step 3
+    session.execute_script("window.prompt(\"Enter Your Name: \", \"Federer\");")
+    response = dismiss_alert(session)
     assert_success(response)

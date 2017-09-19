@@ -1,5 +1,4 @@
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
 
 
 def get_dialog_text(session):

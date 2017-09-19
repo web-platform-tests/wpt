@@ -35,10 +35,11 @@ function test_feature_availability(
     frame.setAttribute(allow_attribute, true);
   }
 
-  window.addEventListener('message', test.step_func(evt => {
+  window.addEventListener('message', test.step_func(function handler(evt) {
     if (evt.source === frame.contentWindow) {
       expect_feature_available(evt.data, feature_description);
       document.body.removeChild(frame);
+      window.removeEventListener('message', handler);
       test.done();
     }
   }));
@@ -102,7 +103,10 @@ function run_all_fp_tests_allow_self(
     cross_origin, feature_name, error_name, feature_promise_factory) {
   // This may be the version of the page loaded up in an iframe. If so, just
   // post the result of running the feature promise back to the parent.
-  if (location.hash == '#iframe') {
+  if (location.hash.startsWith('#iframe')) {
+    // This makes it possible to test multiple features in the one test file.
+    if (!location.hash.includes(feature_name))
+      return;
     feature_promise_factory().then(
         () => window.parent.postMessage('#OK', '*'),
         (e) => window.parent.postMessage('#' + e.toString(), '*'));
@@ -119,7 +123,8 @@ function run_all_fp_tests_allow_self(
   // 2. Same-origin iframe.
   // Append #iframe to the URL so we can detect the iframe'd version of the
   // page.
-  const same_origin_frame_pathname = location.pathname + '#iframe';
+  const same_origin_frame_pathname =
+      location.pathname + '#iframe#' + feature_name;
   async_test(
       t => {
         test_feature_availability_with_post_message_result(

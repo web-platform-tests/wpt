@@ -476,11 +476,13 @@ test(() => {
     null,
     "shippingOption must be null, because requestShipping is false"
   );
-  assert_throws(() => {
-    const request = new PaymentRequest(defaultMethods, details, {
-      requestShipping: true,
-    });
-  });
+  assert_throws(
+    new TypeError(),
+    () => {
+      new PaymentRequest(defaultMethods, details, { requestShipping: true });
+    },
+    "Expected to throw a TypeError because duplicate IDs"
+  );
 }, "If there are any duplicate shipping option ids, and shipping is requested, then throw a TypeError");
 
 test(() => {

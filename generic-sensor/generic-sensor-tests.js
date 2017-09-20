@@ -13,6 +13,22 @@ const properties = {
                          'accuracy', 'altitudeAccuracy', 'heading', 'speed']
 };
 
+// Wraps callback and calls rejectFunc if callback throws an error.
+class CallbackWrapper {
+  constructor(callback, rejectFunc) {
+    this.wrapperFunc_ = (args) => {
+      try {
+        callback(args);
+      } catch(e) {
+        rejectFunc(e);
+      }
+    }
+  }
+  get callback() {
+    return this.wrapperFunc_;
+  }
+}
+
 function assert_reading_not_null(sensor) {
   for (let property in properties[sensor.constructor.name]) {
     let propertyName = properties[sensor.constructor.name][property];
@@ -161,6 +177,39 @@ function runGenericSensorTests(sensorType) {
     sensor.stop();
     assert_array_equals(cachedSensor1, cachedSensor2);
   }, `${sensorType.name}: sensor readings can not be fired on the background tab`);
+
+  promise_test(t => {
+    let fastSensor = new sensorType({frequency: 30});
+    let slowSensor = new sensorType({frequency: 5});
+    slowSensor.start();
+
+    return new Promise((resolve, reject) => {
+        let fastSensorNotifiedCounter = 0;
+        let slowSensorNotifiedCounter = 0;
+        let fastSensorWrapper = new CallbackWrapper(() => {
+          fastSensorNotifiedCounter++;
+        }, reject);
+        let slowSensorWrapper = new CallbackWrapper(() => {
+          slowSensorNotifiedCounter++;
+          if (slowSensorNotifiedCounter == 1) {
+              fastSensor.start();
+          } else if (slowSensorNotifiedCounter == 3) {
+            fastSensor.stop();
+            slowSensor.stop();
+            resolve(fastSensorNotifiedCounter);
+          }
+        }, reject);
+
+        fastSensor.onreading = fastSensorWrapper.callback;
+        slowSensor.onreading = slowSensorWrapper.callback;
+        fastSensor.onerror = reject;
+        slowSensor.onerror = reject;
+    })
+    .then(fastSensorNotifiedCounter => {
+      assert_true(fastSensorNotifiedCounter > 2,
+                  "Fast sensor overtakes the slow one");
+    });
+  }, `${sensorType.name}: frequency hint works.`);
 }
 
 function runGenericSensorInsecureContext(sensorType) {
@@ -179,4 +228,55 @@ function runGenericSensorOnerror(sensorType) {
     assert_false(sensor.activated);
     assert_equals(event.error.name, 'NotReadableError');
   }, `${sensorType.name}: 'onerror' event is fired when sensor is not supported`);
+}
+
+// This test can't be merged to 'runGenericSensorTests' because focused editbox
+// inside a corss-origin iframe will suspend all sensor reading.
+function runLosingFocusTest(sensorType) {
+
+  promise_test(t => {
+    let sensor = new sensorType();
+    sensor.start();
+
+    // Create a focused editbox inside a cross-origin iframe, sensor notification must suspend.
+    const iframeSrc = 'data:text/html;charset=utf-8,<html><body><input type="text" autofocus></body></html>';
+    let iframe = document.createElement('iframe');
+    iframe.src = encodeURI(iframeSrc);
+
+    return new Promise((resolve, reject) => {
+        let wrapper = new CallbackWrapper(() => {
+          assert_reading_not_null(sensor);
+          resolve(sensor.timestamp);
+        }, reject);
+
+        sensor.onreading = wrapper.callback;
+        sensor.onerror = reject;
+    })
+    .then(cachedTimestamp => new Promise((resolve, reject) => {
+      let wrapper = new CallbackWrapper(() => {
+        sensor.onreading = reject;
+        sensor.onerror = reject;
+        assert_equals(sensor.timestamp, cachedTimestamp);
+        resolve(cachedTimestamp);
+      }, reject);
+
+      iframe.onload = wrapper.callback;
+      document.body.appendChild(iframe);
+      }))
+    .then(cachedTimestamp => new Promise((resolve, reject) => {
+      let wrapper = new CallbackWrapper(() => {
+        assert_greater_than(sensor.timestamp, cachedTimestamp);
+        resolve();
+      }, reject);
+
+      sensor.onreading = wrapper.callback;
+      sensor.onerror = reject;
+      t.step_timeout(() => { window.focus(); }, 100);
+    }))
+    .then(() => {
+      sensor.stop();
+      document.body.removeChild(iframe);
+    });
+  }, `${sensorType.name}: sensor receives suspend / resume notifications when`
+              + ` cross-origin subframe is focused`);
 }

@@ -571,8 +571,7 @@ sub build_test() {
   <div id="log"></div>
   <div id="ATTAmessages"></div>
   </body>
-</html>
-);
+</html>);
 
   my $file ;
 

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>contentinfo NEW</title>
+    <title>presentation used on ul element with li children NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,13 +22,7 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:contentinfo"
+                  "ROLE_SECTION"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +36,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkContentInfo"
+                  "<nil>"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "content information"
+                  "group"
                ]
             ],
             "IAccessible2" : [
@@ -56,39 +50,15 @@
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:contentinfo"
+                  "IA2_ROLE_SECTION"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "ControlType",
+                  "Control Type",
                   "is",
                   "Group"
-               ],
-               [
-                  "property",
-                  "LocalizedControlType",
-                  "is",
-                  "content information"
-               ],
-               [
-                  "property",
-                  "Landmark Type",
-                  "is",
-                  "Custom"
-               ],
-               [
-                  "property",
-                  "LocalizedLandmarkType",
-                  "is",
-                  "content information"
                ]
             ]
          },
@@ -96,15 +66,18 @@
          "type" : "test"
       }
    ],
-   "title" : "contentinfo NEW"
+   "title" : "presentation used on ul element with li children NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for contentinfo NEW.</p>
-    <div role='contentinfo' id='test'>content</div>
+  <p>This test examines the ARIA properties for presentation used on ul element with li children NEW.</p>
+    <ul role='presentation'>
+    <li id='test' aria-label='name to force inclusion'>item 1</li>
+    <li>item 2</li>
+  </ul>
 
   <div id="manualMode"></div>
   <div id="log"></div>

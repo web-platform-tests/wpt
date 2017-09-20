@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>form NEW</title>
+    <title>complementary</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -28,7 +28,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:form"
+                  "xml-roles:complementary"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +42,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "<nil>"
+                  "AXLandmarkComplementary"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "group"
+                  "complementary"
                ]
             ],
             "IAccessible2" : [
@@ -56,13 +56,13 @@
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_FORM"
+                  "IA2_ROLE_LANDMARK"
                ],
                [
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:form"
+                  "xml-roles:complementary"
                ]
             ],
             "UIA" : [
@@ -76,13 +76,19 @@
                   "property",
                   "LocalizedControlType",
                   "is",
-                  "form"
+                  "complementary"
                ],
                [
                   "property",
                   "Landmark Type",
                   "is",
-                  "Form"
+                  "Custom"
+               ],
+               [
+                  "property",
+                  "LocalizedLandmarkType",
+                  "is",
+                  "complementary"
                ]
             ]
          },
@@ -90,15 +96,15 @@
          "type" : "test"
       }
    ],
-   "title" : "form NEW"
+   "title" : "complementary"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for form NEW.</p>
-    <div role='form' id='test'>content</div>
+  <p>This test examines the ARIA properties for complementary.</p>
+    <div role='complementary' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

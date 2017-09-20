@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-autocomplete=inline NEW</title>
+    <title>none used on table element with td children NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,29 +20,45 @@
             "ATK" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "autocomplete:inline"
+                  "role",
+                  "is",
+                  "ROLE_SECTION"
+               ]
+            ],
+            "AXAPI" : [
+               [
+                  "property",
+                  "AXRole",
+                  "is",
+                  "AXGroup"
                ],
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_SUPPORTS_AUTOCOMPLETION"
+                  "AXSubrole",
+                  "is",
+                  "<nil>"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "group"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "autocomplete:inline"
-               ],
+                  "role",
+                  "is",
+                  "IA2_ROLE_SECTION"
+               ]
+            ],
+            "UIA" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "IA2_STATE_SUPPORTS_AUTOCOMPLETION"
+                  "Control Type",
+                  "is",
+                  "Group"
                ]
             ]
          },
@@ -50,17 +66,19 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-autocomplete=inline NEW"
+   "title" : "none used on table element with td children NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-autocomplete=inline NEW.</p>
-    <div role='combobox' id='test' aria-autocomplete='inline'>
-    <div role='textbox'>content</div>
-  </div>
+  <p>This test examines the ARIA properties for none used on table element with td children NEW.</p>
+  
+  <table role='none'>
+    <tr><td id='test' aria-label='name to force inclusion'>row 1, col 1</td><td>row 1, col 2</td></tr>
+  </table>
+
 
   <div id="manualMode"></div>
   <div id="log"></div>

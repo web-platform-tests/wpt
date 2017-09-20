@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-haspopup=menu NEW</title>
+    <title>aria-level on heading</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,29 +20,17 @@
             "ATK" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_HAS_POPUP"
-               ],
-               [
-                  "property",
                   "objectAttributes",
                   "contains",
-                  "haspopup:menu"
+                  "level:2"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "actions",
-                  "contains",
-                  "AXShowMenu"
-               ],
-               [
-                  "property",
-                  "actions",
-                  "doesNotContain",
-                  "AXPress"
+                  "AXValue",
+                  "is",
+                  "2"
                ]
             ],
             "IAccessible2" : [
@@ -50,23 +38,21 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "haspopup:menu"
-               ]
-            ],
-            "MSAA" : [
-               [
-                  "property",
-                  "states",
-                  "contains",
-                  "STATE_SYSTEM_HASPOPUP"
+                  "level:2"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Pattern",
+                  "AriaProperties.level",
                   "is",
-                  "ExpandCollapse"
+                  "2"
+               ],
+               [
+                  "property",
+                  "StyleId_Heading",
+                  "is",
+                  "2"
                ]
             ]
          },
@@ -74,15 +60,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-haspopup=menu NEW"
+   "title" : "aria-level on heading"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-haspopup=menu NEW.</p>
-    <div role='group' id='test' aria-haspopup='menu'>content</div>
+  <p>This test examines the ARIA properties for aria-level on heading.</p>
+    <div role='heading' id='test' aria-level='2'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

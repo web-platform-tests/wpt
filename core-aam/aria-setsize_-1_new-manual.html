@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-haspopup=menu NEW</title>
+    <title>aria-setsize=-1 NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,29 +20,23 @@
             "ATK" : [
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "STATE_HAS_POPUP"
+                  "setsize:2"
                ],
                [
                   "property",
-                  "objectAttributes",
+                  "states",
                   "contains",
-                  "haspopup:menu"
+                  "STATE_INDETERMINATE"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "actions",
-                  "contains",
-                  "AXShowMenu"
-               ],
-               [
-                  "property",
-                  "actions",
-                  "doesNotContain",
-                  "AXPress"
+                  "AXARIASetSize",
+                  "is",
+                  "-1"
                ]
             ],
             "IAccessible2" : [
@@ -50,23 +44,15 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "haspopup:menu"
-               ]
-            ],
-            "MSAA" : [
-               [
-                  "property",
-                  "states",
-                  "contains",
-                  "STATE_SYSTEM_HASPOPUP"
+                  "setsize:-1"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Pattern",
+                  "AriaProperties.setsize",
                   "is",
-                  "ExpandCollapse"
+                  "-1"
                ]
             ]
          },
@@ -74,15 +60,18 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-haspopup=menu NEW"
+   "title" : "aria-setsize=-1 NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-haspopup=menu NEW.</p>
-    <div role='group' id='test' aria-haspopup='menu'>content</div>
+  <p>This test examines the ARIA properties for aria-setsize=-1 NEW.</p>
+    <div role='list'>
+    <div role='listitem' id='test' aria-setsize='-1'>content</div>
+    <div role='listitem' aria-setsize='-1'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

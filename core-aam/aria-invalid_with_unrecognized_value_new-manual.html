@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-haspopup=menu NEW</title>
+    <title>aria-invalid with unrecognized value NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,51 +22,43 @@
                   "property",
                   "states",
                   "contains",
-                  "STATE_HAS_POPUP"
+                  "STATE_INVALID_ENTRY"
                ],
                [
                   "property",
-                  "objectAttributes",
+                  "textAttributes",
                   "contains",
-                  "haspopup:menu"
+                  "invalid:true"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "actions",
-                  "contains",
-                  "AXShowMenu"
-               ],
-               [
-                  "property",
-                  "actions",
-                  "doesNotContain",
-                  "AXPress"
+                  "AXInvalid",
+                  "is",
+                  "true"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "haspopup:menu"
-               ]
-            ],
-            "MSAA" : [
-               [
-                  "property",
                   "states",
                   "contains",
-                  "STATE_SYSTEM_HASPOPUP"
+                  "IA2_STATE_INVALID_ENTRY"
+               ],
+               [
+                  "property",
+                  "textAttributes",
+                  "contains",
+                  "invalid:true"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Pattern",
+                  "IsDataValidForForm",
                   "is",
-                  "ExpandCollapse"
+                  "false"
                ]
             ]
          },
@@ -74,15 +66,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-haspopup=menu NEW"
+   "title" : "aria-invalid with unrecognized value NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-haspopup=menu NEW.</p>
-    <div role='group' id='test' aria-haspopup='menu'>content</div>
+  <p>This test examines the ARIA properties for aria-invalid with unrecognized value NEW.</p>
+    <div role='group' id='test' aria-invalid='foo'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>banner NEW</title>
+    <title>presentation used on table element with td children NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,13 +22,7 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:banner"
+                  "ROLE_SECTION"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +36,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkBanner"
+                  "<nil>"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "banner"
+                  "group"
                ]
             ],
             "IAccessible2" : [
@@ -56,39 +50,15 @@
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:banner"
+                  "IA2_ROLE_SECTION"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "ControlType",
+                  "Control Type",
                   "is",
                   "Group"
-               ],
-               [
-                  "property",
-                  "LocalizedControlType",
-                  "is",
-                  "banner"
-               ],
-               [
-                  "property",
-                  "Landmark Type",
-                  "is",
-                  "Custom"
-               ],
-               [
-                  "property",
-                  "LocalizedLandmarkType",
-                  "is",
-                  "banner"
                ]
             ]
          },
@@ -96,15 +66,19 @@
          "type" : "test"
       }
    ],
-   "title" : "banner NEW"
+   "title" : "presentation used on table element with td children NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for banner NEW.</p>
-    <div role='banner' id='test'>content</div>
+  <p>This test examines the ARIA properties for presentation used on table element with td children NEW.</p>
+  
+  <table role='presentation'>
+    <tr><td id='test' aria-label='name to force inclusion'>row 1, col 1</td><td>row 1, col 2</td></tr>
+  </table>
+
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-haspopup=menu NEW</title>
+    <title>button with aria-haspopup="true"</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,53 +20,51 @@
             "ATK" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_HAS_POPUP"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "haspopup:menu"
+                  "role",
+                  "is",
+                  "ROLE_PUSH_BUTTON"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "actions",
-                  "contains",
-                  "AXShowMenu"
+                  "AXRole",
+                  "is",
+                  "AXPopUpButton"
+               ],
+               [
+                  "property",
+                  "AXSubrole",
+                  "is",
+                  "<nil>"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "pop up button"
                ],
                [
                   "property",
                   "actions",
-                  "doesNotContain",
-                  "AXPress"
-               ]
-            ],
-            "IAccessible2" : [
-               [
-                  "property",
-                  "objectAttributes",
                   "contains",
-                  "haspopup:menu"
+                  "AXShowMenu"
                ]
             ],
             "MSAA" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_SYSTEM_HASPOPUP"
+                  "role",
+                  "is",
+                  "ROLE_SYSTEM_BUTTONMENU"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Pattern",
+                  "ControlType",
                   "is",
-                  "ExpandCollapse"
+                  "Button"
                ]
             ]
          },
@@ -74,15 +72,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-haspopup=menu NEW"
+   "title" : "button with aria-haspopup=\"true\""
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-haspopup=menu NEW.</p>
-    <div role='group' id='test' aria-haspopup='menu'>content</div>
+  <p>This test examines the ARIA properties for button with aria-haspopup="true".</p>
+    <div role='button' id='test' aria-haspopup='true'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

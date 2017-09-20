@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-setsize=-1</title>
+    <title>none used on ul element with li children NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,39 +20,45 @@
             "ATK" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "setsize:2"
-               ],
-               [
-                  "property",
-                  "states",
-                  "contains",
-                  "STATE_INDETERMINATE"
+                  "role",
+                  "is",
+                  "ROLE_SECTION"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXARIASetSize",
+                  "AXRole",
                   "is",
-                  "-1"
+                  "AXGroup"
+               ],
+               [
+                  "property",
+                  "AXSubrole",
+                  "is",
+                  "<nil>"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "group"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "setsize:-1"
+                  "role",
+                  "is",
+                  "IA2_ROLE_SECTION"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "AriaProperties.setsize",
+                  "Control Type",
                   "is",
-                  "-1"
+                  "Group"
                ]
             ]
          },
@@ -60,18 +66,18 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-setsize=-1"
+   "title" : "none used on ul element with li children NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-setsize=-1.</p>
-    <div role='list'>
-    <div role='listitem' id='test' aria-setsize='-1'>content</div>
-    <div role='listitem' aria-setsize='-1'>content</div>
-  </div>
+  <p>This test examines the ARIA properties for none used on ul element with li children NEW.</p>
+    <ul role='none'>
+    <li id='test' aria-label='name to force inclusion'>item 1</li>
+    <li>item 2</li>
+  </ul>
 
   <div id="manualMode"></div>
   <div id="log"></div>

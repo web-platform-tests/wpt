@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>navigation NEW</title>
+    <title>form</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -28,7 +28,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:navigation"
+                  "xml-roles:form"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +42,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkNavigation"
+                  "<nil>"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "navigation"
+                  "group"
                ]
             ],
             "IAccessible2" : [
@@ -56,13 +56,13 @@
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_LANDMARK"
+                  "IA2_ROLE_FORM"
                ],
                [
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:navigation"
+                  "xml-roles:form"
                ]
             ],
             "UIA" : [
@@ -76,13 +76,13 @@
                   "property",
                   "LocalizedControlType",
                   "is",
-                  "navigation"
+                  "form"
                ],
                [
                   "property",
                   "Landmark Type",
                   "is",
-                  "Navigation"
+                  "Form"
                ]
             ]
          },
@@ -90,15 +90,15 @@
          "type" : "test"
       }
    ],
-   "title" : "navigation NEW"
+   "title" : "form"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for navigation NEW.</p>
-    <div role='navigation' id='test'>content</div>
+  <p>This test examines the ARIA properties for form.</p>
+    <div role='form' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

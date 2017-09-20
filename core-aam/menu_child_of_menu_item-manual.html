@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>menu child of menu item</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,45 +20,65 @@
             "ATK" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_INVALID_ENTRY"
+                  "role",
+                  "is",
+                  "ROLE_MENU"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "interfaces",
                   "contains",
-                  "invalid:true"
+                  "Selection"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXRole",
                   "is",
-                  "true"
+                  "AXMenu"
+               ],
+               [
+                  "property",
+                  "AXSubrole",
+                  "is",
+                  "<nil>"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "menu"
                ]
             ],
             "IAccessible2" : [
                [
-                  "property",
-                  "states",
-                  "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "result",
+                  "IAccessible::accSelect()",
+                  "is",
+                  "TBD"
                ],
                [
+                  "result",
+                  "IAccessible::get_accSelection()",
+                  "is",
+                  "TBD"
+               ]
+            ],
+            "MSAA" : [
+               [
                   "property",
-                  "textAttributes",
-                  "contains",
-                  "invalid:true"
+                  "role",
+                  "is",
+                  "ROLE_SYSTEM_MENUPOPUP"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "ControlType",
                   "is",
-                  "false"
+                  "Menu"
                ]
             ]
          },
@@ -66,15 +86,21 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "menu child of menu item"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for menu child of menu item.</p>
+    <div role='menu'>
+    <div role='menuitem'>
+      <div role='menu' id='test'>
+        <div role='menuitemradio'>content</div>
+      </div>
+    <div role='menuitem'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-haspopup=menu NEW</title>
+    <title>banner</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,53 +20,75 @@
             "ATK" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_HAS_POPUP"
+                  "role",
+                  "is",
+                  "ROLE_LANDMARK"
                ],
                [
                   "property",
                   "objectAttributes",
                   "contains",
-                  "haspopup:menu"
+                  "xml-roles:banner"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "actions",
-                  "contains",
-                  "AXShowMenu"
+                  "AXRole",
+                  "is",
+                  "AXGroup"
                ],
                [
                   "property",
-                  "actions",
-                  "doesNotContain",
-                  "AXPress"
+                  "AXSubrole",
+                  "is",
+                  "AXLandmarkBanner"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "banner"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "objectAttributes",
-                  "contains",
-                  "haspopup:menu"
-               ]
-            ],
-            "MSAA" : [
+                  "role",
+                  "is",
+                  "IA2_ROLE_LANDMARK"
+               ],
                [
                   "property",
-                  "states",
+                  "objectAttributes",
                   "contains",
-                  "STATE_SYSTEM_HASPOPUP"
+                  "xml-roles:banner"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Pattern",
+                  "ControlType",
                   "is",
-                  "ExpandCollapse"
+                  "Group"
+               ],
+               [
+                  "property",
+                  "LocalizedControlType",
+                  "is",
+                  "banner"
+               ],
+               [
+                  "property",
+                  "Landmark Type",
+                  "is",
+                  "Custom"
+               ],
+               [
+                  "property",
+                  "LocalizedLandmarkType",
+                  "is",
+                  "banner"
                ]
             ]
          },
@@ -74,15 +96,15 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-haspopup=menu NEW"
+   "title" : "banner"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-haspopup=menu NEW.</p>
-    <div role='group' id='test' aria-haspopup='menu'>content</div>
+  <p>This test examines the ARIA properties for banner.</p>
+    <div role='banner' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

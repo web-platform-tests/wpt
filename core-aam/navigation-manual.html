@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>complementary NEW</title>
+    <title>navigation</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -28,7 +28,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:complementary"
+                  "xml-roles:navigation"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +42,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkComplementary"
+                  "AXLandmarkNavigation"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "complementary"
+                  "navigation"
                ]
             ],
             "IAccessible2" : [
@@ -62,7 +62,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:complementary"
+                  "xml-roles:navigation"
                ]
             ],
             "UIA" : [
@@ -76,19 +76,13 @@
                   "property",
                   "LocalizedControlType",
                   "is",
-                  "complementary"
+                  "navigation"
                ],
                [
                   "property",
                   "Landmark Type",
                   "is",
-                  "Custom"
-               ],
-               [
-                  "property",
-                  "LocalizedLandmarkType",
-                  "is",
-                  "complementary"
+                  "Navigation"
                ]
             ]
          },
@@ -96,15 +90,15 @@
          "type" : "test"
       }
    ],
-   "title" : "complementary NEW"
+   "title" : "navigation"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for complementary NEW.</p>
-    <div role='complementary' id='test'>content</div>
+  <p>This test examines the ARIA properties for navigation.</p>
+    <div role='navigation' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>aria-invalid with unrecognized value</title>
+    <title>form</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,45 +20,69 @@
             "ATK" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "STATE_INVALID_ENTRY"
+                  "role",
+                  "is",
+                  "ROLE_LANDMARK"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "objectAttributes",
                   "contains",
-                  "invalid:true"
+                  "xml-roles:form"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXInvalid",
+                  "AXRole",
                   "is",
-                  "true"
+                  "AXGroup"
+               ],
+               [
+                  "property",
+                  "AXSubrole",
+                  "is",
+                  "<nil>"
+               ],
+               [
+                  "property",
+                  "AXRoleDescription",
+                  "is",
+                  "group"
                ]
             ],
             "IAccessible2" : [
                [
                   "property",
-                  "states",
-                  "contains",
-                  "IA2_STATE_INVALID_ENTRY"
+                  "role",
+                  "is",
+                  "IA2_ROLE_FORM"
                ],
                [
                   "property",
-                  "textAttributes",
+                  "objectAttributes",
                   "contains",
-                  "invalid:true"
+                  "xml-roles:form"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "IsDataValidForForm",
+                  "ControlType",
                   "is",
-                  "false"
+                  "Group"
+               ],
+               [
+                  "property",
+                  "LocalizedControlType",
+                  "is",
+                  "form"
+               ],
+               [
+                  "property",
+                  "Landmark Type",
+                  "is",
+                  "Form"
                ]
             ]
          },
@@ -66,19 +90,18 @@
          "type" : "test"
       }
    ],
-   "title" : "aria-invalid with unrecognized value"
+   "title" : "form"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for aria-invalid with unrecognized value.</p>
-    <div role='group' id='test' aria-invalid='foo'>content</div>
+  <p>This test examines the ARIA properties for form.</p>
+    <div role='form' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

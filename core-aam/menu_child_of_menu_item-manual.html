@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>banner NEW</title>
+    <title>menu child of menu item</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,13 +22,13 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_LANDMARK"
+                  "ROLE_MENU"
                ],
                [
                   "property",
-                  "objectAttributes",
+                  "interfaces",
                   "contains",
-                  "xml-roles:banner"
+                  "Selection"
                ]
             ],
             "AXAPI" : [
@@ -36,33 +36,41 @@
                   "property",
                   "AXRole",
                   "is",
-                  "AXGroup"
+                  "AXMenu"
                ],
                [
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkBanner"
+                  "<nil>"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "banner"
+                  "menu"
                ]
             ],
             "IAccessible2" : [
                [
+                  "result",
+                  "IAccessible::accSelect()",
+                  "is",
+                  "TBD"
+               ],
+               [
+                  "result",
+                  "IAccessible::get_accSelection()",
+                  "is",
+                  "TBD"
+               ]
+            ],
+            "MSAA" : [
+               [
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:banner"
+                  "ROLE_SYSTEM_MENUPOPUP"
                ]
             ],
             "UIA" : [
@@ -70,25 +78,7 @@
                   "property",
                   "ControlType",
                   "is",
-                  "Group"
-               ],
-               [
-                  "property",
-                  "LocalizedControlType",
-                  "is",
-                  "banner"
-               ],
-               [
-                  "property",
-                  "Landmark Type",
-                  "is",
-                  "Custom"
-               ],
-               [
-                  "property",
-                  "LocalizedLandmarkType",
-                  "is",
-                  "banner"
+                  "Menu"
                ]
             ]
          },
@@ -96,19 +86,24 @@
          "type" : "test"
       }
    ],
-   "title" : "banner NEW"
+   "title" : "menu child of menu item"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for banner NEW.</p>
-    <div role='banner' id='test'>content</div>
+  <p>This test examines the ARIA properties for menu child of menu item.</p>
+    <div role='menu'>
+    <div role='menuitem'>
+      <div role='menu' id='test'>
+        <div role='menuitemradio'>content</div>
+      </div>
+    <div role='menuitem'>content</div>
+  </div>
 
   <div id="manualMode"></div>
   <div id="log"></div>
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

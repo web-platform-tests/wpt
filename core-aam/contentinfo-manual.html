@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>navigation NEW</title>
+    <title>contentinfo</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -28,7 +28,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:navigation"
+                  "xml-roles:contentinfo"
                ]
             ],
             "AXAPI" : [
@@ -42,13 +42,13 @@
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkNavigation"
+                  "AXLandmarkContentInfo"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "navigation"
+                  "content information"
                ]
             ],
             "IAccessible2" : [
@@ -62,7 +62,7 @@
                   "property",
                   "objectAttributes",
                   "contains",
-                  "xml-roles:navigation"
+                  "xml-roles:contentinfo"
                ]
             ],
             "UIA" : [
@@ -76,13 +76,19 @@
                   "property",
                   "LocalizedControlType",
                   "is",
-                  "navigation"
+                  "content information"
                ],
                [
                   "property",
                   "Landmark Type",
                   "is",
-                  "Navigation"
+                  "Custom"
+               ],
+               [
+                  "property",
+                  "LocalizedLandmarkType",
+                  "is",
+                  "content information"
                ]
             ]
          },
@@ -90,19 +96,18 @@
          "type" : "test"
       }
    ],
-   "title" : "navigation NEW"
+   "title" : "contentinfo"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for navigation NEW.</p>
-    <div role='navigation' id='test'>content</div>
+  <p>This test examines the ARIA properties for contentinfo.</p>
+    <div role='contentinfo' id='test'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>main NEW</title>
+    <title>button with aria-haspopup="true"</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -22,13 +22,7 @@
                   "property",
                   "role",
                   "is",
-                  "ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:main"
+                  "ROLE_PUSH_BUTTON"
                ]
             ],
             "AXAPI" : [
@@ -36,33 +30,33 @@
                   "property",
                   "AXRole",
                   "is",
-                  "AXGroup"
+                  "AXPopUpButton"
                ],
                [
                   "property",
                   "AXSubrole",
                   "is",
-                  "AXLandmarkMain"
+                  "<nil>"
                ],
                [
                   "property",
                   "AXRoleDescription",
                   "is",
-                  "main"
+                  "pop up button"
+               ],
+               [
+                  "property",
+                  "actions",
+                  "contains",
+                  "AXShowMenu"
                ]
             ],
-            "IAccessible2" : [
+            "MSAA" : [
                [
                   "property",
                   "role",
                   "is",
-                  "IA2_ROLE_LANDMARK"
-               ],
-               [
-                  "property",
-                  "objectAttributes",
-                  "contains",
-                  "xml-roles:main"
+                  "ROLE_SYSTEM_BUTTONMENU"
                ]
             ],
             "UIA" : [
@@ -70,19 +64,7 @@
                   "property",
                   "ControlType",
                   "is",
-                  "Group"
-               ],
-               [
-                  "property",
-                  "LocalizedControlType",
-                  "is",
-                  "main"
-               ],
-               [
-                  "property",
-                  "Landmark Type",
-                  "is",
-                  "Main"
+                  "Button"
                ]
             ]
          },
@@ -90,19 +72,18 @@
          "type" : "test"
       }
    ],
-   "title" : "main NEW"
+   "title" : "button with aria-haspopup=\"true\""
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for main NEW.</p>
-    <div role='main' id='test'>content</div>
+  <p>This test examines the ARIA properties for button with aria-haspopup="true".</p>
+    <div role='button' id='test' aria-haspopup='true'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

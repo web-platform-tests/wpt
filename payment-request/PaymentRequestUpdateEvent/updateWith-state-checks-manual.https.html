@@ -77,6 +77,7 @@ function testRequestIsUpdating(button) {
     );
     // We got the error we wanted, so let's resolve with valid details.
     resolver(validDetails);
+    await pendingPromise;
     await event.target.abort();
     responsePromise.catch(err => err);
   }, button.textContent.trim());

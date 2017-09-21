@@ -51,16 +51,23 @@ function testRequestIsClosed(button) {
       "request.[[state]] is not interactive, must throw an InvalidStateError."
     );
     responsePromise.catch(err => err);
-  }, testName.trim());
+  }, button.textContent.trim());
 }
 
 function testRequestIsUpdating(button) {
-    button.disabled = "true";
+  button.disabled = "true";
   promise_test(async t => {
     const { eventPromise, responsePromise } = getPaymentPromises();
     const event = await eventPromise;
+    // We are going to put a promise into a pending state
+    // check that a second call to updateWith() throws,
+    // then resolve the pending promise below.
+    let resolver;
+    const pendingPromise = new Promise(resolve => {
+      resolver = resolve;
+    });
     // Set request.[[updating]] to true
-    event.updateWith(validDetails);
+    event.updateWith(pendingPromise);
     assert_throws(
       "InvalidStateError",
       () => {
@@ -68,10 +75,13 @@ function testRequestIsUpdating(button) {
       },
       "request.[[updating]] to true, must throw an InvalidStateError."
     );
+    // We got the error we wanted, so let's resolve with valid details.
+    resolver(validDetails);
     await event.target.abort();
     responsePromise.catch(err => err);
-  }, testName.trim());
+  }, button.textContent.trim());
 }
+
 </script>
 <h2>updateWith() method - state machine checks</h2>
 <p>

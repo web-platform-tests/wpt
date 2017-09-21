@@ -127,6 +127,13 @@ def check_worker_collision(repo_root, path, css_mode):
     return []
 
 
+def check_ahem_copy(repo_root, path, css_mode):
+    lpath = path.lower()
+    if "ahem" in lpath and lpath.endswith(".ttf"):
+        return [("AHEM COPY", "Don't add extra copies of Ahem, use /fonts/Ahem.ttf", path, None)]
+    return []
+
+
 drafts_csswg_re = re.compile(r"https?\:\/\/drafts\.csswg\.org\/([^/?#]+)")
 w3c_tr_re = re.compile(r"https?\:\/\/www\.w3c?\.org\/TR\/([^/?#]+)")
 w3c_dev_re = re.compile(r"https?\:\/\/dev\.w3c?\.org\/[^/?#]+\/([^/?#]+)")
@@ -801,7 +808,7 @@ def lint(repo_root, paths, output_format, css_mode):
                 logger.info(line)
     return sum(itervalues(error_count))
 
-path_lints = [check_path_length, check_worker_collision]
+path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
 all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 

@@ -90,6 +90,16 @@ PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
 
+## Deliberate copies of Ahem ##
+# The allowed copy
+AHEM COPY: fonts/Ahem.ttf
+
+# None of these are actually Ahem
+AHEM COPY: css/fonts/ahem-extra/AHEM_*.TTF
+
+# https://github.com/w3c/web-platform-tests/issues/7437
+AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
+
 ### Test exclusions ##
 
 CR AT EOL:WebIDL/valid/idl/documentation-dos.widl

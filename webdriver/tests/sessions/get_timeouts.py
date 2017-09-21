@@ -1,5 +1,4 @@
-from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
+from tests.support.asserts import assert_success
 
 
 def get_timeouts(session):
@@ -12,6 +11,15 @@ def get_timeouts(session):
 def test_get_timeouts(session):
     # 8.4 step 1
     response = get_timeouts(session)
+
+    assert response.status == 200
+    # Check if value exist
+    assert 'value' in response.body
+
+    # Check if script, implicit, pageLoad exist
+    assert 'script' in response.body["value"]
+    assert 'implicit' in response.body["value"]
+    assert 'pageLoad' in response.body["value"]
 
     assert isinstance(response.body["value"]["script"], int)
     assert isinstance(response.body["value"]["implicit"], int)

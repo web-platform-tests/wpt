@@ -41,6 +41,8 @@ function testRequestIsClosed(button) {
   promise_test(async t => {
     const { eventPromise, responsePromise } = getPaymentPromises();
     const event = await eventPromise;
+    // We are going to abort the responsePromise, so we can ignore error.
+    responsePromise.catch(err => err);
     // Set request.[[state]] to closed
     await event.target.abort();
     assert_throws(

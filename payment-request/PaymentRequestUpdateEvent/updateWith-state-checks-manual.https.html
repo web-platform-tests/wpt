@@ -36,7 +36,8 @@ function getPaymentPromises() {
   return { eventPromise, responsePromise };
 }
 
-function testRequestIsClosed({ textContent: testName }) {
+function testRequestIsClosed(button) {
+  button.disabled = "true";
   promise_test(async t => {
     const { eventPromise, responsePromise } = getPaymentPromises();
     const event = await eventPromise;
@@ -53,7 +54,8 @@ function testRequestIsClosed({ textContent: testName }) {
   }, testName.trim());
 }
 
-function testRequestIsUpdating({ textContent: testName }) {
+function testRequestIsUpdating(button) {
+    button.disabled = "true";
   promise_test(async t => {
     const { eventPromise, responsePromise } = getPaymentPromises();
     const event = await eventPromise;

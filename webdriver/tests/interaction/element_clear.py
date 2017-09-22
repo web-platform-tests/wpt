@@ -24,7 +24,10 @@ def test_no_browsing_context(session, create_window):
 
 def test_element_not_found(session):
     # 14.2 Step 2
-    response = clear(session, "box1")
+    response = session.transport.send("POST", "session/{session_id}/element/{element_id}/clear"
+                                      .format(session_id=session.session_id,
+                                              element_id="box1"))
+
     assert_error(response, "no such element")
 
 

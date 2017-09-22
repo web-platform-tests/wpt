@@ -175,6 +175,9 @@ class MarionetteProtocol(Protocol):
         while True:
             try:
                 self.marionette.execute_async_script("")
+            except errors.NoSuchWindowException:
+                # The window closed
+                break
             except errors.ScriptTimeoutException:
                 self.logger.debug("Script timed out")
                 pass
@@ -182,7 +185,7 @@ class MarionetteProtocol(Protocol):
                 self.logger.debug("Socket closed")
                 break
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.warning(traceback.format_exc(e))
                 break
 
     def on_environment_change(self, old_environment, new_environment):
@@ -452,10 +455,14 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         self.implementation.setup(**self.implementation_kwargs)
 
     def teardown(self):
-        self.implementation.teardown()
-        handle = self.protocol.marionette.window_handles[0]
-        self.protocol.marionette.switch_to_window(handle)
-        super(self.__class__, self).teardown()
+        try:
+            self.implementation.teardown()
+            handle = self.protocol.marionette.window_handles[0]
+            self.protocol.marionette.switch_to_window(handle)
+            super(self.__class__, self).teardown()
+        except Exception as e:
+            # Ignore errors during teardown
+            self.logger.warning(traceback.format_exc(e))
 
     def is_alive(self):
         return self.protocol.is_alive
@@ -489,10 +496,10 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         test_url = self.test_url(test)
 
         return ExecuteAsyncScriptRun(self.logger,
-                             self._screenshot,
-                             self.protocol,
-                             test_url,
-                             timeout).run()
+                                     self._screenshot,
+                                     self.protocol,
+                                     test_url,
+                                     timeout).run()
 
     def _screenshot(self, marionette, url, timeout):
         marionette.navigate(url)
@@ -547,8 +554,10 @@ class InternalRefTestImplementation(object):
         try:
             self.executor.protocol.marionette._send_message("reftest:teardown", {})
             self.executor.protocol.marionette.set_context(self.executor.protocol.marionette.CONTEXT_CONTENT)
-        except socket.error:
-            pass
+        except Exception as e:
+            # Ignore errors during teardown
+            self.logger.warning(traceback.traceback.format_exc(e))
+
 
 
 class GeckoDriverProtocol(WebDriverProtocol):

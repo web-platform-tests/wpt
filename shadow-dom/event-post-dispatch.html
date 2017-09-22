@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<title>Shadow DOM: Event dispatch post result</title>
+<meta name="author" title="Eriko Kurimoto" href="mailto:elkurin@google.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/shadow-dom.js"></script>
+
+<div id="test1">
+  <div id="d1">
+    <div id="target"></div>
+  </div>
+</div>
+
+<script>
+let n1 = createTestTree(test1);
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: true });
+  let log = dispatchEventWithLog(n1, n1.target, event);
+  assert_equals(event.target, n1.target);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path without ShadowRoots (composed: true).');
+
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: false });
+  let log = dispatchEventWithLog(n1, n1.target, event);
+  assert_equals(event.target, null);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path without ShadowRoots (composed: false).');
+</script>
+
+<div id="test2">
+  <div id="host">
+    <template id="sr" data-mode="open">
+      <div id="target"></div>
+    </template>
+  </div>
+</div>
+
+<script>
+let n2 = createTestTree(test2);
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: true });
+  let log = dispatchEventWithLog(n2, n2.target, event);
+  assert_equals(event.target, n2.host);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with an open ShadowRoot (composed: true).');
+
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: false });
+  let log = dispatchEventWithLog(n2, n2.target, event);
+  assert_equals(event.target, null);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with an open ShadowRoot (composed: false).');
+</script>
+
+<div id="test3">
+  <div id="host">
+    <template id="sr" data-mode="closed">
+      <div id="target"></div>
+    </template>
+  </div>
+</div>
+
+<script>
+let n3 = createTestTree(test3);
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: true });
+  let log = dispatchEventWithLog(n3, n3.target, event);
+  assert_equals(event.target, n3.host);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with a closed ShadowRoot (composed: true).');
+
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: false });
+  let log = dispatchEventWithLog(n3, n3.target, event);
+  assert_equals(event.target, null);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with a closed ShadowRoot (composed: false).');
+</script>
+
+<div id="test4">
+  <div id="host1">
+    <template id="sr" data-mode="open">
+      <div id="host2">
+        <template id="sr" data-mode="open">
+          <div id="target"></div>
+        </template>
+      </div>
+    </template>
+  </div>
+</div>
+
+<script>
+let n4 = createTestTree(test4);
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: true });
+  let log = dispatchEventWithLog(n4, n4.target, event);
+  assert_equals(event.target, n4.host1);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with a nested ShadowRoot (composed: true).');
+
+test(() => {
+  let event = new Event('my-event', { bubbles: true, composed: false });
+  let log = dispatchEventWithLog(n4, n4.target, event);
+  assert_equals(event.target, null);
+  assert_equals(event.eventPhase, 0);
+  assert_equals(event.currentTarget, null);
+  assert_equals(event.composedPath().length, 0);
+}, 'Event Path with a nested ShadowRoot (composed: false).');
+</script>

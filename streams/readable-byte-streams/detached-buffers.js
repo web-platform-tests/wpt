@@ -150,7 +150,7 @@ async_test(t => {
   const reader = stream.getReader({ mode: 'byob' });
 
   reader.read(new Uint8Array([4, 5, 6]));
-}, 'ReadableStream with byte source: respondWithNewView() throws if the BYOB request\'s buffer has been detached ' +
+}, 'ReadableStream with byte source: respondWithNewView() throws if the supplied view\'s buffer has been detached ' +
    '(in the closed state)');
 
 done();

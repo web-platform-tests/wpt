@@ -16,10 +16,10 @@ promise_test(() => {
   const view = new Uint8Array([1, 2, 3]);
   return reader.read(view).then(({ value, done }) => {
     // Sanity checks
-    assert_true(value instanceof Uint8Array);
-    assert_not_equals(value, view);
-    assert_array_equals(value, []);
-    assert_true(done);
+    assert_true(value instanceof Uint8Array, 'The value read must be a Uint8Array');
+    assert_not_equals(value, view, 'The value read must not be the *same* Uint8Array');
+    assert_array_equals(value, [], 'The value read must be an empty Uint8Array, since the stream is closed');
+    assert_true(done, 'done must be true, since the stream is closed');
 
     // The important assertions
     assert_not_equals(value.buffer, view.buffer, 'a different ArrayBuffer must underlie the value');
@@ -39,10 +39,10 @@ promise_test(() => {
   const view = new Uint8Array([4, 5, 6]);
   return reader.read(view).then(({ value, done }) => {
     // Sanity checks
-    assert_true(value instanceof Uint8Array);
-    assert_not_equals(value, view);
-    assert_array_equals(value, [1, 2, 3]);
-    assert_false(done);
+    assert_true(value instanceof Uint8Array, 'The value read must be a Uint8Array');
+    assert_not_equals(value, view, 'The value read must not be the *same* Uint8Array');
+    assert_array_equals(value, [1, 2, 3], 'The value read must be the enqueued Uint8Array, not the original values');
+    assert_false(done, 'done must be false, since the stream is not closed');
 
     // The important assertions
     assert_not_equals(value.buffer, view.buffer, 'a different ArrayBuffer must underlie the value');
@@ -55,7 +55,7 @@ test(() => {
     start(c) {
       const view = new Uint8Array([1, 2, 3]);
       c.enqueue(view);
-      assert_throws(new TypeError(), () => c.enqueue(view));
+      assert_throws(new TypeError(), () => c.enqueue(view), 'enqueuing an already-detached buffer must throw');
     },
     type: 'bytes'
   });
@@ -73,7 +73,8 @@ promise_test(t => {
   const view = new Uint8Array([4, 5, 6]);
   return reader.read(view).then(() => {
     // view is now detached
-    return promise_rejects(t, new TypeError(), reader.read(view));
+    return promise_rejects(t, new TypeError(), reader.read(view),
+      'read(view) must reject when given an already-detached buffer');
   });
 }, 'ReadableStream with byte source: reading into an already-detached buffer rejects');
 
@@ -83,7 +84,8 @@ async_test(t => {
       // Detach it by reading into it
       reader.read(c.byobRequest.view);
 
-      assert_throws(new TypeError(), () => c.byobRequest.respond(1));
+      assert_throws(new TypeError(), () => c.byobRequest.respond(1),
+        'respond() must throw if the corresponding view has become detached');
     }),
     type: 'bytes'
   });
@@ -101,7 +103,8 @@ async_test(t => {
 
       c.close();
 
-      assert_throws(new TypeError(), () => c.byobRequest.respond(0));
+      assert_throws(new TypeError(), () => c.byobRequest.respond(0),
+        'respond() must throw if the corresponding view has become detached');
     }),
     type: 'bytes'
   });
@@ -118,7 +121,8 @@ async_test(t => {
       const view = new Uint8Array([1, 2, 3]);
       reader.read(view);
 
-      assert_throws(new TypeError(), () => c.byobRequest.respondWithNewView(view));
+      assert_throws(new TypeError(), () => c.byobRequest.respondWithNewView(view),
+        'respondWithNewView() must throw if passed a detached view');
     }),
     type: 'bytes'
   });
@@ -138,7 +142,8 @@ async_test(t => {
       c.close();
 
       const zeroLengthView = new Uint8Array(view.buffer, 0, 0);
-      assert_throws(new TypeError(), () => c.byobRequest.respondWithNewView(zeroLengthView));
+      assert_throws(new TypeError(), () => c.byobRequest.respondWithNewView(zeroLengthView),
+        'respondWithNewView() must throw if passed a (zero-length) view whose buffer has been detached');
     }),
     type: 'bytes'
   });

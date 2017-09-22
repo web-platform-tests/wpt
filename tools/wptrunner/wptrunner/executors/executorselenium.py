@@ -206,47 +206,68 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         after = set(webdriver.window_handles)
         assert len(after - before) == 1
         test_window = list(after - before)[0]
+        handler = CallbackHandler(webdriver, logger)
         while True:
             result = webdriver.execute_async_script(
                 self.script_resume % format_map)
-            self.logger.debug("Got async callback: %s" % result[1])
-            if result[1] == "complete":
-                result = [result[0]] + result[2]
+            done, rv = handler(result)
+            if done:
                 break
-            elif result[1] == "action":
-                parent = webdriver.current_window_handle
+        return rv
+
+
+class CallbackHandler(object):
+    def __init__(self, webdriver, logger):
+        pass
+
+    def __call__(self, result):
+        self.logger.debug("Got async callback: %s" % result[1])
+        try:
+            return getattr(self, "process_%s" % result[1])()
+        except AttributeError:
+            raise ValueError("Unknown callback type")
+
+    def process_complete(self, result):
+        rv = [result[0]] + result[2]
+        return True, rv
+
+    def process_action(self, result):
+        parent = self.webdriver.current_window_handle
+        try:
+            self.webdriver.switch_to.window(test_window)
+            action = result[2]["action"]
+            self.logger.debug("Got action: %s" % action)
+            if action == "click":
+                selector = result[2]["selector"]
+                elements = self.webdriver.find_elements_by_css_selector(selector)
+                assert len(elements) == 1  # the JS should ensure this
+                self.logger.debug("Clicking element: %s" % selector)
                 try:
-                    webdriver.switch_to.window(test_window)
-                    action = result[2]["action"]
-                    self.logger.debug("Got action: %s" % action)
-                    if action == "click":
-                        selector = result[2]["selector"]
-                        elements = webdriver.find_elements_by_css_selector(selector)
-                        assert len(elements) == 1  # the JS should ensure this
-                        self.logger.debug("Clicking element: %s" % selector)
-                        try:
-                            elements[0].click()
-                        except (exceptions.ElementNotInteractableException,
-                                exceptions.ElementNotVisibleException) as e:
-                            msg = json.dumps(
-                                {
-                                    "type": "testautomation-complete",
-                                    "status": "failure",
-                                    "message": str(e)
-                                })
-                            webdriver.execute_script("window.postMessage(%s, '*')" % msg)
-                            self.logger.debug("Clicking element failed: %s" % str(e))
-                        else:
-                            msg = json.dumps(
-                                {
-                                    "type": "testautomation-complete",
-                                    "status": "success"
-                                })
-                            webdriver.execute_script("window.postMessage(%s, '*')" % msg)
-                            self.logger.debug("Clicking element succeeded")
-                finally:
-                    webdriver.switch_to.window(parent)
-        return result
+                    elements[0].click()
+                except (exceptions.ElementNotInteractableException,
+                        exceptions.ElementNotVisibleException) as e:
+                    self._send_message(
+                        {
+                            "type": "testautomation-complete",
+                            "status": "failure",
+                            "message": str(e)
+                        })
+                    self.logger.debug("Clicking element failed: %s" % str(e))
+                else:
+                    self._send_message(
+                        {
+                            "type": "testautomation-complete",
+                            "status": "success"
+                        })
+                    self.logger.debug("Clicking element succeeded")
+        finally:
+            self.webdriver.switch_to.window(parent)
+
+        return False, None
+
+    def _send_message(self, obj):
+        msg = json.dumps(obj)
+        self.webdriver.execute_script("window.postMessage(%s, '*')" % msg)
 
 
 

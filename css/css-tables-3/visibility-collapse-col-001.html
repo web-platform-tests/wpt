@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<link rel='stylesheet' href='support/base.css' />
+<link rel='stylesheet' href='base.css' />
 <link rel="author" title="David Grogan" href="mailto:dgrogan@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#computing-the-table-width">
 <style>
@@ -85,23 +85,17 @@
 </main>
 
 <script>
-    tests = [
+    generate_tests(assert_equals, [
         [
-            document.getElementById('two').offsetHeight,
-            document.getElementById('one').offsetHeight,
             "col visibility:collapse doesn't change table height",
+            document.getElementById('two').offsetHeight,
+            document.getElementById('one').offsetHeight
         ],
         [
+            "col visibility:collapse changes table width",
             document.getElementById('two').offsetWidth,
-            116,
-            "col visibility:collapse changes table width"
-        ]];
-    for (i = 0; i< tests.length; i++) {
-        test(function()
-            {
-                assert_equals.apply(this, tests[i]);
-            },
-            tests[i][2]);
-    };
+            116
+        ]
+    ]);
 </script>
 </html>

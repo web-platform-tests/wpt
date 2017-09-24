@@ -20,14 +20,14 @@
 </main>
 
 <script>
-	while(true) {
-		var xtd = document.querySelector('x-td[rowspan], x-td[colspan]'); if(!xtd) break;
-		var td = document.createElement('td'); for(var i = xtd.attributes.length; i--;) { td.setAttribute(xtd.attributes[i].name,xtd.attributes[i].value) }
-		xtd.parentNode.replaceChild(td,xtd);
-	}
+    while(true) {
+        var xtd = document.querySelector('x-td[rowspan], x-td[colspan]'); if(!xtd) break;
+        var td = document.createElement('td'); for(var i = xtd.attributes.length; i--;) { td.setAttribute(xtd.attributes[i].name,xtd.attributes[i].value) }
+        xtd.parentNode.replaceChild(td,xtd);
+    }
 
     var i = 1;
-	generate_tests(assert_equals, [
+    generate_tests(assert_equals, [
         [
              // TEST ONE
             "Width is 100px due to 100px content size of caption",

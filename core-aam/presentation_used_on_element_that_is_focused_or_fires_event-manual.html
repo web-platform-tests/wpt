@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>option not inside combobox</title>
+    <title>presentation used on element that is focused or fires event</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,51 +20,33 @@
             "ATK" : [
                [
                   "property",
-                  "role",
+                  "accessible",
                   "is",
-                  "ROLE_LIST_ITEM"
+                  "true"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXRole",
+                  "accessible",
                   "is",
-                  "AXStaticText"
-               ],
-               [
-                  "property",
-                  "AXSubrole",
-                  "is",
-                  "<nil>"
-               ],
-               [
-                  "property",
-                  "AXRoleDescription",
-                  "is",
-                  "text"
+                  "true"
                ]
             ],
             "MSAA" : [
                [
                   "property",
-                  "role",
+                  "accessible",
                   "is",
-                  "ROLE_SYSTEM_LISTITEM"
+                  "true"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "ControlType",
+                  "accessible",
                   "is",
-                  "ListItem"
-               ],
-               [
-                  "property",
-                  "Control Pattern",
-                  "is",
-                  "Invoke"
+                  "true"
                ]
             ]
          },
@@ -72,17 +54,15 @@
          "type" : "test"
       }
    ],
-   "title" : "option not inside combobox"
+   "title" : "presentation used on element that is focused or fires event"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for option not inside combobox.</p>
-    <div role='listbox'>
-    <div role='option' id='test'>content</div>
-  </div>
+  <p>This test examines the ARIA properties for presentation used on element that is focused or fires event.</p>
+    <div id='test' role='presentation' tabindex='0'>content</div>
 
   <div id="manualMode"></div>
   <div id="log"></div>

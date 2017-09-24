@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>option not inside combobox</title>
+    <title>Exclude presentational children of menuitemcheckbox NEW</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
@@ -20,51 +20,33 @@
             "ATK" : [
                [
                   "property",
-                  "role",
+                  "accessible",
                   "is",
-                  "ROLE_LIST_ITEM"
+                  "false"
                ]
             ],
             "AXAPI" : [
                [
                   "property",
-                  "AXRole",
+                  "accessible",
                   "is",
-                  "AXStaticText"
-               ],
-               [
-                  "property",
-                  "AXSubrole",
-                  "is",
-                  "<nil>"
-               ],
-               [
-                  "property",
-                  "AXRoleDescription",
-                  "is",
-                  "text"
+                  "false"
                ]
             ],
             "MSAA" : [
                [
                   "property",
-                  "role",
+                  "accessible",
                   "is",
-                  "ROLE_SYSTEM_LISTITEM"
+                  "false"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "ControlType",
+                  "accessible",
                   "is",
-                  "ListItem"
-               ],
-               [
-                  "property",
-                  "Control Pattern",
-                  "is",
-                  "Invoke"
+                  "false"
                ]
             ]
          },
@@ -72,16 +54,18 @@
          "type" : "test"
       }
    ],
-   "title" : "option not inside combobox"
+   "title" : "Exclude presentational children of menuitemcheckbox NEW"
 }
 
     ) ;
     </script>
   </head>
   <body>
-  <p>This test examines the ARIA properties for option not inside combobox.</p>
-    <div role='listbox'>
-    <div role='option' id='test'>content</div>
+  <p>This test examines the ARIA properties for Exclude presentational children of menuitemcheckbox NEW.</p>
+    <div role='menu'>
+    <div role='menuitemcheckbox'>
+      <div id='test'>content</div>
+    </div>
   </div>
 
   <div id="manualMode"></div>

@@ -32,13 +32,15 @@ def test_dismiss_alert(session):
 
 def test_dismiss_confirm(session):
     # 18.1 step 3
-    session.execute_script("window.confirm(\"Hello\");")
+    session.execute_script("window.result = window.confirm(\"Hello\");")
     response = dismiss_alert(session)
+    assert False == session.execute_script("return window.result;")
     assert_success(response)
 
 
 def test_dismiss_prompt(session):
     # 18.1 step 3
-    session.execute_script("window.prompt(\"Enter Your Name: \", \"Federer\");")
+    session.execute_script("window.result = window.prompt(\"Enter Your Name: \", \"Federer\");")
     response = dismiss_alert(session)
+    assert None == session.execute_script("return window.result")
     assert_success(response)

@@ -421,7 +421,7 @@ sub build_test() {
         $tests->{"WAIFAKE"} = [ [ "property", "role", "is", "ROLE_TABLE_CELL" ], [ "property", "interfaces", "contains", "TableCell" ] ];
       }
       foreach my $name (@apiNames) {
-        if (exists $asserts->{$name}) {
+        if (exists $asserts->{$name} && scalar(@{$asserts->{$name}})) {
           $tests->{$name} = $asserts->{$name};
         }
       };

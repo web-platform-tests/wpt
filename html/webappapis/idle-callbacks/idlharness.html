@@ -23,6 +23,11 @@ dictionary IdleRequestOptions {
   unsigned long timeout;
 };
 
+[Exposed=Window] interface IdleDeadline {
+  DOMHighResTimeStamp timeRemaining();
+  readonly attribute boolean didTimeout;
+};
+
 callback IdleRequestCallback = void (IdleDeadline deadline);
 </pre>
 <script>

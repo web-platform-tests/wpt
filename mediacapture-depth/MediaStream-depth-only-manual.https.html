@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MediaStream interface with Depth Stream</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://w3c.github.io/mediacapture-main/">
+<link rel="help" href="https://w3c.github.io/mediacapture-depth/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="flags" content="interact">
+
+<p class="instructions">Use a test device with depth camera(embedded or external).</p>
+<p class="instructions">When prompted, accept to share your depth stream.</p>
+
+<div id="log"></div>
+
+<video id="vid"></video>
+<script>
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}, width: {min: 0}}})
+  .then(stream => {
+    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+  })
+  .catch(error => {
+    assert_unreached("a Video stream of minimally zero width can always be created");
+  });
+}, "Tests that setting a trivial mandatory constraint in getUserMedia works");
+
+promise_test(t => {
+  // Note - integer conversion is weird for +inf and numbers > 2^32, so we
+  // use a number less than 2^32 for testing.
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}, width: {min: 100000000}}})
+  .then(stream => {
+    assert_unreached("a Video stream of width 100M cannot be created");
+  })
+  .catch(error => {
+    assert_equals(error.name, "OverconstrainedError", "An impossible constraint triggers a OverconstrainedError");
+    assert_equals(error.constraint, "width", "The name of the not satisfied error is given in error.constraint");
+  });
+}, "Tests that setting an impossible constraint in getUserMedia fails");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}, advanced: [{width: {min: 1024, max: 800}}]}})
+  .then(stream => {
+    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+  })
+  .catch(error => {
+    assert_unreached("an optional constraint can't stop us from obtaining a depth stream");
+  });
+}, "Tests that setting an optional constraint in getUserMedia is handled as optional");
+
+promise_test(t => {
+  let allowedCharacters = /^[\u0021\u0023-\u0027\u002A-\u002B\u002D-\u002E\u0030-\u0039\u0041-\u005A\u005E-\u007E]*$/;
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    assert_true(stream.id.length === 36, "the media stream id has 36 characters");
+    assert_regexp_match(stream.id, allowedCharacters, "the media stream id uses the set of allowed characters");
+  });
+}, "Tests that a MediaStream is created by getUserMedia() has a correct id");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    let track = stream.getVideoTracks()[0];
+    assert_equals(track, stream.getTrackById(track.id), "getTrackById returns track of given id");
+    assert_equals(stream.getTrackById(track.id + "foo"), null, "getTrackById of inexistant id returns null");
+  });
+}, "Tests that MediaStream.getTrackById works as expected");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    assert_true(stream instanceof MediaStream, "getUserMedia success callback comes with a MediaStream object");
+    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one audivideoo track");
+    assert_equals(stream.getVideoTracks()[0].kind, "video", "getVideoTracks() returns a sequence of tracks whose kind is 'video'");
+    assert_equals(stream.getAudioTracks().length, 0, "the media stream has zero audio track");
+  });
+}, "Tests that a MediaStream with exactly one video track is returned");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    let track = stream.getTracks()[0];
+    assert_true(track instanceof MediaStreamTrack);
+    let event = new MediaStreamTrackEvent("type", { track: track });
+    assert_equals(event.type, "type");
+    assert_equals(event.track, track);
+  });
+}, "The MediaStreamTrackEvent instance's track attribute is set");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    let video = new MediaStream();
+    video.onaddtrack = () => {
+      assert_unreached("onaddtrack is not fired when the script directly modified the track of a mediastream");
+    };
+    assert_equals(stream.getVideoTracks().length, 1, "video mediastream starts with one video track");
+    assert_equals(video.getVideoTracks().length, 0, "new video mediastream starts with zero video track");
+    let value = video.addTrack(stream.getVideoTracks()[0]);
+    assert_equals(value, undefined, "the addTrack function return a void type value");
+    assert_equals(video.getVideoTracks().length, 1, "new video mediastream has now one video track");
+    //If track is already in stream's track set, then abort these steps, should not throw
+    video.addTrack(stream.getVideoTracks()[0]);
+    assert_equals(video.getVideoTracks().length, 1, "new video mediastream still has one video track");
+  });
+}, "Tests that adding a track to a MediaStream works as expected");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => {
+    stream.onremovetrack = () => {
+      assert_unreached("onremovetrack is not triggered when removal of track is triggered by the script itself");
+    };
+    assert_equals(stream.getVideoTracks().length, 1, "video mediastream starts with one video track");
+    let video_clone = stream.getVideoTracks()[0].clone();
+    let value = stream.removeTrack(stream.getVideoTracks()[0]);
+    assert_equals(value, undefined, "the removeTrack function return a void type value");
+    assert_equals(stream.getVideoTracks().length, 0, "video mediastream has no video track left");
+    // If track is not in stream's track set, then abort these steps, should not throw
+    stream.removeTrack(video_clone);
+  });
+}, "Tests that a removal from a MediaStream works as expected");
+
+promise_test(t => {
+  let vid = document.getElementById("vid");
+  let cv = document.createElement("canvas");
+  return navigator.mediaDevices.getUserMedia({video: {videoKind: {exact: "depth"}}})
+  .then(stream => new Promise(resolve => {
+    if (stream.getVideoTracks()[0].enabled) {
+      stream.getVideoTracks()[0].enabled = false;
+    }
+
+    let testOnceLoadeddata = function() {
+      vid.removeEventListener("loadeddata", testOnceLoadeddata, false);
+      cv.width = vid.offsetWidth;
+      cv.height = vid.offsetHeight;
+      let ctx = cv.getContext("2d");
+      ctx.drawImage(vid, 0, 0);
+      let imageData = ctx.getImageData(0, 0, cv.width, cv.height);
+      resolve(imageData);
+    }
+
+    vid.srcObject = stream;
+    vid.play();
+    vid.addEventListener("loadeddata", testOnceLoadeddata, false);
+  })).then(imageData => {
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        assert_equals(imageData.data[i], 0, "No red component in pixel #" + i);
+        assert_equals(imageData.data[i + 1], 0, "No green component in pixel #" + i);
+        assert_equals(imageData.data[i + 2], 0, "No blue component in pixel #" + i);
+        assert_equals(imageData.data[i + 3], 255, "No transparency in pixel #" + i);
+      }
+  })
+}, "Tests that a disabled video track in a MediaStream is rendered as blackness");
+
+</script>

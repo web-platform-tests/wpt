@@ -8,7 +8,7 @@ import mozlog
 
 from tests.support.asserts import assert_error
 from tests.support.http_request import HTTPRequest
-from tests.support import merge_dictionaries
+from tests.support import merge_dictionaries, overwrite_dictionary
 
 default_host = "http://127.0.0.1"
 default_port = "4444"
@@ -173,7 +173,7 @@ def session(configuration, request):
 
 
 def new_session(configuration, request):
-    """Return a factory function that will attempt to start a session with a given body.
+    """Return a factory function that will attempt to start a session with given capabilities.
 
     This is intended for tests that are themselves testing new session creation, and the
     session created is closed at the end of the test."""
@@ -183,17 +183,14 @@ def new_session(configuration, request):
             _current_session.end()
             _current_session = None
 
-    def create_session(body):
+    def create_session(capabilities):
         global _current_session
         _session = webdriver.Session(configuration["host"],
                                      configuration["port"],
-                                     capabilities=None)
-        # TODO: merge in some capabilities from the confguration capabilities
-        # since these might be needed to start the browser
-        value = _session.send_command("POST", "session", body=body)
+                                     capabilities=overwrite_dictionary(configuration["capabilities"], capabilities))
+        value = _session.start()
         # Don't set the global session until we are sure this succeeded
         _current_session = _session
-        _session.session_id = value["sessionId"]
 
         return value, _current_session
 

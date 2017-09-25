@@ -1,1 +1,1 @@
-from merge_dictionaries import merge_dictionaries
+from merge_dictionaries import merge_dictionaries, overwrite_dictionary

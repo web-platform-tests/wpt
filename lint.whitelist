@@ -379,7 +379,6 @@ NON-EXISTENT-REF: css/CSS2/tables/border-collapse-005.html
 NON-EXISTENT-REF: css/mediaqueries-3/relative-units-002.html
 NON-EXISTENT-REF: css/mediaqueries-3/relative-units-003.html
 NON-EXISTENT-REF: css/mediaqueries-3/relative-units-004.html
-SAME-FILE-REF: css/css-multicol-1/multicol-rule-shorthand-2.xht
 
 
 ## Whitespace rules that we can't enforce yet

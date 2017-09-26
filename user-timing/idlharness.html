@@ -22,16 +22,6 @@
 [Exposed=(Window,Worker)]
 interface Performance {
 };
-
-[Exposed=(Window,Worker)]
-
-interface PerformanceEntry {
-    readonly attribute DOMString           name;
-    readonly attribute DOMString           entryType;
-    readonly attribute DOMHighResTimeStamp startTime;
-    readonly attribute DOMHighResTimeStamp duration;
-    [Default] object toJSON();
-};
 </pre>
 
 <pre id='idl'>
@@ -41,6 +31,15 @@ partial interface Performance {
 
     void measure(DOMString measureName, optional DOMString startMark, optional DOMString endMark);
     void clearMeasures(optional DOMString measureName);
+};
+
+[Exposed=(Window,Worker)]
+interface PerformanceEntry {
+    readonly attribute DOMString           name;
+    readonly attribute DOMString           entryType;
+    readonly attribute DOMHighResTimeStamp startTime;
+    readonly attribute DOMHighResTimeStamp duration;
+    [Default] object toJSON();
 };
 
 [Exposed=(Window,Worker)]

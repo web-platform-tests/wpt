@@ -27,24 +27,33 @@ def test_get_alert_text(session):
     # 18.3 step 3
     session.execute_script("window.alert(\"Hello\");")
     response = get_dialog_text(session)
-    alert_text = response.body["value"]
-    assert alert_text == "Hello"
     assert_success(response)
+    assert isinstance(response.body, dict)
+    assert "value" in response.body
+    alert_text = response.body["value"]
+    assert isinstance(alert_text, unicode)
+    assert alert_text == "Hello"
 
 
 def test_get_confirm_text(session):
     # 18.3 step 3
     session.execute_script("window.confirm(\"Hello\");")
     response = get_dialog_text(session)
-    alert_text = response.body["value"]
-    assert alert_text == "Hello"
     assert_success(response)
+    assert isinstance(response.body, dict)
+    assert "value" in response.body
+    confirm_text = response.body["value"]
+    assert isinstance(confirm_text, unicode)
+    assert confirm_text == "Hello"
 
 
 def test_get_prompt_text(session):
     # 18.3 step 3
     session.execute_script("window.prompt(\"Enter Your Name: \", \"Federer\");")
     response = get_dialog_text(session)
-    alert_text = response.body["value"]
-    assert alert_text == "Enter Your Name: "
     assert_success(response)
+    assert isinstance(response.body, dict)
+    assert "value" in response.body
+    prompt_text = response.body["value"]
+    assert isinstance(prompt_text, unicode)
+    assert prompt_text == "Enter Your Name: "

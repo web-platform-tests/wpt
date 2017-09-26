@@ -12,16 +12,15 @@ def test_get_timeouts(session):
     # 8.4 step 1
     response = get_timeouts(session)
 
-    assert response.status == 200
-    # Check if value exist
-    assert 'value' in response.body
+    assert_success(response)
+    assert "value" in response.body
+    assert isinstance(response.body["value"], dict)
 
-    # Check if script, implicit, pageLoad exist
-    assert 'script' in response.body["value"]
-    assert 'implicit' in response.body["value"]
-    assert 'pageLoad' in response.body["value"]
+    value = response.body["value"]
+    assert "script" in value
+    assert "implicit" in value
+    assert "pageLoad" in value
 
     assert isinstance(response.body["value"]["script"], int)
     assert isinstance(response.body["value"]["implicit"], int)
     assert isinstance(response.body["value"]["pageLoad"], int)
-    return assert_success(response)

@@ -1,92 +1,99 @@
-[SecureContext] interface WebAuthentication {
-    Promise < ScopedCredentialInfo > makeCredential (
-        Account                                 accountInformation,
-        sequence < ScopedCredentialParameters > cryptoParameters,
-        BufferSource                            attestationChallenge,
-        optional ScopedCredentialOptions        options
-    );
+[SecureContext]
+interface PublicKeyCredential : Credential {
+    readonly attribute ArrayBuffer           rawId;
+    readonly attribute AuthenticatorResponse response;
+    readonly attribute AuthenticationExtensions clientExtensionResults;
+};
 
-    Promise < WebAuthnAssertion > getAssertion (
-        BufferSource               assertionChallenge,
-        optional AssertionOptions  options
-    );
+partial dictionary CredentialRequestOptions {
+    PublicKeyCredentialRequestOptions? publicKey;
+};
+
+partial dictionary CredentialCreationOptions {
+    MakeCredentialOptions? publicKey;
 };
 
 [SecureContext]
-interface ScopedCredentialInfo {
-    readonly attribute ScopedCredential     credential;
-    readonly attribute CryptoKey            publicKey;
-    readonly attribute WebAuthnAttestation  attestation;
+interface AuthenticatorResponse {
+    readonly attribute ArrayBuffer clientDataJSON;
 };
 
-dictionary Account {
-    required DOMString rpDisplayName;
-    required DOMString displayName;
-    required DOMString id;
-    DOMString          name;
-    DOMString          imageURL;
+[SecureContext]
+interface AuthenticatorAttestationResponse : AuthenticatorResponse {
+    readonly attribute ArrayBuffer attestationObject;
 };
 
-dictionary ScopedCredentialParameters {
-    required ScopedCredentialType  type;
+[SecureContext]
+interface AuthenticatorAssertionResponse : AuthenticatorResponse {
+    readonly attribute ArrayBuffer      authenticatorData;
+    readonly attribute ArrayBuffer      signature;
+};
+
+dictionary PublicKeyCredentialParameters {
+    required PublicKeyCredentialType  type;
     required AlgorithmIdentifier   algorithm;
 };
 
-dictionary ScopedCredentialOptions {
-    unsigned long                             timeoutSeconds;
-    USVString                                 rpId;
-    sequence < ScopedCredentialDescriptor >  excludeList;
-    WebAuthnExtensions                        extensions;
+dictionary PublicKeyCredentialUserEntity : PublicKeyCredentialEntity {
+    DOMString displayName;
 };
 
-[SecureContext]
-interface WebAuthnAssertion {
-    readonly attribute ScopedCredential  credential;
-    readonly attribute ArrayBuffer       clientData;
-    readonly attribute ArrayBuffer       authenticatorData;
-    readonly attribute ArrayBuffer       signature;
+dictionary MakeCredentialOptions {
+    required PublicKeyCredentialEntity rp;
+    required PublicKeyCredentialUserEntity user;
+
+    required BufferSource                         challenge;
+    required sequence<PublicKeyCredentialParameters> parameters;
+
+    unsigned long                        timeout;
+    sequence<PublicKeyCredentialDescriptor> excludeList;
+    AuthenticatorSelectionCriteria       authenticatorSelection;
+    AuthenticationExtensions             extensions;
 };
 
-dictionary AssertionOptions {
-    unsigned long                            timeoutSeconds;
-    USVString                                rpId;
-    sequence < ScopedCredentialDescriptor > allowList;
-    WebAuthnExtensions                       extensions;
+dictionary PublicKeyCredentialEntity {
+    DOMString id;
+    DOMString name;
+    USVString icon;
 };
 
-dictionary WebAuthnExtensions {
+dictionary AuthenticatorSelectionCriteria {
+    Attachment    attachment;
+    boolean       requireResidentKey = false;
 };
 
-[SecureContext]
-interface WebAuthnAttestation {
-    readonly    attribute USVString     format;
-    readonly    attribute ArrayBuffer   clientData;
-    readonly    attribute ArrayBuffer   authenticatorData;
-    readonly    attribute any           attestation;
+enum Attachment {
+    "platform",
+    "cross-platform"
 };
 
-dictionary ClientData {
+dictionary PublicKeyCredentialRequestOptions {
+    required BufferSource                challenge;
+    unsigned long                        timeout;
+    USVString                            rpId;
+    sequence<PublicKeyCredentialDescriptor> allowList = [];
+    AuthenticationExtensions             extensions;
+};
+
+typedef record<DOMString, any> AuthenticationExtensions;
+
+dictionary CollectedClientData {
     required DOMString           challenge;
     required DOMString           origin;
-    required AlgorithmIdentifier hashAlg;
+    required DOMString           hashAlg;
     DOMString                    tokenBinding;
-    WebAuthnExtensions           extensions;
+    AuthenticationExtensions     clientExtensions;
+    AuthenticationExtensions     authenticatorExtensions;
 };
 
-enum ScopedCredentialType {
-    "ScopedCred"
+enum PublicKeyCredentialType {
+    "public-key"
 };
 
-[SecureContext]
-interface ScopedCredential {
-    readonly attribute ScopedCredentialType type;
-    readonly attribute ArrayBuffer          id;
-};
-
-dictionary ScopedCredentialDescriptor {
-    required ScopedCredentialType type;
-    required BufferSource   id;
-    sequence < Transport >  transports;
+dictionary PublicKeyCredentialDescriptor {
+    required PublicKeyCredentialType type;
+    required BufferSource id;
+    sequence<Transport>   transports;
 };
 
 enum Transport {
@@ -94,3 +101,7 @@ enum Transport {
     "nfc",
     "ble"
 };
+
+typedef sequence<AAGUID> AuthenticatorSelectionList;
+
+typedef BufferSource AAGUID;

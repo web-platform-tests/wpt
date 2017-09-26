@@ -17,12 +17,20 @@
 <div id="log"></div>
 
 <pre id='untested_idl' style='display:none'>
+  typedef double DOMHighResTimeStamp;
+
 [Exposed=(Window,Worker)]
 interface Performance {
 };
 
 [Exposed=(Window,Worker)]
+
 interface PerformanceEntry {
+    readonly attribute DOMString           name;
+    readonly attribute DOMString           entryType;
+    readonly attribute DOMHighResTimeStamp startTime;
+    readonly attribute DOMHighResTimeStamp duration;
+    [Default] object toJSON();
 };
 </pre>
 
@@ -53,7 +61,11 @@ interface PerformanceMeasure : PerformanceEntry {
   idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
   idl_array.add_idls(document.getElementById("idl").textContent);
 
-  idl_array.add_objects({Performance: ["window.performance"]});
+  self.performance.mark("mark");
+  self.performance.measure("measure", "mark");
+  idl_array.add_objects({Performance: ["window.performance"],
+    PerformanceMark: [self.performance.getEntriesByName("mark")[0]],
+    PerformanceMeasure: [self.performance.getEntriesByName("measure")[0]]});
 
   idl_array.test();
 })();

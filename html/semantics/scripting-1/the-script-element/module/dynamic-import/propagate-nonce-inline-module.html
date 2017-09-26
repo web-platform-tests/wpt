@@ -2,7 +2,7 @@
 <meta http-equiv="content-security-policy" content="script-src 'nonce-correct'">
 <script nonce="correct" src="/resources/testharness.js"></script>
 <script nonce="correct" src="/resources/testharnessreport.js"></script>
-<script nonce="correct">
+<script type="module" nonce="correct">
 promise_test(t => {
   return import("./../imports-a.js").then(module => {
     assert_true(window.evaluated_imports_a);

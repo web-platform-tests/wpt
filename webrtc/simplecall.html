@@ -108,15 +108,13 @@ property to true in Firefox.
 
   // Returns a suitable error callback.
   function failed(function_name) {
-    return test.step_func(function() {
-      assert_unreached('WebRTC called error callback for ' + function_name);
-    });
+    return test.unreached_func('WebRTC called error callback for ' + function_name);
   }
 
   // This function starts the test.
   test.step(function() {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(getUserMediaOkCallback, failed('getUserMedia'));
+      .then(test.step_func(getUserMediaOkCallback), failed('getUserMedia'));
   });
 </script>
 

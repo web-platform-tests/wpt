@@ -163,8 +163,6 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
     );
   }, button.innerText.trim());
 }
-
-
 </script>
 <h2>updateWith() method - "abort the update"</h2>
 <p>
@@ -237,7 +235,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
       Must throw a RangeError when a modifier's total item has an invalid currency.
     </button>
   </li>
- <li>
+  <li>
     <button onclick="
       // validModifier is there as to avoid false positives - it should just get ignored
       const badModifiers = { modifiers: [ modifierWithInvalidDisplayItems, validModifier ] };
@@ -247,7 +245,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
       Must throw a RangeError when a modifier display item has an invalid currency.
    </button>
   </li>
- <li>
+  <li>
     <button onclick="
       // validModifier is there as to avoid false positives - it should just get ignored
       const badModifiers = { modifiers: [ modifierWithRecursiveData, validModifier ] };

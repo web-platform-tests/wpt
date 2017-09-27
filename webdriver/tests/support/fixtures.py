@@ -187,7 +187,7 @@ def new_session(configuration, request):
         global _current_session
         _session = webdriver.Session(configuration["host"],
                                      configuration["port"],
-                                     capabilities=None)
+                                     capabilities={"alwaysMatch": configuration["capabilities"]})
         # TODO: merge in some capabilities from the confguration capabilities
         # since these might be needed to start the browser
         value = _session.send_command("POST", "session", body=body)

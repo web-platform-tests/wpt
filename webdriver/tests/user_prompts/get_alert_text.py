@@ -31,7 +31,7 @@ def test_get_alert_text(session):
     assert isinstance(response.body, dict)
     assert "value" in response.body
     alert_text = response.body["value"]
-    assert isinstance(alert_text, unicode)
+    assert isinstance(alert_text, basestring)
     assert alert_text == "Hello"
 
 
@@ -43,7 +43,7 @@ def test_get_confirm_text(session):
     assert isinstance(response.body, dict)
     assert "value" in response.body
     confirm_text = response.body["value"]
-    assert isinstance(confirm_text, unicode)
+    assert isinstance(confirm_text, basestring)
     assert confirm_text == "Hello"
 
 
@@ -55,5 +55,5 @@ def test_get_prompt_text(session):
     assert isinstance(response.body, dict)
     assert "value" in response.body
     prompt_text = response.body["value"]
-    assert isinstance(prompt_text, unicode)
+    assert isinstance(prompt_text, basestring)
     assert prompt_text == "Enter Your Name: "

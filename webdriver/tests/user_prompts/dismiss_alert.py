@@ -34,13 +34,13 @@ def test_dismiss_confirm(session):
     # 18.1 step 3
     session.execute_script("window.result = window.confirm(\"Hello\");")
     response = dismiss_alert(session)
-    assert False == session.execute_script("return window.result;")
     assert_success(response)
+    assert session.execute_script("return window.result;") is False
 
 
 def test_dismiss_prompt(session):
     # 18.1 step 3
     session.execute_script("window.result = window.prompt(\"Enter Your Name: \", \"Federer\");")
     response = dismiss_alert(session)
-    assert None == session.execute_script("return window.result")
     assert_success(response)
+    assert session.execute_script("return window.result") is None

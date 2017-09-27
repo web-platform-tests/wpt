@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// test for https://github.com/w3c/speech-api/issues/7
+async_test(t => {
+  // the utterance is as short to make the test faster
+  var utter = new SpeechSynthesisUtterance('1');
+  speechSynthesis.speak(utter);
+  utter.onend = t.step_func(() => {
+    speechSynthesis.speak(utter);
+    // pass if the utterance finishes a second time
+    utter.onend = t.step_func_done();
+  });
+}, 'Using the same SpeechSynthesisUtterance twice for speechSynthesis.speak()');
+</script>

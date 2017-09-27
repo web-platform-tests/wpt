@@ -24,7 +24,14 @@ test(function() {
   }, "RTCPeerConnection member " + name + " should not exist");
 });
 
-test(function() {
-  assert_false("webkitRTCPeerConnection" in window);
-}, "webkitRTCPeerConnection interface should not exist");
+[
+  "mozRTCIceCandidate",
+  "mozRTCPeerConnection",
+  "mozRTCSessionDescription",
+  "webkitRTCPeerConnection",
+].forEach(function(name) {
+  test(function() {
+    assert_false("webkitRTCPeerConnection" in window);
+  }, name + " interface should not exist");
+});
 </script>

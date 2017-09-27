@@ -7,7 +7,7 @@ alert_doc = inline("<script>window.alert()</script>")
 
 
 def get_window_rect(session):
-    return session.transport.send("POST", "session/%s/window/rect" % session.session_id)
+    return session.transport.send("GET", "session/%s/window/rect" % session.session_id)
 
 
 # 10.7.1 Get Window Rect

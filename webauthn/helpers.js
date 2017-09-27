@@ -94,20 +94,19 @@ class TestCase {
     }
 
     /**
-     * test
-     *
-     * run the test function with the top-level properties of the test object applied as arguments
+     * actually runs the test function with the supplied arguments
      */
     doIt() {
         if (typeof this.testFunction !== "function") {
             throw new Error("Test function not found");
         }
 
-        console.log("doIt args", ...this.toArgs());
-
         return this.testFunction.call(this.ctx, ...this.toArgs());
     }
 
+    /**
+     * run the test function with the top-level properties of the test object applied as arguments
+     */
     test(desc) {
         promise_test(() => {
             return this.doIt()
@@ -115,20 +114,18 @@ class TestCase {
                     // check the result
                     this.validateRet(ret);
                     return ret;
-                    // })
-                    // .catch((err) => {
-                    //     console.log("ERROR:", err);
                 });
         }, desc);
     }
 
+    /**
+     * validates the value returned from the test function
+     */
     validateRet() {
         throw new Error("Not implemented");
     }
 
     /**
-     * testArgs
-     *
      * calls doIt() with testObject() and expects it to fail with a TypeError()
      */
     testBadArgs(testDesc) {
@@ -201,25 +198,10 @@ class CreateCredentialsTest extends TestCase {
     }
 
     validateRet(ret) {
-        // console.log("validateRet:", ret);
-
-        assert_class_string(ret, "PublicKeyCredential", "Expected return to be instance of 'PublicKeyCredential' class");
-        assert_idl_attribute(ret, "id", "credentials.create() should return PublicKeyCredential with id attribute");
-        assert_readonly(ret, "id", "credentials.create() should return PublicKeyCredential with readonly id attribute");
-        assert_idl_attribute(ret, "rawId", "credentials.create() should return PublicKeyCredential with rawId attribute");
-        assert_readonly(ret, "rawId", "credentials.create() should return PublicKeyCredential with readonly rawId attribute");
-        assert_idl_attribute(ret, "type", "credentials.create() should return PublicKeyCredential with type attribute");
-        assert_equals(ret.type, "public-key", "credentials.create() should return PublicKeyCredential with type 'public-key'");
-
-        var response = ret.response;
-        assert_class_string(response, "AuthenticatorAttestationResponse", "Expected credentials.create() to return instance of 'AuthenticatorAttestationResponse' class");
-        assert_idl_attribute(response, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with clientDataJSON attribute");
-        assert_readonly(response, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with readonly clientDataJSON attribute");
-        assert_idl_attribute(response, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with attestationObject attribute");
-        assert_readonly(response, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with readonly attestationObject attribute");
+        validatePublicKeyCredential(ret);
+        validateAuthenticatorAttestationResponse(ret.response);
     }
 }
-
 
 /**
  * GetCredentialsTest
@@ -310,17 +292,58 @@ class GetCredentialsTest extends TestCase {
     }
 
     validateRet(ret) {
-        console.log("validateRet:", ret);
-
-        assert_class_string(ret, "PublicKeyCredential", ".get() returns PublicKeyCredential");
-        // assert_idl_attribute(ret, "attr", "err")
-        // assert_readonly (ret, "attr", "err")
-        // assert_equals (ret.attr, "value", "err")
-        assert_equals(ret.type, "public-key", "expected returned credential to be of type 'public-key'");
-
-        var response = ret.response;
-        assert_class_string(response, "AuthenticatorAssertionResponse", "PublicKeyCredential.response is of type 'AuthenticatorAssertionResponse'");
+        console.log("get validateRet:", ret);
+        validatePublicKeyCredential (ret);
+        validateAuthenticatorAssertionResponse(ret.response);
     }
+}
+
+/**
+ * runs assertions against a PublicKeyCredential object to ensure it is properly formatted
+ */
+function validatePublicKeyCredential(cred) {
+    // class
+    assert_class_string(cred, "PublicKeyCredential", "Expected return to be instance of 'PublicKeyCredential' class");
+    // id
+    assert_idl_attribute(cred, "id", "should return PublicKeyCredential with id attribute");
+    assert_readonly(cred, "id", "should return PublicKeyCredential with readonly id attribute");
+    // rawId
+    assert_idl_attribute(cred, "rawId", "should return PublicKeyCredential with rawId attribute");
+    assert_readonly(cred, "rawId", "should return PublicKeyCredential with readonly rawId attribute");
+    // type
+    assert_idl_attribute(cred, "type", "should return PublicKeyCredential with type attribute");
+    assert_equals(cred.type, "public-key", "should return PublicKeyCredential with type 'public-key'");
+}
+
+/**
+ * runs assertions against a AuthenticatorAttestationResponse object to ensure it is properly formatted
+ */
+function validateAuthenticatorAttestationResponse(attr) {
+    // class
+    assert_class_string(attr, "AuthenticatorAttestationResponse", "Expected credentials.create() to return instance of 'AuthenticatorAttestationResponse' class");
+    // clientDataJSON
+    assert_idl_attribute(attr, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with clientDataJSON attribute");
+    assert_readonly(attr, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with readonly clientDataJSON attribute");
+    // attestationObject
+    assert_idl_attribute(attr, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with attestationObject attribute");
+    assert_readonly(attr, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with readonly attestationObject attribute");
+}
+
+/**
+ * runs assertions against a AuthenticatorAssertionResponse object to ensure it is properly formatted
+ */
+function validateAuthenticatorAssertionResponse(assert) {
+    // class
+    assert_class_string(assert, "AuthenticatorAssertionResponse", "Expected credentials.create() to return instance of 'AuthenticatorAssertionResponse' class");
+    // clientDataJSON
+    assert_idl_attribute(assert, "clientDataJSON", "credentials.get() should return AuthenticatorAssertionResponse with clientDataJSON attribute");
+    assert_readonly(assert, "clientDataJSON", "credentials.get() should return AuthenticatorAssertionResponse with readonly clientDataJSON attribute");
+    // signature
+    assert_idl_attribute(assert, "signature", "credentials.get() should return AuthenticatorAssertionResponse with signature attribute");
+    assert_readonly(assert, "signature", "credentials.get() should return AuthenticatorAssertionResponse with readonly signature attribute");
+    // authenticatorData
+    assert_idl_attribute(assert, "authenticatorData", "credentials.get() should return AuthenticatorAssertionResponse with authenticatorData attribute");
+    assert_readonly(assert, "authenticatorData", "credentials.get() should return AuthenticatorAssertionResponse with readonly authenticatorData attribute");
 }
 
 //************* BEGIN DELETE AFTER 1/1/2018 *************** //

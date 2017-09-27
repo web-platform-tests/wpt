@@ -2,138 +2,147 @@
 <meta charset="utf8">
 <link rel="help" href="https://w3c.github.io/payment-request/#dfn-abort-the-update">
 <title>
+  updateWith() method - "abort the update"
 </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 setup({ explicit_done: true, explicit_timeout: true });
-const methods = [{ supportedMethods: ["basic-card"] }];
 
-const details = {
-  total: {
-    label: "Total due",
-    amount: { currency: "USD", value: "1.0" },
-  },
-};
+// PaymentMethod
+const validMethod = Object.freeze({
+  supportedMethods: "valid-but-wont-ever-match",
+});
 
-const options = {
-  requestShipping: true,
-};
+const validMethodBasicCard = Object.freeze({
+  supportedMethods: "basic-card",
+});
 
-const negativeAmount = {
+// Methods
+const validMethods = Object.freeze([validMethodBasicCard, validMethod]);
+
+// Amounts
+const validAmount = Object.freeze({
+  currency: "USD",
+  value: "1.00",
+});
+
+const invalidAmount = Object.freeze({
+  currency: "¡INVALID!",
+  value: "A1.0",
+});
+
+const negativeAmount = Object.freeze({
   currency: "USD",
   value: "-1.00",
-};
+});
 
-const validAmount = {
-  currency: "USD",
-  value: "1.00",
-};
-
-const invalidAmount = {
-  currency: "¡INVALID!",
-  value: "1.00",
-};
-
-const invalidTotal = {
-  total: {
-    label: "Invalid total",
-    amount: invalidAmount,
-  },
-};
-
-const validTotal = {
-  total: {
-    label: "Valid total",
-    amount: invalidAmount,
-  },
-};
-
-const negativeTotal = {
-  total: {
-    label: "Invalid total",
-    amount: negativeAmount,
-  },
-};
-
-const validDisplayItem = {
+// Totals
+const validTotal = Object.freeze({
+  label: "Valid Total",
   amount: validAmount,
-  label: "Valid display item",
-};
+});
 
-const invalidDisplayItem = {
+const invalidTotal = Object.freeze({
+  label: "Invalid Total",
   amount: invalidAmount,
-  label: "invalid currency",
-};
+});
 
-const invalidDisplayItems = {
-  displayItems: [invalidDisplayItem, validDisplayItem],
-};
+const invalidNegativeTotal = Object.freeze({
+  label: "Invalid negative total",
+  amount: negativeAmount,
+});
 
-const invalidShippingOption = {
+// PaymentDetailsInit
+const validDetails = Object.freeze({
+  total: validTotal,
+});
+
+const invalidDetailsNegativeTotal = Object.freeze({
+  total: invalidNegativeTotal,
+});
+
+// PaymentOptions
+const validOptions = Object.freeze({
+  requestShipping: true,
+});
+
+// PaymentItem
+const validPaymentItem = Object.freeze({
+  amount: validAmount,
+  label: "Valid payment item",
+});
+
+const invalidPaymentItem = Object.freeze({
+  amount: invalidAmount,
+  label: "Invalid payment item",
+});
+
+// PaymentItem
+const validPaymentItems = Object.freeze([validPaymentItem]);
+const invalidPaymentItems = Object.freeze([invalidPaymentItem]);
+
+// PaymentShippingOption
+const invalidShippingOption = Object.freeze({
   id: "abc",
-  label: "invalid shipping option",
+  label: "Invalid shipping option",
   amount: invalidAmount,
   selected: true,
-};
+});
 
-const validShippingOption = {
+// PaymentShippingOptions
+const validShippingOption = Object.freeze({
   id: "abc",
   label: "valid shipping option",
   amount: validAmount,
-};
+});
 
-const invalidShippingOptions = {
-  shippingOptions: [invalidShippingOption, validShippingOption],
-};
+const validShippingOptions = Object.freeze([validShippingOption]);
+const invalidShippingOptions = Object.freeze([invalidShippingOption]);
 
-// Modifiers apply when the user chooses to pay with
-// a credit card.
-const modifierWithInvalidDisplayItems = {
-  modifiers: [
-    {
-      additionalDisplayItems: [invalidDisplayItem, validDisplayItem],
-      supportedMethods: "basic-card",
-      total: {
-        label: "total",
-        amount: validAmount,
-      },
-    },
-  ],
-};
+// PaymentDetailsModifier
+const validModifier = Object.freeze({
+  additionalDisplayItems: validPaymentItems,
+  supportedMethods: "valid-but-wont-ever-match",
+  total: validTotal,
+});
 
-const modifierWithInvalidTotal = {
-  modifiers: [
-    {
-      additionalDisplayItems: [validDisplayItem],
-      supportedMethods: "basic-card",
-      total: {
-        label: "total",
-        amount: invalidAmount,
-      },
-    },
-  ],
-};
+const modifierWithInvalidDisplayItems = Object.freeze({
+  additionalDisplayItems: invalidPaymentItems,
+  supportedMethods: "basic-card",
+  total: validTotal,
+});
+
+const modifierWithValidDisplayItems = Object.freeze({
+  additionalDisplayItems: validPaymentItems,
+  supportedMethods: "basic-card",
+  total: validTotal,
+});
+
+const modifierWithInvalidTotal = Object.freeze({
+  additionalDisplayItems: validPaymentItems,
+  supportedMethods: "basic-card",
+  total: invalidTotal,
+});
 
 const recursiveData = {};
 recursiveData.foo = recursiveData;
+Object.freeze(recursiveData);
 
-const modifierWithRecursiveData = {
-  modifiers: [
-    {
-      supportedMethods: "basic-card",
-      total: {
-        label: "total",
-        amount: invalidAmount,
-      },
-      data: recursiveData,
-    },
-  ],
-};
+const modifierWithRecursiveData = Object.freeze({
+  supportedMethods: validMethodBasicCard,
+  total: validTotal,
+  data: recursiveData,
+});
 
 function testBadUpdate(button, badDetails, expectedError, errorCode) {
+  button.disabled = true;
   promise_test(async t => {
-    const request = new PaymentRequest(methods, details, options);
+    const request = new PaymentRequest(
+      validMethods,
+      validDetails,
+      validOptions
+    );
     request.onshippingaddresschange = event => {
       event.updateWith(badDetails);
     };
@@ -145,7 +154,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
       acceptPromise,
       "badDetails must cause acceptPromise to reject with expectedError"
     );
-    // The request [[state]] is now "closed", so check for Invalid state
+    // The request [[state]] is now "closed", so let's check for InvalidStateError
     await promise_rejects(
       t,
       "InvalidStateError",
@@ -154,6 +163,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
     );
   }, button.innerText.trim());
 }
+
 
 </script>
 <h2>updateWith() method - "abort the update"</h2>
@@ -187,15 +197,14 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   </li>
   <li>
     <button onclick="
-      const badDetails = Object.assign({}, details,  negativeTotal);
-      testBadUpdate(this, badDetails, new TypeError());
+      testBadUpdate(this, invalidDetailsNegativeTotal, new TypeError());
     ">
       Updating with a negative total results in a TypeError.
     </button>
   </li>
   <li>
     <button onclick="
-      const badDetails = Object.assign({}, details, invalidDisplayItems);
+      const badDetails = Object.assign({}, validDetails, { displayItems: invalidPaymentItems });
       testBadUpdate(this, badDetails, new RangeError());
     ">
       Updating with a displayItem with an invalid currency results in TypeError.
@@ -204,7 +213,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   <li>
     <button onclick="
       const duplicateShippingOptions = [validShippingOption, validShippingOption];
-      const badDetails = Object.assign({}, details, duplicateShippingOptions);
+      const badDetails = Object.assign({}, validDetails, { shippingOptions: duplicateShippingOptions });
       testBadUpdate(this, badDetails, new TypeError());
     ">
       Updating with duplicate shippingOptions (same IDs) results in a TypeError.
@@ -212,7 +221,7 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   </li>
   <li>
     <button onclick="
-      const badDetails = Object.assign({}, details, invalidShippingOptions);
+      const badDetails = Object.assign({}, validDetails, { shippingOptions: invalidShippingOptions });
       testBadUpdate(this, badDetails, new RangeError());
     ">
       Updating with a shippingOption with an invalid currency value results in a RangError.
@@ -220,7 +229,9 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   </li>
   <li>
     <button onclick="
-      const badDetails = Object.assign({}, details, modifierWithInvalidTotal);
+      // validModifier is there as to avoid false positives - it should just get ignored
+      const badModifiers = { modifiers: [ modifierWithInvalidTotal, validModifier ] };
+      const badDetails = Object.assign({}, validDetails, badModifiers);
       testBadUpdate(this, badDetails, new RangeError());
     ">
       Must throw a RangeError when a modifier's total item has an invalid currency.
@@ -228,7 +239,9 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   </li>
  <li>
     <button onclick="
-      const badDetails = Object.assign({}, details, modifierWithInvalidDisplayItems);
+      // validModifier is there as to avoid false positives - it should just get ignored
+      const badModifiers = { modifiers: [ modifierWithInvalidDisplayItems, validModifier ] };
+      const badDetails = Object.assign({}, validDetails, badModifiers);
       testBadUpdate(this, badDetails, new RangeError());
     ">
       Must throw a RangeError when a modifier display item has an invalid currency.
@@ -236,7 +249,9 @@ function testBadUpdate(button, badDetails, expectedError, errorCode) {
   </li>
  <li>
     <button onclick="
-      const badDetails = Object.assign({}, details, modifierWithRecursiveData);
+      // validModifier is there as to avoid false positives - it should just get ignored
+      const badModifiers = { modifiers: [ modifierWithRecursiveData, validModifier ] };
+      const badDetails = Object.assign({}, validDetails, badModifiers);
       testBadUpdate(this, badDetails, new TypeError());
     ">
       Must throw as Modifier has a recursive dictionary.

@@ -31,7 +31,7 @@ test(function() {
   "webkitRTCPeerConnection",
 ].forEach(function(name) {
   test(function() {
-    assert_false("webkitRTCPeerConnection" in window);
+    assert_false(name in window);
   }, name + " interface should not exist");
 });
 </script>

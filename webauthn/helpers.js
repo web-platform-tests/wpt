@@ -80,7 +80,6 @@ class TestCase {
         // iterates through nested `obj` using the `pathArray`, creating the path if it doesn't exist
         // when the final leaf of the path is found, it is assigned the specified value
         function recursiveSetObject(obj, pathArray, value) {
-            console.log ("pathArray", pathArray);
             var currPath = pathArray.shift();
             if (typeof obj[currPath] !== "object") {
                 obj[currPath] = {};
@@ -104,7 +103,7 @@ class TestCase {
             throw new Error("Test function not found");
         }
 
-        console.log ("doIt args", ...this.toArgs());
+        console.log("doIt args", ...this.toArgs());
 
         return this.testFunction.call(this.ctx, ...this.toArgs());
     }
@@ -113,12 +112,14 @@ class TestCase {
         promise_test(() => {
             return this.doIt()
                 .then((ret) => {
-                    console.log ("doIt ret:", ret);
                     // check the result
                     this.validateRet(ret);
                     return ret;
+                    // })
+                    // .catch((err) => {
+                    //     console.log("ERROR:", err);
                 });
-        });
+        }, desc);
     }
 
     validateRet() {
@@ -137,16 +138,46 @@ class TestCase {
     }
 }
 
+var createCredentialDefaultArgs = {
+    options: {
+        publicKey: {
+            // Relying Party:
+            rp: {
+                name: "Acme"
+            },
+
+            // User:
+            user: {
+                id: "1098237235409872",
+                name: "john.p.smith@example.com",
+                displayName: "John P. Smith",
+                icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
+            },
+
+            parameters: [{
+                type: "public-key",
+                algorithm: "ES256",
+            }],
+
+            timeout: 60000, // 1 minute
+            excludeList: [] // No excludeList
+        }
+    }
+};
+
+function cloneObject(o) {
+    return JSON.parse(JSON.stringify(o));
+}
+
 /**
  * CreateCredentialTest
  *
  * tests the WebAuthn navigator.credentials.create() interface
  */
-class CreateCredentialTest extends TestCase {
+class CreateCredentialsTest extends TestCase {
     constructor() {
         // initialize the parent class
         super();
-        console.log ("CreateCredentialTest constructor:", arguments);
 
         // the function to be tested
         this.testFunction = navigator.credentials.create;
@@ -156,33 +187,8 @@ class CreateCredentialTest extends TestCase {
         // the default object to pass to makeCredential, to be modified with modify() for various tests
         let challengeBytes = new Uint8Array(16);
         window.crypto.getRandomValues(challengeBytes);
-        this.testObject = {
-            options: {
-                publicKey: {
-                    challenge: challengeBytes,
-                    // Relying Party:
-                    rp: {
-                        name: "Acme"
-                    },
-
-                    // User:
-                    user: {
-                        id: "1098237235409872",
-                        name: "john.p.smith@example.com",
-                        displayName: "John P. Smith",
-                        icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
-                    },
-
-                    parameters: [{
-                        type: "public-key",
-                        algorithm: "ES256",
-                    }],
-
-                    timeout: 60000, // 1 minute
-                    excludeList: [] // No excludeList
-                }
-            }
-        };
+        this.testObject = cloneObject(createCredentialDefaultArgs);
+        this.testObject.options.publicKey.challenge = challengeBytes;
 
         // how to order the properties of testObject when passing them to makeCredential
         this.argOrder = [
@@ -230,43 +236,14 @@ class GetCredentialsTest extends TestCase {
         // the context to call the test function with (i.e. - the 'this' object for the function)
         this.ctx = navigator.credentials;
 
-        // // the default object to pass to makeCredential, to be modified with modify() for various tests
-        // let challengeBytes = new Uint8Array(16);
-        // window.crypto.getRandomValues(challengeBytes);
-        // this.testObject = {
-        //     options: {
-        //         publicKey: {
-        //             challenge: challengeBytes,
-        //             // Relying Party:
-        //             rp: {
-        //                 name: "Acme"
-        //             },
-
-        //             // User:
-        //             user: {
-        //                 id: "1098237235409872",
-        //                 name: "john.p.smith@example.com",
-        //                 displayName: "John P. Smith",
-        //                 icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
-        //             },
-
-        //             parameters: [{
-        //                 type: "public-key",
-        //                 algorithm: "ES256",
-        //             }],
-
-        //             timeout: 60000, // 1 minute
-        //             excludeList: [] // No excludeList
-        //         }
-        //     }
-        // };
+        // default arguments
         let challengeBytes = new Uint8Array(16);
         window.crypto.getRandomValues(challengeBytes);
         this.testObject = {
             options: {
                 publicKey: {
                     challenge: challengeBytes,
-                    timeout: 60000,
+                    // timeout: 60000,
                     // allowList: [newCredential]
                 }
             }
@@ -277,33 +254,72 @@ class GetCredentialsTest extends TestCase {
             "options"
         ];
 
+        this.credentialPromiseList = [];
+
         // enable the constructor to modify the default testObject
         // would prefer to do this in the super class, but have to call super() before using `this.*`
         if (arguments.length) {
             if (args.cred instanceof Promise) this.credPromise = args.cred;
-            else if (typeof args.cred === "object") this.credPromise = Promise.resolve (args.cred);
+            else if (typeof args.cred === "object") this.credPromise = Promise.resolve(args.cred);
             delete args.cred;
             this.modify(...arguments);
         }
     }
 
-    validateRet(ret) {
-        // console.log("validateRet:", ret);
+    addCredential(arg) {
+        // if a Promise was passed in, add it to the list
+        if (arg instanceof Promise) {
+            this.credentialPromiseList.push(arg);
+            return;
+        }
 
-        assert_class_string(ret, "PublicKeyCredential", "Expected return to be instance of 'PublicKeyCredential' class");
-        assert_idl_attribute(ret, "id", "credentials.create() should return PublicKeyCredential with id attribute");
-        assert_readonly(ret, "id", "credentials.create() should return PublicKeyCredential with readonly id attribute");
-        assert_idl_attribute(ret, "rawId", "credentials.create() should return PublicKeyCredential with rawId attribute");
-        assert_readonly(ret, "rawId", "credentials.create() should return PublicKeyCredential with readonly rawId attribute");
-        assert_idl_attribute(ret, "type", "credentials.create() should return PublicKeyCredential with type attribute");
-        assert_equals(ret.type, "public-key", "credentials.create() should return PublicKeyCredential with type 'public-key'")
+        // if a credential object was passed in, convert it to a Promise for consistency
+        if (typeof arg === "object") {
+            this.credentialPromiseList.push(Promise.resolve(arg));
+            return;
+        }
+
+        // if a credential wasn't passed in, create one
+        let challengeBytes = new Uint8Array(16);
+        window.crypto.getRandomValues(challengeBytes);
+        var createArgs = cloneObject(createCredentialDefaultArgs);
+        createArgs.options.publicKey.challenge = challengeBytes;
+        var p = navigator.credentials.create(createArgs.options);
+        this.credentialPromiseList.push(p);
+
+        return this;
+    }
+
+    test() {
+        if (!this.credentialPromiseList.length) {
+            throw new Error("Attempting list without defining credential to test");
+        }
+
+        Promise.all(this.credentialPromiseList)
+            .then((credList) => {
+                var idList = credList.map((cred) => {
+                    return {
+                        id: cred.rawId,
+                        transports: ["usb", "nfc", "ble"],
+                        type: "public-key"
+                    };
+                });
+                this.testObject.options.publicKey.allowList = idList;
+                return super.test();
+            });
+    }
+
+    validateRet(ret) {
+        console.log("validateRet:", ret);
+
+        assert_class_string(ret, "PublicKeyCredential", ".get() returns PublicKeyCredential");
+        // assert_idl_attribute(ret, "attr", "err")
+        // assert_readonly (ret, "attr", "err")
+        // assert_equals (ret.attr, "value", "err")
+        assert_equals(ret.type, "public-key", "expected returned credential to be of type 'public-key'");
 
         var response = ret.response;
-        assert_class_string(response, "AuthenticatorAttestationResponse", "Expected credentials.create() to return instance of 'AuthenticatorAttestationResponse' class");
-        assert_idl_attribute(response, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with clientDataJSON attribute");
-        assert_readonly(response, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with readonly clientDataJSON attribute");
-        assert_idl_attribute(response, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with attestationObject attribute");
-        assert_readonly(response, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with readonly attestationObject attribute");
+        assert_class_string(response, "AuthenticatorAssertionResponse", "PublicKeyCredential.response is of type 'AuthenticatorAssertionResponse'");
     }
 }
 
@@ -343,7 +359,8 @@ function loadJavaScript(path) {
             return resolve();
         };
         scriptElem.onerror = function() {
-            return reject(new Error("navigator.credentials.create does not exist"));
+            debug("navigator.credentials.create does not exist");
+            resolve();
         };
         scriptElem.src = path;
         if (document.body) {
@@ -359,14 +376,10 @@ function standardSetup(cb) {
     return ensureInterface()
         .then(() => {
             if (cb) return cb();
-        })
-        .catch((err) => {
-            debug(err);
-            return (err);
         });
 }
 //************* END DELETE AFTER 1/1/2018 *************** //
 
 /* JSHINT */
-/* globals assert_class_string, assert_equals, assert_idl_attribute, assert_readonly, promise_test */
-/* exported standardSetup, MakeCredentialTest, GetCredentialsTest */
+/* globals promise_rejects, assert_class_string, assert_equals, assert_idl_attribute, assert_readonly, promise_test */
+/* exported standardSetup, CreateCredentialsTest, GetCredentialsTest */

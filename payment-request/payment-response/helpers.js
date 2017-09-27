@@ -115,11 +115,7 @@ async function runManualTest(button, options, expected = {}, id = undefined) {
     }
     assert_idl_attribute(response, "details");
     assert_equals(typeof response.details, "object", "Expected an object");
-    try {
-      response.toJSON();
-    } catch (err) {
-      assertion_unreached("Unexpected error calling response.toJSON()");
-    }
+    response.toJSON();
     if (options && options.requestShipping) {
       assert_equals(
         response.shippingOption,

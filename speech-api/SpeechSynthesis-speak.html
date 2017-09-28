@@ -1,11 +1,26 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<iframe></iframe>
 <script>
-// test for https://github.com/w3c/speech-api/issues/7
+// using an utterance for different SpeechSynthesis instances should throw
+test(t => {
+  const utter = new SpeechSynthesisUtterance('1');
+  const iframe = document.querySelector('iframe');
+  assert_not_equals(speechSynthesis, iframe.contentWindow.speechSynthesis);
+  speechSynthesis.speak(utter);
+  // the spec doesn't say what exception to throw:
+  // https://github.com/w3c/speech-api/issues/8
+  assert_throws(null, () => {
+    iframe.contentWindow.speechSynthesis.speak(utter);
+  });
+}, 'Using the same SpeechSynthesisUtterance for different SpeechSynthesis instances');
+
+// using an utterance twice on the same SpeechSynthesis instance should work
+// https://github.com/w3c/speech-api/issues/7
 async_test(t => {
-  // the utterance is as short to make the test faster
-  var utter = new SpeechSynthesisUtterance('1');
+  // the utterance is short to make the test faster
+  const utter = new SpeechSynthesisUtterance('1');
   speechSynthesis.speak(utter);
   utter.onend = t.step_func(() => {
     speechSynthesis.speak(utter);

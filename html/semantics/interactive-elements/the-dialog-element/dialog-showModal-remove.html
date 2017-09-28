@@ -15,9 +15,10 @@ async_test(t => {
   dialog.addEventListener('close', t.unreached_func('close event'))
   dialog.remove()
   assert_true(dialog.open)
-  t.step_func_done(() => {
+  // if an event was queued, it would fire before this timeout
+  step_timeout(t.step_func_done(() => {
     assert_true(dialog.open)
     // pass if no close event was fired
-  })
+  }))
 })
 </script>

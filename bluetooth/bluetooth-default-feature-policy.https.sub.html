@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<body>
+  <meta charset="utf-8">
+  <title>Web Bluetooth Feature Policy Test</title>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script src=/feature-policy/resources/featurepolicy.js></script>
+  <script src=util/utils.js></script>
+  <script>
+  'use strict';
+  run_all_fp_tests_allow_self(
+      'https://{{domains[www]}}:{{ports[https][0]}}',
+      'bluetooth',
+      'SecurityError: Access to the Web Bluetooth API is disallowed by ' +
+      'feature policy.',
+      function() {
+        return navigator.bluetooth.requestDevice({acceptAllDevices:true}).then(
+            ()=>{},
+            (exc) => {
+              if (exc.name == 'SecurityError' &&
+                  exc.message.indexOf('feature policy') > -1 )
+                throw exc;
+            })
+      });
+  </script>
+</body>

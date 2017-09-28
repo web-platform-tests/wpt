@@ -108,27 +108,35 @@ function testRecycleEvents({ textContent: testName }) {
       validDetails,
       validOptions
     );
+
+    // Register both listeners.
     const addressChangedPromise = new Promise(resolve => {
       request.addEventListener("shippingaddresschange", resolve, {
         once: true,
       });
     });
+
     const optionChangedPromise = new Promise(resolve => {
-      request.addEventListener("shippingoptionchange", resolve, { once: true });
+      request.addEventListener("shippingoptionchange", resolve, {
+        once: true
+      });
     });
 
     const responsePromise = request.show();
 
     // Let's wait for the address to change.
     const addressChangeEvent = await addressChangedPromise;
+
+    // Sets [[waitingForUpdate]] to true.
     addressChangeEvent.updateWith(validDetails);
 
-    // Let's wait for the shippingOption
+    // Let's wait for the shippingOption.
     const optionChangeEvent = await optionChangedPromise;
 
-    // The addressChangeEvent was already consumed and expired.
+    // Here, we try to be sneaky, and reuse the addressChangeEvent to perform the update.
+    // However, addressChangeEvent [[waitingForUpdate]] is true, so it throws.
     assert_throws(
-      new TypeError(),
+      "InvalidStateError",
       () => {
         addressChangeEvent.updateWith(validDetails);
       },

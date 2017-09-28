@@ -3,6 +3,7 @@
 <link rel="help" href="https://www.w3.org/TR/payment-request/#updatewith()-method">
 <link rel="help" href="https://github.com/w3c/payment-request/pull/591">
 <title>
+  PaymentRequestUpdateEvent.updateWith() needs to be called immediately
 </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -41,7 +42,7 @@ function testImmediateUpdate({ textContent: testName }) {
       validDetails,
       validOptions
     );
-    const shippingOptionEventPromise = new Promise((resolve, reject) => {
+    const eventPromise = new Promise((resolve, reject) => {
       request.addEventListener(
         "shippingaddresschange",
         async ev => {
@@ -61,7 +62,7 @@ function testImmediateUpdate({ textContent: testName }) {
     await promise_rejects(
       t,
       "InvalidStateError",
-      shippingOptionEventPromise,
+      eventPromise,
       "The event loop already spun, so [[waitForUpdate]] is now true"
     );
     await response.complete();
@@ -89,7 +90,12 @@ function testSubsequentUpdateWithCalls({ textContent: testName }) {
       });
     });
     const responsePromise = request.show();
-    await promise_rejects(t, "InvalidStateError", eventPromise);
+    await promise_rejects(
+      t,
+      "InvalidStateError",
+      eventPromise,
+      "Expected eventPromise to have rejected, because updateWith() was a called twice"
+    );
     const response = await responsePromise;
     await response.complete();
   }, testName.trim());
@@ -144,6 +150,7 @@ function testRecycleEvents({ textContent: testName }) {
     await response.complete();
   }, testName.trim());
 }
+
 </script>
 <h2>updateWith() method</h2>
 <p>

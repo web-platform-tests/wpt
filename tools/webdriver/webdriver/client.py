@@ -43,8 +43,7 @@ class Timeouts(object):
 
     def _set(self, key, secs):
         body = {key: secs * 1000}
-        timeouts = self.session.send_session_command("POST", "timeouts", body)
-        return timeouts[key]
+        self.session.send_session_command("POST", "timeouts", body)
 
     @property
     def script(self):
@@ -52,7 +51,7 @@ class Timeouts(object):
 
     @script.setter
     def script(self, secs):
-        return self._set("script", secs)
+        self._set("script", secs)
 
     @property
     def page_load(self):
@@ -60,7 +59,7 @@ class Timeouts(object):
 
     @page_load.setter
     def page_load(self, secs):
-        return self._set("pageLoad", secs)
+        self._set("pageLoad", secs)
 
     @property
     def implicit(self):
@@ -68,7 +67,7 @@ class Timeouts(object):
 
     @implicit.setter
     def implicit(self, secs):
-        return self._set("implicit", secs)
+        self._set("implicit", secs)
 
     def __str__(self):
         name = "%s.%s" % (self.__module__, self.__class__.__name__)

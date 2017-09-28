@@ -292,7 +292,6 @@ class GetCredentialsTest extends TestCase {
     }
 
     validateRet(ret) {
-        console.log("get validateRet:", ret);
         validatePublicKeyCredential (ret);
         validateAuthenticatorAssertionResponse(ret.response);
     }

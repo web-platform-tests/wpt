@@ -90,6 +90,16 @@ PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
 
+## Deliberate copies of Ahem ##
+# The allowed copy
+AHEM COPY: fonts/Ahem.ttf
+
+# None of these are actually Ahem
+AHEM COPY: css/fonts/ahem-extra/AHEM_*.TTF
+
+# https://github.com/w3c/web-platform-tests/issues/7437
+AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
+
 ### Test exclusions ##
 
 CR AT EOL:WebIDL/valid/idl/documentation-dos.widl
@@ -152,7 +162,7 @@ SET TIMEOUT: cookies/resources/testharness-helpers.js
 SET TIMEOUT: common/reftest-wait.js
 SET TIMEOUT: conformance-checkers/*
 SET TIMEOUT: content-security-policy/*
-SET TIMEOUT: css-font-display/font-display.html
+SET TIMEOUT: css-fonts/font-display/font-display.html
 SET TIMEOUT: encrypted-media/Google/migrated_to_root_disabled/encrypted-media-utils.js
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
@@ -363,27 +373,7 @@ SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/transform
 SUPPORT-WRONG-DIR: css/WOFF2/manifest.txt
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css/css-masking-1/clip-path-svg-content/clip-path-clip-rule-008.svg
-NON-EXISTENT-REF: css/css-masking-1/clip-path-svg-content/clip-path-precision-001.svg
-NON-EXISTENT-REF: css/css-shapes-1/spec-examples/shape-outside-012.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-001.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-002.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-003.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-004.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-005.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-006.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-007.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-008.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-009.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-010.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-011.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-ic-001.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-ic-002.html
-NON-EXISTENT-REF: css/css-text-3/line-breaking/line-breaking-ic-003.html
 NON-EXISTENT-REF: css/CSS2/tables/border-collapse-005.html
-NON-EXISTENT-REF: css/mediaqueries-3/relative-units-002.html
-NON-EXISTENT-REF: css/mediaqueries-3/relative-units-003.html
-NON-EXISTENT-REF: css/mediaqueries-3/relative-units-004.html
-SAME-FILE-REF: css/css-multicol-1/multicol-rule-shorthand-2.xht
 
 
 ## Whitespace rules that we can't enforce yet

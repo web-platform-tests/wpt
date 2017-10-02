@@ -15,7 +15,6 @@ INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: html/editing/dnd/*
-INDENT TABS: html/semantics/scripting-1/the-script-element/execution-timing/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*
 INDENT TABS: shadow-dom/*
@@ -36,7 +35,6 @@ TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: custom-elements/*
 TRAILING WHITESPACE: html-longdesc/*
-TRAILING WHITESPACE: html/semantics/scripting-1/the-script-element/execution-timing/*
 TRAILING WHITESPACE: microdata/*
 TRAILING WHITESPACE: old-tests/*
 TRAILING WHITESPACE: pointerevents/*

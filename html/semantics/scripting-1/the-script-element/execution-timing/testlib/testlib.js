@@ -9,7 +9,7 @@
         eventOrder.push(str);
         arNumberOfScriptsParsedPerEvent.push(document.getElementsByTagName('script').length);
     }
-    
+
     window.testlib.addScript = function(source, attributes, parent, firstInParent,funcPrepare) {
         try{
             parent = parent||document.body;

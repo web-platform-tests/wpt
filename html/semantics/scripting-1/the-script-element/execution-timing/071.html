@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<title> scheduler: document.write several scripts into IFRAME </title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+  <title> scheduler: document.write several scripts into IFRAME </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="testlib/testlib.js"></script>
 
 </head>
 <body>
 
-	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
+  <div id="log">FAILED (This TC requires JavaScript enabled)</div>
 
   <iframe style="width:1px;height:1px"></iframe>
 
@@ -45,7 +45,7 @@
           'inline script #2'
         ]);
       t.done();
-}
+    }
 
     onload = t.step_func(test)
   </script>

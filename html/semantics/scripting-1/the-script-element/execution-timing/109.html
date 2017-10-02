@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html><head>
-	<title> scheduler: javascript URL in iframe, src set via DOM</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+  <title> scheduler: javascript URL in iframe, src set via DOM</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="testlib/testlib.js"></script>
 </head>
 <body>
   <div id="log">Not tested</div>
@@ -22,7 +22,7 @@
     })
 
     onload = t.step_func(function() {
-      assert_array_equals(eventOrder, ["inline script #1", "inline script #2", "inline script #3", "JS URL", "iframe onload"]); 
+      assert_array_equals(eventOrder, ["inline script #1", "inline script #2", "inline script #3", "JS URL", "iframe onload"]);
       t.done();
     });
   </script>

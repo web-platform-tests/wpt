@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html><head>
-	<title>scheduler: external SVG script added by SVG script </title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+  <title>scheduler: external SVG script added by SVG script </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="testlib/testlib.js"></script>
 </head>
 <div id="log"></div>
 <script>
@@ -21,7 +21,7 @@ log("end inline script #2");
 </svg>
 <script>
 onload = t.step_func(function() {
-  assert_array_equals(eventOrder, ["inline script #1", "inline script #2", 
+  assert_array_equals(eventOrder, ["inline script #1", "inline script #2",
                                    "end inline script #2", "external script #1"]);
   t.done();
 });

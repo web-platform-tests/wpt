@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html><head>
-	<title> scheduler: document.write into IFRAME a script that creates new external script in parent </title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+  <title> scheduler: document.write into IFRAME a script that creates new external script in parent </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="testlib/testlib.js"></script>
 
 </head>
 <body>
 
-	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
+  <div id="log">FAILED (This TC requires JavaScript enabled)</div>
 
   <iframe style="width:1px;height:1px"></iframe>
 
@@ -38,11 +38,11 @@
       assert_array_equals(eventOrder, ['calling document.write',
           'inline script #1',
           'calling document.close',
-	  'external script #1'
+          'external script #1'
         ]);
 
       t.done();
-}
+    }
 
     onload = t.step_func(test)
   </script>

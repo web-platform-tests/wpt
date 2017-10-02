@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html><head>
-	<title> scheduler: force-async off on non-parser-inserted script</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+        <title> scheduler: force-async off on non-parser-inserted script</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="testlib/testlib.js"></script>
 </head>
 <body>
 
-	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
+        <div id="log">FAILED (This TC requires JavaScript enabled)</div>
 
-	<script>
+        <script>
           var t = async_test(undefined, {timeout:4000});
-          
+
           sources = ["scripts/include-1.js?pipe=trickle(d2)", "scripts/include-2.js?pipe=trickle(d1)"];
           sources.forEach(function(x) {
             var script = document.createElement("script");
@@ -23,9 +23,9 @@
             document.head.appendChild(script);
           });
 
-	  onload = t.step_func(function() {
-                                 assert_array_equals(eventOrder, ['external script #1', 'external script #2']);
-                                 t.done();
-                             });
+          onload = t.step_func(function() {
+            assert_array_equals(eventOrder, ['external script #1', 'external script #2']);
+            t.done();
+          });
         </script>
 </body></html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html><head>
-	<title>scheduler: inline HTML script added by SVG script </title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="testlib/testlib.js"></script>
+  <title>scheduler: inline HTML script added by SVG script </title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="testlib/testlib.js"></script>
 </head>
 <div id="log"></div>
 <script>
@@ -22,7 +22,7 @@ log("end inline script #2");
 <script>
 log("inline script #4");
 t.step(function() {
-  assert_array_equals(eventOrder, ["inline script #1", "inline script #2", "inline script #3", 
+  assert_array_equals(eventOrder, ["inline script #1", "inline script #2", "inline script #3",
                                    "end inline script #2", "inline script #4"]);
   t.done();
 });

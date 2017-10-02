@@ -94,7 +94,6 @@ function testFireEvent(button, details, eventName, expectRequestProps) {
   }, button.textContent.trim());
 }
 
-
 async function runAbortTest(button) {
   button.disabled = true;
   const { textContent: testName } = button;
@@ -107,10 +106,17 @@ async function runAbortTest(button) {
   }, testName.trim());
 }
 </script>
+<h2>
+  Tests for "algorithms" section
+</h2>
+<p>
+  Click on each button in sequence from top to bottom without refreshing the page.
+  Each button will bring up the Payment Request UI window.
+</p>
 <section>
-  <h2 id="abort-algo">
+  <h3 id="abort-algo">
     User aborts the payment request algorithm
-  </h2>
+  </h3>
   <link rel="help" href="https://w3c.github.io/payment-request/#user-aborts-the-payment-request-algorithm">
   <p>
     When presented with the payment sheet, abort the payment request (e.g., by hitting the esc key or pressing a UA provided button).
@@ -125,7 +131,7 @@ async function runAbortTest(button) {
 </section>
 
 <section>
-  <h2 id="shipping-address-changed-algo">Shipping address changed algorithm</h2>
+  <h3 id="shipping-address-changed-algo">Shipping address changed algorithm</h3>
   <link rel="help" href="https://www.w3.org/TR/payment-request/#shipping-address-changed-algorithm">
   <p>
     When prompted, please change or enter a new shipping address and then select Pay.
@@ -140,7 +146,7 @@ async function runAbortTest(button) {
 </section>
 
 <section>
-  <h2 id="shipping-option-changed-algo">Shipping option changed algorithm</h2>
+  <h3 id="shipping-option-changed-algo">Shipping option changed algorithm</h3>
   <link rel="help" href="https://w3c.github.io/payment-request/#shipping-option-changed-algorithm">
   <p>
     Finally, when prompted, please select "shipping option 2" and then select Pay.
@@ -153,3 +159,8 @@ async function runAbortTest(button) {
     </li>
   </ol>
 </section>
+
+<small>
+  If you find a buggy test, please <a href="https://github.com/w3c/web-platform-tests/issues">file a bug</a>
+  and tag one of the <a href="https://github.com/w3c/web-platform-tests/blob/master/payment-request/OWNERS">owners</a>.
+</small>

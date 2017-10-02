@@ -80,17 +80,11 @@ function testFireEvent(button, details, eventName, expectRequestProps) {
     });
     // This listener should never fire because the
     // the event handler caused "prevent immediate propagation" to be set.
-    request.addEventListener(eventName, async () => {
-      await request.abort();
-    });
-    let response;
-    try {
-      response = await request.show();
-    } catch (err) {
-      assertion_unreached(
-        "Unexpected error, addEventListener probably aborted the request" + err
-      );
-    }
+    request.addEventListener(
+      eventName,
+      t.unreached_func("Second event listener should never fire")
+    );
+    const response = await request.show();
     const event = await handlerPromise;
     assert_true(
       event instanceof window.PaymentRequestUpdateEvent,
@@ -99,6 +93,7 @@ function testFireEvent(button, details, eventName, expectRequestProps) {
     await response.complete("success");
   }, button.textContent.trim());
 }
+
 
 async function runAbortTest(button) {
   button.disabled = true;

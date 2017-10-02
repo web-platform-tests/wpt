@@ -24,15 +24,3 @@ def test_get_timeouts(session):
     assert isinstance(response.body["value"]["script"], int)
     assert isinstance(response.body["value"]["implicit"], int)
     assert isinstance(response.body["value"]["pageLoad"], int)
-
-    assert response.body["value"]["script"] == 30000
-    assert response.body["value"]["implicit"] == 0
-    assert response.body["value"]["pageLoad"] == 300000
-
-    session.timeouts.script = 60
-    session.timeouts.implicit = 1
-    session.timeouts.page_load = 200
-    response = get_timeouts(session)
-    assert response.body["value"]["script"] == 60000
-    assert response.body["value"]["implicit"] == 1000
-    assert response.body["value"]["pageLoad"] == 200000

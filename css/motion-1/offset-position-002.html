@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>offset-position 100% 0%</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-position-property">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-anchor-property">
+    <link rel="match" href="offset-position-002-ref.html">
+    <meta name="assert" content="This tests that offset-position horizontal percentages are relative to the containing block width, while used offset-anchor horizontal percentages are relative to the element content width.">
+    <style>
+      body {
+        margin: 0px;
+        border: 0px;
+        padding: 0px;
+        overflow: hidden;
+      }
+      span {
+        display: inline-block;
+      }
+      #offsetParent {
+        transform: translate(50px, 30px);
+        width: 500px;
+        height: 640px;
+      }
+      #above {
+        height: 480px;
+      }
+      #beside {
+        width: 250px;
+      }
+      #target {
+        width: 125px;
+        height: 80px;
+        background-color: aqua;
+        offset-position: 100% 0%;
+
+        position: fixed;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="above"></div>
+      <div><span id="beside"></span><span id="target"></span></div>
+    </div>
+  </body>
+</html>

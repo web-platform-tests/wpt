@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>bottom-right positioning using pixels</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-position-property">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#offset-anchor-property">
+    <link rel="match" href="offset-position-004-ref.html">
+    <meta name="assert" content="This tests that offset-anchor can be a <position>.">
+    <style>
+      body {
+        margin: 0px;
+        border: 0px;
+        padding: 0px;
+        overflow: hidden;
+      }
+      #offsetParent {
+        transform: translate(50px, 30px);
+        width: 500px;
+        height: 640px;
+      }
+      #target {
+        position: absolute;
+        left: 250px;
+        top: 480px;
+        width: 125px;
+        height: 80px;
+        background-color: aqua;
+
+        offset-position: 500px 640px;
+        offset-anchor: 125px 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

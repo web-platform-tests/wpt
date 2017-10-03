@@ -4,12 +4,14 @@
 <script>
 'use strict';
 
-for (let eventType of [UIEvent, MouseEvent, KeyboardEvent, CompositionEvent]) {
+for (let eventTypeName of ['UIEvent', 'MouseEvent', 'KeyboardEvent', 'CompositionEvent']) {
     test(function() {
-        let event = new eventType('test');
+        let eventType = self[eventTypeName];
         assert_equals(eventType.length, 1);
-        let initFunction = "init" + eventType.prototype.constructor.name;
+
+        let event = new eventType('test');
+        let initFunction = "init" + eventTypeName;
         assert_throws(new TypeError(), function() { eventType.prototype[initFunction].call(event) });
-    }, `Call init${eventType.prototype.constructor.name} without parameters`);
+    }, `Call init${eventTypeName} without parameters`);
 }
 </script>

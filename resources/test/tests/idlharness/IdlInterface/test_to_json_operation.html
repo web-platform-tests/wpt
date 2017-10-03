@@ -32,7 +32,7 @@
     i = interfaceFrom("interface B { [Default] object toJSON(); attribute long foo; };");
     i.test_to_json_operation(wrap({ foo: "a value" }), i.members[0]);
 
-    // should handle extra-members (e.g. fron an extension specification)
+    // should handle extraneous attributes (e.g. from an extension specification)
     i = interfaceFrom("interface C { [Default] object toJSON(); attribute long foo; };");
     i.test_to_json_operation(wrap({ foo: 123, bar: 456 }), i.members[0]);
 

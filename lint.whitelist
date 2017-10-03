@@ -405,7 +405,6 @@ SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/transform
 SUPPORT-WRONG-DIR: css/WOFF2/manifest.txt
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css/css-masking-1/clip-path-svg-content/clip-path-clip-rule-008.svg
-NON-EXISTENT-REF: css/CSS2/tables/border-collapse-005.html
 
 
 ## Whitespace rules that we can't enforce yet

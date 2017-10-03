@@ -7,16 +7,16 @@
  </head>
  <body>
   <p>
-    <h3>button_validationMessage</h3>
+    <h3>button_checkValidity</h3>
   </p>
-  
+
   <hr>
 
-  <div id="log"></div> 
+  <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
     <p><button id='button_id'>button</button></p>
   </form>
@@ -24,13 +24,17 @@
 
     var button = document.getElementById("button_id");
 
-    if (typeof(button.validationMessage) == "string") {
+    try
+    {
+      var ret = button.checkValidity();
+
       test(function() {
-        assert_equals(button.validationMessage, "", "validationMessage attribute is not correct.");
+        assert_equals(ret, true, "calling of checkValidity method is failed.");
       });
-    } else {
+    }
+    catch (e) {
       test(function() {
-        assert_unreached("validationMessage attribute is not exist.");
+        assert_unreached("autofocus attribute is not exist.");
       });
     }
 

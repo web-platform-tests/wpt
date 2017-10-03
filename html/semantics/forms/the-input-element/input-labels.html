@@ -7,27 +7,28 @@
  </head>
  <body>
   <p>
-    <h3>button_labels</h3>
+    <h3>input_labels</h3>
   </p>
-  
+
   <hr>
 
-  <div id="log"></div> 
+  <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
-    <p><label>Full name:<label>(name)<button id='button_id1'>button1</button><small>Format: First Last</small></label></label></p>
-    <p><label>Age: <button id='button_id2'>button2</button></label></p>
+    <p><label>Full name:<label>(name)<input name=fn id='input_text1'> <small>Format: First Last</small></label></label></p>
+    <p><label>Age: <input name=age type=number min=0 id='input_text2'></label></p>
+    <p><label>Post code: <input name=pc> <small>Format: AB12 3CD</small></label></p>
   </form>
   <script>
 
-    var button1 = document.getElementById("button_id1");
-    var button2 = document.getElementById("button_id2");
+    var input1 = document.getElementById("input_text1");
+    var input2 = document.getElementById("input_text2");
 
-    if (typeof(button1.labels) == "object") {
-      if (button1.labels.length == 2 && button2.labels.length == 1) {
+    if (typeof(input1.labels) == "object") {
+      if (input1.labels.length == 2 && input2.labels.length == 1) {
         test(function() {
           assert_true(true, "labels attribute is correct.");
         });

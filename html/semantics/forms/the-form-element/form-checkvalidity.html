@@ -7,31 +7,37 @@
  </head>
  <body>
   <p>
-    <h3>FieldSet_validationMessage</h3>
+    <h3>Form_checkValidity</h3>
   </p>
-  
+
   <hr>
 
   <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
-    <fieldset id="input_field">
-     </fieldset>
+  <p><input type=hidden name="custname"></p>
+  <p><input type=hidden name="custtel"></p>
+  <p><input type=hidden name="custemail"></p>
+
   </form>
   <script>
 
-    var field = document.getElementById("input_field");
+    var form = document.getElementById("input_form");
 
-    if (typeof(field.validationMessage) == "string") {
+    try
+    {
+      var ret = form.checkValidity();
+
       test(function() {
-        assert_equals(field.validationMessage, "", "validationMessage attribute is not correct.");
+        assert_equals(ret, true, "calling of checkValidity method is failed.");
       });
-    } else {
+    }
+    catch (e) {
       test(function() {
-        assert_unreached("validationMessage attribute is not exist.");
+        assert_unreached("Error is raised.");
       });
     }
 

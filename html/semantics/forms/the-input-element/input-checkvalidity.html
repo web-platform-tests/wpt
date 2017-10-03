@@ -7,29 +7,29 @@
  </head>
  <body>
   <p>
-    <h3>FieldSet_setCustomValidity</h3>
+    <h3>input_checkValidity</h3>
   </p>
-  
+
   <hr>
 
   <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
-    <fieldset id="input_field">
-     </fieldset>
+    <p><input type='hidden' id='input_text'></p>
   </form>
   <script>
 
-    var field = document.getElementById("input_field");
+    var input = document.getElementById("input_text");
 
     try
     {
-      field.setCustomValidity("custom error");
+      var ret = input.checkValidity();
+
       test(function() {
-        assert_true(true, "calling of setCustomValidity method is successed.");
+        assert_equals(ret, true, "calling of checkValidity method is failed.");
       });
     }
     catch (e) {

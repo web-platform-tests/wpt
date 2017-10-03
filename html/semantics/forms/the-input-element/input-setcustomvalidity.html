@@ -7,9 +7,9 @@
  </head>
  <body>
   <p>
-    <h3>input_width</h3>
+    <h3>input_setCustomValidity</h3>
   </p>
-  
+
   <hr>
 
   <div id="log"></div>
@@ -17,22 +17,23 @@
   <form method="post"
       enctype="application/x-www-form-urlencoded"
       action=""
-      name="input_form">
-  <p><input type='image' id='input_text'></p>
+      id="input_form">
+    <p><input type='hidden' id='input_text'></p>
   </form>
-
   <script>
-    
-    var input_text = document.getElementById("input_text");
-    input_text.width = 30;
 
-    if (typeof(input_text.width) == "number") {
+    var input = document.getElementById("input_text");
+
+    try
+    {
+      input.setCustomValidity("custom error");
       test(function() {
-        assert_equals(input_text.width, 30, "width attribute is not correct.");
+        assert_true(true, "calling of setCustomValidity method is successed.");
       });
-    } else {
+    }
+    catch (e) {
       test(function() {
-        assert_unreached("width attribute is not exist.");
+        assert_unreached("Error is raised.");
       });
     }
 

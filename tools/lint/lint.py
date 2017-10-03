@@ -355,6 +355,12 @@ class PrintRegexp(Regexp):
     file_extensions = [".py"]
     description = "Print function used"
 
+class LayoutTestsRegexp(Regexp):
+    pattern = b"eventSender|testRunner|window\.internals"
+    error = "LAYOUTTESTS APIS"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "eventSender/testRunner/window.internals used; these are LayoutTests-specific APIs (WebKit/Blink)"
+
 regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
@@ -364,7 +370,8 @@ regexps = [item() for item in
             Webidl2Regexp,
             ConsoleRegexp,
             GenerateTestsRegexp,
-            PrintRegexp]]
+            PrintRegexp,
+            LayoutTestsRegexp]]
 
 def check_regexp_line(repo_root, path, f, css_mode):
     errors = []

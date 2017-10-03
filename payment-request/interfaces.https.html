@@ -7,19 +7,16 @@
 <script src=/resources/idlharness.js></script>
 <script>
 promise_test(async () => {
-  const idlURLs = ["/interfaces/dom.idl", "/interfaces/payment-request.idl"];
+  const idlURLs = [
+    "/interfaces/eventhandler.idl",
+    "/interfaces/dom.idl",
+    "/interfaces/payment-request.idl",
+  ];
   const idlArray = new IdlArray();
-  for(const url of idlURLs){
+  for (const url of idlURLs) {
     const idlText = await fetch(url).then(r => r.text());
     idlArray.add_idls(idlText);
   }
-  // typedef EventHandler from HTML
-  // https://html.spec.whatwg.org/#eventhandler
-  idlArray.add_idls(`
-    [TreatNonObjectAsNull]
-    callback EventHandlerNonNull = any (Event event);
-    typedef EventHandlerNonNull? EventHandler;
-  `);
   const methods = "[{supportedMethods: 'foo'}]";
   const amount = "{currency: 'USD', value: '0'}";
   const details = `{total: {label: 'bar', amount: ${amount}} }`;

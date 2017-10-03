@@ -34,13 +34,13 @@ def test_accept_confirm(session):
     # 18.2 step 3
     session.execute_script("window.result = window.confirm(\"Hello\");")
     response = accept_alert(session)
-    assert True == session.execute_script("return window.result")
     assert_success(response)
+    assert session.execute_script("return window.result") is True
 
 
 def test_accept_prompt(session):
     # 18.2 step 3
     session.execute_script("window.result = window.prompt(\"Enter Your Name: \", \"Federer\");")
     response = accept_alert(session)
-    assert "Federer" == session.execute_script("return window.result")
     assert_success(response)
+    assert session.execute_script("return window.result") == "Federer"

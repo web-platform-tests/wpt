@@ -21,6 +21,26 @@ def test_get_timeouts(session):
     assert "implicit" in value
     assert "pageLoad" in value
 
-    assert isinstance(response.body["value"]["script"], int)
-    assert isinstance(response.body["value"]["implicit"], int)
-    assert isinstance(response.body["value"]["pageLoad"], int)
+    assert isinstance(value["script"], int)
+    assert isinstance(value["implicit"], int)
+    assert isinstance(value["pageLoad"], int)
+
+
+def test_get_default_timeouts(session):
+    response = get_timeouts(session)
+
+    assert_success(response)
+    assert response.body["value"]["script"] == 30000
+    assert response.body["value"]["implicit"] == 0
+    assert response.body["value"]["pageLoad"] == 300000
+
+
+def test_get_new_timeouts(session):
+    session.timeouts.script = 60
+    session.timeouts.implicit = 1
+    session.timeouts.page_load = 200
+    response = get_timeouts(session)
+    assert_success(response)
+    assert response.body["value"]["script"] == 60000
+    assert response.body["value"]["implicit"] == 1000
+    assert response.body["value"]["pageLoad"] == 200000

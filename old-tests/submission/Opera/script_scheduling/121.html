@@ -12,6 +12,6 @@
 <script>
 t.step(function() {
   document.getElementById("test").removeAttribute("type");
-  setTimeout(t.step_func(function() {t.done()}), 100);
+  step_timeout(t.step_func(function() {t.done()}), 100);
 });
 </script>

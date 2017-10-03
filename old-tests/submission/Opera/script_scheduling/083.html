@@ -42,7 +42,7 @@
 		]);
 		t.done();
 }
-	onload = function() {setTimeout(t.step_func(function() {fireFooEvent(); test()}), 80)};
+	onload = function() {step_timeout(t.step_func(function() {fireFooEvent(); test()}), 80)};
 	</script>
 
 </body></html>

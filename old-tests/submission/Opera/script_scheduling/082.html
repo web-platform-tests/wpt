@@ -28,7 +28,7 @@
 		assert_array_equals(eventOrder, ['inline script #1', 'end script #1', 'inline script #2', 'external script #1', 'load on include-1.js', 'external script #7', 'load on include-7.js', 'external script #2', 'load on include-2.js']);
 		t.done();
         }
-	onload = function() {setTimeout(t.step_func(test), 12)};
+	onload = function() {step_timeout(t.step_func(test), 12)};
 	</script>
 
 </body></html>

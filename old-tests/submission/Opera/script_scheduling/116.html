@@ -12,7 +12,7 @@
                 var t = async_test();
 	        function test() {
 			if(!(window.findBodyLoaded)) {
-        	            return setTimeout(t.step_func(test),200);
+        	            return step_timeout(t.step_func(test),200);
                 	}
                         document.body.appendChild(div);
 			assert_array_equals(eventOrder, ['document.body: <FRAMESET>']);

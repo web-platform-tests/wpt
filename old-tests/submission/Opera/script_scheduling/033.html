@@ -29,7 +29,7 @@
 		assert_array_equals(eventOrder, ['inline script #1', 'end script #1', 'inline script #2']);
 		t.done();
 }
-	onload = t.step_func(function(){setTimeout(t.step_func(test), 200);})
+	onload = t.step_func(function(){step_timeout(t.step_func(test), 200);})
 	</script>
 
 </body></html>

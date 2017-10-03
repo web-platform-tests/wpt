@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> closest-side)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <style>
+      #offsetParent {
+        width: 140px;
+        height: 260px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        position: absolute;
+        left: 140%;
+        top: 110%;
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        offset-position: 140% 110%;
+        offset-path: ray(180deg sides);
+        offset-distance: 26px; /* 10% * 260px */
+        offset-rotate: 0deg;
+        offset-anchor: 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

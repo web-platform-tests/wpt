@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> farthest-corner)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#valdef-offsetpath-ray">
+    <style>
+      #offsetParent {
+        width: 80px;
+        height: 160px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        position: absolute;
+        left: calc(30px + 130px); /* offset-position x plus offset-distance */
+        top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

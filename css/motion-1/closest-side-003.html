@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> closest-side)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#valdef-offsetpath-ray">
+    <link rel="match" href="closest-side-003-ref.html">
+    <meta name="assert" content="This tests closest-side ray lengths, with right side closest.">
+    <style>
+      #offsetParent {
+        width: 140px;
+        height: 260px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        offset-position: 110px 120px;
+        offset-path: ray(0deg closest-side);
+        offset-distance: 100%;
+        offset-rotate: 0deg;
+        offset-anchor: 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

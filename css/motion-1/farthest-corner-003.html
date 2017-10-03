@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> farthest-corner)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#valdef-offsetpath-ray">
+    <link rel="match" href="farthest-corner-003-ref.html">
+    <meta name="assert" content="This tests farthest-corner ray lengths, with left-top corner farthest.">
+    <style>
+      #offsetParent {
+        width: 80px;
+        height: 160px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        offset-position: 50px 120px;
+        offset-path: ray(90deg farthest-corner);
+        offset-distance: 100%;
+        transform-origin: 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

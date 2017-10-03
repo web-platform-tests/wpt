@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> farthest-side)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#valdef-offsetpath-ray">
+    <link rel="match" href="farthest-side-008-ref.html">
+    <meta name="assert" content="This tests farthest-side ray lengths, with bottom side farthest.">
+    <meta name="assert" content="The sides are considered to extend indefinitely.">
+    <style>
+      #offsetParent {
+        width: 240px;
+        height: 360px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        position: absolute;
+        left: 110px;
+        top: 120px;
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        offset-position: -50px 60px;
+        offset-path: ray(-90deg farthest-side);
+        offset-distance: -100%;
+        offset-rotate: 0deg;
+        offset-anchor: 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

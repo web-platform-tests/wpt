@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ray(<angle> sides)</title>
+    <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+    <link rel="help" href="https://drafts.fxtf.org/motion-1/#valdef-offsetpath-ray">
+    <style>
+      #offsetParent {
+        width: 140px;
+        height: 140px;
+        transform-style: preserve-3d;
+      }
+      #target {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 25px;
+        height: 36px;
+        background-color: aqua;
+
+        offset-position: 110px 70px;
+        offset-path: ray(30deg sides);
+        offset-distance: 60px;
+        offset-rotate: 0deg;
+        transform-origin: 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="offsetParent">
+      <div id="target"></div>
+    </div>
+  </body>
+</html>

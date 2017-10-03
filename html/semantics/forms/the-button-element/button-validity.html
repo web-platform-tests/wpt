@@ -7,35 +7,30 @@
  </head>
  <body>
   <p>
-    <h3>FieldSet_checkValidity</h3>
+    <h3>button_validity</h3>
   </p>
-  
+
   <hr>
 
   <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
-    <fieldset id="input_field">
-     </fieldset>
+    <p><button id='button_id'>button</button></p>
   </form>
   <script>
 
-    var field = document.getElementById("input_field");
+    var button = document.getElementById("button_id");
 
-    try
-    {
-      var ret = field.checkValidity();
-
+    if (typeof(button.validity) == "object") {
       test(function() {
-        assert_equals(ret, true, "calling of checkValidity method is failed.");
+        assert_equals(button.validity.valueMissing, false, "validity attribute is not correct.");
       });
-    }
-    catch (e) {
+    } else {
       test(function() {
-        assert_unreached("Error is raised.");
+        assert_unreached("validity attribute is not exist.");
       });
     }
 

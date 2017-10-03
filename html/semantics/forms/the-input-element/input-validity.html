@@ -7,33 +7,30 @@
  </head>
  <body>
   <p>
-    <h3>button_setCustomValidity</h3>
+    <h3>input_validity</h3>
   </p>
-  
+
   <hr>
 
-  <div id="log"></div> 
+  <div id="log"></div>
 
   <form method="post"
       enctype="application/x-www-form-urlencoded"
-      action="" 
+      action=""
       id="input_form">
-    <p><button id='button_id'>button</button></p>
+    <p><input type='hidden' id='input_text'></p>
   </form>
   <script>
 
-    var button = document.getElementById("button_id");
+    var input = document.getElementById("input_text");
 
-    try
-    {
-      button.setCustomValidity("custom error");
+    if (typeof(input.validity) == "object") {
       test(function() {
-        assert_true(true, "calling of setCustomValidity method is successed.");
+        assert_equals(input.validity.valueMissing, false, "validity attribute is not correct.");
       });
-    }
-    catch (e) {
+    } else {
       test(function() {
-        assert_unreached("Error is raised.");
+        assert_unreached("validity attribute is not exist.");
       });
     }
 

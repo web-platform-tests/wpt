@@ -2,7 +2,7 @@
 
 importScripts('interfaces-idls.js');
 importScripts('worker-testharness.js');
-importScripts('/resources/WebIDLParser.js');
+importScripts('/resources/webidl2/lib/webidl2.js');
 importScripts('/resources/idlharness.js');
 
 var idlArray = new IdlArray();

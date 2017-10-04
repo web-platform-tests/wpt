@@ -5,5 +5,5 @@
 // https://drafts.fxtf.org/geometry/#DOMMatrix
 
 importScripts("/resources/testharness.js");
-importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");
+importScripts("/resources/webidl2/lib/webidl2.js", "/resources/idlharness.js");
 importScripts("support/interfaces.js");

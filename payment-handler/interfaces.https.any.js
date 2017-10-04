@@ -1,11 +1,11 @@
-// META: script=/resources/WebIDLParser.js
+// META: script=/resources/webidl2/lib/webidl2.js
 // META: script=/resources/idlharness.js
 
 "use strict";
 
 if (self.importScripts) {
     importScripts("/resources/testharness.js");
-    importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");
+    importScripts("/resources/webidl2/lib/webidl2.js", "/resources/idlharness.js");
 }
 
 // https://w3c.github.io/payment-handler/

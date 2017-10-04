@@ -1,7 +1,7 @@
 "use strict";
 
 importScripts("/resources/testharness.js");
-importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");
+importScripts("/resources/webidl2/lib/webidl2.js", "/resources/idlharness.js");
 
 var request = new XMLHttpRequest();
 request.onload = function() {

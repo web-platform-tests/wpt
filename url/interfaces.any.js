@@ -1,4 +1,4 @@
-// META: script=/resources/WebIDLParser.js
+// META: script=/resources/webidl2/lib/webidl2.js
 // META: script=/resources/idlharness.js
 
 let idlArray,

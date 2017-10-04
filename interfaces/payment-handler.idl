@@ -5,6 +5,8 @@ interface PaymentManager {
     readonly attribute PaymentInstruments instruments;
     [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
+[SecureContext,
+ Exposed=(Window,Worker)]
 interface PaymentInstruments {
     Promise<boolean>             delete(DOMString instrumentKey);
     Promise<PaymentInstrument>   get(DOMString instrumentKey);

@@ -68,9 +68,9 @@
                 var obj;
                 t.step(function() {obj = new Boolean(false);});
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "Boolean === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "Boolean === event.data.constructor");
                     assert_equals(obj.valueOf(), e.data.valueOf(), "(new Boolean(false)).valueof() === event.data.valueOf()");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },function() {
@@ -79,7 +79,7 @@
                 var obj;
                 t.step(function() {obj = new Number(2000);});
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "Number === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "Number === event.data.constructor");
                     assert_equals(obj.valueOf(), e.data.valueOf(), "(new Number(2000)).valueof() === event.data.valueOf()");
                     t.done();
                 });
@@ -91,7 +91,7 @@
                 var obj;
                 t.step(function() { obj = new String("String Object");});
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "String === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "String === event.data.constructor");
                     assert_equals(obj.valueOf(), e.data.valueOf(), "(new String(\"String Object\")).valueof() === event.data.valueOf()");
                     t.done();
                 });
@@ -103,7 +103,7 @@
                 var obj;
                 t.step(function() { obj= new Date(2011,1,1);});
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "Date === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "Date === event.data.constructor");
                     assert_equals(obj.valueOf(), e.data.valueOf(), "(new Date(2011,1,1)).valueof() === event.data.valueOf()");
                     t.done();
                 });
@@ -115,9 +115,9 @@
                 var obj;
                 t.step(function() {obj = new RegExp("w3+c","g","i");});
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "RegExp === event.data.constructor"); 
-                    assert_equals(obj.source, e.data.source, "canon.source === event.data.source"); 
-                    assert_equals(obj.multiline, e.data.multiline, "canon.multiline === event.data.multiline"); 
+                    assert_equals(obj.constructor, e.data.constructor, "RegExp === event.data.constructor");
+                    assert_equals(obj.source, e.data.source, "canon.source === event.data.source");
+                    assert_equals(obj.multiline, e.data.multiline, "canon.multiline === event.data.multiline");
                     assert_equals(obj.global, e.data.global, "canon.global === event.data.global");
                     assert_equals(obj.ignoreCase, e.data.ignoreCase, "canon.ignoreCase === event.data.ignoreCase");
                     t.done();
@@ -142,16 +142,16 @@
                 var obj;
                 t.step(function() {
                     obj= {};
-                    obj.a = "test"; 
-                    obj.b = 2; 
+                    obj.a = "test";
+                    obj.b = 2;
                     obj["child"] = 3;
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     assert_equals(obj.a, e.data.a, "canon.a === event.data.a");
                     assert_equals(obj.b, e.data.b, "canon.b === event.data.b");
                     assert_equals(obj.child, e.data.child, "canon.child === e.data.child");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -161,18 +161,18 @@
                 function Custom() {
                     this.a = "hello";
                 }
-                
+
                 var obj;
                 t.step(function() {
                     Object.defineProperty(Custom.prototype, "b", { enumerable: true, value: 100 });
                     obj = new Custom();
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_not_equals(obj.constructor, e.data.constructor, "canon.constructor !== event.data.constructor"); 
+                    assert_not_equals(obj.constructor, e.data.constructor, "canon.constructor !== event.data.constructor");
                     assert_equals(Object, e.data.constructor, "Object === e.data.constructor");
                     assert_equals(obj.a, e.data.a, "canon.a === e.data.a");
                     assert_equals(undefined, e.data.b, "undefined === e.data.b");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -186,9 +186,9 @@
                 });
                 worker.onmessage = t.step_func(function(e) {
                     var des = Object.getOwnPropertyDescriptor(e.data, "a");
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     assert_true(des.writable, "Descriptor is writable");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -201,9 +201,9 @@
                     obj.a = obj;
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     assert_equals(e.data, e.data.a, "cycle is preserved");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -216,13 +216,13 @@
                     ref = {};
                     ref.called = 0;
                     Object.defineProperty(ref, "child", {get: function(){this.called++;}, enumerable: true});
-                    
+
                     obj = {a:ref, b:ref};
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     assert_equals(e.data.b.called, 0, "e.data.b.called === 0");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -235,13 +235,13 @@
                     obj["a"] = "named1";
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     var canonNames = Object.getOwnPropertyNames(obj);
                     var testNames = Object.getOwnPropertyNames(e.data);
                     for (var i in canonNames) {
                         assert_equals(canonNames[i], testNames[i], "canonProperty["+i+"] === dataProperty["+i+"]");
                     }
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -254,11 +254,11 @@
                     obj["a"] = "named1";
                 });
                 worker.onmessage = t.step_func(function(e) {
-                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor"); 
+                    assert_equals(obj.constructor, e.data.constructor, "canon.constructor === event.data.constructor");
                     assert_equals(e.data["a"], "named1", "e.data[\"a\"] === \"named1\"");
                     assert_equals(e.data[0], 0, "e.data[0] === 0");
                     assert_equals(e.data[1], 1, "e.data[1] === 1");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -276,7 +276,7 @@
                     assert_equals(e.data[1], 1, "e.data[1] === 1");
                     var des = Object.getOwnPropertyDescriptor(e.data, "2");
                     assert_true(des.writable, "Descriptor is writable");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -293,11 +293,11 @@
                     assert_equals(e.data[0], 0, "e.data[0] === 0");
                     assert_equals(e.data[1], 1, "e.data[1] === 1");
                     assert_equals(e.data[2], e.data, "e.data[2] === e.data");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
-            
+
             function() {
                 var t = async_test("ImageData object can be cloned");
                 t.id = 23;
@@ -317,7 +317,7 @@
                     assert_equals(obj.width, e.data.width, "canon.width === e.data.width");
                     assert_equals(obj.height, e.data.height, "canon.height === e.data.height");
                     assert_array_equals(obj.data, e.data.data, "data arrays are the same");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -342,7 +342,7 @@
                     assert_equals(obj.height, e.data.height, "canon.height === e.data.height");
                     assert_array_equals(obj.data, e.data.data, "data arrays are the same");
                     assert_equals(undefined, e.data.foo, "Expando is lost (undefined === e.data.foo)");
-                    t.done(); 
+                    t.done();
                 });
                 t.step(function() { worker.postMessage(obj);});
             },
@@ -370,7 +370,7 @@
             }
         ];
     }, {explicit_done:true});
-    
+
     //Callback for result_callback
     //queues the next test in the array testCollection
     //serves to make test execution sequential from the async worker callbacks
@@ -385,16 +385,16 @@
         }
     }
     function queue(func) {
-        setTimeout(func, 10);
+        step_timeout(func, 10);
     }
-    
+
     add_result_callback(testFinished);
     //start the first test manually
     queue(testCollection[0]);
 
-    
-    
-    
+
+
+
  </script>
 </body>
 </html>

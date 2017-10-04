@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import struct
-
 from mod_pywebsocket import common, stream
 from mod_pywebsocket.handshake import AbortedByUserException, hybi
 

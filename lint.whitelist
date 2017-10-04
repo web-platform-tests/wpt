@@ -871,5 +871,4 @@ LAYOUTTESTS APIS: content-security-policy/blink-contrib/*
 LAYOUTTESTS APIS: css/css-regions-1/interactivity/*
 LAYOUTTESTS APIS: css/css-ruby-1/line-break-around-ruby-001.html
 LAYOUTTESTS APIS: css/work-in-progress/opera/css-device-adapt/template.blink.html
-LAYOUTTESTS APIS: encrypted-media/Google/chromium_specific_disabled/*
 LAYOUTTESTS APIS: webgl/conformance-1.0.3/*

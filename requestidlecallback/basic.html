@@ -41,9 +41,7 @@ async_test(function() {
     assert_unreached("callback should not be called if canceled with cancelIdleCallback");
   }));
   cancelIdleCallback(handle);
-  setTimeout(this.step_func(function() {
-    this.done();
-  }), 200);
+  step_timeout(this.step_func_done(), 200);
 }, 'cancelIdleCallback cancels callbacks');
 
 </script>

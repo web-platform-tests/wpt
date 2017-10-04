@@ -41,7 +41,7 @@
 
   function waitDuration(delay) {
     return new Promise(resolve => {
-      setTimeout(resolve, delay);
+      step_timeout(resolve, delay);
     })
   }
 

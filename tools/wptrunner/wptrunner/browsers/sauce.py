@@ -138,7 +138,7 @@ class SauceConnect():
     def __enter__(self, options):
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()
-            get_tar("https://saucelabs.com/downloads/sc-latest-linux.tar.gz", self.temp_dir)
+            get_tar("https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz", self.temp_dir)
             self.sauce_connect_binary = glob.glob(os.path.join(self.temp_dir, "sc-*-linux/bin/sc"))[0]
 
         self.upload_prerun_exec('edge-prerun.bat')

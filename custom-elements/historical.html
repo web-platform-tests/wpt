@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Custom Elements v0 features</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(() => {
+  assert_false('registerElement' in document)
+}, 'document.registerElement should not exist')
+
+// If the 2nd/3rd ElementCreationOptions arguments are supported, then passing a
+// string will throw TypeError. If the v0 createElement is supported, it won't.
+// See https://dom.spec.whatwg.org/#interface-document
+test(() => {
+  assert_throws(new TypeError, () => document.createElement('x', 'x'))
+}, 'document.createElement(localName, "string") should throw')
+test(() => {
+  assert_throws(new TypeError, () => document.createElementNS(null, 'x', 'x'))
+}, 'document.createElementNS(namespace, qualifiedName, "string") should throw')
+</script>

@@ -4,4 +4,4 @@ infrastructure is operating correctly:
  * The tests in assumptions/ are designed to test UA assumptions
    documented in ../docs/_writing-tests/assumptions.md.
 
- * The tests in XFAIL/ should all fail.
+ * The tests in expected-fail/ should all fail.

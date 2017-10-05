@@ -10,19 +10,19 @@
             {
                 var selection = window.getSelection();
                 var p2 = document.getElementById("p2");
-                var expectedResult = "abcdeuvwxyz";
 
                 var range = document.createRange();
                 range.setStart(p2.firstChild, 5);
                 range.setEnd(p2.firstChild, 20);
                 selection.addRange(range);
+
+                checkSelectionAttributes(p2.firstChild, 5, p2.firstChild, 20, false, 1);
+                assert_equals(p2.firstChild.data, p2.textContent)
+
                 selection.deleteFromDocument();
-                p2.normalize();
 
-                range.collapse(true);
-
-                checkSelectionAttributes(range.startContainer, range.startOffset, range.endContainer, range.endOffset, true, 1);
-                assert_equals(p2.firstChild.data, expectedResult)
+                checkSelectionAttributes(p2.firstChild, 5, p2.firstChild, 5, true, 1);
+                assert_equals(p2.firstChild.data, "abcdeuvwxyz")
             }
         </script>
     </head>

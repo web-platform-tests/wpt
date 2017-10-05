@@ -7,12 +7,12 @@
         try
         {
             if (window.localStorage && window.sessionStorage) {
-                parent.window.postMessage("access to window.localStorage and window.sessionStorage", "*");            
+                parent.window.postMessage("access to window.localStorage and window.sessionStorage", "*");
             }
         }
         catch(e)
         {
-            parent.window.postMessage("no access to window.localStorage and window.sessionStorage", "*");            
+            parent.window.postMessage("no access to window.localStorage and window.sessionStorage", "*");
         }
     </script>
 </body>

@@ -11,15 +11,13 @@
 </head>
 <body>
     <script type="text/javascript">
-    
-     
-        
+
      var t = async_test("Block parent content to access sandbox child iframe content when sandbox attribute exists");
-  
+
     function callback(event)
     {
-        t.step(function(){ 
-            assert_true('sandbox' in document.createElement('iframe')); 
+        t.step(function(){
+            assert_true('sandbox' in document.createElement('iframe'));
             try { document.getElementById('sandboxIframe').contentDocument.title; assert_true(false);}
             catch(e) {assert_true(true);}
         });

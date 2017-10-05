@@ -11,15 +11,13 @@
 </head>
 <body>
     <script type="text/javascript">
-    
-     
-        
+
      var t = async_test("Allow parent content to access sandbox child iframe content when sandbox='allow-same-origin'");
-  
+
     function callback(event)
     {
-        t.step(function(){ 
-            assert_true('sandbox' in document.createElement('iframe')); 
+        t.step(function(){
+            assert_true('sandbox' in document.createElement('iframe'));
             assert_equals(document.getElementById('sandboxIframe').contentDocument.title, "Page with a message");
         });
         t.done();

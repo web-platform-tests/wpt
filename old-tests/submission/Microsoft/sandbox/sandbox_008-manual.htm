@@ -6,7 +6,7 @@
     <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
     <link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#sandboxed-navigation-browsing-context-flag" />
     <meta name="assert" content="Allow sandboxed iframe content to navigate the sandboxed browsing context itself." />
-    <script src="sandbox_helper.js" type="text/javascript"></script>
+    <script src="support/sandbox_helper.js" type="text/javascript"></script>
 </head>
 <body>
     <pre>Description: Allow sandboxed iframe content to navigate the sandboxed browsing context itself.</pre>
@@ -28,7 +28,7 @@
     <br />
     <div id="testframe">
         <pre>iframe with sandbox=""</pre>
-        <iframe id="iframe1" name="iframe1" src="iframe_sandbox_008.htm" sandbox="" style="height: 100px; width: 350px;"></iframe>
+        <iframe id="iframe1" name="iframe1" src="support/iframe_sandbox_008.htm" sandbox="" style="height: 100px; width: 350px;"></iframe>
     </div>
     <script type="text/javascript">
         DisableTestForNonSupportingBrowsers();

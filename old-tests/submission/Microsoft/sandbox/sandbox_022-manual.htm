@@ -6,7 +6,7 @@
     <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
     <link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#sandboxed-scripts-browsing-context-flag" />
     <meta name="assert" content="Allow sandbox iframe to navigate their top-level browsing context if sandbox='allow-top-navigation'." />
-    <script src="sandbox_helper.js" type="text/javascript"></script>
+    <script src="support/sandbox_helper.js" type="text/javascript"></script>
 </head>
 <body>
     <pre>Description: Allow sandbox iframe to navigate its top-level browsing context if sandbox='allow-top-navigation'.</pre>
@@ -28,7 +28,7 @@
     <br />
     <div id="testframe">
         <pre>iframe with sandbox="allow-top-navigation"</pre>
-        <iframe src="iframe_sandbox_022.htm" sandbox="allow-top-navigation" style="height: 100px; width: 450px;"></iframe>
+        <iframe src="support/iframe_sandbox_022.htm" sandbox="allow-top-navigation" style="height: 100px; width: 450px;"></iframe>
     </div>
     <script type="text/javascript">
         DisableTestForNonSupportingBrowsers();

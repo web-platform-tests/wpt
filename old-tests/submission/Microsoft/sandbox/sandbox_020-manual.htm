@@ -6,7 +6,7 @@
     <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
     <link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#attr-iframe-sandbox" />
     <meta name="assert" content="Nested iframes cannot have less sandbox restrictions than their most restrictive ancestor iframe." />
-    <script src="sandbox_helper.js" type="text/javascript"></script>
+    <script src="support/sandbox_helper.js" type="text/javascript"></script>
 </head>
 <body>
     <pre>Description: Nested iframes cannot have less sandbox restrictions than their most restrictive ancestor iframe.</pre>
@@ -25,7 +25,7 @@
     <br />
     <div id="testframe">
         <div style="font-weight:bold">Top-most iframe with sandbox=""</div>
-        <iframe id="iframe1" name="iframe1" src="iframe_sandbox_020.htm" sandbox="" style="height: 330px; width: 400px;"></iframe>
+        <iframe id="iframe1" name="iframe1" src="support/iframe_sandbox_020.htm" sandbox="" style="height: 330px; width: 400px;"></iframe>
     </div>
     <script type="text/javascript">
         DisableTestForNonSupportingBrowsers();

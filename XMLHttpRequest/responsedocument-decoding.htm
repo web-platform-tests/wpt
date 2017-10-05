@@ -5,8 +5,8 @@
     <title>XMLHttpRequest: response document decoding</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="https://xhr.spec.whatwg.org/#the-responsetext-attribute" data-tested-assertations="following::ol[1]/li[4]" />
-    <link rel="help" href="https://xhr.spec.whatwg.org/#text-response-entity-body" data-tested-assertations="following::ol[1]/li[2] following::ol[1]/li[3] following::ol[1]/li[4] following::ol[1]/li[5]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#the-responsexml-attribute"/>
+    <link rel="help" href="https://xhr.spec.whatwg.org/#document-response"/>
   </head>
   <body>
     <script>
@@ -16,7 +16,7 @@
           client.responseType = 'document';
           client.open("GET", "resources/status.py?content=" + input + "&type=" + encodeURIComponent(type), true);
           client.onload = test.step_func_done(() => {
-            assert_equals(client.response.querySelector("x").textContent, expected);
+            assert_equals(client.responseXML.querySelector("x").textContent, expected);
           })
           client.send(null);
         }, document.title + " (" + type + " " + input + ")");

@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8">
     <title>XMLHttpRequest: responseText decoding</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +23,7 @@
         return encodeURIComponent("<?xml version='1.0' encoding='windows-1252'?><x>") + encoded_content + encodeURIComponent("<\/x>");
       }
       function request(type, input, output, responseType) {
-        var test = async_test(document.title + " (" + type + " " + input + " " + (responseType ? " " + responseType : "default") + ")");
+        var test = async_test(document.title + " (" + type + " " + input + " " + (responseType ? " " + responseType : "empty") + ")");
         test.step(function() {
           var client = new XMLHttpRequest();
           if (responseType !== undefined) {
@@ -36,15 +37,19 @@
         })
       }
 
+      const encoded_content = "%e6%a9%9f";
+      const decoded_as_windows_1252 = "\u00e6\u00a9\u0178";
+      const decoded_as_utf_8 = "\u6a5f";
+
       // "default" response type
       // An XML-ish response is sniffed.
-      request("application/xml", encoded_xml("%FF"), xml("\u00FF"));
+      request("application/xml", encoded_xml(encoded_content), xml(decoded_as_windows_1252));
       // An HTML-ish response isn't sniffed.
-      request("text/html", encoded_html("%FF"), html("\uFFFD"));
-      request("application/xml;charset=utf-8", encoded_xml("%FF"), xml("\uFFFD"));
-      request("application/xml;charset=windows-1252", encoded_xml("%FF"), xml("\u00FF"));
-      request("text/html;charset=utf-8", encoded_html("%FF"), html("\uFFFD"));
-      request("text/html;charset=windows-1252", encoded_html("%FF"), html("\u00FF"));
+      request("text/html", encoded_html(encoded_content), html(decoded_as_utf_8));
+      request("application/xml;charset=utf-8", encoded_xml(encoded_content), xml(decoded_as_utf_8));
+      request("application/xml;charset=windows-1252", encoded_xml(encoded_content), xml(decoded_as_windows_1252));
+      request("text/html;charset=utf-8", encoded_html(encoded_content), html(decoded_as_utf_8));
+      request("text/html;charset=windows-1252", encoded_html(encoded_content), html(decoded_as_windows_1252));
       request("text/plain;charset=windows-1252", "%FF", "\u00FF");
       request("text/plain", "%FF", "\uFFFD");
       request("text/plain", "%FE%FF", "");
@@ -60,9 +65,13 @@
 
       // "text" response type
       // An XML-ish response isn't sniffed.
-      request("application/xml", encoded_xml("%FF"), xml("\uFFFD"), "text");
+      request("application/xml", encoded_xml(encoded_content), xml(decoded_as_utf_8), "text");
       // An HTML-ish response isn't sniffed.
-      request("text/html", encoded_html("%FF"), html("\uFFFD"), "text");
+      request("text/html", encoded_html(encoded_content), html(decoded_as_utf_8), "text");
+      request("application/xml;charset=utf-8", encoded_xml(encoded_content), xml(decoded_as_utf_8), "text");
+      request("application/xml;charset=windows-1252", encoded_xml(encoded_content), xml(decoded_as_windows_1252), "text");
+      request("text/html;charset=utf-8", encoded_html(encoded_content), html(decoded_as_utf_8), "text");
+      request("text/html;charset=windows-1252", encoded_html(encoded_content), html(decoded_as_windows_1252), "text");
       request("text/plain;charset=windows-1252", "%FF", "\u00FF", "text");
       request("text/plain", "%FF", "\uFFFD", "text");
       request("text/plain", "%FE%FF", "", "text");

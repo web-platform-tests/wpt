@@ -14,6 +14,7 @@
                 range.selectNode(span1);
                 selection.addRange(range);
 
+                assert_equals(selection.toString(), span1.textContent);
                 document.body.removeChild(div1);
                 assert_equals(selection.toString(), "");
             }

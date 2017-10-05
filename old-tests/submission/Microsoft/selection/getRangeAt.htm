@@ -16,11 +16,11 @@
 
                 var returnedRange = selection.getRangeAt(0);
 
-                assert_equals(returnedRange.toString(), range.toString());
-                assert_equals(returnedRange.startContainer, range.startContainer);
-                assert_equals(returnedRange.startOffset, range.startOffset);
-                assert_equals(returnedRange.endContainer, range.endContainer);
-                assert_equals(returnedRange.endOffset, range.endOffset);
+                assert_equals(returnedRange.toString(), p1.textContent);
+                assert_equals(returnedRange.startContainer, document.body);
+                assert_equals(returnedRange.startOffset, 1);
+                assert_equals(returnedRange.endContainer, document.body);
+                assert_equals(returnedRange.endOffset, 2);
             }
         </script>
     </head>

@@ -14,12 +14,14 @@
                 var range = document.createRange();
                 range.selectNode(p1);
                 selection.addRange(range);
+
+                checkSelectionAttributes(document.body, 1, document.body, 2, false, 1);
+                assert_equals(selection.toString(), p1.textContent + "\n\n");
+
                 selection.collapseToEnd();
 
-                range.collapse(false);
-
-                checkSelectionAttributes(range.startContainer, range.startOffset, range.endContainer, range.endOffset, true, 1);
-                assert_equals(selection.toString(), "")
+                checkSelectionAttributes(document.body, 2, document.body, 2, true, 1);
+                assert_equals(selection.toString(), "");
             }
         </script>
     </head>

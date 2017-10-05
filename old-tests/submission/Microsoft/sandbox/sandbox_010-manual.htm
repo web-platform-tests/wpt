@@ -6,7 +6,7 @@
     <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
     <link rel="help" href="http://dev.w3.org/html5/spec/Overview.html#sandboxed-navigation-browsing-context-flag" />
     <meta name="assert" content="Block window.open() API inside iframe with sandbox attribute." />
-    <script src="sandbox_helper.js" type="text/javascript"></script>
+    <script src="support/sandbox_helper.js" type="text/javascript"></script>
 </head>
 <body>
     <pre>Description: Block window.open() API inside iframe with sandbox attribute.</pre>
@@ -28,7 +28,7 @@
     <br />
     <div id="testframe">
         <pre>iframe with sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation"</pre>
-        <iframe src="iframe_sandbox_010.htm" sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation" style="height: 100px; width: 450px;"></iframe>
+        <iframe src="support/iframe_sandbox_010.htm" sandbox="allow-scripts allow-same-origin allow-forms allow-top-navigation" style="height: 100px; width: 450px;"></iframe>
     </div>
     <script type="text/javascript">
         DisableTestForNonSupportingBrowsers();

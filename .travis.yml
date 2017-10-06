@@ -100,4 +100,4 @@ notifications:
   email:
     on_success: never
     on_failure: always
-  webhooks: https://pulls-staging.web-platform-tests.org/api/build
+  webhooks: https://pulls.web-platform-tests.org/api/build

@@ -7,7 +7,6 @@
 <link rel='help' href='http://www.w3.org/TR/css3-syntax/#input-byte-stream'>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<link rel="stylesheet" type="text/css" href="../../resources/../testharness.css">
 <meta name='flags' content='http dom'>
 <meta name="assert" content="An HTTP encoding declaration for a stylesheet takes precedence over an @charset declaration.">
 <style type='text/css'>
@@ -29,7 +28,7 @@ This test is only valid if the user agent recognises the HTTP and @charset decla
 
 In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters ýäè.  Read as ISO 8859-1, this gives  Ã½Ã¤Ã¨.
 
-This HTML page is served as UTF-8 and uses a different byte sequence for the class name (c3 83 c2 bd c3 83 c2 a4 c3 83 c2 a8) that equates to the character sequence Ã½Ã¤Ã¨.  
+This HTML page is served as UTF-8 and uses a different byte sequence for the class name (c3 83 c2 bd c3 83 c2 a4 c3 83 c2 a8) that equates to the character sequence Ã½Ã¤Ã¨.
 
 The class ids will therefore only match if the CSS is read as ISO 8859-1.
 

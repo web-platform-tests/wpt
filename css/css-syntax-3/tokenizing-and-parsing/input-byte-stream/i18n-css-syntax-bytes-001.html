@@ -7,7 +7,6 @@
 <link rel='help' href='http://www.w3.org/TR/css3-syntax/#input-byte-stream'>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<link rel="stylesheet" type="text/css" href="../../resources/../testharness.css">
 <meta name='flags' content='http dom'>
 <meta name="assert" content="A UTF-8 signature at the beginning of a css style sheet sets the encoding for the style sheet to UTF-8.">
 <style type='text/css'>
@@ -27,7 +26,7 @@ p { color: gray; margin-top: 3em; font-size: 80%; }
 <!--Notes:
 In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters эди.  Read as ISO 8850-15, this gives ГЅГ¤ГЁ.
 
-This HTML page is served as ISO 8859-15 and uses a different byte sequence (fd e4 e8) for the class name that equates to the character sequence эди.  
+This HTML page is served as ISO 8859-15 and uses a different byte sequence (fd e4 e8) for the class name that equates to the character sequence эди.
 
 The class ids will therefore only match if the CSS is read as UTF-8.  (ISO 8859-15 is used for this page to avoid false matching due to UTF-8 fallback.)
 

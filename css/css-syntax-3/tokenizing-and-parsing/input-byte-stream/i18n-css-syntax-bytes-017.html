@@ -7,7 +7,6 @@
 <link rel='help' href='http://www.w3.org/TR/css3-syntax/#input-byte-stream'>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<link rel="stylesheet" type="text/css" href="../../resources/../testharness.css">
 <meta name='flags' content='http dom'>
 <meta name="assert" content="A UTF-8 signature overrides an HTTP encoding declaration for a stylesheet .">
 <style type='text/css'>
@@ -29,7 +28,7 @@ This test is only valid if the user agent recognises the HTTP and BOM declaratio
 
 In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters эди.  Read as ISO 8859-1, this gives ГЅГ¤ГЁ.
 
-This HTML page is served as ISO 8859-1 and uses a different byte sequence for the class name (fd e4 e8) that equates to the character sequence эди.  
+This HTML page is served as ISO 8859-1 and uses a different byte sequence for the class name (fd e4 e8) that equates to the character sequence эди.
 
 The class ids will therefore only match if the CSS is read as UTF-8.
 

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<link rel="author" title="Kouhei Ueno" href="mailto:kouhei@chromium.org">
+<meta http-equiv="content-security-policy" content="script-src 'nonce-correct' 'unsafe-eval'">
+<script nonce="correct" src="/resources/testharness.js"></script>
+<script nonce="correct" src="/resources/testharnessreport.js"></script>
+<script nonce="correct">
+promise_test(t => {
+  const promise = new Promise(resolve => window.continueTest = resolve);
+  setTimeout('import("./../imports-a.js").then(window.failTest, window.continueTest)', 0);
+
+  return promise.then(() => {
+    assert_equals(undefined, window.evaluated_imports_a);
+  });
+}, "setTimeout should not propagate nonce.");
+</script>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+
+</script>
+</head>
+<body>
+<script>
+setup({explicit_done : true});
+
+function testTextDecorationSkip() {
+      test(
+          function() {
+              var computed_text_decoration_skip =
+                  getComputedStyle(
+                      document.body)["text-decoration-skip"];
+              assert_regexp_match(
+                  computed_text_decoration_skip,
+                  /objects/,
+                  "Must contain value objects.");
+              assert_regexp_match(
+                  computed_text_decoration_skip,
+                  /ink/,
+                  "Must contain value ink.");
+              assert_equals(
+                  computed_text_decoration_skip.split(' ').length,
+                  2,
+                  "Must have exactly two values.");
+          },
+          'Body must have text-decoration-skip values objects and ink.');
+}
+
+window.addEventListener('load', function() {
+  testTextDecorationSkip();
+  done();
+});
+</script>
+</body>
+</html>

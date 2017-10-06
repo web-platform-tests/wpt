@@ -12,7 +12,7 @@ test(() => {
 
   r = new Request("?\uD83D");
   assert_equals(r.url, expectedURL2);
-}, "URL encoding and Headers");
+}, "URL encoding and Request");
 
 promise_test(() => {
   return fetch("?\u00DF").then(res => {

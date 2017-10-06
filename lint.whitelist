@@ -180,13 +180,13 @@ SET TIMEOUT: offscreen-canvas/the-offscreen-canvas/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: old-tests/submission/Microsoft/sandbox/*
 SET TIMEOUT: old-tests/submission/Microsoft/structuredclone/structuredclone_0.html
-SET TIMEOUT: old-tests/submission/Opera/script_scheduling/*
 SET TIMEOUT: old-tests/webdriver/timeouts/res/implicit_waits_tests.html
 SET TIMEOUT: page-visibility/resources/pagevistestharness.js
 SET TIMEOUT: payment-request/allowpaymentrequest/setting-allowpaymentrequest-timing.https.sub.html
 SET TIMEOUT: payment-request/payment-request-response-id.html
 SET TIMEOUT: pointerevents/pointerevent_support.js
 SET TIMEOUT: preload/single-download-preload.html
+SET TIMEOUT: resize-observer/resources/iframe.html
 SET TIMEOUT: resource-timing/resource-timing.js
 SET TIMEOUT: resource-timing/single-entry-per-resource.html
 SET TIMEOUT: screen-orientation/lock-bad-argument.html
@@ -234,7 +234,39 @@ SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 # generate_tests usage (should be got rid of)
 GENERATE_TESTS: 2dcontext/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes-1/shape-outside/values/*
-GENERATE_TESTS: css/work-in-progress/microsoft/css-tables/*
+GENERATE_TESTS: css/css-tables-3/bounding-box-computation-1.html
+GENERATE_TESTS: css/css-tables-3/bounding-box-computation-2.html
+GENERATE_TESTS: css/css-tables-3/bounding-box-computation-3.html
+GENERATE_TESTS: css/css-tables-3/caption-side-1.html
+GENERATE_TESTS: css/css-tables-3/fixed-layout-1.html
+GENERATE_TESTS: css/css-tables-3/fixed-layout-2.html
+GENERATE_TESTS: css/css-tables-3/height-distribution/computing-row-measure-0.html
+GENERATE_TESTS: css/css-tables-3/height-distribution/computing-row-measure-1.html
+GENERATE_TESTS: css/css-tables-3/height-distribution/percentage-sizing-of-table-cell-children.html
+GENERATE_TESTS: css/css-tables-3/height-distribution/percentage-sizing-of-table-cell-children.html
+GENERATE_TESTS: css/css-tables-3/html-to-css-mapping-1.html
+GENERATE_TESTS: css/css-tables-3/html-to-css-mapping-2.html
+GENERATE_TESTS: css/css-tables-3/html5-table-formatting-1.html
+GENERATE_TESTS: css/css-tables-3/html5-table-formatting-1.html
+GENERATE_TESTS: css/css-tables-3/html5-table-formatting-2.html
+GENERATE_TESTS: css/css-tables-3/html5-table-formatting-3.html
+GENERATE_TESTS: css/css-tables-3/html5-table-formatting-fixed-layout-1.html
+GENERATE_TESTS: css/css-tables-3/table-model-fixup-2.html
+GENERATE_TESTS: css/css-tables-3/table-model-fixup-2.html
+GENERATE_TESTS: css/css-tables-3/table-model-fixup-2.html
+GENERATE_TESTS: css/css-tables-3/table-model-fixup.html
+GENERATE_TESTS: css/css-tables-3/visibility-collapse-col-001.html
+GENERATE_TESTS: css/css-tables-3/visibility-collapse-row-001.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/computing-column-measure-0.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/computing-column-measure-1.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/computing-table-width-0.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/computing-table-width-1.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-1.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-2.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-min-content-guess.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-min-content-percent-guess.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-min-content-specified-guess.1.html
+GENERATE_TESTS: css/css-tables-3/width-distribution/distribution-algo-min-content-specified-guess.html
 GENERATE_TESTS: css/work-in-progress/ttwf_sf/divya/index-002.html
 GENERATE_TESTS: cssom/index-002.html
 GENERATE_TESTS: dom/nodes/case.js
@@ -809,3 +841,11 @@ WEBIDL2.JS:.gitmodules
 
 # Manual test that uses console.logs for feedback
 CONSOLE:payment-request/payment-request-response-id.html
+
+# Tests that use WebKit/Blink testing APIs
+LAYOUTTESTS APIS: content-security-policy/blink-contrib/*
+LAYOUTTESTS APIS: css/css-regions-1/interactivity/*
+LAYOUTTESTS APIS: css/css-ruby-1/line-break-around-ruby-001.html
+LAYOUTTESTS APIS: css/work-in-progress/opera/css-device-adapt/template.blink.html
+LAYOUTTESTS APIS: encrypted-media/Google/chromium_specific_disabled/*
+LAYOUTTESTS APIS: webgl/conformance-1.0.3/*

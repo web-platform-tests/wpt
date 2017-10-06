@@ -17,14 +17,20 @@ var test = async_test();
 test.step(function() {
     var client = new XMLHttpRequest();
     var countedLoading = 0;
+    var lastResponseText = '';
 
     client.onreadystatechange = test.step_func(function() {
         if (client.readyState === 3) {
             countedLoading += 1;
+            lastResponseText = client.responseText;
         }
 
         if (client.readyState === 4) {
             assert_greater_than(countedLoading, 1, "LOADING state change may be emitted multiple times");
+            if (countedLoading <= 1) {
+              lastResponseText = client.responseText;
+            }
+            assert_equals(lastResponseText, client.responseText, "The responseText during final LOADING state change event should be equal to the final responseText in case the event is fired multiple times");
 
             test.done();
         }

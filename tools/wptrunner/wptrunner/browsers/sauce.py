@@ -163,7 +163,7 @@ class SauceConnect():
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.sc_process.terminate()
-        if os.path.exists(self.temp_dir):
+        if self.temp_dir and os.path.exists(self.temp_dir):
             try:
                 shutil.rmtree(self.temp_dir)
             except OSError:

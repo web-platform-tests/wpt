@@ -4,10 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-setup({
-  explicit_done: true,
-  explicit_timeout: true,
-});
+setup({ explicit_done: true, explicit_timeout: true });
 
 const amount = { value: "1.0", currency: "USD" };
 const details = {
@@ -17,7 +14,7 @@ const details = {
   },
 };
 const method = {
-  supportedMethods: ["basic-card"],
+  supportedMethods: "basic-card",
 };
 
 const defaultBillingAddress = {
@@ -76,7 +73,7 @@ function runPromiseTest(button, data, expectedCard = visaCredit, expectedAddress
 <ol>
   <li>Add credit card:
     <dl>
-      <dt>Cardhold name:</dt>
+      <dt>Cardholder name:</dt>
       <dd>web platform test</dd>
       <dt>Card number:</dt>
       <dd>4111111111111111</dd>

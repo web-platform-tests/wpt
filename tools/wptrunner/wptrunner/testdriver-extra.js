@@ -1,8 +1,6 @@
 "use strict";
 
 (function(){
-    const global = Function('return this')();
-
     let pending_resolve = null;
     let pending_reject = null;
     window.addEventListener("message", function(event) {
@@ -56,7 +54,7 @@
         return selector;
     };
 
-    global.test_driver = {
+    window.test_driver = {
         click: function(element) {
             const selector = get_selector(element);
             const pending_promise = new Promise(function(resolve, reject) {

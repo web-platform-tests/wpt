@@ -38,7 +38,7 @@
     /**
      * @namespace
      */
-    window.test_automation = {
+    window.test_driver = {
         /**
          * Triggers a user-initiated click
          *
@@ -71,7 +71,7 @@
                 return Promise.reject(new Error("element click intercepted error"));
             }
 
-            return window.test_automation_internal.click(element);
+            return window.test_driver_internal.click(element);
         }
     };
 

@@ -12,7 +12,7 @@
             return;
         }
 
-        if (data.type !== "testautomation-complete") {
+        if (data.type !== "testdriver-complete") {
             return;
         }
 
@@ -47,7 +47,7 @@
         } else {
             let new_class;
             do {
-                new_class = "testautomation-" + random_string();
+                new_class = "testdriver-" + random_string();
             } while(document.getElementsByClassName(new_class).length > 0);
             element.classList.add(new_class);
             selector = "." + new_class;
@@ -56,7 +56,7 @@
         return selector;
     };
 
-    global.test_automation = {
+    global.test_driver = {
         click: function(element) {
             const selector = get_selector(element);
             const pending_promise = new Promise(function(resolve, reject) {

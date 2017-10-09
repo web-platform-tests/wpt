@@ -453,23 +453,23 @@ def test_testharness_ext(filename):
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
-def test_testautomation(ext):
-    content = b"<script src=/resources/testautomation.js></script>"
+def test_testdriver(ext):
+    content = b"<script src=/resources/testdriver.js></script>"
 
     filename = "html/test." + ext
     s = create(filename, content)
 
-    assert s.has_testautomation
+    assert s.has_testdriver
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])
-def test_relative_testautomation(ext):
-    content = b"<script src=../resources/testautomation.js></script>"
+def test_relative_testdriver(ext):
+    content = b"<script src=../resources/testdriver.js></script>"
 
     filename = "html/test." + ext
     s = create(filename, content)
 
-    assert not s.has_testautomation
+    assert not s.has_testdriver
 
 
 @pytest.mark.parametrize("ext", ["htm", "html"])

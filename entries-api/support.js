@@ -18,12 +18,14 @@ window.addEventListener('DOMContentLoaded', e => {
   });
   elem.addEventListener('drop', e => {
     e.preventDefault();
-    const item = e.dataTransfer.items[0];
-    const entry = item.webkitGetAsEntry();
-    window.entry = entry;
-    elem.parentElement.removeChild(elem);
-
-    tests.forEach(f => f(entry, item));
+    for (const item of e.dataTransfer.items) {
+      if (item.kind !== 'file')
+        continue;
+      const entry = item.webkitGetAsEntry();
+      elem.parentElement.removeChild(elem);
+      tests.forEach(f => f(entry, item));
+      break;
+    }
   });
 });
 

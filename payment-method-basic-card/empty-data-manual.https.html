@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf8">
-<title>Manual return any card type</title>
+<title>Payment Method Basic Card - test passing empty BasicCardRequest members</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -18,17 +18,17 @@ const method = {
 };
 
 const defaultBillingAddress = {
-  addressLine: ["1 web st"],
-  city: "w3c",
-  country: "AF",
-  dependentLocality: "",
-  languageCode: "",
-  organization: "",
-  phone: "+9312345678910",
-  postalCode: "1234",
-  recipient: "web platform test",
-  region: "",
-  sortingCode: "",
+  country: 'AF',
+  addressLine: '1 wpt street',
+  region: '',
+  city: 'Kabul',
+  dependentLocality: '',
+  postalCode: '1001',
+  sortingCode: '',
+  languageCode: 'fa',
+  organization: 'w3c',
+  recipient: 'web platform test',
+  phone: '+93555555555',
 };
 
 const visaCredit = {
@@ -40,7 +40,7 @@ const visaCredit = {
 };
 
 async function getCardResponse(data) {
-  const method = Object.assign({ data }, methodCard, { environment: "TEST" });
+  const method = Object.assign({ data }, methodCard);
   const response = await new PaymentRequest([method], defaultDetails).show();
   await response.complete("success");
   return response.details;
@@ -66,9 +66,16 @@ function runPromiseTest(button, data, expectedCard = visaCredit, expectedAddress
   }, button.textContent.trim());
 }
 </script>
-<h2>Instructions</h2>
+<h2>
+  Payment Method Basic Card - test passing empty BasicCardRequest values
+</h2>
 <p>
   This test checks that the Basic Card payment handler can accept any card.
+</p>
+<p>
+  Click on each button in sequence from top to bottom without refreshing the page.
+  Each button will bring up the Payment Request UI window.
+  The test expects the following credit card.
 </p>
 <ol>
   <li>Add credit card:
@@ -103,9 +110,6 @@ function runPromiseTest(button, data, expectedCard = visaCredit, expectedAddress
   </li>
 </ol>
 <hr>
-<h2>
-  Manual Tests - run in order
-</h2>
 <ol>
   <li>
     <button onclick="runPromiseTest(this, {});">
@@ -128,3 +132,8 @@ function runPromiseTest(button, data, expectedCard = visaCredit, expectedAddress
     </button>
   </li>
 </ol>
+
+<small>
+  If you find a buggy test, please <a href="https://github.com/w3c/web-platform-tests/issues">file a bug</a>
+  and tag one of the <a href="https://github.com/w3c/web-platform-tests/blob/master/payment-request/OWNERS">owners</a>.
+</small>

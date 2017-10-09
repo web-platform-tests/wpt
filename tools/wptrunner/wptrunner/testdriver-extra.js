@@ -21,16 +21,6 @@
         }
     });
 
-
-    const random_string = function() {
-        // slightly hackish, and will result in non-uniform distribution, but good enough
-        let ran;
-        do {
-            ran = Math.random();
-        } while(ran === 0.0);
-        return ran.toString(16).substring(2);
-    };
-
     const get_selector = function(element) {
         let selector;
 
@@ -43,12 +33,17 @@
                 selector += '\\' + id.charCodeAt(i).toString(16) + ' ';
             }
         } else {
-            let new_class;
-            do {
-                new_class = "testdriver-" + random_string();
-            } while(document.getElementsByClassName(new_class).length > 0);
-            element.classList.add(new_class);
-            selector = "." + new_class;
+            // push and then reverse to avoid O(n) unshift in the loop
+            let segments = [];
+            for (let node = element; node.parentNode; node = node.parentNode) {
+                let segment = "*|" + node.localName;
+                let nth = Array.prototype.indexOf.call(node.parentNode, node);
+                segments.push(segment + ":nth-child(" + nth + ")");
+            }
+            segments.push(":root");
+            segments.reverse();
+
+            selector = segments.join(" > ");
         }
 
         return selector;

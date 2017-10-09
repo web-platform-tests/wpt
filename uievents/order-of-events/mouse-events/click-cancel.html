@@ -6,7 +6,8 @@
     <link rel="help" href="https://w3c.github.io/uievents/#events-clickevent-event-order">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="/resources/testautomation.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
   </head>
   <body>
     <ol>
@@ -35,8 +36,8 @@ done.addEventListener("click", t.step_func_done(function () {
 
 
 t.step(function() {
-  test_automation.click(box).then(t.step_func(function() {
-    test_automation.click(done);
+  test_driver.click(box).then(t.step_func(function() {
+    test_driver.click(done);
   }));
 });
 

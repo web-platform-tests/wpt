@@ -18,19 +18,19 @@ window.onload = function () {
       fails[fails.length] = 'allowTargetOrigin threw an error: '+e;
     }
     try {
-   evt = new DragEvent('dragstart', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('dragstart', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('drag', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('drag', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('dragenter', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('dragenter', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('dragover', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('dragover', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('dragleave', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('dragleave', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('drop', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('drop', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
-   evt = new DragEvent('dragend', {dataTransfer:e.dataTransfer});
+      evt = new DragEvent('dragend', {dataTransfer:e.dataTransfer});
       targ.dispatchEvent(evt);
     } catch(e) {
       fails[fails.length] = 'Synthetic event threw an error: '+e;

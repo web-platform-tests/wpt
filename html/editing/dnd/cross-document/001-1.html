@@ -12,14 +12,14 @@
 window.onload = function() {
   var blue = document.getElementsByTagName('div')[0], fails = [];
   blue.ondragover = blue.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( e.dataTransfer.getData('text') ) {
       fails[fails.length] = '"' + e.dataTransfer.getData('text') + '" exposed during event ' + e.type;
     }
   };
   blue.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     if( !e.dataTransfer.types.length ) {
       fails[fails.length] = 'no types found during event drop';
     }

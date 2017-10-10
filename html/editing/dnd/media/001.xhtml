@@ -23,10 +23,10 @@ function start(event)
 <body dropzone="copy string:text/uri-list" ondrop="dropIt(event)">
 <p>
   <video draggable="true" ondragstart="start(event)" controls="true"/>
- <script>
-  var video = document.querySelector('video');
-  video.src = getVideoURI('/media/movie_5');
- </script>
+  <script>
+    var video = document.querySelector('video');
+    video.src = getVideoURI('/media/movie_5');
+  </script>
 </p>
 <p>Drag video and drop it somewhere on the page. Dragged frame should be copied to the canvas below and you should see word PASS once you drop video.</p>
 <p>

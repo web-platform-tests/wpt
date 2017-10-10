@@ -50,7 +50,7 @@ window.onload = function() {
     }
   };
   blue.ondragover = blue.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( !evs[e.type] ) { evs[e.type] = {}; }
     evs[e.type].dataTransfer = e.dataTransfer;
@@ -96,7 +96,7 @@ window.onload = function() {
     }
   };
   blue.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     evs[e.type] = {};
     evs[e.type].dataTransfer = e.dataTransfer;
     evs[e.type].items = e.dataTransfer.items;

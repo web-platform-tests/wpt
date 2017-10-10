@@ -22,11 +22,11 @@ window.onload = function() {
     e.dataTransfer.setData('text', 'dummy text');
   };
   blue.ondragover = blue.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   blue.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     alert('It should ideally be possible to dismiss this dialog with your mouse/pointing device (do not use mouse gestures).');
   };
 };

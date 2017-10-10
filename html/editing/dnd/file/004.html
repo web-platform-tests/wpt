@@ -13,12 +13,12 @@ var fails = [];
 window.onload = function() {
   var orange = document.getElementsByTagName('div')[0];
   orange.ondragover = orange.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   orange.ondrop = function(e) {
     //if the browser simulates a drop, it must do so with an empty FileList
-     e.preventDefault();
+    e.preventDefault();
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
     }

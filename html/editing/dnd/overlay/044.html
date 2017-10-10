@@ -28,13 +28,13 @@ window.onload = function() {
     e.dataTransfer.setData('extra/data', 'parent bubble');
   };
   fuchsia.ondragenter = fuchsia.ondragover = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   fuchsia.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     var passed = ( e.dataTransfer.getData('text/plain') == 'text dummy' ) && ( e.dataTransfer.getData('extra/data') == 'parent bubble' );
-     document.getElementsByTagName('p')[0].innerHTML = passed ? 'PASS' : 'FAIL';
+    document.getElementsByTagName('p')[0].innerHTML = passed ? 'PASS' : 'FAIL';
   };
   var range = document.createRange();
   range.selectNodeContents(orange);

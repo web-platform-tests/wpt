@@ -14,7 +14,7 @@ var fails = [], finished = false, donecount = 0;
 window.onload = function() {
   var orange = document.getElementsByTagName('div')[0];
   orange.ondragover = orange.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
@@ -31,7 +31,7 @@ window.onload = function() {
     }
   };
   orange.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
     }

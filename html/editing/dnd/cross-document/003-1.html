@@ -12,7 +12,7 @@
 window.onload = function() {
   var blue = document.getElementsByTagName('div')[0], fails = [];
   blue.ondragover = blue.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( !parent.evs[e.type] ) { parent.evs[e.type] = {}; }
     parent.evs[e.type].dataTransfer = e.dataTransfer;

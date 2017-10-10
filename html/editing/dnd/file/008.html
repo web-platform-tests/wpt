@@ -13,7 +13,7 @@ var fails = [], finished = false;
 window.onload = function() {
   var orange = document.getElementsByTagName('div')[0];
   orange.ondragover = orange.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
@@ -25,11 +25,11 @@ window.onload = function() {
     if( !( e.dataTransfer.files instanceof FileList ) ) {
       fails[fails.length] = 'dataTransfer.files is not a FileList';
     } else if( e.dataTransfer.files.length ) {
-        fails[fails.length] = 'dataTransfer.files.length is '+e.dataTransfer.files.length+' instead of 0 for '+e.type;
+      fails[fails.length] = 'dataTransfer.files.length is '+e.dataTransfer.files.length+' instead of 0 for '+e.type;
     }
   };
   orange.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
     }

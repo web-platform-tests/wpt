@@ -49,7 +49,7 @@ window.onload = function() {
       }
     }
     if( e.type == 'drop' ) {
-       e.preventDefault();
+      e.preventDefault();
       document.getElementsByTagName('p')[1].innerHTML = failed.length ? ( 'FAIL (found ' + failed.join() + ')' ) : 'PASS';
     }
   };

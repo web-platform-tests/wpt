@@ -47,15 +47,15 @@ window.onload = function() {
     }
   };
   fuchsia.ondragenter = fuchsia.ondragover = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   fuchsia.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     //it's possible this could get called twice if the browser drags both items, so it uses the "passed" variable to make sure
     //that if blue gets dropped first, it remains false when orange then gets dropped
     passed = passed && ( e.dataTransfer.getData('text/plain') == 'child targeted' ) && ( e.dataTransfer.getData('extra/data') == 'parent bubble' );
-     document.getElementsByTagName('p')[0].innerHTML = passed ? 'PASS' : 'FAIL';
+    document.getElementsByTagName('p')[0].innerHTML = passed ? 'PASS' : 'FAIL';
   };
 
 };

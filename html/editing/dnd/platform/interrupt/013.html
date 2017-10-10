@@ -22,7 +22,7 @@ window.onload = function() {
     e.dataTransfer.setData('text', 'dummy text');
   };
   blue.ondragover = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     if( !window.doneonce ) {
       alert('2. It should also ideally be possible to dismiss this dialog with your mouse/pointing device (do not use mouse gestures).');
@@ -30,12 +30,12 @@ window.onload = function() {
     window.doneonce = true;
   };
   blue.ondragenter = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
     alert('1. It should ideally be possible to dismiss this dialog with your mouse/pointing device (do not use mouse gestures).');
   };
   blue.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
   };
 };
 </script>

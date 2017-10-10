@@ -13,7 +13,7 @@ var filename = 'fail.png', filesize = '759', filetype = 'image/png';
 var fails = [], finished = false;
 window.onload = function() {
   var orange = document.getElementsByTagName('div')[0];
-    orange.ondragenter = function(e) {
+  orange.ondragenter = function(e) {
     e.dataTransfer.dropEffect = 'copy';
   };
 /*  orange.ondragover = function(e) {
@@ -21,7 +21,7 @@ window.onload = function() {
   };
 */
   orange.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     if( !e.dataTransfer.files ) {
       fails[fails.length] = 'No dataTransfer.files for '+e.type;
     }

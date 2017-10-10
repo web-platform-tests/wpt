@@ -27,11 +27,11 @@ window.onload = function() {
     e.dataTransfer.setData('Text', 'dummy text');
   };
   blue.ondragenter = blue.ondragover = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   blue.ondrop = function(e) {
-     e.preventDefault();
+    e.preventDefault();
   };
 };
 

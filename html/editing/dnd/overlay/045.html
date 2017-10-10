@@ -36,12 +36,12 @@ window.onload = function() {
     e.dataTransfer.setData('text/plain', 'FAIL');
   };
   fuchsia.ondragenter = fuchsia.ondragover = function(e) {
-     e.preventDefault();
+    e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
   fuchsia.ondrop = function(e) {
-     e.preventDefault();
-     document.getElementsByTagName('p')[0].innerHTML = 'FAIL';
+    e.preventDefault();
+    document.getElementsByTagName('p')[0].innerHTML = 'FAIL';
   };
 
 };

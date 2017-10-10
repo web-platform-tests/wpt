@@ -33,7 +33,7 @@ css/ directory, regardless of where they are in the directory structure.
 By default, tests are served over plain HTTP. If a test requires HTTPS
 it must be given a filename containing `.https` before the extension,
 e.g. `test-secure.https.html`. For more details see the documentation
-on [file names](file-name-flags).
+on [file names][file-name-flags].
 
 #### Support Files
 

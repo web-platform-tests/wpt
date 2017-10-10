@@ -2,15 +2,34 @@ The web-platform-tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w
 ==============================
 
 The web-platform-tests Project is a W3C-coordinated attempt to build a
-cross-browser testsuite for the Web-platform stack. Writing tests in a way
+cross-browser test suite for the Web-platform stack. Writing tests in a way
 that allows them to be run in all browsers gives browser projects
 confidence that they are shipping software that is compatible with other
-implementations, and that later implementations will be compatible with
-their implementations. This in turn gives Web authors/developers
+implementations and those later implementations will be compatible with
+their implementations. This, in turn, gives Web authors/developers
 confidence that they can actually rely on the Web platform to deliver on
 the promise of working across browsers and devices without needing extra
-layers of abstraction to paper over the gaps left by specification
+layers of abstraction to paper over the gaps left by the specification
 editors and implementors.
+
+Table of Contents (ToC):
+===========================
+
+* [Setting Up the Repo](*setting-up-the-repo)
+* [Running the Tests](*running-the-tests)
+* [Running tests manually](*running-tests-manually)
+* [Running tests Automatically](*running-tests-automatically)
+* [Command Line Tools](*command-line-tools)
+* [Submodules](*submodules)
+* [Certificates](*certificates)
+* [Finding Things](*finding-things)
+* [Branches](*branches)
+* [Contributing](*contributing)
+* [Issues with web-platform-tests](*issues-with-web-platform-tests)
+* [Lint tooltest](*lint-tool)
+* [Adding command-line scripts ("tools" subdirs)](*adding-command-line-scripts-tools-subdirs)
+* [Test Review](*test-review)
+* [Documentation](*documentation)
 
 Setting Up the Repo
 ===================
@@ -82,14 +101,14 @@ line syntax is:
 ./wpt run product [tests]
 ```
 
-**On Windows**: You will need to preceed the prior command with
+**On Windows**: You will need to proceed the prior command with
 `python` or the path to the python binary.
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
 browser instance and install required dependencies. The command is
-very configurable; for examaple to specify a particular binary use
-`wpt run --binary=path product`. The full range of options can be see
+very configurable; for example to specify a particular binary use
+`wpt run --binary=path product`. The full range of options can be seen
 with `wpt run --help` and `wpt run --wptrunner-help`.
 
 Not all dependencies can be automatically installed; in particular the
@@ -115,18 +134,18 @@ The `wpt` command provides a frontend to a variety of tools for
 working with and running web-platform-tests. Some of the most useful
 commands are:
 
-* `wpt serve` - For starting the wpt http server
+* `wpt serve` - For starting the wpt HTTP server
 * `wpt run` - For running tests in a browser
 * `wpt lint` - For running the lint against all tests
 * `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest
 * `wpt install` - For installing the latest release of a browser or
-  webdriver server on the local machine.
+  web driver server on the local machine.
 
 <span id="submodules">Submodules</span>
 =======================================
 
 Some optional components of web-platform-tests (test components from
-third party software and pieces of the CSS build system) are included
+third-party software and pieces of the CSS build system) are included
 as submodules. To obtain these components run the following in the
 root of your checkout:
 
@@ -135,7 +154,7 @@ git submodule update --init --recursive
 ```
 
 Prior to commit `39d07eb01fab607ab1ffd092051cded1bdd64d78` submodules
-were requried for basic functionality. If you are working with an
+were required for basic functionality. If you are working with an
 older checkout, the above command is required in all cases.
 
 When moving between a commit prior to `39d07eb` and one after it git
@@ -162,9 +181,9 @@ submodules, you will need to `git submodule update`, as above. If git
 throws an error like:
 
 ```
-fatal: No url found for submodule path 'resources/webidl2/test/widlproc' in .gitmodules
+fatal: No URL found for submodule path 'resources/webidl2/test/widlproc' in .gitmodules
 Failed to recurse into submodule path 'resources/webidl2'
-fatal: No url found for submodule path 'tools/html5lib' in .gitmodules
+fatal: No URL found for submodule path 'tools/html5lib' in .gitmodules
 Failed to recurse into submodule path 'resources'
 Failed to recurse into submodule path 'tools'
 ```
@@ -174,7 +193,7 @@ then remove the `tools` and `resources` directories, as above.
 <span id="windows-notes">Windows Notes</span>
 =============================================
 
-On Windows `wpt` commands mut bre prefixed with `python` or the path
+On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
 
 Alternatively, you may also use
@@ -189,11 +208,11 @@ line endings, as it will cause lint errors. For git, please set
 Certificates
 ============
 
-By default pregenerated certificates for the web-platform.test domain
+By default generated certificates for the web-platform.test domain
 are provided in the repository. If you wish to generate new
 certificates for any reason it's possible to use OpenSSL when starting
 the server, or starting a test run, by providing the
-`--ssl-type=openssl` argument to the `wpt serve` or `wpt run`
+`--SSL-type=openssl` argument to the `wpt serve` or `wpt run`
 commands.
 
 If you installed OpenSSL in such a way that running `openssl` at a
@@ -211,7 +230,7 @@ provide a convenient installer that is known to work, but requires a
 little extra setup, i.e.:
 
 Run the installer for Win32_OpenSSL_v1.1.0b (30MB). During installation,
-change the default location for where to Copy OpenSSL Dlls from the
+change the default location for where to Copy OpenSSL DLLs from the
 System directory to the /bin directory.
 
 After installation, ensure that the path to OpenSSL (typically,
@@ -235,15 +254,15 @@ The master branch is automatically synced to http://w3c-test.org/.
 
 Pull requests are
 [automatically mirrored](http://w3c-test.org/submissions/) except those
-that modify sensitive resources (such as `.py`). The latter require
-someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
+that modify sensitive resources (such as `.py`). The latter requires
+someone with merge access to comment with "LGTM" or "w3c-test: mirror" to
 indicate the pull request has been checked.
 
 Finding Things
 ==============
 
-Each top-level directory matches the shortname used by a standard, with
-some exceptions. (Typically the shortname is from the standard's
+Each top-level directory matches the short name used by a standard, with
+some exceptions. (Typically the short name is from the standard's
 corresponding GitHub repository.)
 
 For some of the specifications, the tree under the top-level directory
@@ -259,7 +278,7 @@ Various resources that tests depend on are in `common`, `images`, and
 Branches
 ========
 
-In the vast majority of cases the **only** upstream branch that you
+In the vast majority of cases, the **only** upstream branch that you
 should need to care about is `master`. If you see other branches in
 the repository, you can generally safely ignore them.
 
@@ -277,7 +296,7 @@ which you've noted an interoperability bug in a browser.
 The way to contribute is just as usual:
 
 * Fork this repository (and make sure you're still relatively in sync
-  with it if you forked a while ago).
+  with it, if you forked a while ago).
 * Create a branch for your changes:
   `git checkout -b topic`.
 * Make your changes.
@@ -296,7 +315,7 @@ Thank you!
 Lint tool
 ---------
 
-We have a lint tool for catching common mistakes in test files. You
+We have a lint tool for catching common mistakes in text files. You
 can run it manually by starting the `lint` executable from the root of
 your local web-platform-tests working directory like this:
 
@@ -305,7 +324,7 @@ your local web-platform-tests working directory like this:
 ```
 
 The lint tool is also run automatically for every submitted pull
-request, and reviewers will not merge branches with tests that have
+the request, and reviewers will not merge branches with tests that have
 lint errors, so you must fix any errors the lint tool reports.
 
 In the unusual case of error reports for things essential to a
@@ -330,7 +349,7 @@ either:
 * the `tools` subdir at the root of the repository, or
 
 * the `tools` subdir at the root of any top-level directory in the
-  repository which contains the tests the script is meant to be used
+  the repository which contains the tests the script is meant to be used
   with
 
 Any files in those `tools` directories won't be handled by the HTTP
@@ -339,7 +358,7 @@ the URL for a file within them.
 
 If you want to add a script for use with a particular set of tests but
 there isn't yet any `tools` subdir at the root of a top-level
-directory in the repository containing those tests, you can create a
+the directory in the repository containing those tests, you can create a
 `tools` subdir at the root of that top-level directory and place your
 scripts there.
 
@@ -352,7 +371,7 @@ Test Review
 
 We can sometimes take a little while to go through pull requests
 because we have to go through all the tests and ensure that they match
-the specification correctly. But we look at all of them, and take
+the specification correctly. But we look at all of them and take
 everything that we can.
 
 OWNERS files are used only to indicate who should be notified of pull

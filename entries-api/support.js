@@ -18,8 +18,8 @@ window.addEventListener('DOMContentLoaded', e => {
   });
   elem.addEventListener('drop', e => {
     e.preventDefault();
-    for (var i = 0; i < e.dataTransfer.items.length; ++i) {
-      var item = e.dataTransfer.items[i];
+    for (const i = 0; i < e.dataTransfer.items.length; ++i) {
+      const item = e.dataTransfer.items[i];
       if (item.kind !== 'file')
         continue;
       const entry = item.webkitGetAsEntry();
@@ -43,7 +43,9 @@ function entry_test(func, description) {
 // (test, file_entry); |func| must call `test.done()` when complete.
 function file_entry_test(name, func, description) {
   return entry_test((t, entry, item) => {
-    getChildEntry(entry, name, t.step_func((entry) => func(t, entry)));
+    getChildEntry(entry, name,
+                  t.step_func((entry) => func(t, entry)),
+                  t.unreached_func('Did not find expected file: ' + name));
   }, description);
 }
 
@@ -97,9 +99,9 @@ const FILE_PATHS = [
 
 function getEntriesAsPromise(dirEntry) {
   return new Promise((resolve, reject) => {
-    let result = [];
-    let reader = dirEntry.createReader();
-    let doBatch = () => {
+    const result = [];
+    const reader = dirEntry.createReader();
+    const doBatch = () => {
       reader.readEntries(entries => {
         if (entries.length > 0) {
           entries.forEach(e => result.push(e));
@@ -118,12 +120,12 @@ function getEntriesAsPromise(dirEntry) {
 // name via a callback. Can be used instead of getFile() or
 // getDirectory() since not all implementations support those.
 
-function getChildEntry(dirEntry, name, callback) {
+function getChildEntry(dirEntry, name, callback, errback) {
   getEntriesAsPromise(dirEntry)
-    .then(function(entries) {
-      return entries.filter(function(entry) {
-        return entry.name === name;
-      })[0];
-    })
-    .then(callback);
+    .then(entries => {
+      const entry = entries.filter(entry => entry.name === name)[0];
+      if (!entry)
+        throw new Error('No such file: ' + name);
+      return entry;
+    }).then(callback, errback);
 }

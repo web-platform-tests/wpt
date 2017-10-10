@@ -18,8 +18,8 @@ entry_test((t, entry, item) => {
   ]).then(t.step_func(([entries, idls]) => {
     window.samples = {
       item: item,
-      dirEntry: entries.filter(function(entry) { return entry.isDirectory; })[0],
-      fileEntry: entries.filter(function(entry) { return entry.isFile; })[0],
+      dirEntry: entries.filter(entry => entry.isDirectory)[0],
+      fileEntry: entries.filter(entry => entry.isFile)[0],
       fileSystem: entry.filesystem,
     };
 

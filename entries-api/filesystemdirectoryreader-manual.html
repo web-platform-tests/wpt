@@ -39,7 +39,7 @@ entry_test((t, entry) => {
       })));
 
     do_chunk();
-  }));
+  }), t.unreached_func('A child entry should be found'));
 }, 'FileSystemDirectoryReader - basic enumeration');
 
 entry_test((t, entry) => {

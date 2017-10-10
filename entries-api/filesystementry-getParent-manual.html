@@ -8,7 +8,7 @@
 
 <script>
 entry_test((t, entry) => {
-  assert_idl_attribute(entry, 'getParent', 'FileSystemEntry has filesystem attribute');
+  assert_idl_attribute(entry, 'getParent', 'FileSystemEntry has getParent method');
   assert_equals(typeof entry.getParent, 'function', 'FileSystemEntry has a getParent() method');
 
   assert_equals(entry.getParent(), void 0, 'getParent() arguments are optional');

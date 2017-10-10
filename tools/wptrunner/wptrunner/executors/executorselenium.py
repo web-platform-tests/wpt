@@ -206,7 +206,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         after = set(webdriver.window_handles)
         assert len(after - before) == 1
         test_window = list(after - before)[0]
-        handler = CallbackHandler(webdriver, logger)
+        handler = CallbackHandler(webdriver, self.logger)
         while True:
             result = webdriver.execute_async_script(
                 self.script_resume % format_map)
@@ -218,12 +218,13 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
 
 class CallbackHandler(object):
     def __init__(self, webdriver, logger):
-        pass
+        self.webdriver = webdriver
+        self.logger = logger
 
     def __call__(self, result):
         self.logger.debug("Got async callback: %s" % result[1])
         try:
-            return getattr(self, "process_%s" % result[1])()
+            return getattr(self, "process_%s" % result[1])(result)
         except AttributeError:
             raise ValueError("Unknown callback type")
 

@@ -8,7 +8,6 @@
 
 <script>
 file_entry_test('file.txt', (t, entry) => {
-  // FileSystemEntry ----------
 
   assert_idl_attribute(entry, 'isFile', 'FileSystemEntry has isFile attribute');
   assert_equals(typeof entry.isFile, 'boolean', 'isFile is boolean');
@@ -24,14 +23,8 @@ file_entry_test('file.txt', (t, entry) => {
 
   assert_idl_attribute(entry, 'filesystem', 'FileSystemEntry has filesystem attribute');
 
-  assert_idl_attribute(entry, 'getParent', 'FileSystemEntry has filesystem attribute');
-  assert_equals(typeof entry.getParent, 'function', 'FileSystemEntry has a getParent() method');
-
-  // FileSystemFileEntry ----------
-
-  assert_equals(typeof entry.file, 'function', 'FileSystemFileEntry has a file() method');
   t.done();
-}, 'FileSystemFileEntry - interface');
+}, 'FileSystemFileEntry - attribute types');
 
 file_entry_test('file.txt', (t, entry) => {
   assert_true(entry.isFile);
@@ -39,18 +32,6 @@ file_entry_test('file.txt', (t, entry) => {
   assert_equals(entry.name, 'file.txt');
   assert_equals(entry.fullPath, '/upload/file.txt');
   t.done();
-}, 'FileSystemFileEntry - attributes');
+}, 'FileSystemFileEntry - attribute values');
 
-file_entry_test('file.txt', (t, entry) => {
-  assert_throws(TypeError(), () => entry.file(), 'file() has a required argument');
-  entry.file(t.step_func(file => {
-
-    assert_class_string(file, 'File', 'file() should yield a File');
-    assert_equals(entry.name, file.name, 'entry and file names should match');
-    t.done();
-
-  }), t.unreached_func('file() should not fail'));
-}, 'FileSystemFileEntry - file()');
-
-// TODO: Manual test where file is replaced with directory before file() called
 </script>

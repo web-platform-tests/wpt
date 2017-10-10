@@ -10,7 +10,7 @@ window.addEventListener('DOMContentLoaded', e => {
   header.innerText = document.title;
   document.body.appendChild(header);
   const elem = document.createElement('div');
-  elem.style = 'height: 50px; border: 1px dotted red;';
+  elem.style.cssText = 'height: 50px; border: 1px dotted red;';
   elem.innerHTML = 'Drop the <b>support/upload</b> directory here.</div>';
   document.body.appendChild(elem);
   elem.addEventListener('dragover', e => {
@@ -18,7 +18,8 @@ window.addEventListener('DOMContentLoaded', e => {
   });
   elem.addEventListener('drop', e => {
     e.preventDefault();
-    for (const item of e.dataTransfer.items) {
+    for (var i = 0; i < e.dataTransfer.items.length; ++i) {
+      var item = e.dataTransfer.items[i];
       if (item.kind !== 'file')
         continue;
       const entry = item.webkitGetAsEntry();
@@ -42,10 +43,7 @@ function entry_test(func, description) {
 // (test, file_entry); |func| must call `test.done()` when complete.
 function file_entry_test(name, func, description) {
   return entry_test((t, entry, item) => {
-    entry.getFile(
-      name, {},
-      t.step_func((entry) => func(t, entry)),
-      t.unreached_func('getFile should not fail'));
+    getChildEntry(entry, name, t.step_func((entry) => func(t, entry)));
   }, description);
 }
 
@@ -89,3 +87,43 @@ const FILE_PATHS = [
   '/upload//file.txt',
   'subdir/./../file.txt',
 ];
+
+// ----------------------------------------
+// Helpers
+// ----------------------------------------
+
+// Wrapper for FileSystemDirectoryReader that yields all entries via a
+// Promise.
+
+function getEntriesAsPromise(dirEntry) {
+  return new Promise((resolve, reject) => {
+    let result = [];
+    let reader = dirEntry.createReader();
+    let doBatch = () => {
+      reader.readEntries(entries => {
+        if (entries.length > 0) {
+          entries.forEach(e => result.push(e));
+          doBatch();
+        } else {
+          resolve(result);
+        }
+      }, reject);
+    };
+    doBatch();
+  });
+}
+
+
+// Wrapper for FileSystemDirectoryReader that yields a single entry by
+// name via a callback. Can be used instead of getFile() or
+// getDirectory() since not all implementations support those.
+
+function getChildEntry(dirEntry, name, callback) {
+  getEntriesAsPromise(dirEntry)
+    .then(function(entries) {
+      return entries.filter(function(entry) {
+        return entry.name === name;
+      })[0];
+    })
+    .then(callback);
+}

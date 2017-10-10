@@ -35,7 +35,7 @@ registerPaint('box', class {
     static get inputArguments() { return ['<color>']; }
     paint(ctx, geom, properties, args) {
         ctx.strokeStyle = args[0].toString();
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, 60, 60);
     }
 });

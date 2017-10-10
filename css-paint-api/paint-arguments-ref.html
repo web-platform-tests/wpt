@@ -29,7 +29,7 @@ function drawCanvas(canvasID, color) {
   var context = canvas.getContext("2d", {alpha: true});
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.strokeStyle = color;
-  context.lineWidth = 4;
+  context.lineWidth = 1;
   context.strokeRect(20, 20, 60, 60);
 };
 

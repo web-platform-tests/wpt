@@ -33,7 +33,7 @@ registerPaint('opaque', class {
     static get contextOptions() { return {alpha: false}; }
     paint(ctx, geom) {
         ctx.strokeStyle = 'blue';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, 60, 60);
     }
 });
@@ -42,7 +42,7 @@ registerPaint('nonOpaque', class {
     static get contextOptions() { return {alpha: true}; }
     paint(ctx, geom) {
         ctx.strokeStyle = 'blue';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 1;
         ctx.strokeRect(20, 20, 60, 60);
     }
 });

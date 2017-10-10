@@ -49,8 +49,8 @@ registerPaint('geometry', class {
             ctx.strokeStyle = 'yellow';
         if (serializedStrings[3] != "border-radius: [CSSStyleValue=2px]")
             ctx.strokeStyle = 'cyan';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(0, 0, geom.width, geom.height);
+        ctx.lineWidth = 1;
+        ctx.strokeRect(10, 10, geom.width - 20, geom.height - 20);
     }
 });
 </script>

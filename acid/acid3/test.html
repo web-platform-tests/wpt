@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html class="reftest-wait">
  <title>The Acid3 Test</title>
+ <link rel="match" href="reference.sub.html">
  <script type="text/javascript">
   var startTime = new Date();
  </script>
@@ -3474,6 +3475,7 @@
       log += "Total elapsed time: " + elapsedTime.toFixed(2) + "s";
       if (errors == 0)
         log += "\nNo JS errors and no timing issues.\nWas the rendering pixel-for-pixel perfect too?";
+      document.documentElement.classList.remove("reftest-wait");
     }
   }
   function report(event) {

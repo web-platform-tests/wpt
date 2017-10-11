@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>IndexedDB: The source of requests made against object stores</title>
+<meta name="help" href="https://w3c.github.io/IndexedDB/#dom-idbrequest-source">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+<script>
+
+[
+  'store.put(0)',
+  'store.add(0)',
+  'store.delete(0)',
+  'store.clear()',
+
+  'store.get(0)',
+  'store.getKey(0)',
+  'store.getAll()',
+  'store.getAllKeys()',
+  'store.count()',
+
+  'store.openCursor()',
+  'store.openKeyCursor()'
+].forEach(expr => indexeddb_test(
+  (t, db) => {
+    db.createObjectStore('store', {autoIncrement: true});
+  },
+  (t, db) => {
+    const tx = db.transaction('store', 'readwrite');
+    const store = tx.objectStore('store');
+
+    assert_equals(eval(expr).source, store,
+                  `${expr}.source should be the object store itself`);
+    t.done();
+  },
+  `The source of the request from ${expr} is the object store itself`
+));
+
+</script>

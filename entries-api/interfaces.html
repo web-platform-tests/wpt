@@ -14,7 +14,7 @@ promise_test(t => {
     .then(r => r.text())
     .then(idls => {
 
-      var idl_array = new IdlArray();
+      const idl_array = new IdlArray();
 
       // https://w3c.github.io/FileAPI/#dfn-file
       idl_array.add_untested_idls('[Exposed=(Window,Worker)] interface File {};');

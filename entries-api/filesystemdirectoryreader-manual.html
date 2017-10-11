@@ -18,7 +18,7 @@ entry_test((t, entry) => {
 
 
 entry_test((t, entry) => {
-  entry.getDirectory('subdir', {}, t.step_func(dir => {
+  getChildEntry(entry, 'subdir', t.step_func(dir => {
     const reader = dir.createReader();
     assert_equals(typeof reader.readEntries, 'function');
 
@@ -39,7 +39,7 @@ entry_test((t, entry) => {
       })));
 
     do_chunk();
-  }), t.unreached_func('getDirectory should not fail'));
+  }), t.unreached_func('A child entry should be found'));
 }, 'FileSystemDirectoryReader - basic enumeration');
 
 entry_test((t, entry) => {

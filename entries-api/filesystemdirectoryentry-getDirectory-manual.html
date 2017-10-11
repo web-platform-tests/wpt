@@ -7,6 +7,13 @@
 <script src="support.js"></script>
 
 <script>
+entry_test((t, entry) => {
+  assert_idl_attribute(entry, 'getDirectory', 'FileSystemDirectoryEntry has getDirectory');
+  assert_equals(typeof entry.getDirectory, 'function', 'getDirectory() is a method');
+
+  t.done();
+}, 'FileSystemDirectoryEntry - getDirectory()');
+
 INVALID_PATHS.forEach(path => {
   entry_test((t, entry) => {
     entry.getDirectory(

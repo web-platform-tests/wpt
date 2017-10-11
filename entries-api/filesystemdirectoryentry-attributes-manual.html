@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Entries API: FileSystemDirectoryEntry manual test</title>
+<title>Entries API: FileSystemDirectoryEntry attributes manual test</title>
 <link rel=help href="https://wicg.github.io/entries-api/#api-directoryentry">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,8 +8,6 @@
 
 <script>
 entry_test((t, entry) => {
-  // FileSystemEntry ----------
-
   assert_idl_attribute(entry, 'isFile', 'FileSystemDirectoryEntry has isFile attribute');
   assert_equals(typeof entry.isFile, 'boolean', 'isFile is boolean');
 
@@ -23,26 +21,10 @@ entry_test((t, entry) => {
   assert_equals(typeof entry.fullPath, 'string', 'fullPath is a string');
 
   assert_idl_attribute(entry, 'filesystem', 'FileSystemDirectoryEntry has filesystem attribute');
-
-  assert_idl_attribute(entry, 'getParent', 'FileSystemDirectoryEntry has getParent');
-  assert_equals(typeof entry.getParent, 'function', 'getParent() is a method');
-
-  // FileSystemDirectoryEntry  ----------
-
-  assert_idl_attribute(entry, 'getFile', 'FileSystemDirectoryEntry has getFile');
-  assert_equals(typeof entry.getFile, 'function',
-                'getFile() is a method');
-
-  assert_idl_attribute(entry, 'getDirectory', 'FileSystemDirectoryEntry has getDirectory');
-  assert_equals(typeof entry.getDirectory, 'function',
-                'getDirectory() is a method');
-
-  assert_idl_attribute(entry, 'createReader', 'FileSystemDirectoryEntry has createReader');
-  assert_equals(typeof entry.createReader, 'function',
-                'createReader() is a method');
+  assert_equals(typeof entry.filesystem, 'object', 'filesystem is an object');
 
   t.done();
-}, 'FileSystemDirectoryEntry - interface');
+}, 'FileSystemDirectoryEntry - attribute types');
 
 entry_test((t, entry) => {
   assert_false(entry.isFile, 'isFile is false');
@@ -50,5 +32,6 @@ entry_test((t, entry) => {
   assert_equals(entry.name, 'upload', 'expected directory was uploaded');
   assert_equals(entry.fullPath, '/upload', 'directory is child of root directory');
   t.done();
-}, 'FileSystemDirectoryEntry - attributes');
+}, 'FileSystemDirectoryEntry - attribute values');
+
 </script>

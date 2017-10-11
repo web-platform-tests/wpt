@@ -28,13 +28,13 @@ entry_test((t, entry) => {
 entry_test((t, entry) => {
   const fs = entry.filesystem;
 
-  entry.getParent(t.step_func(parent => {
-    const pfs = parent.filesystem;
-    assert_not_equals(fs, pfs.filesystem, 'FileSystem objects do not have object identity');
-    assert_equals(fs.name, pfs.name, 'FileSystem names match');
+  getChildEntry(entry, 'file.txt', t.step_func(child => {
+    const cfs = child.filesystem;
+    assert_not_equals(fs, cfs.filesystem, 'FileSystem objects do not have object identity');
+    assert_equals(fs.name, cfs.name, 'FileSystem names match');
 
     t.done();
-  }), t.unreached_func('getParent() should not fail'));
+  }), t.unreached_func('child entry file.txt should be present'));
 
 }, 'FileSystem - name consistency and object identity');
 </script>

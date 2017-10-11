@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <meta charset="utf-8">
 <title>Fetch API: keepalive handling</title>
 <script src="/resources/testharness.js"></script>
@@ -12,7 +13,6 @@ promise_test(async (test) => {
     iframe.onload = resolve;
     document.body.appendChild(iframe);
   }));
-  console.log(iframe.contentWindow.x);
   const uuid = iframe.contentWindow.uuid;
   iframe.remove();
   await (new Promise((resolve) => setTimeout(resolve, 1000)));
@@ -22,3 +22,4 @@ promise_test(async (test) => {
 });
 </script>
 </body>
+</html>

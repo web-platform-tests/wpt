@@ -19,7 +19,7 @@ addEventListener('fetch', event => {
         if (!event.preloadResponse) {
           return 'no-preload-response';
         }
-        console.log('hey')
+
         try {
           await event.preloadResponse;
           return 'resolved';

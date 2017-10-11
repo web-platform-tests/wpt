@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', e => {
   });
   elem.addEventListener('drop', e => {
     e.preventDefault();
-    for (const i = 0; i < e.dataTransfer.items.length; ++i) {
+    for (let i = 0; i < e.dataTransfer.items.length; ++i) {
       const item = e.dataTransfer.items[i];
       if (item.kind !== 'file')
         continue;

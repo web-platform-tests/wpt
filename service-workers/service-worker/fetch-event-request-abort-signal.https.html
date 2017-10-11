@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fetch event request abort signal</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+const SW_URL = 'resources/abort-monitor-worker.js';
+
+function raf() {
+  return new Promise(r => requestAnimationFrame(r));
+}
+
+async function nextFrame() {
+  await raf();
+  await raf();
+}
+
+function broadcastResponse(channel) {
+  const bc = new BroadcastChannel(channel);
+  const p = new Promise(resolve => {
+    bc.onmessage = event => {
+      bc.close();
+      resolve(event.data);
+    };
+  });
+
+  p.broadcastChannel = bc;
+
+  return p;
+}
+
+function reset() {
+  for (const iframe of [...document.querySelectorAll('.test-iframe')]) {
+    iframe.remove();
+  }
+  return navigator.serviceWorker.getRegistrations().then(registrations => {
+    return Promise.all(registrations.map(r => r.unregister()));
+  });
+}
+
+promise_test(async t => {
+  const scope = 'resources/blank.html';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const frame = await with_iframe(scope);
+  const fetchUrl = new URL('whatever', location);
+  fetchUrl.searchParams.set('wait-for-abort', '');
+  fetchUrl.searchParams.set('bc', channelName);
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  frame.contentWindow.fetch(fetchUrl, { signal });
+  await nextFrame();
+  controller.abort();
+
+  const testResponse = await bcResponse;
+
+  assert_equals(testResponse, 'aborted');
+}, 'SW signal reacts to fetch abort');
+
+promise_test(async t => {
+  const scope = 'resources/blank.html';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const frame = await with_iframe(scope);
+  const fetchUrl = new URL('whatever', location);
+  fetchUrl.searchParams.set('wait-for-abort', '');
+  fetchUrl.searchParams.set('bc', channelName);
+
+  const xhr = new frame.contentWindow.XMLHttpRequest();
+  xhr.open('GET', fetchUrl);
+  xhr.send();
+
+  await nextFrame();
+  xhr.abort();
+
+  const testResponse = await bcResponse;
+
+  assert_equals(testResponse, 'aborted');
+}, 'SW signal reacts to XHR abort');
+
+promise_test(async t => {
+  const scope = 'resources/blank.html';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const frame = await with_iframe(scope);
+  const fetchUrl = new URL('whatever', location);
+  fetchUrl.searchParams.set('wait-for-abort', '');
+  fetchUrl.searchParams.set('bc', channelName);
+
+  let img = new frame.contentWindow.Image();
+  img.src = fetchUrl;
+  img = undefined;
+
+  await nextFrame();
+  frame.remove();
+
+  const testResponse = await bcResponse;
+
+  assert_equals(testResponse, 'aborted');
+}, 'SW signal reacts to fetch group termination');
+
+promise_test(async t => {
+  const scope = 'resources/blank.html';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const fetchUrl = new URL(scope, location);
+  fetchUrl.searchParams.set('wait-for-abort', '');
+  fetchUrl.searchParams.set('bc', channelName);
+
+  const frame = document.createElement('iframe');
+  frame.src = fetchUrl;
+  document.body.append(frame);
+
+  await nextFrame();
+  frame.remove();
+
+  const testResponse = await bcResponse;
+
+  assert_equals(testResponse, 'aborted');
+}, 'SW signal reacts to navigation termination');
+
+promise_test(async t => {
+  const scope = 'resources/blank.html';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const frame = await with_iframe(scope);
+  const fetchUrl = new URL('whatever', location);
+  fetchUrl.searchParams.set('abort-not-expected', '');
+  fetchUrl.searchParams.set('bc', channelName);
+
+  const response = await frame.contentWindow.fetch(fetchUrl);
+  const data = await response.json();
+
+  assert_true(data.ok);
+
+  bcResponse.broadcastChannel.postMessage('ping');
+  const testResponse = await bcResponse;
+
+  assert_false(testResponse.aborted);
+}, `SW signal doesn't react to successful fetch`);
+
+promise_test(async t => {
+  await reset();
+}, 'Cleanup');
+</script>
+

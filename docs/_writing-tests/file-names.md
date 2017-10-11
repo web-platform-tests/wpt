@@ -54,5 +54,12 @@ themselves precede any test type flag, but are otherwise unordered.
  : (js files only) Indicates that the file generates tests in which it
     is run in Window and dedicated worker environments.
 
+`.tentative`
+ : Indicates that a test makes assertions not yet required by any specification,
+   or in contradiction to some specification. This is useful when implementation
+   experience is needed to inform the specification. It should be apparent in
+   context why the test is tentative and what needs to be resolved to make it
+   non-tentative.
+
 
 [server-side substitution]: https://wptserve.readthedocs.io/en/latest/pipes.html#sub

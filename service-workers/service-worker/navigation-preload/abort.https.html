@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fetch event request abort signal</title>
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.sub.js"></script>
+<script>
+const SW_URL = 'resources/preload-abort-worker.js?pipe=header(Service-Worker-Allowed,/)';
+let abortKey;
+
+function raf() {
+  return new Promise(r => requestAnimationFrame(r));
+}
+
+async function nextFrame() {
+  await raf();
+  await raf();
+}
+
+function broadcastResponse(channel) {
+  const bc = new BroadcastChannel(channel);
+  const p = new Promise(resolve => {
+    bc.onmessage = event => {
+      bc.close();
+      resolve(event.data);
+    };
+  });
+
+  p.broadcastChannel = bc;
+
+  return p;
+}
+
+async function reset() {
+  // This terminates a given infinite-slow-response.py response
+  if (abortKey) await fetch(`/fetch/api/resources/stash-put.py?key=${abortKey}&value=close`);
+  abortKey = null;
+
+  for (const iframe of [...document.querySelectorAll('.test-iframe')]) {
+    iframe.remove();
+  }
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  return Promise.all(registrations.map(r => r.unregister()));
+}
+
+promise_test(async t => {
+  const scope = '/fetch/api/resources/infinite-slow-response.py';
+  await reset();
+  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+
+  assert_true('navigationPreload' in reg, 'navigationPreload exists');
+
+  await wait_for_state(t, reg.installing, 'activated');
+  const channelName = Math.random() + '';
+  const bcResponse = broadcastResponse(channelName);
+
+  const fetchUrl = new URL(scope, location);
+  abortKey = token();
+  fetchUrl.searchParams.set('abortKey', abortKey);
+  fetchUrl.searchParams.set('bc', channelName);
+
+  const frame = document.createElement('iframe');
+  frame.src = fetchUrl;
+  document.body.append(frame);
+
+  await nextFrame();
+  frame.remove();
+
+  const testResponse = await bcResponse;
+
+  assert_equals(testResponse, 'rejected-aborterror');
+}, 'Preload response aborts when navigation terminates');
+
+promise_test(async t => {
+  await reset();
+}, 'Cleanup');
+</script>
+

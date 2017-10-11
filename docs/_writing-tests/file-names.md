@@ -6,7 +6,7 @@ order: 2
 
 The test filename is significant in determining the type of test it
 contains, and enabling specific optional features. This page documents
-the various flags avaiable and their meaning.
+the various flags available and their meaning.
 
 
 ### Test Type

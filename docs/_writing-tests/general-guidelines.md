@@ -25,6 +25,10 @@ integer that follows is normally just increased incrementally, and
 padded to three digits. (If you'd end up with more than 999 tests,
 your `test-topic` is probably too broad!)
 
+The test filename is significant in enabling specific optional features, such as HTTPS
+or server-side substitution. See the documentation on [file names flags][file-name-flags]
+for more details.
+
 In the css directory, the file names should be unique within the whole
 css/ directory, regardless of where they are in the directory structure.
 

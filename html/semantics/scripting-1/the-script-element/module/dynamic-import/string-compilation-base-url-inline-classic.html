@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>import() inside compiled strings uses the document base URL inside a classic script</title>
+<title>import() inside compiled strings uses the script base URL (= document base URL) inside an inline classic script</title>
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
 
 <base href="..">
@@ -21,8 +21,8 @@ function createTestPromise() {
 const dummyDiv = document.querySelector("#dummy");
 
 const evaluators = {
-  eval,
   setTimeout,
+  eval,
   "the Function constructor"(x) {
     Function(x)();
   },

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>import() inside compiled strings uses the document base URL inside a module script</title>
+<title>import() doesn't have any integrity metadata when initiated by compiled strings inside a module script</title>
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<meta http-equiv="Content-Security-Policy" content="require-sri-for script">
 
-<base href="..">
-
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js" integrity="sha384-4Nybydhnr3tOpv1yrTkDxu3RFpnxWAxlU5kGn7c8ebKvh1iUdfVMjqP6jf0dacrV"></script>
+<script src="/resources/testharnessreport.js" integrity="sha384-GOnHxuyo+nnsFAe4enY+RAl4/+w5NPMJPCQiDroTjxtR7ndRz7Uan8vNbM2qWKmU"></script>
 
 <div id="dummy"></div>
 
@@ -45,12 +44,9 @@ for (const [label, evaluator] of Object.entries(evaluators)) {
 
     const promise = createTestPromise();
 
-    evaluator(`import('./imports-a.js?label=${label}').then(window.continueTest, window.errorTest);`);
+    evaluator(`import('../imports-a.js?label=${label}').then(window.continueTest, window.errorTest);`);
 
-    return promise.then(module => {
-      assert_true(window.evaluated_imports_a, "The module must have been evaluated");
-      assert_equals(module.A.from, "imports-a.js", "The module namespace object must be correct");
-    });
-  }, label + " should successfully import");
+    return promise_rejects(t, new TypeError(), promise);
+  }, label + " should fail to import");
 };
 </script>

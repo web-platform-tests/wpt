@@ -6,6 +6,7 @@
 <script src="resources/test-helpers.sub.js"></script>
 <script>
 const SW_URL = 'resources/abort-monitor-worker.js';
+const SCOPE = 'resources/blank.html';
 
 function raf() {
   return new Promise(r => requestAnimationFrame(r));
@@ -40,14 +41,13 @@ function reset() {
 }
 
 promise_test(async t => {
-  const scope = 'resources/blank.html';
   await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
   const bcResponse = broadcastResponse(channelName);
 
-  const frame = await with_iframe(scope);
+  const frame = await with_iframe(SCOPE);
   const fetchUrl = new URL('whatever', location);
   fetchUrl.searchParams.set('wait-for-abort', '');
   fetchUrl.searchParams.set('bc', channelName);
@@ -65,14 +65,13 @@ promise_test(async t => {
 }, 'SW signal reacts to fetch abort');
 
 promise_test(async t => {
-  const scope = 'resources/blank.html';
   await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
   const bcResponse = broadcastResponse(channelName);
 
-  const frame = await with_iframe(scope);
+  const frame = await with_iframe(SCOPE);
   const fetchUrl = new URL('whatever', location);
   fetchUrl.searchParams.set('wait-for-abort', '');
   fetchUrl.searchParams.set('bc', channelName);
@@ -90,14 +89,13 @@ promise_test(async t => {
 }, 'SW signal reacts to XHR abort');
 
 promise_test(async t => {
-  const scope = 'resources/blank.html';
   await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
   const bcResponse = broadcastResponse(channelName);
 
-  const frame = await with_iframe(scope);
+  const frame = await with_iframe(SCOPE);
   const fetchUrl = new URL('whatever', location);
   fetchUrl.searchParams.set('wait-for-abort', '');
   fetchUrl.searchParams.set('bc', channelName);
@@ -115,14 +113,13 @@ promise_test(async t => {
 }, 'SW signal reacts to fetch group termination');
 
 promise_test(async t => {
-  const scope = 'resources/blank.html';
   await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
   const bcResponse = broadcastResponse(channelName);
 
-  const fetchUrl = new URL(scope, location);
+  const fetchUrl = new URL(SCOPE, location);
   fetchUrl.searchParams.set('wait-for-abort', '');
   fetchUrl.searchParams.set('bc', channelName);
 
@@ -139,14 +136,13 @@ promise_test(async t => {
 }, 'SW signal reacts to navigation termination');
 
 promise_test(async t => {
-  const scope = 'resources/blank.html';
   await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, scope);
+  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
   const bcResponse = broadcastResponse(channelName);
 
-  const frame = await with_iframe(scope);
+  const frame = await with_iframe(SCOPE);
   const fetchUrl = new URL('whatever', location);
   fetchUrl.searchParams.set('abort-not-expected', '');
   fetchUrl.searchParams.set('bc', channelName);

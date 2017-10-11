@@ -14,7 +14,6 @@ INDENT TABS: app-uri/*
 INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
-INDENT TABS: html/editing/dnd/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*
 INDENT TABS: shadow-dom/*

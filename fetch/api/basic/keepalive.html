@@ -15,7 +15,7 @@ promise_test(async (test) => {
   }));
   const uuid = iframe.contentWindow.uuid;
   iframe.remove();
-  await (new Promise((resolve) => setTimeout(resolve, 1000)));
+  await (new Promise((resolve) => test.step_timeout(resolve, 1000)));
   const response = await fetch(`../resources/stash-take.py?key=${uuid}`);
   const json = await response.json();
   assert_equals(json, 'on');

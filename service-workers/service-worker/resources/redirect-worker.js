@@ -55,9 +55,11 @@ self.addEventListener('fetch', function(event) {
         return Response.redirect(params['url']);
       } else if (params['sw'] == 'fetch') {
         return fetch(event.request);
-      } else if (params['sw'] == 'opaque') {
+      } else if (params['sw'] == 'follow') {
+        return fetch(new Request(event.request.url, {redirect: 'follow'}));
+      } else if (params['sw'] == 'manual') {
         return fetch(new Request(event.request.url, {redirect: 'manual'}));
-      } else if (params['sw'] == 'opaqueThroughCache') {
+      } else if (params['sw'] == 'manualThroughCache') {
         var url = event.request.url;
         var cache;
         return caches.delete(url)

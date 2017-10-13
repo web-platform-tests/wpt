@@ -9,7 +9,8 @@ from ConfigParser import SafeConfigParser
 
 import requests
 
-wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+here = os.path.dirname(__file__)
+wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 sys.path.insert(0, wpt_root)
 
 from tools.wpt import testfiles
@@ -26,11 +27,19 @@ wptrunner = None
 
 def setup_logging():
     """Set up basic debug logger."""
+    global logger
+    logger = logging.getLogger(wpt_root)
     handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(logging.BASIC_FORMAT, None)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+
+    # Set up basic logging @ root
+    rootLogger = logging.getLogger()
+    if not rootLogger.handlers:
+        logging.basicConfig()
 
 
 def do_delayed_imports():
@@ -279,8 +288,6 @@ def run(venv, wpt_args, **kwargs):
         os.makedirs(wpt_args.metadata_root)
     except OSError:
         pass
-
-    logger = logging.getLogger(os.path.splitext(__file__)[0])
 
     setup_logging()
 

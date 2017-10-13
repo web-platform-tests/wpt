@@ -10,10 +10,14 @@
         <div id="log">FAILED (This TC requires JavaScript enabled)</div>
         <div></div>
         <script>log('inline script #1');
+                var iframeLoaded = 0;
                 for( var i=0; i<2; i++ ){
                         var iframe=document.createElement('iframe');
                         document.getElementsByTagName('div')[1].appendChild(iframe);
                         iframe.src='pages/helloworld.html?'+i+'&'+Math.random();
+                        iframe.onload = function() {
+                                iframeLoaded++;
+                        };
                 }
                 log('end script #1');
         </script>
@@ -23,6 +27,10 @@
         var t = async_test()
 
         function test() {
+                if (iframeLoaded < 2) {
+                        setTimeout(t.step_func(test), 200);
+                        return;
+                }
                 assert_any(assert_array_equals, eventOrder, [
                         ['inline script #1', 'end script #1', 'inline script #2', 'frame/popup script 0', 'frame/popup script 1'],
                         ['inline script #1', 'end script #1', 'inline script #2', 'frame/popup script 1', 'frame/popup script 0']]);

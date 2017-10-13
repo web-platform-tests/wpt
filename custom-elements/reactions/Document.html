@@ -151,6 +151,26 @@ test_with_window(function (contentWindow) {
     assert_array_equals(element.takeLog().types(), ['constructed', 'connected']);
 }, 'writeln on Document must enqueue connectedCallback after constructing a custom element');
 
+test_with_window(function (contentWindow) {
+    const element = define_customized_built_in_element_in_window(contentWindow, 'custom-element', ['is']);
+
+    document.createElement('p', { is: 'custom-element' });
+
+    var logEntries = element.takeLog();
+    assert_array_equals(logEntries.types(), ['attributeChanged']);
+    assert_attribute_log_entry(logEntries.last(), {name: 'is', oldValue: null, newValue: 'custom-element', namespace: null});
+}, 'createElement on Document must enqueue attributeChangedCallback after constructing a customized built-in element');
+
+test_with_window(function (contentWindow) {
+    const element = define_customized_built_in_element_in_window(contentWindow, 'custom-element', ['is']);
+
+    document.createElementNS('http://www.w3.org/1999/xhtml', 'p', { is: 'custom-element' });
+
+    var logEntries = element.takeLog();
+    assert_array_equals(logEntries.types(), ['attributeChanged']);
+    assert_attribute_log_entry(logEntries.last(), {name: 'is', oldValue: null, newValue: 'custom-element', namespace: null});
+}, 'createElementNS on Document must enqueue attributeChangedCallback after constructing a customized built-in element');
+
 </script>
 </body>
 </html>

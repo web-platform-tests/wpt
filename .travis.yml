@@ -13,14 +13,14 @@ addons:
     - xn--n8j6ds53lwwkrqhv28a.web-platform.test
     - xn--lve-6lad.web-platform.test
   jwt:
-    secure: N9lvgkqUPtFlz6Vpa6qTPFhymEsDCsbaCsT64/hj3vlHRxK94r5+ugVJ3zm99zC0q2j1ish8yJC7mN/W4wRfBE4sAwmdxrlowxF1DDGCkaLE9i/GWW92s0fBVGJmXLh8kwNkQ31hMOsaGfHIMpeLFS7Se741te7YqsHIzmBCdQs=
+    secure: cSR6NxySVedPmudbyPTl5uSQWVMvMIp78yTqnAp8MpXdTrTuZTnCXIDowjxoIy+PrXKt/qrHRzCXG/TL2UsWztr1Xe/Ytqhl1BJMB+NKPAeH5hd5br7wYgiQ89j/ZyCzgjEpR1U1u9eOgpXVrvotX671sLJ4jJ5h4HVzAXDO/jPaVIOV/UiZhK89tRquxqSurfLjU7koXyFJbbVvxDgNA3AalO6rWSx2Qsc9jMJGp9gJfV2Jb3sBGZNRgqDQeObkF/wT01auOnurx62Jr9KXJPQ87QNqtBqSA6GWTCoGDo5AUuR2wGlbYYCNClt6YtGcEe5a7kDNdCl1ZKc2SgyMEgZnTfKlW+lOKw8La9ZD2JeymDtUN6CN18UmC4X7+nsJaY1Vm9MyDieKG4t6hAgMi2GlKxBRU0SNC5bU0Qm6aI7OVKCcKOb295oWE04ywp970esgCtTCxHOBJ6nuPiccjYaBN6oqxkFbPWW0vxAZtp/t55qkNfOWjcHvZd3KPeMYpDKZv8vjlGvWkVP9mdnuH4wX5/xkgtLVX93gg8sw52SHths7kpFjyx6wwhdcLCORGOsQ3+Kw1IG/dEJmEocnAF4O3e2fFJ2oMHDuw9T2NdqcLRbLmv2PYnETnwWRuCC0CYLKL5vnm6G4AGLgOMFjgEDT/VRESXKZA4oWnZiglgU=
 before_install:
   - . ./tools/ci/before_install.sh
 install:
   - ./tools/ci/install.sh
 env:  # required at the top-level for allow_failures to work below
   global:
-    - SAUCE_USERNAME=w3c-ttwf
+    - SAUCE_USERNAME=lukebjerring
 matrix:
   fast_finish: true
   include:
@@ -109,4 +109,4 @@ notifications:
   email:
     on_success: never
     on_failure: always
-  webhooks: https://pulls.web-platform-tests.org/api/build
+  webhooks: https://pulls-staging.web-platform-tests.org/api/build

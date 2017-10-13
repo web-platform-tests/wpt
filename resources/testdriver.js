@@ -3,9 +3,9 @@
 
     function getInViewCenterPoint(rect) {
         var left = Math.max(0, Math.min(rect.x, rect.x + rect.width));
-        var right = Math.min(rect.innerWidth, Math.max(rect.x, rect.x + rect.width));
+        var right = Math.min(window.innerWidth, Math.max(rect.x, rect.x + rect.width));
         var top = Math.max(0, Math.min(rect.y, rect.y + rect.height));
-        var bottom = Math.min(rect.innerHeight, Math.max(rect.y, rect.y + rect.height));
+        var bottom = Math.min(window.innerHeight, Math.max(rect.y, rect.y + rect.height));
 
         var x = 0.5 * (left + right);
         var y = 0.5 * (top + bottom);
@@ -71,8 +71,13 @@
                 return Promise.reject(new Error("element click intercepted error"));
             }
 
-            var centerPoint = getInViewCenterPoint(element.getClientRects()[0]);
-            return window.test_driver_internal.click(element, centerPoint);
+            var rect = elements.getClientRects()[0];
+            var top = Math.min(rect.y, rect.y + rect.height);
+            var left = Math.min(rect.x, rect.x + rect.width);
+            var centerPoint = getInViewCenterPoint(rect);
+            return window.test_driver_internal.click(element,
+                                                     [top + centerPoint[0],
+                                                      left + centerPoint[1]]);
         }
     };
 

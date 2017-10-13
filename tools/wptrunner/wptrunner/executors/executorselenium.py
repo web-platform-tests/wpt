@@ -249,7 +249,7 @@ class CallbackHandler(object):
                         exceptions.ElementNotVisibleException) as e:
                     self._send_message(
                         {
-                            "type": "testautomation-complete",
+                            "type": "testdriver-complete",
                             "status": "failure",
                             "message": str(e)
                         })
@@ -257,7 +257,7 @@ class CallbackHandler(object):
                 else:
                     self._send_message(
                         {
-                            "type": "testautomation-complete",
+                            "type": "testdriver-complete",
                             "status": "success"
                         })
                     self.logger.debug("Clicking element succeeded")

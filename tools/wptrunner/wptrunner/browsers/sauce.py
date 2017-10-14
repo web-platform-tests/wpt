@@ -150,6 +150,7 @@ class SauceConnect():
             "--api-key=%s" % self.sauce_key,
             "--no-remove-colliding-tunnels",
             "--tunnel-identifier=%s" % self.sauce_tunnel_id,
+            "--metrics-address=0.0.0.0:9876",
             "--readyfile=./sauce_is_ready",
             "--tunnel-domains",
             "web-platform.test",
@@ -163,7 +164,7 @@ class SauceConnect():
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.sc_process.terminate()
-        if os.path.exists(self.temp_dir):
+        if self.temp_dir and os.path.exists(self.temp_dir):
             try:
                 shutil.rmtree(self.temp_dir)
             except OSError:

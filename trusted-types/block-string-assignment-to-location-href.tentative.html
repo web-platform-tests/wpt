@@ -11,10 +11,7 @@
 <script>
   // String assignments throw.
   promise_test(t => {
-    return createFrameAndHref("about:blank")
-      .catch(e => {
-        assert_equals(e.name, "TypeError");
-      });
+    return promise_rejects(t, new TypeError(), createFrameAndHref("about:blank"));
   }, "`location.href = string` throws");
 
   // TrustedURL assignments work.

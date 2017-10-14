@@ -2,8 +2,8 @@
 <body>
   <script src=/resources/testharness.js></script>
   <script src=/resources/testharnessreport.js></script>
+  <script src=/common/get-host-info.sub.js></script>
   <script src=/feature-policy/resources/featurepolicy.js></script>
-  <script src=util/utils.js></script>
   <script>
   'use strict';
 
@@ -33,8 +33,9 @@
     });
   };
 
+  var cross_domain = get_host_info().HTTPS_REMOTE_ORIGIN;
   run_all_fp_tests_allow_self(
-      'https://{{domains[www]}}:{{ports[https][0]}}',
+      cross_domain,
       'microphone',
       '[object NavigatorUserMediaError]',
       function() {
@@ -42,7 +43,7 @@
       });
 
   run_all_fp_tests_allow_self(
-      'https://{{domains[www]}}:{{ports[https][0]}}',
+      cross_domain,
       'camera',
       '[object NavigatorUserMediaError]',
       function() {
@@ -50,7 +51,7 @@
       });
 
   run_all_fp_tests_allow_self(
-    'https://{{domains[www]}}:{{ports[https][0]}}',
+    cross_domain,
     'camera; microphone',
     '[object NavigatorUserMediaError]',
     function() {

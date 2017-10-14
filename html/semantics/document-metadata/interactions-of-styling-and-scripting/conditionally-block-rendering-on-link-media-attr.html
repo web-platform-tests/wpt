@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<link rel=stylesheet href=stylesheet.py>
+<link rel=stylesheet media="screen and (max-width:10px)" href=stylesheet.py?stylesNotMatchingEnvironment&delay=2>
+<h1>Dominic Farolino</h1>
+<script>
+  test(() => {
+    assert_equals(document.styleSheets.length, 1);
+  }, "Only the style sheet loaded via a link element whose media attribute matches the environment should be loaded synchronously");
+
+  const secondStylesheetTest = async_test("Two style sheets should be registered as style sheets for the document after 3 seconds");
+  setTimeout(() => {
+    secondStylesheetTest.step(() => {
+      assert_equals(document.styleSheets.length, 2);
+    });
+    secondStylesheetTest.done();
+  }, 3000);
+</script>

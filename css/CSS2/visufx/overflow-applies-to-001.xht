@@ -9,7 +9,7 @@
   <link rel="match" href="overflow-applies-to-001-ref.xht" />
   <meta name="assert" content="Name: overflow [...] Applies to:
 block containers and boxes that establish a formatting context" />
-  <link rel="author" title="Bert Bos" href="mailto:bert@w3.org/" />
+  <link rel="author" title="Bert Bos" href="mailto:bert@w3.org" />
 
   <style type="text/css">
   #container {width: 20em; background: red; text-align: center;
@@ -24,8 +24,8 @@ block containers and boxes that establish a formatting context" />
   #grandchild2 {width: 20em; border-right: solid 1em red}
 
   /* Overflow (and width) don't apply to child3 and so grandchild3 is visible */
-  #child3 {display: inline; width: 10em; overflow: hidden}
-  #grandchild3 {width: 20em; height: 1.2em; background: green;
+  #child3 {display: inline; width: 10em; overflow: hidden; background: red}
+  #grandchild3 {width: 20em; height: 1.2em; background: red;
     vertical-align: bottom}
 
   /* Child4 establishes a formatting context and so can clip grandchild4 */

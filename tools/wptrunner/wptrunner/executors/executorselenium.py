@@ -213,13 +213,13 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             after = list(webdriver.window_handles)
             if len(after) == len(before) + 1:
                 test_window = next(iter(set(after) - set(before)))
-            elif after[:len(before)] != before:
-                raise Exception("unable to find test window")
-            else:
+            elif after[:len(before)] == before and len(after) > len(before):
                 # Hope the first one here is the test window
                 test_window = after[len(before)]
+            else:
+                raise Exception("unable to find test window")
 
-        handler = CallbackHandler(webdriver, self.logger)
+        handler = CallbackHandler(webdriver, test_window, self.logger)
         while True:
             result = webdriver.execute_async_script(
                 self.script_resume % format_map)
@@ -230,8 +230,9 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
 
 
 class CallbackHandler(object):
-    def __init__(self, webdriver, logger):
+    def __init__(self, webdriver, test_window, logger):
         self.webdriver = webdriver
+        self.test_window = test_window
         self.logger = logger
 
     def __call__(self, result):

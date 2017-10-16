@@ -5,6 +5,6 @@ def main(request, response):
     sleep(delay)
 
   if "stylesNotMatchingEnvironment" in request.GET:
-    return 'h1 {color: green}'
+    return 'h1 {color: brown}'
   else:
-    return 'h1 {color: red}'
+    return 'h1 {color: purple}'

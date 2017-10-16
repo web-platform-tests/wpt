@@ -186,11 +186,33 @@ class FirefoxBrowser(Browser):
         self.profile = FirefoxProfile(locations=locations,
                                       preferences=preferences)
         self.profile.set_preferences({"marionette.port": self.marionette_port,
+                                      "browser.aboutHomeSnippets.updateUrl": "",
+                                      "browser.newtabpage.activity-stream.enabled": False,
+                                      "browser.newtabpage.activity-stream.feeds.snippets": False,
+                                      "browser.newtabpage.activity-stream.telemetry.ping.endpoint": "",
+                                      "browser.newtabpage.directory.source": "",
+                                      "browser.ping-centre.production.endpoint": "",
+                                      "browser.ping-centre.staging.endpoint": "",
+                                      "browser.search.geoip.url": "",
                                       "dom.disable_open_during_load": False,
+                                      "datareporting.healthreport.about.reportUrl": "",
+                                      "datareporting.healthreport.documentServerURI": "",
+                                      "datareporting.healthreport.logging.consoleEnabled": False,
+                                      "datareporting.healthreport.service.enabled": False,
+                                      "datareporting.healthreport.service.firstRun": False,
+                                      "datareporting.healthreport.uploadEnabled": False,
+                                      "datareporting.policy.dataSubmissionEnabled": False,
+                                      "datareporting.policy.dataSubmissionPolicyAccepted": False,
+                                      "datareporting.policy.dataSubmissionPolicyBypassNotification": True,
+                                      "dom.send_after_paint_to_content": True,
+                                      "extensions.shield-recipe-client.api_url": "",
+                                      "extensions.shield-recipe-client.enabled": False,
+                                      "geo.wifi.uri": False,
                                       "network.dns.localDomains": ",".join(hostnames),
                                       "network.proxy.type": 0,
                                       "places.history.enabled": False,
-                                      "dom.send_after_paint_to_content": True})
+                                      "startup.homepage_welcome_url": "about:blank",
+                                      "startup.homepage_welcome_url.additional": ""})
         if self.e10s:
             self.profile.set_preferences({"browser.tabs.remote.autostart": True})
 

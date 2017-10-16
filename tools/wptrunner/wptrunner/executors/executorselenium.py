@@ -202,7 +202,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
 
-        before = list(webdriver.window_handles)
+        before = webdriver.window_handles
         webdriver.execute_script(self.script % format_map)
         try:
             # Try this, it's in Level 1 but nothing supports it yet
@@ -210,7 +210,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             win_obj = json.loads(win_s)
             test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
         except:
-            after = list(webdriver.window_handles)
+            after = webdriver.window_handles
             if len(after) == len(before) + 1:
                 test_window = next(iter(set(after) - set(before)))
             elif after[:len(before)] == before and len(after) > len(before):

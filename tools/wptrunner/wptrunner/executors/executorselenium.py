@@ -249,7 +249,7 @@ class CallbackHandler(object):
     def process_action(self, result):
         parent = self.webdriver.current_window_handle
         try:
-            self.webdriver.switch_to.window(test_window)
+            self.webdriver.switch_to.window(self.test_window)
             action = result[2]["action"]
             self.logger.debug("Got action: %s" % action)
             if action == "click":

@@ -255,7 +255,8 @@ class CallbackHandler(object):
             if action == "click":
                 selector = result[2]["selector"]
                 elements = self.webdriver.find_elements_by_css_selector(selector)
-                assert len(elements) == 1  # the JS should ensure this
+                if len(elements) != 1:
+                    raise ValueError("Selector matches multiple elements")
                 self.logger.debug("Clicking element: %s" % selector)
                 try:
                     elements[0].click()

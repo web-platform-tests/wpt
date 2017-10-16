@@ -76,9 +76,21 @@
             var left = Math.min(rect.x, rect.x + rect.width);
             var centerPoint = getInViewCenterPoint(rect);
             return window.test_driver_internal.click(element,
-                                                     [top + centerPoint[0],
-                                                      left + centerPoint[1]]);
+                                                     {x: top + centerPoint[0],
+                                                      y: left + centerPoint[1]});
         }
     };
 
+    window.test_driver_internal = {
+        /**
+         * Triggers a user-initated click
+         *
+         * @param {Element} element - element to be clicked
+         * @param {{x: number, y: number} coords - viewport coordinates to click at
+         * @returns {Promise} fulfilled after click occurs or rejected if click fails
+         */
+        click: function(element, coords) {
+            return Promise.reject(new Error("unimplemented"));
+        }
+    };
 })();

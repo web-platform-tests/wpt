@@ -207,6 +207,8 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         try:
             # Try this, it's in Level 1 but nothing supports it yet
             win_s = webdriver.execute_script("return window['%s'];" % self.window_id)
+            win_obj = json.loads(win_s)
+            test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
         except Exception:
             after = list(webdriver.window_handles)
             if len(after) == len(before) + 1:
@@ -216,9 +218,6 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             else:
                 # Hope the first one here is the test window
                 test_window = after[len(before)]
-        else:
-            win_obj = json.loads(win_s)
-            test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
 
         handler = CallbackHandler(webdriver, self.logger)
         while True:

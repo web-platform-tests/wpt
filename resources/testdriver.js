@@ -71,7 +71,7 @@
                 return Promise.reject(new Error("element click intercepted error"));
             }
 
-            var rect = elements.getClientRects()[0];
+            var rect = element.getClientRects()[0];
             var top = Math.min(rect.y, rect.y + rect.height);
             var left = Math.min(rect.x, rect.x + rect.width);
             var centerPoint = getInViewCenterPoint(rect);

@@ -201,11 +201,25 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "window_id": self.window_id,
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
-        before = set(webdriver.window_handles)
+
+        before = list(webdriver.window_handles)
         webdriver.execute_script(self.script % format_map)
-        after = set(webdriver.window_handles)
-        assert len(after - before) == 1
-        test_window = list(after - before)[0]
+        try:
+            # Try this, it's in Level 1 but nothing supports it yet
+            win_s = webdriver.execute_script("return window['%s'];" % self.window_id)
+        except Exception:
+            after = list(webdriver.window_handles)
+            if len(after) == len(before) + 1:
+                test_window = next(iter(set(after) - set(before)))
+            elif after[:len(before)] != before:
+                raise Exception("unable to find test window")
+            else:
+                # Hope the first one here is the test window
+                test_window = after[len(before)]
+        else:
+            win_obj = json.loads(win_s)
+            test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
+
         handler = CallbackHandler(webdriver, self.logger)
         while True:
             result = webdriver.execute_async_script(

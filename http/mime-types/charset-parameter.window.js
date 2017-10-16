@@ -28,6 +28,8 @@
   ["text/html;charset=\" gbk\"", "GBK"],
   ["text/html;charset=\"\\ gbk\"", "GBK"],
   ["text/html;charset=\"\\g\\b\\k\"", "GBK"],
+  "Parameter name logner than 127",
+  ["text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk", "GBK"]
 ].forEach(val => {
   if(typeof val === "string") {
     return;

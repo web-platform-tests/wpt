@@ -40,8 +40,10 @@ function runGenericSensorTests(sensorType) {
     let sensor = new sensorType();
     sensor.onreading = t.step_func_done(() => {
       assert_reading_not_null(sensor);
+      assert_true(sensor.hasReading);
       sensor.stop();
       assert_reading_null(sensor);
+      assert_false(sensor.hasReading);
     });
     sensor.onerror = t.step_func_done(unreached);
     sensor.start();

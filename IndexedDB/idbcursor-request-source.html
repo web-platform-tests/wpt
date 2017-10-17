@@ -8,9 +8,9 @@
 <script>
 
 [
-  'cursor.update(0)',
-  'cursor.delete()'
-].forEach(expr => indexeddb_test(
+  cursor => cursor.update(0),
+  cursor => cursor.delete()
+].forEach(func => indexeddb_test(
   (t, db) => {
     db.createObjectStore('store', {autoIncrement: true});
   },
@@ -20,12 +20,12 @@
     store.put('value');
     store.openCursor().onsuccess = t.step_func(e => {
       const cursor = e.target.result;
-      assert_equals(eval(expr).source, cursor,
-                    `${expr}.source should be the cursor itself`);
+      assert_equals(func(cursor).source, cursor,
+                    `${func}.source should be the cursor itself`);
       t.done();
     });
   },
-  `The source of the request from ${expr} is the cursor itself`
+  `The source of the request from ${func} is the cursor itself`
 ));
 
 </script>

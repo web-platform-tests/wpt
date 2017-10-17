@@ -8,20 +8,20 @@
 <script>
 
 [
-  'store.put(0)',
-  'store.add(0)',
-  'store.delete(0)',
-  'store.clear()',
+  store => store.put(0),
+  store => store.add(0),
+  store => store.delete(0),
+  store => store.clear(),
 
-  'store.get(0)',
-  'store.getKey(0)',
-  'store.getAll()',
-  'store.getAllKeys()',
-  'store.count()',
+  store => store.get(0),
+  store => store.getKey(0),
+  store => store.getAll(),
+  store => store.getAllKeys(),
+  store => store.count(),
 
-  'store.openCursor()',
-  'store.openKeyCursor()'
-].forEach(expr => indexeddb_test(
+  store => store.openCursor(),
+  store => store.openKeyCursor()
+].forEach(func => indexeddb_test(
   (t, db) => {
     db.createObjectStore('store', {autoIncrement: true});
   },
@@ -29,11 +29,11 @@
     const tx = db.transaction('store', 'readwrite');
     const store = tx.objectStore('store');
 
-    assert_equals(eval(expr).source, store,
-                  `${expr}.source should be the object store itself`);
+    assert_equals(func(store).source, store,
+                  `${func}.source should be the object store itself`);
     t.done();
   },
-  `The source of the request from ${expr} is the object store itself`
+  `The source of the request from ${func} is the object store itself`
 ));
 
 </script>

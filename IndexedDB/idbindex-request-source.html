@@ -8,15 +8,15 @@
 <script>
 
 [
-  'index.get(0)',
-  'index.getKey(0)',
-  'index.getAll()',
-  'index.getAllKeys()',
-  'index.count()',
+  index => index.get(0),
+  index => index.getKey(0),
+  index => index.getAll(),
+  index => index.getAllKeys(),
+  index => index.count(),
 
-  'index.openCursor()',
-  'index.openKeyCursor()'
-].forEach(expr => indexeddb_test(
+  index => index.openCursor(),
+  index => index.openKeyCursor()
+].forEach(func => indexeddb_test(
   (t, db) => {
     const store = db.createObjectStore('store', {autoIncrement: true});
     store.createIndex('index', 'kp');
@@ -24,11 +24,11 @@
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
     const index = tx.objectStore('store').index('index');
-    assert_equals(eval(expr).source, index,
-                  `${expr}.source should be the index itself`);
+    assert_equals(func(index).source, index,
+                  `${func}.source should be the index itself`);
     t.done();
   },
-  `The source of the request from ${expr} is the index itself`
+  `The source of the request from ${func} is the index itself`
 ));
 
 </script>

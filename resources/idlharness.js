@@ -207,24 +207,24 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
      * .members) so that they'll be skipped by test() -- they'll only be
      * used for base interfaces of tested interfaces, return types, etc.
      *
-     * options is a dictionary that can have an include or exclude member which
-     * are arrays. If include is given then only members, partials and interface
-     * targets listed will be added, and if exclude is given only those that
-     * aren't listed will be added. Only one of include and exclude can be used.
+     * options is a dictionary that can have an only or except member which are
+     * arrays. If only is given then only members, partials and interface
+     * targets listed will be added, and if except is given only those that
+     * aren't listed will be added. Only one of only and except can be used.
      */
 
-    if (options && options.include && options.exclude)
+    if (options && options.only && options.except)
     {
-        throw "The include and exclude options can't be used together."
+        throw "The only and except options can't be used together."
     }
 
     function should_skip(name)
     {
-        if (options && options.include && options.include.indexOf(name) == -1)
+        if (options && options.only && options.only.indexOf(name) == -1)
         {
             return true;
         }
-        if (options && options.exclude && options.exclude.indexOf(name) != -1)
+        if (options && options.except && options.except.indexOf(name) != -1)
         {
             return true;
         }

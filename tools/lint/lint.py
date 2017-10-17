@@ -17,7 +17,7 @@ from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
 
-from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -355,6 +355,12 @@ class PrintRegexp(Regexp):
     file_extensions = [".py"]
     description = "Print function used"
 
+class LayoutTestsRegexp(Regexp):
+    pattern = b"eventSender|testRunner|window\.internals"
+    error = "LAYOUTTESTS APIS"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "eventSender/testRunner/window.internals used; these are LayoutTests-specific APIs (WebKit/Blink)"
+
 regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
@@ -364,7 +370,8 @@ regexps = [item() for item in
             Webidl2Regexp,
             ConsoleRegexp,
             GenerateTestsRegexp,
-            PrintRegexp]]
+            PrintRegexp,
+            LayoutTestsRegexp]]
 
 def check_regexp_line(repo_root, path, f, css_mode):
     errors = []
@@ -410,7 +417,7 @@ def check_parsed(repo_root, path, f, css_mode):
         return [("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None)]
 
     for reftest_node in source_file.reftest_nodes:
-        href = reftest_node.attrib.get("href", "")
+        href = reftest_node.attrib.get("href", "").strip(space_chars)
         parts = urlsplit(href)
         if parts.scheme or parts.netloc:
             errors.append(("ABSOLUTE-URL-REF",

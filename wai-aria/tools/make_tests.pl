@@ -30,6 +30,7 @@ my %specs = (
 );
 
 my @apiNames = qw(UIA MSAA ATK IAccessible2 AXAPI);
+my $apiNamesRegex = "(" . join("|", @apiNames) . ")";
 
 # the suffix to attach to the automatically generated test case names
 my $theSuffix = "-manual.html";
@@ -302,13 +303,16 @@ while (<$io>) {
       } else {
         print STDERR "Unknown operation type: $type at line " . $lineCounter . "; skipping.\n";
       }
-    } elsif (m/^\|rowspan="*([0-9])"*\|(.*)$/) {
-      my $rows = $1;
-      my $theString = $2;
+    } elsif (m/($apiNamesRegex)$/) {
+      my $theString = $1;
       $theString =~ s/ +$//;
       $theString =~ s/^ +//;
       if ($theString eq "IA2") {
         $theString = "IAccessible2" ;
+      }
+      my $rows = 1;
+      if (m/^\|rowspan="*([0-9])"*\|(.*)$/) {
+        $rows = $1
       }
       if (grep { $_ eq $theString } @apiNames) {
         # we found an API name - were we already processing assertions?
@@ -464,7 +468,7 @@ sub build_test() {
   $fileName =~ s/\s*$//;
   $fileName =~ s/\///g;
   $fileName =~ s/\s+/_/g;
-  $fileName =~ s/[,=]/_/g;
+  $fileName =~ s/[,=:]/_/g;
   $fileName =~ s/['"]//g;
 
   my $count = 2;

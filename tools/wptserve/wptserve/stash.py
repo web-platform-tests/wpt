@@ -115,7 +115,7 @@ class Stash(object):
         if value is None:
             raise ValueError("SharedStash value may not be set to None")
         internal_key = self._wrap_key(key, path)
-        if internal_key in self.data and overwrite_existing:
+        if internal_key in self.data and not overwrite_existing:
             raise StashError("Tried to overwrite existing shared stash value "
                              "for key %s (old value was %s, new value is %s)" %
                              (internal_key, self.data[internal_key], value))

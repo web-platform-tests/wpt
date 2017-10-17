@@ -1,6 +1,4 @@
 (function () {
-  // THIS IS A NEW COMMENT
-
   // Get values from the substitution engine.
   // We can't just pull these from the document context
   // because this script is intended to be transcluded into

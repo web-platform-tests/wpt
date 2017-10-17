@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test for document.all as the value of &lt;iterator&gt;.return</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+  var iter = {
+    [Symbol.iterator]() { return this; },
+    next() { return {}; },
+    return: document.all,
+  };
+
+  var outer = (function*() { yield* iter; })();
+
+  outer.next();
+
+  assert_throws(new TypeError, function() {
+    outer.return();
+  });
+}, "When <iterator>.return is document.all, it should be invoked by the " +
+   "iterator protocol (and then throw a TypeError)");
+</script>
+</body>
+</html>

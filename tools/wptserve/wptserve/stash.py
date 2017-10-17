@@ -105,7 +105,7 @@ class Stash(object):
         # when writing to a subdict.
         return (str(path), str(uuid.UUID(key)))
 
-    def put(self, key, value, path=None, overwite_existing=False):
+    def put(self, key, value, path=None, overwrite_existing=False):
         """Place a value in the shared stash.
 
         :param key: A UUID to use as the data's key.

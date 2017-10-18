@@ -201,8 +201,17 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "window_id": self.window_id,
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
-
-        before = webdriver.window_handles
+        
+        parent = webdriver.current_window_handle
+        to_close = set(webdriver.window_handles) - {parent}
+        while to_close:
+            current = webdriver.current_window_handle
+            if current in to_close:
+                to_close.remove(current)
+            else:
+                webdriver.switch_to.window(to_close.pop())
+            webdriver.close()
+        
         webdriver.execute_script(self.script % format_map)
         try:
             # Try this, it's in Level 1 but nothing supports it yet
@@ -211,11 +220,11 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
         except:
             after = webdriver.window_handles
-            if len(after) == len(before) + 1:
-                test_window = next(iter(set(after) - set(before)))
-            elif after[:len(before)] == before and len(after) > len(before):
+            if len(after) == len(parent) + 1:
+                test_window = next(iter(set(after) - set(parent)))
+            elif after[:len(parent)] == parent and len(after) > len(parent):
                 # Hope the first one here is the test window
-                test_window = after[len(before)]
+                test_window = after[len(parent)]
             else:
                 raise Exception("unable to find test window")
 

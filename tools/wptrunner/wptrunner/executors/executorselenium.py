@@ -211,6 +211,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             else:
                 webdriver.switch_to.window(to_close.pop())
             webdriver.close()
+        webdriver.switch_to.window(parent)
         
         webdriver.execute_script(self.script % format_map)
         try:

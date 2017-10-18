@@ -6,7 +6,10 @@ function handler(e, reply) {
     return;
   }
   if (e.data.blob) {
-    c.postMessage({blob: new Blob(e.data.blob)});
+    (() => {
+      c.postMessage({blob: new Blob(e.data.blob)});
+    })();
+    if (self.gc) self.gc();
   }
   c = new BroadcastChannel(e.data.channel);
   let messages = [];

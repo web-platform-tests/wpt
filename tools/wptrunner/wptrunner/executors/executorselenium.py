@@ -275,28 +275,27 @@ class CallbackHandler(object):
                     elements[0].click()
                 except (exceptions.ElementNotInteractableException,
                         exceptions.ElementNotVisibleException) as e:
-                    self._send_message(
-                        {
-                            "type": "testdriver-complete",
-                            "status": "failure",
-                            "message": str(e)
-                        })
+                    self._send_message("complete",
+                                       "failure",
+                                       e)
                     self.logger.debug("Clicking element failed: %s" % str(e))
                 else:
-                    self._send_message(
-                        {
-                            "type": "testdriver-complete",
-                            "status": "success"
-                        })
+                    self._send_message("complete",
+                                       "success")
                     self.logger.debug("Clicking element succeeded")
         finally:
             self.webdriver.switch_to.window(parent)
 
         return False, None
 
-    def _send_message(self, obj):
-        msg = json.dumps(obj)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % msg)
+    def _send_mesage(self, message_type, status, message=None):
+        obj = {
+            "type": "testdriver-%s" % str(message_type),
+            "status": str(status)
+        }
+        if message:
+            obj["message"] = str(message)
+        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
 
 

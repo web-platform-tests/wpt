@@ -69,6 +69,11 @@ function checkExpectedValues(t, node, prefix)
         assert_tolerance(node.scrollHeight, expectedHeight, prefix + "scrollHeight");
     }
 
+    var expectedWidth = checkAttribute(output, node, "data-expected-bounding-client-rect-width");
+    if (expectedWidth) {
+        assert_tolerance(node.getBoundingClientRect().width, expectedWidth, prefix + "getBoundingClientRect().width");
+    }
+
     var expectedOffset = checkAttribute(output, node, "data-total-x");
     if (expectedOffset) {
         var totalLeft = node.clientLeft + node.offsetLeft;
@@ -156,7 +161,7 @@ function checkExpectedValues(t, node, prefix)
     return output.checked;
 }
 
-window.checkLayout = function(selectorList, outputContainer)
+window.checkLayout = function(selectorList)
 {
     if (!selectorList) {
         console.error("You must provide a CSS selector of nodes to check.");

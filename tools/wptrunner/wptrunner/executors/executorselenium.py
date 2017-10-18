@@ -220,11 +220,11 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
         except:
             after = webdriver.window_handles
-            if len(after) == len(parent) + 1:
+            if len(after) == 2:
                 test_window = next(iter(set(after) - set(parent)))
-            elif after[:len(parent)] == parent and len(after) > len(parent):
+            elif after[0] == parent and len(after) > 2:
                 # Hope the first one here is the test window
-                test_window = after[len(parent)]
+                test_window = after[1]
             else:
                 raise Exception("unable to find test window")
 

@@ -18,7 +18,7 @@ img-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self';
     This image should be blocked, but should not show up in the violation report because meta policies MUST ignore report-uri.
     <img src="../resources/abe.png" onerror="alert_assert('PASS')" onload="alert_assert('FAIL')">
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=false"></script>
+    <!--<script async defer src="../support/checkReport.sub.js?reportExists=false"></script>-->
 </body>
 
 </html>

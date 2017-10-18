@@ -18,7 +18,7 @@ plugin-types application/x-invalid-type; script-src 'self' 'unsafe-inline'; conn
     This tests that plugin content that doesn&apos;t match the declared type doesn&apos;t load, even if the document&apos;s CSP would allow it. This test passes if no iframe is dumped (meaning that no PluginDocument was created).
     <object type="application/x-invalid-type" data="/plugins/resources/mock-plugin.pl" log="FAIL!"></object>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=false"></script>
+    <!--<script async defer src="../support/checkReport.sub.js?reportExists=false"></script>-->
 </body>
 
 </html>

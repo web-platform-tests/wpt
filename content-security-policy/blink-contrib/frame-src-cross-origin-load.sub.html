@@ -60,7 +60,7 @@ frame-src 'self' http://www1.{{host}}:{{ports[http][0]}}; script-src 'self' 'uns
     <iframe src="http://www1.{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/postmessage-pass.html" onload="loadEvent()"></iframe>
     <iframe src="http://www2.{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/postmessage-fail.html" onload="loadEvent()" onerror="log('FAIL')"></iframe>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=frame-src%20&apos;self&apos;http://www1.{{host}}:{{ports[http][0]}}"></script>
+    <!--<script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=frame-src%20&apos;self&apos;http://www1.{{host}}:{{ports[http][0]}}"></script>-->
 </body>
 
 </html>

@@ -222,12 +222,13 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         except:
             after = webdriver.window_handles
             if len(after) == 2:
-                test_window = next(iter(set(after) - set(parent)))
+                test_window = next(iter(set(after) - set([parent])))
             elif after[0] == parent and len(after) > 2:
                 # Hope the first one here is the test window
                 test_window = after[1]
             else:
                 raise Exception("unable to find test window")
+        assert test_window != parent
 
         handler = CallbackHandler(webdriver, test_window, self.logger)
         while True:

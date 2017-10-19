@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<title>CSS Basic User Interface Test: cursor:auto on form elements</title>
+<title>CSS Basic User Interface Test: cursor:auto on editable elements</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#cursor">
 <meta name="flags" content="interact">
 <meta charset="UTF-8">
-<meta name="assert" content="The 'auto' cursor value does the same as 'default' over everything other than selectable text or editable elements, such as form elements that do not take text input.">
+<meta name="assert" content="The 'auto' cursor value does the same as 'text' over editable elements.">
 <style>
 #test {
   border: solid blue;
@@ -20,21 +20,27 @@
 #ref {
   width: 100px;
   height: 100px;
-  cursor: default;
+  cursor: text;
   border: solid orange;
 }
 :root {
   cursor: help; /* give the root element a different cursor so that
   it is easy to tell if something changes when hovering the target.*/
 }
+
+[contenteditable] {
+  border: solid;
+  height: 1em;
+  margin: 5px;
+}
 </style>
 <body>
-  <p>The test passes if, when moved over every element inside the blue box, the cursor remains the platform-dependent default cursor.</p>
+  <p>The test passes if, when moved over every element inside the blue box, the cursor looks like the text insertion and selection cursor.</p>
   <p>Place the cursor into the orange box for a reference of what this should look like.</p>
   <div id=test>
-    <button>button</button>
-    <input type=button value=input-button>
-    <select></select>
+    <textarea></textarea>
+    <input>
+    <div contenteditable=true style="border:solid"></div>
   </div>
   <div id=ref></div>
 </body>

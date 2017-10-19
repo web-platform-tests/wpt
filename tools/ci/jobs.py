@@ -100,6 +100,12 @@ def get_jobs(paths, **kwargs):
         if not rules:
             break
 
+    # Default jobs shuld run even if there were no changes
+    if not paths:
+        for job, path_re in iteritems(job_path_map):
+            if ".*" in path_re:
+                jobs.add(job)
+
     return jobs
 
 

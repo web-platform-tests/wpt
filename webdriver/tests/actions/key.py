@@ -34,9 +34,9 @@ def test_single_printable_key_sends_correct_events(session,
         .key_up(value) \
         .perform()
     expected = [
-        {"code": code, "key": value, "type": "keydown"},
-        {"code": code, "key": value, "type": "keypress"},
-        {"code": code, "key": value, "type": "keyup"},
+        {"key": value, "type": "keydown"},
+        {"key": value, "type": "keypress"},
+        {"key": value, "type": "keyup"},
     ]
     events = [filter_dict(e, expected[0]) for e in get_events(session)]
     assert events == expected
@@ -76,8 +76,8 @@ def test_single_modifier_key_sends_correct_events(session,
         .perform()
     all_events = get_events(session)
     expected = [
-        {"code": code, "key": key, "type": "keydown"},
-        {"code": code, "key": key, "type": "keyup"},
+        {"key": key, "type": "keydown"},
+        {"key": key, "type": "keyup"},
     ]
     events = [filter_dict(e, expected[0]) for e in all_events]
     assert events == expected
@@ -99,9 +99,9 @@ def test_single_nonprintable_key_sends_events(session,
         .key_up(value) \
         .perform()
     expected = [
-        {"code": code, "key": key, "type": "keydown"},
-        {"code": code, "key": key, "type": "keypress"},
-        {"code": code, "key": key, "type": "keyup"},
+        {"key": key, "type": "keydown"},
+        {"key": key, "type": "keypress"},
+        {"key": key, "type": "keyup"},
     ]
     events = [filter_dict(e, expected[0]) for e in get_events(session)]
     if len(events) == 2:
@@ -120,10 +120,10 @@ def test_sequence_of_keydown_printable_keys_sends_events(session,
         .key_down("b") \
         .perform()
     expected = [
-        {"code": "KeyA", "key": "a", "type": "keydown"},
-        {"code": "KeyA", "key": "a", "type": "keypress"},
-        {"code": "KeyB", "key": "b", "type": "keydown"},
-        {"code": "KeyB", "key": "b", "type": "keypress"},
+        {"key": "a", "type": "keydown"},
+        {"key": "a", "type": "keypress"},
+        {"key": "b", "type": "keydown"},
+        {"key": "b", "type": "keypress"},
     ]
     events = [filter_dict(e, expected[0]) for e in get_events(session)]
     assert events == expected
@@ -133,12 +133,12 @@ def test_sequence_of_keydown_printable_keys_sends_events(session,
 def test_sequence_of_keydown_character_keys(session, key_reporter, key_chain):
     key_chain.send_keys("ef").perform()
     expected = [
-        {"code": "KeyE", "key": "e", "type": "keydown"},
-        {"code": "KeyE", "key": "e", "type": "keypress"},
-        {"code": "KeyE", "key": "e", "type": "keyup"},
-        {"code": "KeyF", "key": "f", "type": "keydown"},
-        {"code": "KeyF", "key": "f", "type": "keypress"},
-        {"code": "KeyF", "key": "f", "type": "keyup"},
+        {"key": "e", "type": "keydown"},
+        {"key": "e", "type": "keypress"},
+        {"key": "e", "type": "keyup"},
+        {"key": "f", "type": "keydown"},
+        {"key": "f", "type": "keypress"},
+        {"key": "f", "type": "keyup"},
     ]
     events = [filter_dict(e, expected[0]) for e in get_events(session)]
     assert events == expected

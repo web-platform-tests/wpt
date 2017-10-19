@@ -17,7 +17,7 @@ def test_webdriver_special_key_sends_keydown(session,
         # may interfere with subsequent tests.)
         session.execute_script("""
             document.body.addEventListener("keydown",
-                    (e) => e.preventDefault());
+                    function(e) { e.preventDefault() });
         """)
     key_chain.key_down(getattr(Keys, name)).perform()
     # only interested in keydown
@@ -26,6 +26,7 @@ def test_webdriver_special_key_sends_keydown(session,
     expected = dict(expected)
 
     del expected["value"]
+    del expected["code"]
     # check and remove keys that aren't in expected
     assert first_event["type"] == "keydown"
     assert first_event["repeat"] == False

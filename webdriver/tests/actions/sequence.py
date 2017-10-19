@@ -23,8 +23,8 @@ def test_release_char_sequence_sends_keyup_events_in_reverse(session,
     session.execute_script("resetEvents();")
     session.actions.release()
     expected = [
-        {"code": "KeyB", "key": "b", "type": "keyup"},
-        {"code": "KeyA", "key": "a", "type": "keyup"},
+        {"key": "b", "type": "keyup"},
+        {"key": "a", "type": "keyup"},
     ]
     events = [filter_dict(e, expected[0]) for e in get_events(session)]
     assert events == expected
@@ -90,9 +90,8 @@ def test_release_control_click(session, key_reporter, key_chain, mouse_chain):
     session.actions.perform([key_chain.dict, mouse_chain.dict])
     session.execute_script("""
         var keyReporter = document.getElementById("keys");
-        ["mousedown", "mouseup"].forEach((e) => {
-            keyReporter.addEventListener(e, recordPointerEvent);
-          });
+        keyReporter.addEventListener("mousedown", recordPointerEvent);
+        keyReporter.addEventListener("mouseup", recordPointerEvent);
         resetEvents();
     """)
     session.actions.release()

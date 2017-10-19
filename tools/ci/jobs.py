@@ -123,4 +123,4 @@ def run(**kwargs):
         for item in sorted(jobs):
             print(item)
     else:
-        return 0 if set(kwargs["includes"]) == jobs else 1
+        return 0 if set(kwargs["includes"]).issubset(jobs) else 1

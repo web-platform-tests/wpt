@@ -10,7 +10,7 @@ from ..manifest import manifest, update
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
-logger = logging.getLogger()
+logger = logging.getLogger(wpt_root)
 
 
 def get_git_cmd(repo_path):

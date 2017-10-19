@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Filter Effects Module Level 1: parsing filter with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.fxtf.org/filter-effects/#FilterProperty">
+<meta name="assert" content="filter supports only the grammar 'none | <filter-function-list>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("filter", "auto");
+test_invalid_value("filter", "none hue-rotate(0deg)");
+
+test_invalid_value("filter", "blur(10)");
+test_invalid_value("filter", "blur(-100px)");
+
+test_invalid_value("filter", "brightness(-20)"); // crbug.com/776208
+test_invalid_value("filter", "brightness(30px)");
+
+test_invalid_value("filter", "contrast(-20)");
+test_invalid_value("filter", "contrast(30px)");
+
+// ...
+
+test_invalid_value("filter", "hue-rotate(90)");
+
+// ...
+
+</script>
+</body>
+</html>

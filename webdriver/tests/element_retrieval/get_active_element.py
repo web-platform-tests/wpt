@@ -44,7 +44,7 @@ def test_closed_context(session, create_window):
 #
 # 3. Return success.
 def test_handle_prompt_dismiss(new_session):
-    _, session = new_session({"alwaysMatch": {"unhandledPromptBehavior": "dismiss"}})
+    _, session = new_session({"capabilities": {"alwaysMatch": {"unhandledPromptBehavior": "dismiss"}}})
     session.url = inline("<body><p>Hello, World!</p></body>")
 
     create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
@@ -88,7 +88,7 @@ def test_handle_prompt_dismiss(new_session):
 #
 # 3. Return success.
 def test_handle_prompt_accept(new_session):
-    _, session = new_session({"alwaysMatch": {"unhandledPromptBehavior": "accept"}})
+    _, session = new_session({"capabilities": {"alwaysMatch": {"unhandledPromptBehavior": "accept"}}})
     session.url = inline("<body><p>Hello, World!</p></body>")
     create_dialog(session)("alert", text="accept #1", result_var="accept1")
 

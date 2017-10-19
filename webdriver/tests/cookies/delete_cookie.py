@@ -54,7 +54,7 @@ def test_handle_prompt_accept(new_session):
            Accept the current user prompt.
 
     """
-    _, session = new_session({"alwaysMatch": {"unhandledPromptBehavior": "accept"}})
+    _, session = new_session({"capabilities": {"alwaysMatch": {"unhandledPromptBehavior": "accept"}}})
     session.url = inline("<title>WD doc title</title>")
 
     create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")

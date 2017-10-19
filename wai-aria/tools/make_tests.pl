@@ -21,6 +21,11 @@ my %specs = (
       specURL => "https://www.w3.org/TR/wai-aria11/",
       dir => "aria11"
     },
+    "coreaam" => {
+      title => "Core_AAM_1.1_Testable_Statements",
+      specURL => "https://www.w3.org/wiki/Core_AAM_1.1_Testable_Statements/",
+      dir => "../core-aam"
+    },
     "svg" => {
       title => "SVG_Accessibility/Testing/Test_Assertions_with_Tables_for_ATTA",
       specURL => "https://www.w3.org/TR/svg-aam-1.0/",
@@ -532,8 +537,6 @@ sub usage() {
   -w wiki_title - the TITLE of a wiki page with testable statements
   -f file       - the file from which to read
 
-  -n            - do nothing
-  -v            - be verbose
   -d dir        - put generated tests in directory dir
   );
   exit 1;

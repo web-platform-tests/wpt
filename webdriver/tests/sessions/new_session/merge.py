@@ -34,7 +34,7 @@ def test_merge_invalid(new_session, key, value):
 @pytest.mark.skipif(platform_name() is None, reason="Unsupported platform")
 def test_merge_platformName(new_session, platform_name):
     resp, _ = new_session({"capabilities":
-                        {"alwaysMatch": {"timeouts": {"script": 10}}},
+                        {"alwaysMatch": {"timeouts": {"script": 10}},
                         "firstMatch": [
                             {
                                 "platformName": platform_name.upper(),
@@ -44,14 +44,14 @@ def test_merge_platformName(new_session, platform_name):
                                 "platformName": platform_name,
                                 "pageLoadStrategy": "eager"
                             }
-                        ]})
+                        ]}})
 
     assert resp["capabilities"]["platformName"] == platform_name
     assert resp["capabilities"]["pageLoadStrategy"] == "eager"
 
 
 def test_merge_browserName(new_session):
-    resp, session = new_session({})
+    resp, session = new_session({"capabilities": {}})
     browser_settings = {
         "browserName": resp["capabilities"]["browserName"],
         "browserVersion": resp["capabilities"]["browserVersion"],
@@ -60,7 +60,7 @@ def test_merge_browserName(new_session):
     session.end()
 
     resp, _ = new_session({"capabilities":
-                        {"alwaysMatch": {"timeouts": {"script": 10}}},
+                        {"alwaysMatch": {"timeouts": {"script": 10}},
                         "firstMatch": [
                             {
                                 "browserName": browser_settings["browserName"] + "invalid",
@@ -70,7 +70,7 @@ def test_merge_browserName(new_session):
                                 "browserName": browser_settings["browserName"],
                                 "pageLoadStrategy": "eager"
                             }
-                        ]})
+                        ]}})
 
     assert resp["capabilities"]["browserName"] == browser_settings['browserName']
     assert resp["capabilities"]["pageLoadStrategy"] == "eager"

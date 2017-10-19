@@ -49,7 +49,7 @@ invalid_data = [
 @pytest.mark.parametrize("body", [lambda key, value: {"alwaysMatch": {key: value}},
                                   lambda key, value: {"firstMatch": [{key: value}]}])
 @pytest.mark.parametrize("key,value", flatten(product(*item) for item in invalid_data))
-def test_invalid(new_session, body, key, value):
+def test_invalid_values(new_session, body, key, value):
     with pytest.raises(error.InvalidArgumentException):
         resp = new_session({"capabilities": body(key, value)})
 
@@ -82,7 +82,7 @@ invalid_extensions = [
 @pytest.mark.parametrize("body", [lambda key, value: {"alwaysMatch": {key: value}},
                                   lambda key, value: {"firstMatch": [{key: value}]}])
 @pytest.mark.parametrize("key", invalid_extensions)
-def test_invalid(new_session, body, key):
+def test_invalid_extensions(new_session, body, key):
     with pytest.raises(error.InvalidArgumentException):
         resp = new_session({"capabilities": body(key, {})})
 

@@ -27,8 +27,8 @@ test_valid_value("filter", "drop-shadow(1px 2px)");
 test_valid_value("filter", "drop-shadow(1px 2px 3px)");
 test_valid_value("filter", "drop-shadow(0 0 0)", "drop-shadow(0px 0px 0px)");
 // https://github.com/w3c/fxtf-drafts/issues/231
-test_valid_value("filter", "drop-shadow(1px 2px rgb(4, 5, 6))"); // Blink serializes as "drop-shadow(rgb(4, 5, 6) 1px 2px)"
-test_valid_value("filter", "drop-shadow(1px 2px 3px rgba(4, 5, 6, 0.75))"); // Blink serializes as "drop-shadow(rgba(4, 5, 6, 0.75) 1px 2px 3px)"
+test_valid_value("filter", "drop-shadow(1px 2px rgb(4, 5, 6))"); // Blink/WebKit serialize as "drop-shadow(rgb(4, 5, 6) 1px 2px)"
+test_valid_value("filter", "drop-shadow(1px 2px 3px rgba(4, 5, 6, 0.75))"); // Blink/WebKit serialize as "drop-shadow(rgba(4, 5, 6, 0.75) 1px 2px 3px)"
 
 test_valid_value("filter", "grayscale(0)");
 test_valid_value("filter", "grayscale(300%)", "grayscale(100%)");
@@ -48,10 +48,14 @@ test_valid_value("filter", "saturate(300%)");
 test_valid_value("filter", "sepia(0)");
 test_valid_value("filter", "sepia(300%)", "sepia(100%)");
 
-test_valid_value("filter", "url(picture.svg#f)", 'url("picture.svg#f")');
-test_valid_value("filter", 'url("https://www.example.com/picture.svg#f")');
+// Edge serializes url(...) without quotes. Blink/WebKit and Firefox use quotes.
+test_valid_value("filter", "url(picture.svg#f)", ['url("picture.svg#f")', 'url(picture.svg#f)']);
 
-test_valid_value("filter", 'blur(10px) url("picture.svg#f") contrast(20) brightness(30)');
+test_valid_value("filter", 'url("https://www.example.com/picture.svg#f")',
+  ['url("https://www.example.com/picture.svg#f")', 'url(https://www.example.com/picture.svg#f)']);
+
+test_valid_value("filter", 'blur(10px) url("picture.svg#f") contrast(20) brightness(30)',
+  ['blur(10px) url("picture.svg#f") contrast(20) brightness(30)', 'blur(10px) url(picture.svg#f) contrast(20) brightness(30)']);
 </script>
 </body>
 </html>

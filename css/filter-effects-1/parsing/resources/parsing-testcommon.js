@@ -18,7 +18,7 @@ function test_valid_value(property, value, serializedValue) {
         var readValue = div.style[property];
 
         if (Array.isArray(serializedValue))
-            assert_not_equals(serializedValue.indexOf(readValue), -1, "'" + readValue + "' is not in " + JSON.stringify(serializedValue));
+            assert_true(serializedValue.indexOf(readValue) >= 0, '"' + readValue + '" in ' + JSON.stringify(serializedValue));
         else
             assert_equals(readValue, serializedValue);
         div.style[property] = readValue;

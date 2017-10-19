@@ -12,14 +12,16 @@
 </head>
 <body>
 <script>
+// Edge fails: expected "" but got "none"
+
 test_invalid_value("filter", "auto");
 test_invalid_value("filter", "none hue-rotate(0deg)");
 
 test_invalid_value("filter", "blur(10)");
 test_invalid_value("filter", "blur(-100px)");
-test_invalid_value("filter", "blur()"); // crbug.com/618960 Blink accept no arguments for all but drop-shadow.
+test_invalid_value("filter", "blur()"); // crbug.com/618960 Blink/WebKit accept no arguments for all but drop-shadow.
 
-test_invalid_value("filter", "brightness(-20)"); // crbug.com/776208 Blink accept negative brightness.
+test_invalid_value("filter", "brightness(-20)"); // crbug.com/776208 Blink/WebKit accept negative brightness.
 test_invalid_value("filter", "brightness(30px)");
 test_invalid_value("filter", "brightness()");
 
@@ -33,7 +35,7 @@ test_invalid_value("filter", "drop-shadow(1px)");
 test_invalid_value("filter", "drop-shadow(1px 2px 3px 4px)");
 test_invalid_value("filter", "drop-shadow(rgb(4, 5, 6))");
 // https://github.com/w3c/fxtf-drafts/issues/231
-test_invalid_value("filter", "drop-shadow(rgb(4, 5, 6) 1px 2px)"); // Fails in Blink "drop-shadow(rgb(4, 5, 6) 1px 2px)" and Firefox "drop-shadow(1px 2px rgb(4, 5, 6))".
+test_invalid_value("filter", "drop-shadow(rgb(4, 5, 6) 1px 2px)"); // Fails in Blink/WebKit "drop-shadow(rgb(4, 5, 6) 1px 2px)" and Firefox "drop-shadow(1px 2px rgb(4, 5, 6))".
 test_invalid_value("filter", "drop-shadow()");
 
 test_invalid_value("filter", "grayscale(-20)");

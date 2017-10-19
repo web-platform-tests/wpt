@@ -21,6 +21,7 @@ job_path_map = {
                   "!.*/README",
                   "!css/[^/]*$"],
     "lint": [".*"],
+    "manifest_upload": [".*"],
     "resources_unittest": ["resources/"],
     "tools_unittest": ["tools/"],
     "wptrunner_unittest": ["tools/wptrunner/*"],

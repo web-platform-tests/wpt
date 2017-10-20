@@ -101,7 +101,7 @@ interface HTMLElement : Element {
   [CEReactions] attribute boolean hidden;
   void click();
   [CEReactions] attribute long tabIndex;
-  void focus(optional FocusOptions options);
+  void focus();
   void blur();
   [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
@@ -109,11 +109,6 @@ interface HTMLElement : Element {
   [CEReactions] attribute boolean spellcheck;
 
   [CEReactions] attribute [TreatNullAs=EmptyString] DOMString innerText;
-};
-
-dictionary FocusOptions {
-  boolean preventScroll = false;
-  FocusScrollOptions scrollOptions;
 };
 
 HTMLElement implements GlobalEventHandlers;

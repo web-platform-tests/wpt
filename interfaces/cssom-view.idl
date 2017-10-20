@@ -87,17 +87,10 @@ interface CaretPosition {
   [NewObject] DOMRect? getClientRect();
 };
 
-enum ScrollIntoViewMode { "always", "if-hidden" };
 enum ScrollLogicalPosition { "start", "center", "end", "nearest" };
 dictionary ScrollIntoViewOptions : ScrollOptions {
-  ScrollIntoViewMode scrollMode = "always";
   ScrollLogicalPosition block = "start";
   ScrollLogicalPosition inline = "nearest";
-};
-dictionary FocusScrollOptions : ScrollOptions {
-  ScrollIntoViewMode scrollMode = "if-hidden";
-  ScrollLogicalPosition block;
-  ScrollLogicalPosition inline;
 };
 
 partial interface Element {

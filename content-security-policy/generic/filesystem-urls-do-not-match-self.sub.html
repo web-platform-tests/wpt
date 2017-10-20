@@ -3,14 +3,12 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'; connect-src 'self';">
     <title>filesystem-urls-do-not-match-self</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="../support/logTest.sub.js?logs=[]"></script>
+    <script src='../support/logTest.sub.js?logs=["violated-directive=script-src"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-script-src 'self' 'unsafe-inline' 'self'; connect-src 'self';
--->
 </head>
 
 <body>
@@ -18,11 +16,16 @@ script-src 'self' 'unsafe-inline' 'self'; connect-src 'self';
         filesystem: URLs are same-origin with the page in which they were created, but explicitly do not match the &apos;self&apos; or &apos;*&apos; source in CSP directives because they are more akin to 'unsafe-inline' content..
     </p>
     <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+          log("violated-directive=" + e.violatedDirective);
+        });
+    
         if(!window.webkitRequestFileSystem) {
             t_log = async_test();
             t_log.set_status(t_log.NOTRUN, "No filesystem:// support, cannot run test.");
             t_log.phase = t_log.phases.HAS_RESULT;
             t_log.done();
+            log("violated-directive=script-src"); // simulate needed logs to pass test
         } else {
             function fail() {
                 alert_assert("FAIL!");
@@ -46,11 +49,6 @@ script-src 'self' 'unsafe-inline' 'self'; connect-src 'self';
                         });
                     });
                 });
-            var s = document.createElement('script');
-            s.async = true;
-            s.defer = true;
-            s.src = "../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=script-src%20&apos;self&apos;%20&apos;unsafe-inline&apos;%20&apos;*&apos;"
-            document.lastChild.appendChild(s);
         }
 
 

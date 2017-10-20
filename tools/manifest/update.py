@@ -7,6 +7,7 @@ import sys
 import manifest
 from . import vcs
 from .log import get_logger
+from .download import download_from_github
 
 here = os.path.dirname(__file__)
 
@@ -30,6 +31,9 @@ def update_from_cli(**kwargs):
 
     m = None
     logger = get_logger()
+
+    if kwargs["download"]:
+        download_from_github(path, tests_root)
 
     if not kwargs.get("rebuild", False):
         try:
@@ -69,6 +73,9 @@ def create_parser():
     parser.add_argument(
         "--url-base", action="store", default="/",
         help="Base url to use as the mount point for tests in this manifest.")
+    parser.add_argument(
+        "--no-download", dest="download", action="store_false", default=True,
+        help="Never attempt to download the manifest.")
     return parser
 
 

@@ -100,7 +100,7 @@ def download_manifest(manifest_path, commits_func, url_func, force=False):
     except Exception:
         logger.warning("Failed to write manifest")
         return False
-
+    logger.info("Manifest downloaded")
     return True
 
 

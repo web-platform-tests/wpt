@@ -1,16 +1,29 @@
 <!doctype html>
-<title>Link with onclick navigation and href navigation </title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<title>Link with onclick navigation is aboprted by href navigation </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
 <a target="test" onclick="document.getElementById('test').contentWindow.location='click.html'" href="href.html">Test</a>
 <script>
-var t = async_test();
-t.step(function() {document.links[0].click()});
-onmessage = t.step_func(
+var test = async_test();
+test.step(function() {
+  document.querySelector("a").click();
+});
+window.onmessage = test.step_func(
   function(e) {
     assert_equals(e.data, "href");
-    t.done();
+    test.done();
   });
 </script>
+
+<!--
+1. This test creates a iframe, and an anchor with both an `onclick` and `href`.
+2. The test "clicks" the anchor, triggering the `onclick` handler operation,
+    which will attempt to set the location of the iframe.
+3. Navigating the iframe to the anchor's `href` will abort the not-yet-mature location navigation.
+4. If the semantics are implemented correctly, a message "href"
+    from "href.html" will be received.
+
+-->

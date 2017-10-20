@@ -128,7 +128,7 @@ class Test(object):
         return metadata
 
     @classmethod
-    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata, test_filter=None):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         return cls(manifest_item.source_file.tests_root,
@@ -277,6 +277,7 @@ class ReftestTest(Test):
                       manifest_test,
                       inherit_metadata,
                       test_metadata,
+                      test_filter=None,
                       nodes=None,
                       references_seen=None):
 
@@ -321,8 +322,8 @@ class ReftestTest(Test):
                 reference = ReftestTest.from_manifest(manifest_node,
                                                       [],
                                                       None,
-                                                      nodes,
-                                                      references_seen)
+                                                      nodes=nodes,
+                                                      references_seen=references_seen)
             else:
                 reference = ReftestTest(manifest_test.source_file.tests_root,
                                         ref_url,
@@ -363,6 +364,24 @@ class WdspecTest(Test):
     default_timeout = 25
     long_timeout = 120
 
+    def __init__(self, tests_root, url, inherit_metadata, test_metadata, test_filter, timeout=None, path=None, protocol="http"):
+        Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
+                      path, protocol)
+
+        self.filter = test_filter
+
+    @classmethod
+    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata, test_filter):
+        timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        return cls(manifest_item.source_file.tests_root,
+                   manifest_item.url,
+                   inherit_metadata,
+                   test_metadata,
+                   timeout=timeout,
+                   path=manifest_item.source_file.path,
+                   test_filter=test_filter)
+
+
 
 manifest_test_cls = {"reftest": ReftestTest,
                      "testharness": TestharnessTest,
@@ -370,6 +389,6 @@ manifest_test_cls = {"reftest": ReftestTest,
                      "wdspec": WdspecTest}
 
 
-def from_manifest(manifest_test, inherit_metadata, test_metadata):
+def from_manifest(manifest_test, inherit_metadata, test_metadata, test_filter):
     test_cls = manifest_test_cls[manifest_test.item_type]
-    return test_cls.from_manifest(manifest_test, inherit_metadata, test_metadata)
+    return test_cls.from_manifest(manifest_test, inherit_metadata, test_metadata, test_filter)

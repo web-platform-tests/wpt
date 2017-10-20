@@ -348,6 +348,7 @@ class WdspecExecutor(TestExecutor):
         success, data = WdspecRun(self.do_wdspec,
                                   self.protocol.session_config,
                                   test.abs_path,
+                                  test.filter,
                                   timeout).run()
 
         if success:
@@ -355,9 +356,10 @@ class WdspecExecutor(TestExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_wdspec(self, session_config, path, timeout):
+    def do_wdspec(self, session_config, path, filter, timeout):
         harness_result = ("OK", None)
         subtest_results = pytestrunner.run(path,
+                                           filter,
                                            self.server_config,
                                            session_config,
                                            timeout=timeout)
@@ -388,11 +390,12 @@ class Protocol(object):
 
 
 class WdspecRun(object):
-    def __init__(self, func, session, path, timeout):
+    def __init__(self, func, session, path, filter, timeout):
         self.func = func
         self.result = (None, None)
         self.session = session
         self.path = path
+        self.filter = filter
         self.timeout = timeout
         self.result_flag = threading.Event()
 
@@ -414,7 +417,7 @@ class WdspecRun(object):
 
     def _run(self):
         try:
-            self.result = True, self.func(self.session, self.path, self.timeout)
+            self.result = True, self.func(self.session, self.path, self.filter, self.timeout)
         except (socket.timeout, IOError):
             self.result = False, ("CRASH", None)
         except Exception as e:

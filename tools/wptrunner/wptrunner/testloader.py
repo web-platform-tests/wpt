@@ -343,9 +343,13 @@ class TestFilter(object):
             self.manifest = manifestinclude.IncludeManifest.create()
             self.manifest.set_defaults()
 
+        self._test_filters = defaultdict(lambda: None)
         if include:
             self.manifest.set("skip", "true")
             for item in include:
+                if "::" in item:
+                    item, filter = item.rsplit("::", 1)
+                    self._test_filters[item] = filter
                 self.manifest.add_include(test_manifests, item)
 
         if exclude:
@@ -358,9 +362,8 @@ class TestFilter(object):
             for test in tests:
                 if self.manifest.include(test):
                     include_tests.add(test)
-
             if include_tests:
-                yield test_type, test_path, include_tests
+                yield test_type, test_path, include_tests, self._test_filters
 
 class TagFilter(object):
     def __init__(self, tags):
@@ -486,12 +489,12 @@ class TestLoader(object):
                     self._test_ids += [item.id for item in test_dict[test_type]]
         return self._test_ids
 
-    def get_test(self, manifest_test, inherit_metadata, test_metadata):
+    def get_test(self, manifest_test, inherit_metadata, test_metadata, filters):
         if test_metadata is not None:
             inherit_metadata.append(test_metadata)
             test_metadata = test_metadata.get_test(manifest_test.id)
 
-        return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata)
+        return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata, filters[manifest_test.path])
 
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
         rv = []
@@ -523,18 +526,18 @@ class TestLoader(object):
         if self.chunker is not None:
             manifest_items = self.chunker(manifest_items)
 
-        for test_type, test_path, tests in manifest_items:
+        for test_type, test_path, tests, filters in manifest_items:
             manifest_file = iter(tests).next().manifest
             metadata_path = self.manifests[manifest_file]["metadata_path"]
             inherit_metadata, test_metadata = self.load_metadata(manifest_file, metadata_path, test_path)
 
             for test in iterfilter(self.meta_filters,
-                                   self.iter_wpttest(inherit_metadata, test_metadata, tests)):
+                                   self.iter_wpttest(inherit_metadata, test_metadata, tests, filters)):
                 yield test_path, test_type, test
 
-    def iter_wpttest(self, inherit_metadata, test_metadata, tests):
+    def iter_wpttest(self, inherit_metadata, test_metadata, tests, filters):
         for manifest_test in tests:
-            yield self.get_test(manifest_test, inherit_metadata, test_metadata)
+            yield self.get_test(manifest_test, inherit_metadata, test_metadata, filters)
 
     def _load_tests(self):
         """Read in the tests from the manifest file and add them to a queue"""

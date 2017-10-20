@@ -3,14 +3,17 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <meta http-equiv="Content-Security-Policy" content="style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src 'self';">
     <title>inline-style-blocked</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src='../support/logTest.sub.js?logs=["PASS"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src 'self';
--->
+    <script>
+       window.addEventListener('securitypolicyviolation', function(e) {
+            log("violated-directive=" + e.violatedDirective);
+       });
+    </script>
     <style>
         .target {
             background-color: blue;
@@ -25,7 +28,6 @@ style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src
 
     </script>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=style-src%20&apos;none&apos;"></script>
 </body>
 
 </html>

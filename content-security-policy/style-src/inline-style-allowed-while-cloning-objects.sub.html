@@ -3,15 +3,15 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';">
     <title>inline-style-allowed-while-cloning-objects</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="../support/logTest.sub.js?logs=[]"></script>
-    <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-style-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';
--->
     <script>
+        var t = async_test("Test that violation report event was fired");
+        window.addEventListener("securitypolicyviolation", t.step_func_done(function(e) {
+            assert_equals(e.violatedDirective, "style-src");
+        }));
         window.onload = function() {
             window.nodes = document.getElementById('nodes');
             window.node1 = document.getElementById('node1');
@@ -122,7 +122,6 @@ style-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';
         Yet another div.
     </div>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=style-src%20&apos;self&apos;"></script>
 </body>
 
 </html>

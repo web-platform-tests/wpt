@@ -28,12 +28,13 @@ wptrunner = None
 def setup_logging():
     """Set up basic debug logger."""
     global logger
-    logger = logging.getLogger(here)
+    logger = logging.getLogger(wpt_root)
     handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(logging.BASIC_FORMAT, None)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
+    logger.propagate = False
 
 
 def do_delayed_imports():

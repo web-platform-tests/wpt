@@ -16,7 +16,7 @@ async_test(function() {
   });
 
   var busy_loop_iterations_remaining = 10;  // Should take 20 * 40 = 400ms
-  setTimeout(this.step_func(function busyLoop() {
+  step_timeout(this.step_func(function busyLoop() {
     var start_time = performance.now();
     if (!idle_callback_scheduled) {
       idle_callback_scheduled = start_time;
@@ -28,7 +28,7 @@ async_test(function() {
     }
     if (busy_loop_iterations_remaining > 0) {
       busy_loop_iterations_remaining--;
-      setTimeout(busyLoop);
+      step_timeout(busyLoop);
     }
   }));
 }, 'requestIdleCallback not scheduled when event loop is busy.');
@@ -47,7 +47,7 @@ async_test(function() {
     assert_true(busy_loop_iterations_remaining > 0, "Busy event loop should still be going");
   });
 
-  setTimeout(this.step_func(function busyLoop() {
+  step_timeout(this.step_func(function busyLoop() {
     var start_time = performance.now();
     if (!idle_callback_scheduled) {
       idle_callback_scheduled = start_time;
@@ -59,7 +59,7 @@ async_test(function() {
     }
     if (busy_loop_iterations_remaining > 0) {
       busy_loop_iterations_remaining--;
-      setTimeout(busyLoop);
+      step_timeout(busyLoop);
     }
   }));
 }, 'requestIdleCallback scheduled with timeout when event loop is busy.');

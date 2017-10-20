@@ -3,14 +3,12 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' blob:; connect-src 'self';">    
     <title>blob-urls-match-blob</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src='../support/logTest.sub.js?logs=["PASS (1/1)"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-script-src 'self' 'unsafe-inline' blob:; connect-src 'self';
--->
 </head>
 
 <body>
@@ -18,6 +16,10 @@ script-src 'self' 'unsafe-inline' blob:; connect-src 'self';
         blob: URLs are same-origin with the page in which they were created, but match only if the blob: scheme is specified.
     </p>
     <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+            log("FAIL");
+        });
+    
         function pass() {
             log("PASS (1/1)");
         }
@@ -30,7 +32,6 @@ script-src 'self' 'unsafe-inline' blob:; connect-src 'self';
 
     </script>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=false"></script>
 </body>
 
 </html>

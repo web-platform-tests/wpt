@@ -1,17 +1,18 @@
 <!DOCTYPE html>
+<script>
+    window.addEventListener('securitypolicyviolation', function(e) {
+        log("Fail");
+    });
+</script>
 <html style="background-color: blue;">
-
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self'">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'">
     <title>inline-style-attribute-on-html</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src='../support/logTest.sub.js?logs=["PASS"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src 'self';
--->
 </head>
 
 <body>
@@ -22,7 +23,6 @@ style-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-inline'; connect-src
 
     </script>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=false"></script>
 </body>
 
 </html>

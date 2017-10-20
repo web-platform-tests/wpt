@@ -3,20 +3,22 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
-    <title>connect-src-websocket-allowed</title>
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' http://{{host}}:{{ports[http][0]}}; script-src 'self' 'unsafe-inline';">
+    <title>connect-src-eventsource-allowed</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src='../support/logTest.sub.js?logs=["Pass"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-connect-src 'self' ws://127.0.0.1:8880; script-src 'self' 'unsafe-inline';
--->
 </head>
 
 <body>
     <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+            log("FAIL");
+        });
+    
         try {
-            var ws = new WebSocket("ws://127.0.0.1:8880/echo");
+            var es = new EventSource("http://{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/simple-event-stream");
             log("Pass");
         } catch (e) {
             log("Fail");
@@ -24,7 +26,6 @@ connect-src 'self' ws://127.0.0.1:8880; script-src 'self' 'unsafe-inline';
 
     </script>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=false"></script>
 </body>
 
 </html>

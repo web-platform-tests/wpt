@@ -3,19 +3,21 @@
 
 <head>
     <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' http://{{host}}:{{ports[http][0]}}/security/contentSecurityPolicy/resources/redir.php; script-src 'self' 'unsafe-inline';">
     <title>connect-src-eventsource-redirect-to-blocked</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src='../support/logTest.sub.js?logs=["PASS EventSource() did not follow the disallowed redirect.","TEST COMPLETE"]'></script>
+    <script src='../support/logTest.sub.js?logs=["PASS EventSource() did not follow the disallowed redirect.","TEST COMPLETE", "violated-directive=connect-src"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
-    <!-- enforcing policy:
-connect-src 'self'; script-src 'self' 'unsafe-inline';
--->
     <script></script>
 </head>
 
 <body>
     <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+            log("violated-directive=" + e.violatedDirective);
+        });
+
         var es;
         try {
             es = new EventSource("/common/redirect.py?location= http://www.{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/simple-event-stream");
@@ -33,7 +35,6 @@ connect-src 'self'; script-src 'self' 'unsafe-inline';
 
     </script>
     <div id="log"></div>
-    <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=connect-src%20&apos;self&apos;/security/contentSecurityPolicy/resources/redir.php"></script>
 </body>
 
 </html>

@@ -13,8 +13,10 @@ here = os.path.dirname(__file__)
 
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
+logger = get_logger()
 
 def update(tests_root, manifest, working_copy=False):
+    logger.info("Updating manifest")
     tree = None
     if not working_copy:
         tree = vcs.Git.for_path(tests_root, manifest.url_base)
@@ -30,7 +32,6 @@ def update_from_cli(**kwargs):
     assert tests_root is not None
 
     m = None
-    logger = get_logger()
 
     if kwargs["download"]:
         download_from_github(path, tests_root)
@@ -41,8 +42,6 @@ def update_from_cli(**kwargs):
         except manifest.ManifestVersionMismatch:
             logger.info("Manifest version changed, rebuilding")
             m = None
-        else:
-            logger.info("Updating manifest")
 
     if m is None:
         m = manifest.Manifest(kwargs["url_base"])

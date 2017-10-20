@@ -5,6 +5,8 @@ WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
 cd $WPT_ROOT
 
 mkdir -p ~/meta
+
 ./wpt manifest -p ~/meta/MANIFEST.json
+cp ~/meta/MANIFEST.json $WPT_MANIFEST_FILE
 # Force overwrite of any existing file
-gzip -f ~/meta/MANIFEST.json
+gzip -f $WPT_MANIFEST_FILE

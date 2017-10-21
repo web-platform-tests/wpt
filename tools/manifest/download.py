@@ -1,11 +1,12 @@
 import argparse
 import gzip
+import json
 import io
 import log
 import os
 from datetime import datetime, timedelta
 
-import requests
+import urllib2
 
 from vcs import Git
 
@@ -23,7 +24,6 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
     if not os.path.exists(manifest_path):
         return True
     mtime = datetime.fromtimestamp(os.path.getmtime(manifest_path))
-    print mtime
     if mtime < datetime.now() - rebuild_time:
         return True
     logger.info("Skipping manifest download because existing file is recent")
@@ -37,16 +37,18 @@ def git_commits(repo_root):
 
 def github_url(commits):
     try:
-        resp = requests.get("https://api.github.com/repos/w3c/web-platform-tests/releases")
+        resp = urllib2.urlopen("https://api.github.com/repos/w3c/web-platform-tests/releases")
     except Exception:
         return None
 
-    try:
-        resp.raise_for_status()
-    except requests.exceptions.HTTPError:
+    if resp.code != 200:
         return None
 
-    releases = resp.json()
+    try:
+        releases = json.load(resp.fp)
+    except ValueError:
+        logger.warning("Response was not valid JSON")
+        return None
 
     fallback = None
     for release in releases:
@@ -74,19 +76,17 @@ def download_manifest(manifest_path, commits_func, url_func, force=False):
 
     logger.info("Downloading manifest from %s" % url)
     try:
-        resp = requests.get(url)
+        resp = urllib2.urlopen(url)
     except Exception:
         logger.warning("Downloading pregenreated manifest failed")
         return False
-    try:
-        resp.raise_for_status()
-    except requests.exceptions.HTTPError:
+
+    if resp.code != 200:
         logger.warning("Downloading pregenreated manifest failed; got HTTP status %d" %
-                       resp.status_code)
+                       resp.code)
         return False
 
-    compressed = io.BytesIO(resp.content)
-    gzf = gzip.GzipFile(fileobj=compressed)
+    gzf = gzip.GzipFile(fileobj=io.BytesIO(resp.read()))
 
     try:
         decompressed = gzf.read()
@@ -121,7 +121,7 @@ def download_from_github(path, tests_root, force=False):
                       force=force)
 
 
-def run(venv, **kwargs):
+def run(**kwargs):
     if kwargs["path"] is None:
         path = os.path.join(kwargs["tests_root"], "MANIFEST.json")
     else:

@@ -3,4 +3,4 @@
   "virtualenv": false},
  "manifest-download":
  {"path": "download.py", "script": "run", "parser": "create_parser", "help": "Download recent pregenerated MANIFEST.json file",
-  "virtualenv": true, "install": ["requests"]}}
+  "virtualenv": false}}

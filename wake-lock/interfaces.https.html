@@ -13,11 +13,16 @@
 function doTest([dom_idl, wakelock_idl, wakelock]) {
   const idl_array = new IdlArray();
   idl_array.add_untested_idls(dom_idl);
+  idl_array.add_untested_idls('interface EventHandler {};');
   idl_array.add_untested_idls('interface Navigator {};');
   idl_array.add_idls(wakelock_idl);
-  self.wakelock = wakelock;
-  self.request = wakelock.createRequest();
-  idl_array.add_objects({WakeLock: ['wakelock'], WakeLockRequest: ['request']});
+  window.wakelock = wakelock;
+  window.request = wakelock.createRequest();
+  idl_array.add_objects({
+    Navigator: ['navigator'],
+    WakeLock: ['wakelock'],
+    WakeLockRequest: ['request']
+  });
   idl_array.test();
 }
 

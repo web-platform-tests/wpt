@@ -14,6 +14,7 @@ div:not(#other).class:not(.fail).nottest#theid#other { background: red; color: y
 ]]></style>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="help" href="https://www.w3.org/TR/css3-selectors/#selectors"/> <!-- bogus link to make sure it gets found -->
+  <link rel="match" href="reference/this-line-green-background.xht"/>
   <meta name="flags" content="" />
  </head>
  <body>

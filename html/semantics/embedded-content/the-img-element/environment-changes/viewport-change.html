@@ -53,7 +53,7 @@ onload = function() {
             assert_equals(img.currentSrc, expected[next]);
           });
         } else {
-          setTimeout(this.step_func_done(), 500 + load_time);
+          step_timeout(this.step_func_done(), 500 + load_time);
         }
       }, img.dataset.desc + ', resize to ' + next);
     });

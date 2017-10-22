@@ -9,7 +9,7 @@
 onload = function() {
   var ifr = document.getElementsByTagName('iframe')[0];
   ifr.contentDocument.body.appendChild(ifr.contentDocument.createElement('p')).textContent = 'Modified document';
-  setTimeout(function() {
+  step_timeout(function() {
     ifr.onload = function() {
       assert_equals(ifr.contentDocument.body.textContent.indexOf('Modified'), -1);
       done();

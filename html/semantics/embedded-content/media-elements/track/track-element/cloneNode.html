@@ -20,8 +20,8 @@ async_test(function(t) {
     assert_equals(elm.readyState, elm.NONE, 'elm.readyState after appening to video setting mode');
     elm.src = 'resources/track.vtt?pipe=trickle(d1)';
     assert_equals(elm.readyState, elm.NONE, 'elm.readyState after setting src');
-    setTimeout(t.step_func_done(function() {
-      assert_equals(elm.readyState, elm.LOADING, 'elm.readyState in setTimeout');
+    step_timeout(t.step_func_done(function() {
+      assert_equals(elm.readyState, elm.LOADING, 'elm.readyState in step_timeout');
       var clone = elm.cloneNode(true);
       assert_equals(clone.readyState, clone.NONE, 'clone.readyState after element creation');
       video.appendChild(clone);

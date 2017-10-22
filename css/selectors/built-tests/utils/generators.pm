@@ -312,6 +312,21 @@ sub print_mini_xhtml {
  <head>
   <title>'.&utils::helpers::escape($data->{'def'}).'</title>
   <style type="text/css"><![CDATA['."$data->{cssrules}]]></style>";
+    foreach my $author (@{$data->{'author'}}) {
+        if ($author eq 'Daniel Glazman') {
+            print FILE '
+  <link rel="author" title="Daniel Glazman" href="http://glazman.org/"/>';
+        } elsif ($author eq 'Ian Hickson') {
+            print FILE '
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>';
+        } elsif ($author eq 'Lachlan Hunt') {
+            print FILE '
+  <link rel="author" title="Lachlan Hunt" href="http://lachy.id.au/about/contact"/>';
+        } else {
+            print FILE '
+  <link rel="author" title="'.$author.'" href="about:blank#UNKNOWN"/>';
+        }
+    }
     # XXX shoud list alternates (i.e. flat and each shell)
     print FILE "
   <link rel=\"help\" href=\"https://www.w3.org/TR/css3-selectors/#selectors\"/> <!-- bogus link to make sure it gets found -->

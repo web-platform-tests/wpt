@@ -312,18 +312,8 @@ sub print_mini_xhtml {
  <head>
   <title>'.&utils::helpers::escape($data->{'def'}).'</title>
   <style type="text/css"><![CDATA['."$data->{cssrules}]]></style>";
-    if ($testIndex > 0) {
-        print FILE "\n  <link rel=\"first\" href=\"".&utils::helpers::escape($tests->[0]).'.xml" title="'.&utils::helpers::escape($testDatabase->{$tests->[0]}->{'def'}).'"/>';
-        print FILE "\n  <link rel=\"prev\" href=\"".&utils::helpers::escape($tests->[$testIndex-1]).'.xml" title="'.&utils::helpers::escape($testDatabase->{$tests->[$testIndex-1]}->{'def'}).'"/>';
-    }
-    if ($testIndex < $#$tests) {
-        print FILE "\n  <link rel=\"next\" href=\"".&utils::helpers::escape($tests->[$testIndex+1]).'.xml" title="'.&utils::helpers::escape($testDatabase->{$tests->[$testIndex+1]}->{'def'}).'"/>';
-        print FILE "\n  <link rel=\"last\" href=\"".&utils::helpers::escape($tests->[$#$tests]).'.xml" title="'.&utils::helpers::escape($testDatabase->{$tests->[$#$tests]}->{'def'}).'"/>';
-    }
     # XXX shoud list alternates (i.e. flat and each shell)
     print FILE "
-  <link rel=\"up\" href=\"./index.html\"/>
-  <link rel=\"top\" href=\"../../index.html\"/>
   <link rel=\"help\" href=\"https://www.w3.org/TR/css3-selectors/#selectors\"/> <!-- bogus link to make sure it gets found -->
   <meta name=\"flags\" content=\"";
     if (defined($data->{'interactive'})) {

@@ -7,7 +7,7 @@ onload = function() {
   document.write("<script>test_prop = 2; timeout_fired=false;<\/script>");
   document.close();
 
-  setTimeout(function() {
+  step_timeout(function() {
     parent.tests[0].step(function() {
       parent.assert_equals(test_prop, 1, "Global scope from original window timeout");
       parent.assert_equals(window.test_prop, 2, "Window property from original window timeout")
@@ -19,7 +19,7 @@ onload = function() {
     });
   }, 0);
 
-  window.setTimeout(function() {
+  window.step_timeout(function() {
     parent.tests[2].step(function() {
       parent.assert_equals(test_prop, 1, "Global scope from original window timeout");
       parent.assert_equals(window.test_prop, 2, "Window property from original window timeout")

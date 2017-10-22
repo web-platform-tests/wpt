@@ -12,7 +12,7 @@
    localStorage.test6564729 += '4';
  })
 
- onload=t.step_func(function() {localStorage.test6564729 = '0'; setTimeout(t.step_func(function() {document.links[0].click()}), 100)})
+ onload=t.step_func(function() {localStorage.test6564729 = '0'; step_timeout(t.step_func(function() {document.links[0].click()}), 100)})
 
 </script>
 <body

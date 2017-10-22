@@ -38,7 +38,7 @@ window.onload = function () {
     assert_equals( history.state, 'state1' );
   }, 'history.state should reflect the navigated state onload');
   popfired = false;
-  setTimeout(function () {
+  step_timeout(function () {
     test(function () {
       assert_false( !!popfired );
     }, 'popstate event should not fire after onload fires');

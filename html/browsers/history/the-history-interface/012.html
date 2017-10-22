@@ -19,7 +19,7 @@ test(function () {
   assert_equals( location.href, newUrl );
 }, 'replaced location should be reflected immediately');
 window.onload = function () {
-  setTimeout(function () {
+  step_timeout(function () {
     test(function () {
       assert_equals( location.href, newUrl );
     }, 'replaced location should be retained after the page has loaded');

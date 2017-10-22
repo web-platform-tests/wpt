@@ -18,7 +18,7 @@
 
 onload = t.step_func(function() {
   localStorage.test6564729 = '0';
-  setTimeout(function() {document.getElementsByTagName("input")[0].click()}, 100);
+  step_timeout(function() {document.getElementsByTagName("input")[0].click()}, 100);
 });
 </script>
 <body onbeforeunload="localStorage.test6564729 += '2'"

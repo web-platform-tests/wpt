@@ -12,18 +12,18 @@ window.onload = function () {
     location.href = location.href.replace(/#.*$/,'');
     return;
   }
-  setTimeout(add1,100);
+  step_timeout(add1,100);
   function add1() {
     location.hash = '#foo';
-    setTimeout(add2,100);
+    step_timeout(add2,100);
   }
   function add2() {
     location.hash = '#bar';
-    setTimeout(add3,100);
+    step_timeout(add3,100);
   }
   function add3() {
     location.hash = '#baz';
-    setTimeout(dojumps,100);
+    step_timeout(dojumps,100);
   }
   function dojumps() {
     window.onhashchange = function () {
@@ -36,7 +36,7 @@ window.onload = function () {
       assert_equals( location.hash.replace(/^#/,''), 'baz', 'the browser navigated synchronously' );
     }, '.go commands should be queued until the thread has ended');
     history.go(-1);
-    setTimeout(checkjumps,100);
+    step_timeout(checkjumps,100);
   }
   function checkjumps() {
     test(function () {

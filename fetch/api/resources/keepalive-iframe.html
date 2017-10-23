@@ -3,12 +3,7 @@
 <meta charset="utf-8">
 <script src="/common/utils.js"></script>
 <script>
-const xhr = new XMLHttpRequest();
 window.uuid = token();
-// Use a sync XHR to reset the state.
-xhr.open('GET', `../resources/stash-take.py?key=${uuid}`, false);
-xhr.send();
-
 const URL =
   `../resources/empty.txt?pipe=status(302)|` +
   `header(Location,../resources/stash-put.py?key=${uuid}%26value=on)|` +

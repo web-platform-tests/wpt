@@ -415,5 +415,5 @@ if __name__ == "__main__":
     from tools import localpaths
     try:
         main()
-    except:
+    except Exception:
         pdb.post_mortem()

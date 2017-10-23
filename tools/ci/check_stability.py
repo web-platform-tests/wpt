@@ -387,7 +387,7 @@ def run(venv, wpt_args, **kwargs):
 if __name__ == "__main__":
     try:
         retcode = main()
-    except:
+    except Exception:
         import traceback
         traceback.print_exc()
         sys.exit(1)

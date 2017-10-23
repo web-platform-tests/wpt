@@ -397,7 +397,7 @@ class ServerProc(object):
         except socket.error:
             print("Socket error on port %s" % port, file=sys.stderr)
             raise
-        except:
+        except Exception:
             print(traceback.format_exc(), file=sys.stderr)
             raise
 
@@ -408,7 +408,7 @@ class ServerProc(object):
                     self.stop.wait()
                 except KeyboardInterrupt:
                     pass
-            except:
+            except Exception:
                 print(traceback.format_exc(), file=sys.stderr)
                 raise
 

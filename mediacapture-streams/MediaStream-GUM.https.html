@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MediaStream getUserMedia test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://w3c.github.io/mediacapture-main/#mediastream">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<meta name="flags" content="interact">
+
+<p class="instructions">Use a test device with color camera(embedded or external).</p>
+<p class="instructions">When prompted, accept to share your color stream.</p>
+
+<script>
+
+test(function () {
+  assert_true(undefined !== navigator.mediaDevices && undefined !== navigator.mediaDevices.getUserMedia, "navigator.mediaDevices.getUserMedia exists");
+}, "mediaDevices.getUserMedia() is present on navigator");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({})
+  .then(stream => {
+    assert_unreached("This should never be triggered since the constraints parameter is empty");
+  })
+  .catch(error => {
+    assert_equals(error.name, "TypeError", "TypeError returned as expected");
+    assert_equals(error.constraintName, undefined, "constraintName attribute not set as expected");
+  });
+}, "Tests that getUserMedia is rejected with a TypeError when used with an empty options parameter");
+
+promise_test(t => {
+  // Note - integer conversion is weird for +inf and numbers > 2^32, so we
+  // use a number less than 2^32 for testing.
+  return navigator.mediaDevices.getUserMedia({video: {width: {min:100000000}}})
+  .then(stream => {
+    assert_unreached("a Video stream of width 100M cannot be created");
+  })
+  .catch(error => {
+    assert_equals(error.name, "OverconstrainedError", "An impossible constraint triggers a OverconstrainedError");
+    assert_equals(error.constraint, "width", "The name of the not satisfied error is given in error.constraint");
+  });
+}, "Tests that setting an impossible constraint in getUserMedia fails");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {advanced: [{width: {min:1024, max: 800}}]}})
+  .then(stream => {
+    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+  })
+  .catch(error => {
+    assert_unreached("an optional constraint can't stop us from obtaining a color stream");
+  });
+}, "Tests that setting an optional constraint in getUserMedia is handled as optional");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: {width: {min:0}}})
+  .then(stream => {
+    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+  })
+  .catch(error => {
+    assert_unreached("a Video stream of minimally zero width can always be created");
+  });
+}, "Tests that setting a trivial mandatory constraint in getUserMedia works");
+
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({doesnotexist: true})
+  .then(stream => {
+    assert_unreached("This should never be triggered since the constraints parameter only contains an unrecognized constraint");
+  })
+  .catch(error => {
+    assert_equals(error.name, "TypeError", "TypeError returned as expected");
+    assert_equals(error.constraintName, undefined, "constraintName attribute not set as expected");
+  });
+}, "Tests that getUserMedia is rejected with a TypeError when used with an unknown constraint");
+
+</script>

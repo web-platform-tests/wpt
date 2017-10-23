@@ -18,37 +18,37 @@ Web Audio API</a>.</p>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test("Tests that a disabled audio track in a MediaStream is rendered as silence", {timeout: 200000});
-var aud = document.getElementById("aud");
-t.step(function() {
-  navigator.mediaDevices.getUserMedia({audio: true}).then(t.step_func(function (stream) {
-    var ctx = new AudioContext();
-    var streamSource = ctx.createMediaStreamSource(stream);
-    var silenceDetector = ctx.createScriptProcessor(1024);
-    var count = 10;
-    silenceDetector.onaudioprocess = t.step_func(function (e) {
-       var buffer1 = e.inputBuffer.getChannelData(0);
-       var buffer2 = e.inputBuffer.getChannelData(1);
-       var out = e.outputBuffer.getChannelData(0);
-       out = new Float32Array(buffer1);
-       for (var i = 0; i < buffer1.length; i++) {
-          assert_equals(buffer1[i], 0, "Audio buffer entry #" + i + " in channel 0 is silent");
-       }
-       for (var i = 0; i < buffer2.length; i++) {
-          assert_equals(buffer2[i], 0, "Audio buffer entry #" + i + " in channel 1 is silent");
-       }
-       count--;
-       if (count === 0) {
-         silenceDetector.onaudioprocess = null;
-         t.done();
-        }
-    });
+promise_test(t => {
+  let aud = document.getElementById("aud");
+  return navigator.mediaDevices.getUserMedia({audio: true})
+  .then(stream => new Promise(resolve => {
+    let ctx = new AudioContext();
+    let streamSource = ctx.createMediaStreamSource(stream);
+    let silenceDetector = ctx.createScriptProcessor(1024);
+    let count = 10;
+    silenceDetector.onaudioprocess = e => {
+      let buffer1 = e.inputBuffer.getChannelData(0);
+      let buffer2 = e.inputBuffer.getChannelData(1);
+      let out = e.outputBuffer.getChannelData(0);
+      out = new Float32Array(buffer1);
+      for (let i = 0; i < buffer1.length; i++) {
+        assert_equals(buffer1[i], 0, "Audio buffer entry #" + i + " in channel 0 is silent");
+      }
+      for (let i = 0; i < buffer2.length; i++) {
+        assert_equals(buffer2[i], 0, "Audio buffer entry #" + i + " in channel 1 is silent");
+      }
+      count--;
+      if (count === 0) {
+        silenceDetector.onaudioprocess = null;
+        resolve();
+      }
+    };
     stream.getAudioTracks()[0].enabled = false;
 
     streamSource.connect(silenceDetector);
     silenceDetector.connect(ctx.destination);
-  }), function(error) {});
-});
+  }))
+}, "Tests that a disabled audio track in a MediaStream is rendered as silence", {timeout: 200000});
 </script>
 </body>
 </html>

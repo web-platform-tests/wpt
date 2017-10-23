@@ -14,19 +14,17 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test("Tests that MediaStream.getTrackById works as expected", {timeout: 10000});
-t.step(function () {
-  navigator.mediaDevices.getUserMedia({video: true})
-      .then(t.step_func(gotVideo), t.step_func(function (error) {
-        assert_unreached('Unexpected getUserMedia error: ' + error);
-      }));
-  function gotVideo(stream) {
-    var track = stream.getVideoTracks()[0];
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: true})
+  .then(stream => {
+    let track = stream.getVideoTracks()[0];
     assert_equals(track, stream.getTrackById(track.id), "getTrackById returns track of given id");
-    assert_equals(stream.getTrackById(track.id + "foo"), null, "getTrackById of inexistant id  returns null");
-    t.done();
-  }
-});
+    assert_equals(stream.getTrackById(track.id + "foo"), null, "getTrackById of inexistant id returns null");
+  })
+  .catch(error => {
+    assert_unreached("Unexpected getUserMedia error: " + error);
+  });
+}, "Tests that MediaStream.getTrackById works as expected");
 </script>
 </body>
 </html>

@@ -20,7 +20,7 @@
 
         var es;
         try {
-            es = new EventSource("/common/redirect.py?location= http://www.{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/simple-event-stream");
+            es = new EventSource("/common/redirect.py?location= http://www.{{host}}:{{ports[http][0]}}/content-security-policy/connect-src/resources/simple-event-stream");
         } catch (e) {
             log("FAIL " + "EventSource() should not throw an exception.");
         }

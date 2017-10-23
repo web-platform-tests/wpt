@@ -24,7 +24,6 @@ connect-src 'self' http://{{host}}:{{ports[http][0]}}; script-src 'self' 'unsafe
             t_log.set_status(t_log.NOTRUN, "No navigator.sendBeacon, cannot run test.");
             t_log.phase = t_log.phases.HAS_RESULT;
             t_log.done();
-            log("Pass");
        } else {
 	         try {
 	             var es = navigator.sendBeacon("http://www1.{{host}}:{{ports[http][0]}}/security/contentSecurityPolicy/echo-report.php");

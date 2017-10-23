@@ -18,7 +18,7 @@
         });
     
         try {
-            var es = new EventSource("http://{{host}}:{{ports[http][0]}}/content-security-policy/blink-contrib/resources/simple-event-stream");
+            var es = new EventSource("http://{{host}}:{{ports[http][0]}}/content-security-policy/connect-src/resources/simple-event-stream");
             log("Pass");
         } catch (e) {
             log("Fail");

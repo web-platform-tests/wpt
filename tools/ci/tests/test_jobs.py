@@ -2,12 +2,14 @@ from tools.ci import jobs
 
 default_jobs = set(["lint", "manifest_upload"])
 
+
 def test_testharness():
     assert jobs.get_jobs(["resources/testharness.js"]) == default_jobs | set(["resources_unittest"])
     assert jobs.get_jobs(["resources/testharness.js"],
                          includes=["resources_unittest"]) == set(["resources_unittest"])
     assert jobs.get_jobs(["foo/resources/testharness.js"],
                          includes=["resources_unittest"]) == set()
+
 
 def test_stability():
     assert jobs.get_jobs(["dom/historical.html"],

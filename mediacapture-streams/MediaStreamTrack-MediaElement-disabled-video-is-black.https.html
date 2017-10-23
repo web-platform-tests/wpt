@@ -17,37 +17,38 @@ MediaStream is rendered as blackness.</p>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var vid = document.getElementById("vid");
-var cv = document.createElement("canvas");
-var t = async_test("Tests that a disabled video track in a MediaStream is rendered as blackness", {timeout: 10000});
-t.step(function() {
-  navigator.mediaDevices.getUserMedia({video: true})
-    .then(t.step_func(function (stream) {
-      if (stream.getVideoTracks()[0].enabled) {
-        stream.getVideoTracks()[0].enabled = false;
-      }
+promise_test(t => {
+  let vid = document.getElementById("vid");
+  let cv = document.createElement("canvas"); 
+  return navigator.mediaDevices.getUserMedia({video: true})
+  .then(stream => new Promise(resolve => {
+    if (stream.getVideoTracks()[0].enabled) {
+      stream.getVideoTracks()[0].enabled = false;
+    }
 
-      var testOnceLoadeddata = t.step_func(function() {
-        vid.removeEventListener("loadeddata", testOnceLoadeddata, false);
-        cv.width = vid.offsetWidth;
-        cv.height = vid.offsetHeight;
-        var ctx = cv.getContext("2d");
-        ctx.drawImage(vid,0,0);
-        var imageData = ctx.getImageData(0, 0, cv.width, cv.height);
-        for (var i = 0; i < imageData.data.length; i+=4) {
-          assert_equals(imageData.data[i], 0, "No red component in pixel #" + i);
-          assert_equals(imageData.data[i + 1], 0, "No green component in pixel #" + i);
-          assert_equals(imageData.data[i + 2], 0, "No blue component in pixel #" + i);
-          assert_equals(imageData.data[i + 3], 255, "No transparency in pixel #" + i);
-        }
-        t.done();
-      });
+    let testOnceLoadeddata = () => {
+      vid.removeEventListener("loadeddata", testOnceLoadeddata, false);
+      cv.width = vid.offsetWidth;
+      cv.height = vid.offsetHeight;
+      let ctx = cv.getContext("2d");
+      ctx.drawImage(vid, 0, 0);
+      let imageData = ctx.getImageData(0, 0, cv.width, cv.height);
+      resolve(imageData);
+    }
 
-      vid.srcObject = stream;
-      vid.play();
-      vid.addEventListener("loadeddata", testOnceLoadeddata, false);
-    }));
-});
+    vid.srcObject = stream;
+    vid.play();
+    vid.addEventListener("loadeddata", testOnceLoadeddata, false);
+  }))
+  .then(imageData => {
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      assert_equals(imageData.data[i], 0, "No red component in pixel #" + i);
+      assert_equals(imageData.data[i + 1], 0, "No green component in pixel #" + i);
+      assert_equals(imageData.data[i + 2], 0, "No blue component in pixel #" + i);
+      assert_equals(imageData.data[i + 3], 255, "No transparency in pixel #" + i);
+    }
+  })
+}, "Tests that a disabled video track in a MediaStream is rendered as blackness");
 </script>
 </body>
 </html>

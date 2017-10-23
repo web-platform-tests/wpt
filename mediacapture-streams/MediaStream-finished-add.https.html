@@ -17,28 +17,24 @@ MediaStream is allowed.</p>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test("Tests that adding a track to an inactive MediaStream is allowed", {timeout:20000});
-t.step(function () {
-  var audio, video;
+promise_test(t => {
+  let audio, video;
 
-  navigator.mediaDevices.getUserMedia({audio:true}).then(gotAudio);
-  function gotAudio(stream) {
-    audio = stream;
-    navigator.mediaDevices.getUserMedia({video:true}).then(gotVideo);
-  }
+  return navigator.mediaDevices.getUserMedia({audio: true})
+  .then(audio_stream => {
+    audio = audio_stream;
 
-  function gotVideo(stream) {
-    video = stream;
-    t.step(function () {
-       audio.getAudioTracks()[0].stop();
-       assert_false(audio.active, "audio stream is inactive after stopping its only audio track");
-       assert_true(video.active, "video stream is active");
-       audio.addTrack(video.getVideoTracks()[0]);
-       audio.removeTrack(audio.getAudioTracks()[0]);
-     });
-    t.done();
-  }
-});
+    return navigator.mediaDevices.getUserMedia({video: true})
+    .then(video_stream => {
+      video = video_stream;
+      video.getVideoTracks()[0].stop();
+      assert_false(video.active, "video stream is inactive after stopping its only video track");
+      assert_true(audio.active, "audio stream is active");
+      video.addTrack(audio.getAudioTracks()[0]);
+      video.removeTrack(video.getVideoTracks()[0]);
+    });
+  });
+}, "Tests that adding a track to an inactive MediaStream is allowed", {timeout: 20000});
 </script>
 </body>
 </html>

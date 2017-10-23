@@ -14,15 +14,15 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test("Tests that distinct mediastream tracks have distinct ids ", {timeout: 10000});
-t.step(function () {
-  navigator.mediaDevices.getUserMedia({video: true, audio: true})
-    .then(t.step_func(gotStream), t.step_func(function(error) {t.assert_unreached("Access to audio and video stream is granted");}));
-  function gotStream(stream) {
-    assert_not_equals(stream.getVideoTracks()[0], stream.getAudioTracks()[0].id, "audio and video tracks have distinct ids");
-    t.done();
-  }
-});
+promise_test(t => {
+  return navigator.mediaDevices.getUserMedia({video: true, audio: true})
+  .then(stream => {
+    assert_not_equals(stream.getVideoTracks()[0].id, stream.getAudioTracks()[0].id, "audio and video tracks have distinct ids");
+  })
+  .catch(error => {
+    assert_unreached("Access to audio and video stream is granted");
+  });
+}, "Tests that distinct mediastream tracks have distinct ids");
 </script>
 </body>
 </html>

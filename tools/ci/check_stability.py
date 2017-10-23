@@ -165,6 +165,11 @@ def get_parser():
                         action="store",
                         default=wpt_root,
                         help="Directory that will contain MANIFEST.json")
+    parser.add_argument("--expectation_root",
+                        dest="expectation_root",
+                        action="store",
+                        default=wpt_root,
+                        help="Root directory that will contain test metadata manifests.")
     parser.add_argument("--config-file",
                         action="store",
                         type=str,

@@ -224,17 +224,17 @@ class SubtestNode(TestNode):
         return True
 
 
-def get_manifest(metadata_root, test_path, url_base, run_info):
+def get_manifest(expectation_root, test_path, url_base, run_info):
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
-    :param metadata_root: Absolute path to the root of the metadata directory
+    :param expectation_root: Absolute path to the root of the metadata directory
     :param test_path: Path to the test(s) relative to the test root
     :param url_base: Base url for serving the tests in this manifest
     :param run_info: Dictionary of properties of the test run for which the expectation
                      values should be computed.
     """
-    manifest_path = expected.expected_path(metadata_root, test_path)
+    manifest_path = expected.expected_path(expectation_root, test_path)
     try:
         with open(manifest_path) as f:
             return static.compile(f,

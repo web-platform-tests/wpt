@@ -14,7 +14,7 @@ class Kwargs(dict):
         if desc is None:
             desc = name
 
-        if self[name] is None:
+        if name not in self or self[name] is None:
             if extra_cond is not None and not extra_cond(self):
                 return
             if callable(value):

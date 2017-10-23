@@ -56,8 +56,11 @@ function msg_event_test(scope, test) {
 async_test(msg_event_test.bind(this, 'no-current-extension-different-task'),
   'Test calling waitUntil in a different task without an existing extension throws');
 
-async_test(msg_event_test.bind(this, 'no-current-extension-different-microtask'),
-  'Test calling waitUntil in a different microtask without an existing extension throws');
+async_test(msg_event_test.bind(this, 'no-current-extension-in-a-microtask-of-different-task'),
+  'Test calling waitUntil in a microtask of a different task without an existing extension throws');
+
+async_test(msg_event_test.bind(this, 'extended-in-a-microtask-of-the-same-task'),
+  'Test calling waitUntil in a microtask of the same task without an existing extension succeeds');
 
 async_test(msg_event_test.bind(this, 'current-extension-different-task'),
   'Test calling waitUntil in a different task with an existing extension succeeds');

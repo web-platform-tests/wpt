@@ -385,3 +385,9 @@ Documentation
 
 * [How to write and review tests](http://web-platform-tests.org/)
 * [Documentation for the wptserve server](http://wptserve.readthedocs.org/en/latest/)
+
+BrowserStack
+============
+
+Thanks to [BrowserStack](https://www.browserstack.com) for supporting our automated test infrastructure.
+

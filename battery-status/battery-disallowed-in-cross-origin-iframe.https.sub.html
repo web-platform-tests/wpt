@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Battery Test: navigator.getBattery() is not allowed in non top-level browsing context</title>
+<title>Battery Test: navigator.getBattery() is not allowed in cross origin iframe</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://www.w3.org/TR/battery-status/">
 <script src="/resources/testharness.js"></script>
@@ -17,11 +17,12 @@ function load_iframe(iframe, src) {
 }
 
 promise_test(t => {
-  var iframe = document.getElementById('blank');
-  var src = 'support-iframe.html';
+  let iframe = document.getElementById('blank');
+  let path = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+  let src = 'https://{{domains[www1]}}:{{ports[https][0]}}' + path + 'support-iframe.html';
   return load_iframe(iframe, src)
     .then(iframe => promise_rejects(t, 'SecurityError',
                                     iframe.contentWindow.navigator.getBattery()));
-}, "throw a 'SecurityError' when invoking navigator.getBattery() within iframe");
+}, "throw a 'SecurityError' when invoking navigator.getBattery() within cross-origin iframe");
 
 </script>

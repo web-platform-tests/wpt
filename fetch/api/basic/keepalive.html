@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>Fetch API: keepalive handling</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async (test) => {
+  const iframe = document.createElement('iframe');
+  iframe.src = '../resources/keepalive-iframe.html';
+  await (new Promise((resolve) => {
+    iframe.onload = resolve;
+    document.body.appendChild(iframe);
+  }));
+  const uuid = iframe.contentWindow.uuid;
+  iframe.remove();
+  await (new Promise((resolve) => test.step_timeout(resolve, 1000)));
+  const response = await fetch(`../resources/stash-take.py?key=${uuid}`);
+  const json = await response.json();
+  assert_equals(json, 'on');
+});
+</script>
+</body>
+</html>

@@ -19,7 +19,7 @@ MediaStream is rendered as blackness.</p>
 <script>
 promise_test(t => {
   let vid = document.getElementById("vid");
-  let cv = document.createElement("canvas"); 
+  let cv = document.createElement("canvas");
   return navigator.mediaDevices.getUserMedia({video: true})
   .then(stream => new Promise(resolve => {
     if (stream.getVideoTracks()[0].enabled) {

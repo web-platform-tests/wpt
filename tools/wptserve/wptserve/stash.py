@@ -105,7 +105,7 @@ class Stash(object):
         # when writing to a subdict.
         return (str(path), str(uuid.UUID(key)))
 
-    def put(self, key, value, path=None):
+    def put(self, key, value, path=None, overwrite_existing=False):
         """Place a value in the shared stash.
 
         :param key: A UUID to use as the data's key.
@@ -115,10 +115,10 @@ class Stash(object):
         if value is None:
             raise ValueError("SharedStash value may not be set to None")
         internal_key = self._wrap_key(key, path)
-        if internal_key in self.data:
+        if internal_key in self.data and not overwrite_existing:
             raise StashError("Tried to overwrite existing shared stash value "
                              "for key %s (old value was %s, new value is %s)" %
-                             (internal_key, self.data[str(internal_key)], value))
+                             (internal_key, self.data[internal_key], value))
         else:
             self.data[internal_key] = value
 

@@ -25,10 +25,10 @@ def main(request, response):
         return [("Content-Type", "application/json")], "{ \"reportCookies\" : " + cval + "}"
 
     if hasattr(request, 'Cookies'):
-        request.server.stash.put(key=re.sub('^...', 'ccc', key), value=request.Cookies)
+        request.server.stash.put(key=re.sub('^...', 'ccc', key), value=request.Cookies, overwrite_existing=True)
 
     report = request.body
     report.rstrip()
     request.server.stash.take(key=key)
-    request.server.stash.put(key=key, value=report)
+    request.server.stash.put(key=key, value=report, overwrite_existing=True)
     return [("Content-Type", "text/plain")], "Recorded report " + report

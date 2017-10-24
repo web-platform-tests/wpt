@@ -1,5 +1,4 @@
 (function () {
-
   // Get values from the substitution engine.
   // We can't just pull these from the document context
   // because this script is intended to be transcluded into
@@ -32,7 +31,7 @@
     }
   }
 
-  var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
+  var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
   var reportTest = async_test("Violation report status OK.");

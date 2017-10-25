@@ -69,6 +69,11 @@
         "Correct text/plain MIME space after semicolon (uppercase)"
       )
       request(
+        "text/plain;charset=bogus",
+        "text/plain;charset=bogus",
+        "Correct text/plain MIME with bogus charset"
+      )
+      request(
         "text/x-pink-unicorn",
         "text/x-pink-unicorn",
         "If no charset= param is given, implementation should not add one - unknown MIME"

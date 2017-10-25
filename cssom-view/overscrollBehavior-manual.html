@@ -41,8 +41,8 @@
   </div>
 </div>
 <input type="button" id="btnDone" value="DONE" style="width: 100px; height: 50px;"/>
-<h1>scroll-boundary-behavior</h1>
-<h4>Tests that scroll-boundary-behavior prevents scroll-propagation in the area and direction as specified.</h4>
+<h1>overscroll-behavior</h1>
+<h4>Tests that overscroll-behavior prevents scroll-propagation in the area and direction as specified.</h4>
 <ol>
   <li id="i1">Make two scrolls on <span style="color: blue">BLUE</span>, in this order: scroll UP (or drag down), then scroll LEFT (or drag right). Scroll (or drag) until nothing is scrolling. Then tap on DONE.</li>
   <li id="i2">Repeat the same scrolls as in step 1 and then tap on DONE.</li>
@@ -55,7 +55,7 @@
 const container = document.getElementById('container');
 const non_scrollable = document.getElementById('non_scrollable');
 const root = document.getElementById('root');
-var test = async_test("scroll-boundary-behavior prevents scroll-propagation in the area and direction as specified");
+var test = async_test("overscroll-behavior prevents scroll-propagation in the area and direction as specified");
 var instruction1 = document.getElementById("i1");
 var instruction2 = document.getElementById("i2");
 var instruction3 = document.getElementById("i3");
@@ -74,8 +74,8 @@ function setUpForContainer(offset) {
 function set_boundary_prevents_y() {
   instruction1.style.color = 'red';
   instruction1.style.fontWeight = 'bold';
-  container.style.scrollBoundaryBehaviorX = 'auto';
-  container.style.scrollBoundaryBehaviorY = 'none';
+  container.style.overscrollBehaviorX = 'auto';
+  container.style.overscrollBehaviorY = 'none';
   setUpForRoot(100);
   setUpForContainer(0);
 }
@@ -86,10 +86,10 @@ function verify_y_prevented_and_set_boundary_prevents_x() {
   test.step(function() {
     assert_equals(root.scrollTop, 100);
     assert_equals(root.scrollLeft, 0);
-  }, "scroll-boundary-behavior-y: none should only prevent scroll propagation on y axis.");
+  }, "overscroll-behavior-y: none should only prevent scroll propagation on y axis.");
 
-  container.style.scrollBoundaryBehaviorX = 'none';
-  container.style.scrollBoundaryBehaviorY = 'auto';
+  container.style.overscrollBehaviorX = 'none';
+  container.style.overscrollBehaviorY = 'auto';
   setUpForRoot(100);
   setUpForContainer(0);
 }
@@ -100,10 +100,10 @@ function verify_x_prevented_and_set_boundary_allows_inner() {
   test.step(function() {
     assert_equals(root.scrollTop, 0);
     assert_equals(root.scrollLeft, 100);
-  }, "scroll-boundary-behavior-x: none should only prevent scroll propagation on x axis.");
+  }, "overscroll-behavior-x: none should only prevent scroll propagation on x axis.");
 
-  container.style.scrollBoundaryBehaviorX = 'none';
-  container.style.scrollBoundaryBehaviorY = 'none';
+  container.style.overscrollBehaviorX = 'none';
+  container.style.overscrollBehaviorY = 'none';
   setUpForRoot(100);
   setUpForContainer(100);
 }
@@ -118,10 +118,10 @@ function verify_inner_allowed_and_set_nonscrollable_allows_propagation() {
     assert_equals(container.scrollLeft, 0);
     assert_equals(root.scrollTop, 100);
     assert_equals(root.scrollLeft, 100);
-  }, "scroll-boundary-behavior should latch the scroll to the inner container.");
+  }, "overscroll-behavior should latch the scroll to the inner container.");
 
-  non_scrollable.style.scrollBoundaryBehaviorX = 'none';
-  non_scrollable.style.scrollBoundaryBehaviorY = 'none';
+  non_scrollable.style.overscrollBehaviorX = 'none';
+  non_scrollable.style.overscrollBehaviorY = 'none';
   setUpForRoot(100);
 }
 
@@ -129,7 +129,7 @@ function verify_non_scrollable_allows_propagation() {
   test.step(function() {
     assert_equals(root.scrollLeft, 0);
     assert_equals(root.scrollTop, 0);
-  }, "scroll-boundary-behavior on non-scrollable area should not affect scroll propagation.");
+  }, "overscroll-behavior on non-scrollable area should not affect scroll propagation.");
   test.done();
 }
 

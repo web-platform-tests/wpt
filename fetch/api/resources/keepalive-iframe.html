@@ -3,11 +3,15 @@
 <meta charset="utf-8">
 <script src="/common/utils.js"></script>
 <script>
-window.uuid = token();
+const uuid = token();
 const URL =
-  `../resources/empty.txt?pipe=status(302)|` +
-  `header(Location,../resources/stash-put.py?key=${uuid}%26value=on)|` +
-  `trickle(100)`;
-let p = fetch(URL, {keepalive: true});
+    `../resources/redirect.py?` +
+    `delay=100&` +
+    `location=../resources/stash-put.py?key=${uuid}%26value=on`;
+
+addEventListener('load', () => {
+  let p = fetch(URL, {keepalive: true});
+  window.parent.postMessage(uuid, '*');
+});
 </script>
 </html>

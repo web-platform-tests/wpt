@@ -109,8 +109,8 @@ def check_environ(product):
             for line in f:
                 line = line.split("#", 1)[0].strip()
                 parts = line.split()
-                if len(parts) == 2:
-                    host = parts[1]
+                hosts = parts[1:]
+                for host in hosts:
                     missing_hosts.discard(host)
             if missing_hosts:
                 raise WptrunError("""Missing hosts file configuration. Expected entries like:

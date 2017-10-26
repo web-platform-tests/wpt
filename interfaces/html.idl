@@ -390,6 +390,7 @@ interface HTMLIFrameElement : HTMLElement {
   readonly attribute Document? contentDocument;
   readonly attribute WindowProxy? contentWindow;
   Document? getSVGDocument();
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList delegateStickyUserActivation;
 
   // also has obsolete members
 };

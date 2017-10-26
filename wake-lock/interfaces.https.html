@@ -10,28 +10,25 @@
 <script>
 "use strict";
 
-function doTest([dom_idl, wakelock_idl, wakelock]) {
+promise_test(async () => {
   const idl_array = new IdlArray();
+  const dom_idl = await fetch("/interfaces/dom.idl").then(r => r.text());
+  const wakelock_idl = await fetch("/interfaces/wake-lock.idl").then(r => r.text());
+  const wakelock = await navigator.getWakeLock("screen");
+
   idl_array.add_untested_idls(dom_idl);
   idl_array.add_untested_idls('interface EventHandler {};');
   idl_array.add_untested_idls('interface Navigator {};');
   idl_array.add_idls(wakelock_idl);
+
   window.wakelock = wakelock;
   window.request = wakelock.createRequest();
+
   idl_array.add_objects({
     Navigator: ['navigator'],
     WakeLock: ['wakelock'],
     WakeLockRequest: ['request']
   });
   idl_array.test();
-}
-
-promise_test(() => {
-  return Promise.all([
-    fetch("/interfaces/dom.idl").then((response) => response.text()),
-    fetch("/interfaces/wake-lock.idl").then((response) => response.text()),
-    navigator.getWakeLock("screen")
-  ]).then(doTest);
-}, "Test driver");
+}, "Test IDL implementation of WakeLock API");
 </script>
-

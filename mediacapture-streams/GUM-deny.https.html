@@ -17,14 +17,7 @@
   <script src=/resources/testharnessreport.js></script>
   <script>
     promise_test(t => {
-      return navigator.mediaDevices.getUserMedia({video: true})
-      .then(stream => {
-        assert_unreached("The success callback should not be triggered since access is to be denied");
-      })
-      .catch(error => {
-        assert_equals(error.name, "NotAllowedError", "NotAllowedError returned as expected");
-        assert_equals(error.constraintName, undefined, "constraintName attribute not set as expected");
-      });
+      return promise_rejects(t, "NotAllowedError", navigator.mediaDevices.getUserMedia({video: true}));
     }, "Tests that the error callback is triggered when permission is denied");
   </script>
 </body>

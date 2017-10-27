@@ -12,6 +12,25 @@ the promise of working across browsers and devices without needing extra
 layers of abstraction to paper over the gaps left by specification
 editors and implementors.
 
+Table of Contents (ToC):
+===========================
+
+* [Setting Up the Repo](*setting-up-the-repo)
+* [Running the Tests](*running-the-tests)
+* [Running tests manually](*running-tests-manually)
+* [Running tests Automatically](*running-tests-automatically)
+* [Command Line Tools](*command-line-tools)
+* [Submodules](*submodules)
+* [Certificates](*certificates)
+* [Finding Things](*finding-things)
+* [Branches](*branches)
+* [Contributing](*contributing)
+* [Issues with web-platform-tests](*issues-with-web-platform-tests)
+* [Lint tooltest](*lint-tool)
+* [Adding command-line scripts ("tools" subdirs)](*adding-command-line-scripts-tools-subdirs)
+* [Test Review](*test-review)
+* [Documentation](*documentation)
+
 Setting Up the Repo
 ===================
 

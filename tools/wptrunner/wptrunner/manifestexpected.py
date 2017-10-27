@@ -3,6 +3,7 @@ import urlparse
 
 from wptmanifest.backends import static
 from wptmanifest.backends.static import ManifestItem
+from typing import Optional
 
 import expected
 
@@ -225,6 +226,7 @@ class SubtestNode(TestNode):
 
 
 def get_manifest(metadata_root, test_path, url_base, run_info):
+    # type: (str, str, str, dict) -> Optional[ExpectedManifest]
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
@@ -246,6 +248,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
         return None
 
 def get_dir_manifest(path, run_info):
+    # type: (str, dict) -> Optional[DirectoryManifest]
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 

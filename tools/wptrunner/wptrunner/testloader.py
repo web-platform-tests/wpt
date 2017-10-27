@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 from Queue import Empty
 from collections import defaultdict, OrderedDict, deque
 from multiprocessing import Queue
+from typing import Dict, Generator, Iterable, List, Tuple
 
 import manifestinclude
 import manifestexpected
@@ -353,6 +354,7 @@ class TestFilter(object):
                 self.manifest.add_exclude(test_manifests, item)
 
     def __call__(self, manifest_iter):
+        # type: (Iterable[Tuple[str, str, Test]]) -> Generator[Tuple[str, str, set[Test]]]
         for test_type, test_path, tests in manifest_iter:
             include_tests = set()
             for test in tests:
@@ -361,6 +363,7 @@ class TestFilter(object):
 
             if include_tests:
                 yield test_type, test_path, include_tests
+
 
 class TagFilter(object):
     def __init__(self, tags):
@@ -380,7 +383,7 @@ class ManifestLoader(object):
         if self.logger is None:
             self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
 
-    def load(self):
+    def load(self):  # type: () -> Dict[str, dict]
         rv = {}
         for url_base, paths in self.test_paths.iteritems():
             manifest_file = self.load_manifest(url_base=url_base,
@@ -432,19 +435,22 @@ class ManifestLoader(object):
 
         return manifest_file
 
+
 def iterfilter(filters, iter):
+    # type: (Iterable[TestFilter], Iterable) -> Generator
     for f in filters:
         iter = f(iter)
     for item in iter:
         yield item
 
+
 class TestLoader(object):
     def __init__(self,
-                 test_manifests,
-                 test_types,
+                 test_manifests,         # type: Dict[manifest.Manifest, dict]
+                 test_types,             # type: Iterable[str]
                  run_info,
-                 manifest_filters=None,
-                 meta_filters=None,
+                 manifest_filters=None,  # type: List[TestFilter]
+                 meta_filters=None,      # type: List[TagFilter]
                  chunk_type="none",
                  total_chunks=1,
                  chunk_number=1,
@@ -473,7 +479,7 @@ class TestLoader(object):
 
         self._test_ids = None
 
-        self.directory_manifests = {}
+        self.directory_manifests = {}  # type: Dict[str, manifestexpected.ExpectedManifest]
 
         self._load_tests()
 
@@ -494,6 +500,7 @@ class TestLoader(object):
         return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata)
 
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
+        # type: (...) -> List[manifestexpected.DirectoryManifest]
         rv = []
         path_parts = os.path.dirname(test_path).split(os.path.sep)
         for i in xrange(1,len(path_parts) + 1):
@@ -506,7 +513,12 @@ class TestLoader(object):
                 rv.append(manifest)
         return rv
 
-    def load_metadata(self, test_manifest, metadata_path, test_path):
+    def load_metadata(self,
+                      test_manifest,  # type: manifest.Manifest
+                      metadata_path,  # type: str
+                      test_path       # type: str
+                      ):
+        # type: (...) -> (List[manifestexpected.DirectoryManifest], manifestexpected.ExpectedManifest)
         inherit_metadata = self.load_dir_metadata(test_manifest, metadata_path, test_path)
         test_metadata = manifestexpected.get_manifest(
             metadata_path, test_path, test_manifest.url_base, self.run_info)

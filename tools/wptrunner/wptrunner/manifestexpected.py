@@ -218,13 +218,18 @@ class SubtestNode(TestNode):
         TestNode.__init__(self, name)
 
     @property
-    def is_empty(self):
+    def is_empty(self):  # type: () -> bool
         if self._data:
             return False
         return True
 
 
-def get_manifest(metadata_root, test_path, url_base, run_info):
+def get_manifest(metadata_root,  # type: str
+                 test_path,      # type: str
+                 url_base,       # type: str      
+                 run_info        # type: dict
+                 ):
+    # type: (...) -> ExpectedManifest
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
@@ -245,7 +250,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
     except IOError:
         return None
 
-def get_dir_manifest(path, run_info):
+def get_dir_manifest(path, run_info):  # type: (str, dict) -> ExpectedManifest
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 

@@ -16,7 +16,9 @@
 </svg>
 <script>
 requestAnimationFrame(function() {
-  document.querySelector('svg').setAttribute('width', 200);
-  document.documentElement.classList.remove('reftest-wait');
+  requestAnimationFrame(function() {
+    document.querySelector('svg').setAttribute('width', 200);
+    document.documentElement.classList.remove('reftest-wait');
+  });
 });
 </script>

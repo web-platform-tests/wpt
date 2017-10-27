@@ -41,7 +41,11 @@ function xhr_send(url_base, method, data, with_credentials) {
   return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.onload = function() {
-        resolve(JSON.parse(xhr.response));
+        try {
+          resolve(JSON.parse(xhr.response));
+        } catch (err) {
+          reject('bad response: ' + xhr.response);
+        }
       };
       xhr.onerror = function() {
         reject('XHR should succeed.');

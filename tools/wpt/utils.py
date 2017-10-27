@@ -10,14 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class Kwargs(dict):
-    def set_if_none(self, name, value, err_fn=None, desc=None, extra_cond=None):
-        """
-        :type name: str
-        :type value: Any
-        :type err_fn: (Kwargs, str) -> Any
-        :type desc: str
-        :type extra_cond: (Kwargs) -> bool
-        """
+    def set_if_none(self,
+                    name,            # type: str
+                    value,           # type: Any
+                    err_fn=None,     # type: (Kwargs, str) -> Any
+                    desc=None,       # type: str
+                    extra_cond=None  # type: (Kwargs) -> bool
+                   ):
         if desc is None:
             desc = name
 

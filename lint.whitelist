@@ -443,6 +443,13 @@ SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/transform
 SUPPORT-WRONG-DIR: css/WOFF2/manifest.txt
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css/css-masking-1/clip-path-svg-content/clip-path-clip-rule-008.svg
+NON-EXISTENT-REF: css/css-style-attr/style-attr-urls-002.xht
+NON-EXISTENT-REF: css/css-style-attr/style-attr-urls-003.xht
+NON-EXISTENT-REF: html/semantics/embedded-content/the-iframe-element/iframe-with-base.html
+NON-EXISTENT-REF: html/semantics/embedded-content/the-img-element/document-adopt-base-url.html
+NON-EXISTENT-REF: html/semantics/embedded-content/the-img-element/document-base-url.html
+NON-EXISTENT-REF: html/semantics/document-metadata/the-link-element/stylesheet-empty-href.html
+NON-EXISTENT-REF: html/semantics/document-metadata/the-link-element/stylesheet-with-base.html
 
 
 ## Whitespace rules that we can't enforce yet

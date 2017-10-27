@@ -16,7 +16,7 @@ class Kwargs(dict):
                     err_fn=None,     # type: (Kwargs, str) -> Any
                     desc=None,       # type: str
                     extra_cond=None  # type: (Kwargs) -> bool
-                   ):
+                    ):
         if desc is None:
             desc = name
 

@@ -236,7 +236,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
                     if test_type == "testharness":
                         run_tests = {"testharness": []}
-                        for test["testharness"] in test_loader.tests:
+                        for test in test_loader.tests["testharness"]:
                             if test.testdriver and not executor_cls.supports_testdriver():
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")

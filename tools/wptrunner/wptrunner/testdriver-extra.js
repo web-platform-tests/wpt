@@ -36,10 +36,10 @@
             // push and then reverse to avoid O(n) unshift in the loop
             let segments = [];
             for (let node = element;
-                 node.parentNode && node.parentNode.nodeType == Node.ELEMENT_NODE;
-                 node = node.parentNode) {
+                 node.parentElement;
+                 node = node.parentElement) {
                 let segment = "*|" + node.localName;
-                let nth = Array.prototype.indexOf.call(node.parentNode.children, node) + 1;
+                let nth = Array.prototype.indexOf.call(node.parentElement.children, node) + 1;
                 segments.push(segment + ":nth-child(" + nth + ")");
             }
             segments.push(":root");

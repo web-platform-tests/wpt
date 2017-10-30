@@ -208,10 +208,11 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         while len(webdriver.window_handles) > 1:
             current = webdriver.current_window_handle
             if current == parent:
-                if webdriver.window_handles[0] == parent:
-                    webdriver.switch_to.window(webdriver.window_handles[-1])
+                handles = webdriver.window_handles
+                if handles[0] == parent:
+                    webdriver.switch_to.window(handles[-1])
                 else:
-                    webdriver.switch_to.window(webdriver.window_handles[0])
+                    webdriver.switch_to.window(handles[0])
                 continue
 
             try:

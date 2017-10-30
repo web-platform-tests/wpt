@@ -253,9 +253,11 @@ class CallbackHandler(object):
     def __call__(self, result):
         self.logger.debug("Got async callback: %s" % result[1])
         try:
-            return getattr(self, "process_%s" % result[1])(result)
+            attr = getattr(self, "process_%s" % result[1])
         except AttributeError:
-            raise ValueError("Unknown callback type")
+            raise ValueError("Unknown callback type %r" % result[1])
+        else:
+            return attr(result[1])
 
     def process_complete(self, result):
         rv = [result[0]] + result[2]
@@ -292,7 +294,7 @@ class CallbackHandler(object):
 
         return False, None
 
-    def _send_mesage(self, message_type, status, message=None):
+    def _send_message(self, message_type, status, message=None):
         obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)

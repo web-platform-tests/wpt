@@ -249,6 +249,20 @@ class TestharnessTest(Test):
 
         self.testdriver = testdriver
 
+    @classmethod
+    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+        timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
+        testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
+        return cls(manifest_item.source_file.tests_root,
+                   manifest_item.url,
+                   inherit_metadata,
+                   test_metadata,
+                   timeout=timeout,
+                   path=manifest_item.source_file.path,
+                   protocol=protocol,
+                   testdriver=testdriver)
+
     @property
     def id(self):
         return self.url

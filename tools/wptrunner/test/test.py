@@ -1,16 +1,12 @@
 import ConfigParser
 import argparse
-import json
 import os
 import sys
-import tempfile
-import threading
-import time
-from StringIO import StringIO
 
 from mozlog import structuredlog, reader
 from mozlog.handlers import BaseHandler, StreamHandler, StatusHandler
 from mozlog.formatters import MachFormatter
+from typing import Dict
 from wptrunner import wptcommandline, wptrunner
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -65,8 +61,10 @@ def read_config():
     parser = ConfigParser.ConfigParser()
     parser.read("test.cfg")
 
-    rv = {"general":{},
-          "products":{}}
+    rv = {
+        "general": {},
+        "products": {}
+    }  # type: Dict[str, Dict]
 
     rv["general"].update(dict(parser.items("general")))
 

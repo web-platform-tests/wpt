@@ -102,6 +102,7 @@ class TestExecutor(object):
 
     test_type = None
     convert_result = None
+    supports_testdriver = False
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
@@ -124,10 +125,6 @@ class TestExecutor(object):
         self.last_environment = {"protocol": "http",
                                  "prefs": {}}
         self.protocol = None # This must be set in subclasses
-
-    @classmethod
-    def supports_testdriver(cls):
-        return False
 
     @property
     def logger(self):

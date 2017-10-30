@@ -160,6 +160,8 @@ class SeleniumRun(object):
 
 
 class SeleniumTestharnessExecutor(TestharnessExecutor):
+    supports_testdriver = True
+
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  **kwargs):
@@ -174,10 +176,6 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             self.script_resume = f.read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
-
-    @classmethod
-    def supports_testdriver(cls):
-        return True
 
     def is_alive(self):
         return self.protocol.is_alive()

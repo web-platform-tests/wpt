@@ -205,18 +205,17 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "timeout": timeout * 1000}
 
         parent = webdriver.current_window_handle
-        to_close = set(webdriver.window_handles) - {parent}
-        while to_close:
+        while len(webdriver.window_handles) > 1:
             current = webdriver.current_window_handle
-            if current in to_close:
-                to_close.remove(current)
-            else:
-                webdriver.switch_to.window(to_close.pop())
+            if current == parent:
+                continue
+
             try:
+                webdriver.switch_to.window(current)
                 webdriver.close()
             except Exception:
+                # sometimes tests close windows in racy ways, so don't worry too much
                 pass
-            webdriver.switch_to.window(parent)
 
         webdriver.execute_script(self.script % format_map)
         try:

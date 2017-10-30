@@ -203,7 +203,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "window_id": self.window_id,
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
-        
+
         parent = webdriver.current_window_handle
         to_close = set(webdriver.window_handles) - {parent}
         while to_close:
@@ -214,7 +214,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                 webdriver.switch_to.window(to_close.pop())
             webdriver.close()
         webdriver.switch_to.window(parent)
-        
+
         webdriver.execute_script(self.script % format_map)
         try:
             # Try this, it's in Level 1 but nothing supports it yet

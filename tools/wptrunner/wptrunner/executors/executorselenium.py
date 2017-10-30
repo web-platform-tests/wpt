@@ -257,7 +257,7 @@ class CallbackHandler(object):
         except AttributeError:
             raise ValueError("Unknown callback type %r" % result[1])
         else:
-            return attr(result[1])
+            return attr(result)
 
     def process_complete(self, result):
         rv = [result[0]] + result[2]

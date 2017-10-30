@@ -242,6 +242,11 @@ class TestharnessTest(Test):
     subtest_result_cls = TestharnessSubtestResult
     test_type = "testharness"
 
+    def __init__(self, testdriver=False, *args, **kwargs):
+        Test.__init__(self, *args, **kwargs)
+
+        self.testdriver = testdirver
+
     @property
     def id(self):
         return self.url

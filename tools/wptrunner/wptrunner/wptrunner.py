@@ -234,6 +234,15 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
 
+                    run_tests = []
+                    if test_type == "testharness":
+                        for test in test_loader.tests:
+                            if test.testdriver and not executor_cls.supports_testdriver():
+                                logger.test_start(test.id)
+                                logger.test_end(test.id, status="SKIP")
+                            else:
+                                run_tests.append(test)
+
                     with ManagerGroup("web-platform-tests",
                                       kwargs["processes"],
                                       test_source_cls,
@@ -247,7 +256,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                       kwargs["restart_on_unexpected"],
                                       kwargs["debug_info"]) as manager_group:
                         try:
-                            manager_group.run(test_type, test_loader.tests)
+                            manager_group.run(test_type, run_tests)
                         except KeyboardInterrupt:
                             logger.critical("Main thread got signal")
                             manager_group.stop()

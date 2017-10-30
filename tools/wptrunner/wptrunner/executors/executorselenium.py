@@ -175,6 +175,10 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
 
+    @classmethod
+    def supports_testdriver(cls):
+        return True
+
     def is_alive(self):
         return self.protocol.is_alive()
 

@@ -125,6 +125,10 @@ class TestExecutor(object):
                                  "prefs": {}}
         self.protocol = None # This must be set in subclasses
 
+    @classmethod
+    def supports_testdriver(cls):
+        return False
+
     @property
     def logger(self):
         """StructuredLogger for this executor"""

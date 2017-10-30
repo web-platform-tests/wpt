@@ -234,14 +234,16 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
 
-                    run_tests = []
                     if test_type == "testharness":
-                        for test in test_loader.tests:
+                        run_tests = {"testharness": []}
+                        for test["testharness"] in test_loader.tests:
                             if test.testdriver and not executor_cls.supports_testdriver():
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
                             else:
-                                run_tests.append(test)
+                                run_tests["testharness"].append(test)
+                    else:
+                        run_tests = test_loader.tests
 
                     with ManagerGroup("web-platform-tests",
                                       kwargs["processes"],

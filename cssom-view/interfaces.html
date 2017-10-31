@@ -55,7 +55,8 @@ function waitForLoad() {
 
 promise_test(function() {
   // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
+  return Promise.all([fetchData("/interfaces/eventhandler.idl"),
+                      fetchData("/interfaces/html.idl"),
                       fetchData("/interfaces/dom.idl"),
                       fetchData("/interfaces/cssom.idl"),
                       fetchData("/interfaces/geometry.idl"),

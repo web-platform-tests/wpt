@@ -23,7 +23,6 @@ INDENT TABS: touch-events/*
 INDENT TABS: web-animations/*
 INDENT TABS: webaudio/*
 INDENT TABS: webvtt/*
-INDENT TABS: XMLHttpRequest/*
 INDENT TABS: encoding/legacy*/*
 INDENT TABS: encrypted-media/polyfill/Makefile
 
@@ -44,7 +43,6 @@ TRAILING WHITESPACE: tools/*
 TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: WebIDL/*
 TRAILING WHITESPACE: webvtt/*
-TRAILING WHITESPACE: XMLHttpRequest/*
 TRAILING WHITESPACE: encoding/legacy*/*
 
 ## File types that should never be checked ##
@@ -258,11 +256,6 @@ SET TIMEOUT: websockets/*
 SET TIMEOUT: webstorage/eventTestHarness.js
 SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
-SET TIMEOUT: XMLHttpRequest/abort-during-done.htm
-SET TIMEOUT: XMLHttpRequest/abort-during-headers-received.htm
-SET TIMEOUT: XMLHttpRequest/abort-during-loading.htm
-SET TIMEOUT: XMLHttpRequest/open-url-multi-window-6.htm
-SET TIMEOUT: XMLHttpRequest/xmlhttprequest-timeout-reused.html
 SET TIMEOUT: XMLHttpRequest/resources/init.htm
 SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 

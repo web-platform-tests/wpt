@@ -186,7 +186,6 @@ SET TIMEOUT: html/dom/documents/resource-metadata-management/document-lastModifi
 SET TIMEOUT: html/dom/dynamic-markup-insertion/opening-the-input-stream/*
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/infrastructure/urls/resolving-urls/query-encoding/resources/resolve-url.js
-SET TIMEOUT: html/semantics/embedded-content/media-elements/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
 SET TIMEOUT: html/semantics/forms/textfieldselection/textfieldselection-setRangeText.html

@@ -17,51 +17,34 @@
 <script>
 "use strict";
 
-function doTest([html, dom, cssom, geometry, cssom_view]) {
-
-  var idlArray = new IdlArray();
-  var svg = "interface SVGElement : Element {};";
-  idlArray.add_untested_idls(html + dom + svg + cssom + geometry);
-  idlArray.add_idls(cssom_view);
-
-  idlArray.add_objects({
-    "Window": ["window"],
-    "MediaQueryList": ["matchMedia('all')"],
-    "MediaQueryListEvent": ["new MediaQueryListEvent('change')"],
-    "Screen": ["screen"],
-    "Document": ["document"],
-    "CaretPosition": ["document.caretPositionFromPoint(5, 5)"],
-    "Element": ["document.createElementNS('x', 'y')"],
-    "HTMLElement": ["document.createElement('div')"],
-    "HTMLImageElement": ["document.createElement('img')"],
-    "Range": ["new Range()"],
-    // "MouseEvent": ["new MouseEvent('foo')"],
-    "Text": ["document.createTextNode('x')"],
-    // "CSSPseudoElement": [],
-    "Document": ["document"],
-  });
-  idlArray.test();
+var objects = {
+  "Window": ["window"],
+  "MediaQueryList": ["matchMedia('all')"],
+  "MediaQueryListEvent": ["new MediaQueryListEvent('change')"],
+  "Screen": ["screen"],
+  "Document": ["document"],
+  "CaretPosition": ["document.caretPositionFromPoint(5, 5)"],
+  "Element": ["document.createElementNS('x', 'y')"],
+  "HTMLElement": ["document.createElement('div')"],
+  "HTMLImageElement": ["document.createElement('img')"],
+  "Range": ["new Range()"],
+  // "MouseEvent": ["new MouseEvent('foo')"],
+  "Text": ["document.createTextNode('x')"],
+  // "CSSPseudoElement": [],
+  "Document": ["document"],
 };
 
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
+addEventListener("load", function() {
+  test_idl({
+    tested_urls: ["/interfaces/cssom-view.idl"],
+    untested_urls: [
+      "/interfaces/html.idl",
+      "/interfaces/dom.idl",
+      "/interfaces/cssom.idl",
+      "/interfaces/geometry.idl",
+    ],
+    untested_code: "interface SVGElement : Element {};",
+    objects,
   });
-}
-
-promise_test(function() {
-  // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      fetchData("/interfaces/geometry.idl"),
-                      fetchData("/interfaces/cssom-view.idl"),
-                      waitForLoad()])
-                .then(doTest);
-}, "Test driver");
-
+});
 </script>

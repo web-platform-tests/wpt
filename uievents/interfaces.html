@@ -12,37 +12,18 @@
 
 <script>
 "use strict";
-function doTest([dom, uievents]) {
-  var idlArray = new IdlArray();
-  idlArray.add_untested_idls(dom);
-  idlArray.add_idls(uievents);
-
-  idlArray.add_objects({
-    FocusEvent: ['new FocusEvent("event")'],
-    MouseEvent: ['new MouseEvent("event")'],
-    WheelEvent: ['new WheelEvent("event")'],
-    KeyboardEvent: ['new KeyboardEvent("event")'],
-    CompositionEvent: ['new CompositionEvent("event")'],
-    UIEvent: ['new UIEvent("event")'],
-    InputEvent: ['new InputEvent("event")'],
-  });
-  idlArray.test();
+var objects = {
+  FocusEvent: ['new FocusEvent("event")'],
+  MouseEvent: ['new MouseEvent("event")'],
+  WheelEvent: ['new WheelEvent("event")'],
+  KeyboardEvent: ['new KeyboardEvent("event")'],
+  CompositionEvent: ['new CompositionEvent("event")'],
+  UIEvent: ['new UIEvent("event")'],
+  InputEvent: ['new InputEvent("event")'],
 };
-
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
-  });
-}
-
-promise_test(function() {
-  return Promise.all([fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/uievents.idl")])
-                .then(doTest);
-}, "Test driver");
-
+test_idl({
+  untested_urls: ["/interfaces/dom.idl"],
+  tested_urls: ["/interfaces/uievents.idl"],
+  objects,
+});
 </script>

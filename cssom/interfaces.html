@@ -29,61 +29,43 @@ Use a non-empty style attribute to get a non-empty CSSStyleDeclaration.
 
 <script>
 "use strict";
-var style_element, svg_element, xmlss_pi;
+var style_element = document.getElementById('styleElement');
+var svg_element = document.getElementById('svgElement');
+var xmlss_pi = document.getElementById('xmlssPiIframe').contentDocument.firstChild;
 
-function doTest([html, dom, cssom]) {
-  style_element = document.getElementById('styleElement');
-  svg_element = document.getElementById('svgElement');
-  xmlss_pi = document.getElementById('xmlssPiIframe').contentDocument.firstChild;
-
-  var idlArray = new IdlArray();
-  var svg = "interface SVGElement : Element {};";
-  idlArray.add_untested_idls(html + dom + svg);
-  idlArray.add_idls(cssom);
-
-  idlArray.add_objects({
-    "Document": ["document", "new Document()"],
-    "StyleSheetList": ["document.styleSheets"],
-    "CSSStyleSheet": ["style_element.sheet"],
-    "MediaList": ["style_element.sheet.media"],
-    "CSSRuleList": ["style_element.sheet.cssRules"],
-    "CSSImportRule": ["style_element.sheet.cssRules[0]"],
-    "CSSNamespaceRule": ["style_element.sheet.cssRules[1]"],
-    "CSSPageRule": ["style_element.sheet.cssRules[2]"],
-    "CSSMarginRule": ["style_element.sheet.cssRules[2].cssRules[0]"],
-    "CSSMediaRule": ["style_element.sheet.cssRules[3]"],
-    "CSSStyleRule": ["style_element.sheet.cssRules[4]"],
-    "CSSStyleDeclaration": ["style_element.sheet.cssRules[4].style", // CSSStyleRule
-                            "style_element.sheet.cssRules[2].style", // CSSPageRule
-                            "style_element.sheet.cssRules[2].cssRules[0].style", // CSSMarginRule
-                            "style_element.style", // ElementCSSInlineStyle for HTMLElement
-                            "svg_element.style", // ElementCSSInlineStyle for SVGElement
-                            "getComputedStyle(svg_element)"],
-    "ProcessingInstruction": ["xmlss_pi"],
-    "Window": ["window"],
-    "HTMLElement": ["style_element", "document.createElement('unknownelement')"],
-    "SVGElement": ["svg_element"],
-  });
-  idlArray.test();
+var objects = {
+  "Document": ["document", "new Document()"],
+  "StyleSheetList": ["document.styleSheets"],
+  "CSSStyleSheet": ["style_element.sheet"],
+  "MediaList": ["style_element.sheet.media"],
+  "CSSRuleList": ["style_element.sheet.cssRules"],
+  "CSSImportRule": ["style_element.sheet.cssRules[0]"],
+  "CSSNamespaceRule": ["style_element.sheet.cssRules[1]"],
+  "CSSPageRule": ["style_element.sheet.cssRules[2]"],
+  "CSSMarginRule": ["style_element.sheet.cssRules[2].cssRules[0]"],
+  "CSSMediaRule": ["style_element.sheet.cssRules[3]"],
+  "CSSStyleRule": ["style_element.sheet.cssRules[4]"],
+  "CSSStyleDeclaration": ["style_element.sheet.cssRules[4].style", // CSSStyleRule
+                          "style_element.sheet.cssRules[2].style", // CSSPageRule
+                          "style_element.sheet.cssRules[2].cssRules[0].style", // CSSMarginRule
+                          "style_element.style", // ElementCSSInlineStyle for HTMLElement
+                          "svg_element.style", // ElementCSSInlineStyle for SVGElement
+                          "getComputedStyle(svg_element)"],
+  "ProcessingInstruction": ["xmlss_pi"],
+  "Window": ["window"],
+  "HTMLElement": ["style_element", "document.createElement('unknownelement')"],
+  "SVGElement": ["svg_element"],
 };
 
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
+addEventListener("load", function() {
+  test_idl({
+    tested_urls: ["/interfaces/cssom.idl"],
+    untested_urls: [
+      "/interfaces/html.idl",
+      "/interfaces/dom.idl",
+    ],
+    untested_code: "interface SVGElement : Element {};",
+    objects,
   });
-}
-
-promise_test(function() {
-  // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      waitForLoad()])
-                .then(doTest);
-}, "Test driver");
-
+});
 </script>

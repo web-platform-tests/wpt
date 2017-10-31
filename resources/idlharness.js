@@ -122,6 +122,55 @@ var fround =
 })();
 //@}
 
+self.test_idl = function({
+    untested_code = "",
+    untested_urls = [],
+    tested_code = "",
+    tested_urls = [],
+    objects = {},
+    prevent_multiple_testing = [],
+}) {
+    function doTest([untested, tested]) {
+        var idlArray = new IdlArray();
+
+        if (untested_code) {
+            idlArray.add_untested_idls(untested_code);
+        }
+        for (let code of untested) {
+            idlArray.add_untested_idls(code);
+        }
+
+        if (tested_code) {
+            idlArray.add_idls(tested_code);
+        }
+        for (let code of tested) {
+            idlArray.add_idls(code);
+        }
+
+        idlArray.add_objects(objects);
+        for (var name of prevent_multiple_testing) {
+            idlArray.prevent_multiple_testing(name);
+        }
+        idlArray.test();
+    };
+
+    function fetchData(urls) {
+        function handle(response) {
+            if (!response.ok) {
+                throw new TypeError("Response is not ok for " + response.url);
+            }
+            return response.text();
+        }
+
+        return Promise.all(urls.map(url => fetch(url).then(handle)));
+    }
+
+    promise_test(function() {
+        return Promise.all([fetchData(untested_urls), fetchData(tested_urls)])
+                      .then(doTest);
+    }, "Test driver");
+}
+
 /// IdlArray ///
 // Entry point
 self.IdlArray = function()

@@ -88,6 +88,9 @@ steps:
       sender's [[SenderTrack]].
     steps:
       - step: 1
+        status: tested
+        files:
+          - RTCRtpParameters-encodings
         desc: >
           If the media stack is successfully configured with parameters, queue a
           task to run the following steps.

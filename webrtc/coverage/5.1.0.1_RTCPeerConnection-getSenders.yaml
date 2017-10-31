@@ -36,18 +36,21 @@ steps:
           For each transceiver in transceivers,
         steps:
           - step: 1
+            status: tested
             files:
               - RTCPeerConnection-addTransceiver
             desc: >
               Let sender be transceiver's [[Sender]].
 
           - step: 2
+            status: tested
             files:
               - RTCPeerConnection-addTransceiver
             desc: >
               Add sender to senderset.
 
       - step: 4
+        status: tested
         files:
           - RTCPeerConnection-addTransceiver
         desc: >

@@ -109,7 +109,7 @@ steps:
       RTCIceTransport , either by taking one from the ICE candidate pool or
       gathering it from scratch, the user agent MUST queue a task that runs the
       following steps.
-
+    steps:
       - step: 1
         status: trivial
         desc: >

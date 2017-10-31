@@ -2,7 +2,7 @@ spec_url: https://w3c.github.io/webrtc-pc/archives/20171023/webrtc.html
 section: 5.3
 desc: RTCRtpReceiver Interface
 steps:
-  - status: trival
+  - status: trivial
     desc: >
       To create an RTCRtpReceiver with kind, kind, and optionally an id string,
       id, run the following steps.

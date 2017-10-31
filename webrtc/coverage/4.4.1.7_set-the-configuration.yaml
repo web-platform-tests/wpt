@@ -67,7 +67,7 @@ steps:
       do an ICE restart.
 
   - step: 9
-    status: untesteable
+    status: untestable
     desc: >
       Set the ICE Agent's prefetched ICE candidate pool size as defined in
       [JSEP] (section 3.5.4. and section 4.1.1.) to the value of

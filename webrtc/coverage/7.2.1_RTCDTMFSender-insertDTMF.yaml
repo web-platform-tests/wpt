@@ -63,6 +63,7 @@ steps:
           Let sender be the RTCRtpSender used to send DTMF.
 
       - step: 2
+        status: trivial
         desc: >
           Let transceiver be the RTCRtpTransceiver object associated with sender.
 

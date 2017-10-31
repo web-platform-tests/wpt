@@ -39,7 +39,7 @@ steps:
       MediaStreamTracks in the resulting MediaStream are isolated so that
       content is not accessible to any application. Isolated MediaStreamTracks
       can be used for two purposes.
-
+    steps:
       - status: untestable
         desc: >
           Displayed in an appropriate media tag (e.g., a video or audio element).

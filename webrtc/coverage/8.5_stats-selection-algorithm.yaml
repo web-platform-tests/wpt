@@ -16,6 +16,7 @@ steps:
       result, return result, and abort these steps.
 
   - step: 3
+    status: tested
     files:
       - RTCPeerConnection-getStats
       - RTCRtpSender-getStats

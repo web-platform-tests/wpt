@@ -15,6 +15,7 @@ steps:
       argument.
 
   - step: 3
+    status: trivial
     desc: >
       Let streams be a list of MediaStream objects constructed from the method's
       remaining arguments, or an empty list if the method was called with a

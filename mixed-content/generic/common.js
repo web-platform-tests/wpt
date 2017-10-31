@@ -82,9 +82,17 @@ function setAttributes(el, attrs) {
  */
 function bindEvents(element, resolveEventName, rejectEventName) {
   element.eventPromise = new Promise(function(resolve, reject) {
-    element.addEventListener(resolveEventName  || "load", resolve);
-    element.addEventListener(rejectEventName || "error",
-                             function(e) { e.preventDefault(); reject(); } );
+    var timeout = setTimeout(function (e) {
+      reject("Timeout");
+    }, 1000);
+    element.addEventListener(resolveEventName  || "load", function (e) {
+      clearTimeout(timeout);
+      resolve(e);
+    });
+    element.addEventListener(rejectEventName || "error", function(e) {
+      clearTimeout(timeout);
+      reject();
+    });
   });
 }
 
@@ -313,10 +321,18 @@ function createMediaElement(type, media_attrs, source_attrs) {
   var sourceElement = createElement("source", {});
 
   mediaElement.eventPromise = new Promise(function(resolve, reject) {
-    mediaElement.addEventListener("loadeddata", resolve);
-
-    // Notice that the source element will raise the error.
-    sourceElement.addEventListener("error", reject);
+    // Setting a timeout, as some browsers don't fire `error` events.
+    var timeout = setTimeout(function (e) {
+      reject("Timeout");
+    }, 1000);
+    mediaElement.addEventListener("loadeddata", function (e) {
+      clearTimeout(timeout);
+      resolve(e);
+    });
+    sourceElement.addEventListener("error", function(e) {
+      clearTimeout(timeout);
+      reject();
+    });
   });
 
   setAttributes(mediaElement, media_attrs);
@@ -337,7 +353,7 @@ function createMediaElement(type, media_attrs, source_attrs) {
 function requestViaVideo(url) {
   return createMediaElement("video",
                             {},
-                            {type: "video/ogg", src: url}).eventPromise;
+                            {"src": url}).eventPromise;
 }
 
 /**
@@ -349,7 +365,7 @@ function requestViaVideo(url) {
 function requestViaAudio(url) {
   return createMediaElement("audio",
                             {},
-                            {type: "audio/wav", src: url}).eventPromise;
+                            {"type": "audio/wav", "src": url}).eventPromise;
 }
 
 /**
@@ -372,7 +388,7 @@ function requestViaPicture(url) {
  * @return {Promise} The promise for success/error events.
  */
 function requestViaObject(url) {
-  return createRequestViaElement("object", {"data": url}, document.body);
+  return createRequestViaElement("object", {"data": url, "type": "text/html"}, document.body);
 }
 
 /**

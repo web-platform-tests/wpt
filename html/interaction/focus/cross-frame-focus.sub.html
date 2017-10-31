@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Document.activeElement values between browsing contexts.</title>
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      'use strict';
+      async_test(function (t) {
+        var i = document.createElement('iframe');
+        i.src = 'http://{{domains[www1]}}/html/interaction/focus/iframe.html';
+        var i2 = document.createElement('iframe');
+        i2.src = 'about:blank';
+
+        var waitBlur = t.step_func_done(function(e) {
+          // Iframe returns (event, activeElement.tagName)
+          assert_array_equals(e.data, ['blur', 'INPUT']);
+        });
+        var waitFocus = t.step_func(function(e) {
+          // Iframe returns (event, activeElement.tagName)
+          assert_array_equals(e.data, ['focus', 'INPUT']);
+          assert_equals(document.activeElement, i);
+          window.removeEventListener('message', waitFocus);
+          window.addEventListener('message', waitBlur);
+          i2.focus();
+        });
+
+
+        window.addEventListener('message', waitFocus);
+
+        var input = document.createElement('input');
+        document.body.appendChild(input);
+        input.focus();
+        assert_equals(document.activeElement, input);
+
+        document.body.appendChild(i);
+        document.body.appendChild(i2);
+        i.focus();
+      }, "An iframe that loses focus to a sibling should not change its activeElement.");
+    </script>
+  </body>
+</html>
+

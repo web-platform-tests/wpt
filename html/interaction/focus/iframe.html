@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Page Title</title>
+    <script>
+      'use strict';
+      addEventListener('load', function() {
+        var input = document.getElementById('in');
+        input.addEventListener('focus', function() {
+          window.parent.postMessage(['focus', document.activeElement.tagName], '*');
+        });
+        window.addEventListener('blur', function() {
+          window.parent.postMessage(['blur', document.activeElement.tagName], '*');
+        });
+
+        input.focus();
+      });
+    </script>
+  </head>
+  <body>
+    <input id="in"></input>
+  </body>
+</html>

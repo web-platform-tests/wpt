@@ -10,7 +10,6 @@
 CR AT EOL: svg/import/*
 
 INDENT TABS: .gitmodules
-INDENT TABS: app-uri/*
 INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
@@ -24,19 +23,15 @@ INDENT TABS: web-animations/*
 INDENT TABS: webaudio/*
 INDENT TABS: webvtt/*
 INDENT TABS: encoding/legacy*/*
-INDENT TABS: encrypted-media/polyfill/Makefile
 
 TRAILING WHITESPACE: 2dcontext/tools/current-work-canvas.xhtml
-TRAILING WHITESPACE: app-uri/*
 TRAILING WHITESPACE: battery-status/*
 TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: custom-elements/*
 TRAILING WHITESPACE: html-longdesc/*
-TRAILING WHITESPACE: microdata/*
 TRAILING WHITESPACE: old-tests/*
 TRAILING WHITESPACE: pointerevents/*
-TRAILING WHITESPACE: progress-events/*
 TRAILING WHITESPACE: shadow-dom/*
 TRAILING WHITESPACE: svg/import/*
 TRAILING WHITESPACE: tools/*
@@ -109,17 +104,9 @@ PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/empty.xhtml
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.svg
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.xhtml
 
-# These have undefined entities; should probably find a way to define them
-PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-1.xhtml
-PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-2.xhtml
-PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-3.xhtml
-
 # Test generation files containing print statements
 PRINT STATEMENT:dom/nodes/Document-createElement-namespace-tests/generate.py
 PRINT STATEMENT:encrypted-media/polyfill/make-polyfill-tests.py
-
-# Should probably be fixed.
-W3C-TEST.ORG:subresource-integrity/refresh-header.js.headers
 
 # semi-legitimate use of console.*
 CONSOLE:console/*
@@ -134,10 +121,6 @@ CONSOLE:annotation-model/scripts/ajv.min.js
 CONSOLE:annotation-model/scripts/showdown.min.js
 CR AT EOL: annotation-model/scripts/showdown.min.js
 
-# use of console in a public library - annotation-protocol ensures
-# it is not actually used
-CONSOLE:annotation-protocol/scripts/uuid.js
-
 # Lint doesn't know about sub.svg I guess
 PARSE-FAILED:content-security-policy/svg/including.sub.svg
 
@@ -145,11 +128,6 @@ PARSE-FAILED:content-security-policy/svg/including.sub.svg
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/empty.xml
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.xml
 PARSE-FAILED:acid/acid3/empty.xml
-
-# The patches may have trailing whitespace
-TRAILING WHITESPACE:webgl/tools/*.patch
-# The tests under this directory are not done by us
-*:webgl/conformance-1.0.3/*
 
 # setTimeout usage (should probably mostly be fixed)
 SET TIMEOUT: *-manual.*
@@ -166,7 +144,6 @@ SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-003.html
 SET TIMEOUT: css/selectors/selector-read-write-type-change-002.html
 SET TIMEOUT: css/selectors/selector-required-type-change-002.html
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
-SET TIMEOUT: encrypted-media/Google/migrated_to_root_disabled/encrypted-media-utils.js
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -205,9 +182,6 @@ SET TIMEOUT: mixed-content/generic/sanity-checker.js
 SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: offscreen-canvas/the-offscreen-canvas/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
-SET TIMEOUT: old-tests/submission/Microsoft/sandbox/*
-SET TIMEOUT: old-tests/submission/Microsoft/structuredclone/structuredclone_0.html
-SET TIMEOUT: old-tests/webdriver/timeouts/res/implicit_waits_tests.html
 SET TIMEOUT: page-visibility/resources/pagevistestharness.js
 SET TIMEOUT: payment-request/allowpaymentrequest/setting-allowpaymentrequest-timing.https.sub.html
 SET TIMEOUT: payment-request/payment-request-response-id.html
@@ -294,7 +268,6 @@ GENERATE_TESTS: css/css-tables/width-distribution/distribution-algo-min-content-
 GENERATE_TESTS: css/css-tables/width-distribution/distribution-algo-min-content-percent-guess.html
 GENERATE_TESTS: css/css-tables/width-distribution/distribution-algo-min-content-specified-guess.1.html
 GENERATE_TESTS: css/css-tables/width-distribution/distribution-algo-min-content-specified-guess.html
-GENERATE_TESTS: css/work-in-progress/ttwf_sf/divya/index-002.html
 GENERATE_TESTS: css/cssom/index-002.html
 GENERATE_TESTS: dom/nodes/case.js
 GENERATE_TESTS: dom/ranges/Range-cloneRange.html
@@ -334,10 +307,6 @@ SET TIMEOUT: html/webappapis/timers/*
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
 
-# CI scripts
-PRINT STATEMENT:check_stability.py
-W3C-TEST.ORG:check_stability.py
-
 # Travis
 W3C-TEST.ORG:.travis.yml
 
@@ -357,12 +326,6 @@ TRAILING WHITESPACE: css/css-writing-modes/tools/generators/ucd/Blocks.txt
 
 ## Test generation files
 CONSOLE: css/css-writing-modes/tools/generators/unicode-data.js
-
-
-## Give up on work-in-progress for now
-TRAILING WHITESPACE: css/work-in-progress/*
-INDENT TABS: css/work-in-progress/*
-CR AT EOL: css/work-in-progress/*
 
 
 ## Test plans and implementation reports
@@ -430,14 +393,11 @@ SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/backgroun
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-tr.png
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule.png
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/masking/blank.html
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/transforms/green.html
-SUPPORT-WRONG-DIR: css/WOFF2/manifest.txt
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css/css-masking/clip-path-svg-content/clip-path-clip-rule-008.svg
 
 
 ## Whitespace rules that we can't enforce yet
-INDENT TABS: css/.gitmodules
 INDENT TABS: css/compositing/*
 INDENT TABS: css/CSS2/*
 INDENT TABS: css/css-align/*
@@ -477,7 +437,6 @@ INDENT TABS: css/WOFF2/*
 
 
 ## Things we're stopping from getting worse
-CONSOLE: css/*/support/check-layout-th.js
 CONSOLE: css/css-regions/elements/support/Three.js
 CONSOLE: css/css-regions/interactivity/selection/support/js/selection-test-helper.js
 CONSOLE: css/css-regions/stacking-context/javascript-stacking-context-002.html
@@ -489,9 +448,6 @@ CONSOLE: css/css-writing-modes/orthogonal-parent-shrink-to-fit-001*.html
 CONSOLE: css/css-writing-modes/tools/generators/gulpfile.js
 CONSOLE: css/css-writing-modes/tools/generators/text-orientation-generator.js
 CONSOLE: css/cssom/index-002.html
-CONSOLE: css/work-in-progress/mozilla/mochitest-simplified/packed.js
-CONSOLE: css/work-in-progress/ttwf_sf/divya/index-002.html
-CONSOLE: css/work-in-progress/ttwf_tokyo/hiromitsuuuuu/test_font_face_parser.html
 
 TRAILING WHITESPACE: css/CSS2/generated-content/before-after-positioned-002.html
 TRAILING WHITESPACE: css/CSS2/generated-content/before-after-positioned-003.html
@@ -601,19 +557,6 @@ SET TIMEOUT: css/selectors/focus-within-shadow-002.html
 SET TIMEOUT: css/selectors/focus-within-shadow-003.html
 SET TIMEOUT: css/selectors/focus-within-shadow-004.html
 SET TIMEOUT: css/selectors/focus-within-shadow-005.html
-SET TIMEOUT: css/work-in-progress/apple/css-transforms/scripts/prefixfree.min.js
-SET TIMEOUT: css/work-in-progress/aryehgregor/transitions/test_transitions.html
-SET TIMEOUT: css/work-in-progress/aryehgregor/transitions/test_transitions_per_property.html
-SET TIMEOUT: css/work-in-progress/gabriele/css-xml-dom/js/prototype.js
-SET TIMEOUT: css/work-in-progress/hixie/no-pass-condition/box-float-clear-004-demo.html
-SET TIMEOUT: css/work-in-progress/hp/th/collapsible2.js
-SET TIMEOUT: css/work-in-progress/microsoft/CSS3/animations/*
-SET TIMEOUT: css/work-in-progress/microsoft/CSS3/selectors/dynamicEmpty.htm
-SET TIMEOUT: css/work-in-progress/microsoft/CSS3/transitions/*
-SET TIMEOUT: css/work-in-progress/mozilla/mochitest-simplified/SimpleTest.js
-SET TIMEOUT: css/work-in-progress/mozilla/mochitest-simplified/packed.js
-SET TIMEOUT: css/work-in-progress/opera/animations/*
-SET TIMEOUT: css/work-in-progress/ttwf_sf/houzhenyu/flex-item-change-width.html
 
 ## Build system stuff
 CSS-COLLIDING-TEST-NAME: css/*/OWNERS
@@ -656,7 +599,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-regions/interactivity/resizing/support/util.
 
 # More duplicated copies of the above
 CSS-COLLIDING-SUPPORT-NAME: css/support/pattern-rgr-grg-rgr.png
-CSS-COLLIDING-SUPPORT-NAME: css/CSS2/archive/raw-tests/css1tests/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/floats-clear/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/media/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/cssom-view/support/pattern-rgr-grg-rgr.png
@@ -701,7 +643,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-shapes/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/ui/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/margin-padding-clear/support/pattern-grg-rgr-grg.png
-CSS-COLLIDING-SUPPORT-NAME: css/CSS2/archive/raw-tests/css1tests/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/syntax/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/zindex/support/pattern-grg-rgr-grg.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/colors/support/pattern-grg-rgr-grg.png
@@ -738,7 +679,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-style-attr/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/text/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-multicol/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/values/support/swatch-red.png
-CSS-COLLIDING-SUPPORT-NAME: css/CSS2/archive/raw-tests/css1tests/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/box-display/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/generated-content/support/swatch-red.png
 CSS-COLLIDING-SUPPORT-NAME: css/support/support/swatch-red.png
@@ -780,7 +720,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-values/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/csswg-issues/submitted/css2.1/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/borders/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/filter-effects/support/swatch-green.png
-CSS-COLLIDING-SUPPORT-NAME: css/CSS2/archive/raw-tests/css1tests/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/support/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/cssom/support/swatch-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-writing-modes/support/swatch-green.png
@@ -854,7 +793,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/CSS2/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/ui/support/animated.gif
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/backgrounds/support/animated.gif
 CSS-COLLIDING-SUPPORT-NAME: css/css-shapes/shape-outside/shape-image/support/animated.gif
-CSS-COLLIDING-SUPPORT-NAME: css/CSS2/archive/raw-tests/css1tests/support/pattern-gg-gr.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/css1/support/pattern-gg-gr.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-display/support/util.js
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-1.png
@@ -1005,5 +943,3 @@ CONSOLE:payment-request/payment-request-response-id.html
 
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
-LAYOUTTESTS APIS: css/work-in-progress/opera/css-device-adapt/template.blink.html
-LAYOUTTESTS APIS: webgl/conformance-1.0.3/*

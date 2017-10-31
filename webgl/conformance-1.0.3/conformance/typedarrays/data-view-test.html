@@ -198,7 +198,7 @@ function testFloat(isTestingGet, func, array, start, expected)
     test(isTestingGet, func, 7, expected, true);
     createDataView(array, 10, true, start);
     test(isTestingGet, func, 10, expected, true);
-    
+
     // Big endian.
     createDataView(array, 0, false);
     test(isTestingGet, func, 0, expected, false);

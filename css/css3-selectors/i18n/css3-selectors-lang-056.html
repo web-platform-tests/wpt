@@ -9,20 +9,22 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name='flags' content='HTMLonly'>
 <style type='text/css'>
-.test div { width: 50px; }
-#box[lang='es'] { width: 100px; }
+.test div { width: 100px; height: 50px; background-color: blue; }
+#box[lang='es'] { width: 50px; }
+.ref { width: 100px; height: 50px; background-color: blue; }
 </style>
 </head>
 <body>
 
 
-
+<p>The following two blocks should be <strong>identical</strong>.</p>
 <div class="test"><div id="box" xml:lang="es">&#xA0;</div></div>
+<p class="ref">&#xA0;</p>
 
 
 <script>
 test(function() {
-assert_equals(document.getElementById('box').offsetWidth, 50);
+assert_equals(document.getElementById('box').offsetWidth, 100);
 }, "A [lang='es'] value that matches an identical xml:lang attribute value will NOT produce styling in pages served as HTML.");
 </script>
 

@@ -9,17 +9,19 @@
 <script src="/resources/testharnessreport.js"></script>
 <meta name='flags' content='HTMLonly'>
 <style type='text/css'>
-.test div { width: 50px; }
+.test div { width: 50px; height: 50px; background-color: blue; }
  		#colonlangcontroltest { color: red; font-weight: bold; width: 400px; }
 		#colonlangcontroltest:lang(xx) { display:none; }
 #box:lang(az-Arab-IR) { width: 100px; }
+.ref { width: 100px; height: 50px; background-color: blue; }
 </style>
 </head>
 <body>
 
 
-
+<p>The following two blocks should be <strong>identical</strong>.</p>
 <div class="test"><div id="box" lang="az-arab-IR">&#xA0;</div></div>
+<p class="ref">&#xA0;</p>
 <p lang='xx' id='colonlangcontroltest'>This test failed because it relies on :lang for results, but :lang is not supported by this browser.
 
 

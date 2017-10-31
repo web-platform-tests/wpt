@@ -8,15 +8,17 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style type='text/css'>
-.test div { width: 50px; }
+.test div { width: 50px; height: 50px; background-color: blue; }
 #box[lang|='es'] { width: 100px; }
+.ref { width: 100px; height: 50px; background-color: blue; }
 </style>
 </head>
 <body>
 
 
-
+<p>The following two blocks should be <strong>identical</strong>.</p>
 <div class="test"><div id="box" lang="es">&#xA0;</div></div>
+<p class="ref">&#xA0;</p>
 
 
 <script>

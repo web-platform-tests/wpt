@@ -82,16 +82,11 @@ function setAttributes(el, attrs) {
  */
 function bindEvents(element, resolveEventName, rejectEventName) {
   element.eventPromise = new Promise(function(resolve, reject) {
-    var timeout = setTimeout(function (e) {
-      reject("Timeout");
-    }, 1000);
     element.addEventListener(resolveEventName  || "load", function (e) {
-      clearTimeout(timeout);
       resolve(e);
     });
     element.addEventListener(rejectEventName || "error", function(e) {
-      clearTimeout(timeout);
-      reject();
+      reject(e);
     });
   });
 }
@@ -299,12 +294,14 @@ function requestViaLinkStylesheet(url) {
  * @return {Promise} The promise for success/error events.
  */
 function requestViaLinkPrefetch(url) {
-  // TODO(kristijanburnik): Check if prefetch should support load and error
-  // events. For now we assume it's not specified.
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ
-  return createRequestViaElement("link",
-                                 {"rel": "prefetch", "href": url},
-                                 document.head);
+  var link = document.createElement('link');
+  if (link.relList && link.relList.supports && link.relList.supports("prefetch")) {
+    return createRequestViaElement("link",
+                                   {"rel": "prefetch", "href": url},
+                                   document.head);
+  } else {
+    return Promise.reject("This browser does not support 'prefetch'.");
+  }
 }
 
 /**
@@ -321,17 +318,17 @@ function createMediaElement(type, media_attrs, source_attrs) {
   var sourceElement = createElement("source", {});
 
   mediaElement.eventPromise = new Promise(function(resolve, reject) {
-    // Setting a timeout, as some browsers don't fire `error` events.
-    var timeout = setTimeout(function (e) {
-      reject("Timeout");
-    }, 1000);
     mediaElement.addEventListener("loadeddata", function (e) {
-      clearTimeout(timeout);
       resolve(e);
     });
+
+    // Safari doesn't fire an `error` event when blocking mixed content.
+    mediaElement.addEventListener("stalled", function(e) {
+      reject(e);
+    });
+
     sourceElement.addEventListener("error", function(e) {
-      clearTimeout(timeout);
-      reject();
+      reject(e);
     });
   });
 

@@ -15,7 +15,11 @@ editors and implementors.
 Setting Up the Repo
 ===================
 
-Clone or otherwise get https://github.com/w3c/web-platform-tests.
+Clone this repository from the command line:
+
+```sh
+git clone https://github.com/w3c/web-platform-tests.git && git submodule update --init --recursive
+```
 
 Running the Tests
 =================
@@ -48,22 +52,23 @@ excluded from your proxy lookups.
 Running Tests Manually
 ======================
 
-The test server can be started using
+The test server can be started using this command:
 
     ./wpt serve
 
-This will start HTTP servers on two ports and a websockets server on
-one port. By default one web server starts on port 8000 and the other
+This will start HTTP servers on two ports and a WebSockets server on
+one port. By default, one web server starts on port 8000 and the other
 ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, copy the
-`config.default.json` file to `config.json` and edit the new file,
-replacing the part that reads:
+*first* HTTP server in the output.
+
+To override the default ports, copy the `config.default.json` file to
+`config.json`, and replace the portion in the new file that reads
 
 ```
 "http": [8000, "auto"]
 ```
 
-to some port of your choice e.g.
+to some port of your choice – e.g.,
 
 ```
 "http": [1234, "auto"]
@@ -75,46 +80,46 @@ Running Tests Automatically
 Tests can be run automatically in a browser using the `run` command of
 the `wpt` script in the root of the checkout. This requires the hosts
 file setup documented above, but you must *not* have the
-test server already running when calling `wpt run`. The basic command
+test server already running when calling `wpt run`. The basic command-
 line syntax is:
 
 ```
 ./wpt run product [tests]
 ```
 
-**On Windows**: You will need to preceed the prior command with
+**On Windows**: You will need to precede the prior command with
 `python` or the path to the python binary.
 
-where `product` is currently `firefox` or `chrome` and `[tests]` is a
-list of paths to tests. This will attempt to automatically locate a
-browser instance and install required dependencies. The command is
-very configurable; for examaple to specify a particular binary use
+`product` is currently `firefox` or `chrome`.
+
+`[tests]` is a list of paths to tests. This will attempt to automatically
+locate a browser instance and install required dependencies. The command is
+very configurable; for example, to specify a particular binary use
 `wpt run --binary=path product`. The full range of options can be see
 with `wpt run --help` and `wpt run --wptrunner-help`.
 
-Not all dependencies can be automatically installed; in particular the
+Not all dependencies can be automatically installed; in particular, the
 `certutil` tool required to run https tests with Firefox must be
 installed using a system package manager or similar.
 
-On Debian/Ubuntu certutil may be installed using:
+On **Debian/Ubuntu**: `certutil` may be installed using:
 
 ```
 sudo apt install libnss3-tools
 ```
 
-And on macOS with homebrew using:
+On **macOS**: `nss` may be installed using [Homebrew](https://brew.sh/):
 
 ```
 brew install nss
 ```
 
-On other platforms, download the firefox archive and common.tests.zip
-archive for your platform from
-[https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/](Mozilla CI)
+On other platforms, download the Firefox archive and respective
+`*.common.tests.zip` archive for your platform from [Mozilla CI](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/).
 
-Then extract `certutil[.exe]` from the tests.zip package and
-`libnss3[.so|.dll|.dynlib]` and put the former on your path and the latter on
-your library path.
+Then extract `certutil[.exe]` from the `*.common.tests.zip` package, and make
+sure it is accessible from your system `PATH`. The `libnss3[.so|.dll|.dynlib]`
+file ensure is in your library path.
 
 
 Command Line Tools
@@ -129,7 +134,7 @@ commands are:
 * `wpt lint` - For running the lint against all tests
 * `wpt manifest` - For updating or generating a `MANIFEST.json` test manifest
 * `wpt install` - For installing the latest release of a browser or
-  webdriver server on the local machine.
+  webdriver server on the local machine
 
 <span id="submodules">Submodules</span>
 =======================================
@@ -144,7 +149,7 @@ git submodule update --init --recursive
 ```
 
 Prior to commit `39d07eb01fab607ab1ffd092051cded1bdd64d78` submodules
-were requried for basic functionality. If you are working with an
+were required for basic functionality. If you are working with an
 older checkout, the above command is required in all cases.
 
 When moving between a commit prior to `39d07eb` and one after it git
@@ -183,24 +188,27 @@ then remove the `tools` and `resources` directories, as above.
 <span id="windows-notes">Windows Notes</span>
 =============================================
 
-On Windows `wpt` commands mut bre prefixed with `python` or the path
+On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
 
 Alternatively, you may also use
 [Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
-in the Windows 10 Anniversary Update build, then access your windows
+in the Windows 10 Anniversary Update build; then access your Windows
 partition from there to launch `wpt` commands.
 
 Please make sure git and your text editor do not automatically convert
-line endings, as it will cause lint errors. For git, please set
-`git config core.autocrlf false` in your working tree.
+line endings, causing lint errors. For git, set this in your working tree:
+
+```sh
+git config core.autocrlf false
+```
 
 Certificates
 ============
 
-By default pregenerated certificates for the web-platform.test domain
+By default pre-generated certificates for the `web-platform.test` domain
 are provided in the repository. If you wish to generate new
-certificates for any reason it's possible to use OpenSSL when starting
+certificates for any reason, it's possible to use OpenSSL when starting
 the server, or starting a test run, by providing the
 `--ssl-type=openssl` argument to the `wpt serve` or `wpt run`
 commands.
@@ -208,7 +216,7 @@ commands.
 If you installed OpenSSL in such a way that running `openssl` at a
 command line doesn't work, you also need to adjust the path to the
 OpenSSL binary. This can be done by adding a section to `config.json`
-like:
+like so:
 
 ```
 "ssl": {"openssl": {"binary": "/path/to/openssl"}}
@@ -221,13 +229,13 @@ little extra setup, i.e.:
 
 Run the installer for Win32_OpenSSL_v1.1.0b (30MB). During installation,
 change the default location for where to Copy OpenSSL Dlls from the
-System directory to the /bin directory.
+System directory to the `/bin` directory.
 
 After installation, ensure that the path to OpenSSL (typically,
-this will be `C:\OpenSSL-Win32\bin`) is in your `%Path%`
+this will be `C:\OpenSSL-Win32\bin`) is in your `%PATH%`
 [Environment Variable](http://www.computerhope.com/issues/ch000549.htm).
 If you forget to do this part, you will most likely see a 'File Not Found'
-error when you start wptserve.
+error when you start `wptserve`.
 
 Finally, set the path value in the server configuration file to the
 default OpenSSL configuration file location. To do this,
@@ -240,11 +248,11 @@ will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
 Publication
 ===========
 
-The master branch is automatically synced to http://w3c-test.org/.
+The master branch is automatically synced to https://w3c-test.org/.
 
 Pull requests are
 [automatically mirrored](http://w3c-test.org/submissions/) except those
-that modify sensitive resources (such as `.py`). The latter require
+that modify sensitive resources (such as `.py` files). The latter require
 someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
 indicate the pull request has been checked.
 
@@ -364,10 +372,10 @@ because we have to go through all the tests and ensure that they match
 the specification correctly. But we look at all of them, and take
 everything that we can.
 
-OWNERS files are used only to indicate who should be notified of pull
+`OWNERS` files are used only to indicate who should be notified of pull
 requests.  If you are interested in receiving notifications of proposed
 changes to tests in a given directory, feel free to add yourself to the
-OWNERS file. Anyone with expertise in the specification under test can
+`OWNERS` file. Anyone with expertise in the specification under test can
 approve a pull request.  In particular, if a test change has already
 been adequately reviewed "upstream" in another repository, it can be
 pushed here without any further review by supplying a link to the
@@ -381,7 +389,7 @@ public-test-infra@w3.org mailing list (low traffic) by
 [signing up to our mailing list](mailto:public-test-infra-request@w3.org?subject=subscribe).
 The mailing list is [archived][mailarchive].
 
-Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
+Join us on IRC #testing ([irc.w3.org][ircw3org], port 6665). The channel
 is [archived][ircarchive].
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md

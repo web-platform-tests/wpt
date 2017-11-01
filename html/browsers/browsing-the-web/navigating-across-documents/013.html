@@ -1,20 +1,46 @@
 <!doctype html>
-<title>Link with onclick navigation to javascript url with delayed document.write and href navigation </title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank">
+<title>Link with href navigation to "javascript: url", order of execution</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<a target="test" href="javascript:parent.events.push('javascript');">Test</a>
+<a target="test" href="javascript:parent.postMessage(location.href, '*');">Test</a>
 <script>
-var t = async_test(undefined, {timeout:4000});
-var events = [];
-t.step(function() {
-  document.getElementsByTagName("a")[0].click();
-  events.push('after script');
+var test = async_test();
+var reports = [];
+
+window.onmessage = test.step_func(function(e) {
+  reports.push(e.data);
+  // "about:blank" is expected last, if this is not received last or
+  // not received at all, the test must fail.
+  if (e.data === "about:blank") {
+    assert_equals(reports[0], "click");
+    assert_equals(reports[1], "about:blank");
+    assert_equals(reports.length, 2);
+  } else {
+    throw new Error("'javascript: url' code is expected to run asynchronously and in the target nested browsing context");
+  }
+  test.done();
 });
-onload = t.step_func(function() {
-  // javascript: executions are async.
-  assert_array_equals(events, ['after script', 'javascript']);
-  t.done();
+
+test.step(function() {
+  reports.push("click");
+  document.querySelector("a").click();
 });
 </script>
+
+<!--
+1. This test creates an anchor with an href containing a "javascript: url".
+2. The test "clicks" the anchor, triggering the "javascript: url" href navigation,
+    which must be evaluated and executed asynchronously.
+3. location.href is used to prove that the "javascript: url"'s contents
+    are executed in the iframe.
+4. If the semantics are implemented correctly, reports will be
+    ["click", "about:blank"]
+
+-->

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/feature-policy/resources/featurepolicy.js></script>
+<script>
+  'use strict';
+  
+  const same_origin_src = '/feature-policy/resources/feature-policy-wakelock.html';
+  const cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
+      same_origin_src;
+  const feature_name = 'Feature policy "wake-lock"';
+  const header = 'allow="wake-lock" attribute';
+
+  async_test(t => {
+    test_feature_availability(
+        'navigator.getWakeLock("screen")', t, same_origin_src,
+        expect_feature_available_default, 'wake-lock');
+  }, feature_name + ' can be enabled in same-origin iframe using ' + header);
+
+  async_test(t => {
+    test_feature_availability(
+        'navigator.getWakeLock("screen")', t, cross_origin_src,
+        expect_feature_available_default, 'wake-lock');
+  }, feature_name + ' can be enabled in cross-origin iframe using ' + header);
+</script>
+</body>

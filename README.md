@@ -1,309 +1,661 @@
-The web-platform-tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w3.org/?channels=testing)
-==============================
 
-The web-platform-tests Project is a W3C-coordinated attempt to build a
-cross-browser testsuite for the Web-platform stack. Writing tests in a way
-that allows them to be run in all browsers gives browser projects
-confidence that they are shipping software that is compatible with other
-implementations, and that later implementations will be compatible with
-their implementations. This in turn gives Web authors/developers
-confidence that they can actually rely on the Web platform to deliver on
-the promise of working across browsers and devices without needing extra
-layers of abstraction to paper over the gaps left by specification
-editors and implementors.
+# WebIDL 2
 
-Running the Tests
-=================
+[![NPM version](https://badge.fury.io/js/webidl2.svg)](http://badge.fury.io/js/webidl2)
 
-The tests are designed to be run from your local computer. The test
-environment requires [Python 2.7+](http://www.python.org/downloads) (but not Python 3.x).
-You will also need a copy of OpenSSL.
+## Purpose
 
-On Windows, be sure to add the Python directory (`c:\python2x`, by default) to
-your `%Path%` [Environment Variable](http://www.computerhope.com/issues/ch000549.htm),
-and read the [Windows Notes](#windows-notes) section below.
+This is a parser for the [WebIDL](http://dev.w3.org/2006/webapi/WebIDL/) language. If
+you don't know what that is, then you probably don't need it. It is meant to be used
+both in Node and in the browser (the parser likely works in other JS environments, but
+not the test suite).
 
-To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The
-following entries are required:
+## Installation
 
-```
-127.0.0.1   web-platform.test
-127.0.0.1   www.web-platform.test
-127.0.0.1   www1.web-platform.test
-127.0.0.1   www2.web-platform.test
-127.0.0.1   xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1   xn--lve-6lad.web-platform.test
-0.0.0.0     nonexistent-origin.web-platform.test
+Just the usual. For Node:
+
+```Bash
+npm install webidl2
 ```
 
-If you are behind a proxy, you also need to make sure the domains above are
-excluded from your proxy lookups.
+In the browser:
 
-The test environment can then be started using
-
-    ./serve
-
-This will start HTTP servers on two ports and a websockets server on
-one port. By default one web server starts on port 8000 and the other
-ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, copy the
-`config.default.json` file to `config.json` and edit the new file,
-replacing the part that reads:
-
-```
-"http": [8000, "auto"]
+```HTML
+<script src='webidl2.js'></script>
 ```
 
-to some port of your choice e.g.
+## Documentation
 
-```
-"http": [1234, "auto"]
-```
+The API to WebIDL2 is trivial: you parse a string of WebIDL and it returns a syntax tree.
 
-If you installed OpenSSL in such a way that running `openssl` at a
-command line doesn't work, you also need to adjust the path to the
-OpenSSL binary. This can be done by adding a section to `config.json`
-like:
+### Parsing
 
-```
-"ssl": {"openssl": {"binary": "/path/to/openssl"}}
+In Node, that happens with:
+
+```JS
+var WebIDL2 = require("webidl2");
+var tree = WebIDL2.parse("string of WebIDL");
 ```
 
-<span id="submodules">Submodules</span>
-=======================================
-
-Some optional components of web-platform-tests (test components from
-third party software and pieces of the CSS build system) are included
-as submodules. To obtain these components run the following in the
-root of your checkout:
-
-```
-git submodule update --init --recursive
+In the browser:
+```HTML
+<script src='webidl2.js'></script>
+<script>
+  var tree = WebIDL2.parse("string of WebIDL");
+</script>
 ```
 
-Prior to commit `39d07eb01fab607ab1ffd092051cded1bdd64d78` submodules
-were requried for basic functionality. If you are working with an
-older checkout, the above command is required in all cases.
+### Advanced Parsing
 
-When moving between a commit prior to `39d07eb` and one after it git
-may complain
+`parse()` can optionally accept a second parameter, an options object, which can be used to
+modify parsing behavior.
 
-```
-$ git checkout master
-error: The following untracked working tree files would be overwritten by checkout:
-[…]
-```
-
-followed by a long list of files. To avoid this error remove
-the `resources` and `tools` directories before switching branches:
-
-```
-$ rm -r resources/ tools/
-$ git checkout master
-Switched to branch 'master'
-Your branch is up-to-date with 'origin/master'
+The following options are recognized:
+```JS
+{
+  allowNestedTypedefs: false
+}
 ```
 
-When moving in the opposite direction, i.e. to a commit that does have
-submodules, you will need to `git submodule update`, as above. If git
-throws an error like:
+And their meanings are as follows:
 
-```
-fatal: No url found for submodule path 'resources/webidl2/test/widlproc' in .gitmodules
-Failed to recurse into submodule path 'resources/webidl2'
-fatal: No url found for submodule path 'tools/html5lib' in .gitmodules
-Failed to recurse into submodule path 'resources'
-Failed to recurse into submodule path 'tools'
-```
+* `allowNestedTypedefs`: Boolean indicating whether the parser should accept `typedef`s as valid members of `interface`s.
+This is non-standard syntax and therefore the default is `false`.
 
-then remove the `tools` and `resources` directories, as above.
+### Errors
 
-<span id="windows-notes">Windows Notes</span>
-=============================================
+When there is a syntax error in the WebIDL, it throws an exception object with the following
+properties:
 
-Running wptserve with SSL enabled on Windows typically requires
-installing an OpenSSL distribution.
-[Shining Light](https://slproweb.com/products/Win32OpenSSL.html)
-provide a convenient installer that is known to work, but requires a
-little extra setup, i.e.:
+* `message`: the error message
+* `line`: the line at which the error occurred.
+* `input`: a short peek at the text at the point where the error happened
+* `tokens`: the five tokens at the point of error, as understood by the tokeniser
+  (this is the same content as `input`, but seen from the tokeniser's point of view)
 
-Run the installer for Win32_OpenSSL_v1.1.0b (30MB). During installation,
-change the default location for where to Copy OpenSSL Dlls from the
-System directory to the /bin directory.
+The exception also has a `toString()` method that hopefully should produce a decent
+error message.
 
-After installation, ensure that the path to OpenSSL (typically,
-this will be `C:\OpenSSL-Win32\bin`) is in your `%Path%`
-[Environment Variable](http://www.computerhope.com/issues/ch000549.htm).
-If you forget to do this part, you will most likely see a 'File Not Found'
-error when you start wptserve.
+### AST (Abstract Syntax Tree)
 
-Finally, set the path value in the server configuration file to the
-default OpenSSL configuration file location. To do this,
-copy `config.default.json` in the web-platform-tests root to `config.json`.
-Then edit the JSON so that the key `ssl/openssl/base_conf_path` has a
-value that is the path to the OpenSSL config file (typically this
-will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
+The `parse()` method returns a tree object representing the parse tree of the IDL.
+Comment and white space are not represented in the AST.
 
-Alternatively, you may also use
-[Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
-in the Windows 10 Anniversary Update build, then access your windows
-partition from there to launch wptserve.
+The root of this object is always an array of definitions (where definitions are
+any of interfaces, dictionaries, callbacks, etc. — anything that can occur at the root
+of the IDL).
 
-Publication
-===========
+### IDL Type
 
-The master branch is automatically synced to http://w3c-test.org/.
+This structure is used in many other places (operation return types, argument types, etc.).
+It captures a WebIDL type with a number of options. Types look like this and are typically
+attached to a field called `idlType`:
 
-Pull requests are
-[automatically mirrored](http://w3c-test.org/submissions/) except those
-that modify sensitive resources (such as `.py`). The latter require
-someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
-indicate the pull request has been checked.
-
-Finding Things
-==============
-
-Each top-level directory matches the shortname used by a standard, with
-some exceptions. (Typically the shortname is from the standard's
-corresponding GitHub repository.)
-
-For some of the specifications, the tree under the top-level directory
-represents the sections of the respective documents, using the section
-IDs for directory names, with a maximum of three levels deep.
-
-So if you're looking for tests in HTML for "The History interface",
-they will be under `html/browsers/history/the-history-interface/`.
-
-Various resources that tests depend on are in `common`, `images`, and
-`fonts`.
-
-Branches
-========
-
-In the vast majority of cases the **only** upstream branch that you
-should need to care about is `master`. If you see other branches in
-the repository, you can generally safely ignore them.
-
-Contributing
-============
-
-Save the Web, Write Some Tests!
-
-Absolutely everyone is welcome (and even encouraged) to contribute to
-test development, so long as you fulfill the contribution requirements
-detailed in the [Contributing Guidelines][contributing]. No test is
-too small or too simple, especially if it corresponds to something for
-which you've noted an interoperability bug in a browser.
-
-The way to contribute is just as usual:
-
-* Fork this repository (and make sure you're still relatively in sync
-  with it if you forked a while ago).
-* Create a branch for your changes:
-  `git checkout -b topic`.
-* Make your changes.
-* Run the lint script described below.
-* Commit locally and push that to your repo.
-* Send in a pull request based on the above.
-
-Issues with web-platform-tests
-------------------------------
-
-If you spot an issue with a test and are not comfortable providing a
-pull request per above to fix it, please
-[file a new issue](https://github.com/w3c/web-platform-tests/issues/new).
-Thank you!
-
-Lint tool
----------
-
-We have a lint tool for catching common mistakes in test files. You
-can run it manually by starting the `lint` executable from the root of
-your local web-platform-tests working directory like this:
-
-```
-./lint
+```JS
+{
+  "sequence": false,
+  "generic": null,
+  "idlType": "void",
+  "nullable": false,
+  "union": false,
+}
 ```
 
-The lint tool is also run automatically for every submitted pull
-request, and reviewers will not merge branches with tests that have
-lint errors, so you must fix any errors the lint tool reports. For
-details on doing that, see the [lint-tool documentation][lint-tool].
+Where the fields are as follows:
 
-But in the unusual case of error reports for things essential to a
-certain test or that for other exceptional reasons shouldn't prevent
-a merge of a test, update and commit the `lint.whitelist` file in the
-web-platform-tests root directory to suppress the error reports. For
-details on doing that, see the [lint-tool documentation][lint-tool].
+* `sequence`: Boolean indicating if it is a sequence. Same as `generic === "sequence"`.
+* `generic`: String indicating the generic type (e.g. "Promise", "sequence"). `null`
+  otherwise.
+* `idlType`: Can be different things depending on context. In most cases, this will just
+  be a string with the type name. But the reason this field isn't called "typeName" is
+  because it can take more complex values. If the type is a union, then this contains an
+  array of the types it unites. If it is a generic type, it contains the IDL type
+  description for the type in the sequence, the eventual value of the promise, etc.
+* `nullable`: Boolean indicating whether this is nullable or not.
+* `union`: Boolean indicating whether this is a union type or not.
 
-[lint-tool]: https://github.com/w3c/web-platform-tests/blob/master/docs/lint-tool.md
+### Interface
 
-Adding command-line scripts ("tools" subdirs)
----------------------------------------------
+Interfaces look like this:
 
-Sometimes you may want to add a script to the repository that's meant
-to be used from the command line, not from a browser (e.g., a script
-for generating test files). If you want to ensure (e.g., for security
-reasons) that such scripts won't be handled by the HTTP server, but
-will instead only be usable from the command line, then place them in
-either:
+```JS
+{
+  "type": "interface",
+  "name": "Animal",
+  "partial": false,
+  "members": [...],
+  "inheritance": null,
+  "extAttrs": [...]
+}, {
+  "type": "interface",
+  "name": "Human",
+  "partial": false,
+  "members": [...],
+  "inheritance": "Animal",
+  "extAttrs": [...]
+}
+```
 
-* the `tools` subdir at the root of the repository, or
+The fields are as follows:
 
-* the `tools` subdir at the root of any top-level directory in the
-  repository which contains the tests the script is meant to be used
-  with
+* `type`: Always "interface".
+* `name`: The name of the interface.
+* `partial`: A boolean indicating whether it's a partial interface.
+* `members`: An array of interface members (attributes, operations, etc.). Empty if there are none.
+* `inheritance`: A string giving the name of an interface this one inherits from, `null` otherwise.
+  **NOTE**: In v1 this was an array, but multiple inheritance is no longer supported so this didn't make
+  sense.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
 
-Any files in those `tools` directories won't be handled by the HTTP
-server; instead the server will return a 404 if a user navigates to
-the URL for a file within them.
+### Interface mixins
 
-If you want to add a script for use with a particular set of tests but
-there isn't yet any `tools` subdir at the root of a top-level
-directory in the repository containing those tests, you can create a
-`tools` subdir at the root of that top-level directory and place your
-scripts there.
+Interfaces mixins look like this:
 
-For example, if you wanted to add a script for use with tests in the
-`notifications` directory, create the `notifications/tools` subdir and
-put your script there.
+```JS
+{
+  "type": "interface mixin",
+  "name": "Animal",
+  "partial": false,
+  "members": [...],
+  "extAttrs": [...]
+}, {
+  "type": "interface mixin",
+  "name": "Human",
+  "partial": false,
+  "members": [...],
+  "extAttrs": [...]
+}
+```
 
-Test Review
-===========
+The fields are as follows:
 
-We can sometimes take a little while to go through pull requests
-because we have to go through all the tests and ensure that they match
-the specification correctly. But we look at all of them, and take
-everything that we can.
+* `type`: Always "interface mixin".
+* `name`: The name of the interface mixin.
+* `partial`: A boolean indicating whether it's a partial interface mixin.
+* `members`: An array of interface members (attributes, operations, etc.). Empty if there are none.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
 
-OWNERS files are used only to indicate who should be notified of pull
-requests.  If you are interested in receiving notifications of proposed
-changes to tests in a given directory, feel free to add yourself to the
-OWNERS file. Anyone with expertise in the specification under test can
-approve a pull request.  In particular, if a test change has already
-been adequately reviewed "upstream" in another repository, it can be
-pushed here without any further review by supplying a link to the
-upstream review.
+### Namespace
 
-Getting Involved
-================
+Namespaces look like this:
 
-If you wish to contribute actively, you're very welcome to join the
-public-test-infra@w3.org mailing list (low traffic) by
-[signing up to our mailing list](mailto:public-test-infra-request@w3.org?subject=subscribe).
-The mailing list is [archived][mailarchive].
+```JS
+{
+  "type": "namespace",
+  "name": "Console",
+  "partial": false,
+  "members": [...],
+  "extAttrs": [...]
+}
+```
 
-Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
-is [archived][ircarchive].
+The fields are as follows:
 
-[contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
-[ircw3org]: https://www.w3.org/wiki/IRC
-[ircarchive]: http://logs.glob.uno/?c=w3%23testing
-[mailarchive]: https://lists.w3.org/Archives/Public/public-test-infra/
+* `type`: Always "namespace".
+* `name`: The name of the namespace.
+* `partial`: A boolean indicating whether it's a partial namespace.
+* `members`: An array of namespace members (attributes and operations). Empty if there are none.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
 
-Documentation
-=============
+### Callback Interfaces
 
-* [How to write and review tests](http://testthewebforward.org/docs/)
-* [Documentation for the wptserve server](http://wptserve.readthedocs.org/en/latest/)
+These are captured by the same structure as [Interfaces](#interface) except that
+their `type` field is "callback interface".
+
+### Callback
+
+A callback looks like this:
+
+```JS
+{
+  "type": "callback",
+  "name": "AsyncOperationCallback",
+  "idlType": {
+    "sequence": false,
+    "generic": null,
+    "nullable": false,
+    "union": false,
+    "idlType": "void"
+  },
+  "arguments": [...],
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "callback".
+* `name`: The name of the callback.
+* `idlType`: An [IDL Type](#idl-type) describing what the callback returns.
+* `arguments`: A list of [arguments](#arguments), as in function paramters.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Dictionary
+
+A dictionary looks like this:
+
+```JS
+{
+  "type": "dictionary",
+  "name": "PaintOptions",
+  "partial": false,
+  "members": [{
+    "type": "field",
+    "name": "fillPattern",
+    "required": false,
+    "idlType": {
+      "sequence": false,
+      "generic": null,
+      "nullable": true,
+      "union": false,
+      "idlType": "DOMString"
+    },
+    "extAttrs": [],
+    "default": {
+      "type": "string",
+      "value": "black"
+    }
+  }],
+  "inheritance": null,
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "dictionary".
+* `name`: The dictionary name.
+* `partial`: Boolean indicating whether it's a partial dictionary.
+* `members`: An array of members (see below).
+* `inheritance`: A string indicating which dictionary is being inherited from, `null` otherwise.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+All the members are fields as follows:
+
+* `type`: Always "field".
+* `name`: The name of the field.
+* `required`: Boolean indicating whether this is a [required](https://heycam.github.io/webidl/#required-dictionary-member) field.
+* `idlType`: An [IDL Type](#idl-type) describing what field's type.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `default`: A [default value](#default-and-const-values), absent if there is none.
+
+### Enum
+
+An enum looks like this:
+
+```JS
+{
+  "type": "enum",
+  "name": "MealType",
+  "values": [
+    { "type": "string", "value": "rice" },
+    { "type": "string", "value": "noodles" },
+    { "type": "string", "value": "other" }
+  ],
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "enum".
+* `name`: The enum's name.
+* `values`: An array of values.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Typedef
+
+A typedef looks like this:
+
+```JS
+{
+  "type": "typedef",
+  "typeExtAttrs": [],
+  "idlType": {
+    "sequence": true,
+    "generic": "sequence",
+    "nullable": false,
+    "union": false,
+    "idlType": {
+      "sequence": false,
+      "generic": null,
+      "nullable": false,
+      "union": false,
+      "idlType": "Point"
+    }
+  },
+  "name": "PointSequence",
+  "extAttrs": []
+}
+```
+
+
+The fields are as follows:
+
+* `type`: Always "typedef".
+* `name`: The typedef's name.
+* `idlType`: An [IDL Type](#idl-type) describing what typedef's type.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `typeExtAttrs`: A list of [extended attributes](#extended-attributes) that apply to the
+type rather than to the typedef as a whole.
+
+### Implements
+
+An implements definition looks like this:
+
+```JS
+{
+  "type": "implements",
+  "target": "Node",
+  "implements": "EventTarget",
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "implements".
+* `target`: The interface that implements another.
+* `implements`: The interface that is being implemented by the target.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Includes
+
+An includes definition looks like this:
+
+```JS
+{
+  "type": "includes",
+  "target": "Node",
+  "includes": "EventTarget",
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "includes".
+* `target`: The interface that includes an interface mixin.
+* `includes`: The interface mixin that is being included by the target.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Operation Member
+
+An operation looks like this:
+```JS
+{
+  "type": "operation",
+  "getter": false,
+  "setter": false,
+  "deleter": false,
+  "static": false,
+  "stringifier": false,
+  "idlType": {
+    "sequence": false,
+    "generic": null,
+    "nullable": false,
+    "union": false,
+    "idlType": "void"
+  },
+  "name": "intersection",
+  "arguments": [{
+    "optional": false,
+    "variadic": true,
+    "extAttrs": [],
+    "idlType": {
+      "sequence": false,
+      "generic": null,
+      "nullable": false,
+      "union": false,
+      "idlType": "long"
+    },
+    "name": "ints"
+  }],
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "operation".
+* `getter`: True if a getter operation.
+* `setter`: True if a setter operation.
+* `deleter`: True if a deleter operation.
+* `static`: True if a static operation.
+* `stringifier`: True if a stringifier operation.
+* `idlType`: An [IDL Type](#idl-type) of what the operation returns. If a stringifier, may be absent.
+* `name`: The name of the operation. If a stringifier, may be `null`.
+* `arguments`: An array of [arguments](#arguments) for the operation.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Attribute Member
+
+An attribute member looks like this:
+
+```JS
+{
+  "type": "attribute",
+  "static": false,
+  "stringifier": false,
+  "inherit": false,
+  "readonly": false,
+  "idlType": {
+    "sequence": false,
+    "generic": null,
+    "nullable": false,
+    "union": false,
+    "idlType": "RegExp"
+  },
+  "name": "regexp",
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "attribute".
+* `name`: The attribute's name.
+* `static`: True if it's a static attribute.
+* `stringifier`: True if it's a stringifier attribute.
+* `inherit`: True if it's an inherit attribute.
+* `readonly`: True if it's a read-only attribute.
+* `idlType`: An [IDL Type](#idl-type) for the attribute.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Constant Member
+
+A constant member looks like this:
+
+```JS
+{
+  "type": "const",
+  "nullable": false,
+  "idlType": "boolean",
+  "name": "DEBUG",
+  "value": {
+    "type": "boolean",
+    "value": false
+  },
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always "const".
+* `nullable`: Whether its type is nullable.
+* `idlType`: The type of the constant (a simple type, the type name).
+* `name`: The name of the constant.
+* `value`: The constant value as described by [Const Values](#default-and-const-values)
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Iterator Member
+
+Iterator members look like this
+
+```JS
+{
+  "type": "iterator",
+  "getter": false,
+  "setter": false,
+  "deleter": false,
+  "static": false,
+  "stringifier": false,
+  "idlType": {
+    "sequence": false,
+    "generic": null,
+    "nullable": false,
+    "union": false,
+    "idlType": "Session2"
+  },
+  "iteratorObject": "SessionIterator",
+  "extAttrs": []
+}
+```
+
+* `type`: Always "iterator".
+* `iteratorObject`: The string on the right-hand side; absent if there isn't one.
+* the rest: same as on [operations](#operation-member).
+
+### Arguments
+
+The arguments (e.g. for an operation) look like this:
+
+```JS
+{
+  "arguments": [{
+    "optional": false,
+    "variadic": true,
+    "extAttrs": [],
+    "idlType": {
+      "sequence": false,
+      "generic": null,
+      "nullable": false,
+      "union": false,
+      "idlType": "long"
+    },
+    "name": "ints"
+  }]
+}
+```
+
+The fields are as follows:
+
+* `optional`: True if the argument is optional.
+* `variadic`: True if the argument is variadic.
+* `idlType`: An [IDL Type](#idl-type) describing the type of the argument.
+* `name`: The argument's name.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+### Extended Attributes
+
+Extended attributes are arrays of items that look like this:
+
+```JS
+{
+  "extAttrs": [{
+    "name": "TreatNullAs",
+    "arguments": null,
+    "type": "extended-attribute",
+    "rhs": {
+      "type": "identifier",
+      "value": "EmptyString"
+    }
+  }]
+}
+```
+
+The fields are as follows:
+
+* `name`: The extended attribute's name.
+* `arguments`: If the extended attribute takes arguments (e.g. `[Foo()]`) or if
+  its right-hand side does (e.g. `[NamedConstructor=Name(DOMString blah)]`) they
+  are listed here. Note that an empty arguments list will produce an empty array,
+  whereas the lack thereof will yield a `null`. If there is an `rhs` field then
+  they are the right-hand side's arguments, otherwise they apply to the extended
+  attribute directly.
+* `type`: Always `"extended-attribute"`.
+* `rhs`: If there is a right-hand side, this will capture its `type` (which can be
+  "identifier" or "identifier-list") and its `value`.
+* `typePair`: If the extended attribute is a `MapClass` this will capture the
+  map's key type and value type respectively.
+
+### Default and Const Values
+
+Dictionary fields and operation arguments can take default values, and constants take
+values, all of which have the following fields:
+
+* `type`: One of string, number, boolean, null, Infinity, NaN, or sequence.
+
+For string, number, boolean, and sequence:
+
+* `value`: The value of the given type, as a string. For sequence, the only possible value is `[]`.
+
+For Infinity:
+
+* `negative`: Boolean indicating whether this is negative Infinity or not.
+
+### `iterable<>`, `legacyiterable<>`, `maplike<>`, `setlike<>` declarations
+
+These appear as members of interfaces that look like this:
+
+```JS
+{
+  "type": "maplike", // or "legacyiterable" / "iterable" / "setlike"
+  "idlType": /* One or two types */ ,
+  "readonly": false, // only for maplike and setlike
+  "extAttrs": []
+}
+```
+
+The fields are as follows:
+
+* `type`: Always one of "iterable", "legacyiterable", "maplike" or "setlike".
+* `idlType`: An [IDL Type](#idl-type) (or an array of two types) representing the declared type arguments.
+* `readonly`: Whether the maplike or setlike is declared as read only.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
+
+
+## Testing
+
+In order to run the tests you need to ensure that the widlproc submodule inside `test` is
+initialized and up to date:
+
+```Bash
+git submodule init
+git submodule update
+```
+
+### Running
+
+The test runs with mocha and expect.js. Normally, running mocha in the root directory
+should be enough once you're set up.
+
+### Coverage
+
+Current test coverage, as documented in `coverage.html`, is 95%. You can run your own
+coverage analysis with:
+
+```Bash
+jscoverage lib lib-cov
+```
+
+That will create the lib-cov directory with instrumented code; the test suite knows
+to use that if needed. You can then run the tests with:
+
+```Bash
+JSCOV=1 mocha --reporter html-cov > coverage.html
+```
+
+Note that I've been getting weirdly overescaped results from the html-cov reporter,
+so you might wish to try this instead:
+
+```Bash
+JSCOV=1 mocha  --reporter html-cov | sed "s/&lt;/</g" | sed "s/&gt;/>/g" | sed "s/&quot;/\"/g" > coverage.html
+```
+### Browser tests
+
+In order to test in the browser, get inside `test/web` and run `make-web-tests.js`. This
+will generate a `browser-tests.html` file that you can open in a browser. As of this
+writing tests pass in the latest Firefox, Chrome, Opera, and Safari. Testing on IE
+and older versions will happen progressively.

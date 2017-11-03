@@ -1,0 +1,22 @@
+{
+  "name": "webidl2",
+  "description": "A WebIDL Parser",
+  "version": "8.1.0",
+  "contributors": [
+    "Robin Berjon <robin@berjon.com> (https://berjon.com)",
+    "Marcos Caceres <marcos@marcosc.com> (https://marcosc.com)",
+    "Kagami Sascha Rosylight <saschaplas@outlook.com>"
+  ],
+  "license": "W3C",
+  "dependencies": {},
+  "devDependencies": {
+    "expect": "21.2.1",
+    "jsondiffpatch": "0.2.5",
+    "mocha": "4.0.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": "git://github.com/darobin/webidl2.js",
+  "main": "index"
+}

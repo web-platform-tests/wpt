@@ -1,0 +1,52 @@
+[
+    {
+        "type": "interface",
+        "name": "Counter",
+        "partial": false,
+        "members": [
+            {
+                "type": "attribute",
+                "static": false,
+                "stringifier": false,
+                "inherit": false,
+                "readonly": true,
+                "idlType": {
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "name": "value",
+                "extAttrs": [
+                    {
+                        "name": "Replaceable",
+                        "arguments": null,
+                        "type": "extended-attribute",
+                        "rhs": null
+                    }
+                ]
+            },
+            {
+                "type": "operation",
+                "getter": false,
+                "setter": false,
+                "deleter": false,
+                "static": false,
+                "stringifier": false,
+                "idlType": {
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "void"
+                },
+                "name": "increment",
+                "arguments": [],
+                "extAttrs": []
+            }
+        ],
+        "inheritance": null,
+        "extAttrs": []
+    }
+]

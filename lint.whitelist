@@ -157,20 +157,11 @@ SET TIMEOUT: html/browsers/history/the-history-interface/*
 SET TIMEOUT: html/browsers/history/the-location-interface/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
-SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
-SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
-SET TIMEOUT: html/dom/documents/resource-metadata-management/document-lastModified-01.html
 SET TIMEOUT: html/dom/dynamic-markup-insertion/opening-the-input-stream/*
 SET TIMEOUT: html/editing/dnd/*
-SET TIMEOUT: html/infrastructure/urls/resolving-urls/query-encoding/resources/resolve-url.js
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
-SET TIMEOUT: html/semantics/forms/textfieldselection/textfieldselection-setRangeText.html
-SET TIMEOUT: html/semantics/forms/the-input-element/checkbox.html
-SET TIMEOUT: html/semantics/interactive-elements/the-details-element/toggleEvent.html
 SET TIMEOUT: html/semantics/scripting-1/the-script-element/*
-SET TIMEOUT: html/syntax/parsing/DOMContentLoaded-defer-support.js
-SET TIMEOUT: html/webappapis/animation-frames/same-dispatch-time.html
 SET TIMEOUT: html/webappapis/scripting/event-loops/*
 SET TIMEOUT: html/webappapis/scripting/events/event-handler-processing-algorithm-error/*
 SET TIMEOUT: html/webappapis/scripting/processing-model-2/*
@@ -302,6 +293,8 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/window-named-properties-003.html
 
 # Intentional use of setTimeout
+SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
+SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 
 # setTimeout use in reftests

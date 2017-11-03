@@ -287,13 +287,12 @@ addTest(function() {
                       whitelistedWindowPropNames,
                       "Object.getOwnPropertyNames() gives the right answer for cross-origin Window");
   assert_array_equals(Object.keys(C).sort(),
-                      whitelistedWindowPropNames,
+                      whitelistedWindowIndices,
                       "Object.keys() gives the right answer for cross-origin Window");
   assert_array_equals(Object.getOwnPropertyNames(C.location).sort(),
                       whitelistedLocationPropNames,
                       "Object.getOwnPropertyNames() gives the right answer for cross-origin Location");
-  assert_array_equals(Object.keys(C.location).sort(),
-                      whitelistedLocationPropNames,
+  assert_equals(Object.keys(C.location).length, 0,
                       "Object.keys() gives the right answer for cross-origin Location");
 }, "[[OwnPropertyKeys]] should return all properties from cross-origin objects");
 

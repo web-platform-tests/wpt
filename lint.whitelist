@@ -119,6 +119,9 @@ CONSOLE: annotation-model/scripts/ajv.min.js
 CONSOLE: annotation-model/scripts/showdown.min.js
 CR AT EOL: annotation-model/scripts/showdown.min.js
 
+# console used by Node.js scripts to print out coverage report
+CONSOLE:webrtc/tools/scripts/*
+
 # Helper files that aren't valid XML
 PARSE-FAILED: acid/acid3/empty.xml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/empty.svg

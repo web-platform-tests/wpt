@@ -77,12 +77,10 @@
             }
 
             var rect = element.getClientRects()[0];
-            var top = Math.min(rect.y, rect.y + rect.height);
-            var left = Math.min(rect.x, rect.x + rect.width);
             var centerPoint = getInViewCenterPoint(rect);
             return window.test_driver_internal.click(element,
-                                                     {x: top + centerPoint[0],
-                                                      y: left + centerPoint[1]});
+                                                     {x: centerPoint[0],
+                                                      y: centerPoint[1]});
         }
     };
 

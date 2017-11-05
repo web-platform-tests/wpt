@@ -91,6 +91,22 @@ html/browsers/offline/appcache/workers/resources/appcache-worker.py
     assert err == ""
 
 
+def test_files_changed_ignore():
+    from tools.wpt.testfiles import exclude_ignored
+    files = ["resources/testharness.js", "resources/webidl2/index.js", "test/test.js"]
+    changed, ignored = exclude_ignored(files, ignore_rules=["resources/testharness*"])
+    assert changed == ["resources/webidl2/index.js", "test/test.js"]
+    assert ignored == ["resources/testharness.js"]
+
+
+def test_files_changed_ignore_rules():
+    from tools.wpt.testfiles import compile_ignore_rule
+    assert compile_ignore_rule("foo*bar*/baz").pattern == "^foo\*bar[^/]*/baz$"
+    assert compile_ignore_rule("foo**bar**/baz").pattern == "^foo\*\*bar.*/baz$"
+    assert compile_ignore_rule("foobar/baz/*").pattern == "^foobar/baz/[^/]*$"
+    assert compile_ignore_rule("foobar/baz/**").pattern == "^foobar/baz/.*$"
+
+
 def test_tests_affected(capsys):
     # This doesn't really work properly for random commits because we test the files in
     # the current working directory for references to the changed files, not the ones at

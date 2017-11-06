@@ -24,28 +24,41 @@
 <div id="log"></div>
 
 <script>
-var tests = []
+var tests = [];
 
-function iframeRef( frameRef ) {
+function iframeRef(frameRef) {
     return frameRef.contentWindow
         ? frameRef.contentWindow.document
-        : frameRef.contentDocument
+        : frameRef.contentDocument;
+}
+
+function showNodes() {
+    var iframe = iframeRef(document.getElementById("scrwin"));
+    nodes = iframe.querySelectorAll("span");
+
+    for (var i = 0; i < nodes.length; i++) {
+        tests[i] = async_test(
+            "U+" +
+                nodes[i].dataset.cp +
+                " " +
+                String.fromCodePoint(parseInt(nodes[i].dataset.cp, 16)) +
+                " " +
+                eucjpDecoder(nodes[i].dataset.bytes) +
+                " " +
+                nodes[i].dataset.bytes
+        );
     }
 
-function showNodes () {
-    var iframe = iframeRef( document.getElementById('scrwin') );
-    nodes = iframe.querySelectorAll('span')
-
-    for (var i=0; i<nodes.length; i++) {
-        tests[i] = async_test("U+"+nodes[i].dataset.cp+' '+String.fromCodePoint(parseInt(nodes[i].dataset.cp,16))+' '+eucjpDecoder(nodes[i].dataset.bytes)+' '+nodes[i].dataset.bytes)
-        }
-
-    for (var i=0; i<nodes.length; i++) {
-        tests[i].step(function() {assert_equals(nodes[i].textContent, eucjpDecoder(nodes[i].dataset.bytes)) } )
-        tests[i].done()
-        }
+    for (var i = 0; i < nodes.length; i++) {
+        tests[i].step(function() {
+            assert_equals(
+                nodes[i].textContent,
+                eucjpDecoder(nodes[i].dataset.bytes)
+            );
+        });
+        tests[i].done();
     }
-
+}
 </script>
 </body>
 </html>

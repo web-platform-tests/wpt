@@ -1,5 +1,5 @@
 "use strict";
-// Usage: `node generate-test-wrappers.js js-filename1.js [js-filename2.js ...]` will generate:
+// Usage: `node --harmony generate-test-wrappers.js js-filename1.js [js-filename2.js ...]` will generate:
 // - js-filename1.html
 // - js-filename1.sharedworker.html
 // - js-filename1.dedicatedworker.html

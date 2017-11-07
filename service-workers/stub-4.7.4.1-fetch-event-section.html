@@ -18,7 +18,6 @@ interface FetchEvent : Event {
   readonly attribute Request request;
   readonly attribute Client client; // The window issuing the request.
   readonly attribute Context context;
-  readonly attribute boolean isReload;
 
   void respondWith(Promise<AbstractResponse> r);
   Promise<any> forwardTo(ScalarValueString url);

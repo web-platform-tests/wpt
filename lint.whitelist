@@ -306,6 +306,7 @@ SET TIMEOUT: acid/acid3/test.html
 
 # Travis
 W3C-TEST.ORG: .travis.yml
+WEB-PLATFORM.TEST: .travis.yml
 
 # Config
 WEB-PLATFORM.TEST: config.default.json

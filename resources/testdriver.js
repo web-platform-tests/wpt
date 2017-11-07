@@ -28,9 +28,11 @@
 
         if ("elementsFromPoint" in document) {
             return document.elementsFromPoint(centerPoint[0], centerPoint[1]);
-        } else {
+        } else if ("msElementsFromPoint" in document) {
             var rv = document.msElementsFromPoint(centerPoint[0], centerPoint[1]);
             return Array.prototype.slice.call(rv ? rv : []);
+        } else {
+            throw new Error("document.elementsFromPoint unsupported");
         }
     }
 

@@ -20,7 +20,7 @@
         }) {
           const elem = Object.assign(document.createElement("script"), {
             type: scriptType,
-            src: `../serve-with-content-type.py?fn=${scriptType === "module" ? "is-module-goal.mjs" : "is-script-goal.js"}&ct=${contentType}`
+            src: `./serve-with-content-type.py?fn=${scriptType === "module" ? "is-module-goal.mjs" : "is-script-goal.js"}&ct=${contentType}`
           });
           const name = `${shouldLoad ? "Loads" : "Errors on"} type=${scriptType} when given content-type=${decodeURIComponent(contentType)}`;
           const t = async_test(name);

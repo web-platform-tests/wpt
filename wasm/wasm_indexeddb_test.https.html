@@ -9,11 +9,9 @@
 </head>
 <body>
 <script>
-  if (window.location.origin != get_host_info().AUTHENTICATED_ORIGIN) {
-    window.location = get_host_info().AUTHENTICATED_ORIGIN + window.location.pathname;
-  } else {
-    promise_test(TestIndexedDBLoadStoreSecure, "serialize/deserialize to IndexedDB in secure context");
-  }
+  promise_test(TestIndexedDBLoadStoreSecure, "serialize/deserialize to IndexedDB ");
+  promise_test(SaveToIDBAndLoadInWorker, "Save to IDB and load in worker");
+  promise_test(SaveToIDBInWorkerAndLoadInMain, "Save in worker to IDB and load in window");
 </script>
 </body>
 </html>

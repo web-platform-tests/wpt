@@ -168,7 +168,7 @@
       assert_greater_than_equal(fingerprints.length, 1,
         'Expect at last one fingerprint in array');
 
-      for(const fingerprint of fingerprints[0]) {
+      for(const fingerprint of fingerprints) {
         assert_true(fingerprint instanceof RTCDtlsFingerprint,
           'Expect fingerprint to be instance of RTCDtlsFingerprint');
 

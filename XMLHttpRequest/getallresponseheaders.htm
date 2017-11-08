@@ -23,4 +23,11 @@ async_test((t) => {
   client.open("GET", "resources/headers.asis")
   client.send(null)
 })
+
+test(() => {
+  const client = new XMLHttpRequest
+  client.open("GET", "resources/header-content-length.asis", false)
+  client.send()
+  assert_equals(client.getAllResponseHeaders(), "content-length: 0\r\n")
+})
 </script>

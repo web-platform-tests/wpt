@@ -122,7 +122,7 @@ promise_test(() => {
       c = controller;
     },
     transform(chunk) {
-      setTimeout(() => c.enqueue(chunk.toUpperCase()), 10);
+      delay(10).then(() => c.enqueue(chunk.toUpperCase()));
       return delay(50);
     }
   });
@@ -144,8 +144,8 @@ promise_test(() => {
       c = controller;
     },
     transform(chunk) {
-      setTimeout(() => c.enqueue(chunk.toUpperCase()), 10);
-      setTimeout(() => c.enqueue(chunk.toUpperCase()), 50);
+      delay(10).then(() => c.enqueue(chunk.toUpperCase()));
+      delay(50).then(() => c.enqueue(chunk.toUpperCase()));
       return delay(90);
     }
   });
@@ -241,9 +241,9 @@ promise_test(() => {
       c = controller;
     },
     transform() {
-      setTimeout(() => c.enqueue('x'), 10);
-      setTimeout(() => c.enqueue('y'), 50);
-      return new Promise(resolve => setTimeout(resolve, 50));
+      delay(10).then(() => c.enqueue('x'));
+      delay(50).then(() => c.enqueue('y'));
+      return delay(50);
     }
   });
 

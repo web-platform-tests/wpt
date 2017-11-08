@@ -44,7 +44,7 @@ functionsThatShouldNotAffectIteration.forEach((func) => indexeddb_test(
         cursor.continue();
       } else {
         assert_equals(cursorValues.length, 4,
-            `Expected cursor to iterate over 4 records`);
+            `Cursor should iterate over 4 records`);
 
         cursorValues.forEach((value, i) => {
           assert_object_equals(value, objStoreValuesByIndex[i]);

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Data URI parsing of fragments</title>
+<!-- TODO(smcgruer): get a proper spec link. -->
+<link rel="help" href="https://github.com/whatwg/fetch/pull/579">
+<meta name="assert" content="Fragments should not be included as part of a data URI's body">
+<link rel="match" href="data-uri-fragment-ref.html">
+
+<object data="data:,This text should be visible.#This text should not be visible."></object>

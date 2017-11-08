@@ -71,6 +71,16 @@
       },
     ];
     run_tests(tests);
+
+    test(() => {
+      assert_throws(
+        TypeError(),
+        () => new Request('/', {mode: 'cors', cache: 'only-if-cached'}));
+
+      assert_throws(
+        TypeError(),
+        () => new Request('/', {mode: 'no-cors', cache: 'only-if-cached'}));
+    }, '"only-if-cached" can be set only with "same-origin" mode');
     </script>
   </body>
 </html>

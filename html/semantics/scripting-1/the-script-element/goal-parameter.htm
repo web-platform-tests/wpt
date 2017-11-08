@@ -25,11 +25,11 @@
           const name = `${shouldLoad ? "Loads" : "Errors on"} type=${scriptType} when given content-type=${decodeURIComponent(contentType)}`;
           const t = async_test(name);
           if (!shouldLoad) {
-            elem.onload = t.unreached_func('Script should not load');
+            elem.onload = t.unreached_func("Script should not load.");
             elem.onerror = t.step_func_done();
           } else {
             elem.onload = t.step_func_done();
-            elem.onerror = t.unreached_func("Script should load");
+            elem.onerror = t.unreached_func("Script should load.");
           }
           document.body.appendChild(elem);
         }

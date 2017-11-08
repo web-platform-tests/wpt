@@ -113,4 +113,27 @@ function runImportTests(worklet_type) {
                                worklet.addModule(kScriptURL));
     }, 'Importing a cross origin resource without the ' +
        'Access-Control-Allow-Origin header should reject the given promise');
+
+    promise_test(t => {
+        const kScriptURL = 'resources/syntax-error-worklet-script.js';
+        return promise_rejects(t, new DOMException('', 'AbortError'),
+                               worklet.addModule(kScriptURL));
+    }, 'Importing a script that has a syntax error should reject the given ' +
+       'promise.');
+
+    promise_test(t => {
+        const kScriptURL = 'resources/import-syntax-error-worklet-script.js';
+        return promise_rejects(t, new DOMException('', 'AbortError'),
+                               worklet.addModule(kScriptURL));
+    }, 'Importing a nested script that has a syntax error should reject the ' +
+       'given promise.');
+
+    promise_test(t => {
+        const kBlob = new Blob(["import 'invalid-specifier.js';"],
+                               {type: 'text/javascript'});
+        const kBlobURL = URL.createObjectURL(kBlob);
+        return promise_rejects(t, new DOMException('', 'AbortError'),
+                               worklet.addModule(kBlobURL));
+    }, 'Importing a script that imports an invalid identifier should reject ' +
+       'the given promise.');
 }

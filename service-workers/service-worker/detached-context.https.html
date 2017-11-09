@@ -4,6 +4,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
+<body>
+</body>
 <script>
 // NOTE: This file tests corner case behavior that might not be defined in the
 // spec. See https://github.com/w3c/ServiceWorker/issues/1221
@@ -67,4 +69,54 @@ promise_test(t => {
               'postMessage on a detached client should throw an exception.');
         });
   }, 'accessing a ServiceWorker object from a removed iframe');
+
+promise_test(t => {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'resources/blank.html';
+    document.body.appendChild(iframe);
+    const f = iframe.contentWindow.Function;
+    function get_navigator() {
+      return f('return navigator')();
+    }
+    return new Promise(resolve => {
+        assert_equals(iframe.contentWindow.navigator, get_navigator());
+        iframe.src = 'resources/blank.html?navigate-to-new-url';
+        iframe.onload = resolve;
+      }).then(function() {
+        assert_not_equals(get_navigator().serviceWorker, null);
+        assert_equals(
+            get_navigator().serviceWorker,
+            iframe.contentWindow.navigator.serviceWorker);
+      });
+  }, 'accessing navigator.serviceWorker on a detached iframe');
+
+test(t => {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'resources/blank.html';
+    document.body.appendChild(iframe);
+    const f = iframe.contentWindow.Function;
+    function get_navigator() {
+      return f('return navigator')();
+    }
+    assert_not_equals(get_navigator().serviceWorker, null);
+    iframe.remove();
+    assert_throws({name: 'TypeError'}, () => get_navigator());
+  }, 'accessing navigator on a removed frame');
+
+// It seems weird that about:blank and blank.html (the test above) have
+// different behavior. These expectations are based on Chromium behavior, which
+// might not be right.
+test(t => {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'about:blank';
+    document.body.appendChild(iframe);
+    const f = iframe.contentWindow.Function;
+    function get_navigator() {
+      return f('return navigator')();
+    }
+    assert_not_equals(get_navigator().serviceWorker, null);
+    iframe.remove();
+    assert_equals(get_navigator().serviceWorker, null);
+  }, 'accessing navigator.serviceWorker on a removed about:blank frame');
+
 </script>

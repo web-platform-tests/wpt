@@ -9,19 +9,17 @@
   const same_origin_src = '/feature-policy/resources/feature-policy-wakelock.html';
   const cross_origin_src = 'https://{{domains[www]}}:{{ports[https][0]}}' +
       same_origin_src;
-  const feature_name = 'Feature policy "wake-lock"';
-  const header = 'allow="wake-lock" attribute';
 
   async_test(t => {
     test_feature_availability(
         'navigator.getWakeLock("screen")', t, same_origin_src,
         expect_feature_available_default, 'wake-lock');
-  }, feature_name + ' can be enabled in same-origin iframe using ' + header);
+  }, 'Feature policy "wake-lock" can be enabled in same-origin iframe using allow="wake-lock" attribute');
 
   async_test(t => {
     test_feature_availability(
         'navigator.getWakeLock("screen")', t, cross_origin_src,
         expect_feature_available_default, 'wake-lock');
-  }, feature_name + ' can be enabled in cross-origin iframe using ' + header);
+  }, 'Feature policy "wake-lock" can be enabled in cross-origin iframe using allow="wake-lock" attribute');
 </script>
 </body>

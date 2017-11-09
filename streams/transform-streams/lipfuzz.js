@@ -162,7 +162,7 @@ for (const testCase of cases) {
     });
     promises.push(readerChain);
     return Promise.all(promises);
-  }, `testing "${inputChunks}"`);
+  }, `testing "${inputChunks}" (length ${inputChunks.length})`);
 }
 
 done();

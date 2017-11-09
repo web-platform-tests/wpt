@@ -164,3 +164,6 @@ class ExecutorBrowser(object):
         """
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
+
+    def __repr__(self):
+        return str(self.__dict__)

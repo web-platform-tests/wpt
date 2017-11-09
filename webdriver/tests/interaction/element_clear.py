@@ -40,9 +40,18 @@ def test_element_not_editable(session):
     assert_error(response, "invalid element state")
 
 
-def test_element_not_resettable(session):
+def test_button_element_not_resettable(session):
     # 14.2 Step 3
     session.url = inline("<input type=button value=Federer>")
+
+    element = session.find.css("input", all=False)
+    response = clear(session, element)
+    assert_error(response, "invalid element state")
+
+
+def test_disabled_element_not_resettable(session):
+    # 14.2 Step 3
+    session.url = inline("<input type=text value=Federer disabled>")
 
     element = session.find.css("input", all=False)
     response = clear(session, element)
@@ -58,6 +67,7 @@ def test_scroll_into_element_view(session):
     element = session.find.css("input", all=False)
     # Clear and scroll back to the top of the page
     response = clear(session, element)
+    assert_success(response)
 
     # Check if element cleared is scrolled into view
     rect = session.execute_script("return document.getElementsByTagName(\"input\")[0].getBoundingClientRect()")
@@ -114,20 +124,64 @@ def test_element_pointer_events_disabled(session):
     assert_error(response, "invalid element state")
 
 
-def test_clear_editable_element(session):
+def test_clear_content_editable_resettable_element(session):
     # 14.2 Step 8
-    session.url = inline("<p contenteditable=true>This is an editable paragraph.")
+    elements = {"text": "<input id=text type=text value=\"Federer\"><input id=empty type=text value=\"\">",
+                "search": "<input id=search type=search value=\"Federer\"><input id=empty type=search value=\"\">",
+                "url": "<input id=url type=url value=\"www.hello.com\"><input id=empty type=url value=\"\">",
+                "tele": "<input id=tele type=telephone value=\"2061234567\"><input id=empty type=telephone value=\"\">",
+                "email": "<input id=email type=email value=\"hello@world.com\"><input id=empty type=email value=\"\">",
+                "password": "<input id=password type=password value=\"pass123\"><input id=empty type=password value=\"\">",
+                "date": "<input id=date type=date value=\"2017-12-25\"><input id=empty type=date value=\"\">",
+                "time": "<input id=time type=time value=\"11:11\"><input id=empty type=time value=\"\">",
+                "number": "<input id=number type=number value=\"19\"><input id=empty type=number value=\"\">",
+                "range": "<input id=range type=range min=\"0\" max=\"10\"><input id=empty type=range value=\"\">",
+                "color": "<input id=color type=color value=\"#ff0000\"><input id=empty type=color value=\"\">",
+                "file": "<input id=file type=file value=\"C:\\helloworld.txt\"><input id=empty type=file value=\"\">",
+                "textarea": "<textarea id=textarea>Hello World</textarea><textarea id=empty></textarea>",
+                "sel": "<select id=sel><option></option><option>a</option><option>b</option></select><select id=empty><option></option></select>",
+                "out": "<output id=out value=100></output>output id=empty></output>",
+                "para": "<p id=para contenteditable=true>This is an editable paragraph.</p><p id=empty contenteditable=true></p>"}
 
-    element = session.find.css("p", all=False)
+    for item in elements:
+        url = elements[item] + """<input id=focusCheck type=checkbox>
+                            <input id=blurCheck type=checkbox>
+                            <script>
+                            var elem = %s
+                            document.getElementById("elem").addEventListener("focus", checkFocus);
+                            document.getElementById("elem").addEventListener("blur", checkBlur);
+                            document.getElementById("empty").addEventListener("focus", checkFocus);
+                            document.getElementById("empty").addEventListener("blur", checkBlur);
+
+                            function checkFocus() {
+                                document.getElementById("focusCheck").checked = true;
+                            }
+                            function checkBlur() {
+                                document.getElementById("blurCheck").checked = true;
+                            }
+                            </script>""" % item
+        session.url = inline(url)
+        # Step 1
+        element = session.find.css("#empty", all=False)
+        test_clear_element_helper(session, element, False)
+        session.execute_script("document.getElementById(\"focusCheck\").checked = false;")
+        session.execute_script("document.getElementById(\"blurCheck\").checked = false;")
+        # Step 2 - 4
+        element = session.find.css("#" + item, all=False)
+        test_clear_element_helper(session, element, True)
+        response = clear(session, element)
+        assert_success(response)
+
+
+def test_clear_element_helper(session, element, value):
     response = clear(session, element)
-
-    assert element.text == ""
-
-
-def test_clear_resettable_element(session):
-    # 14.2 Step 8
-    session.url = inline("<input type=text value=Federer>")
-
-    element = session.find.css("input", all=False)
-    response = clear(session, element)
-    assert element.property("value") == ""
+    assert_success(response)
+    response = session.execute_script("return document.getElementById(\"focusCheck\").checked;")
+    assert response is value
+    response = session.execute_script("return document.getElementById(\"blurCheck\").checked;")
+    assert response is value
+    if element.name == "p":
+        response = session.execute_script("return document.getElementById(\"para\").innerHTML;")
+        assert response == ""
+    else:
+        assert element.property("value") == ""

@@ -2,24 +2,21 @@
 <meta charset="utf-8">
 <title>WakeLockType Test</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="Wanming Lin" href="mailto:wanming.lin@intel.com">
 <link rel="help" href="https://w3c.github.io/wake-lock/">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 
 <script>
 
-promise_test(t => {
-  return navigator.getWakeLock("screen")
-  .then(wakeLock => {
-    assert_equals(wakeLock.type, "screen");
-  });
+promise_test(async t => {
+  const wakeLock = await navigator.getWakeLock("screen");
+  assert_equals(wakeLock.type, "screen");
 }, "Test that wakeLock.type is 'screen' when screen wake lock is invoked");
 
-promise_test(t => {
-  return navigator.getWakeLock("system")
-  .then(wakeLock => {
-    assert_equals(wakeLock.type, "system");
-  });
+promise_test(async t => {
+  const wakeLock = await navigator.getWakeLock("system");
+  assert_equals(wakeLock.type, "system");
 }, "Test that wakeLock.type is 'system' when system wake lock is invoked");
 
 promise_test(t => {

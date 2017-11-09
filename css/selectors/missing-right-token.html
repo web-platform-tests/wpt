@@ -11,10 +11,20 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
+
+
+  <div id="container">
+    <span></span>
+    <span class="cls"></span>
+  </div>
+
   <script>
     test(() => {
       assert_equals(document.querySelector('meta[charset="utf-8"'), expected);
       assert_equals(document.querySelector('meta[charset="utf-8'), expected);
+
+      assert_equals(container.querySelectorAll('span:not([class]').length, 1);
+      assert_equals(container.querySelectorAll('span:not([class').length, 1);
     }, "attribute selectors with missing right tokens succeed");
   </script>
 </body>

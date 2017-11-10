@@ -1,6 +1,7 @@
 # META: timeout=long
 
 import pytest
+import time
 from tests.actions.support.keys import ALL_EVENTS, Keys
 from tests.actions.support.refine import filter_dict, get_keys, get_events
 
@@ -20,13 +21,16 @@ def test_webdriver_special_key_sends_keydown(session,
                     function(e) { e.preventDefault() });
         """)
     key_chain.key_down(getattr(Keys, name)).perform()
+
     # only interested in keydown
     first_event = get_events(session)[0]
     # make a copy so we can throw out irrelevant keys and compare to events
     expected = dict(expected)
 
     del expected["value"]
-    del expected["code"]
+    if first_event["code"] == None:
+        del expected["code"]
+
     # check and remove keys that aren't in expected
     assert first_event["type"] == "keydown"
     assert first_event["repeat"] == False

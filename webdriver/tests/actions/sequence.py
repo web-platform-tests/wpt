@@ -23,10 +23,14 @@ def test_release_char_sequence_sends_keyup_events_in_reverse(session,
     session.execute_script("resetEvents();")
     session.actions.release()
     expected = [
-        {"key": "b", "type": "keyup"},
-        {"key": "a", "type": "keyup"},
+        {"code": "KeyB", "key": "b", "type": "keyup"},
+        {"code": "KeyA", "key": "a", "type": "keyup"},
     ]
-    events = [filter_dict(e, expected[0]) for e in get_events(session)]
+    all_events = get_events(session)
+    if len(all_events) > 0 and all_events[0]["code"] == None:
+        # Remove 'code' entry if browser doesn't support it
+        expected = [filter_dict(e, {"key": "", "type": ""}) for e in expected]
+    events = [filter_dict(e, expected[0]) for e in all_events]
     assert events == expected
 
 

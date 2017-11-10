@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection.prototype.setRemoteDescription - add remote tracks</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+  'use strict';
+
+  // Test is based on the following editor draft:
+  // https://w3c.github.io/webrtc-pc/archives/20171002/webrtc.html
+
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   getUserMediaTracksAndStreams
+  //   performOffer
+
+  // These tests are concerned with the observable consequences of processing
+  // the addition or removal of remote tracks, including events firing and the
+  // states of RTCPeerConnection, MediaStream and MediaStreamTrack.
+
+  // TODO(hbos): Move these tests to
+  // RTCPeerConnection-setRemoteDescription-tracks.https.html when Chromium is
+  // able to "-expected.txt" TIMEOUTs for individual tests. Until then, having
+  // this test in the same file would force Chromium to skip all tests in that
+  // file. https://crbug.com/777526
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      let sender = caller.addTrack(tracks[0]);
+      assert_true(sender != null);
+      let offerPromise = performOffer(caller, callee);
+      callee.ontrack = t.step_func(trackEvent => {
+        assert_not_equals(trackEvent.track, null);
+        caller.removeTrack(sender);
+        performOffer(caller, callee);
+        trackEvent.track.onmute = t.step_func(() => {
+          assert_true(trackEvent.track.muted);
+          t.done();
+        });
+      });
+      return offerPromise;
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'removeTrack() causes onmute and the track to be muted.');
+
+</script>

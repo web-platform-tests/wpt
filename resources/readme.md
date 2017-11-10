@@ -9,7 +9,7 @@ tests, and tests of asynchronous behaviour.
 
 ### Getting started
 
-To use testharness.js you must include two scripts, in the order given:
+To use `testharness.js` you must include two scripts, in the order given:
 
 ``` html
 <script src=/resources/testharness.js></script>

@@ -246,4 +246,28 @@
     }));
   }, 'removeTrack() causes onremovetrack and the track to be removed from the stream.');
 
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      let sender = caller.addTrack(tracks[0]);
+      assert_true(sender != null);
+      let offerPromise = performOffer(caller, callee);
+      callee.ontrack = t.step_func(trackEvent => {
+        assert_not_equals(trackEvent.track, null);
+        caller.removeTrack(sender);
+        performOffer(caller, callee);
+        trackEvent.track.onmute = t.step_func(() => {
+          assert_true(trackEvent.track.muted);
+          t.done();
+        });
+      });
+      return offerPromise;
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'removeTrack() causes onmute and the track to be muted.');
+
 </script>

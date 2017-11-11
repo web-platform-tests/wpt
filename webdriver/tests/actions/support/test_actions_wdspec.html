@@ -16,7 +16,6 @@
         "use strict";
         var els = {};
         var allEvents = { events: [] };
-        var initialMoveHandler;
         function displayMessage(message) {
             document.getElementById("events").innerHTML = "<p>" + message + "</p>";
         }
@@ -104,10 +103,11 @@
           els.dragTarget.removeEventListener("mousedown", grabOnce);
         }
 
-        function dropOnce(event) {
-          initialMoveHandler(event);
-          els.dragArea.removeEventListener("mouseup", dropOnce);
-          initialMoveHandler = null;
+        function dropOnce(moveHandler) {
+          return function (event) {
+            moveHandler(event);
+            els.dragArea.removeEventListener("mouseup", dropOnce);
+          }
         }
 
         function resetEvents() {
@@ -145,8 +145,7 @@
               -(areaRect.top + (event.clientY - boxRect.top)),
               20);
           els.dragArea.addEventListener("mousemove", moveHandler);
-          initialMoveHandler = drop(moveHandler);
-          els.dragArea.addEventListener("mouseup", dropOnce);
+          els.dragArea.addEventListener("mouseup", dropOnce(drop(moveHandler)));
         }
 
         document.addEventListener("DOMContentLoaded", function() {

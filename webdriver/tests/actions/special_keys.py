@@ -28,13 +28,14 @@ def test_webdriver_special_key_sends_keydown(session,
     expected = dict(expected)
 
     del expected["value"]
-    if first_event["code"] == None:
-        del expected["code"]
 
     # check and remove keys that aren't in expected
     assert first_event["type"] == "keydown"
     assert first_event["repeat"] == False
     first_event = filter_dict(first_event, expected)
+    if first_event["code"] == None:
+        del first_event["code"]
+        del expected["code"]
     assert first_event == expected
     # only printable characters should be recorded in input field
     entered_keys = get_keys(key_reporter)

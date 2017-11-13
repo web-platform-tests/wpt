@@ -12,7 +12,7 @@ import mozprocess
 
 
 __all__ = ["SeleniumServer", "ChromeDriverServer", "OperaDriverServer",
-           "GeckoDriverServer", "InternetExplorerDriverServer",
+           "GeckoDriverServer", "InternetExplorerDriverServer", "EdgeDriverServer",
            "ServoDriverServer", "WebDriverServer"]
 
 
@@ -137,6 +137,18 @@ class ChromeDriverServer(WebDriverServer):
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
+class EdgeDriverServer(WebDriverServer):
+    default_base_path = "/"
+
+    def __init__(self, logger, binary="microsoftwebdriver.exe", port=None,
+                 base_path="", args=None):
+        WebDriverServer.__init__(
+            self, logger, binary, port=port, base_path=base_path, args=args)
+
+    def make_command(self):
+        return [self.binary,
+                cmd_arg("port", str(self.port)),
+                cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
 class OperaDriverServer(ChromeDriverServer):
     def __init__(self, logger, binary="operadriver", port=None,

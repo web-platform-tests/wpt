@@ -3,7 +3,6 @@
 <title>Data URI parsing of fragments</title>
 <link rel="help" href="https://url.spec.whatwg.org/">
 <meta name="assert" content="Fragments should not be included as part of a data URI's body">
-<link rel="match" href="data-uri-fragment-ref.html">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,7 +10,7 @@
 <iframe id="iframe"></iframe>
 
 <script>
-const TEST_JS = `data:text/html,
+const IFRAME_DATA_SRC = `data:text/html,
     <style>:target { color: green; }<\/style>
     <script>window.addEventListener('load', function() {
       const data = {
@@ -24,13 +23,12 @@ const TEST_JS = `data:text/html,
 
 async_test(function(t) {
   window.addEventListener("message", t.step_func_done(function(event) {
-    console.log(event);
     assert_true(event.data.foo_matches_target_selector);
     assert_equals(event.data.body_html,
         '<p id="foo">This should be the only visible text.</p>');
   }));
 
   const iframe = document.getElementById("iframe");
-  iframe.src = TEST_JS;
+  iframe.src = IFRAME_DATA_SRC;
 });
 </script>

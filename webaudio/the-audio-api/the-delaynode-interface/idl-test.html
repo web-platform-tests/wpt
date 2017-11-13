@@ -32,7 +32,7 @@ callback interface EventListener {
 interface EventListener {};
 </pre>
 
-   <pre id="base-audio-context-idl">callback DecodeSuccessCallback = void (AudioBuffer decodedData);
+   <pre id="base-audio-context-idl">callback DecodeErrorCallback = void (DOMException error);
 
 callback DecodeSuccessCallback = void (AudioBuffer decodedData);
 

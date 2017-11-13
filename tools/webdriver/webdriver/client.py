@@ -431,6 +431,15 @@ class Session(object):
 
         if "value" in response.body:
             value = response.body["value"]
+            """
+            Edge does not yet return the w3c session ID.
+            We want the tests to run in Edge anyway to help with REC.
+            In order to run the tests in Edge, we need to hack around
+            bug:
+            https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14641972
+            """
+            if url == "session" and method == "POST" and "sessionId" in response.body and "sessionId" not in value:
+                value["sessionId"] = response.body["sessionId"]
         else:
             raise error.UnknownErrorException("No 'value' key in response body:\n%s" %
                                               json.dumps(response.body))

@@ -251,6 +251,7 @@ class CallbackHandler(object):
         self.logger = logger
 
     def __call__(self, result):
+        print(result)
         self.logger.debug("Got async callback: %s" % result[1])
         try:
             attr = getattr(self, "process_%s" % result[1])
@@ -273,6 +274,7 @@ class CallbackHandler(object):
         return elements[0]
 
     def process_action(self, result):
+        print("here")
         parent = self.webdriver.current_window_handle
         try:
             self.webdriver.switch_to.window(self.test_window)

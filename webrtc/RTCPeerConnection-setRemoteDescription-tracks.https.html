@@ -118,6 +118,41 @@
     const callee = new RTCPeerConnection();
     return getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
+      const localTracks = tracks;
+      const localStream = streams[0];
+      caller.addTrack(localTracks[0], localStream);
+      const offerPromise = performOffer(caller, callee);
+      callee.ontrack = t.step_func(trackEvent => {
+        assert_equals(trackEvent.streams.length, 1,
+                      'Expected track event to fire with a single stream.');
+        const remoteTracks = [ trackEvent.track ];
+        const remoteStream = trackEvent.streams[0];
+        assert_equals(remoteTracks[0].id, localTracks[0].id, 'Remote track ID.');
+        assert_equals(remoteStream.id, localStream.id, 'Remote stream ID.');
+        assert_array_equals(remoteStream.getTracks(), remoteTracks,
+                            'Expected the remote stream\'s tracks to be the remote track.');
+        caller.addTrack(localTracks[1], localStream);
+        performOffer(caller, callee);
+        remoteStream.onaddtrack = t.step_func(trackEvent => {
+          remoteTracks.push(trackEvent.track);
+          assert_equals(remoteTracks[1].id, localTracks[1].id, 'Remote track ID.');
+          assert_array_equals(remoteStream.getTracks(), remoteTracks,
+                              'Expected the remote stream\'s tracks to be the remote tracks.');
+          t.done();
+        });
+      });
+      return offerPromise;
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack() for an existing stream makes stream.onaddtrack fire.');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    return getUserMediaTracksAndStreams(2)
+    .then(t.step_func(([tracks, streams]) => {
       let localTrack = tracks[0];
       let localStreams = streams;
       caller.addTrack(localTrack, localStreams[0], localStreams[1]);

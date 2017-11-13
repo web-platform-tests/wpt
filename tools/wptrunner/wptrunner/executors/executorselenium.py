@@ -251,7 +251,6 @@ class CallbackHandler(object):
         self.logger = logger
 
     def __call__(self, result):
-        print(result)
         self.logger.debug("Got async callback: %s" % result[1])
         try:
             attr = getattr(self, "process_%s" % result[1])
@@ -274,7 +273,6 @@ class CallbackHandler(object):
         return elements[0]
 
     def process_action(self, result):
-        print("here")
         parent = self.webdriver.current_window_handle
         try:
             self.webdriver.switch_to.window(self.test_window)
@@ -304,7 +302,6 @@ class CallbackHandler(object):
                 # create the initial ActionChains object
                 action_chain = ActionChains(self.webdriver)
                 for sub_action, sub_args in zip(actions, args):
-                    print(sub_action, sub_args)
                     if sub_action == "click":
                         element = self.get_element_from_css(sub_args[0])
                         self.logger.debug("Performing action: {}".format("click"))
@@ -419,7 +416,6 @@ class CallbackHandler(object):
         return False, None
 
     def _send_message(self, message_type, status, message=None):
-        print status
         obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)

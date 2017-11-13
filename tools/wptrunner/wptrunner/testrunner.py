@@ -534,7 +534,6 @@ class TestRunnerManager(threading.Thread):
             if test.disabled(result.name):
                 continue
             expected = test.expected(result.name)
-            print(result)
             is_unexpected = expected != result.status
 
             if is_unexpected:

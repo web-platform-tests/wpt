@@ -129,7 +129,9 @@ promise_test(() => {
     }
   }, undefined, {
     size() {
-      pipeToPromise = ts.readable.pipeTo(ws);
+      if (!pipeToPromise) {
+        pipeToPromise = ts.readable.pipeTo(ws);
+      }
       return 1;
     },
     highWaterMark: 1
@@ -137,14 +139,20 @@ promise_test(() => {
   // Allow promise returned by start() to resolve so that enqueue() will happen synchronously.
   return delay(0).then(() => {
     controller.enqueue('a');
-    // Allow pipeTo() to move the 'a' to the writable.
+    assert_not_equals(pipeToPromise, undefined);
+
+    // Some pipeTo() implementations need an additional chunk enqueued in order for the first one to be processed. See
+    // https://github.com/whatwg/streams/issues/794 for background.
+    controller.enqueue('a');
+
+    // Give pipeTo() a chance to process the queued chunks.
     return delay(0);
   }).then(() => {
-    assert_array_equals(ws.events, ['write', 'a'], 'first chunk should have been written');
+    assert_array_equals(ws.events, ['write', 'a', 'write', 'a'], 'ws should contain two chunks');
     controller.terminate();
     return pipeToPromise;
   }).then(() => {
-    assert_array_equals(ws.events, ['write', 'a', 'close'], 'target should have been closed');
+    assert_array_equals(ws.events, ['write', 'a', 'write', 'a', 'close'], 'target should have been closed');
   });
 }, 'pipeTo() inside size() should work');
 

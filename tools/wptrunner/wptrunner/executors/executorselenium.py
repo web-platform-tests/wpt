@@ -16,6 +16,8 @@ from .base import (Protocol,
                    strip_server)
 from ..testrunner import Stop
 
+from selenium.webdriver.common.action_chains import ActionChains
+
 here = os.path.join(os.path.split(__file__)[0])
 
 webdriver = None
@@ -30,6 +32,7 @@ def do_delayed_imports():
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
+    from selenium.webdriver.common.action_chains import ActionChains
 
 
 class SeleniumProtocol(Protocol):
@@ -260,6 +263,15 @@ class CallbackHandler(object):
         rv = [result[0]] + result[2]
         return True, rv
 
+    def get_element_from_css(self, selector):
+        elements = self.webdriver.find_elements_by_css_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+
+        return elements[0]
+
     def process_action(self, result):
         parent = self.webdriver.current_window_handle
         try:
@@ -268,14 +280,10 @@ class CallbackHandler(object):
             self.logger.debug("Got action: %s" % action)
             if action == "click":
                 selector = result[2]["selector"]
-                elements = self.webdriver.find_elements_by_css_selector(selector)
-                if len(elements) == 0:
-                    raise ValueError("Selector matches no elements")
-                elif len(elements) > 1:
-                    raise ValueError("Selector matches multiple elements")
+                elemet = self.get_element_from_css(selector)
                 self.logger.debug("Clicking element: %s" % selector)
                 try:
-                    elements[0].click()
+                    elements.click()
                 except (exceptions.ElementNotInteractableException,
                         exceptions.ElementNotVisibleException) as e:
                     self._send_message("complete",
@@ -286,12 +294,130 @@ class CallbackHandler(object):
                     self._send_message("complete",
                                        "success")
                     self.logger.debug("Clicking element succeeded")
+
+            elif action == "chain":
+                actions = result[2]["actions_list"]
+                args = result[2]["args_list"]
+
+                # create the initial ActionChains object
+                action_chain = ActionChains(self.webdriver)
+                for sub_action, sub_args in zip(actions, args):
+                    print(sub_action, sub_args)
+                    if sub_action == "click":
+                        element = self.get_element_from_css(sub_args[0])
+                        self.logger.debug("Performing action: {}".format("click"))
+                        action_chain.click(element)
+
+                    elif sub_action == "click_and_hold":
+                        element = self.get_element_from_css(sub_args[0])
+                        self.logger.debug("Performing action: {}".format("click and hold"))
+                        action_chain.click_and_hold(element)
+
+                    elif sub_action == "context_click":
+                        element = self.get_element_from_css(sub_args[0])
+                        self.logger.debug("Performing action: {}".format("context click"))
+                        action_chain.context_click(element)
+
+                    elif sub_action == "double_click":
+                        element = self.get_element_from_css(sub_args[0])
+                        self.logger.debug("Performing action: {}".format("context click"))
+                        action_chain.context_click(element)
+
+                    elif sub_action == "drag_and_drop":
+                        source_element = self.get_element_from_css(sub_args[0])
+                        target_element = self.get_element_from_css(sub_args[1])
+                        self.logger.debug("Performing action: {}".format("drag and drop"))
+                        action_chain.drag_and_drop(element)
+
+                    elif sub_action == "drag_and_drop_by_offset":
+                        css, x_offset, y_offset = sub_args
+                        element = self.get_element_from_css(css)
+
+                        self.logger.debug("Performing action: {}".format("drag and drop by offset"))
+                        action_chain.drag_and_drop_by_offset(element, x_offset, y_offset)
+
+                    elif sub_action == "key_down":
+                        value, css = sub_args
+                        element = self.get_element_from_css(css)
+
+                        self.logger.debug("Performing action: {}".format("key down"))
+                        action_chain.key_down(value, element)
+
+                    elif sub_action == "key_up":
+                        value, css = sub_args
+                        element = self.get_element_from_css(css)
+
+                        self.logger.debug("Performing action: {}".format("key up"))
+                        action_chain.key_up(value, element)
+
+                    elif sub_action == "move_by_offset":
+                        x_offset, y_offset = sub_args
+
+                        self.logger.debug("Performing action: {}".format("move by offset"))
+                        action_chain.move_by_offset(x_offset, y_offset)
+
+                    elif sub_action == "move_to_element":
+                        element = self.get_element_from_css(sub_args[0])
+                        self.logger.debug("Performing action: {}".format("move to element"))
+                        action_chain.move_to_element(element)
+
+                    elif sub_action == "move_to_element_with_offset":
+                        css, x_offset, y_offset = sub_args
+                        element = self.get_element_from_css(css)
+
+                        self.logger.debug("Performing action: {}".format("move to element"))
+                        action_chain.move_to_element_with_offset(element, x_offset, y_offset)
+
+                    elif sub_action == "pause":
+                        seconds = sub_args[0]
+
+                        self.logger.debug("Performing action: {}".format("move to element"))
+                        action_chain.pause(seconds)
+
+                    elif sub_action == "perform":
+                        self.logger.debug("Performing action: {}".format("perform"))
+
+                        # perform the action chain and reset it to a new one
+                        action_chain.perform()
+                        action_chain = ActionChains(self.webdriver)
+
+                    elif sub_action == "release":
+                        css = sub_action[0]
+                        element = self.get_element_from_css(css)
+                        self.logger.debug("Performing action: {}".format("release"))
+
+                        action_chain.release(element)
+
+                    elif sub_action == "reset_actions":
+                        self.logger.debug("Performing action: {}".format("reset actions"))
+
+                        action_chain.reset_actions()
+
+                    elif sub_action == "send_keys":
+                        text = sub_args[0]
+
+                        self.logger.debug("Performing action: {}".format("send keys"))
+                        action_chain.send_keys(text)
+
+                    elif sub_action == "send_keys_to_element":
+                        css, text = sub_args
+                        element = self.get_element_from_css(css)
+
+                        self.logger.debug("Performing action: {}".format("send keys"))
+                        action_chain.send_keys_to_element(element)
+                    else:
+                        self.logger.debug("Unknown action: {}".format(sub_action))
+
+                self._send_message("complete",
+                                    "success")
+                self.logger.debug("Action chain succeeded")
         finally:
             self.webdriver.switch_to.window(parent)
 
         return False, None
 
     def _send_message(self, message_type, status, message=None):
+        print status
         obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)

@@ -30,5 +30,8 @@ Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.
 
+### `testdriver.actions`
+
+http://selenium-python.readthedocs.io/api.html#module-selenium.webdriver.common.action_chains
 
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}

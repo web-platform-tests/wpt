@@ -432,7 +432,7 @@ class Session(object):
         if "value" in response.body:
             value = response.body["value"]
             """
-            Edge does not yet return the w3c session ID. 
+            Edge does not yet return the w3c session ID.
             We want the tests to run in Edge anyway to help with REC.
             In order to run the tests in Edge, we need to hack around
             bug:

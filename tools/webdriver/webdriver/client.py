@@ -438,7 +438,7 @@ class Session(object):
             bug:
             https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14641972
             """
-            if url == "session" and method == "POST" and "sessionId" in response.body:
+            if url == "session" and method == "POST" and "sessionId" in response.body and "sessionId" not in value:
                 value["sessionId"] = response.body["sessionId"]
         else:
             raise error.UnknownErrorException("No 'value' key in response body:\n%s" %

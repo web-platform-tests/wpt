@@ -17,7 +17,7 @@ from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
 
-from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -124,6 +124,13 @@ def check_worker_collision(repo_root, path, css_mode):
                      "path ends with %s which collides with generated tests from %s files" % (path_ending, generated),
                      path,
                      None)]
+    return []
+
+
+def check_ahem_copy(repo_root, path, css_mode):
+    lpath = path.lower()
+    if "ahem" in lpath and lpath.endswith(".ttf"):
+        return [("AHEM COPY", "Don't add extra copies of Ahem, use /fonts/Ahem.ttf", path, None)]
     return []
 
 
@@ -348,6 +355,19 @@ class PrintRegexp(Regexp):
     file_extensions = [".py"]
     description = "Print function used"
 
+class LayoutTestsRegexp(Regexp):
+    pattern = b"eventSender|testRunner|window\.internals"
+    error = "LAYOUTTESTS APIS"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "eventSender/testRunner/window.internals used; these are LayoutTests-specific APIs (WebKit/Blink)"
+
+class SpecialPowersRegexp(Regexp):
+    pattern = b"SpecialPowers"
+    error = "SPECIALPOWERS API"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "SpecialPowers used; this is gecko-specific and not supported in wpt"
+
+
 regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
@@ -357,7 +377,9 @@ regexps = [item() for item in
             Webidl2Regexp,
             ConsoleRegexp,
             GenerateTestsRegexp,
-            PrintRegexp]]
+            PrintRegexp,
+            LayoutTestsRegexp,
+            SpecialPowersRegexp]]
 
 def check_regexp_line(repo_root, path, f, css_mode):
     errors = []
@@ -403,7 +425,7 @@ def check_parsed(repo_root, path, f, css_mode):
         return [("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None)]
 
     for reftest_node in source_file.reftest_nodes:
-        href = reftest_node.attrib.get("href", "")
+        href = reftest_node.attrib.get("href", "").strip(space_chars)
         parts = urlsplit(href)
         if parts.scheme or parts.netloc:
             errors.append(("ABSOLUTE-URL-REF",
@@ -493,13 +515,25 @@ def check_parsed(repo_root, path, f, css_mode):
             if all(seen_elements[name] for name in required_elements):
                 break
 
+    if source_file.testdriver_nodes:
+        if len(source_file.testdriver_nodes) > 1:
+            errors.append(("MULTIPLE-TESTDRIVER",
+                           "More than one <script src='/resources/testdriver.js'>", path, None))
+
+        testdriver_vendor_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver-vendor.js']")
+        if not testdriver_vendor_nodes:
+            errors.append(("MISSING-TESTDRIVER-VENDOR",
+                           "Missing <script src='/resources/testdriver-vendor.js'>", path, None))
+        else:
+            if len(testdriver_vendor_nodes) > 1:
+                errors.append(("MULTIPLE-TESTDRIVER-VENDOR",
+                               "More than one <script src='/resources/testdriver-vendor.js'>", path, None))
 
     for element in source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src]"):
         src = element.attrib["src"]
-        for name in ["testharness", "testharnessreport"]:
+        for name in ["testharness", "testharnessreport", "testdriver", "testdriver-vendor"]:
             if "%s.js" % name == src or ("/%s.js" % name in src and src != "/resources/%s.js" % name):
                 errors.append(("%s-PATH" % name.upper(), "%s.js script seen with incorrect path" % name, path, None))
-
 
     return errors
 
@@ -801,7 +835,7 @@ def lint(repo_root, paths, output_format, css_mode):
                 logger.info(line)
     return sum(itervalues(error_count))
 
-path_lints = [check_path_length, check_worker_collision]
+path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
 all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 

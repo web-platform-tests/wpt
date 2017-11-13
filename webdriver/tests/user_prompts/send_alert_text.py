@@ -1,7 +1,6 @@
 import pytest
 
 from tests.support.asserts import assert_error, assert_success
-from tests.support.inline import inline
 
 def send_alert_text(session, body=None):
     return session.transport.send("POST", "session/{session_id}/alert/text"
@@ -14,8 +13,7 @@ def send_alert_text(session, body=None):
 def test_invalid_input(session, text):
     # 18.4 step 2
     session.execute_script("window.result = window.prompt(\"Enter Your Name: \", \"Name\");")
-    body = {"text": text}
-    response = send_alert_text(session, body)
+    response = send_alert_text(session, {"text": text})
     assert_error(response, "invalid argument")
 
 

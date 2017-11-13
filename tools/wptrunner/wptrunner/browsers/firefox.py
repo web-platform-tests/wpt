@@ -57,8 +57,6 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
 
 def check_args(**kwargs):
     require_arg(kwargs, "binary")
-    if kwargs["ssl_type"] != "none":
-        require_arg(kwargs, "certutil_binary")
 
 
 def browser_kwargs(test_type, run_info_data, **kwargs):
@@ -89,6 +87,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type,
                                                                    run_info_data,
                                                                    **kwargs)
+    capabilities = {}
     if test_type == "reftest":
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
@@ -101,7 +100,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         fxOptions["prefs"] = {
             "network.dns.localDomains": ",".join(hostnames)
         }
-        capabilities = {"moz:firefoxOptions": fxOptions}
+        capabilities["moz:firefoxOptions"] = fxOptions
+    if kwargs["certutil_binary"] is None:
+        capabilities["acceptInsecureCerts"] = True
+    if capabilities:
         executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 
@@ -152,7 +154,7 @@ class FirefoxBrowser(Browser):
         self.certutil_binary = certutil_binary
         self.e10s = e10s
         self.binary_args = binary_args
-        if self.symbols_path and stackfix_dir:
+        if stackfix_dir:
             self.stack_fixer = get_stack_fixer_function(stackfix_dir,
                                                         self.symbols_path)
         else:
@@ -190,7 +192,8 @@ class FirefoxBrowser(Browser):
                                       "network.dns.localDomains": ",".join(hostnames),
                                       "network.proxy.type": 0,
                                       "places.history.enabled": False,
-                                      "dom.send_after_paint_to_content": True})
+                                      "dom.send_after_paint_to_content": True,
+                                      "network.preload": True})
         if self.e10s:
             self.profile.set_preferences({"browser.tabs.remote.autostart": True})
 
@@ -332,6 +335,9 @@ class FirefoxBrowser(Browser):
         """Create a certificate database to use in the test profile. This is configured
         to trust the CA Certificate that has signed the web-platform.test server
         certificate."""
+        if self.certutil_binary is None:
+            self.logger.info("--certutil-binary not supplied; Firefox will not check certificates")
+            return
 
         self.logger.info("Setting up ssl")
 

@@ -58,7 +58,9 @@ class DirectoryHandler(object):
         url_path = request.url_parts.path
 
         if not url_path.endswith("/"):
-            raise HTTPException(404)
+            response.status = 301
+            response.headers = [("Location", "%s/" % request.url)]
+            return
 
         path = filesystem_path(self.base_path, request, self.url_base)
 
@@ -349,17 +351,15 @@ class ErrorHandler(object):
         response.set_error(self.status)
 
 
-class StaticHandler(object):
-    def __init__(self, path, format_args, content_type, **headers):
+class StringHandler(object):
+    def __init__(self, data, content_type, **headers):
         """Hander that reads a file from a path and substitutes some fixed data
 
-        :param path: Path to the template file to use
-        :param format_args: Dictionary of values to substitute into the template file
+        :param data: String to use
         :param content_type: Content type header to server the response with
         :param headers: List of headers to send with responses"""
 
-        with open(path) as f:
-            self.data = f.read() % format_args
+        self.data = data
 
         self.resp_headers = [("Content-Type", content_type)]
         for k, v in headers.iteritems():
@@ -373,3 +373,18 @@ class StaticHandler(object):
     def __call__(self, request, response):
         rv = self.handler(request, response)
         return rv
+
+
+class StaticHandler(StringHandler):
+    def __init__(self, path, format_args, content_type, **headers):
+        """Hander that reads a file from a path and substitutes some fixed data
+
+        :param path: Path to the template file to use
+        :param format_args: Dictionary of values to substitute into the template file
+        :param content_type: Content type header to server the response with
+        :param headers: List of headers to send with responses"""
+
+        with open(path) as f:
+            data = f.read() % format_args
+
+        return super(StaticHandler, self).__init__(data, content_type, **headers)

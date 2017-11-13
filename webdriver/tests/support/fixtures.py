@@ -55,12 +55,11 @@ def _dismiss_user_prompts(session):
 
 @ignore_exceptions
 def _restore_window_state(session):
-    """If the window is maximized, minimized, or fullscreened it will
-    be returned to normal state.
+    """Reset window to an acceptable size, bringing it out of maximized,
+    minimized, or fullscreened state
 
     """
-    if session.window.state in ("maximized", "minimized", "fullscreen"):
-        session.window.size = (800, 600)
+    session.window.size = (800, 600)
 
 
 @ignore_exceptions
@@ -189,8 +188,6 @@ def new_session(configuration, request):
         _session = webdriver.Session(configuration["host"],
                                      configuration["port"],
                                      capabilities=None)
-        # TODO: merge in some capabilities from the confguration capabilities
-        # since these might be needed to start the browser
         value = _session.send_command("POST", "session", body=body)
         # Don't set the global session until we are sure this succeeded
         _current_session = _session
@@ -202,6 +199,16 @@ def new_session(configuration, request):
     request.addfinalizer(end)
 
     return create_session
+
+
+def add_browser_capabilites(configuration):
+    def update_capabilities(capabilities):
+        # Make sure there aren't keys in common.
+        assert not set(configuration["capabilities"]).intersection(set(capabilities))
+        result = dict(configuration["capabilities"])
+        result.update(capabilities)
+        return result
+    return update_capabilities
 
 
 def url(server_config):
@@ -249,3 +256,8 @@ def create_dialog(session):
                                      {"script": spawn, "args": []})
 
     return create_dialog
+
+def clear_all_cookies(session):
+    """Removes all cookies associated with the current active document"""
+    session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
+

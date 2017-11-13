@@ -996,6 +996,10 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
+        assert(typeof actual === "object" && actual !== null && "length" in actual,
+               "assert_array_equals", description,
+               "value is ${actual}, expected array",
+               {actual:actual});
         assert(actual.length === expected.length,
                "assert_array_equals", description,
                "lengths differ, expected ${expected} got ${actual}",
@@ -2254,12 +2258,29 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
-            if (!document.body || document.readyState == "loading") {
+            if (!document.readyState == "loading") {
                 return;
             }
-            node = output_document.createElement("div");
+            node = output_document.createElementNS("http://www.w3.org/1999/xhtml", "div");
             node.id = "log";
-            output_document.body.appendChild(node);
+            if (output_document.body) {
+                output_document.body.appendChild(node);
+            } else {
+                var is_svg = false;
+                var output_window = output_document.defaultView;
+                if (output_window && "SVGSVGElement" in output_window) {
+                    is_svg = output_document.documentElement instanceof output_window.SVGSVGElement;
+                }
+                if (is_svg) {
+                    var foreignObject = output_document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                    foreignObject.setAttribute("width", "100%");
+                    foreignObject.setAttribute("height", "100%");
+                    output_document.documentElement.appendChild(foreignObject);
+                    foreignObject.appendChild(node);
+                } else {
+                    output_document.documentElement.appendChild(node);
+                }
+            }
         }
         this.output_document = output_document;
         this.output_node = node;

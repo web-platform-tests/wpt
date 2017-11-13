@@ -21,6 +21,8 @@ python_meta_re = re.compile(b"#\s*META:\s*(\w*)=(.*)$")
 
 reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
 
+space_chars = u"".join(html5lib.constants.spaceCharacters)
+
 def replace_end(s, old, new):
     """
     Given a string `s` that ends with `old`, replace that occurrence of `old`
@@ -381,6 +383,20 @@ class SourceFile(object):
         return rv
 
     @cached_property
+    def testdriver_nodes(self):
+        """List of ElementTree Elements corresponding to nodes representing a
+        testdriver.js script"""
+        return self.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver.js']")
+
+    @cached_property
+    def has_testdriver(self):
+        """Boolean indicating whether the file content represents a
+        testharness.js test"""
+        if self.root is None:
+            return None
+        return bool(self.testdriver_nodes)
+
+    @cached_property
     def reftest_nodes(self):
         """List of ElementTree Elements corresponding to nodes representing a
         to a reftest <link>"""
@@ -399,7 +415,7 @@ class SourceFile(object):
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
             if "href" in item.attrib:
-                ref_url = urljoin(self.url, item.attrib["href"])
+                ref_url = urljoin(self.url, item.attrib["href"].strip(space_chars))
                 ref_type = rel_map[item.attrib["rel"]]
                 rv.append((ref_url, ref_type))
         return rv
@@ -451,7 +467,7 @@ class SourceFile(object):
         rv = set()
         for item in self.spec_link_nodes:
             if "href" in item.attrib:
-                rv.add(item.attrib["href"])
+                rv.add(item.attrib["href"].strip(space_chars))
         return rv
 
     @cached_property
@@ -521,9 +537,10 @@ class SourceFile(object):
 
         elif self.content_is_testharness:
             rv = TestharnessTest.item_type, []
+            testdriver = self.has_testdriver
             for variant in self.test_variants:
                 url = self.url + variant
-                rv[1].append(TestharnessTest(self, url, timeout=self.timeout))
+                rv[1].append(TestharnessTest(self, url, timeout=self.timeout, testdriver=testdriver))
 
         elif self.content_is_ref_node:
             rv = (RefTestNode.item_type,

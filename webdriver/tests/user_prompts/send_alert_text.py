@@ -1,3 +1,5 @@
+import pytest
+
 from tests.support.asserts import assert_error, assert_success
 
 def send_alert_text(session, body=None):
@@ -7,11 +9,11 @@ def send_alert_text(session, body=None):
 
 # 18.4 Send Alert Text
 
-def test_non_string_input(session):
+@pytest.mark.parametrize("text", [None, {}, [], 42, True])
+def test_invalid_input(session, text):
     # 18.4 step 2
     session.execute_script("window.result = window.prompt(\"Enter Your Name: \", \"Name\");")
-    body = {"text": 123}
-    response = send_alert_text(session, body)
+    response = send_alert_text(session, {"text": text})
     assert_error(response, "invalid argument")
 
 

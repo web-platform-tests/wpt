@@ -280,10 +280,10 @@ class CallbackHandler(object):
             self.logger.debug("Got action: %s" % action)
             if action == "click":
                 selector = result[2]["selector"]
-                elemet = self.get_element_from_css(selector)
+                element = self.get_element_from_css(selector)
                 self.logger.debug("Clicking element: %s" % selector)
                 try:
-                    elements.click()
+                    element.click()
                 except (exceptions.ElementNotInteractableException,
                         exceptions.ElementNotVisibleException) as e:
                     self._send_message("complete",

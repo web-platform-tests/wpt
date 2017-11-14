@@ -1,3 +1,4 @@
+import pytest
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
@@ -124,53 +125,50 @@ def test_element_pointer_events_disabled(session):
     assert_error(response, "invalid element state")
 
 
-def test_clear_content_editable_resettable_element(session):
+@pytest.mark.parametrize("element", [["text", "<input id=text type=text value=\"Federer\"><input id=empty type=text value=\"\">"],
+                                    ["search", "<input id=search type=search value=\"Federer\"><input id=empty type=search value=\"\">"],
+                                    ["url", "<input id=url type=url value=\"www.hello.com\"><input id=empty type=url value=\"\">"],
+                                    ["tele", "<input id=tele type=telephone value=\"2061234567\"><input id=empty type=telephone value=\"\">"],
+                                    ["email", "<input id=email type=email value=\"hello@world.com\"><input id=empty type=email value=\"\">"],
+                                    ["password", "<input id=password type=password value=\"pass123\"><input id=empty type=password value=\"\">"],
+                                    ["date", "<input id=date type=date value=\"2017-12-25\"><input id=empty type=date value=\"\">"],
+                                    ["time", "<input id=time type=time value=\"11:11\"><input id=empty type=time value=\"\">"],
+                                    ["number", "<input id=number type=number value=\"19\"><input id=empty type=number value=\"\">"],
+                                    ["range", "<input id=range type=range min=\"0\" max=\"10\"><input id=empty type=range value=\"\">"],
+                                    ["color", "<input id=color type=color value=\"#ff0000\"><input id=empty type=color value=\"\">"],
+                                    ["file", "<input id=file type=file value=\"C:\\helloworld.txt\"><input id=empty type=file value=\"\">"],
+                                    ["textarea", "<textarea id=textarea>Hello World</textarea><textarea id=empty></textarea>"],
+                                    ["sel", "<select id=sel><option></option><option>a</option><option>b</option></select><select id=empty><option></option></select>"],
+                                    ["out", "<output id=out value=100></output><output id=empty></output>"],
+                                    ["para", "<p id=para contenteditable=true>This is an editable paragraph.</p><p id=empty contenteditable=true></p>"]])
+
+def test_clear_content_editable_resettable_element(session, element):
     # 14.2 Step 8
-    elements = {"text": "<input id=text type=text value=\"Federer\"><input id=empty type=text value=\"\">",
-                "search": "<input id=search type=search value=\"Federer\"><input id=empty type=search value=\"\">",
-                "url": "<input id=url type=url value=\"www.hello.com\"><input id=empty type=url value=\"\">",
-                "tele": "<input id=tele type=telephone value=\"2061234567\"><input id=empty type=telephone value=\"\">",
-                "email": "<input id=email type=email value=\"hello@world.com\"><input id=empty type=email value=\"\">",
-                "password": "<input id=password type=password value=\"pass123\"><input id=empty type=password value=\"\">",
-                "date": "<input id=date type=date value=\"2017-12-25\"><input id=empty type=date value=\"\">",
-                "time": "<input id=time type=time value=\"11:11\"><input id=empty type=time value=\"\">",
-                "number": "<input id=number type=number value=\"19\"><input id=empty type=number value=\"\">",
-                "range": "<input id=range type=range min=\"0\" max=\"10\"><input id=empty type=range value=\"\">",
-                "color": "<input id=color type=color value=\"#ff0000\"><input id=empty type=color value=\"\">",
-                "file": "<input id=file type=file value=\"C:\\helloworld.txt\"><input id=empty type=file value=\"\">",
-                "textarea": "<textarea id=textarea>Hello World</textarea><textarea id=empty></textarea>",
-                "sel": "<select id=sel><option></option><option>a</option><option>b</option></select><select id=empty><option></option></select>",
-                "out": "<output id=out value=100></output>output id=empty></output>",
-                "para": "<p id=para contenteditable=true>This is an editable paragraph.</p><p id=empty contenteditable=true></p>"}
+    url = element[1] + """<input id=focusCheck type=checkbox>
+                    <input id=blurCheck type=checkbox>
+                    <script>       
+                    var id = %s
+                    document.getElementById("id").addEventListener("focus", checkFocus);
+                    document.getElementById("id").addEventListener("blur", checkBlur);
+                    document.getElementById("empty").addEventListener("focus", checkFocus);
+                    document.getElementById("empty").addEventListener("blur", checkBlur);
 
-    for item in elements:
-        url = elements[item] + """<input id=focusCheck type=checkbox>
-                            <input id=blurCheck type=checkbox>
-                            <script>
-                            var elem = %s
-                            document.getElementById("elem").addEventListener("focus", checkFocus);
-                            document.getElementById("elem").addEventListener("blur", checkBlur);
-                            document.getElementById("empty").addEventListener("focus", checkFocus);
-                            document.getElementById("empty").addEventListener("blur", checkBlur);
-
-                            function checkFocus() {
-                                document.getElementById("focusCheck").checked = true;
-                            }
-                            function checkBlur() {
-                                document.getElementById("blurCheck").checked = true;
-                            }
-                            </script>""" % item
-        session.url = inline(url)
-        # Step 1
-        element = session.find.css("#empty", all=False)
-        test_clear_element_helper(session, element, False)
-        session.execute_script("document.getElementById(\"focusCheck\").checked = false;")
-        session.execute_script("document.getElementById(\"blurCheck\").checked = false;")
-        # Step 2 - 4
-        element = session.find.css("#" + item, all=False)
-        test_clear_element_helper(session, element, True)
-        response = clear(session, element)
-        assert_success(response)
+                    function checkFocus() {
+                        document.getElementById("focusCheck").checked = true;
+                    }
+                    function checkBlur() {
+                        document.getElementById("blurCheck").checked = true;
+                    }
+                    </script>""" % element[0]
+    session.url = inline(url)
+    # Step 1
+    empty_element = session.find.css("#empty", all=False)
+    test_clear_element_helper(session, empty_element, False)
+    session.execute_script("document.getElementById(\"focusCheck\").checked = false;")
+    session.execute_script("document.getElementById(\"blurCheck\").checked = false;")
+    # Step 2 - 4
+    test_element = session.find.css("#" + element[0], all=False)
+    test_clear_element_helper(session, test_element, True)
 
 
 def test_clear_element_helper(session, element, value):

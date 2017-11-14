@@ -16,9 +16,9 @@ function runCredentialsTests(worklet_type) {
 
   promise_test(() => {
       const kSetCookieURL =
-          get_host_info().HTTP_REMOTE_ORIGIN +
+          get_host_info().HTTPS_REMOTE_ORIGIN +
           '/worklets/resources/set-cookie.py?name=cookieName';
-      const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+      const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                          '/worklets/resources/credentials.py?mode=default';
       const kOptions = { credentials: 'same-origin' };
 
@@ -41,9 +41,9 @@ function runCredentialsTests(worklet_type) {
 
   promise_test(() => {
       const kSetCookieURL =
-          get_host_info().HTTP_REMOTE_ORIGIN +
+          get_host_info().HTTPS_REMOTE_ORIGIN +
           '/worklets/resources/set-cookie.py?name=cookieName';
-      const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+      const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                          '/worklets/resources/credentials.py?mode=omit';
       const kOptions = { credentials: 'omit' };
 
@@ -66,9 +66,9 @@ function runCredentialsTests(worklet_type) {
 
   promise_test(() => {
       const kSetCookieURL =
-          get_host_info().HTTP_REMOTE_ORIGIN +
+          get_host_info().HTTPS_REMOTE_ORIGIN +
           '/worklets/resources/set-cookie.py?name=cookieName';
-      const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+      const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                          '/worklets/resources/credentials.py?mode=same-origin';
       const kOptions = { credentials: 'same-origin' };
 
@@ -91,9 +91,9 @@ function runCredentialsTests(worklet_type) {
 
   promise_test(() => {
       const kSetCookieURL =
-          get_host_info().HTTP_REMOTE_ORIGIN +
+          get_host_info().HTTPS_REMOTE_ORIGIN +
           '/worklets/resources/set-cookie.py?name=cookieName';
-      const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+      const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                          '/worklets/resources/credentials.py?mode=include';
       const kOptions = { credentials: 'include' };
 

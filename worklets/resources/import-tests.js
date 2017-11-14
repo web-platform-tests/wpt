@@ -95,7 +95,7 @@ function runImportTests(worklet_type) {
     promise_test(() => {
         // Specify the Access-Control-Allow-Origin header to enable cross origin
         // access.
-        const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+        const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                            '/worklets/resources/empty-worklet-script.js' +
                            '?pipe=header(Access-Control-Allow-Origin, *)';
         return worklet.addModule(kScriptURL).then(undefined_arg => {
@@ -107,7 +107,7 @@ function runImportTests(worklet_type) {
     promise_test(t => {
         // Don't specify the Access-Control-Allow-Origin header. addModule()
         // should be rejected because of disallowed cross origin access.
-        const kScriptURL = get_host_info().HTTP_REMOTE_ORIGIN +
+        const kScriptURL = get_host_info().HTTPS_REMOTE_ORIGIN +
                            '/worklets/resources/empty-worklet-script.js';
         return promise_rejects(t, new DOMException('', 'AbortError'),
                                worklet.addModule(kScriptURL));

@@ -354,6 +354,7 @@ class CallbackHandler(object):
                             self._send_message("complete",
                                                "failure")
                             self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+                            continue;
 
                         css, x_offset, y_offset = sub_args
                         element = self.get_element_from_css(css)
@@ -361,10 +362,20 @@ class CallbackHandler(object):
                         self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
 
                     elif sub_action == "key_down":
-                        value, css = sub_args
-                        element = self.get_element_from_css(css)
+                        if len(sub_args) == 1:
+                            value = sub_args[0]
+                            action_chain.key_down(value)
+                        elif len(sub_args) == 2:
+                            value, css = sub_args
+                            element = self.get_element_from_css(css)
+                            action_chain.key_down(value, element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+                            continue;
 
-                        self.logger.debug("Performing action: {}".format("key down"))
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
                         action_chain.key_down(value, element)
 
                     elif sub_action == "key_up":

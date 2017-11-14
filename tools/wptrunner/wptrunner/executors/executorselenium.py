@@ -303,37 +303,62 @@ class CallbackHandler(object):
                 action_chain = ActionChains(self.webdriver)
                 for sub_action, sub_args in zip(actions, args):
                     if sub_action == "click":
-                        element = self.get_element_from_css(sub_args[0])
-                        self.logger.debug("Performing action: {}".format("click"))
-                        action_chain.click(element)
+                        if len(sub_args) == 0:
+                            action_chain.click()
+                        elif len(sub_args) == 1:
+                            element = self.get_element_from_css(sub_args[0])
+                            action_chain.click(element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("click", str(sub_args)))
 
                     elif sub_action == "click_and_hold":
-                        element = self.get_element_from_css(sub_args[0])
-                        self.logger.debug("Performing action: {}".format("click and hold"))
-                        action_chain.click_and_hold(element)
+                        if len(sub_args) == 0:
+                            action_chain.click_and_hold()
+                        elif len(sub_args) == 1:
+                            element = self.get_element_from_css(sub_args[0])
+                            action_chain.click_and_hold(element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("click_and_hold", str(sub_args)))
 
                     elif sub_action == "context_click":
-                        element = self.get_element_from_css(sub_args[0])
-                        self.logger.debug("Performing action: {}".format("context click"))
-                        action_chain.context_click(element)
+                        if len(sub_args) == 0:
+                            action_chain.context_click()
+                        elif len(sub_args) == 1:
+                            element = self.get_element_from_css(sub_args[0])
+                            action_chain.context_click(element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("context_click", str(sub_args)))
 
                     elif sub_action == "double_click":
-                        element = self.get_element_from_css(sub_args[0])
-                        self.logger.debug("Performing action: {}".format("context click"))
-                        action_chain.context_click(element)
+                        if len(sub_args) == 0:
+                            action_chain.double_click()
+                        elif len(sub_args) == 1:
+                            element = self.get_element_from_css(sub_args[0])
+                            action_chain.double_click(element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("double_click"))
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("double_click", str(sub_args)))
 
                     elif sub_action == "drag_and_drop":
+                        if len(sub_args) != 2:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop"))
+
                         source_element = self.get_element_from_css(sub_args[0])
                         target_element = self.get_element_from_css(sub_args[1])
-                        self.logger.debug("Performing action: {}".format("drag and drop"))
-                        action_chain.drag_and_drop(element)
+                        action_chain.drag_and_drop(source_element, target_element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
 
                     elif sub_action == "drag_and_drop_by_offset":
+                        if len(sub_args) != 3:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+
                         css, x_offset, y_offset = sub_args
                         element = self.get_element_from_css(css)
-
-                        self.logger.debug("Performing action: {}".format("drag and drop by offset"))
                         action_chain.drag_and_drop_by_offset(element, x_offset, y_offset)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
 
                     elif sub_action == "key_down":
                         value, css = sub_args

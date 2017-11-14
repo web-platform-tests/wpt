@@ -308,6 +308,12 @@ class CallbackHandler(object):
                         elif len(sub_args) == 1:
                             element = self.get_element_from_css(sub_args[0])
                             action_chain.click(element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("click"))
+                            break
+
                         self.logger.debug("Added action to the current chain: {}, with args: {}".format("click", str(sub_args)))
 
                     elif sub_action == "click_and_hold":
@@ -316,6 +322,12 @@ class CallbackHandler(object):
                         elif len(sub_args) == 1:
                             element = self.get_element_from_css(sub_args[0])
                             action_chain.click_and_hold(element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("click_and_hold"))
+                            break
+
                         self.logger.debug("Added action to the current chain: {}, with args: {}".format("click_and_hold", str(sub_args)))
 
                     elif sub_action == "context_click":
@@ -324,6 +336,12 @@ class CallbackHandler(object):
                         elif len(sub_args) == 1:
                             element = self.get_element_from_css(sub_args[0])
                             action_chain.context_click(element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("context_click"))
+                            break
+
                         self.logger.debug("Added action to the current chain: {}, with args: {}".format("context_click", str(sub_args)))
 
                     elif sub_action == "double_click":
@@ -336,6 +354,8 @@ class CallbackHandler(object):
                             self._send_message("complete",
                                                "failure")
                             self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("double_click"))
+                            break
+
                         self.logger.debug("Added action to the current chain: {}, with args: {}".format("double_click", str(sub_args)))
 
                     elif sub_action == "drag_and_drop":
@@ -343,6 +363,7 @@ class CallbackHandler(object):
                             self._send_message("complete",
                                                "failure")
                             self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop"))
+                            break
 
                         source_element = self.get_element_from_css(sub_args[0])
                         target_element = self.get_element_from_css(sub_args[1])
@@ -354,7 +375,7 @@ class CallbackHandler(object):
                             self._send_message("complete",
                                                "failure")
                             self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
-                            continue;
+                            break
 
                         css, x_offset, y_offset = sub_args
                         element = self.get_element_from_css(css)
@@ -372,74 +393,129 @@ class CallbackHandler(object):
                         else:
                             self._send_message("complete",
                                                "failure")
-                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
-                            continue;
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("key_down"))
+                            break
 
-                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
-                        action_chain.key_down(value, element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("key_down", str(sub_args)))
 
                     elif sub_action == "key_up":
-                        value, css = sub_args
-                        element = self.get_element_from_css(css)
+                        if len(sub_args) == 1:
+                            value = sub_args[0]
+                            action_chain.key_up(value)
+                        elif len(sub_args) == 2:
+                            value, css = sub_args
+                            element = self.get_element_from_css(css)
+                            action_chain.key_up(value, element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("key_up"))
+                            break
 
-                        self.logger.debug("Performing action: {}".format("key up"))
-                        action_chain.key_up(value, element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("key_up", str(sub_args)))
 
                     elif sub_action == "move_by_offset":
-                        x_offset, y_offset = sub_args
+                        if len(sub_args) != 2:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("move_by_offset"))
+                            break
 
-                        self.logger.debug("Performing action: {}".format("move by offset"))
+                        x_offset, y_offset = sub_args
                         action_chain.move_by_offset(x_offset, y_offset)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_by_offset", str(sub_args)))
 
                     elif sub_action == "move_to_element":
+                        if len(sub_args) != 1:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("move_to_element"))
+                            break
+
                         element = self.get_element_from_css(sub_args[0])
-                        self.logger.debug("Performing action: {}".format("move to element"))
                         action_chain.move_to_element(element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_by_offset", str(sub_args)))
 
                     elif sub_action == "move_to_element_with_offset":
+                        if len(sub_args) != 3:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+                            break
+
                         css, x_offset, y_offset = sub_args
                         element = self.get_element_from_css(css)
-
-                        self.logger.debug("Performing action: {}".format("move to element"))
                         action_chain.move_to_element_with_offset(element, x_offset, y_offset)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_to_element_with_offset", str(sub_args)))
 
                     elif sub_action == "pause":
-                        seconds = sub_args[0]
+                        if len(sub_args) != 1:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("pause"))
+                            break
 
-                        self.logger.debug("Performing action: {}".format("move to element"))
+                        seconds = sub_args[0]
                         action_chain.pause(seconds)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("pause", str(sub_args)))
 
                     elif sub_action == "perform":
-                        self.logger.debug("Performing action: {}".format("perform"))
+                        if len(sub_args) != 0:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("perform"))
+                            break
 
-                        # perform the action chain and reset it to a new one
                         action_chain.perform()
-                        action_chain = ActionChains(self.webdriver)
+                        self.logger.debug("Performed the current action chain")
 
                     elif sub_action == "release":
-                        css = sub_action[0]
-                        element = self.get_element_from_css(css)
-                        self.logger.debug("Performing action: {}".format("release"))
+                        if len(sub_args) == 0:
+                            action_chain.release()
+                        elif len(sub_args) == 1:
+                            element = get_element_from_css(sub_action[0])
+                            action_chain.release(element)
+                        else:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("release"))
+                            break
 
-                        action_chain.release(element)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("pause", str(sub_args)))
 
                     elif sub_action == "reset_actions":
-                        self.logger.debug("Performing action: {}".format("reset actions"))
+                        if len(sub_args) != 0:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("reset_actions"))
+                            break
 
                         action_chain.reset_actions()
+                        self.logger.debug("Reset the current action chain")
 
                     elif sub_action == "send_keys":
-                        text = sub_args[0]
+                        if len(sub_args) != 1:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("send_keys"))
+                            break
 
-                        self.logger.debug("Performing action: {}".format("send keys"))
+                        text = sub_args[0]
                         action_chain.send_keys(text)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("send_keys", str(sub_args)))
 
                     elif sub_action == "send_keys_to_element":
+                        if len(sub_args) != 2:
+                            self._send_message("complete",
+                                               "failure")
+                            self.logger.debug("Adding action failed: {}, not the right number of arguments!".format("perform"))
+                            break
+
                         css, text = sub_args
                         element = self.get_element_from_css(css)
+                        action_chain.send_keys_to_element(element, text)
+                        self.logger.debug("Added action to the current chain: {}, with args: {}".format("send_keys_to_element", str(sub_args)))
 
-                        self.logger.debug("Performing action: {}".format("send keys"))
-                        action_chain.send_keys_to_element(element)
                     else:
                         self.logger.debug("Unknown action: {}".format(sub_action))
 

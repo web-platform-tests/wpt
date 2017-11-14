@@ -19,7 +19,6 @@ promise_test(() => {
   });
 }, 'TransformStream flush is called immediately when the writable is closed, if no writes are queued');
 
-// TODO
 promise_test(() => {
   let flushCalled = false;
   let resolveTransform;

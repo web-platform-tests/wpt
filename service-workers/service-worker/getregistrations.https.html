@@ -61,10 +61,9 @@ promise_test(function(t) {
           return navigator.serviceWorker.getRegistrations();
         })
       .then(function(value) {
-          assert_array_equals(
-            value,
-            registrations,
-            'getRegistrations should resolve with array of registrations.');
+          assert_equals(value.length, registrations.length, "Should return the right number of registrations");
+          for (let registration of registrations)
+              assert_in_array(registration, value, "Should return the right registrations");
           return service_worker_unregister(t, scope1);
         })
       .then(function() {

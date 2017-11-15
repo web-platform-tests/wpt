@@ -23,7 +23,7 @@ def do_delayed_imports():
     import pytest
 
 
-def run(path, server_config, session_config, timeout=0):
+def run(path, filter, server_config, session_config, timeout=0):
     """Run Python test at ``path`` in pytest.  The provided ``session``
     is exposed as a fixture available in the scope of the test functions.
 
@@ -52,14 +52,17 @@ def run(path, server_config, session_config, timeout=0):
     # TODO(ato): Deal with timeouts
 
     with TemporaryDirectory() as cache:
-        pytest.main(["--strict",  # turn warnings into errors
-                     "--verbose",  # show each individual subtest
-                     "--capture", "no",  # enable stdout/stderr from tests
-                     "--basetemp", cache,  # temporary directory
-                     "-p", "no:mozlog",  # use the WPT result recorder
-                     "-p", "no:cacheprovider",  # disable state preservation across invocations
-                     path],
-                    plugins=plugins)
+        cmd = ["--strict",  # turn warnings into errors
+               "--verbose",  # show each individual subtest
+               "--capture", "no",  # enable stdout/stderr from tests
+               "--basetemp", cache,  # temporary directory
+               "-p", "no:mozlog",  # use the WPT result recorder
+               "-p", "no:cacheprovider",  # disable state preservation across invocations
+               path]
+        if filter is not None:
+            cmd.extend(["-k", filter])
+
+        pytest.main(cmd, plugins=plugins)
 
     return recorder.results
 

@@ -105,7 +105,7 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
 
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "accept #2")
-    assert read_global(session, "accept2") == True
+    assert read_global(session, "accept2") is True
 
     create_dialog(session)("prompt", text="accept #3", result_var="accept3")
 
@@ -144,7 +144,7 @@ def test_handle_prompt_missing_value(session, create_dialog):
 
     assert_error(response, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #2")
-    assert session.execute_script("return dismiss2;") == False
+    assert session.execute_script("return dismiss2") is False
 
     create_dialog("prompt", text="dismiss #3", result_var="dismiss3")
 

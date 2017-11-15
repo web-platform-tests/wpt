@@ -19,18 +19,20 @@ promise_test(() => {
   });
 }, 'TransformStream flush is called immediately when the writable is closed, if no writes are queued');
 
-// TODO
-test(() => {
+promise_test(() => {
   let flushCalled = false;
+  let resolveTransform;
   const ts = new TransformStream({
     transform() {
-      return delay(10);
+      return new Promise(resolve => {
+        resolveTransform = resolve;
+      });
     },
     flush() {
       flushCalled = true;
       return new Promise(() => {}); // never resolves
     }
-  });
+  }, undefined, { highWaterMark: 1 });
 
   const writer = ts.writable.getWriter();
   writer.write('a');
@@ -42,7 +44,11 @@ test(() => {
     rsClosed = true;
   });
 
-  return delay(50).then(() => {
+  return delay(0).then(() => {
+    assert_false(flushCalled, 'closing the writable does not asynchronously call flush if writes are not finished');
+    resolveTransform();
+    return delay(0);
+  }).then(() => {
     assert_true(flushCalled, 'flush is eventually called');
     assert_false(rsClosed, 'if flushPromise does not resolve, the readable does not become closed');
   });

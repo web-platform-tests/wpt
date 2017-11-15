@@ -122,8 +122,7 @@ promise_test(() => {
       c = controller;
     },
     transform(chunk) {
-      delay(10).then(() => c.enqueue(chunk.toUpperCase()));
-      return delay(50);
+      return delay(0).then(() => c.enqueue(chunk.toUpperCase()));
     }
   });
 
@@ -138,15 +137,15 @@ promise_test(() => {
 }, 'Uppercaser async TransformStream: can read from readable transformed version of what is put into writable');
 
 promise_test(() => {
-  let c;
+  let doSecondEnqueue;
+  let returnFromTransform;
   const ts = new TransformStream({
-    start(controller) {
-      c = controller;
-    },
-    transform(chunk) {
-      delay(10).then(() => c.enqueue(chunk.toUpperCase()));
-      delay(50).then(() => c.enqueue(chunk.toUpperCase()));
-      return delay(90);
+    transform(chunk, controller) {
+      delay(0).then(() => controller.enqueue(chunk.toUpperCase()));
+      doSecondEnqueue = () => controller.enqueue(chunk.toUpperCase());
+      return new Promise(resolve => {
+        returnFromTransform = resolve;
+      });
     }
   });
 
@@ -159,11 +158,13 @@ promise_test(() => {
     assert_equals(result1.value, 'A',
       'the first chunk read is the transformation of the single chunk written');
     assert_false(result1.done, 'stream should not be done');
+    doSecondEnqueue();
 
     return reader.read().then(result2 => {
       assert_equals(result2.value, 'A',
         'the second chunk read is also the transformation of the single chunk written');
       assert_false(result2.done, 'stream should not be done');
+      returnFromTransform();
     });
   });
 }, 'Uppercaser-doubler async TransformStream: can read both chunks put into the readable');
@@ -217,7 +218,7 @@ promise_test(() => {
     transform() {
       c.enqueue('x');
       c.enqueue('y');
-      return delay(50);
+      return delay(0);
     }
   });
 
@@ -241,9 +242,10 @@ promise_test(() => {
       c = controller;
     },
     transform() {
-      delay(10).then(() => c.enqueue('x'));
-      delay(50).then(() => c.enqueue('y'));
-      return delay(50);
+      return delay(0)
+          .then(() => c.enqueue('x'))
+          .then(() => c.enqueue('y'))
+          .then(() => delay(0));
     }
   });
 

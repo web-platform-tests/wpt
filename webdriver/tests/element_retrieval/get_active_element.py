@@ -5,6 +5,10 @@ from tests.support.inline import inline
 def read_global(session, name):
     return session.execute_script("return %s;" % name)
 
+def get_active_element(session):
+    return session.transport.send("GET", "session/%s/element/active" % session.session_id)
+
+
 def assert_is_active_element(session, response):
     """Ensure that the provided object is a successful WebDriver
     response describing an element reference and that the referenced
@@ -29,10 +33,9 @@ def test_closed_context(session, create_window):
     session.window_handle = new_window
     session.close()
 
-    response = session.transport.send("GET",
-                                    "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_error(response, "no such window")
+
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -53,27 +56,25 @@ def test_handle_prompt_dismiss(new_session, add_browser_capabilites):
 
     create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "dismiss #1")
     assert session.execute_script("return dismiss1") is None
 
     create_dialog(session)("confirm", text="dismiss #2", result_var="dismiss2")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "dismiss #2")
     assert read_global(session, "dismiss2") is None
 
     create_dialog(session)("prompt", text="dismiss #3", result_var="dismiss3")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "dismiss #3")
     assert read_global(session, "dismiss3") is None
+
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -93,27 +94,25 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
     session.url = inline("<body><p>Hello, World!</p></body>")
     create_dialog(session)("alert", text="accept #1", result_var="accept1")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "accept #1")
     assert read_global(session, "accept1") is None
 
     create_dialog(session)("confirm", text="accept #2", result_var="accept2")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "accept #2")
     assert read_global(session, "accept2") is True
 
     create_dialog(session)("prompt", text="accept #3", result_var="accept3")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
     assert_dialog_handled(session, "accept #3")
     assert read_global(session, "accept3") == "" or read_global(session, "accept3") == "undefined"
+
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -132,27 +131,25 @@ def test_handle_prompt_missing_value(session, create_dialog):
 
     create_dialog("alert", text="dismiss #1", result_var="dismiss1")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_error(response, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #1")
     assert session.execute_script("return dismiss1") is None
 
     create_dialog("confirm", text="dismiss #2", result_var="dismiss2")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_error(response, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #2")
     assert session.execute_script("return dismiss2") is False
 
     create_dialog("prompt", text="dismiss #3", result_var="dismiss3")
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_error(response, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #3")
     assert session.execute_script("return dismiss3") is None
+
 
 # > [...]
 # > 3. Let active element be the active element of the current browsing
@@ -165,36 +162,36 @@ def test_success_document(session):
             <h1>Heading</h1>
             <input />
             <input />
-            <input style="opacity: 0;" />
+            <input style="opacity: 0" />
             <p>Another element</p>
         </body>""")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
+
 
 def test_sucess_input(session):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
             <input autofocus />
-            <input style="opacity: 0;" />
+            <input style="opacity: 0" />
             <p>Another element</p>
         </body>""")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
+
 
 def test_sucess_input_non_interactable(session):
     session.url = inline("""
         <body>
             <h1>Heading</h1>
             <input />
-            <input style="opacity: 0;" autofocus />
+            <input style="opacity: 0" autofocus />
             <p>Another element</p>
         </body>""")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
+
 
 def test_success_explicit_focus(session):
     session.url = inline("""
@@ -204,16 +201,16 @@ def test_success_explicit_focus(session):
             <iframe></iframe>
         </body>""")
 
-    session.execute_script("document.body.getElementsByTagName('h1')[0].focus();")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    session.execute_script("document.body.getElementsByTagName('h1')[0].focus()")
+    response = get_active_element(session)
     assert_is_active_element(session, response)
 
-    session.execute_script("document.body.getElementsByTagName('input')[0].focus();")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    session.execute_script("document.body.getElementsByTagName('input')[0].focus()")
+    response = get_active_element(session)
     assert_is_active_element(session, response)
 
-    session.execute_script("document.body.getElementsByTagName('iframe')[0].focus();")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    session.execute_script("document.body.getElementsByTagName('iframe')[0].focus()")
+    response = get_active_element(session)
     assert_is_active_element(session, response)
 
     session.execute_script("document.body.getElementsByTagName('iframe')[0].focus();")
@@ -224,25 +221,27 @@ def test_success_explicit_focus(session):
         } else {
           iframe.removeNode(true);
         }""")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    response = get_active_element(session)
     assert_is_active_element(session, response)
 
-    session.execute_script("document.body.appendChild(document.createElement('textarea'));")
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
+    session.execute_script("document.body.appendChild(document.createElement('textarea'))")
+    response = get_active_element(session)
     assert_is_active_element(session, response)
+
 
 def test_success_iframe_content(session):
     session.url = inline("<body></body>")
     session.execute_script("""
-        var iframe = document.createElement('iframe');
+        let iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
-        var input = iframe.contentDocument.createElement('input');
+        let input = iframe.contentDocument.createElement('input');
         iframe.contentDocument.body.appendChild(input);
-        input.focus();""")
+        input.focus();
+        """)
 
-    response = session.transport.send("GET", "session/%s/element/active" % session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)
+
 
 def test_sucess_without_body(session):
     session.url = inline("<body></body>")
@@ -253,6 +252,5 @@ def test_sucess_without_body(session):
           document.body.removeNode(true);
         }""")
 
-    response = session.transport.send("GET", "session/%s/element/active"% session.session_id)
-
+    response = get_active_element(session)
     assert_is_active_element(session, response)

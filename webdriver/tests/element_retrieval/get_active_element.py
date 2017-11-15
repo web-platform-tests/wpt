@@ -15,7 +15,7 @@ def assert_result_is_active_element(session, result):
     from_js = session.execute_script("return document.activeElement;")
 
     if result.body["value"] is None:
-        assert from_js == None
+        assert from_js is None
     else:
         assert_same_element(session, result.body["value"], from_js)
 
@@ -55,7 +55,7 @@ def test_handle_prompt_dismiss(new_session, add_browser_capabilites):
 
     assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #1")
-    assert session.execute_script("return dismiss1;") == None
+    assert session.execute_script("return dismiss1") is None
 
     create_dialog(session)("confirm", text="dismiss #2", result_var="dismiss2")
 
@@ -64,7 +64,7 @@ def test_handle_prompt_dismiss(new_session, add_browser_capabilites):
 
     assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #2")
-    assert read_global(session, "dismiss2") == False
+    assert read_global(session, "dismiss2") is None
 
     create_dialog(session)("prompt", text="dismiss #3", result_var="dismiss3")
 
@@ -73,7 +73,7 @@ def test_handle_prompt_dismiss(new_session, add_browser_capabilites):
 
     assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "dismiss #3")
-    assert read_global(session, "dismiss3") == None
+    assert read_global(session, "dismiss3") is None
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -98,7 +98,7 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
 
     assert_result_is_active_element(session, result)
     assert_dialog_handled(session, "accept #1")
-    assert read_global(session, "accept1") == None
+    assert read_global(session, "accept1") is None
 
     create_dialog(session)("confirm", text="accept #2", result_var="accept2")
 
@@ -140,7 +140,7 @@ def test_handle_prompt_missing_value(session, create_dialog):
 
     assert_error(result, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #1")
-    assert session.execute_script("return dismiss1;") == None
+    assert session.execute_script("return dismiss1") is None
 
     create_dialog("confirm", text="dismiss #2", result_var="dismiss2")
 
@@ -158,7 +158,7 @@ def test_handle_prompt_missing_value(session, create_dialog):
 
     assert_error(result, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #3")
-    assert session.execute_script("return dismiss3;") == None
+    assert session.execute_script("return dismiss3") is None
 
 # > [...]
 # > 3. Let active element be the active element of the current browsing

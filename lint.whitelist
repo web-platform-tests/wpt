@@ -155,6 +155,7 @@ SET TIMEOUT: html/browsers/browsing-the-web/scroll-to-fragid/*
 SET TIMEOUT: html/browsers/browsing-the-web/unloading-documents/*
 SET TIMEOUT: html/browsers/history/the-history-interface/*
 SET TIMEOUT: html/browsers/history/the-location-interface/*
+SET TIMEOUT: html/browsers/history/the-session-history-of-browsing-contexts/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
 SET TIMEOUT: html/dom/dynamic-markup-insertion/opening-the-input-stream/*

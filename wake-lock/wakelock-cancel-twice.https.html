@@ -12,7 +12,7 @@ promise_test(async t => {
   assert_true(wakeLock.active, "the activate is true when wake lock is acquired");
   request.cancel();
   assert_false(wakeLock.active, "the activate is false when wake lock is released");
-  //If the cancel() method has already been invoked on this object, 
+  //If the cancel() method has already been invoked on this object,
   //abort these steps, no error fired
   request.cancel();
 }, document.title);

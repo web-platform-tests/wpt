@@ -88,5 +88,21 @@ promise_test(function(t) {
     return attachAndWaitForError(link);
 }, 'link rel=modulepreload with bad href attribute');
 
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/module1.js?as-script';
+    link.as = 'script'
+    return attachAndWaitForLoad(link);
+}, 'link rel=modulepreload as=script');
+
+promise_test(function(t) {
+    var link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = 'resources/module1.js?as-image';
+    link.as = 'image'
+    return attachAndWaitForError(link);
+}, 'link rel=modulepreload with invalid as= value');
+
 </script>
 </body>

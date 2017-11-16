@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 <title>no exception is thrown when invoking cancel() twice</title>
 <link rel="help" href="https://w3c.github.io/wake-lock/#dom-wakelockrequest-cancel">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script>
 
 promise_test(async t => {
@@ -15,6 +15,6 @@ promise_test(async t => {
   //If the cancel() method has already been invoked on this object,
   //abort these steps, no error fired
   request.cancel();
-}, document.title);
+}, "no exception is thrown when invoking cancel() twice");
 
 </script>

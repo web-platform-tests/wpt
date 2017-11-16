@@ -3,10 +3,13 @@
 <title>wake lock applicability test</title>
 <link rel="help" href="https://w3c.github.io/wake-lock/#dfn-the-wake-lock-is-applicable">
 <meta name="flags" content="interact">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <p>
-  Lock and turn off the screen, then turn it on and unlock the screen in a minute.
+  Lock and turn off the screen, then turn on and unlock the screen.
+</p>
+<p>
+  Note: All the actions need to be done in 60 seconds, otherwise it will get TIMEOUT.
 </p>
 <script>
 

@@ -1,0 +1,43 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<title>Link with onclick sets iframe location, is aborted by href navigation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="test" name="test"></iframe>
+<a target="test" onclick="document.querySelector('iframe').contentWindow.location='call-parent-postmessage.html';reports.push('onclick');" href="href.html">Test</a>
+
+<script>
+var test = async_test();
+var reports = [];
+
+window.onmessage = test.step_func_done(function(e) {
+  // This only occurs once.
+  reports.push(e.data);
+
+  // "href" is expected last, if this is not received last or
+  // not received at all, the test must fail.
+  if (e.data === "href") {
+    assert_equals(reports[0], "onclick");
+    assert_equals(reports[1], "href");
+  } else {
+    throw new Error("navigating to href must abort not-yet-mature navigation");
+  }
+});
+
+test.step(function() {
+  document.querySelector("a").click();
+});
+</script>
+
+<!--
+1. This test creates an iframe and an anchor with both an `onclick` and `href`.
+2. The test "clicks" the anchor, triggering the `onclick` handler operation,
+    which will attempt to navigate the iframe.
+3. Navigating the iframe to the anchor's `href` must abort the not-yet-mature
+    navigation that was started by the `onclick` handler.
+4. If the semantics are implemented correctly, reports will be
+    ["onclick", "href"]
+
+-->

@@ -1,5 +1,6 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
@@ -8,35 +9,34 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank">
-<title>Link with onclick form submit to "javascript: url", order of execution</title>
+<title>Link with onclick form submit to "javascript: url" navigation is not canceled because there is no href navigation; operations occur in exepected order.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<form target="test" action="javascript:parent.postMessage(location.href, '*');"></form>
-<a target="test" onclick="reports.push('onclick');document.forms[0].submit();">Test</a>
+<form target="test" action="javascript:parent.onjsurl({data:location.href});"></form>
+<a target="test" onclick="document.forms[0].submit();reports.push('onclick');">Test</a>
 <script>
 var test = async_test();
 var reports = [];
 
-window.onmessage = test.step_func(function(e) {
+// This direct sync function call is necessary to avoid
+// relying on unrelated events, eg. onload, etc.
+window.onjsurl = test.step_func_done(function(e) {
+  // This only occurs once.
   reports.push(e.data);
 
   // "about:blank" is expected last, if this is not received last or
   // not received at all, the test must fail.
   if (e.data === "about:blank") {
-    assert_equals(reports[0], "click");
-    assert_equals(reports[1], "onclick");
-    assert_equals(reports[2], "about:blank");
-    assert_equals(reports.length, 3);
+    assert_equals(reports[0], "onclick");
+    assert_equals(reports[1], "about:blank");
   } else {
     throw new Error("'javascript: url' code is expected to run asynchronously and in the target nested browsing context");
   }
-  test.done();
 });
 
 test.step(function() {
-  reports.push("click");
   document.querySelector("a").click();
 });
 </script>
@@ -48,8 +48,8 @@ test.step(function() {
     operation, which will attempt to submit the form. The form's `action` is
     a "javscript: url", which must be evaluated and executed asynchronously.
 3. location.href is used to prove that the "javscript: url"'s contents are
-    executed in the iframe.
+    evaluated in the iframe.
 4. If the semantics are implemented correctly, reports will be
-    ["click", "onclick", "about:blank"]
+    ["onclick", "about:blank"]
 
 -->

@@ -1,34 +1,32 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
 <title>Link with onclick navigates iframe and returns false, which will prevent the href navigation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<a target="test" onclick="document.querySelector('iframe').src='call-parent-postmessage.html';reports.push('onclick');return false;" href="href.html">Test</a>
+<a target="test" onclick="document.querySelector('iframe').contentWindow.location='call-parent-postmessage.html';reports.push('onclick');return false;" href="href.html">Test</a>
 
 <script>
 var test = async_test();
 var reports = [];
 
-window.onmessage = test.step_func(function(e) {
+window.onmessage = test.step_func_done(function(e) {
+  // This only occurs once.
   reports.push(e.data);
 
   // "call-parent-postmessage" is expected last, if this is not received last or
   // not received at all, the test must fail.
   if (e.data === "call-parent-postmessage") {
-    assert_equals(reports[0], "click");
-    assert_equals(reports[1], "onclick");
-    assert_equals(reports[2], "call-parent-postmessage");
-    assert_equals(reports.length, 3);
+    assert_equals(reports[0], "onclick");
+    assert_equals(reports[1], "call-parent-postmessage");
   } else {
-    throw new Error('onclick returns false, href navigation must not occur');
+    throw new Error("onclick returns false, href navigation must not occur.");
   }
-  test.done();
 });
 
 test.step(function() {
-  reports.push("click");
   document.querySelector("a").click();
 });
 </script>

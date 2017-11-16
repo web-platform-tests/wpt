@@ -1,0 +1,20 @@
+<!doctype html>
+<iframe id="test" name="test"></iframe>
+<form target="test" action="javascript:((e,n)=>{while(e()<n);return 1;})(Date.now,Date.now()+4000);"></form>
+<a target="test" onclick="times.push(Date.now());document.forms[0].submit();times.push(Date.now());" href="href.html">Test</a>
+<script>
+var times = [];
+window.onmessage = function(e) {
+  // Prevent further calls
+  window.onmessage = null;
+
+  if (times.length === 0 || times[1] - times[0] >= 4000) {
+    parent.postMessage("FAIL", "*");
+    return;
+  }
+  parent.postMessage(e.data, "*");
+};
+window.onload = function() {
+  document.querySelector("a").click();
+};
+</script>

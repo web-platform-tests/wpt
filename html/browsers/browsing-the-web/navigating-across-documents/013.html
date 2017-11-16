@@ -1,35 +1,36 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank">
-<title>Link with href navigation to "javascript: url", order of execution</title>
+<title>Link with href navigation to "javascript: url", code is executed in target nested browsing context; operations occur in exepected order.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<a target="test" href="javascript:parent.postMessage(location.href, '*');">Test</a>
+<a target="test" onclick="reports.push('onclick');" href="javascript:parent.onjsurl({data:location.href});">Test</a>
 <script>
 var test = async_test();
 var reports = [];
 
-window.onmessage = test.step_func(function(e) {
+// This direct sync function call is necessary to avoid
+// relying on unrelated events, eg. onload, etc.
+window.onjsurl = test.step_func_done(function(e) {
+  // This only occurs once.
   reports.push(e.data);
   // "about:blank" is expected last, if this is not received last or
   // not received at all, the test must fail.
   if (e.data === "about:blank") {
-    assert_equals(reports[0], "click");
+    assert_equals(reports[0], "onclick");
     assert_equals(reports[1], "about:blank");
-    assert_equals(reports.length, 2);
   } else {
-    throw new Error("'javascript: url' code is expected to run asynchronously and in the target nested browsing context");
+    throw new Error("'javascript: url' code is expected to run in the target nested browsing context, but it ran in the top-level browsing context.");
   }
-  test.done();
 });
 
 test.step(function() {
-  reports.push("click");
   document.querySelector("a").click();
 });
 </script>
@@ -39,7 +40,7 @@ test.step(function() {
 2. The test "clicks" the anchor, triggering the "javascript: url" href navigation,
     which must be evaluated and executed asynchronously.
 3. location.href is used to prove that the "javascript: url"'s contents
-    are executed in the iframe.
+    are evaluated in the iframe.
 4. If the semantics are implemented correctly, reports will be
     ["click", "about:blank"]
 

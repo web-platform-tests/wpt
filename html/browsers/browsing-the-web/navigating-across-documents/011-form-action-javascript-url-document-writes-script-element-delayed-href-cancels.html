@@ -1,5 +1,6 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
@@ -7,50 +8,32 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source">
-<title>Link with onclick form submit to navigate "javascript: url" in nested browsing context, is aborted by href navigation</title>
+<title>Link with onclick form submit to navigate "javascript: url" that document.writes a script in a nested browsing context, is aborted by href navigation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe id="test" name="test"></iframe>
-<!-- Everything seen in the action="" is necessary to prevent a blank page in Chrome -->
-<form target="test" action="javascript:parent.postMessage(location.href, '*');"></form>
-<a target="test" onclick="document.forms[0].submit();reports.push('onclick');" href="href.html">Test</a>
+<iframe src="011-form-action-javascript-url-document-writes-script-element-delayed-href-cancels-intermediary.html"></iframe>
 <script>
 var test = async_test();
-var reports = [];
-
-window.onmessage = test.step_func(function(e) {
-  reports.push(e.data);
-  // "href" is expected last, if this is not received last or
-  // not received at all, the test must fail.
-  if (e.data === "href") {
-    assert_equals(reports[0], "click");
-    assert_equals(reports[1], "onclick");
-    assert_equals(reports[2], "href");
-    assert_equals(reports.length, 3);
-  } else {
-
-
-  }
-  test.done();
-});
-
-test.step(function() {
-  reports.push("click");
-  document.querySelector("a").click();
+window.onjsurl = window.onmessage = test.step_func_done(function(e) {
+  assert_equals(e.data, "href", "'javascript: url' code is expected to run asynchronously.");
 });
 </script>
 
 <!--
+In an iframe...
+
 1. This test creates an iframe, a form with `action="javascript:...", and
     an anchor with both an `onclick` and `href`.
 2. The test "clicks" the anchor, triggering the `onclick` handler operation,
     which will attempt to submit the form, which targets the iframe.
-3. The form action "javascript: url" navigation is queued in a task.
-4. Navigating the iframe to the anchor's `href` must abort the iframe
-    "javascript: url" navigation.
-5. If the semantics are implemented correctly, reports will be
-    ["click", "onclick", "href"].
-    (There will be no report from the "javascript: url" code, because it
+3. The form action "javascript: url" navigation is queued in a task which contains the
+    steps to evaluate the code contents.
+4. Navigating the iframe to the anchor's `href` must cancel the iframe
+    "javascript: url" navigation, regardless of the delayed response.
+5. If the semantics are implemented correctly, a single message will be
+    received from href.html
+    (There will be no message from the "javascript: url" code, because it
     is aborted by the navigation to "href.html")
+
 -->

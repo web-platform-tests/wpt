@@ -1,34 +1,32 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
-<title>Link with onclick navigates iframe and returns true, which allows the href navigation</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<title>Link with onclick sets iframe src, is aborted by href navigation (despite response being delayed)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<a target="test" onclick="document.querySelector('iframe').src='call-parent-postmessage.html';reports.push('onclick');return true;" href="href.html">Test</a>
+<a target="test" onclick="document.querySelector('iframe').src='call-parent-postmessage.html';reports.push('onclick');" href="href.html?pipe=trickle(d1)">Test</a>
 
 <script>
 var test = async_test();
 var reports = [];
 
-window.onmessage = test.step_func(function(e) {
+window.onmessage = test.step_func_done(function(e) {
+  // This only occurs once.
   reports.push(e.data);
 
   // "href" is expected last, if this is not received last or
   // not received at all, the test must fail.
   if (e.data === "href") {
-    assert_equals(reports[0], "click");
-    assert_equals(reports[1], "onclick");
-    assert_equals(reports[2], "href");
-    assert_equals(reports.length, 3);
+    assert_equals(reports[0], "onclick");
+    assert_equals(reports[1], "href");
   } else {
-    throw new Error('navigating to href must abort not-yet-mature navigation');
+    throw new Error("navigating to href must abort not-yet-mature navigation");
   }
-  test.done();
 });
 
 test.step(function() {
-  reports.push("click");
   document.querySelector("a").click();
 });
 </script>
@@ -40,6 +38,6 @@ test.step(function() {
 3. Navigating the iframe to the anchor's `href` must abort the not-yet-mature
     navigation that was started by the `onclick` handler.
 4. If the semantics are implemented correctly, reports will be
-    ["click", "onclick", "href"]
+    ["onclick", "href"]
 
 -->

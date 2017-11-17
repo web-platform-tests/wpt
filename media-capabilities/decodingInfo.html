@@ -7,7 +7,7 @@
 // Minimal VideoConfiguration that will be allowed per spec. All optional
 // properties are missing.
 var minimalVideoConfiguration = {
-  contentType: 'video/webm; codecs="vp9"',
+  contentType: 'video/webm; codecs="vp09.00.10.08"',
   width: 800,
   height: 600,
   bitrate: 3000,
@@ -45,7 +45,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -58,7 +58,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -71,7 +71,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -110,7 +110,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"; foo="bar"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"; foo="bar"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -136,7 +136,7 @@ promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -149,7 +149,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -162,7 +162,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -175,7 +175,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -188,7 +188,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -201,7 +201,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -214,7 +214,7 @@ promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -227,7 +227,7 @@ promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -240,7 +240,7 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp9"',
+      contentType: 'video/webm; codecs="vp09.00.10.08"',
       width: 800,
       height: 600,
       bitrate: 3000,

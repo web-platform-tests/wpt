@@ -446,7 +446,8 @@ def check_subdomains(host, paths, bind_hostname, ssl_config, aliases):
             time.sleep(1)
 
     if not connected:
-        logger.critical("Failed to connect to test server on http://%s:%s You may need to edit /etc/hosts or similar" % (host, port))
+        logger.critical("Failed to connect to test server on http://%s:%s. "
+                        "You may need to edit /etc/hosts or similar, see README.md." % (host, port))
         sys.exit(1)
 
     for subdomain, (punycode, host) in subdomains.iteritems():
@@ -454,7 +455,8 @@ def check_subdomains(host, paths, bind_hostname, ssl_config, aliases):
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:
-            logger.critical("Failed probing domain %s. You may need to edit /etc/hosts or similar." % domain)
+            logger.critical("Failed probing domain %s. "
+                            "You may need to edit /etc/hosts or similar, see README.md." % domain)
             sys.exit(1)
 
     wrapper.wait()

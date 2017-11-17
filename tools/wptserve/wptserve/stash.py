@@ -4,6 +4,8 @@ import os
 import uuid
 from multiprocessing.managers import BaseManager, DictProxy
 
+from .logger import get_logger
+
 class ServerDictManager(BaseManager):
     shared_data = {}
 
@@ -47,10 +49,13 @@ def store_env_config(address, authkey):
     os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey))
 
 def start_server(address=None, authkey=None):
-    manager = ServerDictManager(address, authkey)
-    manager.start()
-
-    return (manager, manager._address, manager._authkey)
+    try:
+        manager = ServerDictManager(address, authkey)
+        manager.start()
+        return (manager, manager._address, manager._authkey)
+    except Exception:
+        get_logger().critical('Failed to start stash server. You may need to edit /etc/hosts or similar, see README.md.')
+        raise
 
 
 #TODO: Consider expiring values after some fixed time for long-running

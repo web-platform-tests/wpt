@@ -42,7 +42,7 @@ async function checkQuaternion(t, sensorType) {
 async function checkPopulateMatrix(t, sensorType) {
   const sensor = new sensorType();
   const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
-  
+
   //Throws with insufficient buffer space.
   assert_throws({ name: 'TypeError' }, () => sensor.populateMatrix(new Float32Array(15)));
 

@@ -370,8 +370,8 @@ class Session(object):
         self.actions = Actions(self)
 
     def __eq__(self, other):
-        return (self.session_id is not None and isinstance(other, Session)
-                and self.session_Id == other.session_id)
+        return (self.session_id is not None and isinstance(other, Session) and
+                self.session_id == other.session_id)
 
     def __enter__(self):
         self.start()
@@ -626,8 +626,8 @@ class Element(object):
         self.session._element_cache[self.id] = self
 
     def __eq__(self, other):
-        return isinstance(other, Element) and self.id == other.id \
-                and self.session == other.session
+        return (isinstance(other, Element) and self.id == other.id and
+                self.session == other.session)
 
     @classmethod
     def from_json(cls, json, session):

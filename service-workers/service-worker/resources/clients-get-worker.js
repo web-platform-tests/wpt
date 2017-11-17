@@ -4,7 +4,7 @@
 // the `event` object. In the case of the `onmessage` handler, it provides the
 // Client instance attributes of the requested clients.
 self.onfetch = function(e) {
-  if (e.request.mode === 'navigate' && e.clientId !== null) {
+  if (e.request.mode === 'navigate' && e.clientId !== "") {
     e.respondWith(Response.error(
       '`clientId` incorrectly set to non-null value for request with mode `navigate`'
     ));

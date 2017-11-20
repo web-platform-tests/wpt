@@ -780,23 +780,23 @@ def run(**kwargs):
 
     setup_logger(config["log_level"])
 
-    ssl_environment = get_ssl_environment(config)
-    ports = get_ports(config, ssl_environment)
-    config = normalise_config(config, ports)
+    with get_ssl_environment(config) as ssl_env:
+        ports = get_ports(config, ssl_env)
+        config = normalise_config(config, ports)
 
-    stash_address = None
-    if config["bind_hostname"]:
-        stash_address = (config["host"], get_port())
+        stash_address = None
+        if config["bind_hostname"]:
+            stash_address = (config["host"], get_port())
 
-    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-        servers = start(config, ssl_environment, build_routes(config["aliases"]), **kwargs)
+        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+            servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
 
-        try:
-            while any(item.is_alive() for item in iter_procs(servers)):
-                for item in iter_procs(servers):
-                    item.join(1)
-        except KeyboardInterrupt:
-            logger.info("Shutting down")
+            try:
+                while any(item.is_alive() for item in iter_procs(servers)):
+                    for item in iter_procs(servers):
+                        item.join(1)
+            except KeyboardInterrupt:
+                logger.info("Shutting down")
 
 
 def main():

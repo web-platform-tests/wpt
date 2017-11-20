@@ -1,7 +1,3 @@
-const unreached = event => {
-  assert_unreached(event.error.name + ": " + event.error.message);
-};
-
 const properties = {
   'AmbientLightSensor' : ['timestamp', 'illuminance'],
   'Accelerometer' : ['timestamp', 'x', 'y', 'z'],
@@ -38,10 +34,10 @@ function reading_to_array(sensor) {
 function runGenericSensorTests(sensorType) {
   promise_test(async t => {
     const sensor = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("reading");
     assert_reading_not_null(sensor);
     assert_true(sensor.hasReading);
 
@@ -53,11 +49,11 @@ function runGenericSensorTests(sensorType) {
   promise_test(async t => {
     const sensor1 = new sensorType();
     const sensor2 = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor1, ["reading", "error"]);
+    const sensorWatcher = new EventWatcher(t, sensor1, ["reading", "error"]);
     sensor2.start();
     sensor1.start();
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("reading");
     // Reading values are correct for both sensors.
     assert_reading_not_null(sensor1);
     assert_reading_not_null(sensor2);
@@ -73,13 +69,13 @@ function runGenericSensorTests(sensorType) {
 
   promise_test(async t => {
     const sensor = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("reading");
     const cachedTimeStamp1 = sensor.timestamp;
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("reading");
     const cachedTimeStamp2 = sensor.timestamp;
 
     assert_greater_than(cachedTimeStamp2, cachedTimeStamp1);
@@ -88,58 +84,58 @@ function runGenericSensorTests(sensorType) {
 
   promise_test(async t => {
     const sensor = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
     assert_false(sensor.activated);
     sensor.start();
     assert_false(sensor.activated);
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("activate");
     assert_true(sensor.activated);
 
     sensor.stop();
     assert_false(sensor.activated);
   }, `${sensorType.name}: Test that sensor can be successfully created and its states are correct.`);
 
-  test(() => {
+  promise_test(async t => {
     const sensor = new sensorType();
-    sensor.onerror = unreached;
+    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
     const start_return = sensor.start();
+
+    await sensorWatcher.wait_for("activate");
     assert_equals(start_return, undefined);
     sensor.stop();
   }, `${sensorType.name}: sensor.start() returns undefined`);
 
-  test(() => {
-    try {
-      const sensor = new sensorType();
-      sensor.onerror = unreached;
-      sensor.start();
-      sensor.start();
-      assert_false(sensor.activated);
-      sensor.stop();
-    } catch (e) {
-       assert_unreached(e.name + ": " + e.message);
-    }
+  promise_test(async t => {
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
+    sensor.start();
+    sensor.start();
+
+    await sensorWatcher.wait_for("activate");
+    assert_true(sensor.activated);
+    sensor.stop();
   }, `${sensorType.name}: no exception is thrown when calling start() on already started sensor`);
 
-  test(() => {
+  promise_test(async t => {
     const sensor = new sensorType();
-    sensor.onerror = unreached;
+    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
     sensor.start();
+
+    await sensorWatcher.wait_for("activate");
     const stop_return = sensor.stop();
     assert_equals(stop_return, undefined);
   }, `${sensorType.name}: sensor.stop() returns undefined`);
 
-  test(() => {
-    try {
-      const sensor = new sensorType();
-      sensor.onerror = unreached;
-      sensor.start();
-      sensor.stop();
-      sensor.stop();
-      assert_false(sensor.activated);
-    } catch (e) {
-       assert_unreached(e.name + ": " + e.message);
-    }
+  promise_test(async t => {
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["activate", "error"]);
+    sensor.start();
+
+    await sensorWatcher.wait_for("activate");
+    sensor.stop();
+    sensor.stop();
+    assert_false(sensor.activated);
   }, `${sensorType.name}: no exception is thrown when calling stop() on already stopped sensor`);
 
   promise_test(async t => {
@@ -158,18 +154,18 @@ function runGenericSensorTests(sensorType) {
                     '<\/script>';
     iframe.onload = () => iframe.contentWindow.postMessage('LOADED', '*');
     document.body.appendChild(iframe);
-    const eventWatcher = new EventWatcher(t, window, "message");
-    const message = await eventWatcher.wait_for("message");
+    const sensorWatcher = new EventWatcher(t, window, "message");
+    const message = await sensorWatcher.wait_for("message");
     assert_equals(message.data, 'SecurityError');
   }, `${sensorType.name}: throw a 'SecurityError' when constructing sensor object within iframe`);
 
   promise_test(async t => {
     const sensor = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     const visibilityChangeWatcher = new EventWatcher(t, document, "visibilitychange");
     sensor.start();
 
-    await eventWatcher.wait_for("reading");
+    await sensorWatcher.wait_for("reading");
     assert_reading_not_null(sensor);
     const cachedSensor1 = reading_to_array(sensor);
 
@@ -192,10 +188,10 @@ function runGenericSensorInsecureContext(sensorType) {
 function runGenericSensorOnerror(sensorType) {
   promise_test(async t => {
     const sensor = new sensorType();
-    const eventWatcher = new EventWatcher(t, sensor, ["error", "activate"]);
+    const sensorWatcher = new EventWatcher(t, sensor, ["error", "activate"]);
     sensor.start();
 
-    const event = await eventWatcher.wait_for("error");
+    const event = await sensorWatcher.wait_for("error");
     assert_false(sensor.activated);
     assert_equals(event.error.name, 'NotReadableError');
   }, `${sensorType.name}: 'onerror' event is fired when sensor is not supported`);

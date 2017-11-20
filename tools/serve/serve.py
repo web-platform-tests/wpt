@@ -637,9 +637,13 @@ def normalise_config(config, ports):
     for scheme, ports_used in ports.iteritems():
         ports_[scheme] = ports_used
 
-    return {"host": host,
-            "domains": domains,
-            "ports": ports_}
+    # make a (shallow) copy of the config and update that, so that the
+    # normalized config can be used in place of the original one.
+    config_ = config.copy()
+    config_["host"] = host
+    config_["domains"] = domains
+    config_["ports"] = ports_
+    return config_
 
 
 def get_ssl_config(config, external_domains, ssl_environment):
@@ -657,17 +661,15 @@ def start(config, ssl_environment, routes, **kwargs):
     paths = {"doc_root": config["doc_root"],
              "ws_doc_root": config["ws_doc_root"]}
 
-    external_config = normalise_config(config, ports)
-
-    ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
+    ssl_config = get_ssl_config(config, config["domains"].values(), ssl_environment)
 
     if config["check_subdomains"]:
         check_subdomains(host, paths, bind_hostname, ssl_config, config["aliases"])
 
-    servers = start_servers(host, ports, paths, routes, bind_hostname, external_config,
+    servers = start_servers(host, ports, paths, routes, bind_hostname, config,
                             ssl_config, **kwargs)
 
-    return external_config, servers
+    return servers
 
 
 def iter_procs(servers):
@@ -778,20 +780,23 @@ def run(**kwargs):
 
     setup_logger(config["log_level"])
 
+    ssl_environment = get_ssl_environment(config)
+    ports = get_ports(config, ssl_environment)
+    config = normalise_config(config, ports)
+
     stash_address = None
     if config["bind_hostname"]:
         stash_address = (config["host"], get_port())
 
     with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-        with get_ssl_environment(config) as ssl_env:
-            config_, servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
+        servers = start(config, ssl_environment, build_routes(config["aliases"]), **kwargs)
 
-            try:
-                while any(item.is_alive() for item in iter_procs(servers)):
-                    for item in iter_procs(servers):
-                        item.join(1)
-            except KeyboardInterrupt:
-                logger.info("Shutting down")
+        try:
+            while any(item.is_alive() for item in iter_procs(servers)):
+                for item in iter_procs(servers):
+                    item.join(1)
+        except KeyboardInterrupt:
+            logger.info("Shutting down")
 
 
 def main():

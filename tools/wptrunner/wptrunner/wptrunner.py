@@ -13,6 +13,7 @@ import wpttest
 from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
+from typing import List
 
 here = os.path.split(__file__)[0]
 
@@ -48,8 +49,8 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
     test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
                                                manifest_download=kwargs["manifest_download"]).load()
 
-    manifest_filters = []
-    meta_filters = []
+    manifest_filters = []  # type: List[testloader.TestFilter]
+    meta_filters = []  # type: List[testloader.TagFilter]
 
     if kwargs["include"] or kwargs["exclude"] or kwargs["include_manifest"]:
         manifest_filters.append(testloader.TestFilter(include=kwargs["include"],

@@ -149,6 +149,6 @@ class IncludeManifest(ManifestItem):
         return self._add_rule(test_manifests, url_prefix, "exclude")
 
 
-def get_manifest(manifest_path):
+def get_manifest(manifest_path):  # type: (str) -> IncludeManifest
     with open(manifest_path) as f:
         return conditional.compile(f, data_cls_getter=lambda x, y: IncludeManifest)

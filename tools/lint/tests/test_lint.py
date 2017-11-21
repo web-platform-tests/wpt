@@ -362,8 +362,8 @@ def test_check_css_globally_unique_ignored_dir(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css-unique/support/a.html"], "normal", True)
             assert rv == 0
-            assert mocked_check_path.call_count == 2
-            assert mocked_check_file_contents.call_count == 2
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
     assert caplog.text == ""
 
 

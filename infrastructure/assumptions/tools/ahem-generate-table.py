@@ -30,52 +30,66 @@ chars_sorted = sorted(chars)
 per_row = 17
 
 
-def build_header(is_test):
-    rv = []
-
-    rv.append("""
-<!doctype html>
-<title>Ahem checker</title>""")
-
-    if is_test:
-        rv.append("""
-<link rel="match" href="ahem-ref.html">""")
-
-    rv.append("""
-<style>""")
-
-    if not is_test:
-        rv.append("""
-@font-face {
-  font-family: Ahem;
-  src: url("../../fonts/Ahem.ttf");
-}""")
-
-    rv.append("""
+doctype = "<!doctype html>"
+title = "<title>Ahem checker</title>"
+style_open = """
+<style>
 * {
   padding: 0;
   margin: 0;
   border: none;
 }
-
+td {
+  width: 34px;
+}""".strip()
+style_close = "</style>"
+style_font_face = """
+@font-face {
+  font-family: Ahem;
+  src: url("../../fonts/Ahem.ttf");
+}""".strip()
+style_table_with_font = """
 table {
   font: 15px/1 Ahem;
   border-collapse: separate;
   border-spacing: 1px;
   table-layout: fixed;
-}
+}""".strip()
+style_table_no_font = """
+table {
+  font: 15px/1;
+  border-collapse: separate;
+  border-spacing: 1px;
+  table-layout: fixed;
+}""".strip()
 
-td {
-  width: 34px;
-}
-</style>
-""")
 
-    return "".join(rv)
+def build_link(is_mismatch):
+    return ('<link rel="%s" href="ahem-ref.html">' %("mismatch" if is_mismatch else "match"))
+
+def build_header(is_test, is_mismatch):
+    rv = [doctype, title]
+
+    if is_test:
+        rv.append(build_link(is_mismatch))
+
+    rv.append(style_open)
+
+    if not is_test:
+        rv.append(style_font_face)
+
+    if is_mismatch:
+        rv.append(style_table_no_font)
+    else:
+        rv.append(style_table_with_font)
+
+    rv.append(style_close)
+
+    return "\n".join(rv)
 
 
 def build_table():
-    rv = []
+    rv = ["\n"]
 
     rv.append("<table>\n")
     for row in grouper(per_row, chars_sorted):
@@ -94,9 +108,14 @@ def build_table():
 
 
 with open("../ahem.html", "w") as f1:
-    f1.write(build_header(True))
+    f1.write(build_header(is_test=True, is_mismatch=False))
+    f1.write(build_table())
+
+with open("../ahem-mismatch.html", "w") as f1:
+    f1.write(build_header(is_test=True, is_mismatch=True))
     f1.write(build_table())
 
 with open("../ahem-ref.html", "w") as f1:
-    f1.write(build_header(False))
+    f1.write(build_header(is_test=False, is_mismatch=False))
     f1.write(build_table())
+

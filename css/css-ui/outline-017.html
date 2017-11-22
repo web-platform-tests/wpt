@@ -29,20 +29,24 @@
   <div id=log></div>
 
   <script>
-    test(
-      function(){
-        var test = document.getElementById("test");
-        assert_equals(getComputedStyle(test).outlineColor, 'rgb(2, 0, 0)');
-      }, "outline-color is animated as a color");
-    test(
-      function(){
-        var test = document.getElementById("test");
-        assert_equals(getComputedStyle(test).outlineWidth, '2px');
-      }, "outline-width is animated as a length");
-    test(
-      function(){
-        var test = document.getElementById("test");
-        assert_equals(getComputedStyle(test).outlineOffset, '2px');
-      }, "outline-offset is animated as a length");
+    setup({explicit_done:true});
+    requestAnimationFrame(function() {
+        test(
+          function(){
+            var test = document.getElementById("test");
+            assert_equals(getComputedStyle(test).outlineColor, 'rgb(2, 0, 0)');
+          }, "outline-color is animated as a color");
+        test(
+          function(){
+            var test = document.getElementById("test");
+            assert_equals(getComputedStyle(test).outlineWidth, '2px');
+          }, "outline-width is animated as a length");
+        test(
+          function(){
+            var test = document.getElementById("test");
+            assert_equals(getComputedStyle(test).outlineOffset, '2px');
+          }, "outline-offset is animated as a length");
+        done();
+    });
 </script>
 </body>

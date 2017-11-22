@@ -48,40 +48,42 @@ style_font_face = """
   font-family: Ahem;
   src: url("../../fonts/Ahem.ttf");
 }""".strip()
-style_table_with_font = """
+style_table_font_specified = """
 table {
   font: 15px/1 Ahem;
   border-collapse: separate;
   border-spacing: 1px;
   table-layout: fixed;
 }""".strip()
-style_table_no_font = """
+style_table_font_unspecified = """
 table {
-  font: 15px/1;
+  font-size: 15px;
+  line-height: 1;
   border-collapse: separate;
   border-spacing: 1px;
   table-layout: fixed;
 }""".strip()
 
 
-def build_link(is_mismatch):
-    return ('<link rel="%s" href="ahem-ref.html">' %("mismatch" if is_mismatch else "match"))
-
-def build_header(is_test, is_mismatch):
+def build_header(is_test, rel, href):
     rv = [doctype, title]
 
-    if is_test:
-        rv.append(build_link(is_mismatch))
+    if rel != None and href != None:
+        rv.append('<link rel="%s" href="%s">' % (rel, href))
 
     rv.append(style_open)
 
     if not is_test:
-        rv.append(style_font_face)
-
-    if is_mismatch:
-        rv.append(style_table_no_font)
+        if rel == None and href == None:
+            # ahem-notref.html
+            rv.append(style_table_font_unspecified)
+        else:
+            # ahem-ref.html
+            rv.append(style_font_face)
+            rv.append(style_table_font_specified)
     else:
-        rv.append(style_table_with_font)
+        # ahem.html
+        rv.append(style_table_font_specified)
 
     rv.append(style_close)
 
@@ -107,15 +109,21 @@ def build_table():
     return "".join(rv)
 
 
-with open("../ahem.html", "w") as f1:
-    f1.write(build_header(is_test=True, is_mismatch=False))
-    f1.write(build_table())
+cases = [
+    # file, is_test, rel
+    ("../ahem.html", True, "match"),
+    ("../ahem-ref.html", False, "mismatch"),
+    ("../ahem-notref.html", False, None),
+]
 
-with open("../ahem-mismatch.html", "w") as f1:
-    f1.write(build_header(is_test=True, is_mismatch=True))
-    f1.write(build_table())
+table = build_table()
 
-with open("../ahem-ref.html", "w") as f1:
-    f1.write(build_header(is_test=False, is_mismatch=False))
-    f1.write(build_table())
+for index, case in enumerate(cases):
+    next_index = index + 1
+    file, is_test, rel = case
+    href = cases[next_index][0][3:] if next_index < len(cases) else None
+    header = build_header(is_test, rel, href)
+
+    with open(file, "w") as file:
+        file.write("%s%s" % (header, table))
 

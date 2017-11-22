@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+a<!DOCTYPE html>
 <meta charset="utf-8">
 <title>CSS Basic User Interface Test: interpolable outline-* properties animation</title>
 <link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net">
@@ -9,18 +9,18 @@
 <style>
 @keyframes outline-anim {
   from {
-    outline: solid 1px rgb(1,0,0);
+    outline: solid 1px rgba(1, 0, 0, 0.5);
     outline-offset: 1px;
   }
   to {
-    outline: solid 3px rgb(3,0,0);
+    outline: solid 3px rgb(3, 0, 0, 0.5);
     outline-offset: 3px;
   }
 }
 
 #test {
   animation: outline-anim 3s -1.5s paused linear;
-  outline: solid 1px rgb(1,0,0);
+  outline: solid 1px rgb(1, 0, 0, 0.5);
   outline-offset: 1px;
 }
 </style>
@@ -34,7 +34,7 @@
         test(
           function(){
             var test = document.getElementById("test");
-            assert_equals(getComputedStyle(test).outlineColor, 'rgb(2, 0, 0)');
+            assert_equals(getComputedStyle(test).outlineColor, 'rgba(2, 0, 0, 0.5)');
           }, "outline-color is animated as a color");
         test(
           function(){

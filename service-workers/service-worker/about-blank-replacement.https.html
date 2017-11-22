@@ -113,5 +113,34 @@ promise_test(async function(t) {
 }, 'Popup initial about:blank is controlled, exposed to clients.matchAll(), and ' +
    'matches final Client.');
 
+promise_test(async function(t) {
+  const scope = 'resources/about-blank-replacement-uncontrolled-nested-frame.html';
+
+  let reg = await service_worker_unregister_and_register(t, worker, scope);
+  await wait_for_state(t, reg.installing, 'activated');
+
+  // Load the scope as a frame.  We expect this in turn to have a nested
+  // iframe.  Unlike the other tests in this file the nested iframe URL
+  // is not covered by a service worker scope.  It should end up as
+  // uncontrolled even though its initial about:blank is controlled.
+  let frame = await createFrameWithNestedWindow(scope);
+  let nested = frame.contentWindow.nested();
+  let initialResult = nested.document.body.textContent;
+
+  // The nested iframe should not have been intercepted by the service
+  // worker.  The empty.html nested frame has "hello world" for its body.
+  assert_equals(initialResult.trim(), 'hello world', `result: ${initialResult}`);
+
+  assert_not_equals(frame.contentWindow.navigator.serviceWorker.controller, null,
+                'outer frame should be controlled');
+
+  assert_equals(nested.navigator.serviceWorker.controller, null,
+                'nested frame should not be controlled');
+
+  frame.remove();
+  await service_worker_unregister_and_done(t, scope);
+}, 'Initial about:blank is controlled, exposed to clients.matchAll(), and ' +
+   'final Client is not controlled by a service worker.');
+
 </script>
 </body>

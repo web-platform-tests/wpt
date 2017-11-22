@@ -1,3 +1,11 @@
+def main(request, response):
+  if 'nested' in request.GET:
+    return (
+      [('Content-Type', 'text/html')],
+      'failed: nested frame was not intercepted by the service worker'
+    )
+
+  return ([('Content-Type', 'text/html')], """
 <!doctype html>
 <html>
 <body>
@@ -19,14 +27,22 @@ function nested() {
 // document.  Any modifications made here should be preserved after the
 // frame loads because the global should be re-used.
 let win = nested();
-win.navigator.serviceWorker.addEventListener('message', evt => {
-  if (evt.data.type === 'PING') {
-    evt.source.postMessage({
-      type: 'PONG',
-      location: win.location.toString()
-    });
-  }
-});
+if (win.location.href !== 'about:blank') {
+  parent.postMessage({
+    type: 'NESTED_LOADED',
+    result: 'failed: nested iframe does not have an initial about:blank URL'
+  }, '*');
+} else {
+  win.navigator.serviceWorker.addEventListener('message', evt => {
+    if (evt.data.type === 'PING') {
+      evt.source.postMessage({
+        type: 'PONG',
+        location: win.location.toString()
+      });
+    }
+  });
+}
 </script>
 </body>
 </html>
+""")

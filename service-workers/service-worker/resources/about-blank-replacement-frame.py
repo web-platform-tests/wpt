@@ -1,3 +1,11 @@
+def main(request, response):
+  if 'nested' in request.GET:
+    return (
+      [('Content-Type', 'text/html')],
+      'failed: nested frame was not intercepted by the service worker'
+    )
+
+  return ([('Content-Type', 'text/html')], """
 <!doctype html>
 <html>
 <body>
@@ -20,3 +28,4 @@ function nested() {
 </script>
 </body>
 </html>
+""")

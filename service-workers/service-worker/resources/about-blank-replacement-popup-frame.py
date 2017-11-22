@@ -1,9 +1,18 @@
+def main(request, response):
+  if 'nested' in request.GET:
+    return (
+      [('Content-Type', 'text/html')],
+      'failed: nested frame was not intercepted by the service worker'
+    )
+
+  return ([('Content-Type', 'text/html')], """
 <!doctype html>
 <html>
 <body>
 <script>
 function nestedLoaded() {
   parent.postMessage({ type: 'NESTED_LOADED' }, '*');
+  popup.close();
 }
 
 let popup = window.open('?nested=true');
@@ -17,3 +26,4 @@ function nested() {
 </script>
 </body>
 </html>
+""")

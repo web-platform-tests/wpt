@@ -905,6 +905,7 @@ MISSING-LINK: css/cssom-view/elementFromPoint-002.html
 MISSING-LINK: css/cssom-view/elementFromPoint-003.html
 MISSING-LINK: css/cssom-view/elementFromPoint.html
 MISSING-LINK: css/cssom-view/elementScroll.html
+MISSING-LINK: css/cssom-view/elementScroll-002.html
 MISSING-LINK: css/cssom-view/elementsFromPoint-iframes.html
 MISSING-LINK: css/cssom-view/elementsFromPoint-invalid-cases.html
 MISSING-LINK: css/cssom-view/elementsFromPoint-shadowroot.html

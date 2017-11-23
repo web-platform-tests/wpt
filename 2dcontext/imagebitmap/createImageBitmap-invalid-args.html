@@ -95,7 +95,6 @@ function makeAvailableButBrokenImage() {
     const image = new Image();
     image.src = "/images/broken.png";
     image.onload = () => resolve(image);
-    //image.onerror = () => resolve(image);
   });
 }
 

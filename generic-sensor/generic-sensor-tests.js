@@ -5,7 +5,9 @@ const properties = {
   'Gyroscope' : ['timestamp', 'x', 'y', 'z'],
   'Magnetometer' : ['timestamp', 'x', 'y', 'z'],
   'AbsoluteOrientationSensor' : ['timestamp', 'quaternion'],
-  'RelativeOrientationSensor' : ['timestamp', 'quaternion']
+  'RelativeOrientationSensor' : ['timestamp', 'quaternion'],
+  'GeolocationSensor' : ['timestamp', 'latitude', 'longitude', 'altitude',
+                         'accuracy', 'altitudeAccuracy', 'heading', 'speed']
 };
 
 function assert_reading_not_null(sensor) {

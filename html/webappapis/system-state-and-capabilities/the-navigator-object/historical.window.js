@@ -1,6 +1,5 @@
 [
   "registerContentHandler",
-  "isProtocolHandlerRegistered",
   "isContentHandlerRegistered",
   "unregisterContentHandler"
 ].forEach(method => {

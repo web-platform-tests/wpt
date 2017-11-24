@@ -18,18 +18,12 @@ async function nextFrame() {
   await raf();
 }
 
-function broadcastResponse(channel) {
-  const bc = new BroadcastChannel(channel);
-  const p = new Promise(resolve => {
+function broadcastResponse(bc) {
+  return new Promise(resolve => {
     bc.onmessage = event => {
-      bc.close();
       resolve(event.data);
     };
   });
-
-  p.broadcastChannel = bc;
-
-  return p;
 }
 
 async function reset() {
@@ -53,7 +47,8 @@ promise_test(async t => {
 
   await wait_for_state(t, reg.installing, 'activated');
   const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
+  const channel = new BroadcastChannel(channelName);
+  const bcResponse = broadcastResponse(channel);
 
   const fetchUrl = new URL(scope, location);
   abortKey = token();
@@ -66,10 +61,9 @@ promise_test(async t => {
 
   await nextFrame();
   frame.remove();
+  await nextFrame();
 
-  const testResponse = await bcResponse;
-
-  assert_equals(testResponse, 'rejected-aborterror');
+  assert_equals(await bcResponse, 'rejected-aborterror');
 }, 'Preload response aborts when navigation terminates');
 
 promise_test(async t => {

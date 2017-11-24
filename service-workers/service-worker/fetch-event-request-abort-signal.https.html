@@ -17,18 +17,12 @@ async function nextFrame() {
   await raf();
 }
 
-function broadcastResponse(channel) {
-  const bc = new BroadcastChannel(channel);
-  const p = new Promise(resolve => {
+function broadcastResponse(bc) {
+  return new Promise(resolve => {
     bc.onmessage = event => {
-      bc.close();
       resolve(event.data);
     };
   });
-
-  p.broadcastChannel = bc;
-
-  return p;
 }
 
 function reset() {
@@ -40,88 +34,85 @@ function reset() {
   });
 }
 
-promise_test(async t => {
-  await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
-  await wait_for_state(t, reg.installing, 'activated');
-  const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
+function abortTest(callback, name) {
+  return promise_test(async t => {
+    await reset();
+
+    // Register and activate.
+    const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
+    await wait_for_state(t, reg.installing, 'activated');
+
+    // Create a channel for communication with the service worker.
+    const channelName = Math.random() + '';
+    const channel = new BroadcastChannel(channelName);
+
+    // Promise for the next broadcast (from the service worker).
+    const bcResponse = broadcastResponse(channel);
+
+    // URL to fetch.
+    // This will always be caught by the service worker.
+    // 'whatever' doesn't need to exist.
+    const fetchUrl = new URL('whatever', location);
+    fetchUrl.searchParams.set('bc', channelName);
+
+    await callback(t, channel, bcResponse, fetchUrl);
+  }, name);
+}
+
+abortTest(async (t, channel, bcResponse, fetchUrl) => {
+  fetchUrl.searchParams.set('wait-for-abort', '');
 
   const frame = await with_iframe(SCOPE);
-  const fetchUrl = new URL('whatever', location);
-  fetchUrl.searchParams.set('wait-for-abort', '');
-  fetchUrl.searchParams.set('bc', channelName);
-
   const controller = new AbortController();
   const signal = controller.signal;
 
   frame.contentWindow.fetch(fetchUrl, { signal });
   await nextFrame();
   controller.abort();
+  await nextFrame();
+  channel.postMessage('abort-expected');
 
-  const testResponse = await bcResponse;
-
-  assert_equals(testResponse, 'aborted');
+  assert_equals(await bcResponse, 'aborted');
 }, 'SW signal reacts to fetch abort');
 
-promise_test(async t => {
-  await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
-  await wait_for_state(t, reg.installing, 'activated');
-  const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
+abortTest(async (t, channel, bcResponse, fetchUrl) => {
+  fetchUrl.searchParams.set('wait-for-abort', '');
 
   const frame = await with_iframe(SCOPE);
-  const fetchUrl = new URL('whatever', location);
-  fetchUrl.searchParams.set('wait-for-abort', '');
-  fetchUrl.searchParams.set('bc', channelName);
-
   const xhr = new frame.contentWindow.XMLHttpRequest();
   xhr.open('GET', fetchUrl);
   xhr.send();
 
   await nextFrame();
   xhr.abort();
+  await nextFrame();
+  channel.postMessage('abort-expected');
 
-  const testResponse = await bcResponse;
-
-  assert_equals(testResponse, 'aborted');
+  assert_equals(await bcResponse, 'aborted');
 }, 'SW signal reacts to XHR abort');
 
-promise_test(async t => {
-  await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
-  await wait_for_state(t, reg.installing, 'activated');
-  const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
+abortTest(async (t, channel, bcResponse, fetchUrl) => {
+  fetchUrl.searchParams.set('wait-for-abort', '');
 
   const frame = await with_iframe(SCOPE);
-  const fetchUrl = new URL('whatever', location);
-  fetchUrl.searchParams.set('wait-for-abort', '');
-  fetchUrl.searchParams.set('bc', channelName);
 
   let img = new frame.contentWindow.Image();
   img.src = fetchUrl;
+  frame.contentDocument.body.appendChild(img);
   img = undefined;
 
   await nextFrame();
   frame.remove();
+  await nextFrame();
+  channel.postMessage('abort-expected');
 
-  const testResponse = await bcResponse;
-
-  assert_equals(testResponse, 'aborted');
+  assert_equals(await bcResponse, 'aborted');
 }, 'SW signal reacts to fetch group termination');
 
-promise_test(async t => {
-  await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
-  await wait_for_state(t, reg.installing, 'activated');
-  const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
-
-  const fetchUrl = new URL(SCOPE, location);
+abortTest(async (t, channel, bcResponse, fetchUrl) => {
   fetchUrl.searchParams.set('wait-for-abort', '');
-  fetchUrl.searchParams.set('bc', channelName);
+  // The fetch URL isn't 'whatever' in this case, it's the SW scope.
+  fetchUrl.pathname = new URL(SCOPE, location).pathname;
 
   const frame = document.createElement('iframe');
   frame.src = fetchUrl;
@@ -129,33 +120,24 @@ promise_test(async t => {
 
   await nextFrame();
   frame.remove();
+  await nextFrame();
+  channel.postMessage('abort-expected');
 
-  const testResponse = await bcResponse;
-
-  assert_equals(testResponse, 'aborted');
+  assert_equals(await bcResponse, 'aborted');
 }, 'SW signal reacts to navigation termination');
 
-promise_test(async t => {
-  await reset();
-  const reg = await service_worker_unregister_and_register(t, SW_URL, SCOPE);
-  await wait_for_state(t, reg.installing, 'activated');
-  const channelName = Math.random() + '';
-  const bcResponse = broadcastResponse(channelName);
+abortTest(async (t, channel, bcResponse, fetchUrl) => {
+  fetchUrl.searchParams.set('abort-not-expected', '');
 
   const frame = await with_iframe(SCOPE);
-  const fetchUrl = new URL('whatever', location);
-  fetchUrl.searchParams.set('abort-not-expected', '');
-  fetchUrl.searchParams.set('bc', channelName);
-
   const response = await frame.contentWindow.fetch(fetchUrl);
   const data = await response.json();
 
   assert_true(data.ok);
 
-  bcResponse.broadcastChannel.postMessage('ping');
-  const testResponse = await bcResponse;
+  channel.postMessage('ping');
 
-  assert_false(testResponse.aborted);
+  assert_equals(await bcResponse, 'aborted-false');
 }, `SW signal doesn't react to successful fetch`);
 
 promise_test(async t => {

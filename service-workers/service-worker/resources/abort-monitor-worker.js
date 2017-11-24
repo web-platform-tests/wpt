@@ -1,9 +1,5 @@
 skipWaiting();
 
-function wait(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
 addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
@@ -27,8 +23,12 @@ function abortNotExpected(event) {
 
   event.waitUntil(new Promise(resolve => {
     bc.onmessage = () => {
-      bc.postMessage({ aborted: request.signal.aborted });
       resolve();
+      if (!request.signal) {
+        bc.postMessage('no-signal');
+        return;
+      }
+      bc.postMessage(`aborted-${request.signal.aborted}`);
     };
   }));
 }
@@ -38,6 +38,14 @@ function waitForAbort(event) {
   const channelName = url.searchParams.get('bc');
   const bc = new BroadcastChannel(channelName);
   const { request } = event;
+
+  const timeout = new Promise(resolve => {
+    bc.addEventListener('message', function messageListener(event) {
+      if (event.data != 'abort-expected') return;
+      resolve('timeout');
+      bc.removeEventListener('message', messageListener);
+    });
+  });
 
   event.waitUntil(
     (async function test() {
@@ -50,7 +58,7 @@ function waitForAbort(event) {
       }
 
       return Promise.race([
-        wait(2000).then(() => 'timeout'),
+        timeout,
         new Promise(r => {
           request.signal.onabort = () => r('aborted');
         })

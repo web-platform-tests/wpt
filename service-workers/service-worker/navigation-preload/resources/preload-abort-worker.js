@@ -1,9 +1,5 @@
 skipWaiting();
 
-function wait(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
 addEventListener('activate', event => {
   event.waitUntil(self.registration.navigationPreload.enable());
 });
@@ -12,6 +8,14 @@ addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   const channelName = url.searchParams.get('bc');
   const bc = new BroadcastChannel(channelName);
+
+  const timeout = new Promise(resolve => {
+    bc.addEventListener('message', function messageListener(event) {
+      if (event.data != 'abort-expected') return;
+      resolve('timeout');
+      bc.removeEventListener('message', messageListener);
+    });
+  });
 
   event.waitUntil(
     Promise.race([
@@ -28,10 +32,10 @@ addEventListener('fetch', event => {
           if (err.name == 'AbortError') {
             return 'rejected-aborterror';
           }
-          return 'rejected-other-error'
+          return 'rejected-other-error';
         }
       }()),
-      wait(2000).then(() => 'timeout')
+      timeout
     ]).then(
       val => bc.postMessage(val),
       err => bc.postMessage(`Err: ${err.message}`)

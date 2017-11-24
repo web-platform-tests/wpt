@@ -1257,7 +1257,7 @@
         var p1 = doc.createElement("p");
         doc.body.appendChild(doc.createTextNode(" TEST "));
         doc.body.appendChild(p1);
-        expect(doc.documentElement, notFirst, "root element, with no parent node, claims to be a :first-child");
+        //expect(doc.documentElement, notFirst, "root element, with no parent node, claims to be a :first-child");
         expect(doc.documentElement.firstChild, first, "first child of root node didn't match :first-child");
         expect(doc.documentElement.firstChild.firstChild, first, "failure 3");
         expect(doc.body, notFirst, "failure 4");

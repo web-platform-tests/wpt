@@ -52,7 +52,7 @@ promise_test(async t => {
   const wakeLock = await navigator.getWakeLock("screen");
   const iframe = await load_iframe();
   const eventWatcher = new EventWatcher(t, wakeLock, "activechange");
-  
+
   assert_false(wakeLock.active, "wakeLock is initially false");
 
   //when iframe wake lock is acquired, parent wake lock should be actived

@@ -34,7 +34,7 @@ function createFrameWithNestedWindow(url) {
         return;
       }
       window.removeEventListener('message', onMsg);
-      if(evt.data.result && evt.data.result.startsWith('failure:')) {
+      if (evt.data.result && evt.data.result.startsWith('failure:')) {
         reject(evt.data.result);
         return;
       }
@@ -90,7 +90,7 @@ async function doAsyncTest(t, scope, extraSearchParams) {
 }
 
 promise_test(async function(t) {
-  // Execute a test where the nested frame is simple loaded normally.
+  // Execute a test where the nested frame is simply loaded normally.
   await doAsyncTest(t, 'resources/about-blank-replacement-frame.py');
 }, 'Initial about:blank is controlled, exposed to clients.matchAll(), and ' +
    'matches final Client.');

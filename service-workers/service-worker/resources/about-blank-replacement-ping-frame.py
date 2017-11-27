@@ -14,7 +14,7 @@ function nestedLoaded() {
   parent.postMessage({ type: 'NESTED_LOADED' }, '*');
 }
 </script>
-<iframe src="?nested=true&ping=true" id="nested" onload="nestedLoaded()"></iframe>
+<iframe src="?nested=true&amp;ping=true" id="nested" onload="nestedLoaded()"></iframe>
 <script>
 // Helper routine to make it slightly easier for our parent to find
 // the nested frame.

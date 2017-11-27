@@ -36,7 +36,9 @@
    */
   async_test(t => {
     const localPc = new RTCPeerConnection();
+    t.add_cleanup(() => localPc.close());
     const remotePc = new RTCPeerConnection();
+    t.add_cleanup(() => remotePc.close());
 
     let eventCount = 0;
 
@@ -98,7 +100,9 @@
    */
   async_test(t => {
     const localPc = new RTCPeerConnection();
+    t.add_cleanup(() => localPc.close());
     const remotePc = new RTCPeerConnection();
+    t.add_cleanup(() => remotePc.close());
 
     const onDataChannel = t.step_func_done(event => {
       const remoteChannel = event.channel;
@@ -145,7 +149,9 @@
    */
   async_test(t => {
     const localPc = new RTCPeerConnection();
+    t.add_cleanup(() => localPc.close());
     const remotePc = new RTCPeerConnection();
+    t.add_cleanup(() => remotePc.close());
 
     const onDataChannel = t.unreached_func('datachannel event should not be fired');
 

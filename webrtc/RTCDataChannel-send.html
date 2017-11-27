@@ -51,6 +51,8 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close())
+
     const channel = pc.createDataChannel('test');
     assert_equals(channel.readyState, 'connecting');
     assert_throws('InvalidStateError', () => channel.send(helloString));
@@ -71,7 +73,7 @@
             attribute to data.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel1.send(helloString);
       return awaitMessage(channel2)
@@ -84,7 +86,7 @@
   }, 'Data channel should be able to send simple string and receive as string');
 
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel1.send(unicodeString);
       return awaitMessage(channel2)
@@ -96,7 +98,7 @@
     });
   }, 'Data channel should be able to send unicode string and receive as unicode string');
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloString);
@@ -131,7 +133,7 @@
         Float32Array or Float64Array or DataView) ArrayBufferView;
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer);
@@ -153,7 +155,7 @@
             ArrayBuffer in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBuffer.buffer);
@@ -174,7 +176,7 @@
             the bufferedAmount attribute by the size of data, in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(helloBlob);
@@ -195,7 +197,7 @@
             to a new Blob object that represents data as its raw data.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'blob';
       channel1.send(helloBuffer);
@@ -223,7 +225,7 @@
         be initialized to the string "blob".
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       assert_equals(channel2.binaryType, 'blob',
         'Expect initial binaryType value to be blob');
@@ -261,7 +263,7 @@
       }
     });
 
-    createDataChannelPair()
+    createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel2.addEventListener('message', onMessage);

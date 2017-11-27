@@ -141,6 +141,7 @@ a=rtcp-rsize
   // when null is used to indicate end of candidate
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -156,6 +157,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return promise_rejects(t, 'InvalidStateError',
       pc.addIceCandidate({
@@ -169,6 +171,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -179,6 +182,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate(new RTCIceCandidate({
@@ -189,6 +193,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
       .then(() => pc.addIceCandidate({ sdpMid }));
@@ -196,6 +201,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
       .then(() => pc.addIceCandidate({ sdpMLineIndex }));
@@ -211,6 +217,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -225,6 +232,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -241,6 +249,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -256,6 +265,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -290,6 +300,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -317,6 +328,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -330,6 +342,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -341,6 +354,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -354,6 +368,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -363,6 +378,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -384,6 +400,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -404,6 +421,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -431,6 +449,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() => pc.addIceCandidate({
@@ -454,6 +473,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -474,6 +494,7 @@ a=rtcp-rsize
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
@@ -486,6 +507,7 @@ a=rtcp-rsize
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>

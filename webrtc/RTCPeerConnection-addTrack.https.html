@@ -39,6 +39,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(mediaStream => {
@@ -66,6 +67,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(mediaStream => {
@@ -101,6 +103,7 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(mediaStream => {
@@ -121,6 +124,7 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(mediaStream => {
@@ -148,6 +152,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(mediaStream => {
@@ -182,6 +187,7 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     const transceiver = pc.addTransceiver('audio', { direction: 'recvonly' });
     assert_equals(transceiver.sender.track, null);
@@ -199,6 +205,7 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     const transceiver = pc.addTransceiver('audio');
     assert_equals(transceiver.sender.track, null);
@@ -224,6 +231,7 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     const transceiver = pc.addTransceiver('video', { direction: 'recvonly' });
     assert_equals(transceiver.sender.track, null);

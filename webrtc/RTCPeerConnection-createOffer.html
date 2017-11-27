@@ -30,6 +30,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection()
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer()
     .then(offer => {
@@ -58,6 +59,7 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     pc.close();
 
     return promise_rejects(t, 'InvalidStateError',
@@ -78,6 +80,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const promise = pc.createOffer();
 
     pc.addTransceiver('audio');
@@ -121,6 +124,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer({ offerToReceiveAudio: true })
     .then(offer1 => {
@@ -148,6 +152,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer({ offerToReceiveVideo: true })
     .then(offer1 => {
@@ -164,6 +169,7 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer({
       offerToReceiveAudio: true,

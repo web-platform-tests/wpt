@@ -53,8 +53,10 @@
     };
  */
 
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   assert_equals(pc.createDataChannel.length, 1);
   assert_throws(new TypeError(), () => pc.createDataChannel());
 }, 'createDataChannel with no argument should throw TypeError');
@@ -63,7 +65,7 @@ test(() => {
   6.2.  createDataChannel
     2.  If connection's [[isClosed]] slot is true, throw an InvalidStateError.
  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
   pc.close();
   assert_equals(pc.signalingState, 'closed', 'signaling state');
@@ -99,8 +101,10 @@ test(() => {
       When a RTCDataChannel object is created, the binaryType attribute MUST
       be initialized to the string "blob".
  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('');
   assert_true(channel instanceof RTCDataChannel, 'is RTCDataChannel');
   assert_equals(channel.label, '');
@@ -120,8 +124,10 @@ test(() => {
 
 }, 'createDataChannel attribute default values');
 
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('test', {
     ordered: false,
     maxPacketLifeTime: null,
@@ -164,8 +170,10 @@ const labels = [
   ['lone surrogate', '\uD800', '\uFFFD'],
 ];
 for (const [description, label, expected] of labels) {
-  test(() => {
-    const pc = new RTCPeerConnection;
+  test(t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const channel = pc.createDataChannel(label);
     assert_equals(channel.label, expected);
   }, `createDataChannel with label ${description} should succeed`);
@@ -177,16 +185,20 @@ for (const [description, label, expected] of labels) {
       9.  Let channel have an [[Ordered]] internal slot initialized to option's
           ordered member.
  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('', { ordered: false });
   assert_equals(channel.ordered, false);
 }, 'createDataChannel with ordered false should succeed');
 
 // true as the default value of a boolean is confusing because null is converted
 // to false while undefined is converted to true.
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel1 = pc.createDataChannel('', { ordered: null });
   assert_equals(channel1.ordered, false);
   const channel2 = pc.createDataChannel('', { ordered: undefined });
@@ -199,8 +211,10 @@ test(() => {
       6.  Let channel have an [[MaxPacketLifeTime]] internal slot initialized to
           option's maxPacketLifeTime member, if present, otherwise null.
  */
-test(() => {
-  const pc = new RTCPeerConnection;
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('', { maxPacketLifeTime: 0 });
   assert_equals(channel.maxPacketLifeTime, 0);
 }, 'createDataChannel with maxPacketLifeTime 0 should succeed');
@@ -211,8 +225,10 @@ test(() => {
       7.  Let channel have an [[MaxRetransmits]] internal slot initialized to
           option's maxRetransmits member, if present, otherwise null.
  */
-test(() => {
-  const pc = new RTCPeerConnection;
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('', { maxRetransmits: 0 });
   assert_equals(channel.maxRetransmits, 0);
 }, 'createDataChannel with maxRetransmits 0 should succeed');
@@ -222,8 +238,10 @@ test(() => {
     15. If both [[MaxPacketLifeTime]] and [[MaxRetransmits]] attributes are set
         (not null), throw a TypeError.
  */
-test(() => {
-  const pc = new RTCPeerConnection;
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   assert_throws(new TypeError(), () => pc.createDataChannel('', {
     maxPacketLifeTime: 0,
     maxRetransmits: 0
@@ -243,8 +261,10 @@ const protocols = [
   ['lone surrogate', '\uD800', '\uFFFD'],
 ];
 for (const [description, protocol, expected] of protocols) {
-  test(() => {
-    const pc = new RTCPeerConnection;
+  test(t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const channel = pc.createDataChannel('', { protocol });
     assert_equals(channel.protocol, expected);
   }, `createDataChannel with protocol ${description} should succeed`);
@@ -256,8 +276,10 @@ for (const [description, protocol, expected] of protocols) {
       11. Let channel have an [[Negotiated]] internal slot initialized to option's
           negotiated member.
  */
-test(() => {
-  const pc = new RTCPeerConnection;
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('', { negotiated: true });
   assert_equals(channel.negotiated, true);
 }, 'createDataChannel with negotiated true should succeed');
@@ -270,16 +292,20 @@ test(() => {
           of 65534 but still qualifies as an unsigned short, throw a TypeError.
  */
 for (const id of [0, 1, 65534]) {
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const channel = pc.createDataChannel('', { id });
     assert_equals(channel.id, id);
   }, `createDataChannel with id ${id} should succeed`);
 }
 
 for (const id of [-1, 65535, 65536]) {
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     assert_throws(new TypeError(), () => pc.createDataChannel('', { id }));
   }, `createDataChannel with id ${id} should throw TypeError`);
 }
@@ -291,14 +317,17 @@ for (const id of [-1, 65535, 65536]) {
           to option's priority member.
 
  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('', { priority: 'high' });
   assert_equals(channel.priority, 'high');
 }, 'createDataChannel with priority "high" should succeed');
 
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   assert_throws(new TypeError(),
     () => pc.createDataChannel('', { priority: 'invalid' }));
 }, 'createDataChannel with invalid priority should throw TypeError');
@@ -307,8 +336,9 @@ test(() => {
   6.2.  createDataChannel
     13. If [[Negotiated]] is false and [[Label]] is longer than 65535 bytes
         long, throw a TypeError.  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('', {
       label: ' '.repeat(65536),
@@ -321,8 +351,9 @@ test(() => {
     14. If [[Negotiated]] is false and [[Protocol]] is longer than 65535 bytes long,
         throw a TypeError.
  */
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('', {
       protocol: ' '.repeat(65536),
@@ -330,8 +361,9 @@ test(() => {
     }));
 }, 'createDataChannel with negotiated false and long protocol should throw TypeError');
 
-test(() => {
+test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   const label = ' '.repeat(65536)
 
   const channel = pc.createDataChannel('', {
@@ -362,6 +394,7 @@ test(() => {
  */
 promise_test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   const channel1 = pc.createDataChannel('channel');
   assert_equals(channel1.id, null,
     'Expect initial id to be null');

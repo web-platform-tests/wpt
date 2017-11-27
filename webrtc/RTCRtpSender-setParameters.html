@@ -16,6 +16,8 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { sender } = transceiver;
 

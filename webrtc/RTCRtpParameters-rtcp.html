@@ -56,8 +56,9 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -80,8 +81,9 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 

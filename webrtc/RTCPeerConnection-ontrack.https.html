@@ -97,6 +97,7 @@
   // the streams with matching identifiers.
   async_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     // Fail the test if the ontrack event handler is not implemented
     assert_idl_attribute(pc, 'ontrack', 'Expect pc to have ontrack event handler attribute');
@@ -187,7 +188,9 @@ a=ssrc:1001 cname:some
 
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     pc2.ontrack = t.step_func(trackEvent => {
       const { track } = trackEvent;
@@ -200,7 +203,7 @@ a=ssrc:1001 cname:some
       t.done();
     });
 
-    return getTrackFromUserMedia('audio')
+    return getTrackFromUserMedia(t, 'audio')
     .then(([track, mediaStream]) => {
       pc1.addTrack(track, mediaStream);
 
@@ -215,7 +218,9 @@ a=ssrc:1001 cname:some
 
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     pc2.ontrack = t.step_func(trackEvent => {
       const { track } = trackEvent;
@@ -240,7 +245,9 @@ a=ssrc:1001 cname:some
 
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     pc2.ontrack = t.step_func(trackEvent => {
       const { track } = trackEvent;

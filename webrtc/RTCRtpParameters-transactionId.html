@@ -60,8 +60,10 @@
       - transactionId is set to a new unique identifier, used to match this
         getParameters call to a setParameters call that may occur later.
    */
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const { sender } = pc.addTransceiver('audio');
 
     const param1 = sender.getParameters();
@@ -85,8 +87,9 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -100,8 +103,9 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -114,8 +118,9 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param = sender.getParameters();
     validateSenderRtpParameters(param);
 
@@ -128,8 +133,9 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
-    const { sender } = pc.addTransceiver('audio');
+    t.add_cleanup(() => pc.close());
 
+    const { sender } = pc.addTransceiver('audio');
     const param1 = sender.getParameters();
     const param2 = sender.getParameters();
 

@@ -73,7 +73,7 @@
       10. If toneBuffer is an empty string, abort these steps.
    */
   async_test(t => {
-    createDtmfSender()
+    createDtmfSender(t)
     .then(dtmfSender => {
       dtmfSender.addEventListener('tonechange',
         t.unreached_func('Expect no tonechange event to be fired'));
@@ -232,6 +232,8 @@
    */
   async_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio', { direction: 'sendrecv' });
     const dtmfSender = transceiver.sender.dtmf;
 

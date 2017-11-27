@@ -31,18 +31,21 @@
     };
   */
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().rtcpMuxPolicy, 'require');
   }, `new RTCPeerConnection() should have default rtcpMuxPolicy require`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ rtcpMuxPolicy: undefined });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().rtcpMuxPolicy, 'require');
   }, `new RTCPeerConnection({ rtcpMuxPolicy: undefined }) should have default rtcpMuxPolicy require`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ rtcpMuxPolicy: 'require' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().rtcpMuxPolicy, 'require');
   }, `new RTCPeerConnection({ rtcpMuxPolicy: 'require' }) should succeed`);
 
@@ -51,7 +54,7 @@
       3.  If configuration.rtcpMuxPolicy is negotiate, and the user agent does not
           implement non-muxed RTCP, throw a NotSupportedError.
    */
-  test(() => {
+  test(t => {
     let pc;
     try {
       pc = new RTCPeerConnection({ rtcpMuxPolicy: 'negotiate' });
@@ -65,6 +68,7 @@
       }
     }
 
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().rtcpMuxPolicy, 'negotiate');
 
   }, `new RTCPeerConnection({ rtcpMuxPolicy: 'negotiate' }) may succeed or throw NotSupportedError`);
@@ -85,15 +89,16 @@
           connection's rtcpMux policy, throw an InvalidModificationError.
    */
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ rtcpMuxPolicy: 'require' });
+    t.add_cleanup(() => pc.close());
     assert_idl_attribute(pc, 'setConfiguration');
     assert_throws('InvalidModificationError', () =>
       pc.setConfiguration({ rtcpMuxPolicy: 'negotiate' }));
 
   }, `setConfiguration({ rtcpMuxPolicy: 'negotiate' }) with initial rtcpMuxPolicy require should throw InvalidModificationError`);
 
-  test(() => {
+  test(t => {
     let pc;
     try {
       pc = new RTCPeerConnection({ rtcpMuxPolicy: 'negotiate' });
@@ -107,13 +112,14 @@
       }
     }
 
+    t.add_cleanup(() => pc.close());
     assert_idl_attribute(pc, 'setConfiguration');
     assert_throws('InvalidModificationError', () =>
       pc.setConfiguration({ rtcpMuxPolicy: 'require' }));
 
   }, `setConfiguration({ rtcpMuxPolicy: 'require' }) with initial rtcpMuxPolicy negotiate should throw InvalidModificationError`);
 
-  test(() => {
+  test(t => {
     let pc;
     try {
       pc = new RTCPeerConnection({ rtcpMuxPolicy: 'negotiate' });
@@ -127,6 +133,7 @@
       }
     }
 
+    t.add_cleanup(() => pc.close());
     assert_idl_attribute(pc, 'setConfiguration');
     // default value for rtcpMuxPolicy is require
     assert_throws('InvalidModificationError', () =>

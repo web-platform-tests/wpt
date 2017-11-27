@@ -48,8 +48,9 @@
       };
    */
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceServers, undefined);
   }, 'new RTCPeerConnection() should have default configuration.iceServers of undefined');
 

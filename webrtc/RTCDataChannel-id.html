@@ -9,8 +9,10 @@
 // This and the test below verify that after a description is set that
 // negotiates the DTLS role used by SCTP, data channels with unset IDs
 // have IDs set according to the rules in rtcweb-data-channel.
-promise_test(test => {
-  const pc = new RTCPeerConnection;
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('');
   return pc.createOffer()
   .then(offer => pc.setLocalDescription(offer))
@@ -33,8 +35,10 @@ promise_test(test => {
   })
 }, "DTLS client uses odd data channel IDs");
 
-promise_test(test => {
-  const pc = new RTCPeerConnection;
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
   const channel = pc.createDataChannel('');
   return pc.createOffer()
   .then(offer => pc.setLocalDescription(offer))

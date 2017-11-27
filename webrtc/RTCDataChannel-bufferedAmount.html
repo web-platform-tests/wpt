@@ -69,7 +69,7 @@
             by the number of bytes needed to express data as UTF-8.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel1.send(unicodeString);
       assert_equals(channel1.bufferedAmount, unicodeBuffer.byteLength,
@@ -92,7 +92,7 @@
             ArrayBuffer in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel1.send(helloBuffer.buffer);
       assert_equals(channel1.bufferedAmount, helloBuffer.byteLength,
@@ -114,7 +114,7 @@
             the bufferedAmount attribute by the size of data, in bytes.
    */
   promise_test(t => {
-    return createDataChannelPair()
+    return createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       channel1.send(helloBlob);
       assert_equals(channel1.bufferedAmount, helloBlob.size,
@@ -132,7 +132,7 @@
   async_test(t => {
     let messageCount = 0;
 
-    createDataChannelPair()
+    createDataChannelPair(t)
     .then(([channel1, channel2]) => {
       const onMessage = t.step_func(event => {
         const { data } = event;

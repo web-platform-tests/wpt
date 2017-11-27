@@ -181,6 +181,19 @@ function generateAnswer(offer) {
 // test
 function test_state_change_event(parentTest, pc, expectedStates) {
   return async_test(t => {
+    let mainTestEnded = false;
+    let subTestEnded = false;
+
+    parentTest.add_cleanup(() => {
+      mainTestEnded = true;
+      if(subTestEnded) pc.close();
+    });
+
+    t.add_cleanup(() => {
+      subTestEnded = true;
+      if(mainTestEnded) pc.close();
+    });
+
     pc.onsignalingstatechange = t.step_func(() => {
       if(expectedStates.length === 0) {
         return;
@@ -229,7 +242,8 @@ function exchangeIceCandidates(pc1, pc2) {
       // There is ongoing discussion on w3c/webrtc-pc#1213
       // that there should be an empty candidate string event
       // for end of candidate for each m= section.
-      if(candidate) {
+      // If remotePc is closed, it may be due to the test ending prematurely
+      if(candidate && remotePc.signalingState !== 'closed') {
         remotePc.addIceCandidate(candidate);
       }
     });
@@ -257,10 +271,18 @@ function doSignalingHandshake(localPc, remotePc) {
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
 // end points to open.
-function createDataChannelPair(
-  pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
+function createDataChannelPair(t, pc1, pc2)
 {
+  if(!pc1) {
+    pc1 = new RTCPeerConnection()
+    t.add_cleanup(() => pc1.close())
+  }
+
+  if(!pc2) {
+    pc2 = new RTCPeerConnection()
+    t.add_cleanup(() => pc2.close())
+  }
+
   const channel1 = pc1.createDataChannel('');
 
   exchangeIceCandidates(pc1, pc2);
@@ -384,12 +406,16 @@ function generateMediaStreamTrack(kind) {
 // Return Promise of pair of track and associated mediaStream.
 // Assumes that there is at least one available device
 // to generate the track.
-function getTrackFromUserMedia(kind) {
+function getTrackFromUserMedia(t, kind) {
   return navigator.mediaDevices.getUserMedia({ [kind]: true })
   .then(mediaStream => {
     const tracks = mediaStream.getTracks();
     assert_greater_than(tracks.length, 0,
       `Expect getUserMedia to return at least one track of kind ${kind}`);
+    for (const track of tracks) {
+      t.add_cleanup(() => track.stop())
+    }
+
     const [ track ] = tracks;
     return [track, mediaStream];
   });
@@ -400,14 +426,14 @@ function getTrackFromUserMedia(kind) {
 // resolved with a pair of arrays [tracks, streams].
 // Assumes there is at least one available device to generate the tracks and
 // streams and that the getUserMedia() calls resolve.
-function getUserMediaTracksAndStreams(count, type = 'audio') {
+function getUserMediaTracksAndStreams(t, count, type = 'audio') {
   let otherTracksPromise;
   if (count > 1)
-    otherTracksPromise = getUserMediaTracksAndStreams(count - 1, type);
+    otherTracksPromise = getUserMediaTracksAndStreams(t, count - 1, type);
   else
     otherTracksPromise = Promise.resolve([[], []]);
   return otherTracksPromise.then(([tracks, streams]) => {
-    return getTrackFromUserMedia(type)
+    return getTrackFromUserMedia(t, type)
     .then(([track, stream]) => {
       // Remove the default stream-track relationship.
       stream.removeTrack(track);

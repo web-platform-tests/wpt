@@ -54,7 +54,7 @@
       unrecognized.
    */
   promise_test(t => {
-    return createDtmfSender()
+    return createDtmfSender(t)
     .then(dtmfSender => {
       dtmfSender.insertDTMF('');
       dtmfSender.insertDTMF('012345689');
@@ -73,7 +73,7 @@
           InvalidCharacterError.
    */
   promise_test(t => {
-    return createDtmfSender()
+    return createDtmfSender(t)
     .then(dtmfSender => {
       assert_throws('InvalidCharacterError', () =>
         // 'F' is invalid
@@ -95,6 +95,8 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const dtmfSender = transceiver.sender.dtmf;
 
@@ -109,6 +111,8 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio', {
       direction: 'recvonly'
     });
@@ -126,6 +130,8 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio', {
       direction: 'inactive'
     });
@@ -148,8 +154,8 @@
 
       7.  Set the object's toneBuffer attribute to tones.
    */
-  promise_test(() => {
-    return createDtmfSender()
+  promise_test(t => {
+    return createDtmfSender(t)
     .then(dtmfSender => {
       dtmfSender.insertDTMF('123');
       assert_equals(dtmfSender.toneBuffer, '123');

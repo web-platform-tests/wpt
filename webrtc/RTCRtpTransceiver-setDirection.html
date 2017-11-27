@@ -29,6 +29,8 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     assert_equals(transceiver.direction, 'sendrecv');
     assert_equals(transceiver.currentDirection, null);
@@ -47,6 +49,8 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio', { direction: 'sendonly' });
     assert_equals(transceiver.direction, 'sendonly');
     transceiver.setDirection('sendonly');
@@ -56,6 +60,8 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio', { direction: 'recvonly' });
     assert_equals(transceiver.direction, 'recvonly');
     assert_equals(transceiver.currentDirection, null);
@@ -90,5 +96,4 @@
       Untestable    0
       Total         7
    */
-
 </script>

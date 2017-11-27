@@ -6,60 +6,67 @@
 <div id="log"></div>
 <script>
 async_test(t => {
-  const client = new XMLHttpRequest()
+  const client = new XMLHttpRequest();
   client.onload = t.step_func_done(() => {
-    assert_equals(client.getResponseHeader("Content-Type"), "")
-    assert_equals(client.response.type, "text/xml")
-  })
-  client.open("GET", "resources/status.py")
-  client.responseType = "blob"
-  client.send()
-}, "Use text/xml as fallback MIME type")
+    assert_equals(client.getResponseHeader("Content-Type"), "");
+    assert_equals(client.response.type, "text/xml");
+  });
+  client.open("GET", "resources/status.py");
+  client.responseType = "blob";
+  client.send();
+}, "Use text/xml as fallback MIME type");
 
 async_test(t => {
-  const client = new XMLHttpRequest()
+  const client = new XMLHttpRequest();
   client.onload = t.step_func_done(() => {
-    assert_equals(client.getResponseHeader("Content-Type"), "")
-    assert_equals(client.response.type, "text/xml")
+    assert_equals(client.getResponseHeader("Content-Type"), "");
+    assert_equals(client.response.type, "text/xml");
   })
-  client.open("GET", "resources/status.py?content=thisshouldnotmakeadifferencebutdoes")
-  client.responseType = "blob"
-  client.send()
-}, "Use text/xml as fallback MIME type, 2")
+  client.open("GET", "resources/status.py?content=thisshouldnotmakeadifferencebutdoes");
+  client.responseType = "blob";
+  client.send();
+}, "Use text/xml as fallback MIME type, 2");
 
-async_test(t => {
-  const client = new XMLHttpRequest()
-  client.onload = t.step_func_done(() => {
-    assert_equals(client.getResponseHeader("Content-Type"), "")
-    assert_equals(client.response.type, "application/octet-stream")
-  })
-  client.open("GET", "resources/status.py")
-  client.responseType = "blob"
-  client.overrideMimeType("bogus")
-  client.send()
-}, "Bogus MIME type should end up as application/octet-stream")
+["bogus",
+ "†/†",
+ "¢/¢",
+ "ÿ/ÿ",
+ "?/?",
+ "a/",
+ "/",
+ " \t",
+ ""
+].forEach((type, index) => {
+  async_test(t => {
+    const client = new XMLHttpRequest();
+    client.onload = t.step_func_done(() => {
+      assert_equals(client.getResponseHeader("Content-Type"), "");
+      assert_equals(client.response.type, "application/octet-stream");
+    });
+    client.open("GET", "resources/status.py");
+    client.responseType = "blob";
+    client.overrideMimeType(type);
+  client.send();
+  }, "Bogus MIME type should end up as application/octet-stream, " + (index + 1));
+});
 
-async_test(t => {
-  const client = new XMLHttpRequest()
-  client.onload = t.step_func_done(() => {
-    assert_equals(client.getResponseHeader("Content-Type"), "")
-    assert_equals(client.response.type, "application/octet-stream")
-  })
-  client.open("GET", "resources/status.py")
-  client.responseType = "blob"
-  client.overrideMimeType("text/xml;charset=†")
-  client.send()
-}, "Bogus MIME type should end up as application/octet-stream, 2")
-
-async_test(t => {
-  const client = new XMLHttpRequest()
-  client.onload = t.step_func_done(() => {
-    assert_equals(client.getResponseHeader("Content-Type"), "")
-    assert_equals(client.response.type, "hi/x")
-  })
-  client.open("GET", "resources/status.py")
-  client.responseType = "blob"
-  client.overrideMimeType("HI/x;test=test")
-  client.send()
-}, "Valid MIME types need to be normalized")
+[
+ ["HI/x;Test=test;charset=utf-8", "hi/x;test=test;charset=utf-8"],
+ ["text/xml;charset=†", "text/xml"],
+ ["text/html;", "text/html"],
+ ["x/x;?=x;charset=y", "x/x;charset=y"],
+ ["text/html;x=ÿ", "text/html;x=\"ÿ\""]
+].forEach(([inputType, outputType], index) => {
+  async_test(t => {
+    const client = new XMLHttpRequest();
+    client.onload = t.step_func_done(() => {
+      assert_equals(client.getResponseHeader("Content-Type"), "");
+      assert_equals(client.response.type, outputType);
+    })
+    client.open("GET", "resources/status.py");
+    client.responseType = "blob";
+    client.overrideMimeType(inputType);
+    client.send();
+  }, "Valid MIME types need to be parsed and serialized " + (index + 1));
+});
 </script>

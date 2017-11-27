@@ -392,26 +392,20 @@ test_blob(function() {
   desc: "Array with mixed types"
 });
 
-// options argument
 test(function() {
-  new Blob([], { endings: "invalidEnumValue" });
-  new Blob([], { endings: null });
-  new Blob([], { endings: undefined });
-  new Blob([], { endings: 0 });
-  new Blob([], { get endings() { assert_unreached("Should not call getter"); } });
-}, "The 'endings' property should be ignored.");
+  const accessed = [];
+  const stringified = [];
 
-test(function() {
-  assert_throws(test_error, function() {
-    new Blob([], {
-      get type() { throw test_error; }
-    });
+  new Blob([], {
+    get type() { accessed.push('type'); },
+    get endings() { accessed.push('endings'); }
   });
-  assert_throws(test_error, function() {
-    new Blob([], {
-      type: { toString: function() { throw test_error; } }
-    });
+  new Blob([], {
+    type: { toString: () => { stringified.push('type'); return ''; } },
+    endings: { toString: () => { stringified.push('endings'); return 'transparent'; } }
   });
+  assert_array_equals(accessed, ['endings', 'type']);
+  assert_array_equals(stringified, ['endings', 'type']);
 }, "options properties should be accessed in lexicographic order.");
 
 test(function() {
@@ -447,21 +441,6 @@ test(function() {
     type: "",
     desc: "Passing " + format_value(arg) + " (index " + idx + ") for options should use the defaults (with newlines)."
   });
-});
-
-test_blob(function() {
-  return new Blob(["\na\r\nb\n\rc\r"], { endings: "transparent" });
-}, {
-  expected: "\na\r\nb\n\rc\r",
-  type: "",
-  desc: "Newlines should not change when endings is 'transparent'."
-});
-test_blob(function() {
-  return new Blob(["\na\r\nb\n\rc\r"], { endings: "native" });
-}, {
-  expected: "\na\r\nb\n\rc\r",
-  type: "",
-  desc: "Newlines should not change when endings is 'native'."
 });
 
 var type_tests = [

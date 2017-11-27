@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Blob constructor: endings option</title>
+<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+// Windows platforms use CRLF as the native line ending. All others use LF.
+const crlf = navigator.platform.startsWith('Win');
+
+function readBlobAsPromise(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(blob);
+    reader.onload = e => resolve(reader.result);
+    reader.onerror = e => reject(reader.error);
+  });
+}
+
+test(function() {
+  [
+    null,
+    '',
+    'invalidEnumValue',
+    0,
+    {}
+  ].forEach(value => {
+    assert_throws(
+      new TypeError(),
+      () => new Blob([], {endings: value}),
+      'Blob constructor should throw on invalid "endings" value: ' +
+      JSON.stringify(value));
+  });
+
+  const test_error = {name: 'test', message: 'test error'};
+  assert_throws(
+    test_error,
+    () => new Blob([], { get endings() { throw test_error; }}),
+    'Blob constructor should propagate exceptions from "endings" property');
+
+  assert_class_string(new Blob([], {endings: 'transparent'}), 'Blob',
+              'Constructor should allow "transparent" endings');
+  assert_class_string(new Blob([], {endings: 'native'}), 'Blob',
+              'Constructor should allow "native" endings');
+
+}, "The 'endings' property accepts only valid enum values.");
+
+test(t => {
+  let got = false;
+  new Blob([], { get endings() { got = true; } });
+  assert_true(got, 'The "endings" property was accessed during construction.');
+}, 'The "endings" options property is used');
+
+[
+  {name: 'LF', input: '\n', native: crlf ? '\r\n' : '\n'},
+  {name: 'CR', input: '\r', native: crlf ? '\r\n' : '\n'},
+
+  {name: 'CRLF', input: '\r\n', native: crlf ? '\r\n' : '\n' },
+  {name: 'CRCR', input: '\r\r', native: crlf ? '\r\n\r\n' : '\n\n'},
+  {name: 'LFCR', input: '\n\r', native: crlf ? '\r\n\r\n' : '\n\n'},
+  {name: 'LFLF', input: '\n\n', native: crlf ? '\r\n\r\n' : '\n\n' },
+
+  {name: 'CRCRLF', input: '\r\r\n', native: crlf ? '\r\n\r\n' : '\n\n'},
+  {name: 'CRLFLF', input: '\r\n\n', native: crlf ? '\r\n\r\n' : '\n\n'  },
+  {name: 'CRLFCR', input: '\r\n\r\n', native: crlf ? '\r\n\r\n' : '\n\n' },
+
+  {name: 'CRLFCRLF', input: '\r\n\r\n', native: crlf ? '\r\n\r\n' : '\n\n'},
+  {name: 'LFCRLFCR', input: '\n\r\n\r', native: crlf ? '\r\n\r\n\r\n' : '\n\n\n'},
+
+].forEach(testCase => {
+  promise_test(async t => {
+    const blob = new Blob([testCase.input]);
+    assert_equals(
+      await readBlobAsPromise(blob), testCase.input,
+      'Newlines should not change with endings unspecified');
+  }, `Input ${testCase.name} with endings unspecified`);
+
+  promise_test(async t => {
+    const blob = new Blob([testCase.input], {endings: 'transparent'});
+    assert_equals(
+      await readBlobAsPromise(blob), testCase.input,
+      'Newlines should not change with endings "transparent"');
+  }, `Input ${testCase.name} with endings 'transparent'`);
+
+  promise_test(async t => {
+    const blob = new Blob([testCase.input], {endings: 'native'});
+    assert_equals(
+      await readBlobAsPromise(blob), testCase.native,
+      'Newlines should match the platform with endings "native"');
+  }, `Input ${testCase.name} with endings 'native'`);
+});
+
+</script>

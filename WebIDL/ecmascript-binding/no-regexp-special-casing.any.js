@@ -1,5 +1,7 @@
 "use strict";
-// https://github.com/heycam/webidl/commit/bbb2bde">
+// RegExps used to be special-cased in Web IDL, but that was removed in
+// https://github.com/heycam/webidl/commit/bbb2bde. These tests check that implementations no longer
+// do any such special-casing.
 
 test(() => {
   const regExp = new RegExp();

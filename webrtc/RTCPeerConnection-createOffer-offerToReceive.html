@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Test legacy offerToReceiveAudio/Video options</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  'use strict';
+
+  // Run all tests for both audio and video types
+  ['audio', 'video'].forEach((type) => {
+    const capsType = type[0].toUpperCase() + type.slice(1);
+
+    const offerToReceiveTrue = {};
+    offerToReceiveTrue[`offerToReceive${capsType}`] = true;
+
+    const offerToReceiveFalse = {};
+    offerToReceiveFalse[`offerToReceive${capsType}`] = false;
+
+    // Start testing
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+      const dummy = pc.createDataChannel('foo'); // Just to have something to offer
+
+      return pc.createOffer(offerToReceiveFalse)
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 0,
+          'Expect pc to have no transceivers');
+      });
+    }, `createOffer() with offerToReceive${capsType} set to false should not create a transceiver`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+
+      return pc.createOffer(offerToReceiveTrue)
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'recvonly',
+          'Expect transceiver to have "recvonly" direction');
+      });
+    }, `createOffer() with offerToReceive${capsType} should create a "recvonly" transceiver`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+
+      const transceiver = pc.addTransceiver(type);
+      assert_equals(transceiver.direction, 'sendrecv',
+        'Expect transceiver to have "sendrecv" direction');
+
+      assert_equals(pc.getTransceivers().length, 1,
+        'Expect pc to have one transceiver');
+
+      transceiver.stop();
+
+      return pc.createOffer(offerToReceiveTrue)
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to still have one transceiver');
+      });
+    }, `offerToReceive${capsType} option should be ignored if a stopped "sendrecv" transceiver exists`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+
+      const transceiver = pc.addTransceiver(type);
+      transceiver.direction = 'recvonly';
+      assert_equals(transceiver.direction, 'recvonly',
+        'Expect transceiver to have "recvonly" direction');
+
+      assert_equals(pc.getTransceivers().length, 1,
+        'Expect pc to have one transceiver');
+
+      transceiver.stop();
+
+      return pc.createOffer(offerToReceiveTrue)
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to still have one transceiver');
+      });
+    }, `offerToReceive${capsType} option should be ignored if a stopped "recvonly" transceiver exists`);
+  });
+
+</script>

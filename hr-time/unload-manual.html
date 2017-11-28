@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>time origin value manual test</title>
+  <link rel="help" href="https://w3c.github.io/hr-time/#time-origin-1">
+</head>
+<body>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    setup({ explicit_timeout: true });
+
+    const ACCEPTABLE_DELAY = 200; // ms
+
+    const isWithinRange = (a, b) => Math.abs(a - b) < ACCEPTABLE_DELAY;
+
+    const timings = { a: {}, b: {}, c: {} };
+    const t = async_test("hr-time time origin");
+
+    window.addEventListener("message", msg => {
+      msg = msg.data;
+      timings[msg.docName][msg.lifecycleEventName] = msg.time;
+
+      if (msg.docName === "c" && msg.lifecycleEventName === "unload") {
+        setTimeout(makeAssertions, 0);
+      }
+    });
+
+    function makeAssertions () {
+      t.step(() => {
+        assert_true(isWithinRange(timings.a.load, 0), "New window's time origin should be set to creation of document.");
+        assert_true(isWithinRange(timings.b.load, 2000), "Document in reused window's time origin should be time of close of pop-up box.");
+        assert_true(isWithinRange(timings.c.load, 2000), "Document in reused window's time origin should be time of close of pop-up box.");
+
+        assert_true(!isWithinRange(timings.a.unload, 0), "Time origin during unload event should match that of rest of document.");
+        assert_true(!isWithinRange(timings.b.unload, 0), "Time origin during unload event should match that of rest of document.");
+        assert_true(!isWithinRange(timings.c.unload, 0), "Time origin during unload event should match that of rest of document.");
+      });
+      t.done();
+    }
+  </script>
+
+  <h2>Description</h2>
+  <p>This test validates the behavior of <code>performance.now()</code> with respect to its time origin.</p>
+  <div id="log">
+   <h2>Manual Test Steps</h2>
+   <ol>
+    <li><a href="resources/unload-a.html" target="_blank">Click here</a>
+   </ol>
+  </div>
+</body>
+<html>

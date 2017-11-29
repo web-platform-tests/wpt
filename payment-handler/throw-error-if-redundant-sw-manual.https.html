@@ -22,7 +22,7 @@ promise_test(async test => {
   assert_equals(registration.installing, null);
   assert_equals(registration.waiting, null);
   assert_equals(registration.active, null);
-  
+
   await promise_rejects(test, "InvalidStateError",
     registration.paymentManager.instruments.set(
       'test_key',

@@ -138,11 +138,51 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  "Unexpected code points",
+  {
+    "input": "text/html;charset={gbk}",
+    "output": "text/html;charset=\"{gbk}\"",
+    "navigable": true,
+    "encoding": ""
+  },
   "Parameter name longer than 127",
   {
     "input": "text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk",
     "output": "text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk",
     "navigable": true,
     "encoding": "GBK"
+  },
+  "Failure",
+  {
+    "input": "",
+    "output": null
+  },
+  {
+    "input": "\t",
+    "output": null
+  },
+  {
+    "input": "bogus",
+    "output": null
+  },
+  {
+    "input": "bogus/",
+    "output": null
+  },
+  {
+    "input": "bogus/ ",
+    "output": null
+  },
+  {
+    "input": "</>",
+    "output": null
+  },
+  {
+    "input": "(/)",
+    "output": null
+  },
+  {
+    "input": "{/}",
+    "output": null
   }
 ]

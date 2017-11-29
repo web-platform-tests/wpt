@@ -4,7 +4,7 @@ promise_test(() => {
 
 function runTests(tests) {
   tests.forEach(val => {
-    if(typeof val === "string" || val.navigable !== true) {
+    if(typeof val === "string" || val.navigable !== true || typeof val.encoding !== "string") {
       return;
     }
     const mime = val.input;

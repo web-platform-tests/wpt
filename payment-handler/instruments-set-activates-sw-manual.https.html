@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<link rel="help" href="https://w3c.github.io/payment-handler/">
+<title>PaymentInstruments.set() activates the associated service worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+
+promise_test(async test => {
+  const permission = PaymentManager.requestPermission();
+  assert_equals(permission, 'granted');
+
+  const registration = await service_worker_unregister_and_register(
+      test, 'resources/sw-payment-handler.js', 'resources/');
+  await wait_for_state(test, registration.installing, 'installing');
+
+  assert_not_equals(registration.installing, null);
+  assert_equals(registration.active, null);
+
+  // When calling PaymentInstruments.set(), if the associated service worker is
+  // `waiting worker` or `installing worker`, then wait until it becomes
+  // `active worker`.
+  await registration.paymentManager.instruments.set(
+    'test_key',
+    {
+      name: 'test_instrument',
+      enabledMethods: ['test_pay']
+    });
+
+  assert_equals(registration.installing, null);
+  assert_not_equals(registration.active, null);
+});
+
+</script>

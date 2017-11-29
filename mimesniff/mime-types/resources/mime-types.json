@@ -1,0 +1,148 @@
+[
+  "Basics",
+  {
+    "input": "text/html;charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Legacy comment syntax",
+  {
+    "input": "text/html;charset=gbk(",
+    "output": "text/html;charset=\"gbk(\"",
+    "navigable": true,
+    "encoding": ""
+  },
+  {
+    "input": "text/html;x=(;charset=gbk",
+    "output": "text/html;x=\"(\";charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Duplicate parameter",
+  {
+    "input": "text/html;charset=gbk;charset=windows-1255",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Spaces",
+  {
+    "input": "text/html;charset =gbk",
+    "output": "text/html",
+    "navigable": true,
+    "encoding": ""
+  },
+  {
+    "input": "text/html ;charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html; charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset= gbk",
+    "output": "text/html;charset=\" gbk\"",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Single quotes (invalid)",
+  {
+    "input": "text/html;charset='gbk'",
+    "output": "text/html;charset=\"'gbk'\"",
+    "navigable": true,
+    "encoding": ""
+  },
+  {
+    "input": "text/html;charset='gbk",
+    "output": "text/html;charset=\"'gbk\"",
+    "navigable": true,
+    "encoding": ""
+  },
+  {
+    "input": "text/html;charset=gbk'",
+    "output": "text/html;charset=\"gbk'\"",
+    "navigable": true,
+    "encoding": ""
+  },
+  "Invalid parameters",
+  {
+    "input": "text/html;test;charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;test=;charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;';charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;\";charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Double quotes",
+  {
+    "input": "text/html;charset=\"gbk\"",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=gbk\"",
+    "output": "text/html;charset=\"gbk\\\"\"",
+    "navigable": true,
+    "encoding": ""
+  },
+  {
+    "input": "text/html;charset=\" gbk\"",
+    "output": "text/html;charset=\" gbk\"",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"\\ gbk\"",
+    "output": "text/html;charset=\" gbk\"",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"\\g\\b\\k\"",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"gbk\"x",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  "Parameter name longer than 127",
+  {
+    "input": "text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk",
+    "output": "text/html;0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789=x;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  }
+]

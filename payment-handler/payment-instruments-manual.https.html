@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<link rel="help" href="https://w3c.github.io/payment-handler/">
+<title>Test for PaymentInstrument</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+
+function addInstruments(instruments) {
+  return Promise.all([
+    instruments.set(
+      'test_key1',
+      {
+        name: 'test_instrument1',
+        enabledMethods: ['test_pay']
+      }),
+
+    instruments.set(
+      'test_key2',
+      {
+        name: 'test_instrument2',
+        enabledMethods: ['basic-card']
+      })
+  ]);
+}
+
+promise_test(async test => {
+  const permission = PaymentManager.requestPermission();
+  assert_equals(permission, 'granted');
+
+  const registration = await service_worker_unregister_and_register(
+      test, 'resources/sw-payment-handler.js', 'resources/');
+  await wait_for_state(test, registration.installing, 'activated');
+
+  const instruments = registration.paymentManager.instruments;
+  await addInstruments(instruments);
+
+  const testInstrument1 = await instruments.get('test_key1');
+  assert_equals(testInstrument1.name, 'test_instrument1');
+  assert_array_equals(testInstrument1.enabledMethods, ['test_pay']);
+
+  const testInstrument2 = await instruments.get('test_key2');
+  assert_equals(testInstrument2.name, 'test_instrument2');
+  assert_array_equals(testInstrument2.enabledMethods, ['basic-card']);
+
+  // PaymentInstruments.get() should resolve `undefined` if no stored key
+  const undefinedInstrument = await instruments.get('undefined_key');
+  assert_equals(undefinedInstrument, undefined);
+});
+
+</script>

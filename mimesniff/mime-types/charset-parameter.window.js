@@ -1,12 +1,6 @@
-async_test(t => {
-  const request = new XMLHttpRequest()
-  request.open("GET", "resources/mime-types.json")
-  request.send()
-  request.responseType = "json"
-  request.onload = t.step_func_done(() => {
-    runTests(request.response)
-  })
-}, "Loading data…")
+promise_test(() => {
+  return fetch("resources/mime-types.json").then(res => res.json().then(runTests));
+}, "Loading data…");
 
 function runTests(tests) {
   tests.forEach(val => {

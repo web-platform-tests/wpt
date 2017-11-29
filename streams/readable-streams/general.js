@@ -129,7 +129,7 @@ test(() => {
       assert_true(desiredSizePropDesc.configurable, 'desiredSize should be configurable');
 
       assert_equals(controller.close.length, 0, 'close should have no parameters');
-      assert_equals(controller.constructor.length, 4, 'constructor should have 4 parameter');
+      assert_equals(controller.constructor.length, 0, 'constructor should have no parameters');
       assert_equals(controller.enqueue.length, 1, 'enqueue should have 1 parameter');
       assert_equals(controller.error.length, 1, 'error should have 1 parameter');
 

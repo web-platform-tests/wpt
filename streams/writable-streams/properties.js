@@ -56,7 +56,7 @@ const expected = {
   WritableStreamDefaultController: {
     constructor: {
       type: 'constructor',
-      length: 4
+      length: 0
     },
     error: {
       type: 'method',

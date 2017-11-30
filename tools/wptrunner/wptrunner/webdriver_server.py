@@ -72,7 +72,7 @@ class WebDriverServer(object):
             "Waiting for server to become accessible: %s" % self.url)
         try:
             wait_for_service((self.host, self.port))
-        except:
+        except Exception:
             self.logger.error(
                 "WebDriver HTTP server was not accessible "
                 "within the timeout:\n%s" % traceback.format_exc())

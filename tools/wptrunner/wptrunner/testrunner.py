@@ -188,7 +188,7 @@ class BrowserManager(object):
             self.logger.debug("Starting browser with settings %r" % self.browser_settings)
             self.browser.start(**self.browser_settings)
             self.browser_pid = self.browser.pid()
-        except:
+        except Exception:
             self.logger.warning("Failure during init %s" % traceback.format_exc())
             if self.init_timer is not None:
                 self.init_timer.cancel()
@@ -558,7 +558,7 @@ class TestRunnerManager(threading.Thread):
         expected = test.expected()
         status = file_result.status if file_result.status != "EXTERNAL-TIMEOUT" else "TIMEOUT"
 
-        if file_result.status in  ("TIMEOUT", "EXTERNAL-TIMEOUT"):
+        if file_result.status in ("TIMEOUT", "EXTERNAL-TIMEOUT"):
             if self.browser.check_for_crashes():
                 status = "CRASH"
 
@@ -577,8 +577,8 @@ class TestRunnerManager(threading.Thread):
 
         restart_before_next = (test.restart_after or
                                file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
-                               ((subtest_unexpected or is_unexpected)
-                                and self.restart_on_unexpected))
+                               ((subtest_unexpected or is_unexpected) and
+                                self.restart_on_unexpected))
 
         if (self.pause_after_test or
             (self.pause_on_unexpected and (subtest_unexpected or is_unexpected))):

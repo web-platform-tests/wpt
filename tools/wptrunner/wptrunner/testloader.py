@@ -261,7 +261,7 @@ class EqualTimeChunker(TestChunker):
                 return self.paths.popleft()
 
             @property
-            def badness(self_):
+            def badness(self_):  # noqa: N805
                 """Badness metric for this chunk"""
                 return self._badness(self_.time)
 
@@ -587,6 +587,7 @@ class TestSource(object):
         self.current_metadata = None
 
     @abstractmethod
+    # noqa: N805
     #@classmethod (doesn't compose with @abstractmethod)
     def make_queue(cls, tests, **kwargs):
         pass

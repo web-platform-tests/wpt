@@ -35,7 +35,7 @@ class ContextManagerBytesIO(BytesIO):
         self.close()
 
 
-class cached_property(object):
+class cached_property(object):  # noqa: N801
     def __init__(self, func):
         self.func = func
         self.__doc__ = getattr(func, "__doc__")

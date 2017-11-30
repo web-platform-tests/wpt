@@ -59,7 +59,7 @@ setup(name=PACKAGE_NAME,
       include_package_data=True,
       data_files=[("requirements", requirements_files)],
       install_requires=deps
-     )
+      )
 
 if "install" in sys.argv:
     path = os.path.relpath(os.path.join(sys.prefix, "requirements"), os.curdir)

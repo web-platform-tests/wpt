@@ -383,19 +383,19 @@ class ServerProc(object):
         self.daemon = None
         self.stop = Event()
 
-    def start(self, init_func, host, port, paths, routes, bind_hostname, external_config,
+    def start(self, init_func, host, port, paths, routes, bind_hostname, config,
               ssl_config, **kwargs):
         self.proc = Process(target=self.create_daemon,
                             args=(init_func, host, port, paths, routes, bind_hostname,
-                                  external_config, ssl_config),
+                                  config, ssl_config),
                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_hostname,
-                      external_config, ssl_config, **kwargs):
+                      config, ssl_config, **kwargs):
         try:
-            self.daemon = init_func(host, port, paths, routes, bind_hostname, external_config,
+            self.daemon = init_func(host, port, paths, routes, bind_hostname, config,
                                     ssl_config, **kwargs)
         except socket.error:
             print("Socket error on port %s" % port, file=sys.stderr)
@@ -466,7 +466,7 @@ def get_subdomains(host):
             for subdomain in subdomains}
 
 
-def start_servers(host, ports, paths, routes, bind_hostname, external_config, ssl_config,
+def start_servers(host, ports, paths, routes, bind_hostname, config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
     for scheme, ports in ports.iteritems():
@@ -482,13 +482,13 @@ def start_servers(host, ports, paths, routes, bind_hostname, external_config, ss
 
             server_proc = ServerProc()
             server_proc.start(init_func, host, port, paths, routes, bind_hostname,
-                              external_config, ssl_config, **kwargs)
+                              config, ssl_config, **kwargs)
             servers[scheme].append((port, server_proc))
 
     return servers
 
 
-def start_http_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_http_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                       **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
@@ -496,14 +496,14 @@ def start_http_server(host, port, paths, routes, bind_hostname, external_config,
                                  routes=routes,
                                  rewrites=rewrites,
                                  bind_hostname=bind_hostname,
-                                 config=external_config,
+                                 config=config,
                                  use_ssl=False,
                                  key_file=None,
                                  certificate=None,
                                  latency=kwargs.get("latency"))
 
 
-def start_https_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_https_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                        **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
@@ -511,7 +511,7 @@ def start_https_server(host, port, paths, routes, bind_hostname, external_config
                                  routes=routes,
                                  rewrites=rewrites,
                                  bind_hostname=bind_hostname,
-                                 config=external_config,
+                                 config=config,
                                  use_ssl=True,
                                  key_file=ssl_config["key_path"],
                                  certificate=ssl_config["cert_path"],
@@ -584,7 +584,7 @@ class WebSocketDaemon(object):
         self.server = None
 
 
-def start_ws_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_ws_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                     **kwargs):
     return WebSocketDaemon(host,
                            str(port),
@@ -595,7 +595,7 @@ def start_ws_server(host, port, paths, routes, bind_hostname, external_config, s
                            ssl_config = None)
 
 
-def start_wss_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_wss_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                      **kwargs):
     return WebSocketDaemon(host,
                            str(port),

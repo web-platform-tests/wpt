@@ -86,7 +86,6 @@ class TestEnvironment(object):
         self.ssl_env = ssl_env
         self.server = None
         self.config = None
-        self.external_config = None
         self.pause_after_test = pause_after_test
         self.test_server_port = options.pop("test_server_port", True)
         self.debug_info = debug_info
@@ -105,8 +104,10 @@ class TestEnvironment(object):
             cm.__enter__(self.options)
         self.setup_server_logging()
         self.config = self.load_config()
-        self.external_config, self.servers = serve.start(self.config, self.ssl_env,
-                                                         self.get_routes())
+        ports = get_ports(config, self.ssl_env)
+        self.config = normalise_config(self.config, ports)
+        self.servers = serve.start(self.config, self.ssl_env,
+                                   self.get_routes())
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:
             self.ignore_interrupts()
         return self

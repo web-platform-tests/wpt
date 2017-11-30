@@ -15,10 +15,8 @@ else
 fi
 
 if [[ $(./wpt test-jobs --includes wptrunner_unittest; echo $?) -eq 0 ]]; then
-    if [ $TOXENV == "py27" ] || [ $TOXENV == "pypy" ]; then
-        cd tools/wptrunner
-        tox
-    fi
+    cd tools/wptrunner
+    tox
 else
     echo "Skipping wptrunner unittest"
 fi

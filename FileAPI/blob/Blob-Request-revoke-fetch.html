@@ -19,6 +19,18 @@ promise_test(function(t) {
     });
 }, "Revoke blob URL after creating Request, will fetch");
 
+promise_test(function(t) {
+    const blob = new Blob(["test"]);
+    const url = URL.createObjectURL(blob);
+
+    return fetch(url).then(response => response.text()).then(text => {
+      assert_equals(text, 'test');
+    });
+
+    // Revoke the object URL. fetch should have already resolved the blob URL.
+    URL.revokeObjectURL(url);
+}, "Revoke blob URL after fetch, will fetch");
+
 promise_test(t => {
     const blob = new Blob(["test"]);
     const url = URL.createObjectURL(blob);

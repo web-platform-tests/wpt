@@ -93,7 +93,7 @@ class EqualTimeChunker(TestChunker):
         for i, (test_type, test_path, tests) in enumerate(manifest_items):
             test_dir = tuple(os.path.split(test_path)[0].split(os.path.sep)[:3])
 
-            if not test_dir in by_dir:
+            if test_dir not in by_dir:
                 by_dir[test_dir] = PathData(test_dir)
 
             data = by_dir[test_dir]
@@ -119,11 +119,11 @@ class EqualTimeChunker(TestChunker):
         if direction == "next":
             target_chunk = chunks[i+1]
             path_index = -1
-            move_func = lambda: target_chunk.appendleft(source_chunk.pop())
+            move_func = lambda: target_chunk.appendleft(source_chunk.pop())  # noqa: E731
         elif direction == "prev":
             target_chunk = chunks[i-1]
             path_index = 0
-            move_func = lambda: target_chunk.append(source_chunk.popleft())
+            move_func = lambda: target_chunk.append(source_chunk.popleft())  # noqa: E731
         else:
             raise ValueError("Unexpected move direction %s" % direction)
 
@@ -143,11 +143,11 @@ class EqualTimeChunker(TestChunker):
         if direction == "next":
             source_chunk = chunks[i+1]
             path_index = 0
-            move_func = lambda: target_chunk.append(source_chunk.popleft())
+            move_func = lambda: target_chunk.append(source_chunk.popleft())  # noqa: E731
         elif direction == "prev":
             source_chunk = chunks[i-1]
             path_index = -1
-            move_func = lambda: target_chunk.appendleft(source_chunk.pop())
+            move_func = lambda: target_chunk.appendleft(source_chunk.pop())  # noqa: E731
         else:
             raise ValueError("Unexpected move direction %s" % direction)
 

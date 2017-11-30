@@ -361,7 +361,7 @@ class FirefoxBrowser(Browser):
 
         env[env_var] = (os.path.pathsep.join([certutil_dir, env[env_var]])
                         if env_var in env else certutil_dir).encode(
-                                sys.getfilesystemencoding() or 'utf-8', 'replace')
+            sys.getfilesystemencoding() or 'utf-8', 'replace')
 
         def certutil(*args):
             cmd = [self.certutil_binary] + list(args)

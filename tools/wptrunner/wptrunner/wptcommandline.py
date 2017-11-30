@@ -26,9 +26,9 @@ def url_or_path(path):
 
 def require_arg(kwargs, name, value_func=None):
     if value_func is None:
-        value_func = lambda x: x is not None
+        value_func = lambda x: x is not None  # noqa: E731
 
-    if not name in kwargs or not value_func(kwargs[name]):
+    if name not in kwargs or not value_func(kwargs[name]):
         print >> sys.stderr, "Missing required argument %s" % name
         sys.exit(1)
 

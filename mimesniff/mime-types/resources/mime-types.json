@@ -95,6 +95,18 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "text/html ; ; charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;;;;charset=gbk",
+    "output": "text/html;charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
   "Double quotes",
   {
     "input": "text/html;charset=\"gbk\"",
@@ -152,6 +164,11 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  "type/subtype longer than 127",
+  {
+    "input": "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789/0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789",
+    "output": "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789/0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
+  },
   "Failure",
   {
     "input": "",
@@ -174,11 +191,19 @@
     "output": null
   },
   {
+    "input": "bogus/bogus/;",
+    "output": null
+  },
+  {
     "input": "</>",
     "output": null
   },
   {
     "input": "(/)",
+    "output": null
+  },
+  {
+    "input": "text/html(;doesnot=matter",
     "output": null
   },
   {

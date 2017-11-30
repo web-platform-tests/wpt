@@ -1,0 +1,34 @@
+<!doctype html>
+<title>test event resize fired after resetting srcObject to the same stream</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
+<div id=log></div>
+<video></video>
+<script>
+async_test(function (t) {
+  var v = document.querySelector('video');
+  var videoWidth, videoHeight;
+
+  navigator.mediaDevices.getUserMedia({video: true})
+    .then(stream => {
+      v.onresize = () => {
+        videoWidth = v.videoWidth;
+        videoHeight = v.videoHeight;
+      };
+
+      v.onloadedmetadata = () => {
+        v.onresize = t.step_func(() => {
+          assert_equals(v.videoWidth, videoWidth, "Should have the same width");
+          assert_equals(v.videoHeight, videoHeight, "Should have the same height");
+          t.done();
+        });
+
+        v.onloadedmetadata = null;
+        v.srcObject = stream;
+      }
+
+      v.srcObject = stream;
+    }, t.unreached_func("getUserMedia rejected"));
+});
+</script>

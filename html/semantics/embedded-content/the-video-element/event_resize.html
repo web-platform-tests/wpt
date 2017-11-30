@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+ <head>
+  <title>video events - resize</title>
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/media.html#mediaevents">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/media.js"></script>
+ </head>
+ <body>
+  <video></video>
+  <div id="log"></div>
+  <script>
+async_test(function(t) {
+  var v = document.querySelector("video");
+  v.addEventListener("error", t.unreached_func());
+  v.addEventListener("resize", t.step_func(function() {
+    assert_equals(v.videoWidth, 320);
+    assert_equals(v.videoHeight, 240);
+    t.done();
+  }), false);
+
+  assert_equals(v.videoWidth, 0);
+  assert_equals(v.videoHeight, 0);
+  v.src = getVideoURI("/media/movie_5");
+}, "setting src attribute on autoplay video should trigger resize event");
+  </script>
+ </body>
+</html>

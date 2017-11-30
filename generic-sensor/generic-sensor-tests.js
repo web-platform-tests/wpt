@@ -141,27 +141,6 @@ function runGenericSensorTests(sensorType) {
   }, `${sensorType.name}: no exception is thrown when calling stop() on already stopped sensor`);
 
   promise_test(async t => {
-    const iframe = document.createElement('iframe');
-    iframe.srcdoc = '<script>' +
-                    '  window.onmessage = message => {' +
-                    '    if (message.data === "LOADED") {' +
-                    '      try {' +
-                    '        new ' + sensorType.name + '();' +
-                    '        parent.postMessage("FAIL", "*");' +
-                    '      } catch (e) {' +
-                    '        parent.postMessage(e.name, "*");' +
-                    '      }' +
-                    '    }' +
-                    '   };' +
-                    '<\/script>';
-    iframe.onload = () => iframe.contentWindow.postMessage('LOADED', '*');
-    document.body.appendChild(iframe);
-    const sensorWatcher = new EventWatcher(t, window, "message");
-    const message = await sensorWatcher.wait_for("message");
-    assert_equals(message.data, 'SecurityError');
-  }, `${sensorType.name}: throw a 'SecurityError' when constructing sensor object within iframe`);
-
-  promise_test(async t => {
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     const visibilityChangeWatcher = new EventWatcher(t, document, "visibilitychange");

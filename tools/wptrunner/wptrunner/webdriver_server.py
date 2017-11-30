@@ -125,8 +125,6 @@ class SeleniumServer(WebDriverServer):
 
 
 class ChromeDriverServer(WebDriverServer):
-    default_base_path = "/"
-
     def __init__(self, logger, binary="chromedriver", port=None,
                  base_path="", args=None):
         WebDriverServer.__init__(
@@ -138,8 +136,6 @@ class ChromeDriverServer(WebDriverServer):
                 cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
 class EdgeDriverServer(WebDriverServer):
-    default_base_path = "/"
-
     def __init__(self, logger, binary="microsoftwebdriver.exe", port=None,
                  base_path="", args=None):
         WebDriverServer.__init__(

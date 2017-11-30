@@ -4,9 +4,12 @@ import platform
 import re
 import shutil
 import stat
+import subprocess
+import sys
 from abc import ABCMeta, abstractmethod
 from ConfigParser import RawConfigParser
 from distutils.spawn import find_executable
+from io import BytesIO
 
 from utils import call, get, untar, unzip
 

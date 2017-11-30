@@ -27,7 +27,7 @@ class Kwargs(dict):
                 value = value()
             if not value:
                 if err_fn is not None:
-                    return err_fn(kwargs, "Failed to find %s" % desc)
+                    return err_fn(self, "Failed to find %s" % desc)
                 else:
                     return
             self[name] = value
@@ -94,7 +94,7 @@ def unzip(fileobj, dest=None, limit=None):
             os.chmod(os.path.join(dest, info.filename), perm)
 
 
-class pwd(object):
+class pwd(object):  # noqa: N801
     """Create context for temporarily changing present working directory."""
     def __init__(self, dir):
         self.dir = dir

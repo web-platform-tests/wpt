@@ -101,7 +101,7 @@ class PipeTokenizer(object):
         return escapes.get(char, char)
 
 
-class pipe(object):
+class pipe(object):  # noqa: N801
     def __init__(self, *arg_converters):
         self.arg_converters = arg_converters
         self.max_args = len(self.arg_converters)
@@ -129,7 +129,7 @@ class pipe(object):
         return f
 
 
-class opt(object):
+class opt(object):  # noqa: N801
     def __init__(self, f):
         self.f = f
 
@@ -276,10 +276,10 @@ def slice(request, response, start, end=None):
 
 
 class ReplacementTokenizer(object):
-    def ident(scanner, token):
+    def ident(self, token):
         return ("ident", token)
 
-    def index(scanner, token):
+    def index(self, token):
         token = token[1:-1]
         try:
             token = int(token)
@@ -287,7 +287,7 @@ class ReplacementTokenizer(object):
             token = unicode(token, "utf8")
         return ("index", token)
 
-    def var(scanner, token):
+    def var(self, token):
         token = token[:-1]
         return ("var", token)
 

@@ -20,14 +20,6 @@ class ManifestVersionMismatch(ManifestError):
     pass
 
 
-def sourcefile_items(args):
-    tests_root, url_base, rel_path, status = args
-    source_file = SourceFile(tests_root,
-                             rel_path,
-                             url_base)
-    return rel_path, source_file.manifest_items()
-
-
 class Manifest(object):
     def __init__(self, url_base="/"):
         assert url_base is not None

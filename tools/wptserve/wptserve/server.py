@@ -110,7 +110,8 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     # Ensure that we don't hang on shutdown waiting for requests
     daemon_threads = True
 
-    def __init__(self, server_address, RequestHandlerClass, router, rewriter, bind_hostname,
+    def __init__(self, server_address, RequestHandlerClass,  # noqa: N803
+                 router, rewriter, bind_hostname,
                  config=None, use_ssl=False, key_file=None, certificate=None,
                  encrypt_after_connect=False, latency=None, **kwargs):
         """Server for HTTP(s) Requests

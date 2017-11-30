@@ -104,7 +104,7 @@ class TestEnvironment(object):
             cm.__enter__(self.options)
         self.setup_server_logging()
         self.config = self.load_config()
-        ports = serve.get_ports(config, self.ssl_env)
+        ports = serve.get_ports(self.config, self.ssl_env)
         self.config = normalise_config(self.config, ports)
         self.servers = serve.start(self.config, self.ssl_env,
                                    self.get_routes())

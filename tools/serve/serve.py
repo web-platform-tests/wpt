@@ -654,7 +654,6 @@ def get_ssl_config(config, external_domains, ssl_environment):
 
 def start(config, ssl_environment, routes, **kwargs):
     host = config["host"]
-    domains = get_subdomains(host)
     ports = get_ports(config, ssl_environment)
     bind_hostname = config["bind_hostname"]
 

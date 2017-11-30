@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from __future__ import print_function
 
 import argparse
@@ -173,7 +175,7 @@ def group_results(data):
     Message is None if the test didn't produce a message"""
     tests = all_tests(data)
 
-    UAs = data.keys()
+    UAs = data.keys()  # noqa: N806
 
     def result():
         return {
@@ -225,7 +227,7 @@ def test_link(test_id, subtest=None):
     return rv
 
 
-def summary(UAs, results_by_test):
+def summary(UAs, results_by_test):  # noqa: N803
     """Render the implementation report summary"""
     not_passing = []
     for test, results in results_by_test.iteritems():
@@ -245,7 +247,7 @@ def summary(UAs, results_by_test):
     return rv
 
 
-def result_rows(UAs, test, result):
+def result_rows(UAs, test, result):  # noqa: N803
     """Render the results for each test run"""
     yield h.tr(
         h.td(
@@ -267,12 +269,12 @@ def result_rows(UAs, test, result):
         )
 
 
-def result_bodies(UAs, results_by_test):
+def result_bodies(UAs, results_by_test):  # noqa: N803
     return [h.tbody(result_rows(UAs, test, result))
             for test, result in sorted(results_by_test.iteritems())]
 
 
-def generate_html(UAs, results_by_test):
+def generate_html(UAs, results_by_test):  # noqa: N803
     """Generate all the HTML output"""
     return h(h.html(
         h.head(

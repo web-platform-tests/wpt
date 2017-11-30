@@ -93,7 +93,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
     if test_type == "wdspec":
-        fxOptions = {}
+        fxOptions = {}  # noqa: N806
         if kwargs["binary"]:
             fxOptions["binary"] = kwargs["binary"]
         if kwargs["binary_args"]:

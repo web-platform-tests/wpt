@@ -28,7 +28,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     from selenium.webdriver import DesiredCapabilities
 
-    ieOptions = {}
+    ieOptions = {}  # noqa: N806
     ieOptions["requireWindowFocus"] = True
     capabilities = {}
     capabilities["se:ieOptions"] = ieOptions
@@ -51,7 +51,7 @@ class InternetExplorerBrowser(Browser):
 
     def __init__(self, logger, webdriver_binary, webdriver_args=None):
         Browser.__init__(self, logger)
-        self.server = InterentExplorerDriverServer(self.logger,
+        self.server = InternetExplorerDriverServer(self.logger,
                                                    binary=webdriver_binary,
                                                    args=webdriver_args)
         self.webdriver_host = "localhost"

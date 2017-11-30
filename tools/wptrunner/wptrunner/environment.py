@@ -105,7 +105,6 @@ class TestEnvironment(object):
             cm.__enter__(self.options)
         self.setup_server_logging()
         self.config = self.load_config()
-        serve.set_computed_defaults(self.config)
         self.external_config, self.servers = serve.start(self.config, self.ssl_env,
                                                          self.get_routes())
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:

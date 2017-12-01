@@ -11,7 +11,7 @@
     "input": "text/html;charset=gbk(",
     "output": "text/html;charset=\"gbk(\"",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   {
     "input": "text/html;x=(;charset=gbk",
@@ -31,7 +31,7 @@
     "input": "text/html;charset =gbk",
     "output": "text/html",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   {
     "input": "text/html ;charset=gbk",
@@ -51,24 +51,24 @@
     "navigable": true,
     "encoding": "GBK"
   },
-  "Single quotes (invalid)",
+  "Single quotes are a token, not a delimiter",
   {
     "input": "text/html;charset='gbk'",
-    "output": "text/html;charset=\"'gbk'\"",
+    "output": "text/html;charset='gbk'",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   {
     "input": "text/html;charset='gbk",
-    "output": "text/html;charset=\"'gbk\"",
+    "output": "text/html;charset='gbk",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   {
     "input": "text/html;charset=gbk'",
-    "output": "text/html;charset=\"gbk'\"",
+    "output": "text/html;charset=gbk'",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   "Invalid parameters",
   {
@@ -124,7 +124,7 @@
     "input": "text/html;charset=gbk\"",
     "output": "text/html;charset=\"gbk\\\"\"",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   {
     "input": "text/html;charset=\" gbk\"",
@@ -155,7 +155,7 @@
     "input": "text/html;charset={gbk}",
     "output": "text/html;charset=\"{gbk}\"",
     "navigable": true,
-    "encoding": ""
+    "encoding": null
   },
   "Parameter name longer than 127",
   {

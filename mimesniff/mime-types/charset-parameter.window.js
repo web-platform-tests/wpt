@@ -4,13 +4,13 @@ promise_test(() => {
 
 function runTests(tests) {
   tests.forEach(val => {
-    if(typeof val === "string" || val.navigable !== true || typeof val.encoding !== "string") {
+    if(typeof val === "string" || val.navigable === undefined || val.encoding === undefined) {
       return;
     }
     const mime = val.input;
     async_test(t => {
       const frame = document.createElement("iframe"),
-            expectedEncoding = val.encoding === "" ? "UTF-8" : val.encoding;
+            expectedEncoding = val.encoding === null ? "UTF-8" : val.encoding;
       t.add_cleanup(() => frame.remove());
       frame.onload = t.step_func(() => {
         if(frame.contentWindow.location.href === "about:blank") {

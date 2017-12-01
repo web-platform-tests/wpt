@@ -6,6 +6,12 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "TEXT/HTML;CHARSET=GBK",
+    "output": "text/html;charset=GBK",
+    "navigable": true,
+    "encoding": "GBK"
+  },
   "Legacy comment syntax",
   {
     "input": "text/html;charset=gbk(",
@@ -173,6 +179,15 @@
   {
     "input": "!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz/!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz;!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz",
     "output": "!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvxyzabcdefghijklmnopqrstuvxyz/!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvxyzabcdefghijklmnopqrstuvxyz;!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvxyzabcdefghijklmnopqrstuvxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz"
+  },
+  "End-of-file handling",
+  {
+    "input": "x/x;test",
+    "output": "x/x"
+  },
+  {
+    "input": "x/x;test=\"\\",
+    "output": "x/x;test=\"\\\\\""
   },
   "Failure",
   {

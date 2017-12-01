@@ -189,6 +189,18 @@
     "input": "x/x;test=\"\\",
     "output": "x/x;test=\"\\\\\""
   },
+  "Latin1",
+  {
+    "input": "text/html;test=\u00FF;charset=gbk",
+    "output": "text/html;test=\"\u00FF\";charset=gbk",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  ">Latin1",
+  {
+    "input": "x/x;test=\uFFFD;x=x",
+    "output": "x/x;x=x"
+  },
   "Failure",
   {
     "input": "",
@@ -228,6 +240,10 @@
   },
   {
     "input": "{/}",
+    "output": null
+  },
+  {
+    "input": "\u0100/\u0100",
     "output": null
   }
 ]

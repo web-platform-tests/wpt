@@ -9,4 +9,24 @@
 
 Note: the object description implies that there tests without `navigable` or `encoding` set.
 
+A wrapper for these JSON MIME type tests needs to take care that not all `input` values can be tested in all entrypoints. Some entrypoints only accept bytes and some have further restrictions. A function such as the one below can be used to differentiate:
+
+```js
+function isByteCompatible(str) {
+  for(let i = 0; i < str.length; i++) {
+    const charCode = str.charCodeAt(i);
+    // See https://github.com/w3c/web-platform-tests/issues/8372 for 0x0B and 0x0C
+    // See https://fetch.spec.whatwg.org/#concept-header-value for the remainder
+    if(charCode > 0xFF) {
+      return "incompatible";
+    } else if(charCode === 0x00 || charCode === 0x0A || charCode === 0x0D) {
+      return "header-value-incompatible";
+    } else if(charCode === 0x0B || charCode === 0x0C) {
+      return "wptserve-incompatible";
+    }
+  }
+  return "compatible";
+}
+```
+
 These tests are used by resources in this directory to test various aspects of MIME types.

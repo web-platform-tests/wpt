@@ -648,7 +648,13 @@ def normalise_config(config, ports):
     return config_
 
 
-def get_ssl_config(config, external_domains, ssl_environment):
+def get_paths(config):
+    return {"doc_root": config["doc_root"],
+            "ws_doc_root": config["ws_doc_root"]}
+
+
+def get_ssl_config(config, ssl_environment):
+    external_domains = config["domains"].values()
     key_path, cert_path = ssl_environment.host_cert_path(external_domains)
     return {"key_path": key_path,
             "cert_path": cert_path,
@@ -657,15 +663,9 @@ def get_ssl_config(config, external_domains, ssl_environment):
 def start(config, ssl_environment, routes, **kwargs):
     host = config["host"]
     ports = get_ports(config, ssl_environment)
+    paths = get_paths(config)
     bind_hostname = config["bind_hostname"]
-
-    paths = {"doc_root": config["doc_root"],
-             "ws_doc_root": config["ws_doc_root"]}
-
-    ssl_config = get_ssl_config(config, config["domains"].values(), ssl_environment)
-
-    if config["check_subdomains"]:
-        check_subdomains(host, paths, bind_hostname, ssl_config, config["aliases"])
+    ssl_config = get_ssl_config(config, ssl_environment)
 
     servers = start_servers(host, ports, paths, routes, bind_hostname, config,
                             ssl_config, **kwargs)
@@ -784,10 +784,17 @@ def run(**kwargs):
     with get_ssl_environment(config) as ssl_env:
         ports = get_ports(config, ssl_env)
         config = normalise_config(config, ports)
+        host = config["host"]
+        bind_hostname = config["bind_hostname"]
+
+        if config["check_subdomains"]:
+            paths = get_paths(config)
+            ssl_config = get_ssl_config(config, ssl_env)
+            check_subdomains(host, paths, bind_hostname, ssl_config, config["aliases"])
 
         stash_address = None
-        if config["bind_hostname"]:
-            stash_address = (config["host"], get_port())
+        if bind_hostname:
+            stash_address = (host, get_port())
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
             servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)

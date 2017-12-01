@@ -1,4 +1,5 @@
 promise_test(() => {
+  // Don't load generated-mime-types.json as none of them are navigable
   return fetch("resources/mime-types.json").then(res => res.json().then(runTests));
 }, "Loading data…");
 

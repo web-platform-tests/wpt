@@ -18,6 +18,7 @@ main() {
     )
 
     ./update-built-tests.sh
+    python ./mimesniff/mime-types/resources/generated-mime-types.py
     git update-index --assume-unchanged ${excluded[*]}
     git diff --exit-code
 }

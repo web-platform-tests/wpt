@@ -1,5 +1,8 @@
 promise_test(() => {
-  return fetch("resources/mime-types.json").then(res => res.json().then(runTests));
+  return Promise.all([
+    fetch("resources/mime-types.json"),
+    fetch("resources/generated-mime-types.json")
+  ]).then(([res, res2]) => res.json().then(runTests).then(res2.json().then(runTests)));
 }, "Loading data…");
 
 function isByteCompatible(str) {

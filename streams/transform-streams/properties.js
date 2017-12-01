@@ -120,7 +120,7 @@ for (const c in expected) {
 const transformerMethods = {
   start: {
     length: 1,
-    trigger: () => {}
+    trigger: () => Promise.resolve()
   },
   transform: {
     length: 2,
@@ -163,28 +163,32 @@ for (const method in transformerMethods) {
     });
   }, `transformer method ${method} should be called even when it's located on the prototype chain`);
 
-  if (method !== 'start') {
-    promise_test(t => {
-      const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
-                              'getOwnPropertyDescriptor', 'defineProperty', 'has', 'set', 'deleteProperty', 'ownKeys',
-                              'apply', 'construct'];
-      const handler = {
-        get: t.step_func((target, property) => {
-          if (property === 'readableType' || property === 'writableType') {
-            return undefined;
-          }
-          assert_in_array(property, ['start', method], `only start() and ${method}() should be called`);
-          return () => Promise.resolve();
-        })
-      };
-      for (const trap of unreachedTraps) {
-        handler[trap] = t.unreached_func(`${trap} should not be trapped`);
-      }
-      const transformer = new Proxy({}, handler);
-      const ts = new TransformStream(transformer, undefined, { highWaterMark: Infinity });
-      return trigger(ts);
-    }, `unexpected properties should not be accessed when calling transformer method ${method}`);
-  }
+  promise_test(t => {
+    const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
+                            'getOwnPropertyDescriptor', 'defineProperty', 'has', 'set', 'deleteProperty', 'ownKeys',
+                            'apply', 'construct'];
+    const touchedProperties = [];
+    const handler = {
+      get: t.step_func((target, property) => {
+        touchedProperties.push(property);
+        if (property === 'readableType' || property === 'writableType') {
+          return undefined;
+        }
+        return () => Promise.resolve();
+      })
+    };
+    for (const trap of unreachedTraps) {
+      handler[trap] = t.unreached_func(`${trap} should not be trapped`);
+    }
+    const transformer = new Proxy({}, handler);
+    const ts = new TransformStream(transformer, undefined, { highWaterMark: Infinity });
+    assert_array_equals(touchedProperties, ['readableType', 'writableType', 'transform', 'flush', 'start'],
+                        'expected properties should be got');
+    return trigger(ts).then(() => {
+      assert_array_equals(touchedProperties, ['readableType', 'writableType', 'transform', 'flush', 'start'],
+                          'no properties should be accessed on method call');
+    });
+  }, `unexpected properties should not be accessed when calling transformer method ${method}`);
 }
 
 done();

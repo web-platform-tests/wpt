@@ -84,11 +84,11 @@ promise_test(t => {
     }),
     reader.read().then(r => {
       assert_object_equals(r, { value: 'a', done: false }, 'the second chunk read should be correct');
+      assert_equals(counter, 1, 'counter should be 1');
     })
   ]);
 
-}, 'Underlying source pull: throwing getter (second pull)');
-
+}, 'Underlying source pull: throwing getter (second pull does not result in a second get)');
 
 promise_test(t => {
 

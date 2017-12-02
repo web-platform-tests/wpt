@@ -237,6 +237,7 @@ class PythonScriptHandler(object):
             if "main" in environ:
                 handler = FunctionHandler(environ["main"])
                 handler(request, response)
+                wrap_pipeline(path, request, response)
             else:
                 raise HTTPException(500, "No main function in script %s" % path)
         except IOError:
@@ -267,6 +268,7 @@ class FunctionHandler(object):
             else:
                 content = rv
             response.content = content
+            wrap_pipeline('', request, response)
 
 
 #The generic name here is so that this can be used as a decorator

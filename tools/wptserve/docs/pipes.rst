@@ -12,8 +12,7 @@ This would serve bytes 1 to 199, inclusive, of foo.txt with the HTTP status
 code 404.
 
 .. note::
-   Pipes are only applied to static files, and will not work if applied to
-   other types of handlers, such as Python File Handlers.
+   Pipes are only applied to static files, Python file and function handlers, and json handlers.
 
 There are several built-in pipe functions, and it is possible to add
 more using the `@pipe` decorator on a function, if required.

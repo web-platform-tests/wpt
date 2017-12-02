@@ -1,9 +1,11 @@
 import os
 import unittest
 import time
+import json
 
 import pytest
 
+wptserve = pytest.importorskip("wptserve")
 from .base import TestUsingServer, doc_root
 
 
@@ -81,6 +83,29 @@ class TestTrickle(TestUsingServer):
         self.assertEqual(resp.info()["Cache-Control"], "no-cache, no-store, must-revalidate")
         self.assertEqual(resp.info()["Pragma"], "no-cache")
         self.assertEqual(resp.info()["Expires"], "0")
+
+class TestPipesWithVariousHandlers(TestUsingServer):
+    def test_with_python_file_handler(self):
+        resp = self.request("/test_string.py", query="pipe=slice(null,2)")
+        self.assertEqual(resp.read(), "PA")
+
+    def test_with_python_func_handler(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            return "PASS"
+        route = ("GET", "/test/test_pipes_1/", handler)
+        self.server.router.register(*route)
+        resp = self.request(route[1], query="pipe=slice(null,2)")
+        self.assertEqual(resp.read(), "PA")
+
+    def test_with_json_handler(self):
+        @wptserve.handlers.json_handler
+        def handler(request, response):
+            return json.dumps({'data': 'PASS'})
+        route = ("GET", "/test/test_pipes_2/", handler)
+        self.server.router.register(*route)
+        resp = self.request(route[1], query="pipe=slice(null,2)")
+        self.assertEqual(resp.read(), '"{')
 
 if __name__ == '__main__':
     unittest.main()

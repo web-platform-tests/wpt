@@ -1,20 +1,34 @@
+import json
+import os
+import socket
+import sys
+import threading
+import time
+import traceback
+import urlparse
+import uuid
+
 from .base import (Protocol,
-                   WebDriverProtocol,
                    RefTestExecutor,
                    RefTestImplementation,
-                   TestharnessExecutor)
+                   TestharnessExecutor,
+                   extra_timeout,
+                   strip_server)
+from ..testrunner import Stop
+
+here = os.path.join(os.path.split(__file__)[0])
 
 class WebDriverTestharnessExecutor(TestharnessExecutor):
     supports_testdriver = True
 
-    def __init__(self, browser, server_config, timeout_multiplier=1, webdriver_binary,
+    def __init__(self, browser, webdriver_binary=None, server_config=None, timeout_multiplier=1,
                  close_after_done=True, capabilities=None, debug_info=None,
                  **kwargs):
         """WebDriver-based executor for testharness.js tests"""
         TestharnessExecutor.__init__(self, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
-        self.protocol = WebDriverProtocol(self, browser)
+        self.protocol = DriverProtocol(self, browser)
         with open(os.path.join(here, "testharness_webdriver.js")) as f:
             self.script = f.read()
         with open(os.path.join(here, "testharness_webdriver_resume.js")) as f:
@@ -43,6 +57,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(*data), [])
 
     def do_testharness(self, webdriver, url, timeout):
+        self.logger.debug("Running the test harness!")
         format_map = {"abs_url": url,
                       "url": strip_server(url),
                       "window_id": self.window_id,
@@ -88,6 +103,33 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
 class CallbackHandler(object):
     pass
+
+class DriverProtocol(object):
+    def __init__(self, executor, browser):
+        pass
+
+    def setup(self, runner):
+        """Connect to browser using WebDriver API directly"""
+
+    def teardown(self):
+        print('teardown')
+        pass
+
+    def is_alive(self):
+        print('teardown')
+        pass
+
+    def after_connect(self):
+        print('teardown')
+        pass
+
+    def load_runner(self):
+        print('teardown')
+        pass
+
+    def wait(self):
+        print('teardown')
+        pass
 
 class WebDriverRun(object):
     def __init__(self, func, webdriver, url, timeout):

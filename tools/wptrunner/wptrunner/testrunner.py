@@ -121,6 +121,8 @@ def start_runner(runner_command_queue, runner_result_queue,
                  stop_flag):
     """Launch a TestRunner in a new process"""
     try:
+        print(executor_kwargs.keys())
+        print(executor_cls)
         browser = executor_browser_cls(**executor_browser_kwargs)
         executor = executor_cls(browser, **executor_kwargs)
         with TestRunner(runner_command_queue, runner_result_queue, executor) as runner:

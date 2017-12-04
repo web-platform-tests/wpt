@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf8>
+<meta content="width=device-width, initial-scale=1" name=viewport>
+<link rel="help" href="https://www.w3.org/TR/wake-lock/">
+<body>
+<h1>Description</h1>
+<p>This test validates that the page screen.keepAwake reset to false due to reloading the browser window.</p>
+
+<h1>Manual Test Steps:</h1>
+<p>
+    <ol>
+        <li> Ensure that all test results show PASS on this page</li>
+        <li> Click 'Reload the page'</li>
+        <li> After reloading page, the test results remain PASS </li>
+    </ol>
+</p>
+
+<button onclick="window.location.reload();">Reload the page</button>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+   assert_false(screen.keepAwake);
+}, 'Test that screen.keepAwake default state is false');
+test(function() {
+    screen.keepAwake = true;
+    assert_true(screen.keepAwake);
+}, 'Test that screen.keepAwake state is true');
+</script>
+
+</body>
+</html>

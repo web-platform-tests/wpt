@@ -192,14 +192,6 @@
     "output": "x/x;bonus=x"
   },
   {
-    "input": "x/x;x=\t;bonus=x",
-    "output": "x/x;x=\"\t\";bonus=x"
-  },
-  {
-    "input": "x/x;x=\"\t\";bonus=x",
-    "output": "x/x;x=\"\t\";bonus=x"
-  },
-  {
     "input": "\n/x",
     "output": null
   },
@@ -650,14 +642,6 @@
   {
     "input": "x/x; =x;bonus=x",
     "output": "x/x;bonus=x"
-  },
-  {
-    "input": "x/x;x= ;bonus=x",
-    "output": "x/x;x=\" \";bonus=x"
-  },
-  {
-    "input": "x/x;x=\" \";bonus=x",
-    "output": "x/x;x=\" \";bonus=x"
   },
   {
     "input": "\"/x",

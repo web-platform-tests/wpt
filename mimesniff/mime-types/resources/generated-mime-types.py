@@ -31,7 +31,7 @@ for cp in range(0x00, 0x100):
                 continue
             tests.append({"input": "x/x;" + unichr(cp) + "=x;bonus=x", "output": "x/x;bonus=x"})
         elif scenario == "value":
-            if cp == 0x22 or cp == 0x3B or cp == 0x5C: # " ; \
+            if cp == 0x09 or cp == 0x20 or cp == 0x22 or cp == 0x3B or cp == 0x5C: # TAB SP " ; \
                 continue
             if isHTTPQuotedStringTokenCodePoint(cp):
                 testOutput = "x/x;x=\"" + unichr(cp) + "\";bonus=x"

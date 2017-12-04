@@ -18,9 +18,8 @@ window.onload = test.step_func(function() {
   }), 100);
 });
 
-window.onmessage = test.step_func(function(e) {
+window.onmessage = test.step_func_done(function(e) {
   assert_equals(e.data, "002-2");
-  test.done();
 });
 
 </script>

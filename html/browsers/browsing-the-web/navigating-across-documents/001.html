@@ -13,9 +13,8 @@ window.onload = test.step_func(function() {
   iframe.src = iframe.src.replace(/\d{3}-\d\.html/, "001-2.html");
 });
 
-window.onmessage = test.step_func(function(e) {
+window.onmessage = test.step_func_done(function(e) {
   assert_equals(e.data, "001-2");
-  test.done();
 });
 </script>
 

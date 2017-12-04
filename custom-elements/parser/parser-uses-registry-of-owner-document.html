@@ -131,10 +131,10 @@ test_with_window(function (contentWindow, contentDocument) {
 
     var instance = contentDocument.querySelector('my-custom-element');
 
-    assert_true(instance instanceof HTMLElement);
+    assert_true(instance instanceof contentWindow.HTMLElement);
     assert_false(instance instanceof element.class);
 
-}, 'Document.write() must not instantiate a custom element without a defined insertion point');
+}, 'document.write() must not instantiate a custom element without a defined insertion point');
 
 test_with_window(function (contentWindow, contentDocument) {
     const element = define_custom_element_in_window(contentWindow, 'my-custom-element', []);
@@ -145,10 +145,10 @@ test_with_window(function (contentWindow, contentDocument) {
 
     var instance = contentDocument.querySelector('my-custom-element');
 
-    assert_true(instance instanceof HTMLElement);
+    assert_true(instance instanceof contentWindow.HTMLElement);
     assert_false(instance instanceof element.class);
 
-}, 'Document.writeln() must not instantiate a custom element without a defined insertion point');
+}, 'document.writeln() must not instantiate a custom element without a defined insertion point');
 
 </script>
 </body>

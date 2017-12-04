@@ -394,7 +394,7 @@ function run() {
 
     function query_applies(q) {
       style.setAttribute("media", q);
-      return body_cs.getPropertyValue("text-decoration") == "underline";
+      return body_cs.getPropertyValue("text-decoration") == "underline solid rgb(0, 0, 0)";
     }
 
     function should_apply(q) {

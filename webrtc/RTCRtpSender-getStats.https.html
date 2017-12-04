@@ -9,8 +9,8 @@
   'use strict';
 
   // Test is based on the following editor draft:
-  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
-  // https://w3c.github.io/webrtc-stats/archives/20170614/webrtc-stats.html
+  // webrtc-pc 20171130
+  // webrtc-stats 20171122
 
   // The following helper function is called from RTCStats-helper.js
   //   validateStatsReport
@@ -18,11 +18,6 @@
 
   /*
     5.2.  RTCRtpSender Interface
-      interface RTCRtpSender {
-         Promise<RTCStatsReport> getStats();
-          ...
-      };
-
       getStats
         1.  Let selector be the RTCRtpSender object on which the method was invoked.
         2.  Let p be a new promise, and run the following steps in parallel:
@@ -49,6 +44,22 @@
       validateStatsReport(statsReport);
       assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
     });
-  }, 'sender.getStats() should return stats report containing outbound-rtp stats');
+  }, 'sender.getStats() via addTransceiver should return stats report containing outbound-rtp stats');
+
+  promise_test(() => {
+    const pc = new RTCPeerConnection();
+
+    return navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(mediaStream => {
+      const [track] = mediaStream.getTracks();
+      const sender = pc.addTrack(track, mediaStream);
+
+      return sender.getStats()
+      .then(statsReport => {
+        validateStatsReport(statsReport);
+        assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
+      });
+    })
+  }, 'sender.getStats() via addTrack should return stats report containing outbound-rtp stats');
 
 </script>

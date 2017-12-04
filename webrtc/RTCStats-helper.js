@@ -76,6 +76,16 @@ function assert_stats_report_has_stats(statsReport, statsTypes) {
   }
 }
 
+function findStatsFromReport(statsReport, predicate, message) {
+  for (const stats of statsReport.values()) {
+    if (predicate(stats)) {
+      return stats;
+    }
+  }
+
+  assert_unreached(message || 'none of stats in statsReport satisfy given condition')
+}
+
 // Get stats object of type that is expected to be
 // found in the statsReport
 function getRequiredStats(statsReport, type) {

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Tools for WebRTC testing",
   "scripts": {
-    "lint": "eslint -c .eslintrc.js ../*.html ../*.js"
+    "lint": "eslint -c .eslintrc.js ../*.html ../*.js",
     "show-todo": "node scripts/show-todo.js",
     "coverage-overview": "node scripts/overview.js",
     "coverage-by-section": "node scripts/coverage-by-section.js"

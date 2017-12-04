@@ -939,6 +939,7 @@ LAYOUTTESTS APIS: css/css-regions/interactivity/*
 
 # Existing use of WEB-PLATFORM.TEST
 WEB-PLATFORM.TEST: clear-site-data/support/test_utils.sub.js
+WEB-PLATFORM.TEST: content-security-policy/base-uri/report-uri-does-not-respect-base-uri.sub.html
 WEB-PLATFORM.TEST: content-security-policy/generic/generic-0_8.sub.html
 WEB-PLATFORM.TEST: content-security-policy/generic/generic-0_8_1.sub.html
 WEB-PLATFORM.TEST: content-security-policy/nonce-hiding/script-nonces-hidden-meta.tentative.html

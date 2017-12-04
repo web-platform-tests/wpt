@@ -43,13 +43,13 @@
       //   namespace to start.
       var contextNamespace = null;
       // 2.(EDITED)Let namespace prefix map be a new map for associating namespaceURI and **namespace
-      //   prefix lists**, where namespaceURI values are the map's **unique** keys **(which may include the null 
-      //   value representing no namespace)**, and **ordered lists of associated** prefix values are 
-      //   the map's key values. The namespace prefix map will be populated by previously seen 
+      //   prefix lists**, where namespaceURI values are the map's **unique** keys **(which may include the null
+      //   value representing no namespace)**, and **ordered lists of associated** prefix values are
+      //   the map's key values. The namespace prefix map will be populated by previously seen
       //   namespaceURIs and **all their previously encountered** prefix associations **in** a subtree.
       //   **Note: the last seen prefix for a given namespaceURI is at the end of its respective list.
-      //   The list is searched to find potentially matching prefixes, and if no matches are found for 
-      //   the given namespaceURI, then the last prefix in the list is used. See 'copy a namespace prefix 
+      //   The list is searched to find potentially matching prefixes, and if no matches are found for
+      //   the given namespaceURI, then the last prefix in the list is used. See 'copy a namespace prefix
       //   map' and 'retrieve a prefix string from the namespace prefix map' for additional details.**
       var namespacePrefixMap = new NamespacePrefixMap();
       // 3.(EDITED)'Add' the XML namespace with prefix string "xml" to the new namespace prefix map.
@@ -111,12 +111,12 @@
       // 6.(EDITED) Let map be a 'copy of the prefix map'.
       var map = new NamespacePrefixMap(prefixMap);
       // 7.(EDITED)Let **local prefixes map be an empty map. The map has unique prefix strings as its
-      //   keys, with a corresponding namespace as the key's value (in this map, the null namespace is represented by the empty string). 
+      //   keys, with a corresponding namespace as the key's value (in this map, the null namespace is represented by the empty string).
       //   Note: This map is local to each element.
       //   Its purpose is to ensure that there are no conflicting prefixes should a new namespace
       //   prefix attribute need to be generated. It is also used to enable skipping of duplicate
-      //   prefix definitions when writing an element's attributes: the map allows the algorithm 
-      //   to distinguish between a prefix in the namespace prefix map that might be locally defined 
+      //   prefix definitions when writing an element's attributes: the map allows the algorithm
+      //   to distinguish between a prefix in the namespace prefix map that might be locally defined
       //   (to the current element) and one that is not.**
       var localPrefixesMap = {};
       // 8.(DELETED)Let duplicate prefix definition be null.
@@ -153,7 +153,7 @@
          // **** BUG: Additional validation needed--can't re-parse an element that has an XMLNS prefix--no go. If conforming flag set, then fail
          // (NEW)1.5. If the value of prefix matches "xmlns", then run the following steps:
          if (prefix == "xmlns") {
-            // (NEW from above)1.If the require well-formed flag is set, then throw an error. The element with 
+            // (NEW from above)1.If the require well-formed flag is set, then throw an error. The element with
             // prefix "xmlns" will not legally round-trip in a conforming XML parser.
             if (requireWellFormed)
                throw new Error("Failed validation: elements with xmlns prefixes are not valid XML");
@@ -172,9 +172,9 @@
             // 2.(ORIGINAL) If local default namespace is not null (there exists a locally-defined default namespace
             //   declaration attribute), then let inherited ns get the value of ns.
             // 2.(FIXED) If the local default namespace is not null (there exists a locally-defined default namespace
-            //   declaration attribute), **and its value is not the XML namespace***, then let inherited ns get the value of 
-            //   local default namespace unless the local default namespace is the empty string in which case let it get null. 
-            //   (inherit down the declared default, rather than this node's namespace). Note: any default namespace 
+            //   declaration attribute), **and its value is not the XML namespace***, then let inherited ns get the value of
+            //   local default namespace unless the local default namespace is the empty string in which case let it get null.
+            //   (inherit down the declared default, rather than this node's namespace). Note: any default namespace
             //   definitions or namespace prefixes that attempt to use the XML namespace are omitted when serializing this
             //   node's attributes.
             if ((localDefaultNamespace != null) && (localDefaultNamespace != XMLNS))
@@ -182,9 +182,9 @@
             // 3.Append the value of qualified name to markup.
             markup += qualifiedName;
          }
-         // NOTE: This is the "use the given prefix in serialization" branch... By this step, there's no 
+         // NOTE: This is the "use the given prefix in serialization" branch... By this step, there's no
          // namespace/prefix mapping declaration in this node (or any parent node) that could be used (or
-         // step 3 above would have handled it). However, there might be a duplicate prefix name (with a 
+         // step 3 above would have handled it). However, there might be a duplicate prefix name (with a
          // different namespace present on this node, which would be a conflict...)
          // *** Bug: Was missing utilization of the node's prefix when the node *also* had a default namespace!
          // (ORIGINAL)4.Otherwise, if prefix is not null and local default namespace is null, then:
@@ -217,10 +217,10 @@
             markup += "\"";
             // *** See bug at beginning of this conditional block--need to handle the default decl if present...(no
             //     need to handle the XMLNS case as in case 3, since XMLNS is always in the map, thus it will always trigger
-            //     branch 3 above.) Also, it doesn't matter what the local default namespace is (e.g., whether it matches ns), 
+            //     branch 3 above.) Also, it doesn't matter what the local default namespace is (e.g., whether it matches ns),
             //     since the prefix will trump in determing the node's namespace.
             // 6.(NEW) If local default namespace is not null (there exists a locally-defined default namespace
-            //   declaration attribute), then let inherited ns get the value of local default namespace unless the local 
+            //   declaration attribute), then let inherited ns get the value of local default namespace unless the local
             //   default namespace is the empty string in which case let it get null.
             if (localDefaultNamespace != null)
                inheritedNS = (localDefaultNamespace == "") ? null : localDefaultNamespace;
@@ -262,7 +262,7 @@
          }
       } // BUG** pass the well-formed flag along!
       // 14.(EDITED)Append to markup the result of the XML serialization of node's attributes given the namespace
-      //    prefix map map, the generated prefix index prefix index, **the local prefixes map**, and the flag 
+      //    prefix map map, the generated prefix index prefix index, **the local prefixes map**, and the flag
       //    ignore namespace definition attribute.
       markup += xmlSerializationOfNodeAttributes(node, map, prefixIndexRef, localPrefixesMap, ignoreNamespaceDefinition);
       // 15.If ns is the HTML namespace, and the node's list of children is empty, and the node's localName
@@ -345,27 +345,27 @@
             var prefixDefinition = attr.localName;
             // 2.Let namespace definition be the value of attr's value.
             var namespaceDefinition = attr.value;
-            // **Note: XML namespace definitions in prefixes are completely ignored (in order to avoid unnecessary 
-            // work when there might be prefix conflicts). XML namespaced elements are always handled uniformly by 
+            // **Note: XML namespace definitions in prefixes are completely ignored (in order to avoid unnecessary
+            // work when there might be prefix conflicts). XML namespaced elements are always handled uniformly by
             // prefixing (and overriding if necessary) the element's localname with the reserved 'xml' prefix.
             // 2.1.(NEW)If namespace definition is the XML namespace, then stop running these steps,
             //   and return to Main to visit the next attribute.
             if (namespaceDefinition == XMLNS)
               return;
-            // **bug** empty strings were originally recorded here, but this is compared against actual 
+            // **bug** empty strings were originally recorded here, but this is compared against actual
             // namespaceURI later, which will be null. Need to normalize...
-            // 2.5.(NEW)If namespace definition is the empty string (the declarative form of resetting back 
+            // 2.5.(NEW)If namespace definition is the empty string (the declarative form of resetting back
             //     to no namespace), then let namespace definition be null instead.
             if (namespaceDefinition == "")
               namespaceDefinition = null;
-            // **Note: Avoid adding duplicate prefix definitions for the same namespace in the map. Has the 
+            // **Note: Avoid adding duplicate prefix definitions for the same namespace in the map. Has the
             //   side-effect of avoiding serializaing duplicate namespace prefix declarations at different
             //   levels in a serialized node tree.
             // 2.6.(NEW)If 'prefix definition' is 'found' in map given the namespace 'namespace definition', then
             //   stop running these steps, and return to Main to visit the next attribute.
             if (map.has(namespaceDefinition, prefixDefinition))
                 return;
-            // **Point-of-interest Now I can avoid special-casing previous XMLNS bug fixes below: such as having 
+            // **Point-of-interest Now I can avoid special-casing previous XMLNS bug fixes below: such as having
             // the XML prefix get overridden in the map
             // 3.(DELETED)If a key matching the value of namespace definition already exists in map, and the key's
             //   value matches prefix definition, then this is a duplicate namespace prefix definition.
@@ -374,8 +374,8 @@
             map.add(namespaceDefinition, prefixDefinition);
             // 5.(DELETED)--Otherwise, no key matching the value of namespace definition exists; append to map a new
             //   key namespace definition whose key value is the prefix definition.--
-            // 6.(EDITED) Add the value of prefix definition as a new key to the local prefixes map, 
-            //   with the namespace definition as the key's value **replacing the value of null with the 
+            // 6.(EDITED) Add the value of prefix definition as a new key to the local prefixes map,
+            //   with the namespace definition as the key's value **replacing the value of null with the
             //   empty string**.
             localPrefixesMap[prefixDefinition] = (namespaceDefinition == null ? "" : namespaceDefinition);
          }
@@ -385,7 +385,7 @@
    }
 
    //(NEW)
-   // To 'copy a namespace prefix map' map means to copy the map's keys into a new empty namespace prefix map, and 
+   // To 'copy a namespace prefix map' map means to copy the map's keys into a new empty namespace prefix map, and
    // to copy each of the values in the list of prefixes associated with each keys' value into a new list which
    // should be associated with the respective key in the new map.
    function NamespacePrefixMap(mapToCopy) {
@@ -397,11 +397,11 @@
       }
    }
    //(NEW)**Note: This is abstracted to support the newly-enchanced namespace prefix map**
-   // To 'retrieve a preferred prefix string 'prefix' from the namespace prefix map map' given a namespace 'ns', 
+   // To 'retrieve a preferred prefix string 'prefix' from the namespace prefix map map' given a namespace 'ns',
    // the user agent should:
-   NamespacePrefixMap.prototype.get = function(ns, preferred) {    
-      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that 
-      //    matches the value of ns or if there is no such key, then stop running these steps, and return the null 
+   NamespacePrefixMap.prototype.get = function(ns, preferred) {
+      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that
+      //    matches the value of ns or if there is no such key, then stop running these steps, and return the null
       //    value.
       var candidatesList = this[ns];
       if (!candidatesList)
@@ -421,7 +421,7 @@
    // To 'check if a prefix string 'prefix' is 'found' in a namespace prefix map 'map' given a namespace 'ns', the user
    // agent should:
    NamespacePrefixMap.prototype.has = function (ns, prefix) {
-      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that 
+      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that
       //    matches the value of ns or if there is no such key, then stop running these steps, and return false.
       var candidatesList = this[ns];
       if (!candidatesList)
@@ -435,21 +435,21 @@
    //(NEW)
    // To 'add a prefix string 'prefix' to the namespace prefix map map' given a namespace 'ns', the user agent should:
    NamespacePrefixMap.prototype.add = function(ns, prefix) {
-      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that 
+      // 1. Let candidates list be the result of retrieving a list from map where there exists a key in map that
       //    matches the value of ns or if there is no such key, then let candidates list be null.
       var candidatesList = this[ns];
-      // 2. If candidates list is null, then create a new list with prefix as the only item in the list, and 
+      // 2. If candidates list is null, then create a new list with prefix as the only item in the list, and
       //    associate that list with a new key ns in map.
       if (!candidatesList)
         this[ns] = [prefix];
       // 3. Otherwise, append prefix to the end of candidates list.
       // NOTE: This corresponds to 'last-seen' selection when searching the list for a matching prefix in the
-      // 'retrieve a prefix string from the namespace prefix map' steps. This list may contain duplicates of the 
+      // 'retrieve a prefix string from the namespace prefix map' steps. This list may contain duplicates of the
       // same prefix value seen earlier (and that's OK).
       else
         this[ns].push(prefix);
    }
-   
+
    // To generate a prefix given a namespace prefix map map, a string new namespace, and a reference to a
    // generated namespace prefix index prefix index, the user agent must run the following steps:
    function generateAPrefix(map, newNamespace, prefixIndexRef) {
@@ -523,8 +523,8 @@
             // *** Refactor: There were a number of clauses related to XMLNS namespace that should be handled together.
             // (ORIGINAL)2.Otherwise, if there exists a key in map that matches the value of attribute namespace,
             //   then let candidate prefix be that key's value from the map.
-            // (REFACTORED/EDITED)1.Let candidate prefix be the result of 'retrieving' a prefix from 'map' given 
-            //   namespace 'attribute namespace' and with preferred prefix being the value of attr's 'prefix' value. 
+            // (REFACTORED/EDITED)1.Let candidate prefix be the result of 'retrieving' a prefix from 'map' given
+            //   namespace 'attribute namespace' and with preferred prefix being the value of attr's 'prefix' value.
             candidatePrefix = map.get(attributeNamespace, attr.prefix);
             // *** Refactor: moved this from step 1 to step 2, and now provides steps:
             // (ORIGINAL)1.If the value of attribute namespace is the XMLNS namespace and either the attr's prefix
@@ -536,30 +536,30 @@
                // **NOTE: the XML namespace cannot be redeclared and survive round-tripping (unless it defines the prefix 'xml')
                // to side-step the problem, this serializer always prefixes XML namespaced elements with 'xml' and drops
                // any related definitions.
-               // (REFACTORED/ORIGINAL)1.If either the attr's prefix is null and the ignore namespace definition attribute flag 
-               //    is true or the attr's prefix is not null and the attr's localName matches the value of 
+               // (REFACTORED/ORIGINAL)1.If either the attr's prefix is null and the ignore namespace definition attribute flag
+               //    is true or the attr's prefix is not null and the attr's localName matches the value of
                //    duplicate prefix definition, then stop running these steps and goto Main to visit the next attribute.
-               // (REFACTORED/FIXED/EDITED)1.If any of the following are true, then stop running these steps and goto Main to 
-               //    visit the next attribute: 
+               // (REFACTORED/FIXED/EDITED)1.If any of the following are true, then stop running these steps and goto Main to
+               //    visit the next attribute:
                //    * the attr's value is the XML namespace;
-               //    * the attr's prefix is null and the ignore namespace definition attribute flag is true (the element's default 
-               //      namespace attribute should be skipped); 
+               //    * the attr's prefix is null and the ignore namespace definition attribute flag is true (the element's default
+               //      namespace attribute should be skipped);
                //    * the attr's prefix is not null and either the attr's localName is not a key contained in the local prefixes map, or it
-               //      is present but the value of the key does not match attr's value, and furthermore that the attr's localName 
+               //      is present but the value of the key does not match attr's value, and furthermore that the attr's localName
                //      as prefix is 'found' in the namespace prefix map when given the namespace consisting of the attr's value
                //      (the current namespace prefix definition was exactly defined previously--on an ancestor element not the current element
                //      whose attributes are being processed).
                if ((attr.value == XMLNS) ||
                    ((attr.prefix == null) && ignoreNamespaceDefinition) ||
-                   ((attr.prefix != null) && 
-                      (!localPrefixesMap.hasOwnProperty(attr.localName) || (localPrefixesMap[attr.localName] != attr.value)) && 
+                   ((attr.prefix != null) &&
+                      (!localPrefixesMap.hasOwnProperty(attr.localName) || (localPrefixesMap[attr.localName] != attr.value)) &&
                       map.has(attr.value, attr.localName)))
                   return;
                // **** BUG: Hadn't realized that under legit XML parsing rules, you aren't allowed to parse an element into the XMLNS namespace
                //  in any way. The following clause prevents this behind a well-formed check.
                // (NEW)2.If the requireWellFormed flag is set (its value is true), and the value of attr's value attribute matches the XMLNS namespace,
                //    then throw an exception; the serialization of this attribute would produce invalid XML because the XMLNS namespace is
-               //    reserved and cannot be applied as an element's namespace via XML parsing. Note: DOM APIs do allow creation of elements in the 
+               //    reserved and cannot be applied as an element's namespace via XML parsing. Note: DOM APIs do allow creation of elements in the
                //    XMLNS namespace under strict qualifications.)
                if (requireWellFormed && (attr.value == XMLNSNS))
                   throw new Error("XMLNS namespace is reserved and cannot be used to redefine a prefix or apply an element namespace default.");

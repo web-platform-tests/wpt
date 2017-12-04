@@ -73,6 +73,9 @@ W3C-TEST.ORG: README.md
 W3C-TEST.ORG: */README.md
 W3C-TEST.ORG: docs/*
 SET TIMEOUT: docs/*
+WEB-PLATFORM.TEST:README.md
+WEB-PLATFORM.TEST:*/README.md
+WEB-PLATFORM.TEST:docs/*
 
 ## Helper scripts ##
 
@@ -303,6 +306,10 @@ SET TIMEOUT: acid/acid3/test.html
 
 # Travis
 W3C-TEST.ORG: .travis.yml
+WEB-PLATFORM.TEST: .travis.yml
+
+# Config
+WEB-PLATFORM.TEST: config.default.json
 
 # Git submodules are not currently scanned
 *: tools/*
@@ -929,3 +936,24 @@ CONSOLE: payment-request/payment-request-response-id.html
 
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
+
+# Existing use of WEB-PLATFORM.TEST
+WEB-PLATFORM.TEST: clear-site-data/support/test_utils.sub.js
+WEB-PLATFORM.TEST: content-security-policy/base-uri/report-uri-does-not-respect-base-uri.sub.html
+WEB-PLATFORM.TEST: content-security-policy/generic/generic-0_8.sub.html
+WEB-PLATFORM.TEST: content-security-policy/generic/generic-0_8_1.sub.html
+WEB-PLATFORM.TEST: content-security-policy/nonce-hiding/script-nonces-hidden-meta.tentative.html
+WEB-PLATFORM.TEST: content-security-policy/nonce-hiding/svgscript-nonces-hidden-meta.tentative.html
+WEB-PLATFORM.TEST: fetch/api/request/request-structure.html
+WEB-PLATFORM.TEST: html/browsers/origin/relaxing-the-same-origin-restriction/document_domain_setter.html
+WEB-PLATFORM.TEST: html/semantics/embedded-content/the-iframe-element/cross_origin_parentage.html
+WEB-PLATFORM.TEST: html/semantics/forms/the-label-element/label-attributes.html
+WEB-PLATFORM.TEST: longtask-timing/longtask-in-childiframe-crossorigin.html
+WEB-PLATFORM.TEST: longtask-timing/longtask-in-sibling-iframe-crossorigin.html
+WEB-PLATFORM.TEST: navigation-timing/nav2_test_attributes_values.html
+WEB-PLATFORM.TEST: navigation-timing/nav2_test_instance_accessors.html
+WEB-PLATFORM.TEST: service-workers/service-worker/update-bytecheck.https.html
+WEB-PLATFORM.TEST: webdriver/tests/cookies/add_cookie.py
+WEB-PLATFORM.TEST: webdriver/tests/cookies/get_named_cookie.py
+WEB-PLATFORM.TEST: webrtc/RTCPeerConnection-getIdentityAssertion.html
+WEB-PLATFORM.TEST: webrtc/identity-helper.js

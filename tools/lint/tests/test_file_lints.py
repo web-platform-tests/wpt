@@ -100,6 +100,19 @@ def test_w3c_test_org():
             expected.append(("PARSE-FAILED", "Unable to parse file", filename, None))
         assert errors == expected
 
+def test_web_platform_test():
+    error_map = check_with_files(b"import('http://web-platform.test/')")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        expected = [("WEB-PLATFORM.TEST", "Internal web-platform.test domain used", filename, 1)]
+        if kind == "python":
+            expected.append(("PARSE-FAILED", "Unable to parse file", filename, 1))
+        elif kind == "web-strict":
+            expected.append(("PARSE-FAILED", "Unable to parse file", filename, None))
+        assert errors == expected
+
 
 def test_webidl2_js():
     error_map = check_with_files(b"<script src=/resources/webidl2.js>")

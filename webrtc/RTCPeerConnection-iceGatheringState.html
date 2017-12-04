@@ -51,11 +51,13 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.iceGatheringState, 'new');
   }, 'Initial iceGatheringState should be new');
 
   async_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     const onIceGatheringStateChange = t.step_func(() => {
       const { iceGatheringState } = pc;
@@ -97,7 +99,9 @@
    */
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     const onIceGatheringStateChange = t.step_func(() => {
       const { iceGatheringState } = pc2;

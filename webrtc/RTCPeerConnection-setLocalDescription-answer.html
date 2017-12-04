@@ -90,6 +90,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer({ offerToReceiveVideo: true })
     .then(offer =>
@@ -119,6 +120,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer({ offerToReceiveVideo: true })
     .then(offer =>
@@ -141,6 +143,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer()
     .then(offer =>
@@ -151,6 +154,7 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return pc.createOffer()
     .then(offer =>

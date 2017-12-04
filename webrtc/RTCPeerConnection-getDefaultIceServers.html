@@ -34,7 +34,7 @@
       };
    */
 
-  test(() => {
+  test(t => {
     const iceServers = RTCPeerConnection.getDefaultIceServers();
 
     assert_true(Array.isArray(iceServers),
@@ -80,6 +80,7 @@
 
     // Expect default ice servers to be accepted as valid configuration
     const pc = new RTCPeerConnection({ iceServers });
+    t.add_cleanup(() => pc.close());
 
     // Only make sure there are same number of ice servers configured
     // and not do any deep equality checking

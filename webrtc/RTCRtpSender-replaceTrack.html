@@ -33,6 +33,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const track = generateMediaStreamTrack('audio');
 
     const transceiver = pc.addTransceiver('audio');
@@ -52,7 +53,10 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track = generateMediaStreamTrack('video');
+    t.add_cleanup(() => track.stop());
 
     const transceiver = pc.addTransceiver('audio');
     const { sender } = transceiver;
@@ -69,7 +73,10 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track = generateMediaStreamTrack('audio');
+    t.add_cleanup(() => track.stop());
 
     const transceiver = pc.addTransceiver('audio');
     const { sender } = transceiver;
@@ -88,7 +95,10 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track = generateMediaStreamTrack('audio');
+    t.add_cleanup(() => track.stop());
 
     const transceiver = pc.addTransceiver('audio');
     const { sender } = transceiver;
@@ -102,8 +112,13 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track1 = generateMediaStreamTrack('audio');
+    t.add_cleanup(() => track1.stop());
+
     const track2 = generateMediaStreamTrack('audio');
+    t.add_cleanup(() => track2.stop());
 
     const transceiver = pc.addTransceiver(track1);
     const { sender } = transceiver;
@@ -118,7 +133,10 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track = generateMediaStreamTrack('audio');
+    t.add_cleanup(() => track.stop());
 
     const transceiver = pc.addTransceiver(track);
     const { sender } = transceiver;
@@ -144,6 +162,8 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track = generateMediaStreamTrack('audio');
 
     const transceiver = pc.addTransceiver(track);
@@ -173,6 +193,8 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track1 = generateMediaStreamTrack('audio');
     const track2 = generateMediaStreamTrack('audio');
 
@@ -204,6 +226,8 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const track1 = generateMediaStreamTrack('audio');
     const track2 = generateMediaStreamTrack('audio');
 

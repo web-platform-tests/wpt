@@ -38,9 +38,11 @@
         possibly encode, and 127 represents silence.
    */
 
-  promise_test(() => {
+  promise_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     const ontrackPromise = new Promise(resolve => {
       pc2.addEventListener('track', trackEvent => {
@@ -52,9 +54,9 @@
       });
     });
 
-    return getTrackFromUserMedia('audio')
+    return getTrackFromUserMedia(t, 'audio')
     .then(([track, mediaStream]) => {
-      pc1.addTrack(track, mediaStream);
+       pc1.addTrack(track, mediaStream);
       exchangeIceCandidates(pc1, pc2);
       return doSignalingHandshake(pc1, pc2);
     })

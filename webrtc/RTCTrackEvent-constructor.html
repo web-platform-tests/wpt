@@ -30,6 +30,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
     const { track } = receiver;
@@ -52,6 +54,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
     const { track } = receiver;
@@ -72,6 +76,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
     const { track } = receiver;
@@ -93,6 +99,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const receiver = pc.addTransceiver('audio').receiver;
     const track =  pc.addTransceiver('audio').receiver.track;
@@ -113,6 +121,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
     const { track } = receiver;
@@ -126,6 +136,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
 
@@ -138,6 +150,8 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const { receiver } = transceiver;
     const { track } = receiver;

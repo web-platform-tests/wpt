@@ -10,8 +10,13 @@
 //   getTrackFromUserMedia
 
 // Create a RTCDTMFSender using getUserMedia()
-function createDtmfSender(pc = new RTCPeerConnection()) {
-  return getTrackFromUserMedia('audio')
+function createDtmfSender(t, pc) {
+  if (!pc) {
+    pc = new RTCPeerConnection()
+    t.add_cleanup(() => pc.close());
+  }
+
+  return getTrackFromUserMedia(t, 'audio')
   .then(([track, mediaStream]) => {
     const sender = pc.addTrack(track, mediaStream);
     const dtmfSender = sender.dtmf;
@@ -47,8 +52,9 @@ function createDtmfSender(pc = new RTCPeerConnection()) {
 function test_tone_change_events(testFunc, toneChanges, desc) {
   async_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
-    createDtmfSender(pc)
+    createDtmfSender(t, pc)
     .then(dtmfSender => {
       let lastEventTime = Date.now();
 
@@ -88,7 +94,6 @@ function test_tone_change_events(testFunc, toneChanges, desc) {
           t.step_timeout(
             t.step_func(() => {
               t.done();
-              pc.close();
             }), expectedDuration + 100);
         }
       });

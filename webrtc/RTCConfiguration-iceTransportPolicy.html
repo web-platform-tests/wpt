@@ -31,23 +31,27 @@
     };
    */
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection() should have default iceTransportPolicy all`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: undefined });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection({ iceTransportPolicy: undefined }) should have default iceTransportPolicy all`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: 'all' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection({ iceTransportPolicy: 'all' }) should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: 'relay' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'relay');
   }, `new RTCPeerConnection({ iceTransportPolicy: 'relay' }) should succeed`);
 
@@ -59,24 +63,27 @@
           will be taken until the next gathering phase. If a script wants this to
           happen immediately, it should do an ICE restart.
    */
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: 'all' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
 
     pc.setConfiguration({ iceTransportPolicy: 'relay' });
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'relay');
   }, `setConfiguration({ iceTransportPolicy: 'relay' }) with initial iceTransportPolicy all should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: 'relay' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'relay');
 
     pc.setConfiguration({ iceTransportPolicy: 'all' });
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `setConfiguration({ iceTransportPolicy: 'all' }) with initial iceTransportPolicy relay should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransportPolicy: 'relay' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'relay');
 
     // default value for iceTransportPolicy is all
@@ -101,18 +108,21 @@
   }, `with null iceTransportPolicy should throw TypeError`);
 
   // iceTransportPolicy is called iceTransports in Blink.
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransports: 'relay' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection({ iceTransports: 'relay' }) should have no effect`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransports: 'invalid' });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection({ iceTransports: 'invalid' }) should have no effect`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection({ iceTransports: null });
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.getConfiguration().iceTransportPolicy, 'all');
   }, `new RTCPeerConnection({ iceTransports: null }) should have no effect`);
 

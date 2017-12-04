@@ -56,9 +56,8 @@
         - If description is of type "rollback", then this is a rollback. Set
           connection.pendingLocalDescription to null and signaling state to stable.
    */
-  promise_test(t=> {
+  promise_test(t => {
     const pc = new RTCPeerConnection();
-
     test_state_change_event(t, pc, ['have-local-offer', 'stable']);
 
     return pc.createOffer()
@@ -94,12 +93,16 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     return promise_rejects(t, 'InvalidStateError',
       pc.setLocalDescription({ type: 'rollback' }));
   }, `setLocalDescription(rollback) from stable state should reject with InvalidStateError`);
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     return pc.createOffer({ offerToReceiveAudio: true })
     .then(offer =>
       pc.setRemoteDescription(offer)
@@ -113,6 +116,8 @@
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     return pc.createOffer()
     .then(offer => pc.setLocalDescription(offer))
     .then(() => pc.setLocalDescription({

@@ -73,6 +73,7 @@
    */
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     assert_equals(pc.connectionState, 'new');
   }, 'Initial connectionState should be new');
 
@@ -107,7 +108,9 @@
    */
   async_test(t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
     const onConnectionStateChange = t.step_func(() => {
       const { connectionState } = pc1;

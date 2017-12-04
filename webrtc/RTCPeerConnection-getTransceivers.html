@@ -21,6 +21,7 @@
 
   test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     assert_idl_attribute(pc, 'getSenders');
     const senders = pc.getSenders();

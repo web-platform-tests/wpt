@@ -29,24 +29,30 @@
           an InvalidAccessError.
    */
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities = RTCRtpSender.getCapabilities('audio');
     transceiver.setCodecPreferences(capabilities.codecs);
 
   }, `setCodecPreferences() on audio transceiver with codecs returned from RTCRtpSender.getCapabilities('audio') should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('video');
     const capabilities = RTCRtpReceiver.getCapabilities('video');
     transceiver.setCodecPreferences(capabilities.codecs);
 
   }, `setCodecPreferences() on video transceiver with codecs returned from RTCRtpReceiver.getCapabilities('video') should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities1 = RTCRtpSender.getCapabilities('audio');
     const capabilities2 = RTCRtpReceiver.getCapabilities('audio');
@@ -54,15 +60,19 @@
 
   }, `setCodecPreferences() with both sender receiver codecs combined should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     transceiver.setCodecPreferences([]);
 
   }, `setCodecPreferences([]) should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities = RTCRtpSender.getCapabilities('audio');
     const { codecs } = capabilities;
@@ -77,16 +87,20 @@
 
   }, `setCodecPreferences() with reordered codecs should succeed`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities = RTCRtpSender.getCapabilities('video');
     assert_throws(() => transceiver.setCodecPreferences(capabilities.codecs));
 
   }, `setCodecPreferences() on audio transceiver with codecs returned from getCapabilities('video') should throw InvalidAccessError`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const codecs = [{
       mimeType: 'audio/piepiper',
@@ -99,8 +113,10 @@
 
   }, `setCodecPreferences() with user defined codec should throw InvalidAccessError`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities = RTCRtpSender.getCapabilities('audio');
     const codecs = [
@@ -116,8 +132,10 @@
 
   }, `setCodecPreferences() with user defined codec together with codecs returned from getCapabilities() should throw InvalidAccessError`);
 
-  test(() => {
+  test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const transceiver = pc.addTransceiver('audio');
     const capabilities = RTCRtpSender.getCapabilities('audio');
 

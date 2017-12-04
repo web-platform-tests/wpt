@@ -82,6 +82,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     pc.createDataChannel('test');
@@ -90,6 +91,7 @@
 
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     pc.createDataChannel('foo');
@@ -114,6 +116,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     pc.addTransceiver('audio');
@@ -127,6 +130,7 @@
    */
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     pc.addTransceiver('audio');
@@ -144,6 +148,7 @@
    */
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     pc.createDataChannel('test');
@@ -161,6 +166,7 @@
    */
   test_never_resolve(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const negotiated = awaitNegotiation(pc);
 
     return pc.createOffer({ offerToReceiveAudio: true })
@@ -183,6 +189,7 @@
    */
   promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
 
     return assert_first_promise_fulfill_after_second(
       awaitNegotiation(pc),

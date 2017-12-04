@@ -40,8 +40,9 @@
           objects added.
    */
 
-  promise_test(() => {
+  promise_test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     const { sender } = pc.addTransceiver('audio');
 
     return sender.getStats()

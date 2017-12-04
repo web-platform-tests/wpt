@@ -4,6 +4,7 @@
 <link rel="help" href="https://w3c.github.io/webrtc-pc/#legacy-configuration-extensions">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
@@ -46,41 +47,46 @@
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      const transceiver = pc.addTransceiver(type);
-      assert_equals(transceiver.direction, 'sendrecv',
-        'Expect transceiver to have "sendrecv" direction');
-
-      assert_equals(pc.getTransceivers().length, 1,
-        'Expect pc to have one transceiver');
-
-      transceiver.stop();
-
       return pc.createOffer(offerToReceiveTrue)
       .then(() => {
         assert_equals(pc.getTransceivers().length, 1,
-          'Expect pc to still have one transceiver');
-      });
-    }, `offerToReceive${capsType} option should be ignored if a stopped "sendrecv" transceiver exists`);
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'recvonly',
+          'Expect transceiver to have "recvonly" direction');
+      })
+      .then(() => pc.createOffer(offerToReceiveTrue))
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to still have only one transceiver');
+      })
+      ;
+    }, `offerToReceive${capsType} option should be ignored if a non-stopped "recvonly" transceiver exists`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      const transceiver = pc.addTransceiver(type);
-      transceiver.direction = 'recvonly';
-      assert_equals(transceiver.direction, 'recvonly',
-        'Expect transceiver to have "recvonly" direction');
-
-      assert_equals(pc.getTransceivers().length, 1,
-        'Expect pc to have one transceiver');
-
-      transceiver.stop();
-
-      return pc.createOffer(offerToReceiveTrue)
+      return getTrackFromUserMedia(type)
+      .then(([track, stream]) => {
+        pc.addTrack(track, stream);
+        pc.createOffer();
+      })
       .then(() => {
         assert_equals(pc.getTransceivers().length, 1,
-          'Expect pc to still have one transceiver');
-      });
-    }, `offerToReceive${capsType} option should be ignored if a stopped "recvonly" transceiver exists`);
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'sendrecv',
+          'Expect transceiver to have "sendrecv" direction');
+      })
+      .then(() => pc.createOffer(offerToReceiveTrue))
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to still have only one transceiver');
+      })
+      ;
+    }, `offerToReceive${capsType} option should be ignored if a non-stopped "sendrecv" transceiver exists`);
   });
 
 </script>

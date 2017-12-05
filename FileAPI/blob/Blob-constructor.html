@@ -74,6 +74,20 @@ test_blob(function() {
   type: "",
   desc: "A plain object with @@iterator should be treated as a sequence for the blobParts argument."
 });
+test(t => {
+  const blob = new Blob({
+    [Symbol.iterator]() {
+      var i = 0;
+      return {next: () => [
+        {done:false, value:'ab'},
+        {done:false, value:'cde'},
+        {done:true}
+      ][i++]
+      };
+    }
+  });
+  assert_equals(blob.size, 5, 'Custom @@iterator should be treated as a sequence');
+}, "A plain object with custom @@iterator should be treated as a sequence for the blobParts argument.");
 test_blob(function() {
   return new Blob({
     [Symbol.iterator]: Array.prototype[Symbol.iterator],
@@ -443,6 +457,18 @@ test(function() {
   });
 });
 
+[
+  123,
+  123.4,
+  true,
+  'abc'
+].forEach(arg => {
+  test(t => {
+    assert_throws(new TypeError(), () => new Blob([], arg),
+                  'Blob constructor should throw with invalid property bag');
+  }, `Passing ${JSON.stringify(arg)} for options should throw`);
+});
+
 var type_tests = [
   // blobParts, type, expected type
   [[], '', ''],
@@ -450,6 +476,7 @@ var type_tests = [
   [[], 'A', 'a'],
   [[], 'text/html', 'text/html'],
   [[], 'TEXT/HTML', 'text/html'],
+  [[], 'text/plain;charset=utf-8', 'text/plain;charset=utf-8'],
   [[], '\u00E5', ''],
   [[], '\uD801\uDC7E', ''], // U+1047E
   [[], ' image/gif ', ' image/gif '],

@@ -14,7 +14,7 @@
 
  <div>
 
-  
+
   <script type="text/javascript">
    <![CDATA[
 
@@ -26,9 +26,9 @@
     window.setTimeout("test()", 100);
    ]]>
   </script>
-  
 
-  
+
+
 
   <p> The following bar should be green. </p>
 

@@ -282,4 +282,15 @@ function checkEventSequence(events,pattern) {
     assert_equals(j,pattern.length,"Expected more events than received");
 }
 
+// Sets |certificate| on |mediaKeys| if |certificate| is specified. Returns
+// a promise that resolves to |mediaKeys|.
+function setCertificate(mediaKeys, certificate) {
+    if (!certificate) {
+        return Promise.resolve(mediaKeys);
+    }
 
+    return mediaKeys.setServerCertificate(certificate).then(function(result) {
+        assert_true(result);
+        return mediaKeys;
+    });
+}

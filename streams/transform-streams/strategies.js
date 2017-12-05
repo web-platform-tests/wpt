@@ -89,4 +89,13 @@ promise_test(t => {
   return ts.readable.getReader().read().then(() => writePromise);
 }, 'default readable strategy should be equivalent to { highWaterMark: 0 }');
 
+promise_test(t => {
+  const ts = new TransformStream(undefined, undefined, {
+    size() { return NaN; },
+    highWaterMark: 1
+  });
+  const writer = ts.writable.getWriter();
+  return promise_rejects(t, new RangeError(), writer.write(), 'write should reject');
+}, 'a bad readableStrategy size function should cause writer.write() to reject');
+
 done();

@@ -39,9 +39,44 @@
         "bogus charset and bogus header - missing MIME type"
       )
       request(
+        "text/plain",
+        "text/plain",
+        "Correct text/plain MIME"
+      )
+      request(
+        "TEXT/PLAIN",
+        "TEXT/PLAIN",
+        "Correct TEXT/PLAIN MIME (uppercase)"
+      )
+      request(
         "text/plain;charset=utf-8",
         "text/plain;charset=utf-8",
         "Correct text/plain MIME with charset"
+      )
+      request(
+        "text/plain;charset=UTF-8",
+        "text/plain;charset=UTF-8",
+        "Correct text/plain MIME with charset (uppercase)"
+      )
+      request(
+        "text/plain; charset=utf-8",
+        "text/plain; charset=utf-8",
+        "Correct text/plain MIME space after semicolon"
+      )
+      request(
+        "text/plain; charset=UTF-8",
+        "text/plain; charset=UTF-8",
+        "Correct text/plain MIME space after semicolon (uppercase)"
+      )
+      request(
+        "text/plain ;charset=UTF-8",
+        "text/plain ;charset=UTF-8",
+        "Correct text/plain MIME space before semicolon (uppercase)"
+      )
+      request(
+        "text/plain;charset=bogus",
+        "text/plain;charset=bogus",
+        "Correct text/plain MIME with bogus charset"
       )
       request(
         "text/x-pink-unicorn",

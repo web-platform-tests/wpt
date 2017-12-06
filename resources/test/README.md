@@ -31,6 +31,15 @@ following markup:
     <script src="../../testharness.js"></script>
     <script src="../../testharnessreport.js"></script>
 
+The file must also specify a `<meta>` tag whose `name` attribute is
+`wpt-test-type` and whose `value` attribute is either `unit` or `functional`.
+For example:
+
+    <meta name="wpt-test-type" value="functional">
+
+Subsequent sections of this file document the distinction between these two
+test types.
+
 This should be followed by one or more `<script>` tags that interface with the
 `testharness.js` API in some way. For example:
 
@@ -40,8 +49,26 @@ This should be followed by one or more `<script>` tags that interface with the
       }, 'This test is expected to fail.');
     </script>
 
-Finally, each test may include a summary of the expected results as a JSON
-string within a `<script>` tag with an `id` of `"expected"`, e.g.:
+### Unit tests
+
+The "unit test" type allows for concisely testing the expected behavior of
+assertion methods. These tests may define any number of sub-tests; the
+acceptance criteria is simply that any tests executed pass.
+
+### Functional tests
+
+In order to test the behavior of the harness itself, some tests must force
+Thoroughly testing the behavior of the harness itself requires ensuring a
+number of considerations which cannot be verified with the "unit testing"
+strategy. These include:
+
+- Ensuring that some tests are not run
+- Ensuring conditions to cause test failures
+- Ensuring conditions that cause harness errors
+
+Functional tests allow for these details to be verified. Every functional test
+must include a summary of the expected results as a JSON string within a
+`<script>` tag with an `id` of `"expected"`, e.g.:
 
     <script type="text/json" id="expected">
     {
@@ -62,6 +89,3 @@ string within a `<script>` tag with an `id` of `"expected"`, e.g.:
       "type": "complete"
     }
     </script>
-
-This is useful to test, for example, whether asserations that should fail or
-throw actually do.

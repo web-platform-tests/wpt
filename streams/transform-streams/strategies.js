@@ -119,4 +119,37 @@ test(() => {
   }, undefined, { highWaterMark: objectThatConvertsTo42 });
 }, 'readableStrategy highWaterMark should be converted to a number');
 
+promise_test(t => {
+  const ts = new TransformStream(undefined, undefined, {
+    size() { return NaN; },
+    highWaterMark: 1
+  });
+  const writer = ts.writable.getWriter();
+  return promise_rejects(t, new RangeError(), writer.write(), 'write should reject');
+}, 'a bad readableStrategy size function should cause writer.write() to reject on an identity transform');
+
+promise_test(t => {
+  const ts = new TransformStream({
+    transform(chunk, controller) {
+      // This assert has the important side-effect of catching the error, so transform() does not throw.
+      assert_throws(new RangeError(), () => controller.enqueue(chunk), 'enqueue should throw');
+    }
+  }, undefined, {
+    size() {
+      return -1;
+    },
+    highWaterMark: 1
+  });
+
+  const writer = ts.writable.getWriter();
+  return writer.write().then(() => {
+    return Promise.all([
+      promise_rejects(t, new RangeError(), writer.ready, 'ready should reject'),
+      promise_rejects(t, new RangeError(), writer.closed, 'closed should reject'),
+      promise_rejects(t, new RangeError(), ts.readable.getReader().closed, 'readable closed should reject')
+    ]);
+  });
+}, 'a bad readableStrategy size function should error the stream on enqueue even when transformer.transform() ' +
+   'catches the exception');
+
 done();

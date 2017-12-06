@@ -8,6 +8,10 @@
 <script>
 test(() => {
   const style = getComputedStyle(document.querySelector('div'));
-  assert_equals(style.getPropertyValue("text-decoration"), "underline solid rgb(0, 0, 0)");
+  // Chrome serializes as "underline solid rgb(0, 0, 0)" while Edge, Firefox an
+  // Safari use "underline", which Chrome used to do as well. The spec should
+  // probably require "underline":
+  // https://github.com/w3c/csswg-drafts/issues/1564
+  assert_equals(style.getPropertyValue("text-decoration"), "underline");
 });
 </script>

@@ -8,8 +8,11 @@
 <script>
 'use strict';
 
-// The specification talks about canSendSize which is number of bytes that this
-// client can send. In this test, it is assumed to be zero (no limit enforced).
+// This test has an assert_unreached() that requires that the variable
+// canSendSize (initiated below) is greater than 2, if non-zero. The reason
+// is that we need two non-zero values that are less that that value for
+// testing with predictable results. This is a bit unfortunate but shouldn't
+// have any practical impact.
 
 // Helper class to read SDP attributes and generate SDPs with modified attribute values
 class SDPAttributeHelper {
@@ -36,14 +39,33 @@ class SDPAttributeHelper {
 }
 
 const mmsAttributeHelper = new SDPAttributeHelper('max-message-size', '\\d+');
+let canSendSize;
+const remoteValue1 = 1;
+const remoteValue2 = 2;
 
-function ensureNonZeroMaxMessageSizeDesc(desc, sizeIfZero=128) {
-  const size = mmsAttributeHelper.getValue(desc.sdp);
-  if (!size) {
-    return [{ type: desc.type, sdp: mmsAttributeHelper.sdpWithValue(desc.sdp, sizeIfZero) }, sizeIfZero];
-  }
-  return [desc, size];
-}
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.sctp, null);
+  let maxMessageSize;
+
+  return generateOffer({ pc, data: true })
+  .then((offer) => {
+    assert_not_equals(mmsAttributeHelper.getValue(offer.sdp), null,
+      'SDP should have max-message-size attribute');
+
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, 0) };
+    return pc.setRemoteDescription(offer);
+  })
+  .then(() => pc.createAnswer())
+  .then((answer) => pc.setLocalDescription(answer))
+  .then(() => {
+    assert_not_equals(pc.sctp, null);
+    canSendSize = pc.sctp.maxMessageSize == Number.POSITIVE_INFINITY ? 0 : pc.sctp.maxMessageSize;
+    if (canSendSize != 0 && canSendSize < remoteValue2) {
+      assert_unreached('This test needs two values that are less than canSendSize (unless it is zero)');
+    }
+  });
+}, 'Determine the local side send limitation (canSendSize) by offering a max-message-size of 0');
 
 promise_test(t => {
   const pc = new RTCPeerConnection();
@@ -62,67 +84,98 @@ promise_test(t => {
   .then((answer) => pc.setLocalDescription(answer))
   .then(() => {
     assert_not_equals(pc.sctp, null);
-    assert_equals(sctp.maxMessageSize, 65535,
-      'Missing SDP attribute should give sctp.maxMessageSize the default value (65535)');
+    // Test outcome depends on canSendSize value
+    if (canSendSize) {
+      assert_equals(pc.sctp.maxMessageSize, Math.min(65535, canSendSize),
+        'Missing SDP attribute and a non-zero canSendSize should give an maxMessageSize of min(65535, canSendSize)');
+    } else {
+      assert_equals(pc.sctp.maxMessageSize, 65535,
+        'Missing SDP attribute and a canSendSize of 0 should give an maxMessageSize of 65535');
+    }
   });
-}, 'Missing max-message-size attribute');
+}, 'Remote offer SDP missing max-message-size attribute');
 
 promise_test(t => {
   const pc = new RTCPeerConnection();
   assert_equals(pc.sctp, null);
-  let maxMessageSize;
 
   return generateOffer({ pc, data: true })
   .then((offer) => {
     assert_not_equals(mmsAttributeHelper.getValue(offer.sdp), null,
       'SDP should have max-message-size attribute');
 
-    [offer, maxMessageSize] = ensureNonZeroMaxMessageSizeDesc(offer);
-    return pc.setRemoteDescription(offer)
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, remoteValue1) };
+    return pc.setRemoteDescription(offer);
   })
   .then(() => pc.createAnswer())
   .then((answer) => pc.setLocalDescription(answer))
   .then(() => {
     assert_not_equals(pc.sctp, null);
-    assert_equals(sctp.maxMessageSize, maxMessageSize,
-      'maxMessageSize should be the value provided by the remote peer');
+    assert_equals(pc.sctp.maxMessageSize, remoteValue1,
+      'maxMessageSize should be the value provided by the remote peer (as long as it is less than canSendSize)');
   });
 }, 'max-message-size with a (non-zero) value provided by the remote peer');
 
 promise_test(t => {
   const pc = new RTCPeerConnection();
   assert_equals(pc.sctp, null);
-  let maxMessageSize;
 
   return generateOffer({ pc, data: true })
   .then((offer) => {
     assert_not_equals(mmsAttributeHelper.getValue(offer.sdp), null,
       'SDP should have max-message-size attribute');
 
-    [offer, maxMessageSize] = ensureNonZeroMaxMessageSizeDesc(offer);
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, remoteValue1) };
     return pc.setRemoteDescription(offer)
   })
   .then(() => pc.createAnswer())
   .then((answer) => pc.setLocalDescription(answer))
   .then(() => {
     assert_not_equals(pc.sctp, null);
-    assert_equals(sctp.maxMessageSize, maxMessageSize,
-      'maxMessageSize should be the value provided by the remote peer');
+    assert_equals(pc.sctp.maxMessageSize, remoteValue1,
+      'maxMessageSize should be the value provided by the remote peer (as long as it is less than canSendSize)');
   })
   .then(() => pc.createOffer()) // Start new O/A exchange that updates max-message-size
   .then((offer) => {
-    maxMessageSize = 256
-    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, maxMessageSize)};
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, remoteValue2)};
     return pc.setRemoteDescription(offer)
   })
   .then(() => pc.createAnswer())
   .then((answer) => pc.setLocalDescription(answer))
   .then(() => {
     assert_not_equals(pc.sctp, null);
-    assert_equals(sctp.maxMessageSize, maxMessageSize,
-      'maxMessageSize should be the new value provided by the remote peer');
+    assert_equals(pc.sctp.maxMessageSize, remoteValue2,
+      'maxMessageSize should be the new value provided by the remote peer (as long as it is less than canSendSize)');
   })
   ;
 }, 'Renegotiate max-message-size with a (non-zero) value provided by the remote peer');
+
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.sctp, null);
+  const largerThanCanSendSize = canSendSize + 1;
+
+  return generateOffer({ pc, data: true })
+  .then((offer) => {
+    assert_not_equals(mmsAttributeHelper.getValue(offer.sdp), null,
+      'SDP should have max-message-size attribute');
+
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, largerThanCanSendSize) };
+    return pc.setRemoteDescription(offer)
+  })
+  .then(() => pc.createAnswer())
+  .then((answer) => pc.setLocalDescription(answer))
+  .then(() => {
+    assert_not_equals(pc.sctp, null);
+    // Test outcome depends on canSendSize value
+    if (canSendSize) {
+      assert_equals(pc.sctp.maxMessageSize, canSendSize,
+        'A remote value larger than a non-zero canSendSize should limit maxMessageSize to canSendSize');
+    } else {
+      assert_equals(pc.sctp.maxMessageSize, 65535,
+        'A canSendSize of zero should let the remote value set maxMessageSize');
+    }
+  });
+}, 'max-message-size with a (non-zero) value larger than canSendSize provided by the remote peer');
 
 </script>

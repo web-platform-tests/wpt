@@ -96,7 +96,8 @@ function runTest(config,qualifier) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _video.setMediaKeys( mediaKeys );
+            return _video.setMediaKeys( mediaKeys );
+        }).then(function() {
             _mediaKeySession = _mediaKeys.createSession('persistent-license');
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);

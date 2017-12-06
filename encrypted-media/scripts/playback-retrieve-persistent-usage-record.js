@@ -45,7 +45,7 @@ function runTest(config,qualifier) {
             config.messagehandler( event.messageType, event.message ).then(function(response) {
                 return _mediaKeySession.update(response);
             }).then(function() {
-                _video.setMediaKeys(_mediaKeys);
+                return _video.setMediaKeys(_mediaKeys);
             }).catch(onFailure);
         }
 

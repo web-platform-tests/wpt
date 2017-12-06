@@ -936,8 +936,7 @@ IdlInterface.prototype.is_global = function()
 //@{
 {
     return this.extAttrs.some(function(attribute) {
-        return attribute.name === "Global" ||
-               attribute.name === "PrimaryGlobal";
+        return attribute.name === "Global";
     });
 };
 //@}
@@ -1356,7 +1355,7 @@ IdlInterface.prototype.test_self = function()
         // "The interface prototype object for a given interface A must have an
         // internal [[Prototype]] property whose value is returned from the
         // following steps:
-        // "If A is declared with the [Global] or [PrimaryGlobal] extended
+        // "If A is declared with the [Global] extended
         // attribute, and A supports named properties, then return the named
         // properties object for A, as defined in §3.6.4 Named properties
         // object.
@@ -1434,7 +1433,7 @@ IdlInterface.prototype.test_self = function()
         }
     }.bind(this), this.name + " interface: existence and properties of interface prototype object");
 
-    // "If the interface is declared with the [Global] or [PrimaryGlobal]
+    // "If the interface is declared with the [Global]
     // extended attribute, or the interface is in the set of inherited
     // interfaces for any other interface that is declared with one of these
     // attributes, then the interface prototype object must be an immutable
@@ -1780,7 +1779,7 @@ IdlInterface.prototype.test_member_operation = function(member)
                     "interface object missing static operation");
             memberHolderObject = self[this.name];
         // "* Otherwise, [...] if the interface was declared with the [Global]
-        //    or [PrimaryGlobal] extended attribute, then the property exists
+        //    extended attribute, then the property exists
         //    on every object that implements the interface."
         } else if (this.is_global()) {
             assert_own_property(self, member.name,
@@ -2128,7 +2127,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
     }
 
     // "The internal [[SetPrototypeOf]] method of every platform object that
-    // implements an interface with the [Global] or [PrimaryGlobal] extended
+    // implements an interface with the [Global] extended
     // attribute must execute the same algorithm as is defined for the
     // [[SetPrototypeOf]] internal method of an immutable prototype exotic
     // object."

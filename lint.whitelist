@@ -15,6 +15,7 @@ INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*
+INDENT TABS: resources/webidl2/.gitmodules
 INDENT TABS: shadow-dom/*
 INDENT TABS: svg/import/*
 INDENT TABS: tools/*
@@ -101,6 +102,7 @@ CR AT EOL: WebIDL/valid/idl/documentation-dos.widl
 CR AT EOL: cors/resources/cors-headers.asis
 CR AT EOL: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
+CR AT EOL: resources/webidl2/test/syntax/idl/documentation-dos.widl
 
 # Intentional use of tabs
 INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
@@ -111,6 +113,10 @@ PRINT STATEMENT: encrypted-media/polyfill/make-polyfill-tests.py
 
 # semi-legitimate use of console.*
 CONSOLE: console/*
+CONSOLE: resources/check-layout-th.js
+CONSOLE: resources/chromium/*
+CONSOLE: resources/idlharness.js
+CONSOLE: resources/webidl2/*
 CONSOLE: streams/resources/test-utils.js
 CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
@@ -227,6 +233,10 @@ SET TIMEOUT: workers/*
 SET TIMEOUT: XMLHttpRequest/resources/init.htm
 SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
 
+# generate_tests implementation and sample usage
+GENERATE_TESTS: resources/test/tests/generate-callback.html
+GENERATE_TESTS: resources/testharness.js
+
 # generate_tests usage (should be got rid of)
 GENERATE_TESTS: 2dcontext/drawing-images-to-the-canvas/*
 GENERATE_TESTS: css/css-shapes/shape-outside/values/*
@@ -300,6 +310,11 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
+SET TIMEOUT: resources/chromium/*
+SET TIMEOUT: resources/test/tests/add_cleanup.html
+SET TIMEOUT: resources/test/tests/api-tests-1.html
+SET TIMEOUT: resources/test/tests/worker.js
+SET TIMEOUT: resources/testharness.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -310,10 +325,10 @@ WEB-PLATFORM.TEST: .travis.yml
 
 # Config
 WEB-PLATFORM.TEST: config.default.json
+WEB-PLATFORM.TEST: resources/test/config.test.json
 
 # Git submodules are not currently scanned
 *: tools/*
-*: resources/*
 *: css/tools/apiclient/*
 *: css/tools/w3ctestlib/*
 
@@ -323,6 +338,7 @@ WEB-PLATFORM.TEST: config.default.json
 
 ## Third party data files
 TRAILING WHITESPACE: css/css-writing-modes/tools/generators/ucd/Blocks.txt
+TRAILING WHITESPACE: resources/chromium/*
 
 
 ## Test generation files
@@ -929,6 +945,7 @@ CSS-COLLIDING-TEST-NAME: css/cssom/interfaces.html
 # TODO https://github.com/w3c/web-platform-tests/issues/5770
 MISSING-LINK: css/geometry/*.worker.js
 
+WEBIDL2.JS: resources/webidl2/*
 WEBIDL2.JS: .gitmodules
 
 # Manual test that uses console.logs for feedback

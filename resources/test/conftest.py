@@ -52,6 +52,13 @@ class HTMLItem(pytest.Item, pytest.Collector):
         if not name:
             raise ValueError('No name found in file: %s' % filename)
 
+        if not self.test_type:
+            raise ValueError('No "wpt-test-type" found in file: %s' % filename)
+        if self.test_type not in ['unit', 'functional']:
+            raise ValueError(
+              'Unrecognized "wpt-test-type" ("%s") found in file: %s' % (self.test_type, filename)
+            )
+
         super(HTMLItem, self).__init__(name, parent)
 
 
@@ -66,10 +73,6 @@ class HTMLItem(pytest.Item, pytest.Collector):
             self._run_unit_test()
         elif self.test_type == 'functional':
             self._run_functional_test()
-        else:
-            raise ValueError(
-                'Tests for `testharness.js` must specify a "type" (found type: "%s")' % self.test_type
-            )
 
     def _run_unit_test(self):
         driver = self.session.config.driver

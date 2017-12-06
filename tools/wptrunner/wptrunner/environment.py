@@ -158,6 +158,8 @@ class TestEnvironment(object):
         config["key_file"] = key_file
         config["certificate"] = certificate
 
+        serve.set_computed_defaults(config)
+
         return config
 
     def setup_server_logging(self):

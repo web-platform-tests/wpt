@@ -17,81 +17,54 @@ function IsConstructor(o) {
   }
 }
 
-for (const func of ['WritableStreamDefaultController', 'WritableStreamDefaultWriter']) {
-  test(() => {
-    assert_equals(self[func], undefined, `${func} should not be defined`);
-  }, `${func} should not be exported on the global object`);
-}
+test(() => {
+  assert_equals(self['TransformStreamDefaultController'], undefined,
+                `TransformStreamDefaultController should not be defined`);
+}, `TransformStreamDefaultController should not be exported on the global object`);
 
-// Now get hold of the symbols so we can test their properties.
-self.WritableStreamDefaultController = (() => {
+// Now get hold of the symbol so we can test its properties.
+self.TransformStreamDefaultController = (() => {
   let controller;
-  new WritableStream({
+  new TransformStream({
     start(c) {
       controller = c;
     }
   });
   return controller.constructor;
 })();
-self.WritableStreamDefaultWriter = new WritableStream().getWriter().constructor;
 
 const expected = {
-  WritableStream: {
+  TransformStream: {
     constructor: {
       type: 'constructor',
       length: 0
     },
-    locked: {
+    readable: {
       type: 'getter'
     },
-    abort: {
-      type: 'method',
-      length: 1
-    },
-    getWriter: {
-      type: 'method',
-      length: 0
-    }
-  },
-  WritableStreamDefaultController: {
-    constructor: {
-      type: 'constructor',
-      length: 0
-    },
-    error: {
-      type: 'method',
-      length: 1
-    }
-  },
-  WritableStreamDefaultWriter: {
-    constructor: {
-      type: 'constructor',
-      length: 1
-    },
-    closed: {
+    writable: {
       type: 'getter'
+    }
+  },
+  TransformStreamDefaultController: {
+    constructor: {
+      type: 'constructor',
+      length: 0
     },
     desiredSize: {
       type: 'getter'
     },
-    ready: {
-      type: 'getter'
-    },
-    abort: {
+    enqueue: {
       type: 'method',
       length: 1
     },
-    close: {
-      type: 'method',
-      length: 0
-    },
-    releaseLock: {
-      type: 'method',
-      length: 0
-    },
-    write: {
+    error: {
       type: 'method',
       length: 1
+    },
+    terminate: {
+      type: 'method',
+      length: 0
     }
   }
 };
@@ -144,55 +117,51 @@ for (const c in expected) {
   }, `${c}.prototype should have exactly the expected properties`);
 }
 
-const sinkMethods = {
+const transformerMethods = {
   start: {
     length: 1,
     trigger: () => Promise.resolve()
   },
-  write: {
+  transform: {
     length: 2,
-    trigger: writer => writer.write()
+    trigger: ts => ts.writable.getWriter().write()
   },
-  close: {
-    length: 0,
-    trigger: writer => writer.close()
-  },
-  abort: {
+  flush: {
     length: 1,
-    trigger: writer => writer.abort()
+    trigger: ts => ts.writable.getWriter().close()
   }
 };
 
-for (const method in sinkMethods) {
-  const { length, trigger } = sinkMethods[method];
+for (const method in transformerMethods) {
+  const { length, trigger } = transformerMethods[method];
 
-  // Some semantic tests of how sink methods are called can be found in general.js, as well as in the test files
+  // Some semantic tests of how transformer methods are called can be found in general.js, as well as in the test files
   // specific to each method.
   promise_test(() => {
     let argCount;
-    const ws = new WritableStream({
+    const ts = new TransformStream({
       [method](...args) {
         argCount = args.length;
       }
-    });
-    return Promise.resolve(trigger(ws.getWriter())).then(() => {
+    }, undefined, { highWaterMark: Infinity });
+    return Promise.resolve(trigger(ts)).then(() => {
       assert_equals(argCount, length, `${method} should be called with ${length} arguments`);
     });
-  }, `sink method ${method} should be called with the right number of arguments`);
+  }, `transformer method ${method} should be called with the right number of arguments`);
 
   promise_test(() => {
     let methodWasCalled = false;
-    function Sink() {}
-    Sink.prototype = {
+    function Transformer() {}
+    Transformer.prototype = {
       [method]() {
         methodWasCalled = true;
       }
     };
-    const ws = new WritableStream(new Sink());
-    return Promise.resolve(trigger(ws.getWriter())).then(() => {
+    const ts = new TransformStream(new Transformer(), undefined, { highWaterMark: Infinity });
+    return Promise.resolve(trigger(ts)).then(() => {
       assert_true(methodWasCalled, `${method} should be called`);
     });
-  }, `sink method ${method} should be called even when it's located on the prototype chain`);
+  }, `transformer method ${method} should be called even when it's located on the prototype chain`);
 
   promise_test(t => {
     const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
@@ -202,7 +171,7 @@ for (const method in sinkMethods) {
     const handler = {
       get: t.step_func((target, property) => {
         touchedProperties.push(property);
-        if (property === 'type') {
+        if (property === 'readableType' || property === 'writableType') {
           return undefined;
         }
         return () => Promise.resolve();
@@ -211,15 +180,15 @@ for (const method in sinkMethods) {
     for (const trap of unreachedTraps) {
       handler[trap] = t.unreached_func(`${trap} should not be trapped`);
     }
-    const sink = new Proxy({}, handler);
-    const ws = new WritableStream(sink);
-    assert_array_equals(touchedProperties, ['type', 'write', 'close', 'abort', 'start'],
+    const transformer = new Proxy({}, handler);
+    const ts = new TransformStream(transformer, undefined, { highWaterMark: Infinity });
+    assert_array_equals(touchedProperties, ['readableType', 'writableType', 'transform', 'flush', 'start'],
                         'expected properties should be got');
-    return trigger(ws.getWriter()).then(() => {
-      assert_array_equals(touchedProperties, ['type', 'write', 'close', 'abort', 'start'],
+    return trigger(ts).then(() => {
+      assert_array_equals(touchedProperties, ['readableType', 'writableType', 'transform', 'flush', 'start'],
                           'no properties should be accessed on method call');
     });
-  }, `unexpected properties should not be accessed when calling sink method ${method}`);
+  }, `unexpected properties should not be accessed when calling transformer method ${method}`);
 }
 
 done();

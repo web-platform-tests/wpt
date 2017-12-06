@@ -86,15 +86,15 @@ test(() => {
 
 test(() => {
 
-  new ReadableStream({ cancel: '2' });
+  assert_throws(new TypeError(), () => new ReadableStream({ cancel: '2' }), 'constructor should throw');
 
-}, 'ReadableStream constructor can get initial garbage as cancel argument');
+}, 'ReadableStream constructor will not tolerate initial garbage as cancel argument');
 
 test(() => {
 
-  new ReadableStream({ pull: { } });
+  assert_throws(new TypeError(), () => new ReadableStream({ pull: { } }), 'constructor should throw');
 
-}, 'ReadableStream constructor can get initial garbage as pull argument');
+}, 'ReadableStream constructor will not tolerate initial garbage as pull argument');
 
 test(() => {
 

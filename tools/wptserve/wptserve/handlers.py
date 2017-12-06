@@ -311,6 +311,7 @@ class AsIsHandler(object):
         try:
             with open(path) as f:
                 response.writer.write_content(f.read())
+            wrap_pipeline(path, request, response)
             response.close_connection = True
         except IOError:
             raise HTTPException(404)

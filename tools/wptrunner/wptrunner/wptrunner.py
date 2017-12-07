@@ -133,6 +133,12 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
+    kwargs.update({
+        "config": config,
+        "test_paths": test_paths,
+        "product": product
+    })
+
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 
@@ -218,6 +224,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     browser_kwargs = get_browser_kwargs(test_type,
                                                         run_info,
                                                         ssl_env=ssl_env,
+                                                        config=test_environment.config,
                                                         **kwargs)
 
                     executor_cls = executor_classes.get(test_type)

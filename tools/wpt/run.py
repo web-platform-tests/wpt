@@ -11,6 +11,8 @@ wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
 from . import browser, utils, virtualenv
+from serve import serve
+
 logger = None
 
 
@@ -94,13 +96,10 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 def check_environ(product):
     if product not in ("firefox", "servo"):
-        expected_hosts = ["web-platform.test",
-                          "www.web-platform.test",
-                          "www1.web-platform.test",
-                          "www2.web-platform.test",
-                          "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
-                          "xn--lve-6lad.web-platform.test",
-                          "nonexistent-origin.web-platform.test"]
+        expected_hosts = {".".join(x)
+                          for x in serve.get_subdomains("web-platform.test").values()}
+        expected_hosts |= {".".join(x)
+                           for x in serve.get_not_subdomains("web-platform.test").values()}
         missing_hosts = set(expected_hosts)
         if platform.uname()[0] != "Windows":
             hosts_path = "/etc/hosts"

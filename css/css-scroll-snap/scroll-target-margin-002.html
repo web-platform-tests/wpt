@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
-<title>focus() and scroll-snap-margin with snapping off (y-axis)</title>
+<title>focus() and scroll-margin with snapping off (y-axis)</title>
 <link rel='author' title='Elika J. Etemad' href='http://fantasai.inkedblade.net/contact'>
-<link rel='help' href='https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-margin'>
+<link rel='help' href='https://www.w3.org/TR/css-scroll-snap-1/#scroll-margin'>
 <link rel='match' href='scroll-target-001-ref.html'>
 <meta name="flags" content="should">
 <style type='text/css'>
@@ -20,9 +20,9 @@
   .container > div {
     height: 1em;
   }
-  #target    { scroll-snap-margin: 2em 0 1em; } /* snap area is exact fit for snapport */
-  #stripe    { background: green;             } /* color part of the snap area         */
-  .fail      { color: red;                    } /* make failing more obvious           */
+  #target    { scroll-margin: 2em 0 1em; } /* snap area is exact fit for snapport */
+  #stripe    { background: green;        } /* color part of the snap area         */
+  .fail      { color: red;               } /* make failing more obvious           */
 </style>
 
 <div id='instructions'>Test passes if there is a green stripe centered in the box below and no red.</div>

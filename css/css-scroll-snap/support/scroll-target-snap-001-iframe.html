@@ -16,10 +16,10 @@
   div {
     height: 1em;
   }
-  #target { scroll-snap-margin: 1em 0 0;
-            scroll-snap-align: center;     } /* set up a snap position      */
-  #stripe { background: green;             } /* color part of the snap area */
-  .fail   { color: red;                    } /* make failing more obvious   */
+  #target { scroll-margin:     1em 0 0;
+            scroll-snap-align:  center; } /* set up a snap position      */
+  #stripe { background: green;          } /* color part of the snap area */
+  .fail   { color: red;                 } /* make failing more obvious   */
 
   /* Try to foil the UA */
   .foilup { margin-bottom: -1em; scroll-snap-align: start; }

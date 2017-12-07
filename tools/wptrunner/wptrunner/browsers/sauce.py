@@ -127,6 +127,7 @@ def get_tar(url, dest):
 class SauceConnect():
 
     def __init__(self, **kwargs):
+        self.config = kwargs["config"]
         self.sauce_user = kwargs["sauce_user"]
         self.sauce_key = kwargs["sauce_key"]
         self.sauce_tunnel_id = kwargs["sauce_tunnel_id"]
@@ -152,8 +153,7 @@ class SauceConnect():
             "--metrics-address=0.0.0.0:9876",
             "--readyfile=./sauce_is_ready",
             "--tunnel-domains",
-            "web-platform.test",
-            "*.web-platform.test"
+            ",".join(self.config['domains'].values())
         ])
 
         # Timeout config vars

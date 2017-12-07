@@ -59,8 +59,8 @@ test(function () {
   assert_equals( makeTime('go fish').dateTime, 'go fish' );
 }, 'the datetime attribute should be reflected by the .dateTime property even if it is invalid');
 test(function () {
-  assert_equals( makeTime(false,'2000-02-01T03:04:05Z').dateTime, '' );
-}, 'the datetime attribute should not reflect the textContent');
+  assert_equals( makeTime(false,'2000-02-01T03:04:05Z').dateTime, '2000-02-01T03:04:05Z' );
+}, 'the datetime attribute value should be the textContent value if it is unset');
 
     </script>
 

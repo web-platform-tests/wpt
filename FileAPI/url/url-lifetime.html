@@ -19,7 +19,7 @@ promise_test(t => {
     return result;
   }).then(response => response.text()).then(text => {
     assert_equals(text, blob_contents);
-    return new Promise(resolve => setTimeout(resolve, 100));
+    return new Promise(resolve => t.step_timeout(resolve, 100));
   }).then(() => promise_rejects(t, new TypeError, fetch(url)));
 }, 'Terminating worker revokes its URLs');
 
@@ -47,7 +47,7 @@ promise_test(t => {
     return fetch_result;
   }).then(response => response.text()).then(text => {
     assert_equals(text, blob_contents);
-    return new Promise(resolve => setTimeout(resolve, 100));
+    return new Promise(resolve => t.step_timeout(resolve, 100));
   }).then(() => promise_rejects(t, new TypeError, fetch(url)));
 
   frame.src = 'resources/create-helper.html';

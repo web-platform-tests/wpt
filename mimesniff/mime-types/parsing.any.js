@@ -1,8 +1,10 @@
+// META: timeout=long
+
 promise_test(() => {
   return Promise.all([
     fetch("resources/mime-types.json"),
     fetch("resources/generated-mime-types.json")
-  ]).then(([res, res2]) => res.json().then(runTests).then(res2.json().then(runTests)));
+  ]).then(([res, res2]) => res.json().then(runTests).then(() => res2.json().then(runTests)));
 }, "Loading data…");
 
 function isByteCompatible(str) {

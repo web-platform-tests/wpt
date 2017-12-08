@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLSelectElement Test: add()</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<form style="display:none">
+  <option id="testoption">
+    <select id="testselect1">
+    </select>
+    <select id="testselect2">
+      <option>TEST</option>
+    </select>
+  </option>
+</form>
+
+<script>
+
+var testselect1 = document.getElementById("testselect1");
+var testselect2 = document.getElementById("testselect2");
+var opt1 = new Option("Marry","1");
+var opt2 = document.getElementById("testoption");
+
+test(function() {
+  testselect1.add(opt1);
+  assert_equals(testselect1.options[0].value, "1");
+}, "Check if HTMLSelectElement.add method can add option element");
+
+test(function() {
+  assert_throws("HierarchyRequestError", function () {
+    testselect2.add(opt2);
+  });
+}, "Check if HierarchyRequestError exception must be thrown when element is an ancestor of the element into which it is to be inserted");
+
+</script>
+
+<div id="log"></div>

@@ -60,7 +60,7 @@ The test server can be started using
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
 ```bash
-c:\python27\python.exe wpt serve
+python wpt serve
 ```
 
 This will start HTTP servers on two ports and a websockets server on
@@ -96,7 +96,7 @@ line syntax is:
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
 ```bash
-c:\python27\python.exe wpt product [tests]
+python wpt product [tests]
 ```
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
@@ -201,7 +201,7 @@ On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
 
 ```bash
-c:\python27\python.exe wpt [command]
+python wpt [command]
 ```
 
 Alternatively, you may also use

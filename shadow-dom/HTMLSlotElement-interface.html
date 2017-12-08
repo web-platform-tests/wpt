@@ -12,6 +12,8 @@
 <div id="log"></div>
 <script>
 
+const slotMethods = ['assignedNodes', 'assignedElements'];
+
 test(function () {
     assert_true('HTMLSlotElement' in window, 'HTMLSlotElement must be defined on window');
     assert_equals(HTMLSlotElement.prototype.__proto__, HTMLElement.prototype, 'HTMLSlotElement should inherit from HTMLElement');
@@ -35,29 +37,19 @@ test(function () {
 
 function testSlotOutsideShadowTree(options)
 {
+  for (const method of slotMethods) {
     test(function () {
-        assert_true('assignedNodes' in HTMLSlotElement.prototype, '"assignedNodes" method must be defined on HTMLSlotElement.prototype');
+      assert_true(method in HTMLSlotElement.prototype, `"${method}" method must be defined on HTMLSlotElement.prototype`);
 
-        var slotElement = document.createElement('slot');
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes() must return an empty array when the slot element is not in any tree');
+      const slotElement = document.createElement('slot');
+      assert_array_equals(slotElement[method](options), [], `${method}() must return an empty array when the slot element is not in any tree`);
 
-        document.body.appendChild(slotElement);
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes() must return an empty array when the slot element is in a document tree');
+      document.body.appendChild(slotElement);
+      assert_array_equals(slotElement[method](options), [], `${method}() must return an empty array when the slot element is in a document tree`);
 
-    }, 'assignedNodes(' + (options ? JSON.stringify(options) : '')
-        + ') on a HTMLSlotElement must return an empty array when the slot element is not in a tree or in a document tree');
-
-    test(function () {
-        assert_true('assignedElements' in HTMLSlotElement.prototype, '"assignedElements" method must be defined on HTMLSlotElement.prototype');
-
-        var slotElement = document.createElement('slot');
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() must return an empty array when the slot element is not in any tree');
-
-        document.body.appendChild(slotElement);
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() must return an empty array when the slot element is in a document tree');
-
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '')
-        + ') on a HTMLSlotElement must return an empty array when the slot element is not in a tree or in a document tree');
+    }, method + '(' + ( options ? JSON.stringify(options) : '' )
+        + ' on a HTMLSlotElement must return an empty array when the slot element is not in a tree or in a document tree');
+  }
 }
 
 testSlotOutsideShadowTree(null);
@@ -66,82 +58,36 @@ testSlotOutsideShadowTree({flattened: true});
 
 function testSingleLevelOfSlotting(options)
 {
+  for (const method of ['assignedNodes', 'assignedElements']) {
     test(function () {
-        assert_true('assignedNodes' in HTMLSlotElement.prototype, '"assignedNodes" method must be defined on HTMLSlotElement.prototype');
+      assert_true(method in HTMLSlotElement.prototype, `"${method}" method must be defined on HTMLSlotElement.prototype`);
 
-        var shadowHost = document.createElement('div');
-        var child = document.createElement('p');
+      const shadowHost = document.createElement('div');
+      const child = document.createElement('p');
 
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        shadowRoot.appendChild(slotElement);
+      const shadowRoot = shadowHost.attachShadow({mode: 'open'});
+      const slotElement = document.createElement('slot');
+      shadowRoot.appendChild(slotElement);
 
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes() must return an empty array when there are no nodes in the shadow tree');
+      assert_array_equals(slotElement[method](options), [], `${method}() must return an empty array when there are no nodes in the shadow tree`);
 
-        shadowHost.appendChild(child);
-        assert_array_equals(slotElement.assignedNodes(options), [child], 'assignedNodes() on a default slot must return an element without slot element');
+      shadowHost.appendChild(child);
+      assert_array_equals(slotElement[method](options), [child], `${method}() on a default slot must return an element without slot element`);
 
-        child.setAttribute('slot', 'foo');
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes() on a default slot must not return an element with non-empty slot attribute');
+      child.setAttribute('slot', 'foo');
+      assert_array_equals(slotElement[method](options), [], `${method}() on a default slot must not return an element with non-empty slot attribute`);
 
-        child.setAttribute('slot', '');
-        assert_array_equals(slotElement.assignedNodes(options), [child], 'assignedNodes() on a default slot must return an element with empty slot attribute');
+      child.setAttribute('slot', '');
+      assert_array_equals(slotElement[method](options), [child], `${method}() on a default slot must return an element with empty slot attribute`);
 
-        slotElement.setAttribute('name', 'bar');
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes() on a named slot must not return an element with empty slot attribute');
+      slotElement.setAttribute('name', 'bar');
+      assert_array_equals(slotElement[method](options), [], `${method}() on a named slot must not return an element with empty slot attribute`);
 
-        slotElement.setAttribute('name', '');
-        assert_array_equals(slotElement.assignedNodes(options), [child], 'assignedNodes() on an empty name slot must return an element with empty slot attribute');
+      slotElement.setAttribute('name', '');
+      assert_array_equals(slotElement[method](options), [child], `${method}() on an empty name slot must return an element with empty slot attribute`);
 
-    }, 'assignedNodes(' + (options ? JSON.stringify(options) : '') + ') must return the list of assigned nodes when none of the assigned nodes themselves are slots');
-
-    test(function () {
-        assert_true('assignedElements' in HTMLSlotElement.prototype, '"assignedElements" method must be defined on HTMLSlotElement.prototype');
-
-        var shadowHost = document.createElement('div');
-        var child = document.createElement('p');
-
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        shadowRoot.appendChild(slotElement);
-
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() must return an empty array when there are no nodes in the shadow tree');
-
-        shadowHost.appendChild(child);
-        assert_array_equals(slotElement.assignedElements(options), [child], 'assignedElements() on a default slot must return an element without slot element');
-
-        child.setAttribute('slot', 'foo');
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() on a default slot must not return an element with non-empty slot attribute');
-
-        child.setAttribute('slot', '');
-        assert_array_equals(slotElement.assignedElements(options), [child], 'assignedElements() on a default slot must return an element with empty slot attribute');
-
-        slotElement.setAttribute('name', 'bar');
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() on a named slot must not return an element with empty slot attribute');
-
-        slotElement.setAttribute('name', '');
-        assert_array_equals(slotElement.assignedElements(options), [child], 'assignedElements() on an empty name slot must return an element with empty slot attribute');
-
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '') + ') must return the list of assigned elements when none of the assigned nodes themselves are slots');
-
-    test(function () {
-        assert_true('assignedElements' in HTMLSlotElement.prototype, '"assignedElements" method must be defined on HTMLSlotElement.prototype');
-
-        var shadowHost = document.createElement('div');
-        var elementChild = document.createElement('p');
-        var textChild = document.createTextNode('test');
-
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        shadowRoot.appendChild(slotElement);
-
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements() must return an empty array when there are no nodes in the shadow tree');
-
-        shadowHost.appendChild(elementChild);
-        shadowHost.appendChild(textChild);
-        assert_array_equals(slotElement.assignedElements(options), [elementChild], 'assignedElements() on a slot with mixed assigned nodes must return only elements');
-
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '') + ') must return the list of assigned nodes limited to elements');
+    }, method + '(' + (options ? JSON.stringify(options) : '') + ') must return the list of assigned nodes when none of the assigned nodes themselves are slots');
+  }
 }
 
 testSingleLevelOfSlotting(null);
@@ -150,61 +96,34 @@ testSingleLevelOfSlotting({flattened: true});
 
 function testMutatingSlottedContents(options)
 {
+  for (const method of slotMethods) {
     test(function () {
-        var shadowHost = document.createElement('div');
-        var p = document.createElement('p');
-        var b = document.createElement('b');
-        shadowHost.appendChild(p);
-        shadowHost.appendChild(b);
+      const shadowHost = document.createElement('div');
+      const p = document.createElement('p');
+      const b = document.createElement('b');
+      shadowHost.appendChild(p);
+      shadowHost.appendChild(b);
 
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        shadowRoot.appendChild(slotElement);
+      const shadowRoot = shadowHost.attachShadow({mode: 'open'});
+      const slotElement = document.createElement('slot');
+      shadowRoot.appendChild(slotElement);
 
-        assert_array_equals(slotElement.assignedNodes(options), [p, b], 'assignedNodes must return the distributed nodes');
+      assert_array_equals(slotElement[method](options), [p, b], `${method} must return the distributed nodes`);
 
-        slotElement.name = 'foo';
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes must be empty when there are no matching elements for the slot name');
+      slotElement.name = 'foo';
+      assert_array_equals(slotElement[method](options), [], `${method} must be empty when there are no matching elements for the slot name`);
 
-        b.slot = 'foo';
-        assert_array_equals(slotElement.assignedNodes(options), [b], 'assignedNodes must return the nodes with the matching slot name');
+      b.slot = 'foo';
+      assert_array_equals(slotElement[method](options), [b], `${method} must return the nodes with the matching slot name`);
 
-        p.slot = 'foo';
-        assert_array_equals(slotElement.assignedNodes(options), [p, b], 'assignedNodes must return the nodes with the matching slot name in the tree order');
+      p.slot = 'foo';
+      assert_array_equals(slotElement[method](options), [p, b], `${method} must return the nodes with the matching slot name in the tree order`);
 
-        slotElement.removeAttribute('name');
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes must be empty for a default slot when all elements have "slot" attributes specified');
+      slotElement.removeAttribute('name');
+      assert_array_equals(slotElement[method](options), [], `${method} must be empty for a default slot when all elements have "slot" attributes specified`);
 
-    }, 'assignedNodes(' + (options ? JSON.stringify(options) : '') + ') must update when slot and name attributes are modified');
-
-    test(function () {
-        var shadowHost = document.createElement('div');
-        var p = document.createElement('p');
-        var t = document.createTextNode('test');
-        var b = document.createElement('b');
-        shadowHost.appendChild(p);
-        shadowHost.appendChild(t);
-        shadowHost.appendChild(b);
-
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        shadowRoot.appendChild(slotElement);
-
-        assert_array_equals(slotElement.assignedElements(options), [p, b], 'assignedElements must return the distributed nodes limited to elements');
-
-        slotElement.name = 'foo';
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements must be empty when there are no matching elements for the slot name');
-
-        b.slot = 'foo';
-        assert_array_equals(slotElement.assignedElements(options), [b], 'assignedElements must return the elements with the matching slot name');
-
-        p.slot = 'foo';
-        assert_array_equals(slotElement.assignedElements(options), [p, b], 'assignedElements must return the elements with the matching slot name in the tree order');
-
-        slotElement.removeAttribute('name');
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements must be empty for a default slot when all elements have "slot" attributes specified');
-
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '') + ') must update when slot and name attributes are modified');
+    }, method + '(' + (options ? JSON.stringify(options) : '') + ') must update when slot and name attributes are modified');
+  }
 }
 
 testMutatingSlottedContents(null);
@@ -213,31 +132,20 @@ testMutatingSlottedContents({flattened: true});
 
 function testMutatingSlotName(options)
 {
+  for (const method of slotMethods) {
     test(function () {
-        var shadowHost = document.createElement('div');
-        var child = document.createElement('span');
-        shadowHost.appendChild(child);
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        slotElement.name = 'foo';
-        shadowRoot.appendChild(slotElement);
-        assert_array_equals(slotElement.assignedNodes(options), [], 'assignedNodes must be empty when there are no matching elements for the slot name');
-        slotElement.removeAttribute('name');
-        assert_array_equals(slotElement.assignedNodes(options), [child], 'assignedNodes must be empty when there are no matching elements for the slot name');
-    }, 'assignedNodes(' + (options ? JSON.stringify(options) : '') + ') must update when a default slot is introduced dynamically by a slot rename');
-
-    test(function () {
-        var shadowHost = document.createElement('div');
-        var child = document.createElement('span');
-        shadowHost.appendChild(child);
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-        var slotElement = document.createElement('slot');
-        slotElement.name = 'foo';
-        shadowRoot.appendChild(slotElement);
-        assert_array_equals(slotElement.assignedElements(options), [], 'assignedElements must be empty when there are no matching elements for the slot name');
-        slotElement.removeAttribute('name');
-        assert_array_equals(slotElement.assignedElements(options), [child], 'assignedElements must be empty when there are no matching elements for the slot name');
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '') + ') must update when a default slot is introduced dynamically by a slot rename');
+      const shadowHost = document.createElement('div');
+      const child = document.createElement('span');
+      shadowHost.appendChild(child);
+      const shadowRoot = shadowHost.attachShadow({mode: 'open'});
+      const slotElement = document.createElement('slot');
+      slotElement.name = 'foo';
+      shadowRoot.appendChild(slotElement);
+      assert_array_equals(slotElement[method](options), [], `${method} must be empty when there are no matching elements for the slot name`);
+      slotElement.removeAttribute('name');
+      assert_array_equals(slotElement[method](options), [child], `${method} must be empty when there are no matching elements for the slot name`);
+    }, method + '(' + (options ? JSON.stringify(options) : '') + ') must update when a default slot is introduced dynamically by a slot rename');
+  }
 }
 
 testMutatingSlotName(null);
@@ -246,232 +154,125 @@ testMutatingSlotName({flattened: true});
 
 function testInsertingAndRemovingSlots(options)
 {
+  for (const method of slotMethods) {
     test(function () {
-        var shadowHost = document.createElement('div');
-        var p = document.createElement('p');
-        var text = document.createTextNode('');
-        var comment = document.createComment('');
-        var processingInstruction = document.createProcessingInstruction('target', 'data');
-        var b = document.createElement('b');
-        shadowHost.appendChild(p);
-        shadowHost.appendChild(text);
-        shadowHost.appendChild(comment);
-        shadowHost.appendChild(processingInstruction);
-        shadowHost.appendChild(b);
+      const shadowHost = document.createElement('div');
+      const p = document.createElement('p');
+      const text = document.createTextNode('');
+      const comment = document.createComment('');
+      const processingInstruction = document.createProcessingInstruction('target', 'data');
+      const b = document.createElement('b');
+      shadowHost.appendChild(p);
+      shadowHost.appendChild(text);
+      shadowHost.appendChild(comment);
+      shadowHost.appendChild(processingInstruction);
+      shadowHost.appendChild(b);
 
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
+      const shadowRoot = shadowHost.attachShadow({mode: 'open'});
 
-        var firstSlotElement = document.createElement('slot');
-        shadowRoot.appendChild(firstSlotElement);
+      const firstSlotElement = document.createElement('slot');
+      shadowRoot.appendChild(firstSlotElement);
 
-        var secondSlotElement = document.createElement('slot');
-        shadowRoot.appendChild(secondSlotElement);
+      const secondSlotElement = document.createElement('slot');
+      shadowRoot.appendChild(secondSlotElement);
 
-        assert_array_equals(firstSlotElement.assignedNodes(options), [p, text, b],
-            'assignedNodes on a default slot must return the elements without slot attributes and text nodes');
-        assert_array_equals(secondSlotElement.assignedNodes(options), [],
-            'assignedNodes on the second unnamed slot element must return an empty array');
+      assert_array_equals(firstSlotElement[method](options), [p, text, b],
+      `${method} on a default slot must return the elements without slot attributes and text nodes`);
+      assert_array_equals(secondSlotElement[method](options), [],
+      `${method} on the second unnamed slot element must return an empty array`);
 
-        shadowRoot.removeChild(firstSlotElement);
-        assert_array_equals(firstSlotElement.assignedNodes(options), [],
-            'assignedNodes on a detached formerly-default slot must return an empty array');
-        assert_array_equals(secondSlotElement.assignedNodes(options), [p, text, b],
-            'assignedNodes on the second unnamed slot element after removing the first must return the elements without slot attributes and text nodes');
+      shadowRoot.removeChild(firstSlotElement);
+      assert_array_equals(firstSlotElement[method](options), [],
+      `${method} on a detached formerly-default slot must return an empty array`);
+      assert_array_equals(secondSlotElement[method](options), [p, text, b],
+      `${method} on the second unnamed slot element after removing the first must return the elements without slot attributes and text nodes`);
 
-        shadowRoot.removeChild(secondSlotElement);
-        shadowRoot.appendChild(secondSlotElement);
-        assert_array_equals(firstSlotElement.assignedNodes(options), [],
-            'Removing and re-inserting a default slot must not change the result of assignedNodes on a detached slot');
-        assert_array_equals(secondSlotElement.assignedNodes(options), [p, text, b],
-            'Removing and re-inserting a default slot must not change the result of assignedNodes');
+      shadowRoot.removeChild(secondSlotElement);
+      shadowRoot.appendChild(secondSlotElement);
+      assert_array_equals(firstSlotElement[method](options), [],
+      `Removing and re-inserting a default slot must not change the result of ${method} on a detached slot`);
+      assert_array_equals(secondSlotElement[method](options), [p, text, b],
+      `Removing and re-inserting a default slot must not change the result of ${method}`);
 
-        shadowRoot.insertBefore(firstSlotElement, secondSlotElement);
-        assert_array_equals(firstSlotElement.assignedNodes(options), [p, text, b],
-            'assignedNodes on a newly inserted unnamed slot element must return the elements without slot attributes and text nodes');
-        assert_array_equals(secondSlotElement.assignedNodes(options), [],
-            'assignedNodes on formerly-first but now second unnamed slot element must return an empty array');
+      shadowRoot.insertBefore(firstSlotElement, secondSlotElement);
+      assert_array_equals(firstSlotElement[method](options), [p, text, b],
+      `${method} on a newly inserted unnamed slot element must return the elements without slot attributes and text nodes`);
+      assert_array_equals(secondSlotElement[method](options), [],
+      `${method} on formerly-first but now second unnamed slot element must return an empty array`);
 
-    }, 'assignedNodes(' + (options ? JSON.stringify(options) : '') + ') must update when slot elements are inserted or removed');
-
-    test(function () {
-        var shadowHost = document.createElement('div');
-        var p = document.createElement('p');
-        var text = document.createTextNode('');
-        var comment = document.createComment('');
-        var processingInstruction = document.createProcessingInstruction('target', 'data');
-        var b = document.createElement('b');
-        shadowHost.appendChild(p);
-        shadowHost.appendChild(text);
-        shadowHost.appendChild(comment);
-        shadowHost.appendChild(processingInstruction);
-        shadowHost.appendChild(b);
-
-        var shadowRoot = shadowHost.attachShadow({mode: 'open'});
-
-        var firstSlotElement = document.createElement('slot');
-        shadowRoot.appendChild(firstSlotElement);
-
-        var secondSlotElement = document.createElement('slot');
-        shadowRoot.appendChild(secondSlotElement);
-
-        assert_array_equals(firstSlotElement.assignedElements(options), [p, b],
-            'assignedElements on a default slot must return the elements nodes only');
-        assert_array_equals(secondSlotElement.assignedElements(options), [],
-            'assignedElements on the second unnamed slot element must return an empty array');
-
-        shadowRoot.removeChild(firstSlotElement);
-        assert_array_equals(firstSlotElement.assignedElements(options), [],
-            'assignedElements on a detached formerly-default slot must return an empty array');
-        assert_array_equals(secondSlotElement.assignedElements(options), [p, b],
-            'assignedElements on the second unnamed slot element after removing the first must return the elements nodes only');
-
-        shadowRoot.removeChild(secondSlotElement);
-        shadowRoot.appendChild(secondSlotElement);
-        assert_array_equals(firstSlotElement.assignedElements(options), [],
-            'Removing and re-inserting a default slot must not change the result of assignedElements on a detached slot');
-        assert_array_equals(secondSlotElement.assignedElements(options), [p, b],
-            'Removing and re-inserting a default slot must not change the result of assignedElements');
-
-        shadowRoot.insertBefore(firstSlotElement, secondSlotElement);
-        assert_array_equals(firstSlotElement.assignedElements(options), [p, b],
-            'assignedElements on a newly inserted unnamed slot element must return the elements nodes only');
-        assert_array_equals(secondSlotElement.assignedElements(options), [],
-            'assignedElements on formerly-first but now second unnamed slot element must return an empty array');
-
-    }, 'assignedElements(' + (options ? JSON.stringify(options) : '') + ') must update when slot elements are inserted or removed');
+    }, method + '(' + (options ? JSON.stringify(options) : '') + ') must update when slot elements are inserted or removed');
+  }
 }
 
 testInsertingAndRemovingSlots(null);
 testInsertingAndRemovingSlots({flattened: false});
 testInsertingAndRemovingSlots({flattened: true});
 
-test(function () {
-    var outerHost = document.createElement('div');
-    var outerChild = document.createElement('span');
+for (const method of slotMethods) {
+  test(function () {
+    const outerHost = document.createElement('div');
+    const outerChild = document.createElement('span');
     outerHost.appendChild(outerChild);
 
-    var outerShadow = outerHost.attachShadow({mode: 'closed'});
-    var innerHost = document.createElement('div');
-    var outerSlot = document.createElement('slot');
-    var innerChild = document.createElement('b');
+    const outerShadow = outerHost.attachShadow({mode: 'closed'});
+    const innerHost = document.createElement('div');
+    const outerSlot = document.createElement('slot');
+    const innerChild = document.createElement('b');
     outerShadow.appendChild(innerHost);
     innerHost.appendChild(outerSlot);
     innerHost.appendChild(innerChild);
 
-    var innerShadow = innerHost.attachShadow({mode: 'closed'});
-    var innerSlot = document.createElement('slot');
+    const innerShadow = innerHost.attachShadow({mode: 'closed'});
+    const innerSlot = document.createElement('slot');
     innerShadow.appendChild(innerSlot);
 
-    assert_array_equals(outerSlot.assignedNodes(), [outerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(outerSlot.assignedNodes({flatten: false}), [outerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(outerSlot.assignedNodes({flatten: true}), [outerChild], 'assignedNodes({flatten: true}) on a default slot must return the assigned nodes if they are not themselves slots');
+    assert_array_equals(outerSlot[method](), [outerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(outerSlot[method]({flatten: false}), [outerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(outerSlot[method]({flatten: true}), [outerChild], `${method}({flatten: true}) on a default slot must return the assigned nodes if they are not themselves slots`);
 
-    assert_array_equals(innerSlot.assignedNodes(), [outerSlot, innerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: false}), [outerSlot, innerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: true}), [outerChild, innerChild], 'assignedNodes({flatten: true}) on a default slot must return the distributed nodes');
+    assert_array_equals(innerSlot[method](), [outerSlot, innerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: false}), [outerSlot, innerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: true}), [outerChild, innerChild], `${method}({flatten: true}) on a default slot must return the distributed nodes`);
 
     outerSlot.name = 'foo';
-    assert_array_equals(outerSlot.assignedNodes(), [], 'assignedNodes() on a named slot must return an empty array if there are no matching elements');
-    assert_array_equals(outerSlot.assignedNodes({flatten: false}), [], 'assignedNodes({flatten: false}) on a named slot must return an empty array if there are no matching elements');
-    assert_array_equals(outerSlot.assignedNodes({flatten: true}), [], 'assignedNodes({flatten: true}) on a named slot must return an empty array if there are no matching elements');
+    assert_array_equals(outerSlot[method](), [], `${method}() on a named slot must return an empty array if there are no matching elements`);
+    assert_array_equals(outerSlot[method]({flatten: false}), [], `${method}({flatten: false}) on a named slot must return an empty array if there are no matching elements`);
+    assert_array_equals(outerSlot[method]({flatten: true}), [], `${method}({flatten: true}) on a named slot must return an empty array if there are no matching elements`);
 
-    assert_array_equals(innerSlot.assignedNodes(), [outerSlot, innerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: false}), [outerSlot, innerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: true}), [innerChild], 'assignedNodes({flatten: true}) on a default slot must return the distributed nodes');
+    assert_array_equals(innerSlot[method](), [outerSlot, innerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: false}), [outerSlot, innerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: true}), [innerChild], `${method}({flatten: true}) on a default slot must return the distributed nodes`);
 
     outerChild.slot = 'foo';
-    assert_array_equals(outerSlot.assignedNodes(), [outerChild], 'assignedNodes() on a named slot must return matching elements');
-    assert_array_equals(outerSlot.assignedNodes({flatten: false}), [outerChild], 'assignedNodes({flatten: false}) on a named slot must return matching elements');
-    assert_array_equals(outerSlot.assignedNodes({flatten: true}), [outerChild], 'assignedNodes({flatten: true}) on a named slot must return matching elements');
+    assert_array_equals(outerSlot[method](), [outerChild], `${method}() on a named slot must return matching elements`);
+    assert_array_equals(outerSlot[method]({flatten: false}), [outerChild], `${method}({flatten: false}) on a named slot must return matching elements`);
+    assert_array_equals(outerSlot[method]({flatten: true}), [outerChild], `${method}({flatten: true}) on a named slot must return matching elements`);
 
-    assert_array_equals(innerSlot.assignedNodes(), [outerSlot, innerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: false}), [outerSlot, innerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: true}), [outerChild, innerChild], 'assignedNodes({flatten: true}) on a default slot must return the distributed nodes');
+    assert_array_equals(innerSlot[method](), [outerSlot, innerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: false}), [outerSlot, innerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: true}), [outerChild, innerChild], `${method}({flatten: true}) on a default slot must return the distributed nodes`);
 
     var newInnerSlot = document.createElement('slot');
     innerShadow.insertBefore(newInnerSlot, innerSlot);
-    assert_array_equals(newInnerSlot.assignedNodes(), [outerSlot, innerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(newInnerSlot.assignedNodes({flatten: false}), [outerSlot, innerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(newInnerSlot.assignedNodes({flatten: true}), [outerChild, innerChild], 'assignedNodes({flatten: true}) on a default slot must return the distributed nodes');
+    assert_array_equals(newInnerSlot[method](), [outerSlot, innerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(newInnerSlot[method]({flatten: false}), [outerSlot, innerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(newInnerSlot[method]({flatten: true}), [outerChild, innerChild], `${method}({flatten: true}) on a default slot must return the distributed nodes`);
 
-    assert_array_equals(innerSlot.assignedNodes(), [], 'assignedNodes() on a nameless slot element which appears after a default slot must return an empty array');
-    assert_array_equals(innerSlot.assignedNodes({flatten: false}), [], 'assignedNodes({flatten: false}) on a nameless slot element which appears after a default slot must return an empty array');
-    assert_array_equals(innerSlot.assignedNodes({flatten: true}), [], 'assignedNodes({flatten: true}) on a nameless slot element which appears after a default slot must return an empty array');
-
-    innerShadow.removeChild(newInnerSlot);
-    assert_array_equals(newInnerSlot.assignedNodes(), [], 'assignedNodes() must return an empty array when the slot element is not in any tree');
-    assert_array_equals(newInnerSlot.assignedNodes({flatten: false}), [], 'assignedNodes({flatten: false}) must return an empty array when the slot element is not in any tree');
-    assert_array_equals(newInnerSlot.assignedNodes({flatten: true}), [], 'assignedNodes({flatten: true}) must return an empty array when the slot element is not in any tree');
-
-    assert_array_equals(innerSlot.assignedNodes(), [outerSlot, innerChild], 'assignedNodes() on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: false}), [outerSlot, innerChild], 'assignedNodes({flatten: false}) on a default slot must return the assigned nodes');
-    assert_array_equals(innerSlot.assignedNodes({flatten: true}), [outerChild, innerChild], 'assignedNodes({flatten: true}) on a default slot must return the distributed nodes');
-
-}, 'assignedNodes({flatten: true}) must return the distributed nodes, and assignedNodes() and assignedNodes({flatten: false}) must returned the assigned nodes');
-
-test(function () {
-    var outerHost = document.createElement('div');
-    var outerChild = document.createElement('span');
-    outerHost.appendChild(outerChild);
-
-    var outerShadow = outerHost.attachShadow({mode: 'closed'});
-    var innerHost = document.createElement('div');
-    var outerSlot = document.createElement('slot');
-    var innerChild = document.createElement('b');
-    outerShadow.appendChild(innerHost);
-    innerHost.appendChild(outerSlot);
-    innerHost.appendChild(innerChild);
-
-    var innerShadow = innerHost.attachShadow({mode: 'closed'});
-    var innerSlot = document.createElement('slot');
-    innerShadow.appendChild(innerSlot);
-
-    assert_array_equals(outerSlot.assignedElements(), [outerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: false}), [outerChild], 'assignedElements({flatten: false}) on a default slot must return the assigned elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: true}), [outerChild], 'assignedElements({flatten: true}) on a default slot must return the assigned elements if they are not themselves slots');
-
-    assert_array_equals(innerSlot.assignedElements(), [outerSlot, innerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: false}), [outerSlot, innerChild], 'assignedElements({flatten: false}) on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: true}), [outerChild, innerChild], 'assignedElements({flatten: true}) on a default slot must return the distributed elements');
-
-    outerSlot.name = 'foo';
-    assert_array_equals(outerSlot.assignedElements(), [], 'assignedElements() on a named slot must return an empty array if there are no matching elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: false}), [], 'assignedElements({flatten: false}) on a named slot must return an empty array if there are no matching elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: true}), [], 'assignedElements({flatten: true}) on a named slot must return an empty array if there are no matching elements');
-
-    assert_array_equals(innerSlot.assignedElements(), [outerSlot, innerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: false}), [outerSlot, innerChild], 'assignedElements({flatten: false}) on a default slot must return the elements nodes');
-    assert_array_equals(innerSlot.assignedElements({flatten: true}), [innerChild], 'assignedElements({flatten: true}) on a default slot must return the distributed elements');
-
-    outerChild.slot = 'foo';
-    assert_array_equals(outerSlot.assignedElements(), [outerChild], 'assignedElements() on a named slot must return matching elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: false}), [outerChild], 'assignedElements({flatten: false}) on a named slot must return matching elements');
-    assert_array_equals(outerSlot.assignedElements({flatten: true}), [outerChild], 'assignedElements({flatten: true}) on a named slot must return matching elements');
-
-    assert_array_equals(innerSlot.assignedElements(), [outerSlot, innerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: false}), [outerSlot, innerChild], 'assignedElements({flatten: false}) on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: true}), [outerChild, innerChild], 'assignedElements({flatten: true}) on a default slot must return the distributed elements');
-
-    var newInnerSlot = document.createElement('slot');
-    innerShadow.insertBefore(newInnerSlot, innerSlot);
-    assert_array_equals(newInnerSlot.assignedElements(), [outerSlot, innerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(newInnerSlot.assignedElements({flatten: false}), [outerSlot, innerChild], 'assignedElements({flatten: false}) on a default slot must return the assigned elements');
-    assert_array_equals(newInnerSlot.assignedElements({flatten: true}), [outerChild, innerChild], 'assignedElements({flatten: true}) on a default slot must return the distributed elements');
-
-    assert_array_equals(innerSlot.assignedElements(), [], 'assignedElements() on a nameless slot element which appears after a default slot must return an empty array');
-    assert_array_equals(innerSlot.assignedElements({flatten: false}), [], 'assignedElements({flatten: false}) on a nameless slot element which appears after a default slot must return an empty array');
-    assert_array_equals(innerSlot.assignedElements({flatten: true}), [], 'assignedElements({flatten: true}) on a nameless slot element which appears after a default slot must return an empty array');
+    assert_array_equals(innerSlot[method](), [], `${method}() on a nameless slot element which appears after a default slot must return an empty array`);
+    assert_array_equals(innerSlot[method]({flatten: false}), [], `${method}({flatten: false}) on a nameless slot element which appears after a default slot must return an empty array`);
+    assert_array_equals(innerSlot[method]({flatten: true}), [], `${method}({flatten: true}) on a nameless slot element which appears after a default slot must return an empty array`);
 
     innerShadow.removeChild(newInnerSlot);
-    assert_array_equals(newInnerSlot.assignedElements(), [], 'assignedElements() must return an empty array when the slot element is not in any tree');
-    assert_array_equals(newInnerSlot.assignedElements({flatten: false}), [], 'assignedElements({flatten: false}) must return an empty array when the slot element is not in any tree');
-    assert_array_equals(newInnerSlot.assignedElements({flatten: true}), [], 'assignedElements({flatten: true}) must return an empty array when the slot element is not in any tree');
+    assert_array_equals(newInnerSlot[method](), [], `${method}() must return an empty array when the slot element is not in any tree`);
+    assert_array_equals(newInnerSlot[method]({flatten: false}), [], `${method}({flatten: false}) must return an empty array when the slot element is not in any tree`);
+    assert_array_equals(newInnerSlot[method]({flatten: true}), [], `${method}({flatten: true}) must return an empty array when the slot element is not in any tree`);
 
-    assert_array_equals(innerSlot.assignedElements(), [outerSlot, innerChild], 'assignedElements() on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: false}), [outerSlot, innerChild], 'assignedElements({flatten: false}) on a default slot must return the assigned elements');
-    assert_array_equals(innerSlot.assignedElements({flatten: true}), [outerChild, innerChild], 'assignedElements({flatten: true}) on a default slot must return the distributed elements');
+    assert_array_equals(innerSlot[method](), [outerSlot, innerChild], `${method}() on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: false}), [outerSlot, innerChild], `${method}({flatten: false}) on a default slot must return the assigned nodes`);
+    assert_array_equals(innerSlot[method]({flatten: true}), [outerChild, innerChild], `${method}({flatten: true}) on a default slot must return the distributed nodes`);
 
-}, 'assignedElements({flatten: true}) must return the distributed elements, and assignedElements() and assignedElements({flatten: false}) must returned the assigned elements');
+  }, `${method}({flatten: true}) must return the distributed nodes, and ${method}() and ${method}({flatten: false}) must returned the assigned nodes`);
+}
 
 </script>
 </body>

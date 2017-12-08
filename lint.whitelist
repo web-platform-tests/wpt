@@ -15,7 +15,6 @@ INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*
-INDENT TABS: resources/webidl2/.gitmodules
 INDENT TABS: shadow-dom/*
 INDENT TABS: svg/import/*
 INDENT TABS: tools/*
@@ -102,7 +101,6 @@ CR AT EOL: WebIDL/valid/idl/documentation-dos.widl
 CR AT EOL: cors/resources/cors-headers.asis
 CR AT EOL: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
-CR AT EOL: resources/webidl2/test/syntax/idl/documentation-dos.widl
 
 # Intentional use of tabs
 INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
@@ -116,7 +114,6 @@ CONSOLE: console/*
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
 CONSOLE: resources/idlharness.js
-CONSOLE: resources/webidl2/*
 CONSOLE: streams/resources/test-utils.js
 CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
@@ -327,10 +324,11 @@ WEB-PLATFORM.TEST: .travis.yml
 WEB-PLATFORM.TEST: config.default.json
 WEB-PLATFORM.TEST: resources/test/config.test.json
 
-# Git submodules are not currently scanned
-*: tools/*
+# Third party code
 *: css/tools/apiclient/*
 *: css/tools/w3ctestlib/*
+*: resources/webidl2/*
+*: tools/*
 
 # Build system virtualenv
 *: css/tools/_virtualenv/*
@@ -945,7 +943,6 @@ CSS-COLLIDING-TEST-NAME: css/cssom/interfaces.html
 # TODO https://github.com/w3c/web-platform-tests/issues/5770
 MISSING-LINK: css/geometry/*.worker.js
 
-WEBIDL2.JS: resources/webidl2/*
 WEBIDL2.JS: .gitmodules
 
 # Manual test that uses console.logs for feedback

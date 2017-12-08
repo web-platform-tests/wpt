@@ -5,38 +5,30 @@
 <title>multicolumn | column-width</title>
 <link rel="author" title="Opera Software ASA" href="http://www.opera.com/"/>
 <link rel="help" href="http://www.w3.org/TR/css3-multicol/#the-number-and-width-of-columns"/>
-<link rel="match" href="multicol-width-ems-ref.xht"/>
+<link rel="match" href="multicol-width-ch-ref.xht"/>
 <meta name="flags" content=""/>
 <style type="text/css"><![CDATA[
-body {
-	margin: 0;
-	width: 40em;
-}
-div {
-	font-family: monospace;
-	font-size: 1em;
-	line-height: 1em;
-	color: black;
-	background: yellow;
-	orphans: 1;
-	widows: 1;
-
-	column-width: 8em;
-	column-gap: 0;
+.multicol {
+  font: 1em monospace;
+  width: 69ch;
+  column-width: 13ch;
+  column-gap: 1ch;
+  orphans: 1;
+  widows: 1;
+  background: yellow;
 }
 ]]></style>
 </head>
 
 <body>
-<div>
-	one two three four
-	five six seven eight
-	nineten eleven twelve
-	thirtn fourtnfiftn sixtn
-	seventn eightn ninetn twenty
-	hundred thousand million billion
-	trillion
-</div>
-
+  <div class="multicol">
+    one two three four
+    five six seven eight
+    nineten eleven twelve
+    thirtn fourtnfiftn sixtn
+    seventn eightn ninetn twenty
+    hundred thousand million billion
+    trillion
+  </div>
 </body>
 </html>

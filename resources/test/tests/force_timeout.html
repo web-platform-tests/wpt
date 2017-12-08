@@ -16,15 +16,15 @@ test(function(t) {
   }, 'test (synchronous)');
 
 async_test(function(t) {
-    setTimeout(function() {
+    t.step_timeout(function() {
         t.force_timeout();
       }, 0);
   }, 'async_test');
 
 promise_test(function(t) {
-	t.force_timeout();
+    t.force_timeout();
 
-	return new Promise(function() {});
+    return new Promise(function() {});
   }, 'promise_test');
 </script>
 <script type="text/json" id="expected">

@@ -144,20 +144,3 @@ function assert_will_be_idl_attribute(object, attribute_name, description) {
 
   assert_true(attribute_name in object, description);
 }
-
-// Stringifies a DOM object.  This function stringifies not only own properties
-// but also DOM attributes which are on a prototype chain.  Note that
-// JSON.stringify only stringifies own properties.
-function stringifyDOMObject(object)
-{
-    function deepCopy(src) {
-        if (typeof src != "object")
-            return src;
-        var dst = Array.isArray(src) ? [] : {};
-        for (var property in src) {
-            dst[property] = deepCopy(src[property]);
-        }
-        return dst;
-    }
-    return JSON.stringify(deepCopy(object));
-}

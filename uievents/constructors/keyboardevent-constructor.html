@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>KeyboardEvent Constructor Tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  var e = new KeyboardEvent('keydown');
+  assert_equals(e.key, "", '.key');
+  assert_equals(e.code, "", '.code');
+  assert_equals(e.location, 0, '.location');
+  assert_false(e.ctrlKey, '.ctrlKey');
+  assert_false(e.shiftKey, '.shiftKey');
+  assert_false(e.altKey, '.altKey');
+  assert_false(e.metaKey, '.metaKey');
+  assert_false(e.repeat, '.repeat');
+  assert_false(e.isComposing, '.isComposing');
+  assert_equals(e.charCode, 0, '.charCode');
+  assert_equals(e.keyCode, 0, '.keyCode');
+}, 'KeyboardEvent constructor without KeyboardEventInit.');
+
+test(function() {
+  var e = new KeyboardEvent('keydown', {key: 'a', code: 'Shift', location: 2,
+    ctrlKey: true, shiftKey: false, altKey: true, metaKey: false, repeat: true,
+    isComposing: false, charCode: 32, keyCode: 123});
+
+  assert_equals(e.key, 'a', '.key');
+  assert_equals(e.code, 'Shift', '.code');
+  assert_equals(e.location, 2, '.location');
+  assert_true(e.ctrlKey, '.ctrlKey');
+  assert_false(e.shiftKey, '.shiftKey');
+  assert_true(e.altKey, '.altKey');
+  assert_false(e.metaKey, '.metaKey');
+  assert_true(e.repeat, '.repeat');
+  assert_false(e.isComposing, '.isComposing');
+  assert_equals(e.charCode, 32, '.charCode');
+  assert_equals(e.keyCode, 123, '.keyCode');
+}, 'KeyboardEvent with KeyboardEventInit.');
+
+</script>

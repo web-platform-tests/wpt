@@ -51,11 +51,13 @@ async_test(t => {
       return;
     }
     assert_equals(e.data, 'revoked');
-    promise_rejects(t, new TypeError, fetch(url)).then(t.step_func_done());
+    fetch(url).then(response => response.text()).then(t.step_func_done(text => {
+      assert_equals(text, blob_contents);
+    }), t.unreached_func('Unexpected promise rejection'));
   }));
 
   frame.src = '//{{domains[www1]}}:{{location[port]}}/FileAPI/url/resources/revoke-helper.html';
   document.body.appendChild(frame);
-}, 'It is possible to revoke cross-origin blob URLs.');
+}, 'It is not possible to revoke cross-origin blob URLs.');
 
 </script>

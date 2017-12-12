@@ -23,5 +23,5 @@ test(function() {
   assert_throws("INVALID_ACCESS_ERR", function() {
     doc.open("/resources/testharness.js", "", "");
   });
-}, "document.open should throw when it has no window and is called with three arguments");
+}, "document.open throws when it has no window and is called with three arguments");
 </script>

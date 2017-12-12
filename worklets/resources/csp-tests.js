@@ -22,8 +22,6 @@ function openWindowAndExpectResult(windowURL, scriptURL, type, expectation) {
 // Usage:
 // runContentSecurityPolicyTests("paint");
 function runContentSecurityPolicyTests(workletType) {
-  const worklet = get_worklet(workletType);
-
   promise_test(t => {
     const kWindowURL =
         'resources/addmodule-window.html?pipe=header(' +

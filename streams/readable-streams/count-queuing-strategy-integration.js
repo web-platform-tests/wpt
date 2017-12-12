@@ -70,7 +70,7 @@ promise_test(() => {
       assert_equals(controller.desiredSize, -2, '5 reads, 7 enqueues: desiredSize should be -2');
     });
 
-}, 'Correctly governs a ReadableStreamController\'s desiredSize property (HWM = 0)');
+}, 'Correctly governs a ReadableStreamDefaultControllerWrapper\'s desiredSize property (HWM = 0)');
 
 promise_test(() => {
 
@@ -132,7 +132,7 @@ promise_test(() => {
       assert_equals(controller.desiredSize, -1, '5 reads, 7 enqueues: desiredSize should be -1');
     });
 
-}, 'Correctly governs a ReadableStreamController\'s desiredSize property (HWM = 1)');
+}, 'Correctly governs a ReadableStreamDefaultControllerWrapper\'s desiredSize property (HWM = 1)');
 
 promise_test(() => {
 
@@ -208,6 +208,6 @@ promise_test(() => {
       assert_equals(controller.desiredSize, -1, '6 reads, 11 enqueues: desiredSize should be -1');
     });
 
-}, 'Correctly governs a ReadableStreamController\'s desiredSize property (HWM = 4)');
+}, 'Correctly governs a ReadableStreamDefaultControllerWrapper\'s desiredSize property (HWM = 4)');
 
 done();

@@ -22,7 +22,7 @@ promise_test(() => {
     assert_throws(new TypeError(), () => controller.error(), 'error should throw a TypeError on a closed stream');
   });
 
-}, 'ReadableStreamController methods should continue working properly when scripts lose their reference to the ' +
+}, 'ReadableStreamDefaultControllerWrapper methods should continue working properly when scripts lose their reference to the ' +
    'readable stream');
 
 promise_test(() => {

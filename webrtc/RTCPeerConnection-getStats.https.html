@@ -122,7 +122,35 @@
       validateStatsReport(statsReport);
       assert_stats_report_has_stats(statsReport, ['peer-connection']);
     });
-  }, 'getStats() with no argument should return stats report containing peer-connection stats');
+  }, 'getStats() with no argument should return stats report containing peer-connection stats on an empty PC');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return getTrackFromUserMedia('audio')
+    .then(([track, mediaStream]) => {
+      pc.addTrack(track, mediaStream);
+      return pc.getStats();
+    })
+    .then(statsReport => {
+      validateStatsReport(statsReport);
+      assert_stats_report_has_stats(statsReport, ['peer-connection']);
+      assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
+    });
+  }, 'getStats() with no argument should return stats report containing peer-connection stats and outbound-track-stats');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    return getTrackFromUserMedia('audio')
+    .then(([track, mediaStream]) => {
+      pc.addTrack(track);
+      return pc.getStats();
+    })
+    .then(statsReport => {
+      validateStatsReport(statsReport);
+      assert_stats_report_has_stats(statsReport, ['peer-connection']);
+      assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
+    });
+  }, 'getStats() with no argument should return stats for no-stream tracks');
 
   /*
     8.5.  The stats selection algorithm

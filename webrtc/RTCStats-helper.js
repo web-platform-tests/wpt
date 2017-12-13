@@ -136,7 +136,7 @@ function validateOptionalIdField(statsReport, stats, field, type) {
     };
  */
 function validateRtcStats(statsReport, stats) {
-  assert_number_field(stats, 'timeStamp');
+  assert_number_field(stats, 'timestamp');
   assert_string_field(stats, 'type');
   assert_string_field(stats, 'id');
 }

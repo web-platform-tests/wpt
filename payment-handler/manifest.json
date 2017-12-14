@@ -1,8 +1,10 @@
 {
   "name": "Test Payment Handler",
-  "icons": [{
-    "src": "/images/rgrg-256x256.png",
-    "sizes": "256x256",
-    "type": "image/png"
-  }]
+  "icons": [
+    {
+      "src": "/images/rgrg-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
 }

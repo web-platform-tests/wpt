@@ -7,7 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   async function registerAppAndBuildPaymentRequest(methodName) {
-    await navigator.serviceWorker.register("app-can-make-payment.js");
+    await navigator.serviceWorker.register('app-can-make-payment.js');
     const registration = await navigator.serviceWorker.ready;
     if (!registration.paymentManager) {
       return;
@@ -18,8 +18,8 @@
         return;
       }
     }
-    await registration.paymentManager.instruments.set("instrument-key", {
-      name: "Test Payment Method",
+    await registration.paymentManager.instruments.set('instrument-key', {
+      name: 'Test Payment Method',
       enabledMethods: [methodName],
     });
     return new PaymentRequest(
@@ -27,10 +27,10 @@
         supportedMethods: methodName,
       }, ], {
         total: {
-          label: "Total",
+          label: 'Total',
           amount: {
-            currency: "USD",
-            value: "0",
+            currency: 'USD',
+            value: '0',
           },
         },
       }
@@ -38,7 +38,7 @@
   }
 
   promise_test(async t => {
-    const methodName = window.location.origin + "/canMakePayment-false";
+    const methodName = window.location.origin + '/canMakePayment-false';
     const request = await registerAppAndBuildPaymentRequest(methodName);
     assert_not_equals(request, undefined);
     let paymentRequestCanMakePaymentResult;
@@ -47,16 +47,16 @@
     } catch (err) {
       assert_equals(
         err.name,
-        "NotAllowedError",
-        "If it throws, then it must be NotAllowedError"
+        'NotAllowedError',
+        'If it throws, then it must be NotAllowedError'
       );
     }
-    assert_false(paymentRequestCanMakePaymentResult, "canMakePayment() must return false.");
-    await promise_rejects(t, "NotSupportedError", request.show());
-  }, "If CanMakePaymentEvent.respondWith(false) is called, then the payment method is not supported.");
+    assert_false(paymentRequestCanMakePaymentResult, 'canMakePayment() must return false.');
+    await promise_rejects(t, 'NotSupportedError', request.show());
+  }, 'If CanMakePaymentEvent.respondWith(false) is called, then the payment method is not supported.');
 
   promise_test(async t => {
-    const methodName = window.location.origin + "/canMakePayment-promise-false";
+    const methodName = window.location.origin + '/canMakePayment-promise-false';
     const request = await registerAppAndBuildPaymentRequest(methodName);
     assert_not_equals(request, undefined);
     let paymentRequestCanMakePaymentResult;
@@ -65,16 +65,16 @@
     } catch (err) {
       assert_equals(
         err.name,
-        "NotAllowedError",
-        "If it throws, then it must be NotAllowedError"
+        'NotAllowedError',
+        'If it throws, then it must be NotAllowedError'
       );
     }
-    assert_false(paymentRequestCanMakePaymentResult, "canMakePayment() must return false.");
-    await promise_rejects(t, "NotSupportedError", request.show());
-  }, "If CanMakePaymentEvent.respondWith(Promise.resolve(false)) is called, then the payment method is not supported.");
+    assert_false(paymentRequestCanMakePaymentResult, 'canMakePayment() must return false.');
+    await promise_rejects(t, 'NotSupportedError', request.show());
+  }, 'If CanMakePaymentEvent.respondWith(Promise.resolve(false)) is called, then the payment method is not supported.');
 
   promise_test(async t => {
-    const methodName = window.location.origin + "/canMakePayment-true";
+    const methodName = window.location.origin + '/canMakePayment-true';
     const request = await registerAppAndBuildPaymentRequest(methodName);
     assert_not_equals(request, undefined);
     let paymentRequestCanMakePaymentResult;
@@ -83,18 +83,18 @@
     } catch (err) {
       assert_equals(
         err.name,
-        "NotAllowedError",
-        "If it throws, then it must be NotAllowedError"
+        'NotAllowedError',
+        'If it throws, then it must be NotAllowedError'
       );
     }
-    assert_true(paymentRequestCanMakePaymentResult, "canMakePayment() must return true.");
+    assert_true(paymentRequestCanMakePaymentResult, 'canMakePayment() must return true.');
     const acceptPromise = request.show();
     await request.abort();
-    await promise_rejects(t, "AbortError", acceptPromise);
-  }, "If CanMakePaymentEvent.respondWith(true) is called, then the payment method is supported.");
+    await promise_rejects(t, 'AbortError', acceptPromise);
+  }, 'If CanMakePaymentEvent.respondWith(true) is called, then the payment method is supported.');
 
   promise_test(async t => {
-    const methodName = window.location.origin + "/canMakePayment-promise-true";
+    const methodName = window.location.origin + '/canMakePayment-promise-true';
     const request = await registerAppAndBuildPaymentRequest(methodName);
     assert_not_equals(request, undefined);
     let paymentRequestCanMakePaymentResult;
@@ -103,18 +103,18 @@
     } catch (err) {
       assert_equals(
         err.name,
-        "NotAllowedError",
-        "If it throws, then it must be NotAllowedError"
+        'NotAllowedError',
+        'If it throws, then it must be NotAllowedError'
       );
     }
-    assert_true(paymentRequestCanMakePaymentResult, "canMakePayment() must return true.");
+    assert_true(paymentRequestCanMakePaymentResult, 'canMakePayment() must return true.');
     const acceptPromise = request.show();
     await request.abort();
-    await promise_rejects(t, "AbortError", acceptPromise);
-  }, "If CanMakePaymentEvent.respondWith(Promise.resolve(true)) is called, then the payment method is supported.");
+    await promise_rejects(t, 'AbortError', acceptPromise);
+  }, 'If CanMakePaymentEvent.respondWith(Promise.resolve(true)) is called, then the payment method is supported.');
 
   promise_test(async t => {
-    const methodName = window.location.origin + "/canMakePayment-custom-error";
+    const methodName = window.location.origin + '/canMakePayment-custom-error';
     const request = await registerAppAndBuildPaymentRequest(methodName);
     assert_not_equals(request, undefined);
     let paymentRequestCanMakePaymentResult;
@@ -123,11 +123,11 @@
     } catch (err) {
       assert_equals(
         err.name,
-        "NotAllowedError",
-        "If it throws, then it must be NotAllowedError"
+        'NotAllowedError',
+        'If it throws, then it must be NotAllowedError'
       );
     }
-    assert_false(paymentRequestCanMakePaymentResult, "canMakePayment() must return false.");
-    await promise_rejects(t, "NotSupportedError", request.show());
-  }, "If CanMakePaymentEvent.respondWith(Promise.reject(error)) is called, then the payment method is not supported.");
+    assert_false(paymentRequestCanMakePaymentResult, 'canMakePayment() must return false.');
+    await promise_rejects(t, 'NotSupportedError', request.show());
+  }, 'If CanMakePaymentEvent.respondWith(Promise.reject(error)) is called, then the payment method is not supported.');
 </script>

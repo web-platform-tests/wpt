@@ -17,14 +17,13 @@
     const timings = { a: {}, b: {}, c: {} };
     const t = async_test("hr-time time origin");
 
-    window.addEventListener("message", msg => {
-      msg = msg.data;
+    window.mark = msg => {
       timings[msg.docName][msg.lifecycleEventName] = msg.time;
 
       if (msg.docName === "c" && msg.lifecycleEventName === "unload") {
         setTimeout(makeAssertions, 0);
       }
-    });
+    };
 
     function makeAssertions () {
       t.step(() => {

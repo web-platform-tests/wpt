@@ -6,11 +6,11 @@ const syncDelay = ms => {
   } while (elapsedTime < ms);
 };
 
-const markTime = (docName, lifecycleEventName) => window.opener.postMessage({
+const markTime = (docName, lifecycleEventName) => window.opener.mark({
   docName,
   lifecycleEventName,
   time: performance.now()
-}, "*");
+});
 
 const setupUnloadPrompt = (docName, msg) => {
   window.addEventListener("beforeunload", ev => {

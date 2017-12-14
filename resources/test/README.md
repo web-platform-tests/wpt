@@ -57,7 +57,6 @@ acceptance criteria is simply that any tests executed pass.
 
 ### Functional tests
 
-In order to test the behavior of the harness itself, some tests must force
 Thoroughly testing the behavior of the harness itself requires ensuring a
 number of considerations which cannot be verified with the "unit testing"
 strategy. These include:

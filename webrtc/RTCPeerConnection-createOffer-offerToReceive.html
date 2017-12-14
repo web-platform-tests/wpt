@@ -89,19 +89,19 @@
     }, `offerToReceive${capsType} option should be ignored if a non-stopped "sendrecv" transceiver exists`);
   });
 
-promise_test(t => {
-  const pc = new RTCPeerConnection();
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
 
-  return pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
-  .then(() => {
-    assert_equals(pc.getTransceivers().length, 2,
-      'Expect pc to have two transceivers');
+    return pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
+    .then(() => {
+      assert_equals(pc.getTransceivers().length, 2,
+        'Expect pc to have two transceivers');
 
-    assert_equals(pc.getTransceivers()[0].direction, 'recvonly',
-      'Expect first transceiver to have "recvonly" direction');
-    assert_equals(pc.getTransceivers()[1].direction, 'recvonly',
-      'Expect second transceiver to have "recvonly" direction');
-  });
-}, 'offerToReceiveAudio and Video should create two "recvonly" transceivers');
+      assert_equals(pc.getTransceivers()[0].direction, 'recvonly',
+        'Expect first transceiver to have "recvonly" direction');
+      assert_equals(pc.getTransceivers()[1].direction, 'recvonly',
+        'Expect second transceiver to have "recvonly" direction');
+    });
+  }, 'offerToReceiveAudio and Video should create two "recvonly" transceivers');
 
 </script>

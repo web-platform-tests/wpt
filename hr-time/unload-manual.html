@@ -3,6 +3,9 @@
 <head>
   <title>time origin value manual test</title>
   <link rel="help" href="https://w3c.github.io/hr-time/#time-origin-1">
+  <link rel="prefetch" href="./resources/unload-a.html">
+  <link rel="prefetch" href="./resources/unload-b.html">
+  <link rel="prefetch" href="./resources/unload-c.html">
 </head>
 <body>
   <script src="/resources/testharness.js"></script>
@@ -10,15 +13,18 @@
   <script>
     setup({ explicit_timeout: true });
 
-    const ACCEPTABLE_DELAY = 200; // ms
+    const ACCEPTABLE_VARIANCE = 40; // ms
 
-    const isWithinRange = (a, b) => Math.abs(a - b) < ACCEPTABLE_DELAY;
+    const isRoughlyEqual = (a, b) => Math.abs(a - b) < ACCEPTABLE_VARIANCE;
 
     const timings = { a: {}, b: {}, c: {} };
     const t = async_test("hr-time time origin");
 
     window.mark = msg => {
-      timings[msg.docName][msg.lifecycleEventName] = msg.time;
+      timings[msg.docName][msg.lifecycleEventName] = {
+        performanceNow: msg.performanceNow,
+        dateNow: msg.dateNow
+      };
 
       if (msg.docName === "c" && msg.lifecycleEventName === "unload") {
         setTimeout(makeAssertions, 0);
@@ -27,13 +33,29 @@
 
     function makeAssertions () {
       t.step(() => {
-        assert_true(isWithinRange(timings.a.load, 0), "New window's time origin should be set to creation of document.");
-        assert_true(isWithinRange(timings.b.load, 2000), "Document in reused window's time origin should be time of close of pop-up box.");
-        assert_true(isWithinRange(timings.c.load, 2000), "Document in reused window's time origin should be time of close of pop-up box.");
+        const loadTimeBetweenAandB = timings.b.load.dateNow - timings.a.unload.dateNow;
+        const loadTimeBetweenBandC = timings.c.load.dateNow - timings.b.unload.dateNow;
 
-        assert_true(!isWithinRange(timings.a.unload, 0), "Time origin during unload event should match that of rest of document.");
-        assert_true(!isWithinRange(timings.b.unload, 0), "Time origin during unload event should match that of rest of document.");
-        assert_true(!isWithinRange(timings.c.unload, 0), "Time origin during unload event should match that of rest of document.");
+        assert_true(
+          isRoughlyEqual(loadTimeBetweenAandB, timings.b.load.performanceNow),
+          "Document in reused window's time origin should be time of close of pop-up box."
+        );
+        assert_true(
+          isRoughlyEqual(loadTimeBetweenBandC, timings.c.load.performanceNow),
+          "Document in reused window's time origin should be time of close of pop-up box."
+        );
+        assert_true(
+          !isRoughlyEqual(timings.a.unload.performanceNow, 0),
+          "Time origin during unload event should match that of rest of document."
+        );
+        assert_true(
+          !isRoughlyEqual(timings.b.unload.performanceNow, 0),
+          "Time origin during unload event should match that of rest of document."
+        );
+        assert_true(
+          !isRoughlyEqual(timings.c.unload.performanceNow, 0),
+          "Time origin during unload event should match that of rest of document."
+        );
       });
       t.done();
     }

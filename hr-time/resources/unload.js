@@ -9,7 +9,8 @@ const syncDelay = ms => {
 const markTime = (docName, lifecycleEventName) => window.opener.mark({
   docName,
   lifecycleEventName,
-  time: performance.now()
+  performanceNow: performance.now(),
+  dateNow: Date.now()
 });
 
 const setupUnloadPrompt = (docName, msg) => {
@@ -36,7 +37,7 @@ const setupListeners = (docName, nextDocument) => {
 
   window.addEventListener("unload", () => {
     markTime(docName, "unload");
-    if (docName !== "c") { syncDelay(2000); }
+    if (docName !== "c") { syncDelay(1000); }
   });
 };
 

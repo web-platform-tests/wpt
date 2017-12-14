@@ -22,10 +22,20 @@ async function registerAppAndBuildPaymentRequest(methodName) {
     name: 'Test Payment Method',
     enabledMethods: [methodName],
   });
+  const unsupportedMethodName = methodName + '/unsupported';
   return new PaymentRequest(
     [
       {
         supportedMethods: methodName,
+        data: {
+          defaultParameter: 'defaultValue',
+        },
+      },
+      {
+        supportedMethods: unsupportedMethodName,
+        data: {
+          defaultUnsupportedParameter: 'defaultUnsupportedValue',
+        },
       },
     ],
     {
@@ -36,6 +46,52 @@ async function registerAppAndBuildPaymentRequest(methodName) {
           value: '0',
         },
       },
+      displayItems: [
+        {
+          label: 'Nada',
+          amount: {currency: 'USD', value: '0'},
+        },
+      ],
+      modifiers: [
+        {
+          supportedMethods: [methodName],
+          data: {
+            modifiedParameter: 'modifiedValue',
+          },
+          total: {
+            label: 'Modified Total',
+            amount: {
+              currency: 'USD',
+              value: '0.0001',
+            },
+          },
+          additionalDisplayItems: [
+            {
+              label: 'Something',
+              amount: {currency: 'USD', value: '0.0001'},
+            },
+          ],
+        },
+        {
+          supportedMethods: [unsupportedMethodName],
+          data: {
+            modifiedUnsupportedParameter: 'modifiedUnsupportedValue',
+          },
+          total: {
+            label: 'Modified Unsupported Total',
+            amount: {
+              currency: 'USD',
+              value: '10',
+            },
+          },
+          additionalDisplayItems: [
+            {
+              label: 'Something Unsupported',
+              amount: {currency: 'USD', value: '10'},
+            },
+          ],
+        },
+      ],
     },
   );
 }

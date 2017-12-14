@@ -21,7 +21,6 @@ self.addEventListener("canmakepayment", canMakePaymentEvent => {
       break;
     default:
       const msg = `Worker says: unrecognized payment method name ${methodName}`;
-      console.log(msg);
       canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
       break;
   }

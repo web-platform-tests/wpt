@@ -1,11 +1,3 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Async Cookies: cookieStore.get() sees cookieStore.set() cookie</title>
-<link rel="help" href="https://github.com/WICG/cookie-store">
-<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
 'use strict';
 
 // Workaround because add_cleanup doesn't support async functions yet.
@@ -27,5 +19,3 @@ promise_test(async testCase => {
 
   await async_cleanup(() => cookieStore.delete('cookie-name'));
 }, 'cookieStore.get returns the cookie written by cookieStore.set');
-
-</script>

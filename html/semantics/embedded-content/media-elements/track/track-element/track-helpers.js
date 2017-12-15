@@ -26,6 +26,16 @@ function assert_cues_match(cues, expected) {
     }
 }
 
+function assert_cues_html_content(cues, expected) {
+    assert_equals(cues.length, expected.length);
+    for (var i = 0; i < cues.length; i++) {
+        var expectedItem = expected[i];
+        var property = Object.getOwnPropertyNames(expectedItem)[0];
+        var propertyValue = expectedItem[property];
+        assert_equals(propertyValue(cues[i]), expectedItem.expected);
+    }
+}
+
 function check_cues_from_track(src, func) {
     async_test(function(t) {
         var video = document.createElement("video");

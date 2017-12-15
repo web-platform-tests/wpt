@@ -70,7 +70,7 @@
       return getTrackFromUserMedia(type)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
-        pc.createOffer();
+        return pc.createOffer();
       })
       .then(() => {
         assert_equals(pc.getTransceivers().length, 1,

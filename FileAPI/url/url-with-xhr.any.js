@@ -23,7 +23,7 @@ function xhr_should_fail(test, url, method = 'GET') {
   });
   const result2 = new Promise(resolve => {
     xhr.onreadystatechange = test.step_func(() => {
-      if (xhr.readyState != xhr.DONE) return;
+      if (xhr.readyState !== xhr.DONE) return;
       assert_equals(xhr.status, 0);
       resolve();
     });

@@ -1,3 +1,18 @@
+// This method generates a number of tests verifying fetching of blob URLs,
+// allowing the same tests to be used both with fetch() and XMLHttpRequest.
+//
+// |fetch_method| is only used in test names, and should describe the
+// (javascript) method being used by the other two arguments (i.e. 'fetch' or 'XHR').
+//
+// |fetch_should_succeed| is a callback that is called with the Test and a URL.
+// Fetching the URL is expected to succeed. The callback should return a promise
+// resolved with whatever contents were fetched.
+//
+// |fetch_should_fail| similarly is a callback that is called with the Test, a URL
+// to fetch, and optionally a method to use to do the fetch. If no method is
+// specified the callback should use the 'GET' method. Fetching of these URLs is
+// expected to fail, and the callback should return a promise that resolves iff
+// fetching did indeed fail.
 function fetch_tests(fetch_method, fetch_should_succeed, fetch_should_fail) {
   const blob_contents = 'test blob contents';
   const blob = new Blob([blob_contents]);
@@ -8,7 +23,7 @@ function fetch_tests(fetch_method, fetch_should_succeed, fetch_should_fail) {
     return fetch_should_succeed(t, url).then(text => {
       assert_equals(text, blob_contents);
     });
-  }, 'Check whether Blob URLs can be used in ' + fetch_method);
+  }, 'Blob URLs can be used in ' + fetch_method);
 
   promise_test(t => {
     const url = URL.createObjectURL(blob);

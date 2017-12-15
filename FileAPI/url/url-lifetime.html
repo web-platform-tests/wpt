@@ -28,16 +28,19 @@ promise_test(t => {
   const blob = new Blob([blob_contents]);
   const frame = document.createElement('iframe');
   frame.setAttribute('style', 'display:none;');
+  frame.src = 'resources/create-helper.html';
+  document.body.appendChild(frame);
+
   let url;
-  let result = new Promise(resolve => {
-    self.addEventListener('message', t.step_func(e => {
-      if (e.source == frame.contentWindow && e.data == 'ready') resolve(e);
-    }));
+  return new Promise(resolve => {
+    frame.onload = t.step_func(e => {
+      resolve(e);
+    });
   }).then(e => {
-    e.source.postMessage({blob: blob}, '*');
+    frame.contentWindow.postMessage({blob: blob}, '*');
     return new Promise(resolve => {
       self.addEventListener('message', t.step_func(e => {
-        if (e.source == frame.contentWindow && e.data != 'ready') resolve(e);
+        if (e.source === frame.contentWindow) resolve(e);
       }));
     });
   }).then(e => {
@@ -49,9 +52,5 @@ promise_test(t => {
     assert_equals(text, blob_contents);
     return new Promise(resolve => t.step_timeout(resolve, 100));
   }).then(() => promise_rejects(t, new TypeError, fetch(url)));
-
-  frame.src = 'resources/create-helper.html';
-  document.body.appendChild(frame);
-  return result;
 }, 'Removing an iframe revokes its URLs');
 </script>

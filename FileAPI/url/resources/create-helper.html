@@ -4,5 +4,4 @@ self.addEventListener('message', e => {
   let url = URL.createObjectURL(e.data.blob);
   e.source.postMessage({url: url}, '*');
 });
-self.parent.postMessage('ready', '*');
 </script>

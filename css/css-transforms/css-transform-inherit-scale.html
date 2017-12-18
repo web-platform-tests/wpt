@@ -6,13 +6,11 @@
     <link rel="reviewer" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#two-d-transform-functions">
-    <!--<link rel="match" href="reference/ttwf-reftest-tutorial-ref.html">
-	<meta name="flags" content="svg">-->
+    <link rel="match" href="../reference/ref-filled-green-200px-square.html">
     <meta name="assert" content="While child div inherits property from its parent, scaling 2 on parent div will course the child to scale 4 and totally cover the red div. The test passes if there is a green square and no red. ">
     <style type="text/css">
-		* {
-			margin: 0;
-			padding: 0;
+		.test {
+			position: relative;
 		}
 		.red {
 			position: absolute;
@@ -32,7 +30,6 @@
         }
         .child {
 			position: absolute;
-			top: 10px;
 			transform: inherit;
             width: 50px;
 			height: 50px;
@@ -41,10 +38,12 @@
     </style>
 </head>
 <body>
-    <p>The test passes if there is a green square and no red. </p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <div class="test">
 	<div class="red"></div>
 	<div class="parent">
 		<div class="child"></div>
 	</div>
+  </div>
 </body>
 </html>

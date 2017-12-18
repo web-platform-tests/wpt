@@ -53,8 +53,8 @@ promise_test(function(t) {
     link.rel = 'modulepreload';
     link.href = 'resources/module1.js';
     return attachAndWaitForLoad(link).then(() => {
-        // Currently, modulepreload doesn't perform submodules fetch.
         verifyNumberOfDownloads('resources/module1.js', 1);
+        // The load event fires before (optional) submodules fetch.
         verifyNumberOfDownloads('resources/module2.js', 0);
 
         var script = document.createElement('script');

@@ -1,11 +1,3 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Async Cookies: cookieStore.getAll() arguments and options</title>
-<link rel="help" href="https://github.com/WICG/cookie-store">
-<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
 'use strict';
 
 // Workaround because add_cleanup doesn't support async functions yet.
@@ -125,5 +117,3 @@ promise_test(async testCase => {
   await async_cleanup(() => cookieStore.delete('cookie-name'));
   await async_cleanup(() => cookieStore.delete('cookie-name-2'));
 }, 'cookieStore.getAll with matchType set to startsWith and name in options');
-
-</script>

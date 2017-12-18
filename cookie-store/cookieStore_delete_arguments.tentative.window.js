@@ -1,11 +1,3 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Async Cookies: cookieStore.delete() arguments and options</title>
-<link rel="help" href="https://github.com/WICG/cookie-store">
-<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
 'use strict';
 
 // Workaround because add_cleanup doesn't support async functions yet.
@@ -76,7 +68,7 @@ promise_test(async testCase => {
 }, 'cookieStore.delete with expires in options');
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentDomain = currentUrl.hostname;
   await cookieStore.set(
       'cookie-name', 'cookie-value', { domain: currentDomain });
@@ -91,7 +83,7 @@ promise_test(async testCase => {
 }, 'cookieStore.delete with domain set to the current hostname');
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentDomain = currentUrl.hostname;
   const subDomain = `sub.${currentDomain}`;
   await cookieStore.set(
@@ -108,7 +100,7 @@ promise_test(async testCase => {
 }, 'cookieStore.delete with domain set to a subdomain of the current hostname');
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentDomain = currentUrl.hostname;
   await cookieStore.set(
       'cookie-name', 'cookie-value', { domain: currentDomain });
@@ -124,7 +116,7 @@ promise_test(async testCase => {
    'hostname');
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentDomain = currentUrl.hostname;
   const subDomain = `sub.${currentDomain}`;
   await cookieStore.set(
@@ -143,7 +135,7 @@ promise_test(async testCase => {
 
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentPath = currentUrl.pathname;
   const currentDirectory =
       currentPath.substr(0, currentPath.lastIndexOf('/') + 1);
@@ -160,7 +152,7 @@ promise_test(async testCase => {
 }, 'cookieStore.delete with path set to the current directory');
 
 promise_test(async testCase => {
-  const currentUrl = new URL(window.location.href);
+  const currentUrl = new URL(self.location.href);
   const currentPath = currentUrl.pathname;
   const currentDirectory =
       currentPath.substr(0, currentPath.lastIndexOf('/') + 1);
@@ -177,5 +169,3 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name', { path: currentDirectory })
   });
 }, 'cookieStore.delete with path set to subdirectory of the current directory');
-
-</script>

@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset=windows-1252>
+<title>Fragment navigation: encoding</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div style=height:10000px></div>
+<div id=&#xFF;></div>
+<div id=&#xFEFF;></div>
+<script>
+test(() => {
+  assert_equals(location.hash, "", "Page must be loaded with no hash");
+
+  location.hash = "\u00FF";
+  assert_equals(location.hash, "#%C3%BF");
+  assert_greater_than(self.scrollY, 1000);
+
+  location.hash = "top";
+  assert_equals(self.scrollY, 0);
+
+  location.hash = "%EF%BB%BF";
+  assert_greater_than(self.scrollY, 1000);
+
+  location.hash = "%FF";
+  assert_equals(self.scrollY, 0);
+});
+</script>

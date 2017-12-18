@@ -1,6 +1,8 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Async Cookies: cookieStore.get() sees cookieStore.set() cookie in ServiceWorker</title>
+<title>Async Cookies: cookieStore API argument handling in ServiceWorker</title>
+<link rel="help" href="https://github.com/WICG/cookie-store">
+<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -13,7 +15,7 @@
   if (registration)
     await registration.unregister();
   registration = await navigator.serviceWorker.register(
-      'serviceworker_cookiestore_basic.js', {scope});
+      'serviceworker_cookieStore_arguments.js', {scope});
 
   fetch_tests_from_worker(registration.installing);
 })();

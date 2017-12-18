@@ -94,7 +94,7 @@ function registration_tests_scope(register_method, check_error_types) {
       var script = 'resources/empty-worker.js';
       var scope = 'filesystem:' + normalizeURL('resources/scope/filesystem-scope-url');
       return promise_rejects(t,
-          check_error_types ? 'SecurityError' : null,
+          check_error_types ? new TypeError() : null,
           register_method(script, {scope: scope}),
           'Registering with the scope that has same-origin filesystem: URL ' +
               'should fail with SecurityError.');

@@ -21,19 +21,19 @@ self.addEventListener('canmakepayment', canMakePaymentEvent => {
   }
 
   if ('defaultUnsupportedParameter' in methodData.data) {
-    const msg = "Worker says: unexpected 'defaultUnsupportedParameter'";
+    const msg = 'Worker says: unexpected "defaultUnsupportedParameter"';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }
 
   if ('total' in canMakePaymentEvent) {
-    const msg = "Worker says: unexpected 'total'";
+    const msg = 'Worker says: unexpected "total"';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }
 
   if ('displayItems' in canMakePaymentEvent) {
-    const msg = "Worker says: unexpected 'displayItems'";
+    const msg = 'Worker says: unexpected "displayItems"';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }
@@ -53,6 +53,13 @@ self.addEventListener('canmakepayment', canMakePaymentEvent => {
   }
 
   const methodName = methodData.supportedMethods[0];
+  if (methodName === 'basic-card') {
+    const msg =
+      'Worker says: "basic-card" payment method should never be checked in CanMakePaymentEvent';
+    canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
+    return;
+  }
+
   if (modifier.supportedMethods[0] !== methodName) {
     const msg = `Worker says: unexpected modifier method name ${
       modifier.supportedMethods[0]
@@ -71,19 +78,19 @@ self.addEventListener('canmakepayment', canMakePaymentEvent => {
 
   if ('modifiedUnsupportedParameter' in modifier) {
     const msg =
-      "Worker says: unexpected 'modifiedUnsupportedParameter' in modifier";
+      'Worker says: unexpected "modifiedUnsupportedParameter" in modifier';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }
 
   if ('total' in modifier) {
-    const msg = "Worker says: unexpected 'total' in modifier";
+    const msg = 'Worker says: unexpected "total" in modifier';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }
 
   if ('additionalDisplayItems' in modifier) {
-    const msg = "Worker says: unexpected 'additionalDisplayItems' in modifier";
+    const msg = 'Worker says: unexpected "additionalDisplayItems" in modifier';
     canMakePaymentEvent.respondWith(Promise.reject(new Error(msg)));
     return;
   }

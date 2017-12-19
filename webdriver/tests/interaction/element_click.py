@@ -1,3 +1,5 @@
+import pytest
+
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
@@ -32,7 +34,7 @@ def test_element_file_upload_state(session):
 
 def test_scroll_into_element_view(session):
     # 14.1 Step 4
-    session.url = inline("<input type=text value=Federer><div style= \"height: 200vh; width: 5000vh\">")
+    session.url = inline("<input type=text value=Federer><div style=\"height: 200vh; width: 5000vh\">")
 
     # Scroll to the bottom right of the page
     session.execute_script("window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);")
@@ -42,30 +44,45 @@ def test_scroll_into_element_view(session):
     assert_success(response)
 
     # Check if element cleared is scrolled into view
-    rect = session.execute_script("return document.getElementsByTagName(\"input\")[0].getBoundingClientRect()")
+    response = session.execute_script("""rect = document.getElementsByTagName("input")[0].getBoundingClientRect();
+                                        xOffset = window.pageXOffset;
+                                        yOffset = window.pageYOffset;
+                                        return  rect["top"] < (window.innerHeight + yOffset) &&
+                                                rect["left"] < (window.innerWidth + xOffset) &&
+                                                (rect["top"] + rect["height"]) > yOffset &&
+                                                (rect["left"] + rect["width"]) > xOffset;""")
+    assert response is True
 
-    pageDict = {}
 
-    pageDict["innerHeight"] = session.execute_script("return window.innerHeight")
-    pageDict["innerWidth"] = session.execute_script("return window.innerWidth")
-    pageDict["pageXOffset"] = session.execute_script("return window.pageXOffset")
-    pageDict["pageYOffset"] = session.execute_script("return window.pageYOffset")
+@pytest.mark.parametrize("element", ["""<div style="width: 500px; height: 100px; background-color: green; transform: translate(-50px, -50px);">
+                                            <a href=#>aaaa</a>
+                                        </div>""",
+                                    """<div style="width: 500px; height: 100px; background-color: green; transform: rotate(50deg);">
+                                            <a href=#>aaaa</a>
+                                        </div>"""])
 
-    assert rect["top"] < (pageDict["innerHeight"] + pageDict["pageYOffset"]) and \
-           rect["left"] < (pageDict["innerWidth"] + pageDict["pageXOffset"]) and \
-           (rect["top"] + element.rect["height"]) > pageDict["pageYOffset"] and \
-           (rect["left"] + element.rect["width"]) > pageDict["pageXOffset"]
-
-# TODO
-# Any suggestions on implementation?
-# def test_element_not_interactable(session):
+def test_element_not_interactable(session, element):
 #     # 14.1 Step 5
-#     assert_error(response, "element not interactable")
+    session.url = inline(element)
+    element = session.find.css("a", all=False)
+    response = click(session, element)
+    assert_error(response, "element not interactable")
 
-def test_element_click_intercepted(session):
+
+@pytest.mark.parametrize("element", ["""<input type=button value=Roger style="position: absolute; left: 10px; top: 10px">
+                                    <div style="position: absolute; height: 100px; width: 100px; background: rgba(255,0,0,.5); left: 10px; top: 5px"></div>""",
+                                    "<input type=button value=Roger style=\"pointer-events: none\">",
+                                    """<div style="position: absolute; height: 50px; width: 100px; background: rgba(255,0,0,.5); left: 10px; top: 50px; overflow: hidden">
+                                        ABCDEFGHIJKLMNOPQRSTUVWXYZ
+                                        <input type=text value=Federer style="position: absolute; top: 50px; left: 10px;">
+                                    </div>"""])
+
+def test_element_click_intercepted(session, element):
     # 14.1 Step 6
-    session.url = inline("""<input type=button value=Roger style=\"position: absolute; left: 10px; top: 10px\">
-                            <div style=\"position: absolute; height: 100px; width: 100px; background: rgba(255,0,0,.5); left: 10px; top: 5px\"></div>""")
+    # Test intercepted click
+    # Test no pointer events
+    # Test overflow hidden
+    session.url = inline(element)
 
     element = session.find.css("input", all=False)
     response = click(session, element)
@@ -140,3 +157,58 @@ def test_match_option_element(session, mouse_chain):
     for event in ["focusCheck", "mouseOverCheck", "mouseMoveCheck", "mouseDownCheck", "mouseUpCheck", "mouseClickCheck", "inputEventCheck", "changeEventCheck"]:
         response = session.execute_script("return document.getElementById(\"%s\").checked;" % event)
         assert response is True
+
+
+@pytest.mark.parametrize("element", ["<a href=\"/webdriver/tests/interaction/support/test.html\">123456</a>",
+                                     """<p style="background-color: rgb(255, 255, 0); width: 5em;">
+                                        <a href=\"/webdriver/tests/interaction/support/test.html\">Helloooooooooooooooooooo Worlddddddddddddddd</a>
+                                    </p>"""])
+
+def test_element_click_link(session, element):
+    # 14.1 Step 6
+    session.url = inline(element)
+    element = session.find.css("a", all=False)
+    response = click(session, element)
+    assert_success(response)
+
+    element = session.find.css("input", all=False)
+    assert element.attribute("value") == "Hello World"
+
+
+def test_element_click_link_unload_event(session):
+    # 14.1 Step 6
+    session.url = inline("""<body onunload="checkUnload()">
+                                <a href="/webdriver/tests/interaction/support/test.html">click here</a>
+                                <input id=unloadCheck type=checkbox>
+                                <script>
+                                function checkUnload() {                        
+                                    document.getElementById("unloadCheck").checked = true;                       
+                                }
+                                </script>
+                            </body>""")
+    element = session.find.css("a", all=False)
+    response = click(session, element)
+    assert_success(response)
+
+    element = session.find.css("input", all=False)
+    assert element.attribute("value") == "Hello World"
+
+    session.transport.send("POST", "session/{session_id}/back".format(session_id=session.session_id))
+
+    element = session.find.css("input", all=False)
+    response = session.execute_script("return document.getElementById(\"unloadCheck\").checked;")
+    assert response is True
+
+
+def test_element_click_link_hash(session):
+    # 14.1 Step 6
+    session.url = inline("<a href=\"#\">aaaa</a>")
+    oldUrl = session.transport.send("GET", "session/{session_id}/url".format(session_id=session.session_id))
+    assert_success(oldUrl)
+    element = session.find.css("a", all=False)
+    response = click(session, element)
+    assert_success(response)
+
+    newUrl = session.transport.send("GET", "session/{session_id}/url".format(session_id=session.session_id))
+    assert_success(newUrl)
+    assert oldUrl.body["value"] + "#" == newUrl.body["value"]

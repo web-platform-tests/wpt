@@ -148,7 +148,7 @@
           'Expect transceiver to have "sendonly" direction');
       })
       ;
-    }, `subsequent offerToReceive${capsType} with a track should change the transceiver to sendonly`);
+    }, `subsequent offerToReceive${capsType} set to false with a track should change the direction to "sendonly"`);
   });
 
   promise_test(t => {

@@ -1,0 +1,404 @@
+#!/usr/bin/env python
+
+import os
+import re
+import string
+import subprocess
+import sys
+import tempfile
+import threading
+
+from random import randint
+from stat import *
+
+'''
+This tool reads out test262 suite and generates wrappers for web-platform-tests.
+Each WPT wrapper runs the target test262 test within 4 agents: IFrame, Window, 
+DedicatedWorker and SharedWorker.  Each tests is run either in strict and 
+non-strict mode, unless the target test indicates otherwise.
+'''
+
+TAB_WIDTH = 2
+DEST_PATH = 'js/test262'
+
+def trim(text):
+    lines = text.split("\n")
+    return "\n".join(lines[1:len(lines)-1])
+
+usage_text = trim('''
+Usage: test262-to-wpt [test262-dir]
+''')
+
+def usage():
+    print(usage_text)
+    exit(1)
+
+'''
+Parses a Test262 test.
+
+A test262 tests are usually composed by two parts: a comment header, that 
+describes several properties of the test, and a body, which defines the proper 
+test itself.
+
+The test header is defined in YAML and contains properties such as esid (test ID),
+description, features, flags, etc. Some of these properties are relevant to know
+what harnessing libraries to import from the test262 suite (features), whether
+the test should only be tested in strict mode or non-strict mode (flags), etc
+
+Some of the beforementioned properties would need to get serialized to the 
+resulting web-platform-test as a JSON object.
+
+The parser also fetches the body of the test.
+'''
+# Parses a Test262 test. 
+class Test262Parser(object):
+
+    def __init__(self, text):
+        match = re.search('---\*/', text)
+        if match:
+            self.header = text[:match.end(0)]
+            self.body = text[match.end(0)+1:]
+        else:
+            self.header = ""
+            self.body = text
+        self.attrs = {}
+        self.parse_header()
+
+    def parse_header(self):
+        if len(self.header) == 0:
+            return
+        value = []
+        last_attr = None
+        for line in self.header.split('\n'):
+            # End of the attribute section?
+            if re.search(r'---\*/', line):
+                self.store_attribute(last_attr, "\n".join(value))
+                break
+
+            # Attribute? (attr: <text>)
+            match = re.search(r'^\s*(\w+):', line)
+            if match:
+                attr = match.group(1)
+                # Name of attribute changed?
+                if attr != last_attr:
+                    # Should store attribute?
+                    if last_attr is not None:
+                        self.store_attribute(last_attr, "".join(value))
+                    match = re.search(': (.*)\n?', line)
+                    if match:
+                        value = [match.group(1)]
+                    else:
+                        value = []
+                    last_attr = attr
+            else:
+                value.append(line)
+        self.store_attribute(last_attr, "".join(value))
+
+    def store_attribute(self, name, value):
+        if name in ['includes', 'flags', 'features']:
+            self.attrs[name] = self.parse_list(value)
+        else:
+            self.attrs[name] = value
+
+    '''
+    There are two ways of describing a list of properties:
+       attr: [prop1, prop2, ..., propn]
+       attr:
+         - prop1
+         - prop2
+         - ...
+         - propn
+    '''
+    def parse_list(self, text):
+        match = re.search("\[", text)
+        if match:
+            return re.findall("[^\[, \]\n]+", text)
+        else:
+            return re.findall("[^- \n]+", text)
+
+###
+
+# TODO: Put everything into one single template?
+HEADER = trim('''
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>###TITLE###</title>
+    <meta name="help" href="https://storage.spec.whatwg.org/#dom-storagemanager-persisted">
+    <meta name="author" title="Mozilla" href="https://www.mozilla.org">
+
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/test262-agent-harness.js"></script>
+
+  </head>
+  <body>
+  </body>
+  <script type="text/javascript">
+###HEADER###
+###ATTRS###
+    function test262() {
+''')
+FOOTER = trim('''
+    }
+    window.addEventListener('load', function(e) {
+###TESTS###
+    });
+  </script>
+</html>
+''')
+
+ASYNC_TEST = trim('''
+async_test(function(t) {
+  ###TEST_CALL###(test262, attrs, t);
+}, '###TITLE###');
+''')
+
+def run_in_iframe(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'IFrame: ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_iframe', output)
+    return output
+
+def run_in_iframe_strict(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'IFrame (strict): ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_iframe_strict', output)
+    return output
+
+def run_in_window(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'Window: ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_window', output)
+    return output
+
+def run_in_window_strict(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'Window (strict): ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_window_strict', output)
+    return output
+
+def run_in_worker(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'Worker: ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_worker', output)
+    return output
+
+def run_in_worker_strict(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'Worker (strict): ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_worker_strict', output)
+    return output
+
+def run_in_shared_worker(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'SharedWorker: ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_shared_worker', output)
+    return output
+
+def run_in_shared_worker_strict(title):
+    output = ASYNC_TEST
+    output = re.sub('###TITLE###', 'SharedWorker (strict): ' + title, output)
+    output = re.sub('###TEST_CALL###', 'run_in_shared_worker_strict', output)
+    return output
+
+'''
+Converts a dictionary to a JSON data structure. It is possible to pass a list
+of attributes in opts.exclude so they don't get serialized to JSON.
+TODO: Use Python's JSON module?
+'''
+def tojson(d, opts):
+    def stringify(list):
+        if list == None or len(list) == 0:
+            return '[]'
+        l = []
+        for i in range(0, len(list)):
+            elem = "'" + str(list[i]) + "'"
+            l.append(elem)
+        return '[%s]' % ",".join(l)
+    ret = []
+    exclude = opts['exclude'] or []
+    def append(string):
+        ret.append(string)
+    def flush():
+        return "\n".join(ret)
+    def quote(v):
+        if isinstance(v, str):
+            if len(v) == 0:
+                return "''"
+            first, last = [v[0], v[len(v)-1]]
+            if first == "'" and last == "'":
+                return v
+            if first == '"' and last == '"':
+                return v
+        return "'%s'" % str(v)
+    def escape(v):
+        return re.sub(r"'", r"\'", v)
+    append('{')
+    for k, v in d.iteritems():
+        if k in exclude:
+            continue
+        if isinstance(v, list):
+            append("\t{key}: {value},".format(key=k, value=stringify(v)))
+        else:
+            append("\t{key}: {value},".format(key=k, value=quote(escape(v))))
+    append('}')
+    return flush()
+
+# Indents content n tabs. A tab is 2 spaces (TAB_WIDTH).
+def indent(num_tabs, content):
+    # Duplicates char n times.
+    def dup(char, times):
+        ret = []
+        for i in range(0, times):
+            ret.append(char)
+        return "".join(ret)
+    ret = []
+    space = dup(" ", num_tabs * TAB_WIDTH)
+    for line in content.split("\n"):
+        ret.append(space + line)
+    return "\n".join(ret)
+
+'''
+Generates web-platform-test wrapper for test262 tests.
+
+If a directory is passed as origin for the tests, the class recursively reads 
+out al the JavaScript files contained and converts them to web-platform-tests.
+
+If a file is passed as origin, only that tests is converted.
+
+The resulting tests are placed inside an output directory named 'js'.
+'''
+class WPTestBuilder(object):
+
+    def __init__(self, path):
+        self.path = path
+
+    def generate(self):
+        path = self.path
+        mode = os.stat(self.path)[ST_MODE]
+        if S_ISDIR(mode):
+            # Check root folder contains 'test'.
+            test_dir = os.path.join(path, "test")
+            mode = os.stat(test_dir)[ST_MODE]
+            if not S_ISDIR(mode):
+                print("Could not locate 'test' folder at %s" % path)
+                exit(1)
+            print "Generating web-platform-test wrappers for test262"
+            for each in self.listall(test_dir, {'ext': 'js', 'skip_hidden': True}):
+                self.generate_single_wpt(each)
+            print "Output: " + DEST_PATH
+        elif S_ISREG(mode):
+            pos = path.find("test262/test")
+            if pos < 0:
+                print("Not a test262 file: '%'" % path)
+                exit(1)
+            print "Generating web-platform-tests wrapper for {0}".format(path)
+            print "Output: %s" % self.generate_single_wpt(path)
+        else:
+            print "Skipping %s" % path
+
+    def destination_path(self, path):
+        filename = re.sub(".*?test262/test", "", path)
+        filename = re.sub('.js$', '.html', filename)
+        return DEST_PATH + filename
+
+    def generate_single_wpt(self, src):
+        dst = self.destination_path(src)
+        self.ensure_destination_path(dst)
+        return self.savefile(dst, self.build(dst, self.readfile(src)))
+
+    def ensure_destination_path(self, path):
+        dirname = subprocess.check_output(("dirname {0}".format(path)).split())
+        dirname = re.sub('\n', '', dirname)
+        process = subprocess.Popen(("mkdir -p {0}".format(dirname)).split())
+        process.wait() 
+
+    def savefile(self, output, content):
+        with open(output, 'wt') as fd:
+            fd.write(content)
+            return fd.name
+
+    def build(self, title, content):
+        test262 = Test262Parser(content)
+        def header():
+            opts = { 'exclude': ['description', 'info', 'esid', 'es6id'] }
+            ret = HEADER
+            ret = re.sub('###TITLE###', title, ret)
+            ret = ret.replace('###ATTRS###', indent(2, "let attrs = %s;" % tojson(test262.attrs, opts)))
+            ret = ret.replace('###HEADER###', indent(2, test262.header))
+            return ret
+        def body():
+            def escape(text):
+                text = re.sub(r'\\', r'\\\\', text)
+                text = re.sub(r'"', r'\"', text)
+                return text
+            def quote(line):
+                return "\"" + line + "\\n\""
+            def format(text):
+                output = []
+                lines = text.split("\n");
+                for line in text.split("\n"):
+                    if len(line) > 0:
+                        output.append(quote(line))
+                return " + \n".join(output)
+            return indent(4, "return \"\" +\n%s;" % format(escape(test262.body)))
+        def footer():
+            # By default tests are run in strict and non-strict modes,
+            # unless flags says otherwise.
+            ret = []
+            flags = 'flags' in test262.attrs and test262.attrs['flags'] or []
+            if 'onlyStrict' in flags:
+                ret.append(run_in_iframe_strict(title))
+                ret.append(run_in_window_strict(title))
+                ret.append(run_in_worker_strict(title))
+                ret.append(run_in_shared_worker_strict(title))
+            elif 'noStrict' in flags:
+                ret.append(run_in_iframe(title))
+                ret.append(run_in_window(title))
+                ret.append(run_in_worker(title))
+                ret.append(run_in_shared_worker(title))
+            else:
+                ret.append(run_in_iframe_strict(title))
+                ret.append(run_in_iframe(title))
+                ret.append(run_in_window_strict(title))
+                ret.append(run_in_window(title))
+                ret.append(run_in_worker_strict(title))
+                ret.append(run_in_worker(title))
+                ret.append(run_in_shared_worker_strict(title))
+                ret.append(run_in_shared_worker(title))
+            return FOOTER.replace("###TESTS###", indent(3, "\n".join(ret)))
+        ret = []
+        ret.append(header())
+        ret.append(body())
+        ret.append(footer())
+        return "\n".join(ret)
+
+    def readfile(self, path):
+        with open(path) as fd:
+            content = fd.read()
+            # Remove carriage return if any.
+            return re.sub("\x0D", "", content)
+
+    def listall(self, root, opts):
+        opts = opts or {}
+        ret = []
+        ext = opts['ext']
+        skip_hidden = opts['skip_hidden']
+        for root, dirs, files in os.walk(root):
+            for filename in files:
+                if skip_hidden and filename.startswith('.'):
+                    continue
+                if ext and filename.endswith(ext):
+                    ret.append(os.path.join(root, filename))
+        return ret
+
+def main():
+    if len(sys.argv) < 2:
+        usage()
+    path = sys.argv[1]
+    WPTestBuilder(path).generate()
+
+if __name__ == "__main__":
+    main()

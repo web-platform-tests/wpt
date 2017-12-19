@@ -102,6 +102,7 @@ class TestExecutor(object):
 
     test_type = None
     convert_result = None
+    supports_testdriver = False
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
@@ -112,7 +113,7 @@ class TestExecutor(object):
         :param browser: ExecutorBrowser instance providing properties of the
                         browser that will be tested.
         :param server_config: Dictionary of wptserve server configuration of the
-                              form stored in TestEnvironment.external_config
+                              form stored in TestEnvironment.config
         :param timeout_multiplier: Multiplier relative to base timeout to use
                                    when setting test timeout.
         """
@@ -356,12 +357,10 @@ class WdspecExecutor(TestExecutor):
         return (test.result_cls(*data), [])
 
     def do_wdspec(self, session_config, path, timeout):
-        harness_result = ("OK", None)
-        subtest_results = pytestrunner.run(path,
-                                           self.server_config,
-                                           session_config,
-                                           timeout=timeout)
-        return (harness_result, subtest_results)
+        return pytestrunner.run(path,
+                                self.server_config,
+                                session_config,
+                                timeout=timeout)
 
     def do_delayed_imports(self):
         global pytestrunner

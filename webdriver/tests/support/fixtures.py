@@ -8,6 +8,7 @@ import mozlog
 
 from tests.support.asserts import assert_error
 from tests.support.http_request import HTTPRequest
+from tests.support.wait import wait
 from tests.support import merge_dictionaries
 
 default_host = "http://127.0.0.1"
@@ -188,8 +189,6 @@ def new_session(configuration, request):
         _session = webdriver.Session(configuration["host"],
                                      configuration["port"],
                                      capabilities=None)
-        # TODO: merge in some capabilities from the confguration capabilities
-        # since these might be needed to start the browser
         value = _session.send_command("POST", "session", body=body)
         # Don't set the global session until we are sure this succeeded
         _current_session = _session
@@ -201,6 +200,16 @@ def new_session(configuration, request):
     request.addfinalizer(end)
 
     return create_session
+
+
+def add_browser_capabilites(configuration):
+    def update_capabilities(capabilities):
+        # Make sure there aren't keys in common.
+        assert not set(configuration["capabilities"]).intersection(set(capabilities))
+        result = dict(configuration["capabilities"])
+        result.update(capabilities)
+        return result
+    return update_capabilities
 
 
 def url(server_config):
@@ -246,10 +255,15 @@ def create_dialog(session):
         session.send_session_command("POST",
                                      "execute/async",
                                      {"script": spawn, "args": []})
+        wait(session,
+             lambda s: s.send_session_command("GET", "alert/text") == text,
+             "modal has not appeared",
+             timeout=15,
+             ignored_exceptions=webdriver.NoSuchAlertException)
 
     return create_dialog
+
 
 def clear_all_cookies(session):
     """Removes all cookies associated with the current active document"""
     session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
-

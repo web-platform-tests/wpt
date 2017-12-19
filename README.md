@@ -17,6 +17,10 @@ Setting Up the Repo
 
 Clone or otherwise get https://github.com/w3c/web-platform-tests.
 
+Note: because of the frequent creation and deletion of branches in this
+repo, it is recommended to "prune" stale branches when fetching updates,
+i.e. use `git pull --prune` (or `git fetch -p && git merge`).
+
 Running the Tests
 =================
 
@@ -49,8 +53,15 @@ Running Tests Manually
 ======================
 
 The test server can be started using
+```
+./wpt serve
+```
 
-    ./wpt serve
+**On Windows**: You will need to preceed the prior command with
+`python` or the path to the python binary.
+```bash
+python wpt serve
+```
 
 This will start HTTP servers on two ports and a websockets server on
 one port. By default one web server starts on port 8000 and the other
@@ -78,12 +89,15 @@ file setup documented above, but you must *not* have the
 test server already running when calling `wpt run`. The basic command
 line syntax is:
 
-```
+```bash
 ./wpt run product [tests]
 ```
 
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
+```bash
+python wpt product [tests]
+```
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
@@ -107,6 +121,15 @@ And on macOS with homebrew using:
 ```
 brew install nss
 ```
+
+On other platforms, download the firefox archive and common.tests.zip
+archive for your platform from
+[Mozilla CI](https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/).
+
+Then extract `certutil[.exe]` from the tests.zip package and
+`libnss3[.so|.dll|.dynlib]` and put the former on your path and the latter on
+your library path.
+
 
 Command Line Tools
 ==================
@@ -174,8 +197,12 @@ then remove the `tools` and `resources` directories, as above.
 <span id="windows-notes">Windows Notes</span>
 =============================================
 
-On Windows `wpt` commands mut bre prefixed with `python` or the path
+On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
+
+```bash
+python wpt [command]
+```
 
 Alternatively, you may also use
 [Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)

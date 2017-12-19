@@ -1,5 +1,7 @@
 from cgi import escape
 import gzip as gzip_module
+import hashlib
+import os
 import re
 import time
 import types
@@ -336,6 +338,9 @@ def sub(request, response, escape_type="html"):
       A dictionary of HTTP headers in the request.
     GET
       A dictionary of query parameters supplied with the request.
+    sha384
+      A dictionary of cryptographic file hashes, keyed by the file name
+      relative to the root of the project.
     uuid()
       A pesudo-random UUID suitable for usage with stash
 
@@ -364,6 +369,27 @@ def sub(request, response, escape_type="html"):
     response.content = new_content
     return response
 
+class HashLookup(object):
+    def __init__(self, doc_root):
+        self.doc_root = doc_root
+
+    def __getitem__(self, name):
+        m = hashlib.sha384()
+        absolute_path = os.path.join(self.doc_root, name)
+
+        try:
+            with open(absolute_path) as f:
+                m.update(f.read())
+        except IOError:
+            # In this context, an unhandled IOError will be interpreted by the
+            # server as an indication that the template file is non-existent.
+            # Although the generic "Exception" is less precise, it avoids
+            # triggering a potentially-confusing HTTP 404 error in cases where
+            # the path to the file to be hashed is invalid.
+            raise Exception('Cannot open file for hash computation: "%s"' % absolute_path)
+
+        return m.digest().encode('base64').strip()
+
 def template(request, content, escape_type="html"):
     #TODO: There basically isn't any error handling here
     tokenizer = ReplacementTokenizer()
@@ -387,6 +413,8 @@ def template(request, content, escape_type="html"):
 
         if field in variables:
             value = variables[field]
+        elif field == "sha384":
+            value = HashLookup(request.doc_root)
         elif field == "headers":
             value = request.headers
         elif field == "GET":

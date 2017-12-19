@@ -181,8 +181,8 @@ def test_element_click_link_unload_event(session):
                                 <a href="/webdriver/tests/interaction/support/test.html">click here</a>
                                 <input id=unloadCheck type=checkbox>
                                 <script>
-                                function checkUnload() {                        
-                                    document.getElementById("unloadCheck").checked = true;                       
+                                function checkUnload() {
+                                    document.getElementById("unloadCheck").checked = true;
                                 }
                                 </script>
                             </body>""")

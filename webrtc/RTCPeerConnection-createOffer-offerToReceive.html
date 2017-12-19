@@ -8,9 +8,9 @@
 <script>
   'use strict';
 
-  // Run some tests for both audio and video types
-  ['audio', 'video'].forEach((type) => {
-    const capsType = type[0].toUpperCase() + type.slice(1);
+  // Run some tests for both audio and video kinds
+  ['audio', 'video'].forEach((kind) => {
+    const capsType = kind[0].toUpperCase() + kind.slice(1);
 
     const offerToReceiveTrue = {};
     offerToReceiveTrue[`offerToReceive${capsType}`] = true;
@@ -67,7 +67,7 @@
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer();
@@ -91,7 +91,7 @@
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer(offerToReceiveFalse);
@@ -110,7 +110,7 @@
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      pc.addTransceiver(type, {direction: 'recvonly'});
+      pc.addTransceiver(kind, {direction: 'recvonly'});
 
       return pc.createOffer(offerToReceiveFalse)
       .then(() => {
@@ -128,7 +128,7 @@
       const pc = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer();

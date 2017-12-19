@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Handling of instantiation errors, 5</title>
+<title>Handling of different types of errors</title>
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,20 +11,23 @@
     window.addEventListener("error", ev => log.push(ev.error));
 
     const test_load = async_test(
-        "Test that loading a graph in which a module is already " +
-        "errored results in that module's error.");
+        "network error has higher priority than parse error");
     window.addEventListener("load", test_load.step_func_done(ev => {
-      assert_equals(log.length, 4);
+      assert_equals(log.length, 3);
+
+      // A parse error is reported for the first top-level
+      // <script> element for syntaxerror.js.
       assert_equals(log[0].constructor, SyntaxError);
       assert_equals(log[1], 1);
-      assert_equals(log[2].constructor, SyntaxError);
-      assert_equals(log[3], 2);
-      assert_not_equals(log[0], log[2], "errors should be different");
+
+      // onerror is called (with no errors reported) due to a network error
+      // for the second top-level <script>.
+      assert_equals(log[2], 2);
     }));
 
     function unreachable() { log.push("unexpected"); }
 </script>
-<script type="module" src="./instantiation-error-5a.js"
+<script type="module" src="./syntaxerror.js"
     onerror="unreachable()" onload="log.push(1)"></script>
-<script type="module" src="./instantiation-error-5d.js"
-    onerror="unreachable()" onload="log.push(2)"></script>
+<script type="module" src="./error-type-1.js"
+    onerror="log.push(2)" onload="unreachable()"></script>

@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <meta name=timeout content=long>
 <title>Precedence of scroll restoration mode over fragment scrolling in cross-origin history traversal</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <style>
   iframe {
     height: 300px;
     width: 300px;
   }
 </style>
-
-<body>
-  <iframe></iframe>
-</body>
-
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script type="text/javascript">
+<div id="log"></div>
+<iframe></iframe>
+<script>
   'use strict';
 
   // The test does the following navigation steps for iframe

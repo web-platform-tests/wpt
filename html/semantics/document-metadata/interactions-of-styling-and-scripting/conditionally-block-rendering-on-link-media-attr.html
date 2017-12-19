@@ -17,7 +17,7 @@
   }, "Only the style sheet loaded via a link element whose media attribute matches the environment should block following script execution");
 
   const secondStylesheetTest = async_test("Two style sheets should be registered as style sheets for the document after 3 seconds");
-  step_timeout(() => {
+  secondStylesheetTest.step_timeout(() => {
     secondStylesheetTest.step(() => {
       assert_equals(document.styleSheets.length, 2);
     });

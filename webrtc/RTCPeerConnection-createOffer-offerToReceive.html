@@ -87,6 +87,68 @@
       })
       ;
     }, `offerToReceive${capsType} option should be ignored if a non-stopped "sendrecv" transceiver exists`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+
+      return getTrackFromUserMedia(type)
+      .then(([track, stream]) => {
+        pc.addTrack(track, stream);
+        return pc.createOffer(offerToReceiveFalse);
+      })
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'sendonly',
+          'Expect transceiver to have "sendonly" direction');
+      })
+      ;
+    }, `offerToReceive${capsType} set to false with a track should create a "sendonly" transceiver`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+
+      pc.addTransceiver(type, {direction: 'recvonly'});
+
+      return pc.createOffer(offerToReceiveFalse)
+      .then(() => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'inactive',
+          'Expect transceiver to have "inactive" direction');
+      })
+      ;
+    }, `offerToReceive${capsType} set to false with a "recvonly" transceiver should change the direction to "inactive"`);
+
+    promise_test(t => {
+      const pc = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+
+      return getTrackFromUserMedia(type)
+      .then(([track, stream]) => {
+        pc.addTrack(track, stream);
+        return pc.createOffer();
+      })
+      .then((offer) => pc.setLocalDescription(offer))
+      .then(() => pc2.setRemoteDescription(pc.localDescription))
+      .then(() => pc2.createAnswer())
+      .then((answer) => pc2.setLocalDescription(answer))
+      .then(() => pc.setRemoteDescription(pc2.localDescription))
+      .then(() => pc.createOffer(offerToReceiveFalse))
+      .then((offer) => {
+        assert_equals(pc.getTransceivers().length, 1,
+          'Expect pc to have one transceiver');
+
+        const transceiver = pc.getTransceivers()[0];
+        assert_equals(transceiver.direction, 'sendonly',
+          'Expect transceiver to have "sendonly" direction');
+      })
+      ;
+    }, `subsequent offerToReceive${capsType} set to false with a track should change the direction to "sendonly"`);
   });
 
   promise_test(t => {

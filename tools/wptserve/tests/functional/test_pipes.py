@@ -63,9 +63,36 @@ class TestSub(TestUsingServer):
         expected = "PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
+    def test_sub_location(self):
+        resp = self.request("/sub_location.sub.txt?query_string")
+        expected = """
+host: localhost:{0}
+hostname: localhost
+path: /sub_location.sub.txt
+pathname: /sub_location.sub.txt
+port: {0}
+query: ?query_string
+scheme: http
+server: http://localhost:{0}""".format(self.server.port)
+        self.assertEqual(resp.read().rstrip(), expected.strip())
+
     def test_sub_params(self):
         resp = self.request("/sub_params.txt", query="test=PASS&pipe=sub")
         expected = "PASS"
+        self.assertEqual(resp.read().rstrip(), expected)
+
+    def test_sub_url_base(self):
+        resp = self.request("/sub_url_base.sub.txt")
+        self.assertEqual(resp.read().rstrip(), "Before / After")
+
+    def test_sub_uuid(self):
+        resp = self.request("/sub_uuid.sub.txt")
+        self.assertRegexpMatches(resp.read().rstrip(), r"Before [a-f0-9-]+ After")
+
+    def test_sub_var(self):
+        resp = self.request("/sub_var.sub.txt")
+        port = self.server.port
+        expected = "localhost %s A %s B localhost C" % (port, port)
         self.assertEqual(resp.read().rstrip(), expected)
 
 class TestTrickle(TestUsingServer):

@@ -1732,9 +1732,10 @@ policies and contribution forms [3].
             }
 
             if (bad_value_count) {
-                var type = test._is_promise_test ? "non-thenable " : "";
+                var type = test._is_promise_test ?
+                   "non-thenable" : "non-undefined";
                 tests.status.message += ", and " + bad_value_count +
-                    " returned a " + type + "value";
+                    " returned a " + type + " value";
             }
 
             tests.status.message += ".";

@@ -1746,8 +1746,8 @@ policies and contribution forms [3].
         test.phase = test.phases.COMPLETE;
         tests.result(test);
         forEach(test._done_callbacks,
-                function(cb) {
-                    cb();
+                function(callback) {
+                    callback();
                 });
         test._done_callbacks.length = 0;
     }

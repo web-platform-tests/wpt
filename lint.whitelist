@@ -311,6 +311,7 @@ SET TIMEOUT: resources/chromium/*
 SET TIMEOUT: resources/test/tests/add_cleanup.html
 SET TIMEOUT: resources/test/tests/add_cleanup_async.html
 SET TIMEOUT: resources/test/tests/add_cleanup_async_rejection.html
+SET TIMEOUT: resources/test/tests/add_cleanup_async_rejection_after_load.html
 SET TIMEOUT: resources/test/tests/api-tests-1.html
 SET TIMEOUT: resources/test/tests/worker.js
 SET TIMEOUT: resources/testharness.js

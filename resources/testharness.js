@@ -20,8 +20,8 @@ policies and contribution forms [3].
     var settings = {
         output:true,
         harness_timeout:{
-            "normal":10000,
-            "long":60000
+            "normal":1000,
+            "long":2000
         },
         test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]
@@ -541,6 +541,14 @@ policies and contribution forms [3].
             var donePromise = new Promise(function(resolve) {
                 test._add_done_callback(resolve);
             });
+
+            // The current test should be skipped if the harness is in an
+            // invalid state (e.g. if the "cleanup" logic of a previous test
+            // failed.
+            if (tests.phase === tests.phases.ABORTED) {
+                test.done();
+            }
+
             var promise = test.step(func, test, test);
 
             test.step(function() {
@@ -1664,16 +1672,17 @@ policies and contribution forms [3].
                         return;
                     }
 
+                    if (!is_valid_cleanup_result(this_obj, result)) {
+                        bad_value_count += 1;
+                        // Set test phase immediately so that tests declared
+                        // within subsequent cleanup functions are not run.
+                        tests.phase = tests.phases.ABORTED;
+                    }
+
                     results.push(result);
                 });
 
         if (!this._is_promise_test) {
-            forEach(results,
-                    function(result) {
-                        if (result !== undefined) {
-                            bad_value_count += 1;
-                        }
-                    });
             cleanup_done(this_obj, error_count, bad_value_count);
         } else {
             all_async(results,
@@ -1683,10 +1692,6 @@ policies and contribution forms [3].
                                   .then(null, on_error)
                                   .then(done);
                           } else {
-                              if (result !== undefined) {
-                                  bad_value_count += 1;
-                              }
-
                               done();
                           }
                       },
@@ -1696,15 +1701,26 @@ policies and contribution forms [3].
         }
     };
 
+    /**
+     * Determine if the return value of a cleanup function is valid for a given
+     * test. Any test may return the value `undefined`. Tests created with
+     * `promise_test` may alternatively return "thenable" object values.
+     */
+    function is_valid_cleanup_result(test, result) {
+        if (result === undefined) {
+            return true;
+        }
+
+        if (test._is_promise_test) {
+            return result && typeof result.then === "function";
+        }
+
+        return false;
+    }
+
     function cleanup_done(test, error_count, bad_value_count) {
         if (error_count || bad_value_count) {
             var total = test._user_defined_cleanup_count;
-
-            tests.phase = tests.phases.ABORTED;
-            forEach(tests.tests,
-                    function(test) {
-                        test.phase = test.phases.COMPLETE
-                    });
 
             tests.status.status = tests.status.ERROR;
             tests.status.message = "Test named '" + test.name +
@@ -2121,10 +2137,11 @@ policies and contribution forms [3].
 
     Tests.prototype.result = function(test)
     {
-        if (this.phase > this.phases.HAVE_RESULTS) {
-            return;
+        // If the harness has already transitioned beyond the `HAVE_RESULTS`
+        // phase, subsequent tests should not cause it to revert.
+        if (this.phase <= this.phases.HAVE_RESULTS) {
+            this.phase = this.phases.HAVE_RESULTS;
         }
-        this.phase = this.phases.HAVE_RESULTS;
         this.num_pending--;
         this.notify_result(test);
     };

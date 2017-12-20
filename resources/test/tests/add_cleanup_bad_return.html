@@ -12,14 +12,21 @@
 
 test(function(t) {
   t.add_cleanup(function() {});
-  t.add_cleanup(function() { throw new Error(); });
   t.add_cleanup(function() { return null; });
+  t.add_cleanup(function() {
+    test(
+      function() {},
+      "The test runner is in an unpredictable state #1 ('NOT RUN')"
+    );
+
+    throw new Error();
+  });
   t.add_cleanup(function() { return 4; });
   t.add_cleanup(function() { return Promise.resolve(); });
   t.add_cleanup(function() {});
 }, "Test that returns a value in three \"cleanup\" functions");
 
-test(function() {}, "The test runner is in an unpredictable state ('NOT RUN')");
+test(function() {}, "The test runner is in an unpredictable state #2 ('NOT RUN')");
 </script>
 <script type="text/json" id="expected">
 {
@@ -38,7 +45,14 @@ test(function() {}, "The test runner is in an unpredictable state ('NOT RUN')");
     },
     {
       "status_string": "NOTRUN",
-      "name": "The test runner is in an unpredictable state ('NOT RUN')",
+      "name": "The test runner is in an unpredictable state #1 ('NOT RUN')",
+      "stack": null,
+      "message": null,
+      "properties": {}
+    },
+    {
+      "status_string": "NOTRUN",
+      "name": "The test runner is in an unpredictable state #2 ('NOT RUN')",
       "stack": null,
       "message": null,
       "properties": {}

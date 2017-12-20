@@ -18,6 +18,11 @@ test(() => {
 }, "window.open : unpaired surrogate codepoint should be replaced with U+FFFD");
 
 test(() => {
+  var w = document.open("about:blank#\uD800", "", "");
+  assert_equals(w.location.hash, '#%EF%BF%BD');
+}, "document.open : unpaired surrogate codepoint should be replaced with U+FFFD");
+
+test(() => {
   var element = document.createElement("a");
   element.ping = '\uD989';
   assert_equals(element.ping, '\uFFFD');

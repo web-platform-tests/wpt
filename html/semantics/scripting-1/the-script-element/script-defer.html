@@ -9,10 +9,8 @@
 
 <script>
 
-let flag = 0;
-let NUMBER_FIRST = 3;
-let NUMBER_SECOND = 5;
-let EXPECTED = 8;
+let ran_deferred_script = true;
+let t = async_test("the defer script run later");
 
 </script>
 
@@ -20,10 +18,9 @@ let EXPECTED = 8;
 
 <script>
 
-function beforeLoad(){
-  flag += NUMBER_FIRST;
-}
-
-beforeLoad();
+t.step(() => {
+  assert_true(ran_deferred_script);
+  ran_deferred_script = false;
+});
 
 </script>

@@ -351,7 +351,7 @@ def sub(request, response, escape_type="html"):
     It is also possible to assign a value to a variable name, which must start with
     the $ character, using the ":" syntax e.g.
 
-    {{$id:uuid()}
+    {{$id:uuid()}}
 
     Later substitutions in the same file may then refer to the variable
     by name e.g.

@@ -1632,6 +1632,7 @@ policies and contribution forms [3].
      */
     Test.prototype.cleanup = function() {
         var error_count = 0;
+        var bad_value_count = 0;
         function on_error() {
             error_count += 1;
             // Set test phase immediately so that tests declared within
@@ -1658,7 +1659,13 @@ policies and contribution forms [3].
                 });
 
         if (!this._is_promise_test) {
-            cleanup_done(this_obj, error_count);
+            forEach(results,
+                    function(result) {
+                        if (result !== undefined) {
+                            bad_value_count += 1;
+                        }
+                    });
+            cleanup_done(this_obj, error_count, bad_value_count);
         } else {
             all_async(results,
                       function(result, done) {
@@ -1667,17 +1674,21 @@ policies and contribution forms [3].
                                   .then(null, on_error)
                                   .then(done);
                           } else {
+                              if (result !== undefined) {
+                                  bad_value_count += 1;
+                              }
+
                               done();
                           }
                       },
                       function() {
-                          cleanup_done(this_obj, error_count);
+                          cleanup_done(this_obj, error_count, bad_value_count);
                       });
         }
     };
 
-    function cleanup_done(test, error_count) {
-        if (error_count) {
+    function cleanup_done(test, error_count, bad_value_count) {
+        if (error_count || bad_value_count) {
             var total = test._user_defined_cleanup_count;
 
             tests.phase = tests.phases.ABORTED;
@@ -1689,8 +1700,20 @@ policies and contribution forms [3].
             tests.status.status = tests.status.ERROR;
             tests.status.message = "Test named '" + test.name +
                 "' specified " + total +
-                " 'cleanup' function" + (total > 1 ? "s" : "") +
-                ", and " + error_count + " failed.";
+                " 'cleanup' function" + (total > 1 ? "s" : "");
+
+            if (error_count) {
+                tests.status.message += ", and " + error_count + " failed";
+            }
+
+            if (bad_value_count) {
+                var type = test._is_promise_test ? "non-thenable " : "";
+                tests.status.message += ", and " + bad_value_count +
+                    " returned a " + type + "value";
+            }
+
+            tests.status.message += ".";
+
             tests.status.stack = null;
         }
 

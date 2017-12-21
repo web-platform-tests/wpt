@@ -30,6 +30,8 @@ def pytest_configure(config):
 class HTMLItem(pytest.Item, pytest.Collector):
     def __init__(self, filename, parent):
         self.filename = filename
+        self.test_type = None
+
         with io.open(filename, encoding=ENC) as f:
             markup = f.read()
 
@@ -41,12 +43,21 @@ class HTMLItem(pytest.Item, pytest.Collector):
             if not name and element.tag == 'title':
                 name = element.text
                 continue
+            if element.tag == 'meta' and element.attrib.get('name') == 'wpt-test-type':
+                self.test_type = element.attrib.get('content')
             if element.attrib.get('id') == 'expected':
                 self.expected = json.loads(unicode(element.text))
                 continue
 
         if not name:
             raise ValueError('No name found in file: %s' % filename)
+
+        if not self.test_type:
+            raise ValueError('No "wpt-test-type" found in file: %s' % filename)
+        if self.test_type not in ['unit', 'functional']:
+            raise ValueError(
+              'Unrecognized "wpt-test-type" ("%s") found in file: %s' % (self.test_type, filename)
+            )
 
         super(HTMLItem, self).__init__(name, parent)
 
@@ -58,6 +69,27 @@ class HTMLItem(pytest.Item, pytest.Collector):
         return pytest.Collector.repr_failure(self, excinfo)
 
     def runtest(self):
+        if self.test_type == 'unit':
+            self._run_unit_test()
+        elif self.test_type == 'functional':
+            self._run_functional_test()
+
+    def _run_unit_test(self):
+        driver = self.session.config.driver
+        server = self.session.config.server
+
+        driver.get(server.url(HARNESS))
+
+        actual = driver.execute_async_script('runTest("%s", "foo", arguments[0])' % server.url(str(self.filename)))
+
+        summarized = self._summarize(actual)
+
+        assert summarized[u'summarized_status'][u'status_string'] == u'OK', summarized[u'summarized_status'][u'message']
+        for test in summarized[u'summarized_tests']:
+            msg = "%s\n%s:\n%s" % (test[u'name'], test[u'message'], test[u'stack'])
+            assert test[u'status_string'] == u'PASS', msg
+
+    def _run_functional_test(self):
         driver = self.session.config.driver
         server = self.session.config.server
 
@@ -70,20 +102,20 @@ class HTMLItem(pytest.Item, pytest.Collector):
         indices = [test_obj.get('index') for test_obj in actual['tests']]
         self._assert_sequence(indices)
 
+        summarized = self._summarize(actual)
+
+        assert summarized == self.expected
+
+    def _summarize(self, actual):
         summarized = {}
+
         summarized[u'summarized_status'] = self._summarize_status(actual['status'])
         summarized[u'summarized_tests'] = [
             self._summarize_test(test) for test in actual['tests']]
         summarized[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
         summarized[u'type'] = actual['type']
 
-        if not self.expected:
-            assert summarized[u'summarized_status'][u'status_string'] == u'OK', summarized[u'summarized_status'][u'message']
-            for test in summarized[u'summarized_tests']:
-                msg = "%s\n%s:\n%s" % (test[u'name'], test[u'message'], test[u'stack'])
-                assert test[u'status_string'] == u'PASS', msg
-        else:
-            assert summarized == self.expected
+        return summarized
 
     @staticmethod
     def _assert_sequence(nums):

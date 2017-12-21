@@ -4,6 +4,7 @@
 <link rel="author" title="Chris Nardi" href="mailto:csnardi1@gmail.com">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#resolving-color-values">
 <meta name="assert" content="Tests if HSL color values are resolved properly">
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -30,7 +31,7 @@
     function expected_value(rgb_channels) {
         if (rgb_channels === null)
             return null;
-        else if (rgb_channels.length === 3 || rgb_channels[3] == 1)
+        else if (rgb_channels.length === 3 || rgb_channels[3] == 1 || rgb_channels[3] === undefined)
             return "rgb(" + rgb_channels.slice(0, 3).join(", ") + ")";
         else
             return "rgba(" + rgb_channels.join(", ") + ")";
@@ -64,11 +65,11 @@
     for (var hue of [0, 30, 60, 90, 120, 180, 210, 240, 270, 300, 330, 360]) {
         for (var sat of [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]) {
             for (var light of [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]) {
+                rgb_channels = hslToRgb(hue / 60, sat, light);
                 for (var alpha of [undefined, 0, 0.2, 1]) {
-                    rgb_channels = hslToRgb(hue / 60, sat, light);
                     hsl_color = "hsl(" + hue + ", " + sat * 100 + "%, " + light * 100 + "%)";
+                    rgb_channels[3] = alpha;
                     if (alpha !== undefined) {
-                        rgb_channels[3] = alpha;
                         hsl_color = "hsla(" + hue + ", " + sat * 100 + "%, " + light * 100 + "%, " + alpha + ")";
                     }
                     color_test(hsl_color, expected_value(rgb_channels), "HSL/HSLA value should parse and round correctly");

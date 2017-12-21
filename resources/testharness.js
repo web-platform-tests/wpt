@@ -693,6 +693,9 @@ policies and contribution forms [3].
         }
         var end_wait = function() { tests.end_wait(); };
         if (tests.file_is_test) {
+            // Register a "done" callback to ensure the invocation of
+            // `end_wait` is deffered until after test "cleanup" logic has
+            // completed (as this may be asynchronous).
             tests.tests[0]._add_done_callback(end_wait);
             tests.tests[0].done();
         } else {
@@ -1610,6 +1613,13 @@ policies and contribution forms [3].
         this._done_callbacks.push(callback);
     };
 
+    /**
+     * Update the test status, initiate "cleanup" functions, and signal test
+     * completion. Note that this may involve asynchronous operations, so
+     * callers that expect the test to be fully complete should define a "done"
+     * callback using the `_add_done_callback` method prior to invoking this
+     * function.
+     */
     Test.prototype.done = function()
     {
         if (this.phase >= this.phases.CLEANING) {

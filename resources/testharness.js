@@ -1780,7 +1780,15 @@ policies and contribution forms [3].
         Object.keys(this).forEach(
                 (function(key) {
                     var value = this[key];
-                    if (key === '_done_callbacks' ) { return; }
+                    // `RemoteTest` instances are responsible for managing
+                    // their own "done" callback functions, so those functions
+                    // are not relevant in other execution contexts. Because of
+                    // this (and because Function values cannot be serialized
+                    // for cross-realm transmittance), the property should not
+                    // be considered when cloning instances.
+                    if (key === '_done_callbacks' ) {
+                        return;
+                    }
 
                     if (typeof value === "object" && value !== null) {
                         clone[key] = merge({}, value);

@@ -2073,13 +2073,13 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.timeout = function() {
-        var cleaningTest = null;
+        var test_in_cleanup = null;
 
         if (this.status.status === null) {
             forEach(this.tests,
                     function(test) {
                         if (test.phase === test.phases.CLEANING) {
-                            cleaningTest = test;
+                            test_in_cleanup = test;
                         }
 
                         test.phase = test.phases.COMPLETE;
@@ -2090,10 +2090,10 @@ policies and contribution forms [3].
             // invalidates the overall test execution, so the timeout should be
             // reported as an error and cancel the execution of any remaining
             // sub-tests.
-            if (cleaningTest) {
+            if (test_in_cleanup) {
                 this.status.status = this.status.ERROR;
                 this.status.message = "Cleanup function for test named \"" +
-                    cleaningTest.name + "\" timed out.";
+                    test_in_cleanup.name + "\" timed out.";
                 tests.status.stack = null;
             } else {
                 this.status.status = this.status.TIMEOUT;

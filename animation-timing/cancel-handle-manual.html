@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AnimationTiming Test: cancelAnimationFrame used to cancel request callback</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/animation-timing/#Window-interface-extensions">
+<meta name="assert" content="When window.cancelRequestAnimationFrame is called
+                             with the handle returned by window.requestAnimationFrame,
+                             the callback registered will be canceled.">
+<style>
+  #animated {
+    background: blue;
+    color: white;
+    height: 100px;
+    width: 100px;
+    position: absolute;
+  }
+</style>
+<body onload="start()">
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which moves from left to right repeatly, when click the 'stop' button,
+    the square stops.
+  </p>
+  <button onclick="stop()">stop</button>
+  <div id="animated">Filler Text</div>
+  <script>
+    var requestId = 0;
+    var requestAnimation = window.webkitRequestAnimationFrame ||
+                           window.mozRequestAnimationFrame ||
+                           window.requestAnimationFrame;
+    var cancelAnimation = window.webkitCancelAnimationFrame ||
+                          window.mozCancelAnimationFrame ||
+                          window.cancelAnimationFrame;
+
+    function animate(time) {
+      var div = document.getElementById("animated");
+      div.style.left = (time - animationStartTime) % 2000 / 4 + "px";
+      requestId = requestAnimation(animate);
+    }
+
+    function start() {
+      animationStartTime = window.performance.now();
+      requestId = requestAnimation(animate);
+    }
+
+    function stop() {
+      if(requestId) {
+        cancelAnimation(requestId);
+        requestId = 0;
+      }
+    }
+  </script>
+</body>
+

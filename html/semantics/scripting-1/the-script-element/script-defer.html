@@ -9,7 +9,7 @@
 
 <script>
 
-let ran_deferred_script = true;
+let script_run_status = "inline";
 let t = async_test("the defer script run later");
 
 </script>
@@ -19,8 +19,8 @@ let t = async_test("the defer script run later");
 <script>
 
 t.step(() => {
-  assert_true(ran_deferred_script);
-  ran_deferred_script = false;
+  assert_equals(script_run_status, "inline", "the script run status");
+  script_run_status = "deferred";
 });
 
 </script>

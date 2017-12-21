@@ -1,4 +1,4 @@
 t.step(() => {
-  assert_false(ran_deferred_script);
+  assert_equals(script_run_status, "deferred", "the script run status");
 });
 t.done();

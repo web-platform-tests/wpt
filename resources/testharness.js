@@ -2078,6 +2078,8 @@ policies and contribution forms [3].
         if (this.status.status === null) {
             forEach(this.tests,
                     function(test) {
+                        // No more than one test is expected to be in the
+                        // "CLEANUP" phase at any time
                         if (test.phase === test.phases.CLEANING) {
                             test_in_cleanup = test;
                         }

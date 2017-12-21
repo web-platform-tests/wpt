@@ -8,15 +8,15 @@
 <script>
   'use strict';
 
-  // Run some tests for both audio and video types
-  ['audio', 'video'].forEach((type) => {
-    const capsType = type[0].toUpperCase() + type.slice(1);
+  // Run some tests for both audio and video kinds
+  ['audio', 'video'].forEach((kind) => {
+    const capsKind = kind[0].toUpperCase() + kind.slice(1);
 
     const offerToReceiveTrue = {};
-    offerToReceiveTrue[`offerToReceive${capsType}`] = true;
+    offerToReceiveTrue[`offerToReceive${capsKind}`] = true;
 
     const offerToReceiveFalse = {};
-    offerToReceiveFalse[`offerToReceive${capsType}`] = false;
+    offerToReceiveFalse[`offerToReceive${capsKind}`] = false;
 
     // Start testing
     promise_test(t => {
@@ -28,7 +28,7 @@
         assert_equals(pc.getTransceivers().length, 0,
           'Expect pc to have no transceivers');
       });
-    }, `createOffer() with offerToReceive${capsType} set to false should not create a transceiver`);
+    }, `createOffer() with offerToReceive${capsKind} set to false should not create a transceiver`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
@@ -42,7 +42,7 @@
         assert_equals(transceiver.direction, 'recvonly',
           'Expect transceiver to have "recvonly" direction');
       });
-    }, `createOffer() with offerToReceive${capsType} should create a "recvonly" transceiver`);
+    }, `createOffer() with offerToReceive${capsKind} should create a "recvonly" transceiver`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
@@ -62,12 +62,12 @@
           'Expect pc to still have only one transceiver');
       })
       ;
-    }, `offerToReceive${capsType} option should be ignored if a non-stopped "recvonly" transceiver exists`);
+    }, `offerToReceive${capsKind} option should be ignored if a non-stopped "recvonly" transceiver exists`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer();
@@ -86,12 +86,12 @@
           'Expect pc to still have only one transceiver');
       })
       ;
-    }, `offerToReceive${capsType} option should be ignored if a non-stopped "sendrecv" transceiver exists`);
+    }, `offerToReceive${capsKind} option should be ignored if a non-stopped "sendrecv" transceiver exists`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer(offerToReceiveFalse);
@@ -105,12 +105,12 @@
           'Expect transceiver to have "sendonly" direction');
       })
       ;
-    }, `offerToReceive${capsType} set to false with a track should create a "sendonly" transceiver`);
+    }, `offerToReceive${capsKind} set to false with a track should create a "sendonly" transceiver`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
 
-      pc.addTransceiver(type, {direction: 'recvonly'});
+      pc.addTransceiver(kind, {direction: 'recvonly'});
 
       return pc.createOffer(offerToReceiveFalse)
       .then(() => {
@@ -122,13 +122,13 @@
           'Expect transceiver to have "inactive" direction');
       })
       ;
-    }, `offerToReceive${capsType} set to false with a "recvonly" transceiver should change the direction to "inactive"`);
+    }, `offerToReceive${capsKind} set to false with a "recvonly" transceiver should change the direction to "inactive"`);
 
     promise_test(t => {
       const pc = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
 
-      return getTrackFromUserMedia(type)
+      return getTrackFromUserMedia(kind)
       .then(([track, stream]) => {
         pc.addTrack(track, stream);
         return pc.createOffer();
@@ -148,7 +148,7 @@
           'Expect transceiver to have "sendonly" direction');
       })
       ;
-    }, `subsequent offerToReceive${capsType} set to false with a track should change the direction to "sendonly"`);
+    }, `subsequent offerToReceive${capsKind} set to false with a track should change the direction to "sendonly"`);
   });
 
   promise_test(t => {

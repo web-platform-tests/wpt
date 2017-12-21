@@ -2201,8 +2201,8 @@ policies and contribution forms [3].
                       // for tests that are fully synchronous, so the
                       // `testDone` callback function may be invoked
                       // synchronously. The `all_async` utility accommodates
-                      // such irregularities, ensuring that the `allDone`
-                      // callback is invoked asynchronously in all cases.
+                      // such irregularities, ensuring that the `done_callback`
+                      // function is invoked asynchronously in all cases.
                       test._done_async(testDone);
                   },
                   function() {
@@ -2988,27 +2988,29 @@ policies and contribution forms [3].
     }
 
     /**
-     * Immediately invoke a "predicate" function with a series of values in
-     * parallel and invoke a final "done" function when all of the "predicates"
+     * Immediately invoke a "iteratee" function with a series of values in
+     * parallel and invoke a final "done" function when all of the "iteratee"
      * invocations have signaled completion.
      *
      * @param {array} value Zero or more values to use in the invocation of
-     *                      `predicate`
-     * @param {function} predicate A function that will be invoked once for
-     *                             each of the provided `values`. Two arguments
-     *                             will be available in each invocation: the
-     *                             value from `values` and a function that must
-     *                             be invoked to signal completion
-     * @param {function} allDone A function that will be invoked after all
-     *                           operations initiated by the `predicate`
-     *                           function have signaled completion
+     *                      `iter_callback`
+     * @param {function} iter_callback A function that will be invoked once for
+     *                                 each of the provided `values`. Two
+     *                                 arguments will be available in each
+     *                                 invocation: the value from `values` and
+     *                                 a function that must be invoked to
+     *                                 signal completion
+     * @param {function} done_callback A function that will be invoked after
+     *                                 all operations initiated by the
+     *                                 `iter_callback` function have signaled
+     *                                 completion
      */
-    function all_async(values, predicate, allDone)
+    function all_async(values, iter_callback, done_callback)
     {
         var remaining = values.length;
 
         if (remaining === 0) {
-            setTimeout(allDone, 0);
+            setTimeout(done_callback, 0);
         }
 
         forEach(values,
@@ -3023,11 +3025,11 @@ policies and contribution forms [3].
                         remaining -= 1;
 
                         if (remaining === 0) {
-                            setTimeout(allDone, 0);
+                            setTimeout(done_callback, 0);
                         }
                     };
 
-                    predicate(element, elDone);
+                    iter_callback(element, elDone);
                 });
     }
 

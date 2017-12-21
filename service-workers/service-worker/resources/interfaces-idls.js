@@ -7,8 +7,7 @@ interface WorkerGlobalScope {};
 callback EventHandlerNonNull = any (Event event);
 typedef EventHandlerNonNull? EventHandler;
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
-interface AbstractWorker {
+interface mixin AbstractWorker {
   attribute EventHandler onerror;
 };
 `;
@@ -65,7 +64,7 @@ interface ServiceWorker : EventTarget {
   // event
   attribute EventHandler onstatechange;
 };
-ServiceWorker implements AbstractWorker;
+ServiceWorker includes AbstractWorker;
 
 enum ServiceWorkerState {
   "installing",

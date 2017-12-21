@@ -11,11 +11,9 @@ interface Navigator {
 };
 </script>
 <script type=text/plain>
-Navigator implements NavigatorAutomationInformation;
+Navigator includes NavigatorAutomationInformation;
 
-[NoInterfaceObject,
- Exposed=(Window)]
-interface NavigatorAutomationInformation {
+interface mixin NavigatorAutomationInformation {
     readonly attribute boolean webdriver;
     // always returns true
 };

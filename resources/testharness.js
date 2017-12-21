@@ -1431,7 +1431,6 @@ policies and contribution forms [3].
 
         this.cleanup_callbacks = [];
         this._user_defined_cleanup_count = 0;
-        this._cleanup_done_callbacks = [];
         this._done_callbacks = [];
 
         tests.push(this);

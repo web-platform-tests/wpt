@@ -816,7 +816,6 @@ interface HTMLInputElement : HTMLElement {
   [CEReactions] attribute DOMString formTarget;
   [CEReactions] attribute unsigned long height;
   attribute boolean indeterminate;
-  [CEReactions] attribute DOMString inputMode;
   readonly attribute HTMLElement? list;
   [CEReactions] attribute DOMString max;
   [CEReactions] attribute long maxLength;
@@ -960,7 +959,6 @@ interface HTMLTextAreaElement : HTMLElement {
   [CEReactions] attribute DOMString dirName;
   [CEReactions] attribute boolean disabled;
   readonly attribute HTMLFormElement? form;
-  [CEReactions] attribute DOMString inputMode;
   [CEReactions] attribute long maxLength;
   [CEReactions] attribute long minLength;
   [CEReactions] attribute DOMString name;
@@ -1455,6 +1453,7 @@ dictionary ElementDefinitionOptions {
 interface mixin ElementContentEditable {
   [CEReactions] attribute DOMString contentEditable;
   readonly attribute boolean isContentEditable;
+  [CEReactions] attribute DOMString inputMode;
 };
 
 [Exposed=Window,

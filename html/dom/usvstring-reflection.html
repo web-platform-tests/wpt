@@ -74,4 +74,12 @@ test(() => {
   assert_equals(element.src.endsWith('%EF%BF%BD'), true);
   assert_equals(element.srcset, '\uFFFD');
 }, "source : unpaired surrogate codepoint should be replaced with U+FFFD")
+
+test(() => {
+  const event = new StorageEvent('storage', {
+    url: window.location.href + '\uD999',
+  });
+  assert_equals(event.url, window.location.href + "\uFFFD");
+}, "storage event : unpaired surrogate codepoint should be replaced with U+FFFD")
+
 </script>

@@ -20,8 +20,8 @@ policies and contribution forms [3].
     var settings = {
         output:true,
         harness_timeout:{
-            "normal":1000,
-            "long":2000
+            "normal":10000,
+            "long":60000
         },
         test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]

@@ -1622,7 +1622,7 @@ policies and contribution forms [3].
      */
     Test.prototype.done = function()
     {
-        if (this.phase >= this.phases.CLEANING) {
+        if (this.phase > this.phases.HAS_RESULT) {
             return;
         }
 

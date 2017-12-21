@@ -2094,8 +2094,8 @@ policies and contribution forms [3].
             // tests.
             if (test_in_cleanup) {
                 this.status.status = this.status.ERROR;
-                this.status.message = "Cleanup function for test named \"" +
-                    test_in_cleanup.name + "\" timed out.";
+                this.status.message = "Timeout while running cleanup for " +
+                    "test named \"" + test_in_cleanup.name + "\".";
                 tests.status.stack = null;
             } else {
                 this.status.status = this.status.TIMEOUT;

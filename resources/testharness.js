@@ -2087,11 +2087,11 @@ policies and contribution forms [3].
                         test.phase = test.phases.COMPLETE;
                     });
 
-            // Timeouts that occur while a sub-test is in the "cleanup" phase
+            // Timeouts that occur while a test is in the "cleanup" phase
             // indicate that some global state was not properly reverted. This
             // invalidates the overall test execution, so the timeout should be
             // reported as an error and cancel the execution of any remaining
-            // sub-tests.
+            // tests.
             if (test_in_cleanup) {
                 this.status.status = this.status.ERROR;
                 this.status.message = "Cleanup function for test named \"" +

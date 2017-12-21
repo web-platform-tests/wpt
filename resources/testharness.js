@@ -1789,6 +1789,16 @@ policies and contribution forms [3].
         return clone;
     };
 
+    /**
+     * `RemoteTest` instances are objects which represent tests running in
+     * another realm. They do not define "cleanup" functions (if necessary,
+     * such functions are defined on the associated `Test` instance within the
+     * external realm). However, `RemoteTests` may have "done" callbacks (e.g.
+     * as attached by the `Tests` instance responsible for tracking the overall
+     * test status in the parent realm). The `cleanup` method delegates to
+     * `done` in order to ensure that such callbacks are invoked following the
+     * completion of the `RemoteTest`.
+     */
     RemoteTest.prototype.cleanup = function() {
         this.done();
     };

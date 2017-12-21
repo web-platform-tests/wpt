@@ -44,7 +44,7 @@ interface WindowClient : Client {
   readonly attribute boolean focused;
   [SameObject] readonly attribute FrozenArray<USVString> ancestorOrigins;
   [NewObject] Promise<WindowClient> focus();
-  [NewObject] Promise<WindowClient> navigate(USVString url);
+  [NewObject] Promise<WindowClient?> navigate(USVString url);
 };
 
 [Exposed=ServiceWorker]

@@ -1852,7 +1852,12 @@ policies and contribution forms [3].
         this.message_target = message_target;
         this.message_handler = function(message) {
             var passesFilter = !message_filter || message_filter(message);
-            if (message.data && passesFilter &&
+            // The reference to the `running` property in the following
+            // condition is unnecessary because that value is only set to
+            // `false` after the `message_handler` function has been
+            // unsubscribed.
+            // TODO: Simplify the condition by removing the reference.
+            if (this_obj.running && message.data && passesFilter &&
                 (message.data.type in this_obj.message_handlers)) {
                 this_obj.message_handlers[message.data.type].call(this_obj, message.data);
             }

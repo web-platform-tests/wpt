@@ -542,7 +542,7 @@ policies and contribution forms [3].
                 // The current test should be skipped if the harness is in an
                 // invalid state (e.g. if the "cleanup" logic of a previous test
                 // failed).
-                if (tests.phase === tests.phases.ABORTED) {
+                if (tests.status.status === tests.status.ERROR) {
                     tests.result(test);
                     resolve();
                     return;
@@ -1414,7 +1414,7 @@ policies and contribution forms [3].
         }
         this.name = name;
 
-        this.phase = tests.phase === tests.phases.ABORTED ?
+        this.phase = tests.status.status === tests.status.ERROR ?
             this.phases.COMPLETE : this.phases.INITIAL;
 
         this.status = this.NOTRUN;
@@ -1976,8 +1976,7 @@ policies and contribution forms [3].
             SETUP:1,
             HAVE_TESTS:2,
             HAVE_RESULTS:3,
-            COMPLETE:4,
-            ABORTED:5
+            COMPLETE:4
         };
         this.phase = this.phases.INITIAL;
 
@@ -2144,14 +2143,10 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        if (!test_environment.all_loaded) {
-            return false;
-        }
-
-        return  (this.tests.length > 0 &&
+        return this.tests.length > 0 && test_environment.all_loaded &&
                 this.num_pending === 0 && !this.wait_for_finish &&
                 !this.processing_callbacks &&
-                !this.pending_remotes.some(function(w) { return w.running; }));
+                !this.pending_remotes.some(function(w) { return w.running; });
     };
 
     Tests.prototype.start = function() {
@@ -2199,10 +2194,7 @@ policies and contribution forms [3].
         }
         var this_obj = this;
         var all_complete = function() {
-            if (this_obj.phase !== this_obj.phases.ABORTED) {
-                this_obj.phase = this_obj.phases.COMPLETE;
-            }
-
+            this_obj.phase = this_obj.phases.COMPLETE;
             this_obj.notify_complete();
         };
         var incomplete = filter(this.tests,
@@ -2234,13 +2226,13 @@ policies and contribution forms [3].
     };
 
     /**
-     * Advance the harness phase state to reflect an unrecoverable harness
-     * error that should cancel all further testing. Update all
-     * previously-defined tests which have not yet started to indicate that
-     * they will not be executed.
+     * Update the harness status to reflect an unrecoverable harness error that
+     * should cancel all further testing. Update all previously-defined tests
+     * which have not yet started to indicate that they will not be executed.
      */
     Tests.prototype.abort = function() {
-        this.phase = tests.phases.ABORTED;
+        this.status.status = this.status.ERROR;
+
         forEach(this.tests,
                 function(test) {
                     if (test.phase === test.phases.INITIAL) {

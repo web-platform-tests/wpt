@@ -543,7 +543,9 @@ policies and contribution forms [3].
                 // invalid state (e.g. if the "cleanup" logic of a previous test
                 // failed).
                 if (tests.phase === tests.phases.ABORTED) {
-                    test._done_async(resolve);
+                    tests.result(test);
+                    resolve();
+                    return;
                 }
 
                 var promise = test.step(func, test, test);
@@ -2142,8 +2144,11 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return this.phase === this.phases.ABORTED ||
-            (this.tests.length > 0 && test_environment.all_loaded &&
+        if (!test_environment.all_loaded) {
+            return false;
+        }
+
+        return  (this.tests.length > 0 &&
                 this.num_pending === 0 && !this.wait_for_finish &&
                 !this.processing_callbacks &&
                 !this.pending_remotes.some(function(w) { return w.running; }));
@@ -2193,8 +2198,28 @@ policies and contribution forms [3].
             return;
         }
         var this_obj = this;
+        var all_complete = function() {
+            if (this_obj.phase !== this_obj.phases.ABORTED) {
+                this_obj.phase = this_obj.phases.COMPLETE;
+            }
 
-        all_async(this.tests,
+            this_obj.notify_complete();
+        };
+        var incomplete = filter(this.tests,
+                                function(test) {
+                                    return test.phase < test.phases.COMPLETE;
+                                });
+
+        /**
+         * To preserve legacy behavior, overall test completion must be
+         * signaled synchronously.
+         */
+        if (incomplete.length === 0) {
+            all_complete();
+            return;
+        }
+
+        all_async(incomplete,
                   function(test, testDone)
                   {
                       // The asynchronous version of `Test#done` is used even
@@ -2205,13 +2230,7 @@ policies and contribution forms [3].
                       // function is invoked asynchronously in all cases.
                       test._done_async(testDone);
                   },
-                  function() {
-                      if (this_obj.phase !== this_obj.phases.ABORTED) {
-                          this_obj.phase = this_obj.phases.COMPLETE;
-                      }
-
-                      this_obj.notify_complete();
-                  });
+                  all_complete);
     };
 
     /**

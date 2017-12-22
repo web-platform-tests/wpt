@@ -2225,7 +2225,7 @@ policies and contribution forms [3].
         forEach(this.tests,
                 function(test) {
                     if (test.phase === test.phases.INITIAL) {
-                        test.phase = test.phases.NOTRUN;
+                        test.phase = test.phases.COMPLETE;
                     }
                 });
     };

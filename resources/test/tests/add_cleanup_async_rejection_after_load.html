@@ -21,7 +21,6 @@ promise_test(function(t) {
       setTimeout(resolve, 0)
     });
   });
-  return Promise.resolve();
 }, "Test with failing cleanup that completes after DOMContentLoaded event");
 
 promise_test(function(t) {

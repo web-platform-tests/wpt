@@ -1016,7 +1016,7 @@ policies and contribution forms [3].
                        "assert_array_equals", description,
                        "property expected to be ${expected_array} but was ${actual_array},"
                        + " value of array expected ${expected} got ${actual}",
-                       {i:i, expected_array:expected_array.hasOwnProperty(i) ? "present" : "missing",
+                       {expected_array:expected_array.hasOwnProperty(i) ? "present" : "missing",
                         actual_array:actual_array.hasOwnProperty(i) ? "present" : "missing",
                         expected:expected, actual:actual});
                 if (actual_array[i] instanceof Array && expected_array[i] instanceof Array) {

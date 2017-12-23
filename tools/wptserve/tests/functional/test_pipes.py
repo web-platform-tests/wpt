@@ -58,6 +58,18 @@ class TestSub(TestUsingServer):
         expected = "localhost localhost %i" % self.server.port
         self.assertEqual(resp.read().rstrip(), expected)
 
+    def test_sub_file_hash(self):
+        resp = self.request("/sub_file_hash.sub.txt")
+        expected = """
+md5: JmI1W8fMHfSfCarYOSxJcw==
+sha1: nqpWqEw4IW8NjD6R375gtrQvtTo=
+sha224: RqQ6fMmta6n9TuA/vgTZK2EqmidqnrwBAmQLRQ==
+sha256: G6Ljg1uPejQxqFmvFOcV/loqnjPTW5GSOePOfM/u0jw=
+sha384: lkXHChh1BXHN5nT5BYhi1x67E1CyYbPKRKoF2LTm5GivuEFpVVYtvEBHtPr74N9E
+sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dXaICz
+JwGFonfXwg=="""
+        self.assertEqual(resp.read().rstrip(), expected.strip())
+
     def test_sub_headers(self):
         resp = self.request("/sub_headers.txt", query="pipe=sub", headers={"X-Test": "PASS"})
         expected = "PASS"

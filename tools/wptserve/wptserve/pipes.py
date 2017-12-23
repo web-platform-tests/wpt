@@ -277,6 +277,9 @@ def slice(request, response, start, end=None):
 
 
 class ReplacementTokenizer(object):
+    def arguments(self, token):
+        return ("arguments", None)
+
     def ident(self, token):
         return ("ident", token)
 
@@ -296,8 +299,9 @@ class ReplacementTokenizer(object):
         return self.scanner.scan(string)[0]
 
     scanner = re.Scanner([(r"\$\w+:", var),
-                          (r"\$?\w+(?:\(\))?", ident),
-                          (r"\[[^\]]*\]", index)])
+                          (r"\$?\w+", ident),
+                          (r"\[[^\]]*\]", index),
+                          (r"\(\)", arguments)])
 
 
 class FirstWrapper(object):
@@ -382,7 +386,8 @@ def template(request, content, escape_type="html"):
         else:
             variable = None
 
-        assert tokens[0][0] == "ident" and all(item[0] == "index" for item in tokens[1:]), tokens
+        assert tokens[0][0] == "ident", tokens
+        assert all(item[0] in ("index", "arguments") for item in tokens[1:]), tokens
 
         field = tokens[0][1]
 
@@ -414,15 +419,18 @@ def template(request, content, escape_type="html"):
                      "path": request.url_parts.path,
                      "pathname": request.url_parts.path,
                      "query": "?%s" % request.url_parts.query}
-        elif field == "uuid()":
-            value = str(uuid.uuid4())
+        elif field == "uuid":
+            value = lambda: str(uuid.uuid4())
         elif field == "url_base":
             value = request.url_base
         else:
             raise Exception("Undefined template variable %s" % field)
 
         for item in tokens[1:]:
-            value = value[item[1]]
+            if item[0] == "index":
+                value = value[item[1]]
+            else:
+                value = value()
 
         assert isinstance(value, (int,) + types.StringTypes), tokens
 

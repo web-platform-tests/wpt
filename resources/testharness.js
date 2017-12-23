@@ -996,26 +996,40 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
-        assert(typeof actual === "object" && actual !== null && "length" in actual,
-               "assert_array_equals", description,
-               "value is ${actual}, expected array",
-               {actual:actual});
-        assert(actual.length === expected.length,
-               "assert_array_equals", description,
-               "lengths differ, expected ${expected} got ${actual}",
-               {expected:expected.length, actual:actual.length});
+        function check_equal(actual_array, expected_array)
+        {
+            assert(actual_array instanceof Array,
+                   "assert_array_equals", description,
+                   "actual value is not an array");
+            assert(expected_array instanceof Array,
+                   "assert_array_equals", description,
+                   "expected value is not an array");
+            assert(actual_array.length === expected_array.length,
+                   "assert_array_equals", description,
+                   "lengths differ, expected ${expected_array} got ${actual_array},"
+                   + " value of array expected ${expected} got ${actual}",
+                   {expected_array:expected_array.length, actual_array:actual_array.length,
+                    expected:expected, actual:actual});
 
-        for (var i = 0; i < actual.length; i++) {
-            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
-                   "assert_array_equals", description,
-                   "property ${i}, property expected to be ${expected} but was ${actual}",
-                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
-            assert(same_value(expected[i], actual[i]),
-                   "assert_array_equals", description,
-                   "property ${i}, expected ${expected} but got ${actual}",
-                   {i:i, expected:expected[i], actual:actual[i]});
+            for (var i = 0; i < actual_array.length; i++) {
+                assert(actual_array.hasOwnProperty(i) === expected_array.hasOwnProperty(i),
+                       "assert_array_equals", description,
+                       "property expected to be ${expected_array} but was ${actual_array},"
+                       + " value of array expected ${expected} got ${actual}",
+                       {i:i, expected_array:expected_array.hasOwnProperty(i) ? "present" : "missing",
+                        actual_array:actual_array.hasOwnProperty(i) ? "present" : "missing",
+                        expected:expected, actual:actual});
+                if (actual_array[i] instanceof Array && expected_array[i] instanceof Array) {
+                    check_equal(actual_array[i], expected_array[i]);
+                } else {
+                    assert(same_value(expected_array[i], actual_array[i]),
+                    "assert_array_equals", description,
+                    "value of array expected ${expected} but got ${actual}",
+                    {i:i, expected:expected, actual:actual});
+                }
+            }
         }
+        check_equal(actual, expected);
     }
     expose(assert_array_equals, "assert_array_equals");
 

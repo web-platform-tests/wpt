@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../../service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+async_test(function(t) {
+    var worker_url = 'resources/fetch-destination-worker.js';
+    var scope = 'resources/empty.html';
+    var registration;
+
+    service_worker_unregister_and_register(t, worker_url, scope)
+      .then(t.step_func(function(r) {
+          registration = r;
+          return wait_for_state(t, r.installing, 'activated');
+        }))
+      .then(t.step_func(function() {
+          return with_iframe(scope);
+        }))
+      .then(t.step_func(function(frame) {
+          var script = frame.contentWindow.document.createElement("script");
+          script.addEventListener("load", t.step_func_done(function() { registration.unregister(); }));
+          script.addEventListener("error", t.step_func_done(function() {
+              registration.unregister();
+              assert_unreached("Fetch destination preload errored");
+          }));
+          script.src = "resources/dummy?dest=script";
+          frame.contentWindow.document.body.appendChild(script);
+        }))
+      .catch(unreached_rejection(t));
+}, 'Fetch destination preload');
+</script>

@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../../../service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/common/media.js"></script>
 <script>
 async_test(function(t) {
     var worker_url = 'resources/fetch-destination-worker.js';
@@ -17,15 +18,15 @@ async_test(function(t) {
           return with_iframe(scope);
         }))
       .then(t.step_func(function(frame) {
-          var node = frame.contentWindow.document.createElement("script");
-          node.addEventListener("load", t.step_func_done(function() { registration.unregister(); }));
+          var audioURL = getAudioURI("dummy_audio");
+          var node = frame.contentWindow.document.createElement("audio");
+          node.addEventListener("loadstart", t.step_func_done(function() { registration.unregister(); }));
           node.addEventListener("error", t.step_func_done(function() {
               registration.unregister();
-              assert_unreached("Fetch destination script errored");
+              assert_unreached("Fetch destination audio errored");
           }));
-          node.src = "dummy?dest=script";
-          frame.contentWindow.document.body.appendChild(node);
+          node.src = audioURL + "?dest=audio";
         }))
       .catch(unreached_rejection(t));
-}, 'Fetch destination script');
+}, 'Fetch destination audio');
 </script>

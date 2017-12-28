@@ -17,14 +17,14 @@ async_test(function(t) {
           return with_iframe(scope);
         }))
       .then(t.step_func(function(frame) {
-          var img = new Image();
-          img.addEventListener("load", t.step_func_done(function() { registration.unregister(); }));
-          img.addEventListener("error", t.step_func_done(function() {
+          var node = frame.contentWindow.document.createElement("img");
+          node.addEventListener("load", t.step_func_done(function() { registration.unregister(); }));
+          node.addEventListener("error", t.step_func_done(function() {
               registration.unregister();
               assert_unreached("Fetch destination preload errored");
           }));
-          img.src = "resources/dummy?dest=image";
+          node.src = "dummy.png?dest=image";
         }))
       .catch(unreached_rejection(t));
-}, 'Fetch destination preload');
+}, 'Fetch destination image');
 </script>

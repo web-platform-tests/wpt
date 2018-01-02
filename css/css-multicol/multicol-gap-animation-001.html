@@ -4,7 +4,7 @@
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="https://www.w3.org/TR/css-multicol-1/#column-gap">
 <link rel="help" href="https://www.w3.org/TR/web-animations-1/#dom-animatable-animate">
-<meta name="assert" content="Test checks that colunm-gap is an animatable property, and that the computed values during the animation are the expected ones.">
+<meta name="assert" content="Test checks that column-gap is an animatable property, and that the computed values during the animation are the expected ones.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -28,7 +28,8 @@
         ];
         var options = {
           duration: 10,
-          fill: "forwards"
+          fill: "forwards",
+          easing: "linear"
         };
 
         var player = multicol.animate(keyframes, options);

@@ -8,16 +8,16 @@
 <body>
 <script>
 window.setCookie = function (name, path) {
-  document.cookie = name + '=1; path = ' + path + ';';
+  document.cookie = name + '=1; Path=' + path + ';';
 }
 window.fetchCookieThen = function (name, path) {
-  return fetch("/cookies/resources/set-cookie.py?name=" + encodeURIComponent(name) + "&path=" + encodeURIComponent(path));
+  return fetch("/cookies/resources/set-cookie.py?name=" + encodeURIComponent(name) + "&path=" + encodeURIComponent(path), {'credentials': 'include'});
 };
 window.isCookieSet = function (name, path) {
   return document.cookie.match(name + '=1');
 };
 window.expireCookie = function (name, path) {
-  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=' + path + ';';
+  document.cookie = name + '=0; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=' + path + ';';
 };
 </script>
 </body>

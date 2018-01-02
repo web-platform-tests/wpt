@@ -17,10 +17,10 @@
   async_test(t => {
     simulateGesture(t, () => {
       isAutoplayAllowed().then(t.step_func_done((result) => {
-        assert_false(result);
+        assert_true(result);
       }));
     });
-  }, header + ' disallows the top-level document.');
+  }, header + ' has no effect on the top level document.');
 
   async_test(t => {
     simulateGesture(t, () => {

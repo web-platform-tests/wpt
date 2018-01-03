@@ -1,23 +1,8 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
 <script>
-
-function makeCanvas() {
-  return new Promise(resolve => {
-    let canvas = document.createElement('canvas');
-    canvas.setAttribute('width', '10');
-    canvas.setAttribute('height', '10');
-    resolve(canvas);
-  });
-}
-
-function makeOffscreenCanvas() {
-  return new Promise(resolve => {
-    let canvas = new OffscreenCanvas(10, 10);
-    resolve(canvas);
-  });
-}
 
 function makeOversizedCanvas() {
 
@@ -33,46 +18,6 @@ function makeOversizedOffscreenCanvas() {
   return new Promise(resolve =>{
     let canvas = new OffscreenCanvas(100000000, 100000000);
     resolve(canvas);
-  });
-}
-
-function makeVideo() {
-  return new Promise(resolve => {
-    let video = document.createElement('video');
-    video.addEventListener('canplaythrough', resolve.bind(undefined, video), false);
-    video.src = '/media/A4.ogv';
-  });
-}
-
-function makeImage() {
-  return makeCanvas().then(canvas => {
-    let image = new Image();
-    image.src = canvas.toDataURL();
-    return new Promise(resolve => {
-      image.onload = resolve.bind(undefined, image);
-    });
-  });
-}
-
-function makeImageData() {
-  return makeCanvas().then(canvas => {
-    return new Promise(function(resolve, reject) {
-      resolve(canvas.getContext('2d').getImageData(0, 0, 10, 10));
-    });
-  });
-}
-
-function makeImageBitmap() {
-  return makeCanvas().then(canvas => {
-    return createImageBitmap(canvas);
-  });
-}
-
-function makeBlob() {
-  return makeCanvas().then(canvas => {
-    return new Promise(resolve => {
-      canvas.toBlob(resolve);
-    });
   });
 }
 
@@ -97,16 +42,6 @@ function makeAvailableButBrokenImage() {
     image.onload = () => resolve(image);
   });
 }
-
-imageSourceTypes = [
-  { name: 'HTMLImageElement',  factory: makeImage },
-  { name: 'HTMLVideoElement',  factory: makeVideo },
-  { name: 'HTMLCanvasElement', factory: makeCanvas },
-  { name: 'OffscreenCanvas',   factory: makeOffscreenCanvas },
-  { name: 'ImageData',         factory: makeImageData },
-  { name: 'ImageBitmap',       factory: makeImageBitmap },
-  { name: 'Blob',              factory: makeBlob },
-];
 
 testCases = [
   {

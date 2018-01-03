@@ -16,6 +16,22 @@ function makeCanvas() {
     });
 }
 
+function makeOffscreenCanvas() {
+    return new Promise(resolve => {
+        let canvas = new OffscreenCanvas(20, 20);
+        var testCtx = canvas.getContext("2d");
+        testCtx.fillStyle = "rgb(255, 0, 0)";
+        testCtx.fillRect(0, 0, 10, 10);
+        testCtx.fillStyle = "rgb(0, 255, 0)";
+        testCtx.fillRect(10, 0, 10, 10);
+        testCtx.fillStyle = "rgb(0, 0, 255)";
+        testCtx.fillRect(0, 10, 10, 10);
+        testCtx.fillStyle = "rgb(0, 0, 0)";
+        testCtx.fillRect(10, 10, 10, 10);
+        resolve(canvas);
+    });
+}
+
 function makeVideo() {
     return new Promise(function(resolve, reject) {
         var video = document.createElement("video");
@@ -84,6 +100,7 @@ var imageSourceTypes = [
     { name: 'an HTMLCanvasElement', factory: makeCanvas },
     { name: 'an HTMLVideoElement',  factory: makeVideo },
     { name: 'an HTMLImageElement',  factory: makeImage },
+    { name: 'an OffscreenCanvas',   factory: makeOffscreenCanvas },
     { name: 'an ImageData',         factory: makeImageData },
     { name: 'an ImageBitmap',       factory: makeImageBitmap },
     { name: 'a Blob',               factory: makeBlob },

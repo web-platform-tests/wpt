@@ -6,25 +6,19 @@
 <script>
     setup({allow_uncaught_exception: true});
 
-    window.log = [];
-
-    window.addEventListener("error", ev => log.push(ev.error));
-
     const test_load = async_test(
         "Test that missing exports lead to SyntaxError events on window and " +
         "load events on script");
+
+    window.log = [];
+    window.addEventListener("error", ev => {
+      test_load.step(() => assert_equals(ev.error.constructor, SyntaxError));
+      log.push(ev.message);
+    });
+
     window.addEventListener("load", test_load.step_func_done(ev => {
-      assert_equals(log.length, 10);
-      assert_equals(log[0].constructor, SyntaxError);
-      assert_equals(log[1], 1);
-      assert_equals(log[2].constructor, SyntaxError);
-      assert_equals(log[3], 2);
-      assert_equals(log[4].constructor, SyntaxError);
-      assert_equals(log[5], 3);
-      assert_equals(log[6].constructor, SyntaxError);
-      assert_equals(log[7], 4);
-      assert_equals(log[8].constructor, SyntaxError);
-      assert_equals(log[9], 5);
+      const msg = log[0];
+      assert_array_equals(log, [msg, 1, msg, 2, msg, 3, msg, 4, msg, 5]);
     }));
 
     function unreachable() { log.push("unexpected"); }

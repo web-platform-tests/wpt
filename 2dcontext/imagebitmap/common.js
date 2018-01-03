@@ -1,3 +1,58 @@
+function makeCanvas() {
+    return new Promise(resolve => {
+        var testCanvas = document.createElement("canvas");
+        initializeTestCanvas(testCanvas);
+        resolve(testCanvas);
+    });
+}
+
+function makeVideo() {
+    return new Promise(function(resolve, reject) {
+        var video = document.createElement("video");
+        video.oncanplaythrough = function() {
+            resolve(video);
+        };
+        video.src = "/images/pattern.ogv";
+    });
+}
+
+function makeImage() {
+    return new Promise(resolve => {
+        var img = new Image();
+        img.onload = function() {
+            resolve(img);
+        };
+        img.src = "/images/pattern.png";
+    });
+}
+
+function makeImageData() {
+    return new Promise(function(resolve, reject) {
+        var width = 20, height = 20;
+        var imgData = new ImageData(width, height);
+        initializeImageData(imgData, width, height);
+        resolve(imgData);
+    });
+}
+
+function makeImageBitmap() {
+    return makeCanvas().then(canvas => {
+        return createImageBitmap(canvas);
+    });
+}
+
+function makeBlob() {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", '/images/pattern.png');
+        xhr.responseType = 'blob';
+        xhr.send();
+        xhr.onload = function() {
+            resolve(xhr.response);
+        };
+    });
+}
+
 function initializeTestCanvas(testCanvas)
 {
     testCanvas.width = 20;

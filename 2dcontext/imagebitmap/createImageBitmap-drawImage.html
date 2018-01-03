@@ -8,6 +8,28 @@
 <link rel="stylesheet" href="/common/canvas-tests.css">
 <body>
 <script>
+function testCanvasDisplayingPattern(canvas)
+{
+    var tolerance = 5; // for creating ImageBitmap from a video, the tolerance needs to be high
+    _assertPixelApprox(canvas, 5,5, 255,0,0,255, "5,5", "255,0,0,255", tolerance);
+    _assertPixelApprox(canvas, 15,5, 0,255,0,255, "15,5", "0,255,0,255", tolerance);
+    _assertPixelApprox(canvas, 5,15, 0,0,255,255, "5,15", "0,0,255,255", tolerance);
+    _assertPixelApprox(canvas, 15,15, 0,0,0,255, "15,15", "0,0,0,255", tolerance);
+}
+
+function testDrawImageBitmap(source)
+{
+    var canvas = document.createElement("canvas");
+    canvas.width = 20;
+    canvas.height = 20;
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return createImageBitmap(source).then(imageBitmap => {
+        ctx.drawImage(imageBitmap, 0, 0);
+        testCanvasDisplayingPattern(canvas);
+    });
+}
+
 (function() {
     promise_test(function() {
         return new Promise(function(resolve, reject) {

@@ -30,43 +30,13 @@ function testDrawImageBitmap(source)
     });
 }
 
-(function() {
+for (let { name, factory } of imageSourceTypes) {
     promise_test(function() {
-        return makeImage().then(function(img) {
+        return factory().then(function(img) {
             return testDrawImageBitmap(img);
         });
-    }, "createImageBitmap from a HTMLImageElement, and drawImage on the created ImageBitmap");
-
-    promise_test(function() {
-        return makeBlob().then(function(blob) {
-            return testDrawImageBitmap(blob);
-        });
-    }, "createImageBitmap from a Blob, and drawImage on the created ImageBitmap");
-
-    promise_test(function() {
-        return makeCanvas().then(function(testCanvas) {
-            return testDrawImageBitmap(testCanvas);
-        });
-    }, "createImageBitmap from a HTMLCanvasElement, and drawImage on the created ImageBitmap");
-
-    promise_test(function() {
-        return makeImageBitmap().then(function(bitmap) {
-            return testDrawImageBitmap(bitmap);
-        });
-    }, "createImageBitmap from an ImageBitmap, and drawImage on the created ImageBitmap");
-
-    promise_test(function() {
-        return makeImageData().then(function(imgData) {
-            return testDrawImageBitmap(imgData);
-        });
-    }, "createImageBitmap from an ImageData, and drawImage on the created ImageBitmap");
-
-    promise_test(function() {
-        return makeVideo().then(function(video) {
-            return testDrawImageBitmap(video);
-        });
-    }, "createImageBitmap from a HTMLVideoElement, and drawImage on the created ImageBitmap");
-})();
+    }, `createImageBitmap from ${name}, and drawImage on the created ImageBitmap`);
+}
 </script>
 </body>
 </html>

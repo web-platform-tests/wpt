@@ -79,3 +79,12 @@ function makeBlob() {
         };
     });
 }
+
+var imageSourceTypes = [
+    { name: 'an HTMLCanvasElement', factory: makeCanvas },
+    { name: 'an HTMLVideoElement',  factory: makeVideo },
+    { name: 'an HTMLImageElement',  factory: makeImage },
+    { name: 'an ImageData',         factory: makeImageData },
+    { name: 'an ImageBitmap',       factory: makeImageBitmap },
+    { name: 'a Blob',               factory: makeBlob },
+];

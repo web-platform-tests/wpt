@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>Reference rendering - no red, 3x3 monospace table</title>
-      <link rel="author" title="Opera" href="https://www.opera.com/" />
       <style>
          body {
             font-family: monospace;
@@ -33,9 +32,10 @@
       </style>
    </head>
    <body>
-      <p>There should be no red below, except for antialiasing issues.</p>
+      There should be no red below, except for antialiasing issues.
       <div>
          <div class="container"><table id="red">
+            <colgroup><col style="background: yellow"/><col style="background: cyan"/><col style="background: lime"/></colgroup>
             <tr>
                <td>Row 1, Col 1</td>
                <td>Row 1, Col 2</td>
@@ -53,6 +53,7 @@
             </tr>
          </table></div>
          <div class="container"><table id="green">
+            <colgroup><col style="background: yellow"/><col style="background: cyan"/><col style="background: lime"/></colgroup>
             <tr>
                <td>Row 1, Col 1</td>
                <td>Row 1, Col 2</td>

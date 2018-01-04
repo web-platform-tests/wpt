@@ -30,7 +30,7 @@ function makeInvalidBlob() {
 function makeBrokenImage() {
   return new Promise(resolve => {
     const image = new Image();
-    image.src = "data,x";
+    image.src = "data:,x";
     image.onerror = () => resolve(image);
   });
 }

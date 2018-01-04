@@ -143,4 +143,10 @@ promise_test( t => {
   });
 }, "createImageBitmap with an available but undecodable image source rejects with an InvalidStateError.");
 
+promise_test( t => {
+  return makeImageBitmap().then(bitmap => {
+    bitmap.close()
+    return promise_rejects(t, "InvalidStateError", createImageBitmap(bitmap));
+  });
+}, "createImageBitmap with a closed ImageBitmap rejects with an InvalidStateError.");
 </script>

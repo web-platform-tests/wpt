@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Custom User Timing</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="performanceobservers.js"></script>
+<h1>Custom User Timing</h1>
+<p>
+Custom User Timing
+</p>
+<div id="log"></div>
+<script>
+  async_test(function (t) {
+    var mark_entries = [];
+    var now = self.performance.now();
+    var observer = new PerformanceObserver(
+        t.step_func(function (entryList, obs) {
+          mark_entries =
+            mark_entries.concat(entryList.getEntries());
+          if (mark_entries.length >= 10) {
+            checkEntries(mark_entries,
+              [{ entryType: "mark", name: "mark1", detail: null},
+              { entryType: "mark", name: "mark2", detail: null},
+              { entryType: "mark", name: "mark3", detail: null},
+              { entryType: "mark", name: "mark4", detail: null},
+              { entryType: "mark", name: "mark5", detail: null},
+              { entryType: "mark", name: "mark6", detail: {}},
+              { entryType: "mark", name: "mark7", detail: {info: 'abc'}},
+              { entryType: "mark", name: "mark8", detail: null, startTime: now},
+              { entryType: "mark", name: "mark9", detail: null, startTime: 234.56},
+              { entryType: "mark", name: "mark10", detail: {count: 3}, startTime: 345.67}]);
+            observer.disconnect();
+            t.done();
+          }
+        })
+      );
+    self.performance.clearMarks();
+    observer.observe({entryTypes: ["mark"]});
+    self.performance.mark("mark1");
+    self.performance.mark("mark2", undefined);
+    self.performance.mark("mark3", null);
+    self.performance.mark("mark4", {});
+    self.performance.mark("mark5", {detail: null});
+    self.performance.mark("mark6", {detail: {}});
+    self.performance.mark("mark7", {detail: {info: 'abc'}});
+    self.performance.mark("mark8", now);
+    self.performance.mark("mark9", {startTime: 234.56});
+    self.performance.mark("mark10", {detail: {count: 3}, startTime: 345.67});
+  }, "marked entries' detail and startTime are customizable");
+</script>

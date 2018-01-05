@@ -10,7 +10,7 @@ const kScope = 'resources/dummy.https.html?dest=document';
 
 // Set up the service worker and the frame.
 promise_test(t => {
-    const kScript = 'resources/fetch-destination-worker-no-load-event.js';
+    const kScript = 'resources/fetch-destination-worker-iframe.js';
     return service_worker_unregister_and_register(t, kScript, kScope)
       .then(registration => {
           add_completion_callback(() => {
@@ -23,7 +23,7 @@ promise_test(t => {
 
 var waitOnMessageFromSW = async t => {
     await new Promise((resolve, reject) => {
-        frame.contentWindow.navigator.serviceWorker.onmessage = t.step_func(event => {
+        navigator.serviceWorker.onmessage = t.step_func(event => {
             if (event.data == "PASS") {
                 resolve();
             } else {

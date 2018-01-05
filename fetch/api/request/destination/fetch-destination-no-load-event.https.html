@@ -121,11 +121,4 @@ promise_test(async t => {
     await waitOnMessageFromSW(t);
 }, '@import fetches with a "style" Request.destination');
 
-// worker destination
-/////////////////////
-promise_test(async t => {
-    let worker = new frame.contentWindow.Worker("dummy?t=worker&dest=worker");
-    await waitOnMessageFromSW(t);
-}, 'Worker fetches with a "worker" Request.destination');
-
 </script>

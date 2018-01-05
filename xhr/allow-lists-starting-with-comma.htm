@@ -10,7 +10,7 @@
   <script type="text/javascript">
     async_test(function(test) {
       const client = new XMLHttpRequest();
-      let url = "XMLHttpRequest/resources/access-control-allow-lists.py?headers=,y-lol,x-print,%20,,,y-print&origin=" +
+      let url = "xhr/resources/access-control-allow-lists.py?headers=,y-lol,x-print,%20,,,y-print&origin=" +
           get_host_info().HTTP_ORIGIN;
       client.open("GET", get_host_info().HTTP_REMOTE_ORIGIN + '/' + url, false);
       client.setRequestHeader('x-print', 'unicorn')
@@ -21,7 +21,7 @@
       assert_equals(response['x-print'], "unicorn");
       assert_equals(response['y-print'], "narwhal");
 
-      url = "XMLHttpRequest/resources/access-control-allow-lists.py?methods=,,PUT,GET&origin=" +
+      url = "xhr/resources/access-control-allow-lists.py?methods=,,PUT,GET&origin=" +
           get_host_info().HTTP_ORIGIN;
       client.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN + '/' + url, false);
       // Sending PUT request

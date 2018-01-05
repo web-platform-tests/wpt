@@ -20,7 +20,7 @@
         firstRequest();
       });
 
-      xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/reset-token.py?token=" + uuid, true);
+      xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/reset-token.py?token=" + uuid, true);
       xhr.send();
 
       function firstRequest() {
@@ -28,7 +28,7 @@
           assert_equals(xhr.responseText, "PASS: First PUT request.");
           step_timeout(secondRequest, 3000); // 3 seconds
         });
-        xhr.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/access-control-basic-preflight-cache-timeout.py?token=" + uuid, true);
+        xhr.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/access-control-basic-preflight-cache-timeout.py?token=" + uuid, true);
         xhr.send();
       }
 
@@ -37,7 +37,7 @@
           assert_equals(xhr.responseText, "PASS: Second OPTIONS request was sent.");
           test.done();
         });
-        xhr.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/access-control-basic-preflight-cache-timeout.py?token=" + uuid, true);
+        xhr.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/access-control-basic-preflight-cache-timeout.py?token=" + uuid, true);
         xhr.send();
       }
     }, "Preflight cache should be invalidated on timeout");

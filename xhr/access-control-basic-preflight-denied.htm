@@ -23,7 +23,7 @@
       xhr.onload = test.unreached_func("Request succeeded unexpectedly");
 
       xhr.open("FOO", get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-denied.py");
+          "/xhr/resources/access-control-basic-denied.py");
       xhr.send();
     });
     </script>

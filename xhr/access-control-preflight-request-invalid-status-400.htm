@@ -11,7 +11,7 @@
     async_test((test) => {
       const xhr = new XMLHttpRequest;
 
-      xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/access-control-preflight-request-invalid-status.py?code=400");
+      xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/access-control-preflight-request-invalid-status.py?code=400");
 
       xhr.setRequestHeader("x-pass", "pass");
 

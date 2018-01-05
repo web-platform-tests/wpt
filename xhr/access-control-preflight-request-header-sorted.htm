@@ -10,7 +10,7 @@
 <script>
 async_test((test) => {
   const xhr = new XMLHttpRequest();
-  const url = get_host_info().HTTP_REMOTE_ORIGIN + '/XMLHttpRequest/resources/access-control-preflight-request-header-sorted.py';
+  const url = get_host_info().HTTP_REMOTE_ORIGIN + '/xhr/resources/access-control-preflight-request-header-sorted.py';
   xhr.open('GET', url);
   xhr.setRequestHeader("X-Custom-Test", "foobar");
   xhr.setRequestHeader("X-Custom-ua", "foobar");

@@ -18,7 +18,7 @@
       xhr.onerror = test.unreached_func("Unexpected error.");
 
       xhr.open("PUT", get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-put-allow.py");
+          "/xhr/resources/access-control-basic-put-allow.py");
       xhr.setRequestHeader("Content-Type", "text/plain; charset=UTF-8");
       xhr.send("PASS: PUT data received");
     }, "Allow async PUT request");

@@ -12,7 +12,7 @@ async_test((test) => {
   const xhr = new XMLHttpRequest;
 
   xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN +
-      "/XMLHttpRequest/resources/pass.txt?pipe=" +
+      "/xhr/resources/pass.txt?pipe=" +
       "header(Cache-Control,no-cache)|" +
       "header(Access-Control-Max-Age,0)|" +
       "header(Access-Control-Allow-Origin,*)|" +

@@ -18,7 +18,7 @@ async_test(t => {
 
 async_test(t => {
   const client = new XMLHttpRequest
-  client.open("YO", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/delay.py")
+  client.open("YO", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/delay.py")
   client.timeout = 1000
   client.send()
   client.ontimeout = t.step_func_done(() => {

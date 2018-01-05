@@ -33,37 +33,37 @@
 
     // The redirect response passes the access check.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow-star.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow-star.py",
           withoutCredentials, succeeds)
     }, "Request without credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)");
 
     // The redirect response fails the access check because credentials were sent.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow-star.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow-star.py",
           withCredentials, fails)
     }, "Request with credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)");
 
     // The redirect response passes the access check.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow.py",
           withoutCredentials, succeeds)
     }, "Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin");
 
     // The redirect response passes the access check.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow.py",
           withCredentials, succeeds)
     }, "Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin");
 
     // forbidding credentials. The redirect response passes the access check.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow-no-credentials.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow-no-credentials.py",
           withoutCredentials, succeeds)
     }, "Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)");
 
     // forbidding credentials. The redirect response fails the access check.
     async_test(t => {
-      runTest(t, "/XMLHttpRequest/resources/access-control-basic-allow-no-credentials.py",
+      runTest(t, "/xhr/resources/access-control-basic-allow-no-credentials.py",
           withCredentials, fails)
     }, "Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)");
     </script>

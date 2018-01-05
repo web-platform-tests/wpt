@@ -11,7 +11,7 @@
     async_test(function(test) {
       const xhr = new XMLHttpRequest;
 
-      xhr.open("POST", get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/access-control-basic-options-not-supported.py");
+      xhr.open("POST", get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/access-control-basic-options-not-supported.py");
 
       xhr.onerror = test.unreached_func("Network error.");
 

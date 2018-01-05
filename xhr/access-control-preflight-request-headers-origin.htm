@@ -11,7 +11,7 @@
 async_test((test) => {
   const xhr = new XMLHttpRequest;
   const url = get_host_info().HTTP_REMOTE_ORIGIN +
-      "/XMLHttpRequest/resources/access-control-preflight-request-headers-origin.py";
+      "/xhr/resources/access-control-preflight-request-headers-origin.py";
 
   xhr.open("GET", url);
   xhr.setRequestHeader("x-pass", "PASS");

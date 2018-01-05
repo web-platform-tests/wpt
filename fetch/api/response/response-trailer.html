@@ -6,7 +6,7 @@
 <!-- based on /XMLHttpRequest/getresponseheader-chunked-trailer.htm -->
 <script>
 promise_test(() => {
-  return fetch("/XMLHttpRequest/resources/chunked.py").then(res => {
+  return fetch("/xhr/resources/chunked.py").then(res => {
     assert_equals(res.headers.get("Trailer"), "X-Test-Me")
     assert_equals(res.headers.get("X-Test-Me"), null)
     assert_equals(res.headers.get("Content-Type"), "text/plain")

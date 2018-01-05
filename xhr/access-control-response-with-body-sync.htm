@@ -12,7 +12,7 @@ test(() => {
   const xhr = new XMLHttpRequest;
 
   xhr.open("GET", get_host_info().HTTP_REMOTE_ORIGIN+
-      "/XMLHttpRequest/resources/access-control-allow-with-body.py", false);
+      "/xhr/resources/access-control-allow-with-body.py", false);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
   xhr.send();

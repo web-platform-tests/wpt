@@ -7,7 +7,7 @@
 <script src="/common/get-host-info.sub.js"></script>
 <div id="log"></div>
 <script>
-const remote = get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/corsenabled.py",
+const remote = get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/corsenabled.py",
       redirect = "resources/redirect.py?code=307&location=" + remote;
 
 [remote, redirect].forEach(url => {

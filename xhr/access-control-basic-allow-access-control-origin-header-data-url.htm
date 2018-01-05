@@ -8,7 +8,7 @@
   </head>
   <body>
     <script type="text/javascript">
-const url = get_host_info().HTTP_REMOTE_ORIGIN + "/XMLHttpRequest/resources/access-control-origin-header.py";
+const url = get_host_info().HTTP_REMOTE_ORIGIN + "/xhr/resources/access-control-origin-header.py";
 async_test(function(test) {
   window.addEventListener("message", test.step_func(function(evt) {
     if (evt.data == "ready") {

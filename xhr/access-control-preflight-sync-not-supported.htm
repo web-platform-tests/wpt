@@ -11,7 +11,7 @@
     <script type="text/javascript">
 const uuid = token();
 const url = get_host_info().HTTP_REMOTE_ORIGIN +
-      "/XMLHttpRequest/resources/access-control-preflight-denied.py?token=" + uuid;
+      "/xhr/resources/access-control-preflight-denied.py?token=" + uuid;
 
 test(() => {
   let xhr = new XMLHttpRequest;

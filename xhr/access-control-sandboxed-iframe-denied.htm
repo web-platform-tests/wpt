@@ -8,7 +8,7 @@
   </head>
   <body>
     <script type="text/javascript">
-const path = "/XMLHttpRequest/resources/pass.txt?pipe=" +
+const path = "/xhr/resources/pass.txt?pipe=" +
     "header(Cache-Control,no-store)|" +
     "header(Content-Type,text/plain)";
 
@@ -35,7 +35,7 @@ async_test((test) => {
   }), false);
 }, "Sandboxed iframe is denied access to path");
     </script>
-    <iframe id="frame" sandbox="allow-scripts" src="/XMLHttpRequest/resources/access-control-sandboxed-iframe.html">
+    <iframe id="frame" sandbox="allow-scripts" src="/xhr/resources/access-control-sandboxed-iframe.html">
     </iframe>
   </body>
 </html>

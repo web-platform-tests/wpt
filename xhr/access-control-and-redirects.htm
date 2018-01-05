@@ -29,31 +29,31 @@
     }
     test(t => {
       runSync(t, "resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py")
+          "/xhr/resources/access-control-basic-allow.py")
     }, "Local sync redirect to remote origin");
     async_test(t => {
       runAsync(t, "resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py")
+          "/xhr/resources/access-control-basic-allow.py")
     }, "Local async redirect to remote origin");
     test(t => {
       runSync(t, get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/redirect-cors.py?location=" + get_host_info().HTTP_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py&allow_origin=true")
+          "/xhr/resources/redirect-cors.py?location=" + get_host_info().HTTP_ORIGIN +
+          "/xhr/resources/access-control-basic-allow.py&allow_origin=true")
     }, "Remote sync redirect to local origin");
     async_test(t => {
       runAsync(t, get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/redirect-cors.py?location=" + get_host_info().HTTP_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py&allow_origin=true")
+          "/xhr/resources/redirect-cors.py?location=" + get_host_info().HTTP_ORIGIN +
+          "/xhr/resources/access-control-basic-allow.py&allow_origin=true")
     }, "Remote async redirect to local origin");
     test(t => {
       runSync(t, get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py&allow_origin=true")
+          "/xhr/resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
+          "/xhr/resources/access-control-basic-allow.py&allow_origin=true")
     }, "Remote sync redirect to same remote origin");
     async_test(t => {
       runAsync(t, get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
-          "/XMLHttpRequest/resources/access-control-basic-allow.py&allow_origin=true")
+          "/xhr/resources/redirect-cors.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN +
+          "/xhr/resources/access-control-basic-allow.py&allow_origin=true")
     }, "Remote async redirect to same remote origin");
     </script>
   </body>

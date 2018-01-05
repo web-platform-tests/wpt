@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#autocapitalization">
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+test(function() {
+    assert_true('autocapitalize' in document.createElement('input'));
+}, "Test that the autocapitalize is avaible on HTMLInputElement.")
+
+test(function() {
+    assert_true('autocapitalize' in document.createElement('textarea'));
+}, "Test that the autocapitalize is avaible on HTMLTextAreaElement.")
+
+test(function() {
+    assert_true('autocapitalize' in document.createElement('div'));
+}, "Test that the autocapitalize is avaible on div.")
+
+test(function() {
+  var elements = [ document.createElement('input'),
+                   document.createElement('textarea'),
+                   document.createElement('div') ];
+
+  elements.forEach(function(e) {
+    e.autocapitalize = 'on';
+    assert_equals(e.autocapitalize, 'sentences');
+
+    e.autocapitalize = 'off';
+    assert_equals(e.autocapitalize, 'none');
+  });
+}, "Test deprecated values of autocapitalize.");
+
+test(function() {
+  var elements = [ document.createElement('input'),
+                   document.createElement('textarea'),
+                   document.createElement('div') ];
+  var knownValues = [ 'none', 'characters', 'words', 'sentences' ];
+
+  elements.forEach(function(e) {
+    // Default value.
+    assert_equals(e.autocapitalize, '');
+
+    // Empty value.
+    e.autocapitalize = '';
+    assert_equals(e.autocapitalize, '');
+    assert_equals(e.getAttribute('autocapitalize'), '');
+    e.setAttribute('autocapitalize', '');
+    assert_equals(e.autocapitalize, '');
+    assert_equals(e.getAttribute('autocapitalize'), '');
+    assert_equals(e.autocapitalize, '');
+
+    // Invalid value.
+    e.autocapitalize = 'foo';
+    assert_equals(e.autocapitalize, 'sentences');
+    assert_equals(e.getAttribute('autocapitalize'), 'foo');
+    e.setAttribute('autocapitalize', 'bar');
+    assert_equals(e.autocapitalize, 'sentences');
+    assert_equals(e.getAttribute('autocapitalize'), 'bar');
+
+    // Default value.
+    e.removeAttribute('autocapitalize');
+    assert_equals(e.autocapitalize, '');
+    assert_equals(e.getAttribute('autocapitalize'), null);
+
+    // Case insensitive.
+    e.setAttribute('autocapitalize', 'NoNe');
+    assert_equals(e.autocapitalize, 'none');
+    assert_equals(e.getAttribute('autocapitalize'), 'NoNe');
+    e.autocapitalize = 'WORDS';
+    assert_equals(e.autocapitalize, 'words');
+    assert_equals(e.getAttribute('autocapitalize'), 'WORDS');
+
+    knownValues.forEach(function(value) {
+      e.setAttribute('autocapitalize', value);
+      assert_equals(e.autocapitalize, value);
+      assert_equals(e.getAttribute('autocapitalize'), value);
+
+      e.removeAttribute('autocapitalize');
+
+      e.autocapitalize = value;
+      assert_equals(e.autocapitalize, value);
+      assert_equals(e.getAttribute('autocapitalize'), value);
+
+      e.removeAttribute('autocapitalize');
+    });
+  });
+}, "Test reflection of autocapitalize.");
+
+test(function() {
+var testData = [ 'text',
+                 'search',
+                 'email',
+                 'url',
+                 'tel',
+                 'number',
+                 'date',
+                 'color',
+                 'password' ];
+
+  testData.forEach(function(data) {
+    const input = document.createElement('input');
+    input.type = data;
+    assert_equals(input.autocapitalize, '');
+
+    // Verify that wrapping the input element in a form doesn't change the
+    // defaults.
+    const form = document.createElement('form');
+    form.appendChild(input);
+    assert_equals(input.autocapitalize, '');
+  });
+}, "Test that the IDL attribute returns the empty string if the content "
++ "attribute is not set.")
+
+test(function() {
+  const testData = [
+    { formValue: null, formElementValue: null, result: '' },
+    { formValue: null, formElementValue: '', result: '' },
+    { formValue: null, formElementValue: 'on', result: 'sentences' },
+    { formValue: null, formElementValue: 'off', result: 'none' },
+    { formValue: null, formElementValue: 'none', result: 'none' },
+    { formValue: null, formElementValue: 'characters', result: 'characters' },
+    { formValue: null, formElementValue: 'words', result: 'words' },
+    { formValue: null, formElementValue: 'sentences', result: 'sentences' },
+    { formValue: null, formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: '', formElementValue: null, result: '' },
+    { formValue: '', formElementValue: '', result: '' },
+    { formValue: '', formElementValue: 'on', result: 'sentences' },
+    { formValue: '', formElementValue: 'off', result: 'none' },
+    { formValue: '', formElementValue: 'none', result: 'none' },
+    { formValue: '', formElementValue: 'characters', result: 'characters' },
+    { formValue: '', formElementValue: 'words', result: 'words' },
+    { formValue: '', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: '', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'on', formElementValue: null, result: 'sentences' },
+    { formValue: 'on', formElementValue: '', result: 'sentences' },
+    { formValue: 'on', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'on', formElementValue: 'off', result: 'none' },
+    { formValue: 'on', formElementValue: 'none', result: 'none' },
+    { formValue: 'on', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'on', formElementValue: 'words', result: 'words' },
+    { formValue: 'on', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'on', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'off', formElementValue: null, result: 'none' },
+    { formValue: 'off', formElementValue: '', result: 'none' },
+    { formValue: 'off', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'off', formElementValue: 'off', result: 'none' },
+    { formValue: 'off', formElementValue: 'none', result: 'none' },
+    { formValue: 'off', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'off', formElementValue: 'words', result: 'words' },
+    { formValue: 'off', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'off', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'none', formElementValue: null, result: 'none' },
+    { formValue: 'none', formElementValue: '', result: 'none' },
+    { formValue: 'none', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'none', formElementValue: 'off', result: 'none' },
+    { formValue: 'none', formElementValue: 'none', result: 'none' },
+    { formValue: 'none', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'none', formElementValue: 'words', result: 'words' },
+    { formValue: 'none', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'none', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'characters', formElementValue: null, result: 'characters' },
+    { formValue: 'characters', formElementValue: '', result: 'characters' },
+    { formValue: 'characters', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'characters', formElementValue: 'off', result: 'none' },
+    { formValue: 'characters', formElementValue: 'none', result: 'none' },
+    { formValue: 'characters', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'characters', formElementValue: 'words', result: 'words' },
+    { formValue: 'characters', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'characters', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'words', formElementValue: null, result: 'words' },
+    { formValue: 'words', formElementValue: '', result: 'words' },
+    { formValue: 'words', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'words', formElementValue: 'off', result: 'none' },
+    { formValue: 'words', formElementValue: 'none', result: 'none' },
+    { formValue: 'words', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'words', formElementValue: 'words', result: 'words' },
+    { formValue: 'words', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'words', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'sentences', formElementValue: null, result: 'sentences' },
+    { formValue: 'sentences', formElementValue: '', result: 'sentences' },
+    { formValue: 'sentences', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'sentences', formElementValue: 'off', result: 'none' },
+    { formValue: 'sentences', formElementValue: 'none', result: 'none' },
+    { formValue: 'sentences', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'sentences', formElementValue: 'words', result: 'words' },
+    { formValue: 'sentences', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'sentences', formElementValue: 'foo', result: 'sentences' },
+
+    { formValue: 'foo', formElementValue: null, result: 'sentences' },
+    { formValue: 'foo', formElementValue: '', result: 'sentences' },
+    { formValue: 'foo', formElementValue: 'on', result: 'sentences' },
+    { formValue: 'foo', formElementValue: 'off', result: 'none' },
+    { formValue: 'foo', formElementValue: 'none', result: 'none' },
+    { formValue: 'foo', formElementValue: 'characters', result: 'characters' },
+    { formValue: 'foo', formElementValue: 'words', result: 'words' },
+    { formValue: 'foo', formElementValue: 'sentences', result: 'sentences' },
+    { formValue: 'foo', formElementValue: 'foo', result: 'sentences' },
+  ];
+
+  const form = document.createElement('form');
+  form.id = 'form';
+  document.body.appendChild(form);
+
+  const input = document.createElement('input');
+  form.appendChild(input);
+
+  const input2 = document.createElement('input');
+  input2.setAttribute('form', 'form');
+  document.body.appendChild(input2);
+
+  const textarea = document.createElement('textarea');
+  form.appendChild(textarea);
+
+  const textarea2 = document.createElement('textarea');
+  textarea2.setAttribute('form', 'form');
+  document.body.appendChild(textarea2);
+
+  testData.forEach(function(data) {
+    form.removeAttribute('autocapitalize');
+    input.removeAttribute('autocapitalize');
+    input2.removeAttribute('autocapitalize');
+    textarea.removeAttribute('autocapitalize');
+    textarea2.removeAttribute('autocapitalize');
+
+    if (data.formValue !== null) {
+      form.setAttribute('autocapitalize', data.formValue);
+    }
+
+    if (data.formElementValue !== null) {
+      input.setAttribute('autocapitalize', data.formElementValue);
+      input2.setAttribute('autocapitalize', data.formElementValue);
+      textarea.setAttribute('autocapitalize', data.formElementValue);
+      textarea2.setAttribute('autocapitalize', data.formElementValue);
+    }
+
+    const description_suffix = ' with "' + data.formValue
+      + '" and form element with "'+ data.formElementValue + '"';
+    assert_equals(input.autocapitalize, data.result,
+                  "Input element with form parent" + description_suffix);
+    assert_equals(input2.autocapitalize, data.result,
+                  "Input element with form owner attribute set" + description_suffix);
+    assert_equals(textarea.autocapitalize, data.result,
+                  "Textarea element with form parent" + description_suffix);
+    assert_equals(textarea2.autocapitalize, data.result,
+                  "Textarea element with form owner attribute set" + description_suffix);
+  });
+}, "Test inheriting values from a form.")
+
+test(function() {
+  const testData = [ 'text',
+                     'search',
+                     'email',
+                     'url',
+                     'tel',
+                     'number',
+                     'date',
+                     'color',
+                     'password' ];
+
+  testData.forEach(function(data) {
+    const form = document.createElement('form');
+    form.setAttribute('autocapitalize', 'sentences');
+    const input = document.createElement('input');
+    input.setAttribute('type', data);
+    form.appendChild(input);
+
+    assert_equals(input.autocapitalize, 'sentences');
+  });
+}, "Verify that even input types that are never autocapitalized support the "
++ "IDL interface.")
+
+</script>
+</body>
+</html>

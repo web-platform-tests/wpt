@@ -9,7 +9,7 @@ let frame;
 
 // Set up the service worker and the frame.
 promise_test(t => {
-    const kScope = 'resources/dummy.https.html';
+    const kScope = 'resources/dummy.html';
     const kScript = 'resources/fetch-destination-worker-no-load-event.js';
     return service_worker_unregister_and_register(t, kScript, kScope)
       .then(registration => {
@@ -46,7 +46,7 @@ var waitOnMessageFromSW = async t => {
 // worker destination
 /////////////////////
 promise_test(async t => {
-    let worker = new frame.contentWindow.Worker("dummy.https.html?t=worker&dest=worker");
+    let worker = new frame.contentWindow.Worker("dummy.html?t=worker&dest=worker");
     await waitOnMessageFromSW(t);
 }, 'Worker fetches with a "worker" Request.destination');
 

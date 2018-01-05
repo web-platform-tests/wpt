@@ -19,19 +19,19 @@
         var client = new XMLHttpRequest()
         client.open("GET", "resources/requri.py#foobar", false)
         client.send(null)
-        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.py$/)
+        assert_regexp_match(client.responseText, /xhr\/resources\/requri\.py$/)
       }, 'make sure fragment is removed from URL before request')
       test(function() {
         var client = new XMLHttpRequest()
         client.open("GET", "resources/requri.py?help=#foobar", false)
         client.send(null)
-        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.py\?help=$/)
+        assert_regexp_match(client.responseText, /xhr\/resources\/requri\.py\?help=$/)
       }, 'make sure fragment is removed from URL before request (with query string)')
       test(function() {
         var client = new XMLHttpRequest()
         client.open("GET", "resources/requri.py?" +encodeURIComponent("#foobar"), false)
         client.send(null)
-        assert_regexp_match(client.responseText, /XMLHttpRequest\/resources\/requri\.py\?%23foobar$/)
+        assert_regexp_match(client.responseText, /xhr\/resources\/requri\.py\?%23foobar$/)
       }, 'make sure escaped # is not removed')
     </script>
   </body>

@@ -90,6 +90,15 @@ promise_test(async t => {
     await waitOnMessageFromSW(t);
 }, 'sendBeacon() fetches with an empty string Request.destination');
 
+// Cache.add() - empty string destination
+promise_test(async t => {
+    frame.contentWindow.caches.open("foo").then(cache => {
+        cache.add("dummy?t=cache&dest=");
+    });
+
+    await waitOnMessageFromSW(t);
+}, 'Cache.add() fetches with an empty string Request.destination');
+
 // script destination
 /////////////////////
 

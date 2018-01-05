@@ -170,9 +170,9 @@
    "text/plain",
    [88]],
   ["data:;charset=\"x\",X",
-   "text/plain;charset=\"x\"",
+   "text/plain;charset=x",
    [88]],
   ["data:;CHARSET=\"X\",X",
-   "text/plain;charset=\"X\"",
+   "text/plain;charset=X",
    [88]]
 ]

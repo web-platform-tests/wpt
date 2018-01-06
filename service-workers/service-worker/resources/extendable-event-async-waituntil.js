@@ -45,6 +45,16 @@ self.addEventListener('message', function(event) {
       case 'script-extendable-event':
         self.dispatchEvent(new ExtendableEvent('nontrustedevent'));
         break;
+      case 'no-current-extension-different-microtask-after-dispatch-flag-unset':
+        waitPromise = new Promise((res) => {
+          setTimeout(() => {
+            res();
+          }, 0);
+        });
+        event.waitUntil(waitPromise);
+        waitPromise.then(() => { return sync_waituntil(event); })
+          .then(reportResultExpecting('OK'))
+        break;
     }
 
     event.source.postMessage('ACK');

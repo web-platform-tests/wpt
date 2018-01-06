@@ -76,6 +76,9 @@ async_test(msg_event_test.bind(this, 'current-extension-expired-different-task')
 async_test(msg_event_test.bind(this, 'script-extendable-event'),
   'Test calling waitUntil on a script constructed ExtendableEvent throws exception');
 
+async_test(msg_event_test.bind(this, 'no-current-extension-different-microtask-after-dispatch-flag-unset'),
+  'Test calling waitUntil in the same microtask checkpoint after all promises settle succeeds');
+
 async_test(function(t) {
     var testBody = function(worker) {
       return with_iframe('./resources/pending-respondwith-async-waituntil/dummy.html');

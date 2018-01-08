@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>FileReader SecurityError Test</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-error-codes">
+<link rel="help" href="https://w3c.github.io/FileAPI/#dfn-error-codes">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <form name="upload">
@@ -20,18 +20,18 @@
 
 <script>
 
-  let fileChooser = document.querySelector('#fileChooser');
+  const fileChooser = document.querySelector('#fileChooser');
 
   setup({explicit_done: true});
   setup({explicit_timeout: true});
 
   on_event(document.querySelector('#start'), 'click', () => {
     async_test(t => {
-      let reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsArrayBuffer(fileChooser.files[0]);
       reader.onloadend = t.step_func_done(event => {
         assert_equals(event.target.readyState, FileReader.DONE);
-        assert_equals(reader.error.code, 18);
+        assert_equals(reader.error.name, "SecurityError");
       });
     }, 'FileReader.error should be SECURITY_ERROR if the file is a system sensitive file');
     done();

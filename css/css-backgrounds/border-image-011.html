@@ -6,19 +6,20 @@
     <meta name="assert" content="Basic support for the border-image-outset property" />
     <link rel="author" title="Jérémie Patonnier" href="mailto:jeremie@patonnier.net" />
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-border-image-source">
+    <link rel="match" href="reference/border-image-001-ref.html" />
     <style type="text/css">
         #fail {
             background-color: red;
             padding : 9px;
-            width   : 24px;
-            height  : 24px;
+            width   : 42px;
+            height  : 42px;
         }
 
         #test {
-            background-color: #009900;
+            background-color: #289900;
             border : 1px solid red;
-            width  : 22px;
-            height : 22px;
+            width  : 40px;
+            height : 40px;
 
             border-image-source: url(support/img-ref-1.png);
             border-image-slice : 10;
@@ -28,7 +29,7 @@
     </style>
 </head>
 <body>
-    <p>Pass if the square is green.</p>
+    <p>Pass if the square is fully green.</p>
 
     <div id="fail">
         <div id="test"></div>

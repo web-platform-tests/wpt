@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Worker: Timeouts (setTimeout, setInterval, clearTimeout, clearInterval)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(() => {
+  const worker = new Worker('resources/worker-timeout.js');
+  return new Promise(resolve => worker.onmessage = resolve)
+      .then(msgEvent => {
+          assert_equals(msgEvent.data, 'PASS: timeout 1');
+          return new Promise(resolve => worker.onmessage = resolve);
+        })
+      .then(msgEvent => {
+          assert_equals(msgEvent.data, 'PASS: timeout 2');
+          return new Promise(resolve => worker.onmessage = resolve);
+        })
+      .then(msgEvent => {
+          assert_equals(msgEvent.data, 'PASS: interval 3');
+          return new Promise(resolve => worker.onmessage = resolve);
+        })
+      .then(msgEvent => {
+          assert_equals(msgEvent.data, 'PASS: repeated interval');
+          return new Promise(resolve => worker.onmessage = resolve);
+        })
+      .then(msgEvent => {
+          assert_equals(msgEvent.data, 'PASS: repeated interval');
+          return new Promise(resolve => worker.onmessage = resolve);
+        })
+      .then(msgEvent => assert_equals(msgEvent.data, 'DONE'));
+}, 'Tests timeouts (setTimeout, setInterval, clearTimeout, clearInterval) on ' +
+   'WorkerGlobalScope.');
+
+</script>

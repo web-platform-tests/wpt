@@ -52,8 +52,8 @@ function performChromiumSetup() {
       // problem for the new tests that do not use setBluetoothFakeAdapter().
       // TODO(crbug.com/569709): Remove once setBluetoothFakeAdapter is no
       // longer used.
-      .then(() => setBluetoothFakeAdapter ? setBluetoothFakeAdapter('')
-                                          : undefined);
+      .then(() => typeof setBluetoothFakeAdapter === 'undefined' ?
+          undefined : setBluetoothFakeAdapter(''));
 }
 
 

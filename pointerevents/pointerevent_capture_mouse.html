@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pointer Events Automation</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
+  </head>
+  <body>
+    <input type="checkbox" id="checkbox">Check me!<br>
+    <button type="button" id="button">Button</button>
+    <script>
+async_test(function(t) {
+  var target0 = document.getElementById("checkbox");
+  target0.addEventListener("pointermove", t.step_func_done(function() {
+  }));
+
+  test_driver.action_chain([{"type": "click", "args": [{"type": "element", "arg": target0}]}, {"type": "perform"}]).then((function() {
+      return;
+  })).catch(t.unreached_func("click failed"));
+});
+    </script>
+  </body>
+</html>

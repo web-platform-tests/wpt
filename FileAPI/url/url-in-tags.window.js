@@ -11,7 +11,7 @@ async_test(t => {
   });
 
   document.body.appendChild(e);
-}, 'Check whether Blob URLs can be used in <script> tags');
+}, 'Blob URLs can be used in <script> tags');
 
 async_test(t => {
   const run_result = 'test_frame_OK';
@@ -28,7 +28,7 @@ async_test(t => {
   frame.onload = t.step_func_done(() => {
     assert_equals(frame.contentWindow.test_result, run_result);
   });
-}, 'Check whether Blob URLs can be used in iframes, and are treated same origin');
+}, 'Blob URLs can be used in iframes, and are treated same origin');
 
 async_test(t => {
   const scroll_position = 5000;
@@ -47,4 +47,4 @@ async_test(t => {
   frame.onload = t.step_func_done(() => {
     assert_equals(frame.contentWindow.scrollY, 5000);
   });
-}, 'Check whether the Blob URL fragment is implemented.');
+}, 'Blob URL fragment is implemented.');

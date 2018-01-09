@@ -1,3 +1,15 @@
+
+/* Useful constants for working with COSE key objects */
+const cose_kty = 1;
+const cose_kty_ec2 = 2;
+const cose_alg = 3;
+const cose_alg_ECDSA_w_SHA256 = -7;
+const cose_alg_ECDSA_w_SHA512 = -36;
+const cose_crv = -1;
+const cose_crv_P256 = 1;
+const cose_crv_x = -2;
+const cose_crv_y = -3;
+
 /**
  * TestCase
  *
@@ -145,19 +157,19 @@ var createCredentialDefaultArgs = {
 
             // User:
             user: {
-                id: "1098237235409872",
+                id: new Uint8Array(), // Won't survive the copy, must be rebuilt
                 name: "john.p.smith@example.com",
                 displayName: "John P. Smith",
                 icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
             },
 
-            parameters: [{
+            pubKeyCredParams: [{
                 type: "public-key",
-                algorithm: "ES256",
+                alg: cose_alg_ECDSA_w_SHA256,
             }],
 
             timeout: 60000, // 1 minute
-            excludeList: [] // No excludeList
+            excludeCredentials: [] // No excludeList
         }
     }
 };
@@ -185,6 +197,8 @@ class CreateCredentialsTest extends TestCase {
         let challengeBytes = new Uint8Array(16);
         window.crypto.getRandomValues(challengeBytes);
         this.testObject = cloneObject(createCredentialDefaultArgs);
+        // cloneObject can't clone the BufferSource in user.id, so let's recreate it.
+        this.testObject.options.publicKey.user.id = new Uint8Array();
         this.testObject.options.publicKey.challenge = challengeBytes;
 
         // how to order the properties of testObject when passing them to makeCredential
@@ -226,7 +240,7 @@ class GetCredentialsTest extends TestCase {
                 publicKey: {
                     challenge: challengeBytes,
                     // timeout: 60000,
-                    // allowList: [newCredential]
+                    // allowCredentials: [newCredential]
                 }
             }
         };
@@ -266,6 +280,7 @@ class GetCredentialsTest extends TestCase {
         window.crypto.getRandomValues(challengeBytes);
         var createArgs = cloneObject(createCredentialDefaultArgs);
         createArgs.options.publicKey.challenge = challengeBytes;
+        createArgs.options.publicKey.user.id = new Uint8Array();
         var p = navigator.credentials.create(createArgs.options);
         this.credentialPromiseList.push(p);
 
@@ -286,7 +301,7 @@ class GetCredentialsTest extends TestCase {
                         type: "public-key"
                     };
                 });
-                this.testObject.options.publicKey.allowList = idList;
+                this.testObject.options.publicKey.allowCredentials = idList;
                 return super.test();
             });
     }

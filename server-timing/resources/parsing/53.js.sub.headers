@@ -1,1 +1,1 @@
-Server-Timing: metric;dur="foo"
+Server-Timing: metric;dur=foo

@@ -16,6 +16,10 @@ Next, we need to start adb and reverse forward the web-platform.tests ports
 
 ```
 adb start-server
+```
+
+Add any ports that you need based on your config. For example:
+```
 adb reverse tcp:8000 tcp:8000
 adb reverse tcp:8001 tcp:8001
 adb reverse tcp:8081 tcp:8081

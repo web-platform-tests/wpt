@@ -1,0 +1,187 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection.prototype.getStats</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+  'use strict';
+
+  // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   getUserMediaTracksAndStreams
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let track;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      track = tracks[0];
+      pc.addTrack(track);
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
+      assert_true(trackStats != null, 'Has stats for track');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack() without setLocalDescription() yields track stats');
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let stream;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      let track = tracks[0];
+      stream = streams[0];
+      pc.addTrack(track, stream);
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
+      assert_true(streamStats != null, 'Has stats for stream');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack() without setLocalDescription() yields stream stats');
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let track;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      track = tracks[0];
+      pc.addTrack(track);
+      return pc.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return pc.setLocalDescription(offer);
+    }))
+    .then(t.step_func(() => {
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
+      assert_true(trackStats != null, 'Has stats for track');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack() with setLocalDescription() yields track stats');
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let stream;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      let track = tracks[0];
+      stream = streams[0];
+      pc.addTrack(track, stream);
+      return pc.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return pc.setLocalDescription(offer);
+    }))
+    .then(t.step_func(() => {
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
+      assert_true(streamStats != null, 'Has stats for stream');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack() with setLocalDescription() yields stream stats');
+
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let track;
+    let stream;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      track = tracks[0];
+      stream = streams[0];
+      pc.addTrack(track, stream);
+      return pc.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return pc.setLocalDescription(offer);
+    }))
+    .then(t.step_func(() => {
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
+      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
+      assert_true(trackStats != null && streamStats != null,
+                  'Has stats for track and stream');
+      assert_array_equals(streamStats.trackIds, [ trackStats.id ],
+                          'streamStats.trackIds == [ trackStats.id ]');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'addTrack(): Stream stats references track stats');
+
+  // TODO(hbos): addStream() is legacy API not in the spec. Based on discussion
+  // whether to standardize in legacy section, consider removing this test or
+  // keeping it until addTrack() has wide support.
+  // https://github.com/w3c/webrtc-pc/issues/1705
+  // https://github.com/w3c/webrtc-pc/issues/1125
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    let track;
+    let stream;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      track = tracks[0];
+      stream = streams[0];
+      stream.addTrack(track);
+      pc.addStream(stream);
+      return pc.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return pc.setLocalDescription(offer);
+    }))
+    .then(t.step_func(() => {
+      return pc.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
+      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
+      assert_true(trackStats != null && streamStats != null,
+                  'Has stats for track and stream');
+      assert_array_equals(streamStats.trackIds, [ trackStats.id ],
+                          'streamStats.trackIds == [ trackStats.id ]');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'Legacy addStream(): Stream stats references track stats');
+
+  // Helpers.
+
+  function findStatsByTypeAndId(report, type, identifier) {
+    return findStats(report, stats => {
+      return stats.type == type && stats[type + 'Identifier'] == identifier;
+    });
+  }
+
+  function findStats(report, findFunc) {
+    for (let it = report.values(), n = it.next(); !n.done; n = it.next()) {
+      if (findFunc(n.value))
+        return n.value;
+    }
+    return null;
+  }
+
+</script>

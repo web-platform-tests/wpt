@@ -403,7 +403,7 @@ Changes between 1.4.0 and 1.4.1
 
 - fix (pytest-) issue20 path.samefile(relpath) works as expected now
 
-- fix (pytest-) issue8 len(long_list) now shows the lenght of the list
+- fix (pytest-) issue8 len(long_list) now shows the length of the list
 
 Changes between 1.3.4 and 1.4.0
 ==================================================

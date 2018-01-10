@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Animation.finished</title>
-<link rel="help" href="https://w3c.github.io/web-animations/#dom-animation-finished">
+<link rel="help" href="https://drafts.csswg.org/web-animations/#dom-animation-finished">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -163,7 +163,7 @@ promise_test(t => {
   animation.cancel();
 
   return retPromise;
-}, 'finished promise is rejected when an animation is cancelled by calling ' +
+}, 'finished promise is rejected when an animation is canceled by calling ' +
    'cancel()');
 
 promise_test(t => {
@@ -175,30 +175,9 @@ promise_test(t => {
     animation.cancel();
     assert_not_equals(animation.finished, previousFinishedPromise,
                       'A new finished promise should be created when'
-                      + ' cancelling a finished animation');
+                      + ' canceling a finished animation');
   });
-}, 'cancelling an already-finished animation replaces the finished promise');
-
-promise_test(t => {
-  const div = createDiv(t);
-  const animation = div.animate({}, 100 * MS_PER_SEC);
-  animation.cancel();
-  // The spec says we still create a new finished promise and reject the old
-  // one even if we're already idle. That behavior might change, but for now
-  // test that we do that.
-  const retPromise = animation.finished.catch(err => {
-    assert_equals(err.name, 'AbortError',
-                  'finished promise is rejected with AbortError');
-  });
-
-  // Redundant call to cancel();
-  const previousFinishedPromise = animation.finished;
-  animation.cancel();
-  assert_not_equals(animation.finished, previousFinishedPromise,
-                    'A redundant call to cancel() should still generate a new'
-                    + ' finished promise');
-  return retPromise;
-}, 'cancelling an idle animation still replaces the finished promise');
+}, 'canceling an already-finished animation replaces the finished promise');
 
 promise_test(t => {
   const div = createDiv(t);

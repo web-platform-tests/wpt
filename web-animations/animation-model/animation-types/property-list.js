@@ -1054,12 +1054,6 @@ const gCSSProperties = {
     types: [
     ]
   },
-  'overflow-clip-box': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/overflow-clip-box
-    types: [
-      { type: 'discrete', options: [ [ 'padding-box', 'content-box' ] ] }
-    ]
-  },
   'overflow-wrap': {
     // https://drafts.csswg.org/css-text-3/#propdef-overflow-wrap
     types: [
@@ -1554,7 +1548,7 @@ function TestKeyframe(testProp) {
 }
 
 function propertyToIDL(property) {
-  // https://w3c.github.io/web-animations/#animation-property-name-to-idl-attribute-name
+  // https://drafts.csswg.org/web-animations/#animation-property-name-to-idl-attribute-name
   if (property === 'float') {
     return 'cssFloat';
   }

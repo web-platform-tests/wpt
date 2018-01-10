@@ -38,6 +38,7 @@ TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: WebIDL/*
 TRAILING WHITESPACE: webvtt/*
 TRAILING WHITESPACE: encoding/legacy*/*
+TRAILING WHITESPACE: server-timing/resources/parsing/*.sub.headers
 
 ## File types that should never be checked ##
 
@@ -99,6 +100,10 @@ AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
 # Intentional use of CRLF
 CR AT EOL: WebIDL/valid/idl/documentation-dos.widl
 CR AT EOL: cors/resources/cors-headers.asis
+CR AT EOL: html/form-elements/the-textarea-element/multiline-placeholder-cr.html
+CR AT EOL: html/form-elements/the-textarea-element/multiline-placeholder-crlf.html
+CR AT EOL: html/input/the-placeholder-attribute/multiline-cr.html
+CR AT EOL: html/input/the-placeholder-attribute/multiline-crlf.html
 CR AT EOL: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 
@@ -148,7 +153,6 @@ SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-002.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-003.html
 SET TIMEOUT: css/selectors/selector-read-write-type-change-002.html
 SET TIMEOUT: css/selectors/selector-required-type-change-002.html
-SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -227,8 +231,8 @@ SET TIMEOUT: websockets/*
 SET TIMEOUT: webstorage/eventTestHarness.js
 SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
-SET TIMEOUT: XMLHttpRequest/resources/init.htm
-SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
+SET TIMEOUT: xhr/resources/init.htm
+SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/generate-callback.html
@@ -304,6 +308,9 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/window-named-properties-003.html
 
 # Intentional use of setTimeout
+SET TIMEOUT: css/css-fonts/font-display/font-display.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
@@ -937,6 +944,7 @@ MISSING-LINK: css/cssom-view/scrolling-quirks-vs-nonquirks.html
 MISSING-LINK: css/cssom-view/scrollingElement.html
 MISSING-LINK: css/cssom-view/scrollIntoView-shadow.html
 MISSING-LINK: css/cssom-view/scrollIntoView-smooth.html
+MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 CSS-COLLIDING-TEST-NAME: css/cssom-view/interfaces.html
 CSS-COLLIDING-TEST-NAME: css/cssom/interfaces.html
 

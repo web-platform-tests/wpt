@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Web App Manifest IDL tests</title>
+<link rel="help" href="https://w3c.github.io/manifest/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const idl_array = new IdlArray();
+  const dom_idl = await fetch("/interfaces/dom.idl").then(r => r.text());
+  const manifest_idl = await fetch("/interfaces/manifest.idl").then(r => r.text());
+
+  idl_array.add_untested_idls(dom_idl);
+  idl_array.add_untested_idls('interface EventHandler {};');
+  idl_array.add_untested_idls("[Global=Window, Exposed=Window] interface Window {};");
+  idl_array.add_idls(manifest_idl);
+  idl_array.add_objects({
+    Window: ['window'],
+    BeforeInstallPromptEvent: ['new BeforeInstallPromptEvent();']
+  });
+  idl_array.test();
+}, "Test IDL implementation of Web App Manifest");
+</script>

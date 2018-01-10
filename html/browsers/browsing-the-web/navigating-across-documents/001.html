@@ -1,31 +1,26 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
-<title>Navigation from unload canceled when navigating cross-origin</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe src="001-1.html"></iframe>
 <script>
-var test = async_test();
-var iframe = document.querySelector("iframe");
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
 
-window.onload = test.step_func(function() {
-  iframe.src = iframe.src.replace(/\d{3}-\d\.html/, "001-2.html");
-});
+  window.onmessage = test.step_func_done(function(e) {
+    assert_equals(e.data, "001-2");
+  });
 
-window.onmessage = test.step_func_done(function(e) {
-  assert_equals(e.data, "001-2");
-});
+  window.onload = test.step_func(function() {
+    // 001-1.html (the initial iframe src) has an `onunload` handler,
+    // that will attempt to set `location` to "001-3.html" (as a
+    // "cross origin" resource, via `location.href.replace("http://", "http://www.")`,
+    // but will be aborted.
+    //
+    // If the semantics are implemented correctly, a message "001-2"
+    // from 001-2.html will be received.
+    iframe.src = iframe.src.replace(/\d{3}-\d\.html/, "001-2.html");
+  });
+}, "Navigation from unload canceled when navigating cross-origin");
 </script>
-
-<!--
-1. Creates an iframe with `src="001-1.html"
-2. Creates an `onload` handler which will set the iframe's `src`
-    to set a new `src` to "001-2.html"
-3. 001-1.html has an `onunload` handler, that will attempt to set
-    `location` to "001-3.html" (as a "cross origin" resource, via
-    `location.href.replace("http://", "http://www.")`, but will be aborted.
-4. If the semantics are implemented correctly, a message "001-2"
-    from 001-2.html will be received.
-
--->

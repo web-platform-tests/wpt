@@ -1,34 +1,33 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
-<title>Navigation from unload canceled when traversing cross-origin history</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe src="004-1.html"></iframe>
+<iframe src=""></iframe>
 <script>
-var test = async_test();
-var iframe = document.querySelector("iframe");
-var messages = [];
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
+  var messages = [];
 
-window.onmessage = test.step_func(function(e) {
-  messages.push(e.data);
-  if (messages.length === 3) {
-    assert_array_equals(messages, ["004-1", "004-2", "004-1"]);
-    test.done();
-    iframe.parentNode.removeChild(iframe);
-  }
-});
+  // 004-2.html has an `onunload` handler, which sets `location` to 004-3.html.
+  // This must NOT be allowed, per https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb.
+  //
+  // 004-2.html has an `onload` handler, which sends the message "004-2" to 004.html,
+  // then calls `history.go(-1)` after a 0ms timeout. `history.go(-1)` navigates
+  // browsingContext to the last _session history entry_ (004-1.html).
+  //
+  window.onmessage = test.step_func(function(e) {
+    messages.push(e.data);
+    if (messages.length === 3) {
+      assert_array_equals(messages, ["004-1", "004-2", "004-1"]);
+      test.done();
+      iframe.parentNode.removeChild(iframe);
+    }
+  });
+
+  // 004-1.html has an `onload` handler, which sends the message "004-1" to
+  // 004.html, then sets `location` to 004-2.html ~100ms later
+  iframe.src = "004-1.html";
+
+}, "Navigation from unload canceled when traversing cross-origin history");
 </script>
-
-<!--
-Similar to 003.html, but 004-1.html does a "cross-origin" navigation
-1. 004.html has an `onmessage` handler to receive messages and store them in `messages`.
-2. 004-1.html has an `onload` handler, which sends the message "004-1" to 004.html, then sets `location` to 004-2.html ~100ms later
-3. 004-2.html has an `onunload` handler, which sets `location` to 004-3.html. This must NOT be allowed, per https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb.
-4. 004-2.html has an `onload` handler, which sends the message "004-2" to 004.html, then calls `history.go(-1)` after a 0ms timeout.
-  a. `history.go(-1)` navigates browsingContext to the last _session history entry_ (004-1.html).
-  b. 004-1.html has an `onload` handler, which sends the message "004-1" to 004.html.
-5. If the semantics are implemented correctly, `messages` will be `["004-1", "004-2", "004-1"]`.
-6. The iframe is removed, preventing the function in the ~100ms timeout from being executed.
-
--->

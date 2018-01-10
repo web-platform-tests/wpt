@@ -4,30 +4,30 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe src="003-1.html"></iframe>
+<iframe src=""></iframe>
 <script>
-var test = async_test();
-var iframe = document.querySelector("iframe");
-var messages = [];
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
+  var messages = [];
 
-window.onmessage = test.step_func(function(e) {
-  messages.push(e.data);
-  if (messages.length === 3) {
-    assert_array_equals(messages, ["003-1", "003-2", "003-1"]);
-    test.done();
-    iframe.parentNode.removeChild(iframe);
-  }
+  // 003-2.html has an `onunload` handler, which sets `location` to 003-3.html.
+  // This must NOT be allowed, per https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb.
+  //
+  // 003-2.html has an `onload` handler, which sends the message "003-2" to 003.html,
+  // then calls `history.go(-1)` after a 0ms timeout. `history.go(-1)` navigates
+  // browsingContext to the last _session history entry_ (003-1.html).
+  //
+  window.onmessage = test.step_func(function(e) {
+    messages.push(e.data);
+    if (messages.length === 3) {
+      assert_array_equals(messages, ["003-1", "003-2", "003-1"]);
+      test.done();
+      iframe.parentNode.removeChild(iframe);
+    }
+  });
+
+  // 003-1.html has an `onload` handler, which sends the message "003-1" to 003.html,
+  // then sets `location` to 003-2.html ~100ms later
+  iframe.src = "003-1.html";
 });
 </script>
-
-<!--
-1. 003.html has an `onmessage` handler to receive messages and store them in `messages`.
-2. 003-1.html has an `onload` handler, which sends the message "003-1" to 003.html, then sets `location` to 003-2.html ~100ms later
-3. 003-2.html has an `onunload` handler, which sets `location` to 003-3.html. This must NOT be allowed, per https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb.
-4. 003-2.html has an `onload` handler, which sends the message "003-2" to 003.html, then calls `history.go(-1)` after a 0ms timeout.
-  a. `history.go(-1)` navigates browsingContext to the last _session history entry_ (003-1.html).
-  b. 003-1.html has an `onload` handler, which sends the message "003-1" to 003.html.
-5. If the semantics are implemented correctly, `messages` will be `["003-1", "003-2", "003-1"]`.
-6. The iframe is removed, preventing the function in the ~100ms timeout from being executed.
-
--->

@@ -1,36 +1,37 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
-<title>Multiple navigations</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe src="about:blank"></iframe>
 <script>
-var test = async_test();
-var iframe = document.querySelector("iframe");
+async_test(function(test) {
+  var iframe = document.querySelector("iframe");
 
-window.onload = test.step_func(function() {
-  setTimeout(test.step_func(function() {
-    iframe.src = "002-1.html?pipe=trickle(d1)";
+  window.onmessage = test.step_func_done(function(e) {
+    assert_equals(e.data, "002-2");
+  });
+
+  window.onload = test.step_func(function() {
     setTimeout(test.step_func(function() {
-      iframe.src = "002-2.html"
-    }), 500);
-  }), 100);
-});
+      // The iframe `src` is set to "002-1.html"
+      // (with a response that will be delayed by 1s, using `?pipe=trickle(d1)`)
+      //
+      // This must start a navigation by making the request,
+      // despite the delayed response.
+      iframe.src = "002-1.html?pipe=trickle(d1)";
+      setTimeout(test.step_func(function() {
 
-window.onmessage = test.step_func_done(function(e) {
-  assert_equals(e.data, "002-2");
-});
+        // Before that navigation is complete (~500ms later), the iframe `src`
+        // will be set to 002-2.html, which **must** cancel the previous
+        // "not yet mature" navigation.
+        //
+        // If the semantics are implemented correctly, a message "002-2"
+        // from 002-2.html will be received. (Below)
+        iframe.src = "002-2.html"
+      }), 500);
+    }), 100);
+  });
 
+}, "Multiple navigations by setting iframe.src");
 </script>
-
-<!--
-1. Creates an iframe with `src="about:blank"
-2. The iframe `src` is set to "002-1.html" (with a response that will be
-    delayed by 1s, using `?pipe=trickle(d1)`)
-3. Before that navigation is complete (~500ms later), the iframe `src` will be
-    set to 002-2.html, which **must** cancel the previous "not yet mature" navigation.
-4. If the semantics are implemented correctly, a message "002-2"
-    from 002-2.html will be received.
-
--->

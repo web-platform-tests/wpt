@@ -1,9 +1,9 @@
 <!doctype html>
 <iframe id="test" name="test"></iframe>
-<form target="test" action="javascript:document.write(`<script>parent.onjsurl({data:'javascript:url'});</script>`);"></form>
+<form target="test" action="javascript:(()=>{document.write(`<script>parent.postMessage('write', '*')</script>`); return `<!-- this should not be successful --><script>parent.postMessage('click', '*')</script>`})()"></form>
 <a target="test" onclick="document.forms[0].submit();" href="href.html">Test</a>
 <script>
-window.onjsurl = window.onmessage = function(e) {
+window.onmessage = function(e) {
   parent.postMessage(e.data, "*");
 };
 window.onload = function() {

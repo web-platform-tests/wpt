@@ -12,11 +12,16 @@ the /etc/hosts file to include
 0.0.0.0     nonexistent-origin.web-platform.test
 ```
 
-Next, we need to start adb and reverse forward the web-platform.tests port
+Next, we need to start adb and reverse forward the web-platform.tests ports
 
 ```
 adb start-server
 adb reverse tcp:8000 tcp:8000
+adb reverse tcp:8001 tcp:8001
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:8444 tcp:8444
+adb reverse tcp:9001 tcp:9001
+adb reverse tcp:9444 tcp:9444
 ```
 
 After this, we may run wpt with the `chrome_android` product

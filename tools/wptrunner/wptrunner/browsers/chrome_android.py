@@ -39,7 +39,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     capabilities["chromeOptions"] = {}
     # required to start on mobile
     capabilities["chromeOptions"]["androidPackage"] = "com.android.chrome"
-    print(capabilities)
+
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
             capabilities["chromeOptions"][capability] = kwargs[kwarg]

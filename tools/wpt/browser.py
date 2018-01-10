@@ -285,30 +285,13 @@ class ChromeAndroid(Browser):
     """
 
     product = "chrome_android"
-    binary = "/usr/bin/google-chrome"
-    requirements = "requirements_chrome.txt"
+    requirements = "requirements_chrome_android.txt"
 
     def install(self, dest=None):
         raise NotImplementedError
 
     def platform_string(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
-
-        if platform is None:
-            raise ValueError("Unable to construct a valid Chrome package name for current platform")
-
-        if platform == "linux":
-            bits = "64" if uname[4] == "x86_64" else "32"
-        elif platform == "mac":
-            bits = "64"
-        elif platform == "win":
-            bits = "32"
-
-        return "%s%s" % (platform, bits)
+        raise NotImplementedError
 
     def find_webdriver(self):
         return find_executable("chromedriver")
@@ -328,9 +311,7 @@ class ChromeAndroid(Browser):
         return path
 
     def version(self, root):
-        """Retrieve the release version of the installed browser."""
-        output = call(self.binary, "--version")
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+        raise NotImplementedError
 
     def prepare_environment(self):
         # https://bugs.chromium.org/p/chromium/issues/detail?id=713947

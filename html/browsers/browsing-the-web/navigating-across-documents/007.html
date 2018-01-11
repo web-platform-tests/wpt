@@ -10,23 +10,18 @@
 <script>
 var test = async_test();
 
-test.step(function() {
-  document.querySelector("a").click();
-});
-
 window.onmessage = test.step_func_done(function(e) {
+  // Navigating the iframe to the anchor's `href` will abort the previous operation.
+  // If the semantics are implemented correctly, a message "href"
+  // from "href.html" will be received.
   assert_equals(e.data, "href");
 });
+
+test.step(function() {
+  // Clicking the anchor will trigger the `onclick` handler operation,
+  // which will attempt to set the `location` of the iframe to a "javascript: url",
+  // that creates a script element containing a `postMessage` call, which will
+  // send a message "click".
+  document.querySelector("a").click();
+});
 </script>
-
-<!--
-1. This test creates an iframe, and an anchor with both an `onclick` and `href`.
-2. The test "clicks" the anchor, triggering the `onclick` handler operation,
-    which will attempt to set the `location` of the iframe to a "javascript: url",
-    that creates a script element containing a `postMessage` call, which will
-    send a message "click".
-3. Navigating the iframe to the anchor's `href` will abort the previous operation.
-4. If the semantics are implemented correctly, a message "href"
-    from "href.html" will be received.
-
--->

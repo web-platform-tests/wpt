@@ -8,7 +8,7 @@ import sys
 import tempfile
 import threading
 
-from random import randint
+from shutil import copyfile
 from stat import *
 
 '''
@@ -285,8 +285,20 @@ class WPTestBuilder(object):
                 print("Could not locate 'test' folder at %s" % path)
                 exit(1)
             print "Generating web-platform-test wrappers for test262"
-            for each in self.listall(test_dir, {'ext': 'js', 'skip_hidden': True}):
-                self.generate_single_wpt(each)
+            # Blacklist 'harness' from root folders.
+            folders = []
+            for each in os.listdir(test_dir):
+                if each == 'harness':
+                    continue
+                folders.append(os.path.join(test_dir, each))
+            # Generate wrappers.
+            for filename in self.listall(folders, {'ext': 'js', 'skip_hidden': True}):
+                if re.search('_FIXTURE.js$', filename):
+                    dest = DEST_PATH + re.sub(".*test262/test", "", filename)
+                    self.ensure_destination_path(dest)
+                    copyfile(filename, dest)
+                else:
+                    self.generate_single_wpt(filename)
             print "Output: " + DEST_PATH
         elif S_ISREG(mode):
             pos = path.find("test262/test")
@@ -380,17 +392,18 @@ class WPTestBuilder(object):
             # Remove carriage return if any.
             return re.sub("\x0D", "", content)
 
-    def listall(self, root, opts):
+    def listall(self, folders, opts):
         opts = opts or {}
         ret = []
         ext = opts['ext']
         skip_hidden = opts['skip_hidden']
-        for root, dirs, files in os.walk(root):
-            for filename in files:
-                if skip_hidden and filename.startswith('.'):
-                    continue
-                if ext and filename.endswith(ext):
-                    ret.append(os.path.join(root, filename))
+        for folder in folders:
+            for root, dirs, files in os.walk(folder):
+                for filename in files:
+                    if skip_hidden and filename.startswith('.'):
+                        continue
+                    if ext and filename.endswith(ext):
+                        ret.append(os.path.join(root, filename))
         return ret
 
 def main():

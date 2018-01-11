@@ -47,7 +47,7 @@
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
-  }, 'addTrack() without setLocalDescription() yields stream stats');
+  }, 'addTrack() without setLocalDescription() yields media stream stats');
 
   async_test(t => {
     const pc = new RTCPeerConnection();
@@ -98,7 +98,7 @@
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
-  }, 'addTrack() with setLocalDescription() yields stream stats');
+  }, 'addTrack() with setLocalDescription() yields media stream stats');
 
   async_test(t => {
     const pc = new RTCPeerConnection();
@@ -129,7 +129,7 @@
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
-  }, 'addTrack(): Stream stats references track stats');
+  }, 'addTrack(): Media stream stats references track stats');
 
   // TODO(hbos): addStream() is legacy API not in the spec. Based on discussion
   // whether to standardize in legacy section, consider removing this test or
@@ -166,13 +166,97 @@
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
-  }, 'Legacy addStream(): Stream stats references track stats');
+  }, 'Legacy addStream(): Media stream stats references track stats');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let sendingTrack;
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      sendingTrack = tracks[0];
+      caller.addTrack(sendingTrack);
+      return caller.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return Promise.all([ caller.setLocalDescription(offer),
+                           callee.setRemoteDescription(offer) ]);
+    }))
+    .then(t.step_func(() => {
+      return callee.createAnswer();
+    }))
+    .then(t.step_func(answer => {
+      return Promise.all([ callee.setLocalDescription(answer),
+                           caller.setRemoteDescription(answer) ]);
+    }))
+    .then(t.step_func(() => {
+      return caller.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', sendingTrack.id);
+      assert_true(trackStats != null, 'Has stats for sending track');
+      let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
+                                                   'trackId', trackStats.id);
+      assert_true(outboundStats != null, 'Has stats for outbound RTP stream');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'O/A exchange yields outbound RTP stream stats for sending track');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let receivingTrack;
+    callee.ontrack = trackEvent => {
+      assert_true(receivingTrack == undefined, 'ontrack has not fired before');
+      receivingTrack = trackEvent.track;
+    };
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      caller.addTrack(tracks[0]);
+      return caller.createOffer();
+    }))
+    .then(t.step_func(offer => {
+      return Promise.all([ caller.setLocalDescription(offer),
+                           callee.setRemoteDescription(offer) ]);
+    }))
+    .then(t.step_func(() => {
+      return callee.createAnswer();
+    }))
+    .then(t.step_func(answer => {
+      return Promise.all([ callee.setLocalDescription(answer),
+                           caller.setRemoteDescription(answer) ]);
+    }))
+    .then(t.step_func(() => {
+      return callee.getStats();
+    }))
+    .then(t.step_func(report => {
+      assert_true(receivingTrack != null, 'Has a receiving track');
+      let trackStats = findStatsByTypeAndId(report, 'track', receivingTrack.id);
+      assert_true(trackStats != null, 'Has stats for receiving track');
+      let inboundStats = findStatsByTypeAndMember(report, 'inbound-rtp',
+                                                  'trackId', trackStats.id);
+      assert_true(inboundStats != null, 'Has stats for outbound RTP stream');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'O/A exchange yields inbound RTP stream stats for receiving track');
 
   // Helpers.
 
   function findStatsByTypeAndId(report, type, identifier) {
     return findStats(report, stats => {
       return stats.type == type && stats[type + 'Identifier'] == identifier;
+    });
+  }
+
+  function findStatsByTypeAndMember(report, type, member, value) {
+    return findStats(report, stats => {
+      return stats.type == type && stats[member] == value;
     });
   }
 

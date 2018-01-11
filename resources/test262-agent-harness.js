@@ -63,9 +63,6 @@ let HEADER = `
   <meta charset="UTF-8">
   <title></title>
 
-  <!-- Test262 harness -->
-  <script src="http://localhost:8000/resources/test262-harness.js"><\/script>
-
   <!-- Test262 required libraries -->
   <script src="http://localhost:8000/resources/test262/harness/assert.js"><\/script>
   <script src="http://localhost:8000/resources/test262/harness/sta.js"><\/script>

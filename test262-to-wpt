@@ -125,8 +125,6 @@ HEADER = trim('''
   <head>
     <meta charset="utf-8">
     <title>###TITLE###</title>
-    <meta name="help" href="https://storage.spec.whatwg.org/#dom-storagemanager-persisted">
-    <meta name="author" title="Mozilla" href="https://www.mozilla.org">
 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>

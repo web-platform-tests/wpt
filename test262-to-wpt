@@ -128,7 +128,7 @@ HEADER = trim('''
 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="/resources/test262-agent-harness.js"></script>
+    <script src="/resources/test262-agent-harness.js?pipe=sub"></script>
     <script src="/resources/test262-harness.js"></script>
 
   </head>

@@ -7,6 +7,9 @@ enum AppBannerPromptOutcome {
 interface BeforeInstallPromptEvent : Event {
     Promise<PromptResponseObject> prompt();
 };
+dictionary PromptResponseObject {
+    AppBannerPromptOutcome userChoice;
+};
 partial interface Window {
     attribute EventHandler onappinstalled;
     attribute EventHandler onbeforeinstallprompt;

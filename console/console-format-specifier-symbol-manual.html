@@ -7,15 +7,17 @@
 <link rel="help" href="https://console.spec.whatwg.org/#formatter">
 </head>
 <body>
-<p>Open the console inside the developer tools. It should contain four lines whose contents are:</p>
+<p>Open the console inside the developer tools. It should contain five lines whose contents are:</p>
 <p><code>Symbol(description)</code></p>
 <p><code>Symbol(description)</code></p>
 <p><code>Symbol(description)</code></p>
 
 <script>
 console.log("%s", Symbol.for("description"));
-console.dir("%s", Symbol.for("description"));
 console.dirxml("%s", Symbol.for("description"));
+console.trace("%s", Symbol.for("description"));
+console.group("%s", Symbol.for("description"));
+console.groupCollapsed("%s", Symbol.for("description"));
 </script>
 </body>
 </html>

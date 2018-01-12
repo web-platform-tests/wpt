@@ -8,10 +8,8 @@
 <h1>Dominic Farolino</h1>
 <script>
   function styleExists(styleText) {
-    for (let key in document.styleSheets) {
-      if (!document.styleSheets.hasOwnProperty(key) || key == "length") continue;
-
-      let currentStyleText = document.styleSheets[key].cssRules["0"].cssText;
+    for (let styleRule of document.styleSheets) {
+      let currentStyleText = styleRule.cssRules["0"].cssText;
       if (currentStyleText == styleText) {
         return true;
       }
@@ -32,10 +30,8 @@
 
   const secondStylesheetTest = async_test("Both style sheets loaded via the link elements should be registered as style sheets for the document after 2 seconds");
   secondStylesheetTest.step_timeout(() => {
-    secondStylesheetTest.step(() => {
       assert_true(styleExists("h1 { color: purple; }")); // first style sheet
       assert_true(styleExists("h1 { color: brown; }")); // second style sheet (loaded now!)
-    });
-    secondStylesheetTest.done();
+      secondStylesheetTest.done();
   }, 3000);
 </script>

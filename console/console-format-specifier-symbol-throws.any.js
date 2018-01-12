@@ -6,7 +6,7 @@ const clauses = ["must throw a TypeError when applying the", "format specifier o
 function assertFailure(method, specifier) {
   assert_throws({name: "TypeError"}, () => {
     console[method](specifier, Symbol.for("description"));
-  }, errorTag`${method}() ${clauses[0]} ${specifier} ${clauses[1]}`);
+  }, `${method}() ${clauses[0]} ${specifier} ${clauses[1]}`);
 }
 
 test(() => {

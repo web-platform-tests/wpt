@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Console Format Specifiers on Symbols</title>
+<meta name="author" title="Dominic Farolino" href="mailto:domfarolino@gmail.com">
+<meta name="assert" content="Console format specifiers on Symbols">
+<link rel="help" href="https://console.spec.whatwg.org/#formatter">
+</head>
+<body>
+<p>Open the console inside the developer tools. It should contain four lines whose contents are:</p>
+<p><code>Symbol(description)</code></p>
+<p><code>Symbol(description)</code></p>
+<p><code>Symbol(description)</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+<p><code>TypeError</code></p>
+
+<script>
+console.log("%s", Symbol.for("description"));
+console.dir("%s", Symbol.for("description"));
+console.dirxml("%s", Symbol.for("description"));
+
+console.log("%i", Symbol.for("description"));
+console.dir("%i", Symbol.for("description"));
+console.dirxml("%i", Symbol.for("description"));
+
+console.log("%d", Symbol.for("description"));
+console.dir("%d", Symbol.for("description"));
+console.dirxml("%d", Symbol.for("description"));
+
+console.log("%f", Symbol.for("description"));
+console.log("%f", Symbol.for("description"));
+console.log("%f", Symbol.for("description"));
+</script>
+</body>
+</html>

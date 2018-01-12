@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Unprefixed cookie getAll path and domain ordering</title>
+<meta name="help"
+      href="https://github.com/WICG/cookie-store/blob/gh-pages/explainer.md">
+<meta name="help"
+      href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.2.3">
+<meta name="help"
+      href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-5.5">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-helpers.js"></script>
+<script>
+'use strict';
+
+const kMyPath = location.pathname.replace(/[^\/]+$/, '');
+const kMyDomain = document.domain;
+
+const kImplicitDomain = '_implicit_domain_' + kMyDomain;
+const kExplicitDomain = '_explicit_domain_' + kMyDomain;
+const kImplicitRoot = '_implicit_path_/';
+const kExplicitRoot = '_explicit_path_/';
+const kExplicitMyPath = '_explicit_path_' + kMyPath;
+
+promise_test(async testCase => {
+  try {
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing1_unshadowed',
+        'value1' + kImplicitDomain + kImplicitRoot);
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        'value2' + kImplicitDomain + kImplicitRoot);
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing3_unshadowed',
+        'value3' + kImplicitDomain + kImplicitRoot);
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        'value2' + kImplicitDomain + kExplicitMyPath, {
+          path: kMyPath,
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        'value2' + kExplicitDomain + kImplicitRoot,
+        {
+          domain: kMyDomain,
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        'value2' + kExplicitDomain + kExplicitMyPath,
+        {
+          domain: kMyDomain,
+          path: kMyPath,
+        });
+    assert_equals(
+        cookieString(await cookieStore.getAll()),
+        [
+          'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed=' +
+              'value2' + kExplicitDomain + kImplicitRoot,
+          'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed=' +
+              'value2' + kExplicitDomain + kExplicitMyPath,
+          'unprefixed_getAll_domain_and_implicit_path_shadowing1_unshadowed=' +
+              'value1' + kImplicitDomain + kImplicitRoot,
+          'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed=' +
+              'value2' + kImplicitDomain + kImplicitRoot,
+          'unprefixed_getAll_domain_and_implicit_path_shadowing3_unshadowed=' +
+              'value3' + kImplicitDomain + kImplicitRoot,
+        ].join('; '));
+  } finally {
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing1_unshadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing3_unshadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        {
+          path: kMyPath,
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        {
+          domain: kMyDomain,
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_implicit_path_shadowing2_shadowed',
+        {
+          domain: kMyDomain,
+          path: kMyPath,
+        });
+  }
+}, 'getAll item order with domain and implicit path shadowing and unshadowed cookies');
+
+promise_test(async testCase => {
+  try {
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing1_unshadowed',
+        'value1' + kImplicitDomain + kExplicitRoot,
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        'value2' + kImplicitDomain + kExplicitRoot,
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing3_unshadowed',
+        'value3' + kImplicitDomain + kExplicitRoot,
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        'value2' + kImplicitDomain + kExplicitMyPath,
+        {
+          path: kMyPath,
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        'value2' + kExplicitDomain + kExplicitRoot,
+        {
+          path: '/',
+          domain: kMyDomain,
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        'value2' + kExplicitDomain + kExplicitMyPath,
+        {
+          domain: kMyDomain,
+          path: kMyPath,
+        });
+    assert_equals(
+        cookieString(await cookieStore.getAll()),
+        [
+          'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed=' +
+              'value2' + kExplicitDomain + kExplicitRoot,
+          'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed=' +
+              'value2' + kExplicitDomain + kExplicitMyPath,
+          'unprefixed_getAll_domain_and_explicit_path_shadowing1_unshadowed=' +
+              'value1' + kImplicitDomain + kExplicitRoot,
+          'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed=' +
+              'value2' + kImplicitDomain + kExplicitRoot,
+          'unprefixed_getAll_domain_and_explicit_path_shadowing3_unshadowed=' +
+              'value3' + kImplicitDomain + kExplicitRoot,
+        ].join('; '));
+  } finally {
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing1_unshadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing3_unshadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        {
+          path: kMyPath,
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        {
+          path: '/',
+          domain: kMyDomain,
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_domain_and_explicit_path_shadowing2_shadowed',
+        {
+          domain: kMyDomain,
+          path: kMyPath,
+        });
+  }
+}, 'getAll item order with domain and explicit path shadowing and unshadowed cookies');
+
+</script>

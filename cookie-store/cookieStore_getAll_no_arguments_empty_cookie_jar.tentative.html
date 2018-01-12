@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>No arguments and empty cookie jar with getAll</title>
+<meta name="help"
+      href="https://github.com/WICG/cookie-store/blob/gh-pages/explainer.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-helpers.js"></script>
+<script>
+'use strict';
+
+promise_test(async testCase => {
+  const allCookies = await cookieStore.getAll();
+  assert_equals(
+      allCookies.length,
+      0,
+      'cookieStore.getAll should return an empty array');
+}, 'getAll with no arguments and empty cookie jar');
+
+</script>

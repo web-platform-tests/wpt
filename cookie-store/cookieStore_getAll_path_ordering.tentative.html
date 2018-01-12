@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Unprefixed cookie getAll path ordering</title>
+<meta name="help"
+      href="https://github.com/WICG/cookie-store/blob/gh-pages/explainer.md">
+<meta name="help"
+      href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-5.5">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-helpers.js"></script>
+<script>
+'use strict';
+
+const kMyPath = location.pathname.replace(/[^\/]+$/, '');
+
+promise_test(async testCase => {
+  try {
+    await cookieStore.set(
+        'unprefixed_getAll_implicit_path_shadowing1_unshadowed',
+        'value1_implicit_path_/');
+    await cookieStore.set(
+        'unprefixed_getAll_implicit_path_shadowing2_shadowed',
+        'value2_implicit_path_/');
+    await cookieStore.set(
+        'unprefixed_getAll_implicit_path_shadowing3_unshadowed',
+        'value3_implicit_path_/');
+    await cookieStore.set(
+        'unprefixed_getAll_implicit_path_shadowing2_shadowed',
+        'value2_explicit_path_' + kMyPath,
+        {
+          path: kMyPath,
+        });
+    assert_equals(
+        cookieString(await cookieStore.getAll()),
+        [
+          'unprefixed_getAll_implicit_path_shadowing2_shadowed=' +
+              'value2_explicit_path_' + kMyPath,
+          'unprefixed_getAll_implicit_path_shadowing1_unshadowed=' +
+              'value1_implicit_path_/',
+          'unprefixed_getAll_implicit_path_shadowing2_shadowed=' +
+              'value2_implicit_path_/',
+          'unprefixed_getAll_implicit_path_shadowing3_unshadowed=' +
+              'value3_implicit_path_/',
+        ].join('; '));
+  } finally {
+    await cookieStore.delete(
+        'unprefixed_getAll_implicit_path_shadowing1_unshadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_implicit_path_shadowing2_shadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_implicit_path_shadowing3_unshadowed');
+    await cookieStore.delete(
+        'unprefixed_getAll_implicit_path_shadowing2_shadowed',
+        {
+          path: kMyPath,
+        });
+  }
+}, 'getAll item order with implicit path shadowing and unshadowed cookies');
+
+promise_test(async testCase => {
+  try {
+    await cookieStore.set(
+        'unprefixed_getAll_explicit_path_shadowing1_unshadowed',
+        'value1_explicit_path_/',
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_explicit_path_shadowing2_shadowed',
+        'value2_explicit_path_/',
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_explicit_path_shadowing3_unshadowed',
+        'value3_explicit_path_/',
+        {
+          path: '/',
+        });
+    await cookieStore.set(
+        'unprefixed_getAll_explicit_path_shadowing2_shadowed',
+        'value2_explicit_path_' + kMyPath,
+        {
+          path: kMyPath,
+        });
+    assert_equals(
+        cookieString(await cookieStore.getAll()),
+        [
+          'unprefixed_getAll_explicit_path_shadowing2_shadowed=' +
+              'value2_explicit_path_' + kMyPath,
+          'unprefixed_getAll_explicit_path_shadowing1_unshadowed=' +
+              'value1_explicit_path_/',
+          'unprefixed_getAll_explicit_path_shadowing2_shadowed=' +
+              'value2_explicit_path_/',
+          'unprefixed_getAll_explicit_path_shadowing3_unshadowed=' +
+              'value3_explicit_path_/',
+        ].join('; '));
+  } finally {
+    await cookieStore.delete(
+        'unprefixed_getAll_explicit_path_shadowing1_unshadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_explicit_path_shadowing2_shadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_explicit_path_shadowing3_unshadowed',
+        {
+          path: '/',
+        });
+    await cookieStore.delete(
+        'unprefixed_getAll_explicit_path_shadowing2_shadowed',
+        {
+          path: kMyPath,
+        });
+  }
+}, 'getAll item order with explicit path shadowing and unshadowed cookies');
+
+</script>

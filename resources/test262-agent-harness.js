@@ -15,6 +15,11 @@ function run_in_iframe_strict(test262, attrs, t) {
     run_in_iframe(test262, attrs, t, opts);
 }
 
+function is_syntax_error(message, attrs) {
+    let negative = attrs.negative || {};
+    return message.startsWith('SyntaxError') && negative.type == 'SyntaxError';
+}
+
 function run_in_iframe(test262, attrs, t, opts) {
   opts = opts || {};
   // Rethrow error from iframe.
@@ -46,11 +51,9 @@ function run_in_iframe(test262, attrs, t, opts) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
-    if (e.message.startsWith("SyntaxError")) {
-        if (attrs.type == 'SyntaxError' && attrs.phase == 'early') {
-            t.done();
-            return;
-        }
+    if (is_syntax_error(e.message, attrs)) {
+        t.done();
+        return;
     }
     top.dispatchEvent(new CustomEvent(FAILED, {detail: e.message}));
   });
@@ -77,7 +80,7 @@ let HEADER = `
 </head>
 <body>
 </body>
-<script type="text/javascript">
+<script type="###MIME_TYPE###">
 `;
 let FOOTER = `
   ;__completed__();
@@ -88,9 +91,15 @@ let FOOTER = `
 function test262_as_html(test262, attrs, strict) {
   output = [];
   output.push(HEADER.replace('###INCLUDES###', addScripts(attrs.includes)));
-  output.push(prepareTest(test262, attrs, strict));
+  output.push(HEADER.replace('###MIME_TYPE###', mimeType(attrs.negative)));
+  output.push(prepareTest(test262, strict));
   output.push(FOOTER);
   return output.join("");
+}
+
+function mimeType(negative) {
+    negative = negative || {};
+    return negative.type == 'SyntaxError' && negative.phase == 'runtime' ? "module" : "type/javascript";
 }
 
 function addScripts(sources) {
@@ -103,28 +112,8 @@ function addScripts(sources) {
   return ret.join("\n");
 }
 
-function prepareTest(test262, attrs, strict) {
-  function escapeEvalExpr(str) {
-      // Escape double quotes.
-      let ret = str.replace(/\"/g, '\\\"');
-      // Remove backreturn characters.
-      return ret.replace(/\n/g, '');
-  }
-  let output = [];
-  let test = test262();
-  if (strict) {
-    test = "'use strict';\n" + test;
-  }
-  if (attrs.type == 'SyntaxError' && attrs.phase == 'runtime') {
-      // If phase is 'runtime' the error will be caught here. If phase is 'early' the
-      // error will be handled at the window.onerror event.
-      output.push('try { eval("');
-      output.push(escapeEvalExpr(test));
-      output.push('"); }\ncatch (e) { assert.sameValue(e instanceof SyntaxError, true); }');
-  } else {
-      output.push(test);
-  }
-  return output.join("");
+function prepareTest(test262, strict) {
+  return strict ? "'use strict';\n" + test262() : test262();
 }
 
 // Window.
@@ -157,12 +146,10 @@ function run_in_window(test262, attrs, t, opts) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
-    if (e.message.startsWith("SyntaxError")) {
-        if (attrs.type == 'SyntaxError' && attrs.phase == 'early') {
-            popup.close();
-            t.done();
-            return;
-        }
+    if (is_syntax_error(e.message, attrs)) {
+        popup.close();
+        t.done();
+        return;
     }
     top.dispatchEvent(new CustomEvent(FAILED, {detail: e.message}));
   });
@@ -224,7 +211,7 @@ function createWorkerFromString(test262, attrs, opts) {
   let template = getWorkerTemplate(type);
   template = template.replace('###INCLUDES###', importScripts(attrs.includes));
   template = template.replace('###NAME###', workerNameByType(type, opts.strict));
-  template = template.replace('###BODY###', prepareTest(test262, attrs, opts.strict));
+  template = template.replace('###BODY###', prepareTest(test262, opts.strict));
   return createWorker(type, template);
 }
 
@@ -255,11 +242,9 @@ function run_in_worker(test262, attrs, t, opts) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
-    if (e.message.startsWith("SyntaxError")) {
-      if (attrs.type == 'SyntaxError' && attrs.phase == 'early') {
+    if (is_syntax_error(e.message, attrs)) {
         t.done();
         return;
-      }
     }
     top.dispatchEvent(new CustomEvent(FAILED, {detail: e.message}));
   });
@@ -314,11 +299,9 @@ function run_in_shared_worker(test262, attrs, t, opts) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
-    if (e.message.startsWith("SyntaxError")) {
-      if (attrs.type == 'SyntaxError' && attrs.phase == 'early') {
+    if (is_syntax_error(e.message, attrs)) {
         t.done();
         return;
-      }
     }
     top.dispatchEvent(new CustomEvent(FAILED, {detail: e.message}));
   });

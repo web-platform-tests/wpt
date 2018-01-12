@@ -3,47 +3,38 @@
 
 const clauses = ["must throw a TypeError when applying the", "format specifier on a Symbol"];
 
+function assertFailure(method, specifier) {
+  assert_throws({name: "TypeError"}, () => {
+    console[method](specifier, Symbol.for("description"));
+  }, errorTag`${method}() ${clauses[0]} ${specifier} ${clauses[1]}`);
+}
+
 test(() => {
-  assert_throws({name: "TypeError"}, () => {
-    console.log("%i", Symbol.for("description"));
-  }, errorTag`log() ${clauses[0]} %i ${clauses[1]}`);
-
-  assert_throws({name: "TypeError"}, () => {
-    console.log("%d", Symbol.for("description"));
-  }, errorTag`log() ${clauses[0]} %d ${clauses[1]}`);
-
-  assert_throws({name: "TypeError"}, () => {
-    console.log("%f", Symbol.for("description"));
-  }, `log() ${clauses[0]} %f ${clauses[1]}`);
-
+  assertFailure("log", "%i");
+  assertFailure("log", "%d");
+  assertFailure("log", "%f");
 }, "console.log() throws exceptions when applying non-string format specifiers to Symbols");
 
 test(() => {
-  assert_throws({name: "TypeError"}, () => {
-    console.dir("%i", Symbol.for("description"));
-  }, `dir() ${clauses[0]} %i ${clauses[1]}`);
-
-  assert_throws({name: "TypeError"}, () => {
-    console.dir("%d", Symbol.for("description"));
-  }, `dir() ${clauses[0]} %d ${clauses[1]}`);
-
-  assert_throws({name: "TypeError"}, () => {
-    console.dir("%f", Symbol.for("description"));
-  }, `dir() ${clauses[0]} %f ${clauses[1]}`);
-
-}, "console.dir() throws exceptions when applying non-string format specifiers to Symbols");
+  assertFailure("dirxml", "%i");
+  assertFailure("dirxml", "%d");
+  assertFailure("dirxml", "%f");
+}, "console.dirxml() throws exceptions when applying non-string format specifiers to Symbols");
 
 test(() => {
-  assert_throws({name: "TypeError"}, () => {
-    console.dirxml("%i", Symbol.for("description"));
-  }, `dirxml() ${clauses[0]} %i ${clauses[1]}`);
+  assertFailure("trace", "%i");
+  assertFailure("trace", "%d");
+  assertFailure("trace", "%f");
+}, "console.trace() throws exceptions when applying non-string format specifiers to Symbols");
 
-  assert_throws({name: "TypeError"}, () => {
-    console.dirxml("%d", Symbol.for("description"));
-  }, `dirxml() ${clauses[0]} %d ${clauses[1]}`);
+test(() => {
+  assertFailure("group", "%i");
+  assertFailure("group", "%d");
+  assertFailure("group", "%f");
+}, "console.group() throws exceptions when applying non-string format specifiers to Symbols");
 
-  assert_throws({name: "TypeError"}, () => {
-    console.dirxml("%f", Symbol.for("description"));
-  }, `dirxml() ${clauses[0]} %f ${clauses[1]}`);
-
-}, "console.dirxml() throws exceptions when applying non-string format specifiers to Symbols");
+test(() => {
+  assertFailure("groupCollapsed", "%i");
+  assertFailure("groupCollapsed", "%d");
+  assertFailure("groupCollapsed", "%f");
+}, "console.groupCollapsed() throws exceptions when applying non-string format specifiers to Symbols");

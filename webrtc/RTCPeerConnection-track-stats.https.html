@@ -4,11 +4,18 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
+<script src="dictionary-helper.js"></script>
+<script src="RTCStats-helper.js"></script>
 <script>
   'use strict';
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
+  //   doSignalingHandshake
   //   getUserMediaTracksAndStreams
+
+  // The following helper functions are called from RTCStats-helper.js
+  // (depends on dictionary-helper.js):
+  //   validateRtcStats
 
   async_test(t => {
     const pc = new RTCPeerConnection();
@@ -22,6 +29,11 @@
     .then(t.step_func(report => {
       let trackStats = findStatsByTypeAndId(report, 'track', track.id);
       assert_true(trackStats != null, 'Has stats for track');
+      // TODO(hbos): Here and elsewhere, validateRtcStats() only tests id,
+      // timestamp and type is correct type. Should validate based on stats type
+      // but it expects both audio and video members.
+      // https://github.com/w3c/web-platform-tests/issues/9010
+      validateRtcStats(report, trackStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -42,6 +54,7 @@
     .then(t.step_func(report => {
       let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
       assert_true(streamStats != null, 'Has stats for stream');
+      validateRtcStats(report, streamStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -67,6 +80,7 @@
     .then(t.step_func(report => {
       let trackStats = findStatsByTypeAndId(report, 'track', track.id);
       assert_true(trackStats != null, 'Has stats for track');
+      validateRtcStats(report, trackStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -93,6 +107,7 @@
     .then(t.step_func(report => {
       let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
       assert_true(streamStats != null, 'Has stats for stream');
+      validateRtcStats(report, streamStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -124,6 +139,8 @@
                   'Has stats for track and stream');
       assert_array_equals(streamStats.trackIds, [ trackStats.id ],
                           'streamStats.trackIds == [ trackStats.id ]');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, streamStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -161,6 +178,8 @@
                   'Has stats for track and stream');
       assert_array_equals(streamStats.trackIds, [ trackStats.id ],
                           'streamStats.trackIds == [ trackStats.id ]');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, streamStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -176,18 +195,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack = tracks[0];
       caller.addTrack(sendingTrack);
-      return caller.createOffer();
-    }))
-    .then(t.step_func(offer => {
-      return Promise.all([ caller.setLocalDescription(offer),
-                           callee.setRemoteDescription(offer) ]);
-    }))
-    .then(t.step_func(() => {
-      return callee.createAnswer();
-    }))
-    .then(t.step_func(answer => {
-      return Promise.all([ callee.setLocalDescription(answer),
-                           caller.setRemoteDescription(answer) ]);
+      return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
       return caller.getStats();
@@ -198,6 +206,8 @@
       let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
                                                    'trackId', trackStats.id);
       assert_true(outboundStats != null, 'Has stats for outbound RTP stream');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, outboundStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
@@ -216,18 +226,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       caller.addTrack(tracks[0]);
-      return caller.createOffer();
-    }))
-    .then(t.step_func(offer => {
-      return Promise.all([ caller.setLocalDescription(offer),
-                           callee.setRemoteDescription(offer) ]);
-    }))
-    .then(t.step_func(() => {
-      return callee.createAnswer();
-    }))
-    .then(t.step_func(answer => {
-      return Promise.all([ callee.setLocalDescription(answer),
-                           caller.setRemoteDescription(answer) ]);
+      return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
       return callee.getStats();
@@ -239,12 +238,145 @@
       let inboundStats = findStatsByTypeAndMember(report, 'inbound-rtp',
                                                   'trackId', trackStats.id);
       assert_true(inboundStats != null, 'Has stats for outbound RTP stream');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, inboundStats);
       t.done();
     }))
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
   }, 'O/A exchange yields inbound RTP stream stats for receiving track');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let sendingTrack1;
+    let sendingTrack2;
+    let sender;
+    return getUserMediaTracksAndStreams(2)
+    .then(t.step_func(([tracks, streams]) => {
+      sendingTrack1 = tracks[0];
+      sendingTrack2 = tracks[1];
+      sender = caller.addTrack(sendingTrack1);
+      return sender.replaceTrack(sendingTrack2);
+    }))
+    .then(t.step_func(() => {
+      return caller.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', sendingTrack2.id);
+      assert_true(trackStats != null, 'Has stats for replaced track');
+      validateRtcStats(report, trackStats);
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'replaceTrack() before offer: new track attachment stats present');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let sendingTrack1;
+    let sendingTrack2;
+    let sender;
+    return getUserMediaTracksAndStreams(2)
+    .then(t.step_func(([tracks, streams]) => {
+      sendingTrack1 = tracks[0];
+      sendingTrack2 = tracks[1];
+      sender = caller.addTrack(sendingTrack1);
+      return performOffer(caller, callee);
+    }))
+    .then(t.step_func(() => {
+      return sender.replaceTrack(sendingTrack2);
+    }))
+    .then(t.step_func(() => {
+      return caller.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', sendingTrack2.id);
+      assert_true(trackStats != null, 'Has stats for replaced track');
+      let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
+                                                   'trackId', trackStats.id);
+      assert_true(outboundStats != null, 'Has stats for outbound RTP stream');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, outboundStats);
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'replaceTrack() after offer, before answer: new track attachment stats ' +
+     'present');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let sendingTrack1;
+    let sendingTrack2;
+    let sender;
+    return getUserMediaTracksAndStreams(2)
+    .then(t.step_func(([tracks, streams]) => {
+      sendingTrack1 = tracks[0];
+      sendingTrack2 = tracks[1];
+      sender = caller.addTrack(sendingTrack1);
+      return doSignalingHandshake(caller, callee);
+    }))
+    .then(t.step_func(() => {
+      return sender.replaceTrack(sendingTrack2);
+    }))
+    .then(t.step_func(() => {
+      return caller.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', sendingTrack2.id);
+      assert_true(trackStats != null, 'Has stats for replaced track');
+      let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
+                                                   'trackId', trackStats.id);
+      assert_true(outboundStats != null, 'Has stats for outbound RTP stream');
+      validateRtcStats(report, trackStats);
+      validateRtcStats(report, outboundStats);
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'replaceTrack() after answer: new track attachment stats present');
+
+  async_test(t => {
+    const caller = new RTCPeerConnection();
+    const callee = new RTCPeerConnection();
+    let sendingTrack1;
+    let sendingTrack2;
+    let sender;
+    return getUserMediaTracksAndStreams(2)
+    .then(t.step_func(([tracks, streams]) => {
+      sendingTrack1 = tracks[0];
+      sendingTrack2 = tracks[1];
+      sender = caller.addTrack(sendingTrack1);
+      return doSignalingHandshake(caller, callee);
+    }))
+    .then(t.step_func(() => {
+      return sender.replaceTrack(sendingTrack2);
+    }))
+    .then(t.step_func(() => {
+      return caller.getStats();
+    }))
+    .then(t.step_func(report => {
+      let trackStats = findStatsByTypeAndId(report, 'track', sendingTrack1.id);
+      assert_true(trackStats != null, 'Has stats for original track');
+      assert_true(trackStats.objectDeleted);
+      let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
+                                                   'trackId', trackStats.id);
+      assert_true(outboundStats == null,
+                  'The outbound RTP stream should no longer reference the ' +
+                  'original attachment');
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'replaceTrack(): original track attachment stats present after replacing');
 
   // Helpers.
 

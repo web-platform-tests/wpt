@@ -7,6 +7,8 @@ import subprocess
 import sys
 import tempfile
 import threading
+import yaml
+import json
 
 from shutil import copyfile
 from stat import *
@@ -61,60 +63,24 @@ class Test262Parser(object):
         else:
             self.header = ""
             self.body = text
-        self.attrs = {}
-        self.parse_header()
+        self.attrs = self.parse_header()
 
     def parse_header(self):
         if len(self.header) == 0:
-            return
-        value = []
-        last_attr = None
+            return {}
+        return yaml.load(self.yaml_section()) or {}
+
+    def yaml_section(self):
+        is_yaml = False
+        ret = []
         for line in self.header.split('\n'):
-            # End of the attribute section?
-            if re.search(r'---\*/', line):
-                self.store_attribute(last_attr, "\n".join(value))
+            if re.search(r'/*---', line):
+                is_yaml = True
+            elif is_yaml and re.search(r'---*/', line):
                 break
-
-            # Attribute? (attr: <text>)
-            match = re.search(r'^\s*(\w+):', line)
-            if match:
-                attr = match.group(1)
-                # Name of attribute changed?
-                if attr != last_attr:
-                    # Should store attribute?
-                    if last_attr is not None:
-                        self.store_attribute(last_attr, "".join(value))
-                    match = re.search(': (.*)\n?', line)
-                    if match:
-                        value = [match.group(1)]
-                    else:
-                        value = []
-                    last_attr = attr
-            else:
-                value.append(line)
-        self.store_attribute(last_attr, "".join(value))
-
-    def store_attribute(self, name, value):
-        if name in ['includes', 'flags', 'features']:
-            self.attrs[name] = self.parse_list(value)
-        else:
-            self.attrs[name] = value
-
-    '''
-    There are two ways of describing a list of properties:
-       attr: [prop1, prop2, ..., propn]
-       attr:
-         - prop1
-         - prop2
-         - ...
-         - propn
-    '''
-    def parse_list(self, text):
-        match = re.search("\[", text)
-        if match:
-            return re.findall("[^\[, \]\n]+", text)
-        else:
-            return re.findall("[^- \n]+", text)
+            elif is_yaml:
+                ret.append(line)
+        return "\n".join(ret)
 
 ###
 
@@ -334,12 +300,17 @@ class WPTestBuilder(object):
     def build(self, title, content):
         test262 = Test262Parser(content)
         def header():
-            opts = { 'exclude': ['description', 'info', 'esid', 'es6id'] }
+            attrs = tojson(test262.attrs)
             ret = HEADER
             ret = re.sub('###TITLE###', title, ret)
-            ret = ret.replace('###ATTRS###', indent(2, "let attrs = %s;" % tojson(test262.attrs, opts)))
+            ret = ret.replace('###ATTRS###', indent(2, "let attrs = %s;" % tojson(test262.attrs)))
             ret = ret.replace('###HEADER###', indent(2, test262.header))
             return ret
+        def tojson(attrs):
+            exclude = ['description', 'info', 'esid', 'es6id']
+            for key in exclude:
+                attrs.pop(key, None)
+            return json.dumps(attrs) or '{}'
         def body():
             def escape(text):
                 text = re.sub(r'\\', r'\\\\', text)

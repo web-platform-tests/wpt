@@ -28,12 +28,15 @@ function installAPI(global) {
         },
         global: global
     };
-    return global.$262;
 }
 
-// TODO: $DONE is used by Promise tests and others, but I don't know from where to fetch it.
-function $DONE() {
-
+function $DONE(err) {
+    if (err) {
+        throw err;
+    }
 }
 
-installAPI(window);
+if (this.document) {
+    // TODO: Any Worker test that depends on these functions will fail. Define API for Workers.
+    installAPI(window);
+}

@@ -28,6 +28,7 @@ function installAPI(global) {
         },
         global: global
     };
+    return global.$262;
 }
 
 function $DONE(err) {

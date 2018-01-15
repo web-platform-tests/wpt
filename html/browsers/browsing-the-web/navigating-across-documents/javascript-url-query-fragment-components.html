@@ -1,28 +1,30 @@
 <!doctype html>
-<title> javascript url with query and fragment components </title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#run-a-classic-script">
+<link rel="help" href="https://url.spec.whatwg.org/#percent-decode">
+<link rel="help" href="https://encoding.spec.whatwg.org/#utf-8-decode">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script>
-var a = null;
-var b = null;
-var c = null;
-</script>
-
+<div id="log"></div>
+<!-- 9, ("nope" ? "yep" : "what";) is just a JavaScript expression to evaluate -->
 <iframe id="a" src='javascript:"nope" ? "yep" : "what";'></iframe>
+<!-- 4, %0a is treated as a byte and turned into "\n" (0x0A is \n), which means "ok" is the return value -->
 <iframe id="b" src='javascript:"wrong"; // # %0a "ok";'></iframe>
-<iframe id="c" src='javascript:"%252525 ? %252525 # %252525"'></iframe>
+<!-- 4, %25 is treated as a byte and turned into "%" (0x25 is %) -->
+<iframe id="c" src='javascript:"%2525"'></iframe>
 
 <script>
-var t = async_test("iframes with javascript src", {timeout:1000});
 function check(id, expected) {
   assert_equals(
     document.getElementById(id).contentDocument.body.textContent,
-    expected);
+    expected
+  );
 }
-onload = t.step_func(function() {
-  check("a", "yep");
-  check("b", "ok");
-  check("c", "%2525 ? %2525 # %2525");
-  t.done();
-});
+async_test(function(test) {
+  window.onload = test.step_func_done(function() {
+    check("a", "yep");
+    check("b", "ok");
+    check("c", "%25");
+  });
+}, "'javascript: url' contents include things that look like query and fragment components");
 </script>

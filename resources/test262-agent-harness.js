@@ -70,6 +70,8 @@ let HEADER = `
   <script src="http://{{host}}:{{ports[http][0]}}/resources/test262/harness/assert.js"><\/script>
   <script src="http://{{host}}:{{ports[http][0]}}/resources/test262/harness/sta.js"><\/script>
 
+  <script src="http://{{host}}:{{ports[http][0]}}/resources/test262-harness.js"><\/script>
+
   ###INCLUDES###
 
   <script type="text/javascript">
@@ -184,14 +186,14 @@ function workerNameByType(type, strict) {
 function createWorkerFromString(test262, attrs, opts) {
   function importScripts(sources) {
     sources = sources || [];
-    let ret = [];
-    let master = ['assert.js', 'sta.js'];  // Must always be included.
-    let root = 'http://{{host}}:{{ports[http][0]}}/resources/test262/harness/';
-    master.forEach(function(src) {
-      ret.push('"' + root + src + '"');
+    let root = 'http://{{host}}:{{ports[http][0]}}/resources';
+    let ret = [`"${root}/test262-harness.js"`];
+    let mandatory = ['assert.js', 'sta.js'];
+    mandatory.forEach(function(filename) {
+      ret.push(`"${root}/test262/harness/${filename}"`);
     });
-    sources.forEach(function(src) {
-      ret.push('"' + root + src + '"');
+    sources.forEach(function(filename) {
+      ret.push(`"${root}/test262/harness/${filename}"`);
     });
     return "importScripts(" + ret.join(",") + ");";
   }

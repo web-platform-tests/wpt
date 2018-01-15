@@ -5,7 +5,6 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
-<title>Link with onclick form submit is aborted by href navigation </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -13,23 +12,16 @@
 <form target="test" action="click.html"></form>
 <a target="test" onclick="document.forms[0].submit()" href="href.html">Test</a>
 <script>
-var test = async_test();
+async_test(function(test) {
 
-window.onmessage = test.step_func_done(function(e) {
-  // Navigating the iframe to the anchor's `href` will abort the
-  // not-yet-mature iframe navigation. If the semantics are implemented correctly,
-  // ONLY the message "href" from "href.html" will be received.
-  assert_equals(e.data, "href");
-});
+  window.onmessage = test.step_func_done(function(e) {
+    // Navigating the iframe to the anchor's `href` will abort the
+    // not-yet-mature iframe navigation. If the semantics are implemented correctly,
+    // ONLY the message "href" from "href.html" will be received.
+    assert_equals(e.data, "href");
+  });
 
-test.step(function() {
-  // Clicking the anchor will trigger the `onclick` handler operation,
-  // which will attempt to submit the form, which targets the iframe.
   document.querySelector("a").click();
-});
+
+}, "A form submit navigation invoked via link onclick is cancelled by default href navigation.");
 </script>
-
-
-
-
-

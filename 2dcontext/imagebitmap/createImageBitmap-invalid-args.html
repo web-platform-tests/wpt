@@ -99,6 +99,26 @@ promise_test( t => {
 }, "createImageBitmap with null image source.");
 
 promise_test( t => {
+  var context = document.createElement("canvas").getContext("2d");
+  return promise_rejects(t, new TypeError(), createImageBitmap(context));
+}, "createImageBitmap with CanvasRenderingContext2D image source.");
+
+promise_test( t => {
+  var context = document.createElement("canvas").getContext("webgl");
+  return promise_rejects(t, new TypeError(), createImageBitmap(context));
+}, "createImageBitmap with WebGLRenderingContext image source.");
+
+promise_test( t => {
+  var buffer = new Uint8Array();
+  return promise_rejects(t, new TypeError(), createImageBitmap(buffer));
+}, "createImageBitmap with Uint8Array image source.");
+
+promise_test( t => {
+  var buffer = new ArrayBuffer(8);
+  return promise_rejects(t, new TypeError(), createImageBitmap(buffer));
+}, "createImageBitmap with ArrayBuffer image source.");
+
+promise_test( t => {
   return promise_rejects(t, "InvalidStateError",
     createImageBitmap(new Image()));
 }, "createImageBitmap with empty image source.");

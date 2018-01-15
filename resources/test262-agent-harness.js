@@ -47,7 +47,7 @@ function run_in_iframe(test262, attrs, t, opts) {
     throw new Error(e.detail);
   }));
   // In case of error send it to parent window.
-  w.addEventListener('error', function(e) { 
+  w.addEventListener('error', function(e) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
@@ -89,17 +89,24 @@ let FOOTER = `
 `;
 
 function test262_as_html(test262, attrs, strict) {
-  output = [];
-  output.push(HEADER.replace('###INCLUDES###', addScripts(attrs.includes)));
-  output.push(HEADER.replace('###MIME_TYPE###', mimeType(attrs.negative)));
+  function header() {
+    let header = HEADER.replace('###INCLUDES###', addScripts(attrs.includes));
+    return header.replace('###MIME_TYPE###', mimeType(attrs));
+  }
+  function footer() {
+    return FOOTER;
+  }
+  let output = [];
+  output.push(header());
   output.push(prepareTest(test262, strict));
-  output.push(FOOTER);
+  output.push(footer());
   return output.join("");
 }
 
-function mimeType(negative) {
-    negative = negative || {};
-    return negative.type == 'SyntaxError' && negative.phase == 'runtime' ? "module" : "type/javascript";
+function mimeType(attrs) {
+  let negative = attrs && attrs.negative ? attrs.negative : {};
+  return negative.type == 'SyntaxError' && negative.phase == 'runtime' ?
+    'module' : 'text/javascript';
 }
 
 function addScripts(sources) {

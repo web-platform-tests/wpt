@@ -40,6 +40,8 @@ class WrapperHandler(object):
 
     __meta__ = abc.ABCMeta
 
+    headers = []
+
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -49,6 +51,9 @@ class WrapperHandler(object):
         self.handler(request, response)
 
     def handle_request(self, request, response):
+        for header_name, header_value in self.headers:
+            response.headers.set(header_name, header_value)
+
         path = self._get_path(request.url_parts.path, True)
         meta = "\n".join(self._get_meta(request))
         response.content = self.wrapper % {"meta": meta, "path": path}
@@ -169,6 +174,7 @@ self.GLOBAL = {
 
 
 class AnyWorkerHandler(WrapperHandler):
+    headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {
@@ -208,14 +214,14 @@ class RoutesBuilder(object):
                           ("*", "{spec}/tools/*", handlers.ErrorHandler(404)),
                           ("*", "/serve.py", handlers.ErrorHandler(404))]
 
-        self.static = []
+        self.extra = []
 
         self.mountpoint_routes = OrderedDict()
 
         self.add_mount_point("/", None)
 
     def get_routes(self):
-        routes = self.forbidden_override + self.forbidden + self.static
+        routes = self.forbidden_override + self.forbidden + self.extra
         # Using reversed here means that mount points that are added later
         # get higher priority. This makes sense since / is typically added
         # first.
@@ -223,9 +229,12 @@ class RoutesBuilder(object):
             routes.extend(item)
         return routes
 
+    def add_handler(self, method, route, handler):
+        self.extra.append((str(method), str(route), handler))
+
     def add_static(self, path, format_args, content_type, route):
         handler = handlers.StaticHandler(path, format_args, content_type)
-        self.static.append((b"GET", str(route), handler))
+        self.add_handler(b"GET", str(route), handler)
 
     def add_mount_point(self, url_base, path):
         url_base = "/%s/" % url_base.strip("/") if url_base != "/" else "/"
@@ -273,7 +282,7 @@ def setup_logger(level):
     import logging
     global logger
     logger = logging.getLogger("web-platform-tests")
-    logging.basicConfig(level=getattr(logging, level.upper()))
+    logger.setLevel(getattr(logging, level.upper()))
     set_logger(logger)
 
 
@@ -374,24 +383,24 @@ class ServerProc(object):
         self.daemon = None
         self.stop = Event()
 
-    def start(self, init_func, host, port, paths, routes, bind_hostname, external_config,
+    def start(self, init_func, host, port, paths, routes, bind_hostname, config,
               ssl_config, **kwargs):
         self.proc = Process(target=self.create_daemon,
                             args=(init_func, host, port, paths, routes, bind_hostname,
-                                  external_config, ssl_config),
+                                  config, ssl_config),
                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_hostname,
-                      external_config, ssl_config, **kwargs):
+                      config, ssl_config, **kwargs):
         try:
-            self.daemon = init_func(host, port, paths, routes, bind_hostname, external_config,
+            self.daemon = init_func(host, port, paths, routes, bind_hostname, config,
                                     ssl_config, **kwargs)
         except socket.error:
             print("Socket error on port %s" % port, file=sys.stderr)
             raise
-        except:
+        except Exception:
             print(traceback.format_exc(), file=sys.stderr)
             raise
 
@@ -402,7 +411,7 @@ class ServerProc(object):
                     self.stop.wait()
                 except KeyboardInterrupt:
                     pass
-            except:
+            except Exception:
                 print(traceback.format_exc(), file=sys.stderr)
                 raise
 
@@ -437,7 +446,8 @@ def check_subdomains(host, paths, bind_hostname, ssl_config, aliases):
             time.sleep(1)
 
     if not connected:
-        logger.critical("Failed to connect to test server on http://%s:%s You may need to edit /etc/hosts or similar" % (host, port))
+        logger.critical("Failed to connect to test server on http://%s:%s. "
+                        "You may need to edit /etc/hosts or similar, see README.md." % (host, port))
         sys.exit(1)
 
     for subdomain, (punycode, host) in subdomains.iteritems():
@@ -445,7 +455,8 @@ def check_subdomains(host, paths, bind_hostname, ssl_config, aliases):
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:
-            logger.critical("Failed probing domain %s. You may need to edit /etc/hosts or similar." % domain)
+            logger.critical("Failed probing domain %s. "
+                            "You may need to edit /etc/hosts or similar, see README.md." % domain)
             sys.exit(1)
 
     wrapper.wait()
@@ -457,7 +468,7 @@ def get_subdomains(host):
             for subdomain in subdomains}
 
 
-def start_servers(host, ports, paths, routes, bind_hostname, external_config, ssl_config,
+def start_servers(host, ports, paths, routes, bind_hostname, config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
     for scheme, ports in ports.iteritems():
@@ -473,13 +484,13 @@ def start_servers(host, ports, paths, routes, bind_hostname, external_config, ss
 
             server_proc = ServerProc()
             server_proc.start(init_func, host, port, paths, routes, bind_hostname,
-                              external_config, ssl_config, **kwargs)
+                              config, ssl_config, **kwargs)
             servers[scheme].append((port, server_proc))
 
     return servers
 
 
-def start_http_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_http_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                       **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
@@ -487,14 +498,14 @@ def start_http_server(host, port, paths, routes, bind_hostname, external_config,
                                  routes=routes,
                                  rewrites=rewrites,
                                  bind_hostname=bind_hostname,
-                                 config=external_config,
+                                 config=config,
                                  use_ssl=False,
                                  key_file=None,
                                  certificate=None,
                                  latency=kwargs.get("latency"))
 
 
-def start_https_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_https_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                        **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
@@ -502,7 +513,7 @@ def start_https_server(host, port, paths, routes, bind_hostname, external_config
                                  routes=routes,
                                  rewrites=rewrites,
                                  bind_hostname=bind_hostname,
-                                 config=external_config,
+                                 config=config,
                                  use_ssl=True,
                                  key_file=ssl_config["key_path"],
                                  certificate=ssl_config["cert_path"],
@@ -575,7 +586,7 @@ class WebSocketDaemon(object):
         self.server = None
 
 
-def start_ws_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_ws_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                     **kwargs):
     return WebSocketDaemon(host,
                            str(port),
@@ -586,7 +597,7 @@ def start_ws_server(host, port, paths, routes, bind_hostname, external_config, s
                            ssl_config = None)
 
 
-def start_wss_server(host, port, paths, routes, bind_hostname, external_config, ssl_config,
+def start_wss_server(host, port, paths, routes, bind_hostname, config, ssl_config,
                      **kwargs):
     return WebSocketDaemon(host,
                            str(port),
@@ -628,12 +639,22 @@ def normalise_config(config, ports):
     for scheme, ports_used in ports.iteritems():
         ports_[scheme] = ports_used
 
-    return {"host": host,
-            "domains": domains,
-            "ports": ports_}
+    # make a (shallow) copy of the config and update that, so that the
+    # normalized config can be used in place of the original one.
+    config_ = config.copy()
+    config_["host"] = host
+    config_["domains"] = domains
+    config_["ports"] = ports_
+    return config_
 
 
-def get_ssl_config(config, external_domains, ssl_environment):
+def get_paths(config):
+    return {"doc_root": config["doc_root"],
+            "ws_doc_root": config["ws_doc_root"]}
+
+
+def get_ssl_config(config, ssl_environment):
+    external_domains = config["domains"].values()
     key_path, cert_path = ssl_environment.host_cert_path(external_domains)
     return {"key_path": key_path,
             "cert_path": cert_path,
@@ -641,24 +662,15 @@ def get_ssl_config(config, external_domains, ssl_environment):
 
 def start(config, ssl_environment, routes, **kwargs):
     host = config["host"]
-    domains = get_subdomains(host)
     ports = get_ports(config, ssl_environment)
+    paths = get_paths(config)
     bind_hostname = config["bind_hostname"]
+    ssl_config = get_ssl_config(config, ssl_environment)
 
-    paths = {"doc_root": config["doc_root"],
-             "ws_doc_root": config["ws_doc_root"]}
-
-    external_config = normalise_config(config, ports)
-
-    ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
-
-    if config["check_subdomains"]:
-        check_subdomains(host, paths, bind_hostname, ssl_config, config["aliases"])
-
-    servers = start_servers(host, ports, paths, routes, bind_hostname, external_config,
+    servers = start_servers(host, ports, paths, routes, bind_hostname, config,
                             ssl_config, **kwargs)
 
-    return external_config, servers
+    return servers
 
 
 def iter_procs(servers):
@@ -762,21 +774,30 @@ def get_parser():
     return parser
 
 
-def main():
-    kwargs = vars(get_parser().parse_args())
-    config = load_config("config.default.json",
-                         "config.json",
+def run(**kwargs):
+    config = load_config(os.path.join(repo_root, "config.default.json"),
+                         os.path.join(repo_root, "config.json"),
                          **kwargs)
 
     setup_logger(config["log_level"])
 
-    stash_address = None
-    if config["bind_hostname"]:
-        stash_address = (config["host"], get_port())
+    with get_ssl_environment(config) as ssl_env:
+        ports = get_ports(config, ssl_env)
+        config = normalise_config(config, ports)
+        host = config["host"]
+        bind_hostname = config["bind_hostname"]
 
-    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-        with get_ssl_environment(config) as ssl_env:
-            config_, servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
+        if config["check_subdomains"]:
+            paths = get_paths(config)
+            ssl_config = get_ssl_config(config, ssl_env)
+            check_subdomains(host, paths, bind_hostname, ssl_config, config["aliases"])
+
+        stash_address = None
+        if bind_hostname:
+            stash_address = (host, get_port())
+
+        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+            servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
 
             try:
                 while any(item.is_alive() for item in iter_procs(servers)):
@@ -784,3 +805,8 @@ def main():
                         item.join(1)
             except KeyboardInterrupt:
                 logger.info("Shutting down")
+
+
+def main():
+    kwargs = vars(get_parser().parse_args())
+    return run(**kwargs)

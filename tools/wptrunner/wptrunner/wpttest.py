@@ -1,8 +1,6 @@
 import os
 from collections import defaultdict
 
-import mozinfo
-
 from wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
@@ -67,6 +65,8 @@ def get_run_info(metadata_root, product, **kwargs):
 
 class RunInfo(dict):
     def __init__(self, metadata_root, product, debug, extras=None):
+        import mozinfo
+
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
         self["product"] = product
@@ -77,12 +77,18 @@ class RunInfo(dict):
             self["debug"] = False
         if product == "firefox" and "stylo" not in self:
             self["stylo"] = False
+        if "STYLO_FORCE_ENABLED" in os.environ:
+            self["stylo"] = True
+        if "STYLO_FORCE_DISABLED" in os.environ:
+            self["stylo"] = False
         if extras is not None:
             self.update(extras)
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
         directory"""
+        import mozinfo
+
         path = metadata_root
         dirs = set()
         while path != os.path.expanduser('~'):
@@ -235,6 +241,27 @@ class TestharnessTest(Test):
     result_cls = TestharnessResult
     subtest_result_cls = TestharnessSubtestResult
     test_type = "testharness"
+
+    def __init__(self, tests_root, url, inherit_metadata, test_metadata,
+                 timeout=None, path=None, protocol="http", testdriver=False):
+        Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
+                      path, protocol)
+
+        self.testdriver = testdriver
+
+    @classmethod
+    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+        timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
+        testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
+        return cls(manifest_item.source_file.tests_root,
+                   manifest_item.url,
+                   inherit_metadata,
+                   test_metadata,
+                   timeout=timeout,
+                   path=manifest_item.source_file.path,
+                   protocol=protocol,
+                   testdriver=testdriver)
 
     @property
     def id(self):

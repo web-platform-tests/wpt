@@ -8,89 +8,32 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
-<style>
-  pre {
-    display: none;
-  }
-</style>
-<div id="log"></div>
-
-<pre id="idl">
-interface Event {
-};
-
-interface Error {
-};
-
-dictionary EventInit {
-};
-
-interface EventTarget {
-};
-
-interface EventHandler {
-};
-</pre>
-
-<pre id="generic-idl">
-[SecureContext]
-interface Sensor : EventTarget {
-  readonly attribute boolean activated;
-  readonly attribute DOMHighResTimeStamp? timestamp;
-  void start();
-  void stop();
-  attribute EventHandler onchange;
-  attribute EventHandler onactivate;
-  attribute EventHandler onerror;
-};
-
-dictionary SensorOptions {
-  double? frequency;
-};
-
-[SecureContext, Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
-interface SensorErrorEvent : Event {
-  readonly attribute Error error;
-};
-
-dictionary SensorErrorEventInit : EventInit {
-  required Error error;
-};
-</pre>
-
-<pre id="accelerometer-idl">
-[Constructor(optional SensorOptions options)]
-interface Accelerometer : Sensor {
-  readonly attribute unrestricted double? x;
-  readonly attribute unrestricted double? y;
-  readonly attribute unrestricted double? z;
-};
-
-[Constructor(optional SensorOptions options)]
-interface LinearAccelerationSensor : Accelerometer {
-};
-
-[Constructor(optional SensorOptions options)]
-interface GravitySensor : Accelerometer {
-};
-</pre>
-
 <script>
+"use strict";
 
-(() => {
-  "use strict";
-  let idl_array = new IdlArray();
-  idl_array.add_untested_idls(document.getElementById('idl').textContent);
-  idl_array.add_untested_idls(document.getElementById('generic-idl').textContent);
-  idl_array.add_idls(document.getElementById('accelerometer-idl').textContent);
-
+function doTest([dom, generic_sensor, accelerometer]) {
+  const idl_array = new IdlArray();
+  idl_array.add_untested_idls(dom);
+  idl_array.add_untested_idls('interface EventHandler {};');
+  idl_array.add_idls(generic_sensor, { only: ['Sensor'] });
+  idl_array.add_idls(accelerometer);
   idl_array.add_objects({
     Accelerometer: ['new Accelerometer();'],
     LinearAccelerationSensor: ['new LinearAccelerationSensor();'],
     GravitySensor: ['new GravitySensor();']
   });
-
   idl_array.test();
-})();
+}
 
+function fetchText(url) {
+  return fetch(url).then((response) => response.text());
+}
+
+promise_test(() => {
+  return Promise.all([
+    "/interfaces/dom.idl",
+    "/interfaces/generic-sensor.idl",
+    "/interfaces/accelerometer.idl",
+  ].map(fetchText)).then(doTest);
+}, "Test IDL implementation of Accelerometer Sensor");
 </script>

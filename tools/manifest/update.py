@@ -7,11 +7,16 @@ import sys
 import manifest
 from . import vcs
 from .log import get_logger
+from .download import download_from_github
 
 here = os.path.dirname(__file__)
 
+wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
+
+logger = get_logger()
 
 def update(tests_root, manifest, working_copy=False):
+    logger.info("Updating manifest")
     tree = None
     if not working_copy:
         tree = vcs.Git.for_path(tests_root, manifest.url_base)
@@ -27,7 +32,9 @@ def update_from_cli(**kwargs):
     assert tests_root is not None
 
     m = None
-    logger = get_logger()
+
+    if kwargs["download"]:
+        download_from_github(path, tests_root)
 
     if not kwargs.get("rebuild", False):
         try:
@@ -35,8 +42,6 @@ def update_from_cli(**kwargs):
         except manifest.ManifestVersionMismatch:
             logger.info("Manifest version changed, rebuilding")
             m = None
-        else:
-            logger.info("Updating manifest")
 
     if m is None:
         m = manifest.Manifest(kwargs["url_base"])
@@ -57,7 +62,7 @@ def create_parser():
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
     parser.add_argument(
-        "--tests-root", type=abs_path, help="Path to root of tests.")
+        "--tests-root", type=abs_path, default=wpt_root, help="Path to root of tests.")
     parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
         help="Force a full rebuild of the manifest.")
@@ -67,6 +72,9 @@ def create_parser():
     parser.add_argument(
         "--url-base", action="store", default="/",
         help="Base url to use as the mount point for tests in this manifest.")
+    parser.add_argument(
+        "--no-download", dest="download", action="store_false", default=True,
+        help="Never attempt to download the manifest.")
     return parser
 
 
@@ -81,24 +89,14 @@ def find_top_repo():
     return rv
 
 
-def main(default_tests_root=None):
+def run(**kwargs):
+    if kwargs["path"] is None:
+        kwargs["path"] = os.path.join(kwargs["tests_root"], "MANIFEST.json")
+
+    update_from_cli(**kwargs)
+
+
+def main():
     opts = create_parser().parse_args()
 
-    if opts.tests_root is None:
-        tests_root = None
-        if default_tests_root is not None:
-            tests_root = default_tests_root
-        else:
-            tests_root = find_top_repo()
-
-        if tests_root is None:
-            print >> sys.stderr, """No git repo found; could not determine test root.
-Run again with --test-root"""
-            sys.exit(1)
-
-        opts.tests_root = tests_root
-
-    if opts.path is None:
-        opts.path = os.path.join(opts.tests_root, "MANIFEST.json")
-
-    update_from_cli(**vars(opts))
+    run(**vars(opts))

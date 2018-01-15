@@ -1,4 +1,3 @@
-// Up-to-date as of 2013-04-09.
 var miscElements = {
   // "The root element" section
   html: {
@@ -24,6 +23,11 @@ var miscElements = {
   },
   noscript: {},
 
+  template: {},
+  slot: {
+    name: "string",
+  },
+
   // "Edits" section
   ins: {
     cite: "url",
@@ -48,7 +52,9 @@ var miscElements = {
   },
 
   // Global attributes should exist even on unknown elements
-  undefinedelement: {},
+  undefinedelement: {
+    inputMode: {type: "enum", keywords: ["none", "text", "tel", "url", "email", "numeric", "decimal", "search"]},
+  },
 };
 
 mergeElements(miscElements);

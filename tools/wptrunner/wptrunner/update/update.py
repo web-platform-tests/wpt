@@ -11,10 +11,7 @@ from state import State
 
 def setup_paths(sync_path):
     sys.path.insert(0, os.path.abspath(sync_path))
-    try:
-        from tools import localpaths
-    except ImportError:
-        from wpt_tools import localpaths
+    from tools import localpaths
 
 class LoadConfig(Step):
     """Step for loading configuration from the ini file and kwargs."""
@@ -90,6 +87,7 @@ class UpdateMetadata(Step):
         with state.push(["local_tree", "sync_tree", "paths", "serve_root"]):
             state.run_log = kwargs["run_log"]
             state.ignore_existing = kwargs["ignore_existing"]
+            state.stability = kwargs["stability"]
             state.patch = kwargs["patch"]
             state.suite_name = kwargs["suite_name"]
             state.product = kwargs["product"]

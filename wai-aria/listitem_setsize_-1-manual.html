@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>listitem setsize -1</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -70,8 +71,8 @@
                   "setsize:-1"
                ],
                [
-                  "result",
-                  "groupPosition()",
+                  "property",
+                  "groupPosition",
                   "contains",
                   "similarItemsInGroup:-1"
                ]
@@ -93,7 +94,7 @@
             "UIA" : [
                [
                   "property",
-                  "control type",
+                  "ControlType",
                   "is",
                   "ListItem"
                ],
@@ -107,7 +108,7 @@
                   "property",
                   "controlPatterns",
                   "contains",
-                  "selectionitem"
+                  "SelectionItem"
                ]
             ]
          },
@@ -132,4 +133,3 @@
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

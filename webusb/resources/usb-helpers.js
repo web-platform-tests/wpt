@@ -18,6 +18,7 @@ let loadChromiumResources = Promise.resolve().then(() => {
   let chain = Promise.resolve();
   [
     '/resources/chromium/mojo_bindings.js',
+    '/resources/chromium/string16.mojom.js',
     '/resources/chromium/device.mojom.js',
     '/resources/chromium/device_manager.mojom.js',
     '/resources/chromium/chooser_service.mojom.js',
@@ -124,5 +125,6 @@ function callWithTrustedClick(callback) {
       document.body.removeChild(button);
     };
     document.body.appendChild(button);
+    test_driver.click(button);
   });
 }

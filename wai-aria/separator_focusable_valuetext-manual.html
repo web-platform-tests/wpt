@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>separator focusable valuetext</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -101,6 +102,12 @@
             "IAccessible2" : [
                [
                   "property",
+                  "role",
+                  "is",
+                  "ROLE_SYSTEM_SEPARATOR"
+               ],
+               [
+                  "property",
                   "interfaces",
                   "contains",
                   "AccessibleValue"
@@ -112,20 +119,20 @@
                   "valuetext:Bonaire"
                ],
                [
-                  "result",
-                  "AccessibleValue.minimumValue",
+                  "property",
+                  "minimumValue",
                   "is",
                   "0"
                ],
                [
-                  "result",
-                  "AccessibleValue.currentValue",
+                  "property",
+                  "currentValue",
                   "is",
                   "50"
                ],
                [
-                  "result",
-                  "AccessibleValue.maximumValue",
+                  "property",
+                  "maximumValue",
                   "is",
                   "100"
                ]
@@ -141,7 +148,7 @@
             "UIA" : [
                [
                   "property",
-                  "Control Type",
+                  "ControlType",
                   "is",
                   "Thumb"
                ],
@@ -168,12 +175,6 @@
                   "RangeValue.Maximum",
                   "is",
                   "100"
-               ],
-               [
-                  "property",
-                  "controlPatterns",
-                  "contains",
-                  "Value"
                ],
                [
                   "property",
@@ -204,4 +205,3 @@
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

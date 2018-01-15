@@ -27,6 +27,7 @@
 == mask-image-3c.html mask-image-3-ref.html
 == mask-image-3d.html mask-image-3-ref.html
 == mask-image-3e.html mask-image-3-ref.html
+# Due to SVG luminance, see bug 1372577, parent process doesn't use d2d for luminance.
 == mask-image-3f.html mask-image-3-ref.html
 == mask-image-3g.html mask-image-3-ref.html
 == mask-image-3h.html mask-image-3-ref.html
@@ -86,7 +87,6 @@
 == mask-size-percent-percent.html mask-size-percent-percent-ref.html
 == mask-size-percent-percent-stretch.html mask-size-percent-percent-stretch-ref.html
 
-
 == clip-path-contentBox-1a.html clip-path-geometryBox-1-ref.html
 == clip-path-contentBox-1b.html clip-path-geometryBox-1-ref.html
 == clip-path-contentBox-1c.html clip-path-geometryBox-1-ref.html
@@ -106,8 +106,6 @@
 == clip-path-geometryBox-2.html clip-path-geometryBox-2-ref.html
 
 == clip-path-localRef-1.html clip-path-localRef-1-ref.html
-
-default-preferences
 
 # mask with opacity test cases
 == mask-opacity-1a.html mask-opacity-1-ref.html

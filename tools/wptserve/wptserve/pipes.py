@@ -304,7 +304,7 @@ class ReplacementTokenizer(object):
     scanner = re.Scanner([(r"\$\w+:", var),
                           (r"\$?\w+", ident),
                           (r"\[[^\]]*\]", index),
-                          (r"\(.*\)", arguments)])
+                          (r"\([^)]*\)", arguments)])
 
 
 class FirstWrapper(object):
@@ -391,7 +391,8 @@ class SubFunctions(object):
 
     @staticmethod
     def file_hash(request, algorithm, path):
-        assert algorithm in SubFunctions.supported_algorithms
+        assert algorithm in SubFunctions.supported_algorithms, (
+            "Unsupported encryption algorithm: '%s'" % algorithm)
         hash_obj = getattr(hashlib, algorithm)()
         absolute_path = os.path.join(request.doc_root, path)
 

@@ -5,34 +5,21 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
-<title>Link with onclick form submit to javascript: url with document.write and href navigation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe src="017-onclick-form-action-javascript-url-document-write-script-then-navigate-href-intermediary.html"></iframe>
+<iframe src=""></iframe>
 <script>
-var test = async_test();
-window.onmessage = test.step_func_done(function(e) {
-  assert_equals(e.data, "href", "'javascript: url' code is expected to run asynchronously and in the target nested browsing context");
-});
+const runner = location.href.slice(location.href.lastIndexOf("/") + 1, location.href.length)
+                  .replace(".html", "-runner.html");
+
+async_test(function(test) {
+
+  window.verifyNavigation = test.step_func_done(function(signal) {
+    assert_equals(signal, true, "The navigation via 'javascript: url' code was not canceled by the default href navigation. This might occur if the 'javascript:url' code is not evaluated async, and/or the default href navigation does not cancel the navigation via 'javascript: url'.");
+  });
+
+  document.querySelector("iframe").src = runner;
+
+}, `A navigation via 'javascript: url' code (in ${runner}) must be evaluated async; to pass this test, that navigation must be aborted by the default href navigation (of the clicked link) before that evaluation can complete.`);
 </script>
-
-
-<!--
-In an iframe...
-
-1. This test creates an iframe, a form with
-    `action="javascript: ..."` (which document writes a script and returns a strings
-    containing a script. Both scripts attempt to postMessage back to the intermediary.html)
-    and an anchor with both an `onclick` and `href`.
-2. The test "clicks" the anchor, triggering the `onclick` handler operation,
-    which will attempt to submit the form, which targets the iframe.
-3. The form action "javascript: url" navigation is queued in a task which contains the
-    steps to evaluate the code contents.
-4. Navigating the iframe to the anchor's `href` must cancel the iframe
-    "javascript: url" navigation.
-5. If the semantics are implemented correctly, a single message will be
-    received from href.html
-    (There will be no message from the "javascript: url" code, because it
-    is aborted by the navigation to "href.html")
--->

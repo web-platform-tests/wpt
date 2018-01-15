@@ -19,11 +19,11 @@ const runner = location.href.slice(location.href.lastIndexOf("/") + 1, location.
 async_test(function(test) {
 
   window.verifyNavigation = test.step_func_done(function(signal) {
-    assert_equals(signal, true, "The navigation via 'javascript: url' code was not canceled by the default href navigation. This might occur if the 'javascript:url' code is not evaluated async, and/or the default href navigation does not cancel the navigation via 'javascript: url'.");
+    assert_equals(signal, true, "The navigation via 'javascript: url' code did not complete as expected.");
   });
 
   document.querySelector("iframe").src = runner;
 
-}, `A navigation via 'javascript: url' code (in: ${runner}) must be evaluated async; to pass this test, that navigation must be aborted by the default href navigation (of the clicked link) before that evaluation can complete. Most importantly: the execution of the code in the 'javascript:url' must NOT block the default href navigation.`);
+}, `A navigation via 'javascript: url' code (in: ${runner}) must be evaluated async; to pass this test, that code must be evaluated and the resulting string written to the iframe body as the contents of a script element. There is no default href navigation in the link.`);
 </script>
 

@@ -1,42 +1,19 @@
 <!doctype html>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
-<title>Link with onclick navigates iframe and returns false, which will prevent the href navigation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe id="test" name="test"></iframe>
-<a target="test" onclick="document.querySelector('iframe').contentWindow.location='call-parent-postmessage.html';reports.push('onclick');return false;" href="href.html">Test</a>
-
+<a target="test" onclick="document.querySelector('iframe').contentWindow.location='call-verify-navigation.html';return false;" href="javascript:parent.verifyNavigation(false);">Test</a>
 <script>
-var test = async_test();
-var reports = [];
+async_test(function(test) {
 
-window.onmessage = test.step_func_done(function(e) {
-  // This only occurs once.
-  reports.push(e.data);
+  window.verifyNavigation = test.step_func_done(function(signal) {
+    assert_equals(signal, true, "The navigation initiated in the onclick handler was erroneously canceled by the default href navigation.");
+  });
 
-  // "call-parent-postmessage" is expected last, if this is not received last or
-  // not received at all, the test must fail.
-  if (e.data === "call-parent-postmessage") {
-    assert_equals(reports[0], "onclick");
-    assert_equals(reports[1], "call-parent-postmessage");
-  } else {
-    throw new Error("onclick returns false, href navigation must not occur.");
-  }
-});
-
-test.step(function() {
   document.querySelector("a").click();
-});
+
+}, "An onlick handler that returns false must prevent the default href navigation from occuring. To pass this test, verifyNavigation(true) must be called from the successful navigation to call-verify-navigation.html.");
 </script>
-
-<!--
-1. This test creates an iframe and an anchor with both an `onclick` and `href`.
-2. The test "clicks" the anchor, triggering the `onclick` handler operation,
-    which will attempt to navigate the iframe. This navigation will be successful.
-3. Navigating the iframe to the anchor's `href` does not occur, because `onclick` returns false.
-4. If the semantics are implemented correctly, reports will be
-    ["click", "onclick", "call-parent-postmessage"]
-
--->

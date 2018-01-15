@@ -1,11 +1,9 @@
 <!doctype html>
 <iframe id="test" name="test"></iframe>
-<form target="test" action="javascript:`<script>parent.onjsurl({data:'javascript:url'});</script>`"></form>
+<form target="test" action="javascript:`<script>parent.verifyNavigation(true)</script>`"></form>
 <a target="test" onclick="document.forms[0].submit();" >Test</a>
 <script>
-window.onjsurl = window.onmessage = function(e) {
-  parent.postMessage(e.data, "*");
-};
+window.verifyNavigation = parent.verifyNavigation;
 window.onload = function() {
   document.querySelector("a").click();
 };

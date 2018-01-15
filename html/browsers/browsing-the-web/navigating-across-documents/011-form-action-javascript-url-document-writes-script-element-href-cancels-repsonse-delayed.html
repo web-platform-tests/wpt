@@ -24,6 +24,5 @@ async_test(function(test) {
 
   document.querySelector("iframe").src = runner;
 
-}, `A navigation via 'javascript: url' code (in: ${runner}) must be evaluated async; to pass this test, that navigation must be aborted by the default href navigation (of the clicked link) before that evaluation can complete. Most importantly: the execution of the code in the 'javascript:url' must NOT block the default href navigation.`);
+}, `A navigation via 'javascript: url' code (in: ${runner}) must be evaluated async; to pass this test, that navigation must be aborted by the default href navigation (of the clicked link) before that evaluation can complete. This test will delay the _response_ of the default href navigation, but that must NOT impact the cancellation of the navigation via 'javascript:url'.`);
 </script>
-

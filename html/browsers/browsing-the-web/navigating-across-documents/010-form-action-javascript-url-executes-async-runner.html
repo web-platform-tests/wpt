@@ -1,0 +1,10 @@
+<!doctype html>
+<iframe id="test" name="test"></iframe>
+<form target="test" action="javascript:/*this should not be successful*/((e,n)=>{while(e()<n);parent.verifyNavigation(false);})(Date.now,Date.now()+4000);1;"><!-- 'javascript: url' ending with a "1;" is intentional --></form>
+<a target="test" onclick="document.forms[0].submit();" href="call-verify-navigation.html">Test</a>
+<script>
+window.verifyNavigation = parent.verifyNavigation;
+window.onload = function() {
+  document.querySelector("a").click();
+};
+</script>

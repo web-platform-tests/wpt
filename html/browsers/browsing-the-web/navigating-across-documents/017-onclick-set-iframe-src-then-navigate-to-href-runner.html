@@ -1,0 +1,10 @@
+<!doctype html>
+<iframe id="test" name="test"></iframe>
+<a target="test" onclick="document.querySelector('iframe').src='javascript:`<script>parent.verifyNavigation(false);</script>`';" href="call-verify-navigation.html">Test</a>
+<script>
+window.verifyNavigation = parent.verifyNavigation;
+window.onload = function() {
+  document.querySelector("a").click();
+};
+</script>
+

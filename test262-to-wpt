@@ -15,8 +15,8 @@ from stat import *
 
 '''
 This tool reads out test262 suite and generates wrappers for web-platform-tests.
-Each WPT wrapper runs the target test262 test within 4 agents: IFrame, Window, 
-DedicatedWorker and SharedWorker.  Each tests is run either in strict and 
+Each WPT wrapper runs the target test262 test within 4 agents: IFrame, Window,
+DedicatedWorker and SharedWorker.  Each tests is run either in strict and
 non-strict mode, unless the target test indicates otherwise.
 '''
 
@@ -38,8 +38,8 @@ def usage():
 '''
 Parses a Test262 test.
 
-A test262 tests are usually composed by two parts: a comment header, that 
-describes several properties of the test, and a body, which defines the proper 
+A test262 tests are usually composed by two parts: a comment header, that
+describes several properties of the test, and a body, which defines the proper
 test itself.
 
 The test header is defined in YAML and contains properties such as esid (test ID),
@@ -47,12 +47,12 @@ description, features, flags, etc. Some of these properties are relevant to know
 what harnessing libraries to import from the test262 suite (features), whether
 the test should only be tested in strict mode or non-strict mode (flags), etc
 
-Some of the beforementioned properties would need to get serialized to the 
+Some of the beforementioned properties would need to get serialized to the
 resulting web-platform-test as a JSON object.
 
 The parser also fetches the body of the test.
 '''
-# Parses a Test262 test. 
+# Parses a Test262 test.
 class Test262Parser(object):
 
     def __init__(self, text):
@@ -228,7 +228,7 @@ def indent(num_tabs, content):
 '''
 Generates web-platform-test wrapper for test262 tests.
 
-If a directory is passed as origin for the tests, the class recursively reads 
+If a directory is passed as origin for the tests, the class recursively reads
 out al the JavaScript files contained and converts them to web-platform-tests.
 
 If a file is passed as origin, only that tests is converted.
@@ -290,7 +290,7 @@ class WPTestBuilder(object):
         dirname = subprocess.check_output(("dirname {0}".format(path)).split())
         dirname = re.sub('\n', '', dirname)
         process = subprocess.Popen(("mkdir -p {0}".format(dirname)).split())
-        process.wait() 
+        process.wait()
 
     def savefile(self, output, content):
         with open(output, 'wt') as fd:

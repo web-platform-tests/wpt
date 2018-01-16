@@ -39,7 +39,7 @@ function makeVideo() {
             resolve(video);
         };
         video.onerror = reject;
-        video.src = "/images/pattern.ogv";
+        video.src = getVideoURI("/images/pattern");
     });
 }
 

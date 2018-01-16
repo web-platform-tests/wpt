@@ -317,8 +317,10 @@ class WPTestBuilder(object):
     def readfile(self, path):
         with open(path) as fd:
             content = fd.read()
-            # Remove carriage return if any.
-            return re.sub("\x0D", "", content)
+            # Replace CR + LF for LF only.
+            content = re.sub("\r\n", "\n", content)
+            # Replace CR for LF.
+            return re.sub("\r", "\n", content)
 
     def listall(self, folders, opts):
         opts = opts or {}

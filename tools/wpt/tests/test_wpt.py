@@ -134,13 +134,15 @@ def test_tests_affected(capsys):
 
 
 @pytest.mark.slow
-@pytest.mark.system_dependent
 def test_serve():
-    def test():
-        s = socket.socket()
-        s.connect(("127.0.0.1", 8000))
-    with pytest.raises(socket.error):
-        test()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("127.0.0.1", 8000))
+    except socket.error as e:
+        if e.errno == 98:
+            pytest.skip("port 8000 already in use")
+    finally:
+        s.close()
 
     p = subprocess.Popen([os.path.join(wpt.localpaths.repo_root, "wpt"), "serve"],
                          preexec_fn=os.setsid)
@@ -148,8 +150,10 @@ def test_serve():
     start = time.time()
     try:
         while True:
+            if p.poll() is not None:
+                assert False, "server not running"
             if time.time() - start > 60:
-                assert False
+                assert False, "server did not start responding within 60s"
             try:
                 resp = urllib2.urlopen("http://web-platform.test:8000")
                 print resp

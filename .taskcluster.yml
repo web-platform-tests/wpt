@@ -1,0 +1,27 @@
+version: 0
+tasks:
+  - provisionerId: '{{ taskcluster.docker.provisionerId }}'
+    workerType: '{{ taskcluster.docker.workerType }}'
+    extra:
+      github:
+        events:
+          - push
+        branches:
+          - master
+    payload:
+      maxRunTime: 3600
+      image: python
+      command:
+        - /bin/bash
+        - '--login'
+        - '-c'
+        - >-
+          git clone {{event.head.repo.url}} repo && cd repo && git config
+          advice.detachedHead false && git checkout {{event.head.sha}} &&
+          tools/ci/ci_taskcluster.sh firefox testharness 1 12
+    metadata:
+      name: 'firefox-nightly-testharness-1'
+      description: ''
+      owner: '{{ event.head.user.email }}'
+      source: '{{ event.head.repo.url }}'
+allowPullRequests: collaborators

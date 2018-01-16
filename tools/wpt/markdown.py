@@ -1,5 +1,3 @@
-from .stability import is_inconsistent
-
 def format_comment_title(product):
     """Produce a Markdown-formatted string based on a given "product"--a string
     containing a browser identifier optionally followed by a colon and a
@@ -40,18 +38,3 @@ def table(headings, data, log):
     for row in data:
         log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
     log("")
-
-
-def err_string(results_dict, iterations):
-    """Create and return string with errors from test run."""
-    rv = []
-    total_results = sum(results_dict.values())
-    for key, value in sorted(results_dict.items()):
-        rv.append("%s%s" %
-                  (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
-    if total_results < iterations:
-        rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
-    rv = ", ".join(rv)
-    if is_inconsistent(results_dict, iterations):
-        rv = "**%s**" % rv
-    return rv

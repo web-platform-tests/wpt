@@ -106,27 +106,30 @@ child.addEventListener('load', () => {
         let db;
         const checkIndexedDB = () => {
             if ('indexedDB' in window) {
-                let req = indexedDB.open(dbName, 1), store;
-                let eventWatcher = new EventWatcher(t, req, ['upgradeneeded', 'success']);
-                return eventWatcher.wait_for('upgradeneeded').then(() => {
-                    db = req.result;
-                    const store = db.createObjectStore(storeName, { keyPath: 'id' });
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    db = req.result;
-                    const transaction = db.transaction(storeName, 'readwrite');
-                    store = transaction.objectStore(storeName);
-                    req = store.openCursor();
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    assert_equals(req.result, null, 'Indexed Database is set to an empty storage.');
-                    req = store.put(storeData.parent);
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    db.close();
-                    db = null;
+                let req = indexedDB.open(dbName, 1), store, transaction;
+                return new Promise((resolve, reject) => {
+                    // The test would fail when the database is already created by the controlling UA
+                    let upgradeNeeded = false;
+
+                    req.onupgradeneeded = () => {
+                        upgradeNeeded = true;
+                        db = req.result;
+                        store = db.createObjectStore(storeName, { keyPath: 'id' });
+                        store.add(storeData.parent);
+                    };
+                    req.onsuccess = () => {
+                        if (!upgradeNeeded)
+                            reject(null);
+                        db.close();
+                        db = null;
+                        resolve();
+                    };
+                    req.onerror = reject;
+                }).catch(e => {
+                    if (!e)
+                        assert_unreached('Indexed Database is set to an empty storage.');
+                    else
+                        throw e;
                 });
             }
             else
@@ -253,29 +256,33 @@ child.addEventListener('load', () => {
         // Indexed Database
         const checkUpdatedIndexedDB = () => {
             if ('indexedDB' in window) {
-                let req = indexedDB.open(dbName, 1), store;
-                let eventWatcher = new EventWatcher(t, req, 'success');
+                let req, store;
                 message = 'Indexed Database is shared by top-level and nested browsing contexts.';
-                const checkItem = event => {
-                    assert_true(event.target.result instanceof IDBCursorWithValue, message);
-                    const cursor = event.target.result;
-                    const item = cursor.value;
-                    assert_equals(storeData[item.id].data, item.data, message);
-                    delete storeData[item.id]
-                    cursor.continue();
-                    return eventWatcher.wait_for('success');
-                };
-                return eventWatcher.wait_for('success').then(() => {
-                    db = req.result;
-                    const transaction = db.transaction(storeName, 'readwrite');
-                    store = transaction.objectStore(storeName);
-                    req = store.openCursor();
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(checkItem)
-                .then(checkItem)
-                .then(event => {
-                    assert_equals(event.target.result, null, message);
+                return new Promise((resolve, reject) => {
+                    req = indexedDB.open(dbName, 1);
+                    req.onsuccess = () => {
+                        let results = [];
+                        db = req.result;
+                        const transaction = db.transaction(storeName, 'readwrite');
+                        store = transaction.objectStore(storeName);
+                        req = store.openCursor();
+                        req.onsuccess = () => {
+                            if (req.result) {
+                                const item = req.result.value;
+                                results.push(item);
+                                req.result.continue();
+                            }
+                            else
+                                resolve(results);
+                        };
+                        req.onerror = reject;
+                    };
+                    req.onerror = reject;
+                }).then(results => {
+                    results.forEach(item => {
+                        assert_equals(storeData[item.id].data, item.data, message);
+                        delete storeData[item.id]
+                    });
                     assert_equals(Object.keys(storeData).length, 0, message);
                     db.close();
                     db = null;

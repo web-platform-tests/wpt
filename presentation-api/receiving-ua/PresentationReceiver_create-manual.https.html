@@ -38,7 +38,7 @@
                 notice.parentNode.removeChild(notice);
                 stash.stop();
 
-                //history.back();
+                // history.back();
                 document.cookie = 'PresentationApiTest=true; Expires=' + new Date().toUTCString();
                 sessionStorage.removeItem('presentation_api_test');
                 localStorage.removeItem('presentation_api_test');
@@ -115,6 +115,8 @@
                             };
                             reg.active.postMessage('', [channel.port2]);
                         }
+                        else
+                            resolve([]);
                     });
                 });
             };
@@ -249,7 +251,7 @@
                 // Check accessibility to window clients before terminating a presentation
                 return getClientUrls().then(urls => {
                     assert_true(urls.length === clientUrls.length && urls.every((value, index) => { return clientUrls[index] === value}),
-                        'A window client in a receiving user agent is not accessible to a service worker on a controlling user agent.')
+                        'A window client in a receiving user agent is not accessible to a service worker on a controlling user agent.');
                     const eventWatcher = new EventWatcher(t, connection, 'terminate');
                     connection.terminate();
                     return eventWatcher.wait_for('terminate');

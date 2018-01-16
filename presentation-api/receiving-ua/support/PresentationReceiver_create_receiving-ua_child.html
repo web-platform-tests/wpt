@@ -44,7 +44,7 @@ window.addEventListener('message', event => {
         modal.textContent = 'confirm()';
         confirm(message);
         modal.textContent = 'print()';
-        //print();
+        print();
         modal.textContent = 'prompt()';
         prompt(message);
         notice.style.display = 'none';
@@ -61,31 +61,43 @@ window.addEventListener('message', event => {
 
         // Indexed Database
         let db;
+        const storeName = 'store-controlling-ua';
         const checkIndexedDB = () => {
             if ('indexedDB' in window) {
                 message = 'Indexed Database is shared by top-level and nested browsing contexts.';
                 let req = indexedDB.open('db-presentation-api', 1), store;
-                let eventWatcher = new EventWatcher(t, req, 'success');
-                return eventWatcher.wait_for('success').then(() => {
-                    db = req.result;
-                    const transaction = db.transaction('store-controlling-ua', 'readwrite');
-                    store = transaction.objectStore('store-controlling-ua');
-                    req = store.openCursor();
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    assert_true(req.result instanceof IDBCursorWithValue, message);
-                    const cursor = req.result;
-                    const item = cursor.value;
+                return new Promise((resolve, reject) => {
+                    req.onsuccess = () => {
+                        let results = [];
+                        db = req.result;
+                        const transaction = db.transaction(storeName, 'readwrite');
+                        store = transaction.objectStore(storeName);
+                        req = store.openCursor();
+                        req.onsuccess = () => {
+                            if (req.result) {
+                                const item = req.result.value;
+                                results.push(item);
+                                req.result.continue();
+                            }
+                            else
+                                resolve(results);
+                        };
+                        req.onerror = reject;
+                    };
+                    req.onerror = reject;
+                }).then(results => {
+                    assert_equals(results.length, 1, message);
+                    const item = results[0];
                     assert_equals(item.id, 'parent', message);
                     assert_equals(item.data, 'receiving user agent', message);
-                    cursor.continue();
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    assert_equals(req.result, null, message);
-                    req = store.put({ id: 'child', data: 'nested browsing context' });
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
+
+                    return new Promise((resolve, reject) => {
+                        const transaction = db.transaction(storeName, 'readwrite');
+                        store = transaction.objectStore(storeName);
+                        req = store.put({ id: 'child', data: 'nested browsing context' });
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    });
                 }).then(() => {
                     db.close();
                     db = null;

@@ -168,49 +168,6 @@ def run_in_shared_worker_strict(title):
     output = re.sub('###TEST_CALL###', 'run_in_shared_worker_strict', output)
     return output
 
-'''
-Converts a dictionary to a JSON data structure. It is possible to pass a list
-of attributes in opts.exclude so they don't get serialized to JSON.
-TODO: Use Python's JSON module?
-'''
-def tojson(d, opts):
-    def stringify(list):
-        if list == None or len(list) == 0:
-            return '[]'
-        l = []
-        for i in range(0, len(list)):
-            elem = "'" + str(list[i]) + "'"
-            l.append(elem)
-        return '[%s]' % ",".join(l)
-    ret = []
-    exclude = opts['exclude'] or []
-    def append(string):
-        ret.append(string)
-    def flush():
-        return "\n".join(ret)
-    def quote(v):
-        if isinstance(v, str):
-            if len(v) == 0:
-                return "''"
-            first, last = [v[0], v[len(v)-1]]
-            if first == "'" and last == "'":
-                return v
-            if first == '"' and last == '"':
-                return v
-        return "'%s'" % str(v)
-    def escape(v):
-        return re.sub(r"'", r"\'", v)
-    append('{')
-    for k, v in d.iteritems():
-        if k in exclude:
-            continue
-        if isinstance(v, list):
-            append("\t{key}: {value},".format(key=k, value=stringify(v)))
-        else:
-            append("\t{key}: {value},".format(key=k, value=quote(escape(v))))
-    append('}')
-    return flush()
-
 # Indents content n tabs. A tab is 2 spaces (TAB_WIDTH).
 def indent(num_tabs, content):
     # Duplicates char n times.

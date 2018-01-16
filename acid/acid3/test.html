@@ -3419,7 +3419,7 @@
     }
 
   ];
-  window.parent.postMessage({tests: tests.length}, "*");
+  window.parent.postMessage({num_tests: tests.length}, "*");
   var log = '';
   var delay = 10;
   var score = 0, index = 0, retry = 0, errors = 0;

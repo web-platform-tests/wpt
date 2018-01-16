@@ -7,7 +7,7 @@ var tests = undefined;
 
 function gotMessage(e) {
   var m = e.data;
-  if (tests === undefined && "tests" in m) {
+  if (tests === undefined && "num_tests" in m) {
     tests = [];
     for (var i = 0; i < m.tests; i++) {
       tests.push(async_test("Test " + i));
@@ -16,9 +16,10 @@ function gotMessage(e) {
     var test = m.test;
     var passed = m.result === "pass";
     var message = m.message;
-    tests[test].step_func_done(function() {
+    tests[test].step(function() {
       assert_true(passed, message);
-    })();
+    });
+    tests[test].done();
   }
 }
 window.addEventListener("message", gotMessage, false);

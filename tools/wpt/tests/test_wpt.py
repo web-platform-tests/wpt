@@ -14,6 +14,20 @@ from tools.wpt import wpt
 pytestmark = pytest.mark.skipif(os.name == "nt",
                                 reason="Tests currently don't work on Windows for path reasons")
 
+def is_port_8000_in_use():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("127.0.0.1", 8000))
+    except socket.error as e:
+        if e.errno == 98:
+            return True
+        else:
+            raise e
+    finally:
+        s.close()
+    return False
+
+
 @pytest.fixture(scope="module")
 def manifest_dir():
     def update_manifest():
@@ -55,6 +69,9 @@ def test_help():
 def test_run_firefox(manifest_dir):
     # TODO: It seems like there's a bug in argparse that makes this argument order required
     # should try to work around that
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
+
     os.environ["MOZ_HEADLESS"] = "1"
     try:
         fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
@@ -73,6 +90,9 @@ def test_run_firefox(manifest_dir):
 
 @pytest.mark.slow
 def test_run_chrome(manifest_dir):
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
+
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
                        "--metadata", manifest_dir,
@@ -156,14 +176,8 @@ def test_tests_affected(capsys, manifest_dir):
 
 @pytest.mark.slow
 def test_serve():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.bind(("127.0.0.1", 8000))
-    except socket.error as e:
-        if e.errno == 98:
-            pytest.skip("port 8000 already in use")
-    finally:
-        s.close()
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
 
     p = subprocess.Popen([os.path.join(wpt.localpaths.repo_root, "wpt"), "serve"],
                          preexec_fn=os.setsid)

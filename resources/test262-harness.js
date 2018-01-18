@@ -1,4 +1,4 @@
-// Source: https://github.com/bakkot/test262-web-runner
+// Based on Test262-Web-Runner. See https://github.com/bakkot/test262-web-runner/main.js.
 function installAPI(global) {
     global.$262 = {
         createRealm: function() {
@@ -31,6 +31,22 @@ function installAPI(global) {
     return global.$262;
 }
 
+function installAPIWorker(global) {
+    global.$262 = {
+        createRealm: function() {
+            throw new Error('createRealm is not supported in a Worker context');
+        },
+        evalScript: function(src) {
+            throw new Error('evalScript is not supported in a Worker context');
+        },
+        detachArrayBuffer: function(buffer) {
+            throw new Error('detachArrayBuffer is not supported in a Worker context');
+        },
+        global: global
+    }
+    return global.$262;
+}
+
 function $DONE(err) {
     if (err) {
         throw err;
@@ -40,4 +56,6 @@ function $DONE(err) {
 if (this.document) {
     // TODO: Any Worker test that depends on these functions will fail. Define API for Workers.
     installAPI(window);
+} else {
+    installAPIWorker(self);
 }

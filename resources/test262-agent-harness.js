@@ -106,9 +106,8 @@ function test262_as_html(test262, attrs, strict) {
 }
 
 function mimeType(attrs) {
-  let negative = attrs && attrs.negative ? attrs.negative : {};
-  return negative.type == 'SyntaxError' && negative.phase == 'runtime' ?
-    'module' : 'text/javascript';
+  let flags = attrs && attrs.flags;
+  return flags && flags.includes('module') ? 'module' : 'text/javascript';
 }
 
 function addScripts(sources) {

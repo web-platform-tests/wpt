@@ -13,9 +13,6 @@ import pytest
 from tools.wpt import wpt
 
 
-pytestmark = pytest.mark.skipif(sys.platform == "win32",
-                                reason="Tests currently don't work on Windows for path reasons")
-
 def is_port_8000_in_use():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -70,6 +67,8 @@ def test_help():
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "darwin",
                    reason="https://github.com/w3c/web-platform-tests/issues/9090")
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_run_firefox(manifest_dir):
     # TODO: It seems like there's a bug in argparse that makes this argument order required
     # should try to work around that
@@ -93,6 +92,8 @@ def test_run_firefox(manifest_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_run_chrome(manifest_dir):
     if is_port_8000_in_use():
         pytest.skip("port 8000 already in use")
@@ -106,6 +107,8 @@ def test_run_chrome(manifest_dir):
 
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_install_chromedriver():
     chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
     if os.path.exists(chromedriver_path):
@@ -121,6 +124,8 @@ def test_install_chromedriver():
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "darwin",
                    reason="https://github.com/w3c/web-platform-tests/issues/9090")
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_install_firefox():
     fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
     if os.path.exists(fx_path):
@@ -132,6 +137,8 @@ def test_install_firefox():
     shutil.rmtree(fx_path)
 
 
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_files_changed(capsys):
     commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
     with pytest.raises(SystemExit) as excinfo:
@@ -168,6 +175,8 @@ def test_files_changed_ignore_rules():
 
 
 @pytest.mark.slow  # this updates the manifest
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_tests_affected(capsys, manifest_dir):
     # This doesn't really work properly for random commits because we test the files in
     # the current working directory for references to the changed files, not the ones at
@@ -181,6 +190,8 @@ def test_tests_affected(capsys, manifest_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_serve():
     if is_port_8000_in_use():
         pytest.skip("port 8000 already in use")

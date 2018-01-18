@@ -159,7 +159,7 @@ function runGenericSensorTests(sensorType) {
 
     win.close();
     sensor.stop();
-    assert_array_equals(cachedSensor1, cachedSensor2);
+    assert_object_equals(cachedSensor1, cachedSensor2);
   }, `${sensorType.name}: sensor readings can not be fired on the background tab`);
 }
 

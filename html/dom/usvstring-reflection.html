@@ -99,4 +99,13 @@ test(() => {
   assert_equals(w.document.URL, 'about:blank#%EF%BF%BD');
   assert_equals(w.document.documentURI, 'about:blank#%EF%BF%BD');
 }, "Document URLs: unpaired surrogate codepoint should be replaced with U+FFFD")
+
+test(() => {
+  try {
+    var es = navigator.sendBeacon("http://www.example.com:8000/sendbeacon/resources/\uD800send-beacon.php");
+    assert_true(true);
+  } catch (e) {
+    assert_true(false);
+  }
+}, "sendBeacon URL: unpaired surrogate codepoint should not make any exceptions.")
 </script>

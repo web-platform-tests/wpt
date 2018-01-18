@@ -3,6 +3,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import urllib2
@@ -12,7 +13,7 @@ import pytest
 from tools.wpt import wpt
 
 
-pytestmark = pytest.mark.skipif(os.name == "nt",
+pytestmark = pytest.mark.skipif(sys.platform == "win32",
                                 reason="Tests currently don't work on Windows for path reasons")
 
 def is_port_8000_in_use():
@@ -67,6 +68,8 @@ def test_help():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "darwin",
+                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 def test_run_firefox(manifest_dir):
     # TODO: It seems like there's a bug in argparse that makes this argument order required
     # should try to work around that
@@ -116,6 +119,8 @@ def test_install_chromedriver():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "darwin",
+                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 def test_install_firefox():
     fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
     if os.path.exists(fx_path):

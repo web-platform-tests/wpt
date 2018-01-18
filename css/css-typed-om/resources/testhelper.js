@@ -105,7 +105,12 @@ function createDivWithStyle(test, cssText) {
 // Creates a new div element with inline style |cssText| and returns
 // its inline style property map.
 function createInlineStyleMap(test, cssText) {
-  return createDivWithStyle(test, cssText).attributeStyleMap;
+  return createElementWithInlineStyleMap(test, cssText)[1]
+}
+// Same as createInlineStyleMap but also returns the element itself.
+function createElementWithInlineStyleMap(test, cssText) {
+  let elem = createDivWithStyle(test, cssText);
+  return [elem, elem.attributeStyleMap];
 }
 
 // Creates a new div element with inline style |cssText| and returns
@@ -117,13 +122,17 @@ function createComputedStyleMap(test, cssText) {
 // Creates a new style element with a rule |cssText| and returns
 // its declared style property map.
 function createDeclaredStyleMap(test, cssText) {
+  return createRuleWithDeclaredStyleMap(test, cssText)[1];
+}
+// Same as createDeclaredStyleMap but also returns the rule itself.
+function createRuleWithDeclaredStyleMap(test, cssText) {
   const style = document.createElement('style');
   document.head.appendChild(style);
   const rule = style.sheet.cssRules[style.sheet.insertRule('#test { ' + cssText + '}')];
   test.add_cleanup(() => {
     style.remove();
   });
-  return rule.attributeStyleMap;
+  return [rule, rule.attributeStyleMap];
 }
 
 // Creates a new element with background image set to |imageValue|

@@ -60,7 +60,7 @@ window.addEventListener('message', event => {
         assert_equals(document.cookie, 'PresentationApiTest=Receiving-UA', 'A cookie store is shared by top-level and nested browsing contexts.');
 
         // Indexed Database
-        const dbName = 'db-presentation-api-receiving-ua';    
+        const dbName = 'db-presentation-api-receiving-ua';
         const checkIndexedDB = () => {
             if ('indexedDB' in window) {
                 message = 'Indexed Database is shared by top-level and nested browsing contexts.';

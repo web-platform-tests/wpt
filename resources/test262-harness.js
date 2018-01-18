@@ -26,6 +26,9 @@ function installAPI(global) {
                 */
             }
         },
+        IsHTMLDDA: function() {
+            return global.document.all;
+        },
         global: global
     };
     return global.$262;
@@ -41,6 +44,9 @@ function installAPIWorker(global) {
         },
         detachArrayBuffer: function(buffer) {
             throw new Error('detachArrayBuffer is not supported in a Worker context');
+        },
+        IsHTMLDDA: function() {
+            throw new Error('IsHTMLDDA is not supported in a Worker context');
         },
         global: global
     }

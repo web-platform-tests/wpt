@@ -15,9 +15,11 @@ function run_in_iframe_strict(test262, attrs, t) {
     run_in_iframe(test262, attrs, t, opts);
 }
 
-function is_syntax_error(message, attrs) {
+// If 'negative' attribute was defined, the test must pass if 'message'
+// matches 'negative.type'.
+function is_negative(attrs, message) {
     let negative = attrs.negative || {};
-    return message.startsWith('SyntaxError') && negative.type == 'SyntaxError';
+    return message && message.indexOf(negative.type) >= 0;
 }
 
 function run_in_iframe(test262, attrs, t, opts) {
@@ -51,7 +53,8 @@ function run_in_iframe(test262, attrs, t, opts) {
     e.preventDefault();
     // If the test failed due to a SyntaxError but phase was 'early', then the
     // test should actually pass.
-    if (is_syntax_error(e.message, attrs)) {
+
+    if (is_negative(attrs, e.message)) {
         t.done();
         return;
     }
@@ -156,9 +159,7 @@ function run_in_window(test262, attrs, t, opts) {
   // In case of error send it to parent window.
   popup.addEventListener('error', function(e) {
     e.preventDefault();
-    // If the test failed due to a SyntaxError but phase was 'early', then the
-    // test should actually pass.
-    if (is_syntax_error(e.message, attrs)) {
+    if (is_negative(attrs, e.message)) {
         popup.close();
         t.done();
         return;
@@ -256,9 +257,7 @@ function run_in_worker(test262, attrs, t, opts) {
   // In case of error send it back to sender.
   worker.addEventListener('error', function(e) {
     e.preventDefault();
-    // If the test failed due to a SyntaxError but phase was 'early', then the
-    // test should actually pass.
-    if (is_syntax_error(e.message, attrs)) {
+    if (is_negative(attrs, e.message)) {
         t.done();
         return;
     }
@@ -313,9 +312,7 @@ function run_in_shared_worker(test262, attrs, t, opts) {
   // In case of error send it back to sender.
   worker.addEventListener('error', function(e) {
     e.preventDefault();
-    // If the test failed due to a SyntaxError but phase was 'early', then the
-    // test should actually pass.
-    if (is_syntax_error(e.message, attrs)) {
+    if (is_negative(attrs, e.message)) {
         t.done();
         return;
     }

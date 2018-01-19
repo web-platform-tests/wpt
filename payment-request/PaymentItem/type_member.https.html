@@ -61,11 +61,12 @@ test(() => {
 test(() => {
   // Let's make an invalid DisplayItem to add to displayItems
   const taxDisplayItem = { ...validDisplayItem, type: "tax" };
+  const nullDisplayItem = { ...validDisplayItem, type: null };
   const taxTotal = { ...validTotal, type: "tax" };
   const validDetailsWithType = {
     ...validDetails,
     total: taxTotal,
-    displayItems: [taxDisplayItem],
+    displayItems: [taxDisplayItem, nullDisplayItem],
   };
   try {
     new PaymentRequest(validMethods, validDetailsWithType);

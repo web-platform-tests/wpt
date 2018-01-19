@@ -45,7 +45,7 @@ self.addEventListener('message', function(event) {
       case 'script-extendable-event':
         self.dispatchEvent(new ExtendableEvent('nontrustedevent'));
         break;
-      case 'no-current-extension-different-microtask-after-dispatch-flag-unset':
+      case 'current-extension-different-microtask-after-dispatch-flag-unset':
         waitPromise = new Promise((res) => {
           setTimeout(() => {
             res();

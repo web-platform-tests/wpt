@@ -293,7 +293,7 @@ class WPTestBuilder(object):
                 ret.append(run_in_window_strict(title))
                 ret.append(run_in_worker_strict(title))
                 ret.append(run_in_shared_worker_strict(title))
-            elif 'noStrict' in flags:
+            elif 'noStrict' in flags or 'raw' in flags:
                 ret.append(run_in_iframe(title))
                 ret.append(run_in_window(title))
                 ret.append(run_in_worker(title))

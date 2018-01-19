@@ -1,0 +1,30 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe src=""></iframe>
+<script>
+const runner = location.href.slice(location.href.lastIndexOf("/") + 1, location.href.length)
+                  .replace(".html", "-runner.html");
+
+async_test(function(test) {
+
+  window.verifyNavigation = test.step_func_done(function(signal) {
+    assert_equals(signal, true, "The navigation via 'javascript: url' code was not canceled by the default href navigation. This might occur if the 'javascript:url' code is not evaluated async, and/or the default href navigation does not cancel the navigation via 'javascript: url'.");
+  });
+
+  document.querySelector("iframe").src = runner;
+
+}, `A navigation via 'javascript: url' code (in ${runner}) must be evaluated async; to pass this test, that navigation must be aborted by the default href navigation (of the clicked link) before that evaluation can complete.`);
+</script>
+

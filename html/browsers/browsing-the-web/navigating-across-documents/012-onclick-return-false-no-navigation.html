@@ -1,0 +1,19 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="test" name="test"></iframe>
+<a target="test" onclick="document.querySelector('iframe').contentWindow.location='call-verify-navigation.html';return false;" href="javascript:parent.verifyNavigation(false);">Test</a>
+<script>
+async_test(function(test) {
+
+  window.verifyNavigation = test.step_func_done(function(signal) {
+    assert_equals(signal, true, "The navigation initiated in the onclick handler was erroneously canceled by the default href navigation.");
+  });
+
+  document.querySelector("a").click();
+
+}, "An onlick handler that returns false must prevent the default href navigation from occuring. To pass this test, verifyNavigation(true) must be called from the successful navigation to call-verify-navigation.html.");
+</script>

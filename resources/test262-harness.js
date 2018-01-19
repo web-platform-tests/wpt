@@ -59,6 +59,12 @@ function $DONE(err) {
     }
 }
 
+function print(value) {
+    if (value != "Test262:AsyncTestComplete") {
+        throw new Error('Test262:AsyncTestFailed');
+    }
+}
+
 if (this.document) {
     // TODO: Any Worker test that depends on these functions will fail. Define API for Workers.
     installAPI(window);

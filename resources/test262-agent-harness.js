@@ -92,7 +92,7 @@ let FOOTER = `
 
 function test262_as_html(test262, attrs, strict) {
   function header() {
-    let header = HEADER.replace('###INCLUDES###', addScripts(attrs.includes));
+    let header = HEADER.replace('###INCLUDES###', addScripts(attrs));
     return header.replace('###MIME_TYPE###', mimeType(attrs));
   }
   function footer() {
@@ -110,11 +110,15 @@ function mimeType(attrs) {
   return flags && flags.includes('module') ? 'module' : 'text/javascript';
 }
 
-function addScripts(sources) {
-  sources = sources || [];
+function addScripts(attrs) {
+  includes = attrs && attrs.includes || [];
+  let flags = attrs && attrs.flags || [];
+  if (flags && flags.includes('async')) {
+      includes.push('doneprintHandle.js');
+  }
   let ret = [];
   let root = 'http://{{host}}:{{ports[http][0]}}/resources/test262/harness/';
-  sources.forEach(function(src) {
+  includes.forEach(function(src) {
     ret.push("<script src='###SRC###'><\/script>".replace('###SRC###', root + src));
   });
   return ret.join("\n");
@@ -188,6 +192,10 @@ function createWorkerFromString(test262, attrs, opts) {
     let root = 'http://{{host}}:{{ports[http][0]}}/resources';
     let ret = [`"${root}/test262-harness.js"`];
     let mandatory = ['assert.js', 'sta.js'];
+    let flags = attrs && attrs.flags || [];
+    if (flags && flags.includes('async')) {
+        mandatory.push('doneprintHandle.js');
+    }
     mandatory.forEach(function(filename) {
       ret.push(`"${root}/test262/harness/${filename}"`);
     });

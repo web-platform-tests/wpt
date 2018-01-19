@@ -60,6 +60,10 @@ dictionary PaymentItem {
   required DOMString label;
   required PaymentCurrencyAmount amount;
   boolean pending = false;
+  PaymentItemType type;
+};
+enum PaymentItemType {
+  "tax"
 };
 [SecureContext,
   Exposed=Window]

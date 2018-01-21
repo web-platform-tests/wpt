@@ -51,9 +51,6 @@ function run_in_iframe(test262, attrs, t, opts) {
   // In case of error send it to parent window.
   w.addEventListener('error', function(e) {
     e.preventDefault();
-    // If the test failed due to a SyntaxError but phase was 'early', then the
-    // test should actually pass.
-
     if (is_negative(attrs, e.message)) {
         t.done();
         return;
@@ -103,7 +100,7 @@ function test262_as_html(test262, attrs, strict) {
   }
   let output = [];
   output.push(header());
-  output.push(prepareTest(test262, strict));
+  output.push(prepareTest(test262, attrs, strict));
   output.push(footer());
   return output.join("");
 }
@@ -127,8 +124,44 @@ function addScripts(attrs) {
   return ret.join("\n");
 }
 
-function prepareTest(test262, strict) {
-  return strict ? "'use strict';\n" + test262() : test262();
+function prepareTest(test262, attrs, strict) {
+    let output = [];
+    function write(str) {
+        output.push(str);
+    }
+    function flush() {
+        return output.join("\n");
+    }
+    function run_in_eval(str) {
+        let ret = []
+        let lines = str.split("\n");
+        lines.forEach(function(line) {
+            ret.push('"' + line.replace(/"/g, '\\"') + '"');
+        });
+        return 'eval(' + ret.join(" +\n") + ');';
+    }
+    let negative = attrs.negative || {}
+    if (negative.phase == 'parse' || negative.phase == 'early') {
+        let type = negative.type;
+        write("try {");
+        if (strict) {
+            write("'use strict';");
+        }
+        write(run_in_eval(test262()));
+        write("} catch (e) {");
+        write(`    if (e instanceof ${type}) {`);
+        write("        __completed__();");
+        write("    } else {");
+        write("        throw e;");
+        write("    }");
+        write("}");
+    } else {
+        if (strict) {
+            write("'use strict';");
+        }
+        write(test262());
+    }
+    return flush();
 }
 
 // Window.
@@ -228,7 +261,7 @@ function createWorkerFromString(test262, attrs, opts) {
   let template = getWorkerTemplate(type);
   template = template.replace('###INCLUDES###', importScripts(attrs.includes));
   template = template.replace('###NAME###', workerNameByType(type, opts.strict));
-  template = template.replace('###BODY###', prepareTest(test262, opts.strict));
+  template = template.replace('###BODY###', prepareTest(test262, attrs, opts.strict));
   return createWorker(type, template);
 }
 

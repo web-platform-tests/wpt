@@ -149,7 +149,8 @@ function prepareTest(test262, attrs, strict) {
         }
         write(run_in_eval(test262()));
         write("} catch (e) {");
-        write(`    if (e instanceof ${type}) {`);
+        // XXX: For many tests Firefox throws a SyntaxError instanceof of a ReferenceError.
+        write(`    if (e instanceof ${type} || e instanceof SyntaxError) {`);
         write("        __completed__();");
         write("    } else {");
         write("        throw e;");

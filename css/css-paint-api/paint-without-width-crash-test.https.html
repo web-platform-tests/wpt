@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.css-houdini.org/css-paint-api/" />
+<style>
+.container {
+  height: 187px;
+}
+
+#canvas-geometry {
+  background-image: paint(geometry);
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div class="container" id="canvas-geometry">
+<script id="code" type="text/worklet">
+registerPaint('geometry', class {
+    paint(ctx) {
+        if (Math.abs(geom.width) < 0.001)
+            ctx.fillStyle = 'green';
+        else
+            ctx.fillStyle = 'red';
+        ctx.fillRect();
+    }
+});
+</script>
+<script>
+// This is a crash test for crbug.com/803026. In chrome, when we ship the
+// CSSPaintAPI without shipping the CSSPaintAPIArguments, there is a crash and
+// this is a regression test to ensure that it won't crash in any state.
+test(() => {
+    var code = document.getElementById('code').textContent;
+    var blob = new Blob([code], {type: 'text/javascript'});
+    CSS.paintWorklet.addModule(URL.createObjectURL(blob)).then(function() {
+    assert_true(true);
+})}, 'test');
+</script>
+</body>
+</html>

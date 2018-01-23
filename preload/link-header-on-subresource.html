@@ -2,13 +2,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
-<link rel=stylesheet href="resources/dummy-preloads-subresource.css?link-header-on-subresource">
+<link rel=stylesheet href="resources/dummy-preloads-subresource.css">
 <script>
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
         verifyPreloadAndRTSupport();
-        waitUntilResourceDownloaded("/preload/resources/CanvasTest.ttf?link-header-on-subresource");
-        verifyNumberOfDownloads("/preload/resources/CanvasTest.ttf?link-header-on-subresource", 1);
+        waitUntilResourceDownloaded("resources/CanvasTest.ttf");
+        verifyNumberOfDownloads("resources/CanvasTest.ttf", 1);
         resolve();
     });
 }, 'Makes sure that Link headers on subresources preload resources');

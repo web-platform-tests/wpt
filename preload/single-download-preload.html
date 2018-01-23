@@ -38,15 +38,14 @@ promise_test(async t => {
     await new Promise(async (resolve, reject) => {
         await fetch("resources/dummy.xml?single-download-preload");
         verifyPreloadAndRTSupport();
-        waitUntilResourceDownloaded("resources/dummy.js?single-download-preload");
-        waitUntilResourceDownloaded("resources/dummy.css?single-download-preload");
-        waitUntilResourceDownloaded("resources/square.png?single-download-preload");
-        waitUntilResourceDownloaded("resources/square.png?background&single-download-preload");
-        waitUntilResourceDownloaded("resources/CanvasTest.ttf?single-download-preload");
-        waitUntilResourceDownloaded("resources/white.mp4?single-download-preload");
-        waitUntilResourceDownloaded("resources/sound_5.oga?single-download-preload");
-        waitUntilResourceDownloaded("resources/foo.vtt?single-download-preload");
-        waitUntilResourceDownloaded("resources/dummy.xml?single-download-preload");
+        await untilResourceDownloaded("resources/dummy.js?single-download-preload");
+        await untilResourceDownloaded("resources/dummy.css?single-download-preload");
+        await untilResourceDownloaded("resources/square.png?single-download-preload");
+        await untilResourceDownloaded("resources/square.png?background&single-download-preload");
+        await untilResourceDownloaded("resources/CanvasTest.ttf?single-download-preload");
+        await untilResourceDownloaded("resources/white.mp4?single-download-preload");
+        await untilResourceDownloaded("resources/sound_5.oga?single-download-preload");
+        await untilResourceDownloaded("resources/foo.vtt?single-download-preload");
         verifyNumberOfDownloads("resources/dummy.js?single-download-preload", 1);
         verifyNumberOfDownloads("resources/dummy.css?single-download-preload", 1);
         verifyNumberOfDownloads("resources/square.png?single-download-preload", 1);

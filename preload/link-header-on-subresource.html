@@ -7,7 +7,7 @@
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
         verifyPreloadAndRTSupport();
-        waitUntilResourceDownloaded("resources/CanvasTest.ttf");
+        await untilResourceDownloaded("resources/CanvasTest.ttf");
         verifyNumberOfDownloads("resources/CanvasTest.ttf", 1);
         resolve();
     });

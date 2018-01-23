@@ -47,14 +47,14 @@ function useAllResources() {
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
         verifyPreloadAndRTSupport()
-        waitUntilResourceDownloaded("resources/dummy.js");
-        waitUntilResourceDownloaded("resources/dummy.css");
-        waitUntilResourceDownloaded("resources/square.png");
-        waitUntilResourceDownloaded("resources/CanvasTest.ttf");
-        waitUntilResourceDownloaded("resources/white.mp4");
-        waitUntilResourceDownloaded("resources/sound_5.oga");
-        waitUntilResourceDownloaded("resources/foo.vtt");
-        waitUntilResourceDownloaded("resources/dummy.xml");
+        await untilResourceDownloaded("resources/dummy.js");
+        await untilResourceDownloaded("resources/dummy.css");
+        await untilResourceDownloaded("resources/square.png");
+        await untilResourceDownloaded("resources/CanvasTest.ttf");
+        await untilResourceDownloaded("resources/white.mp4");
+        await untilResourceDownloaded("resources/sound_5.oga");
+        await untilResourceDownloaded("resources/foo.vtt");
+        await untilResourceDownloaded("resources/dummy.xml");
         verifyNumberOfDownloads("resources/dummy.js", 1);
         verifyNumberOfDownloads("resources/dummy.css", 1);
         verifyNumberOfDownloads("resources/square.png", 1);

@@ -21,19 +21,22 @@ function verifyNumberOfDownloads(url, number)
     assert_equals(numDownloads, number, url);
 }
 
-async function waitUntilResourceDownloaded(url)
+function untilResourceDownloaded(url)
 {
-    if (performance.getEntriesByName(getAbsoluteURL(url)).length >= 1) {
+    let absoluteURL = getAbsoluteURL(url);
+    if (performance.getEntriesByName(absoluteURL).length >= 1) {
         return true;
     }
 
-    await new Promise((resolve, reject) => {
+    console.log("waiting on " + absoluteURL);
+    return new Promise((resolve, reject) => {
       let observer = new PerformanceObserver(list => {
           list.getEntries().forEach(entry => {
-              if (entry.name == url) {
+              if (entry.name == absoluteURL) {
                   resolve();
               }
           });
       });
+      observer.observe({entryTypes: ["resource"]});
     });
 }

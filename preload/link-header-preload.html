@@ -7,9 +7,9 @@
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
         verifyPreloadAndRTSupport();
-        waitUntilResourceDownloaded("resources/square.png?link-header-preload");
-        waitUntilResourceDownloaded("resources/dummy.js?link-header-preload");
-        waitUntilResourceDownloaded("resources/dummy.css?link-header-preload");
+        await untilResourceDownloaded("resources/square.png?link-header-preload");
+        await untilResourceDownloaded("resources/dummy.js?link-header-preload");
+        await untilResourceDownloaded("resources/dummy.css?link-header-preload");
         verifyNumberOfDownloads("resources/square.png?link-header-preload", 1);
         verifyNumberOfDownloads("resources/dummy.js?link-header-preload", 1);
         verifyNumberOfDownloads("resources/dummy.css?link-header-preload", 1);

@@ -39,7 +39,9 @@ xhr.open("GET", "resources/dummy.xml?single-download-preload");
 xhr.send();
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
-        verifyPreloadAndRTSupport();
+        if (!isPreloadAndRTSupported()) {
+            reject("Unsupported APIs");
+        }
         await untilResourceDownloaded("resources/dummy.js?single-download-preload");
         await untilResourceDownloaded("resources/dummy.css?single-download-preload");
         await untilResourceDownloaded("resources/square.png?single-download-preload");

@@ -46,7 +46,9 @@ function useAllResources() {
 }
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
-        verifyPreloadAndRTSupport()
+        if (!isPreloadAndRTSupported()) {
+            reject("Unsupported APIs");
+        }
         await untilResourceDownloaded("resources/dummy.js");
         await untilResourceDownloaded("resources/dummy.css");
         await untilResourceDownloaded("resources/square.png");

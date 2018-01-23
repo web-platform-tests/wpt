@@ -6,7 +6,9 @@
 <script>
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
-        verifyPreloadAndRTSupport();
+        if (!isPreloadAndRTSupported()) {
+            reject("Unsupported APIs");
+        }
         await untilResourceDownloaded("resources/CanvasTest.ttf");
         verifyNumberOfDownloads("resources/CanvasTest.ttf", 1);
         resolve();

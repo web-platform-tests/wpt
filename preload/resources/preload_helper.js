@@ -28,7 +28,6 @@ function untilResourceDownloaded(url)
         return true;
     }
 
-    console.log("waiting on " + absoluteURL);
     return new Promise((resolve, reject) => {
       let observer = new PerformanceObserver(list => {
           list.getEntries().forEach(entry => {

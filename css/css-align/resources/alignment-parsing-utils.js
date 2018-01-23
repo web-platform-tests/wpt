@@ -1,12 +1,5 @@
-var selfPositionValues = [ "start", "end", "self-start", "self-end", "left", "right", "center", "flex-start", "flex-end"];
-var contentPositionValues = [ "start", "end", "left", "right", "center", "flex-start", "flex-end"];
-var distributionValues = [ "stretch", "space-around", "space-between", "space-evenly"];
-var baselineValues = [ "baseline", "first baseline", "last baseline"];
-var overflowValues = [ "safe flex-end", "unsafe start", "safe end", "unsafe self-start", "safe center"];
-var legacyValues = [ "legacy left", "legacy center", "legacy right", "left legacy", "center legacy", "right legacy", "legacy"];
-
-var selfPositionClasses = {"Start":"start", "End":"end", "SelfStart":"self-start", "SelfEnd":"self-end", "Left":"left", "Right":"right", "Center":"center", "FlexStart":"flex-start", "FlexEnd":"flex-end"};
-var contentPositionClasses = {"Start":"start", "End":"end", "Left":"left", "Right":"right", "Center":"center", "FlexStart":"flex-start", "FlexEnd":"flex-end"};
+var selfPositionClasses = {"Start":"start", "End":"end", "SelfStart":"self-start", "SelfEnd":"self-end", "Center":"center", "FlexStart":"flex-start", "FlexEnd":"flex-end"};
+var contentPositionClasses = {"Start":"start", "End":"end", "Center":"center", "FlexStart":"flex-start", "FlexEnd":"flex-end"};
 var distributionClasses = {"Stretch":"stretch", "SpaceAround":"space-around", "SpaceBetween":"space-between", "SpaceEvenly":"space-evenly"};
 var baselineClasses = {"Baseline":"baseline", "FirstBaseline":"first baseline", "LastBaseline":"last baseline"};
 var overflowClasses = {"SafeFlexEnd":"safe flex-end", "UnsafeEnd":"unsafe end", "SafeEnd":"safe end", "UnsafeFlexStart":"unsafe flex-start", "SafeCenter":"safe center"};
@@ -85,8 +78,8 @@ function checkValues(element, property, propertyID, value, computedValue)
 function checkBadValues(element, property, propertyID, value)
 {
     var elementID = element.id || "element";
-    var initialValue = eval("window.getComputedStyle(" + elementID + " , '').getPropertyValue('" + propertyID + "')");
     element.style[property] = "";
+    var initialValue = eval("window.getComputedStyle(" + elementID + " , '').getPropertyValue('" + propertyID + "')");
     element.style[property] = value;
     checkValues(element, property, propertyID, "", initialValue);
 }

@@ -10,7 +10,8 @@ const properties = {
   'AbsoluteOrientationSensor' : ['timestamp', 'quaternion'],
   'RelativeOrientationSensor' : ['timestamp', 'quaternion'],
   'GeolocationSensor' : ['timestamp', 'latitude', 'longitude', 'altitude',
-                         'accuracy', 'altitudeAccuracy', 'heading', 'speed']
+                         'accuracy', 'altitudeAccuracy', 'heading', 'speed'],
+  'ProximitySensor' : ['timestamp', 'max']
 };
 
 function assert_reading_not_null(sensor) {

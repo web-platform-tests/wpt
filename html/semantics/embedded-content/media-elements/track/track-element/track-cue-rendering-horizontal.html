@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Rendering horizontal line-positioned cues</title>
+<link rel="match" href="track-cue-rendering-horizontal-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/media.js"></script>
+<video onseeked="takeScreenshot();">
+  <source src="/media/white.webm" type="video/webm">
+  <source src="/media/white.mp4" type="video/mp4">
+  <track src="resources/captions-snap-to-lines-set.vtt" kind="captions" default>
+  <script>
+  var video = document.querySelector("video");
+  video.currentTime = 0.25;
+  </script>
+</video>
+</html>

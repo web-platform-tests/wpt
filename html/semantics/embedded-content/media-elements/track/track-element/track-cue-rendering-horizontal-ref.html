@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Reference test for track-cue-rendering-horizontal.html</title>
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/media.js"></script>
+<style>
+.container {
+  position: relative;
+  width: 320px;
+}
+.cue {
+  position: absolute;
+  font-family: sans-serif;
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(0, 0, 0, 0.8);
+  font-size: 12px;
+  padding: 0 2px;
+  margin-left: -3px;
+}
+.cue1 {
+  left: 24px;
+  top: 0px;
+}
+.cue2 {
+  left: 10px;
+  top: 19px;
+}
+.cue3 {
+  left: 13px;
+  top: 38px;
+}
+.cue4 {
+  left: 18px;
+  top: 95px;
+}
+.cue5 {
+  left: 16px;
+  top: 221px;
+}
+.cue6 {
+  left: 22px;
+  top: 202px;
+}
+</style>
+<div class="container">
+  <video onloadeddata="this.onloadeddata = null; takeScreenshot();">
+  <source src="/media/white.webm" type="video/webm">
+  <source src="/media/white.mp4" type="video/mp4">
+  </video>
+  <span class="cue cue1">Cue 1: should be positioned at the top of the video.</span>
+  <span class="cue cue2">Cue 2: should be the second cue and not overlap cue 1.</span>
+  <span class="cue cue3">Cue 3: should become the third line from top to bottom.</span>
+  <span class="cue cue4">Cue 4: should be fixed positioned around the middle.</span>
+  <span class="cue cue5">Cue 5: should be displayed at the bottom of the video.</span>
+  <span class="cue cue6">Cue 6: should be on top of bottom positioned cue 5.</span>
+</div>
+</html>

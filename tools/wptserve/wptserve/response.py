@@ -201,6 +201,8 @@ class Response(object):
         self.writer.write_status(*self.status)
         for item in self.headers:
             self.writer.write_header(*item)
+        # Always enable cross origin.
+        self.writer.write_header("Access-Control-Allow-Origin", "*")
         self.writer.end_headers()
 
     def write_content(self):

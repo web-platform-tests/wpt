@@ -218,43 +218,69 @@ class WPTestBuilder(object):
                 folders.append(os.path.join(test_dir, each))
             # Generate wrappers.
             for filename in self.listall(folders, {'ext': 'js', 'skip_hidden': True}):
+                # Files that have the suffix _FIXTURE are not tests, but should be preserved.
                 if re.search('_FIXTURE.js$', filename):
-                    dest = DEST_PATH + re.sub(".*test262/test", "", filename)
-                    self.ensure_destination_path(dest)
-                    copyfile(filename, dest)
-                else:
-                    self.generate_single_wpt(filename)
-            print "Output: " + DEST_PATH
+                    self.keep_file(filename)
+                    continue
+                # If they are not fixtures, they're tests. However, it's necessary to keep the
+                # original file because some tests reference themselves.
+                if re.search('module-code', filename):
+                    self.keep_file(filename)
+                self.generate_single_wpt(filename)
+            print "Output: " + self.destination_path(path)
         elif S_ISREG(mode):
             pos = path.find("test262/test")
             if pos < 0:
-                print("Not a test262 file: '%'" % path)
+                print("Not a test262 file: '%s'" % path)
                 exit(1)
             print "Generating web-platform-tests wrapper for {0}".format(path)
             print "Output: %s" % self.generate_single_wpt(path)
         else:
             print "Skipping %s" % path
 
-    def destination_path(self, path):
-        filename = re.sub(".*?test262/test", "", path)
-        filename = re.sub('.js$', '.html', filename)
-        return DEST_PATH + filename
+    def keep_file(self, filename):
+        dirname = self.destination_path(filename)
+        dst = os.path.join(dirname, os.path.basename(filename))
+        self.mkdir(dirname)
+        content = self.replace_module_path_if_any(dirname, self.readfile(filename))
+        return self.savefile(dst, content)
 
-    def generate_single_wpt(self, src):
-        dst = self.destination_path(src)
-        self.ensure_destination_path(dst)
-        return self.savefile(dst, self.build(dst, self.readfile(src)))
+    def destination_path(self, filename):
+        filename = re.sub(".*test262/test/", "", filename)
+        return os.path.join(DEST_PATH, os.path.dirname(filename))
 
-    def ensure_destination_path(self, path):
-        dirname = subprocess.check_output(("dirname {0}".format(path)).split())
-        dirname = re.sub('\n', '', dirname)
-        process = subprocess.Popen(("mkdir -p {0}".format(dirname)).split())
+    def mkdir(self, path):
+        process = subprocess.Popen(("mkdir -p {0}".format(path)).split())
         process.wait()
+
+    def replace_module_path_if_any(self, dirname, content):
+        # Replace "[import|export] from './filename'".
+        content = re.sub(r"from\s+(['\"])\.\/(.*?\.js)(['\"])",
+                         r"from \1http://localhost:8000/" + dirname + r"/\2\3", content)
+        # Replace "import './filename'".
+        content = re.sub(r"import (['\"])\.\/(.*?\.js)(['\"])",
+                         r"import \1http://localhost:8000/" + dirname + r"/\2\3", content)
+        # Replace "export './filename'".
+        content = re.sub(r"export (['\"])\.\/(.*?\.js)(['\"])",
+                         r"export \1http://localhost:8000/" + dirname + r"/\2\3", content)
+        return content
 
     def savefile(self, output, content):
         with open(output, 'wt') as fd:
             fd.write(content)
             return fd.name
+
+    def generate_single_wpt(self, filename):
+        dst = self.destination_file(filename)
+        dirname = os.path.dirname(dst)
+        self.mkdir(dirname)
+        content = self.replace_module_path_if_any(dirname, self.readfile(filename))
+        return self.savefile(dst, self.build(dst, content))
+
+    def destination_file(self, filename):
+        filename = re.sub(".*test262/test/", "", filename)
+        filename = re.sub('.js$', '.html', filename)
+        return os.path.join(DEST_PATH, filename)
 
     def build(self, title, content):
         test262 = Test262Parser(content)

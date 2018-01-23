@@ -140,6 +140,7 @@ function prepareTest(test262, attrs, strict) {
         });
         return 'eval(' + ret.join(" +\n") + ');';
     }
+    let test_code = test262();
     let negative = attrs.negative || {}
     if (negative.phase == 'parse' || negative.phase == 'early') {
         let type = negative.type;
@@ -147,7 +148,7 @@ function prepareTest(test262, attrs, strict) {
         if (strict) {
             write("'use strict';");
         }
-        write(run_in_eval(test262()));
+        write(run_in_eval(test_code));
         write("} catch (e) {");
         // XXX: For many tests Firefox throws a SyntaxError instanceof of a ReferenceError.
         write(`    if (e instanceof ${type} || e instanceof SyntaxError) {`);
@@ -160,7 +161,7 @@ function prepareTest(test262, attrs, strict) {
         if (strict) {
             write("'use strict';");
         }
-        write(test262());
+        write(test_code);
     }
     return flush();
 }

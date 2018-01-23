@@ -20,3 +20,20 @@ function verifyNumberOfDownloads(url, number)
     });
     assert_equals(numDownloads, number, url);
 }
+
+async function waitUntilResourceDownloaded(url)
+{
+    if (performance.getEntriesByName(getAbsoluteURL(url)).length >= 1) {
+        return true;
+    }
+
+    await new Promise((resolve, reject) => {
+      let observer = new PerformanceObserver(list => {
+          list.getEntries().forEach(entry => {
+              if (entry.name == url) {
+                  resolve();
+              }
+          });
+      });
+    });
+}

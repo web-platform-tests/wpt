@@ -116,7 +116,12 @@ function createElementWithInlineStyleMap(test, cssText) {
 // Creates a new div element with inline style |cssText| and returns
 // its computed style property map.
 function createComputedStyleMap(test, cssText) {
-  return createDivWithStyle(test, cssText).computedStyleMap();
+  return createElementWithComputedStyleMap(test, cssText)[1];
+}
+// Same as createComputedStyleMap but also returns the element itself.
+function createElementWithComputedStyleMap(test, cssText) {
+  let elem = createDivWithStyle(test, cssText);
+  return [elem, elem.computedStyleMap()];
 }
 
 // Creates a new style element with a rule |cssText| and returns

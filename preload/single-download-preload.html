@@ -34,9 +34,11 @@
 </video>
 <audio src="resources/sound_5.oga?single-download-preload"></audio>
 <script>
+var xhr = new XMLHttpRequest();
+xhr.open("GET", "resources/dummy.xml?single-download-preload");
+xhr.send();
 promise_test(async t => {
     await new Promise(async (resolve, reject) => {
-        await fetch("resources/dummy.xml?single-download-preload");
         verifyPreloadAndRTSupport();
         await untilResourceDownloaded("resources/dummy.js?single-download-preload");
         await untilResourceDownloaded("resources/dummy.css?single-download-preload");
@@ -46,6 +48,7 @@ promise_test(async t => {
         await untilResourceDownloaded("resources/white.mp4?single-download-preload");
         await untilResourceDownloaded("resources/sound_5.oga?single-download-preload");
         await untilResourceDownloaded("resources/foo.vtt?single-download-preload");
+        await untilResourceDownloaded("resources/dummy.xml?single-download-preload");
         verifyNumberOfDownloads("resources/dummy.js?single-download-preload", 1);
         verifyNumberOfDownloads("resources/dummy.css?single-download-preload", 1);
         verifyNumberOfDownloads("resources/square.png?single-download-preload", 1);

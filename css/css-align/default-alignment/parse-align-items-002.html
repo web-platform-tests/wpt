@@ -29,24 +29,24 @@ test(function() {
 
 test(function() {
     container.style.display = "grid";
-    checkInitialValues(element, "alignItems", "align-items", "safe left", "normal");
+    checkInitialValues(element, "alignItems", "align-items", "safe start", "normal");
 }, "Test grid items align-items: 'initial'");
 
 test(function() {
     container.style.display = "flex";
-    checkInitialValues(element, "alignItems", "align-items", "unsafe right", "normal");
+    checkInitialValues(element, "alignItems", "align-items", "unsafe end", "normal");
 }, "Test flex items align-items: 'initial'");
 
 test(function() {
     container.style.display = "";
     element.style.position = "absolute";
-    checkInitialValues(element, "alignItems", "align-items", "left", "normal");
+    checkInitialValues(element, "alignItems", "align-items", "start", "normal");
 }, "Test absolute positioned elements align-items: 'initial'");
 
 test(function() {
     container.style.display = "grid";
     element.style.position = "absolute";
-    checkInitialValues(element, "alignItems", "align-items", "right", "normal");
+    checkInitialValues(element, "alignItems", "align-items", "end", "normal");
 }, "Test absolute positioned grid items align-items: 'initial'");
 
 test(function() {

@@ -8,6 +8,7 @@ from .base import Browser, require_arg, get_free_port, browser_command, Executor
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorservodriver import (ServoWebDriverTestharnessExecutor,
                                              ServoWebDriverRefTestExecutor)
+from ..hosts import make_hosts_file
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -25,14 +26,6 @@ __wptrunner__ = {
     "env_options": "env_options",
     "update_properties": "update_properties",
 }
-
-hosts_text = """127.0.0.1 web-platform.test
-127.0.0.1 www.web-platform.test
-127.0.0.1 www1.web-platform.test
-127.0.0.1 www2.web-platform.test
-127.0.0.1 xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1 xn--lve-6lad.web-platform.test
-"""
 
 
 def check_args(**kwargs):
@@ -68,10 +61,10 @@ def update_properties():
     return ["debug", "os", "version", "processor", "bits"], None
 
 
-def make_hosts_file():
+def write_hosts_file(config):
     hosts_fd, hosts_path = tempfile.mkstemp()
     with os.fdopen(hosts_fd, "w") as f:
-        f.write(hosts_text)
+        f.write(make_hosts_file(config['domains'], "127.0.0.1"))
     return hosts_path
 
 
@@ -86,7 +79,7 @@ class ServoWebDriverBrowser(Browser):
         self.webdriver_port = None
         self.proc = None
         self.debug_info = debug_info
-        self.hosts_path = make_hosts_file()
+        self.hosts_path = write_hosts_file()
         self.command = None
         self.user_stylesheets = user_stylesheets if user_stylesheets else []
 

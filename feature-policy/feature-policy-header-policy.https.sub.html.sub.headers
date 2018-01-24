@@ -1,0 +1,1 @@
+Feature-Policy: fullscreen *; payment 'self'; midi 'none'; camera 'self' https://{{domains[www]}}:{{ports[https][0]}} https://www.example.com; geolocation 'self'

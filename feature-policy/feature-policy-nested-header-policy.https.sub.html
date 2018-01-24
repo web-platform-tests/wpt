@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<body>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script src=/feature-policy/resources/featurepolicy.js></script>
+  <iframe id="local-frame"></iframe>
+  <iframe id="remote-frame"></iframe>
+  <script>
+  'use strict';
+  var local_origin = 'https://{{domains[]}}:{{ports[https][0]}}';
+  var cross_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+  var src = '/feature-policy/resources/feature-policy-nested-subframe-policy.https.sub.html'
+
+  /*
+   Top-level Feature Policy:
+     midi 'none'; payment 'self'; camera *; usb 'self'; vr *;
+     fullscreen https://{{domains[www]}}:{{ports[https][0]}};
+     accelerometer https://{{domains[www]}}:{{ports[https][0]}};
+
+     1st layer iframe (feature-policy-nested-subframe-policy.https.sub.html) Feature Policy:
+       midi *; payment 'self'; camera 'self'; usb *; vr 'none'; fullscreen 'self'; accelerometer *;
+
+       2nd layer iframe (feature-policy-subframe-policy.https.sub.html) Feature Policy:
+         midi *; payment 'self'; camera *; usb 'self'; vr *; fullscreen 'self';  accelerometer *;
+
+   ----------------------------------------------------------------------------
+   | Top-level Feature Policy                                                 |
+   |  ----------------------------------------------------------------------  |
+   |  | 1st layer iframe Feature Policy (same origin / cross origin)       |  |
+   |  |  ----------------------------------------------------------------  |  |
+   |  |  | 2nd layer iframe Feature Policy (same origin / cross origin) |  |  |
+   |  |  |______________________________________________________________|  |  |
+   |  |____________________________________________________________________|  |
+   |__________________________________________________________________________|
+
+  'payment' is enabled for 'self' at the top-level and through the chain of
+  same-origin frames but disabled in cross-origin frames and descendents of a
+  any cross-origin frame.
+
+  'fullscreen' is enabled on cross origin at the top-level, then enabled only
+  for 'self' in the subframes. So a same-origin frame embedded in a
+  cross-origin frame has 'fullscreen' enabled, but a cross-origin frame
+  embedded in a cross-origin frame has 'fullscreen' disabled.
+
+  'camera' is enabled at the top-level but blocked by subframe.
+  A-B-A: enabled A-A-B: disabled A-A-A: enabled; A-B-A: enabled
+
+  'accelerometer' is only enabled on cross origin at the top-level, but enabled
+  by cross-origin subframe.
+
+  'usb' is only enabled for 'self' at the top-level but then enabled for all
+  by subframe.
+
+  'midi' is disabled everywhere.
+
+  'vr' is disabled by the first layer subframe.
+  */
+
+  async_test(t => {
+    let local_frame = document.createElement('iframe');
+    local_frame.src = local_origin + src;
+    let remote_frame = document.createElement('iframe');
+    remote_frame.src = cross_origin + src;
+    var frame_count = 0;
+
+    window.addEventListener('message', t.step_func(function handler(evt) {
+      var data = evt.data;
+      if (evt.source === local_frame.contentWindow) {
+        if (data.frame === 'local') {
+          assert_true(data.allowedfeatures.includes('payment'),
+              'Top-level>Local-iframe>Local-iframe: payment enabled');
+          assert_false(data.allowedfeatures.includes('fullscreen'),
+              'top-level>local-iframe>local-iframe: fullscreen disabled');
+          assert_true(data.allowedfeatures.includes('camera'),
+              'Top-level>Local-iframe>Local-iframe: camera enabled');
+          assert_false(data.allowedfeatures.includes('accelerometer'),
+              'Top-level>Local-iframe>Local-iframe: accelerometer disabled');
+          assert_true(data.allowedfeatures.includes('usb'),
+              'Top-level>Local-iframe>Local-iframe: usb enabled');
+          assert_false(data.allowedfeatures.includes('midi'),
+              'top-level>local-iframe>local-iframe: midi disabled');
+          assert_false(data.allowedfeatures.includes('vr'),
+              'top-level>local-iframe>local-iframe: vr disabled');
+          frame_count = frame_count + 1;
+        }
+        if (data.frame === 'remote') {
+          assert_false(data.allowedfeatures.includes('payment'),
+              'Top-level>Local-iframe>Remote-iframe: payment disabled');
+          assert_false(data.allowedfeatures.includes('fullscreen'),
+              'Top-level>Local-iframe>Remote-iframe: fullscreen disabled');
+          assert_false(data.allowedfeatures.includes('camera'),
+              'Top-level>Local-iframe>Remote-iframe: camera disabled');
+          assert_false(data.allowedfeatures.includes('accelerometer'),
+              'Top-level>Local-iframe>Remote-iframe: accelerometer disabled');
+          assert_true(data.allowedfeatures.includes('usb'),
+              'Top-level>Local-iframe>Remote-iframe: usb enabled');
+          assert_false(data.allowedfeatures.includes('midi'),
+              'Top-level>Local-iframe>Remote-iframe: midi disabled');
+          assert_false(data.allowedfeatures.includes('vr'),
+              'Top-level>Local-iframe>Remote-iframe: vr disabled');
+          frame_count = frame_count + 1;
+        }
+      }
+      if (evt.source === remote_frame.contentWindow) {
+        if (data.frame === 'local') {
+          assert_false(data.allowedfeatures.includes('payment'),
+              'Top-level>Remote-iframe>Local-iframe: payment disabled');
+          assert_true(data.allowedfeatures.includes('fullscreen'),
+              'Top-level>Remote-iframe>Local-iframe: fullscreen enabled');
+          assert_true(data.allowedfeatures.includes('camera'),
+              'Top-level>Remote-iframe>Local-iframe: camera enabled');
+          assert_true(data.allowedfeatures.includes('accelerometer'),
+              'Top-level>Remote-iframe>Local-iframe: accelerometer enabled');
+          assert_false(data.allowedfeatures.includes('usb'),
+              'Top-level>Remote-iframe>Local-iframe: usb disabled');
+          assert_false(data.allowedfeatures.includes('midi'),
+              'Top-level>Remote-iframe>Local-iframe: midi disabled');
+          assert_false(data.allowedfeatures.includes('vr'),
+              'Top-level>Remote-iframe>Local-iframe: vr disabled');
+          frame_count = frame_count + 1;
+        }
+        if (data.frame === 'remote') {
+          assert_false(data.allowedfeatures.includes('payment'),
+              'Top-level>Remote-iframe>Remote-iframe: payment disabled');
+          assert_false(data.allowedfeatures.includes('fullscreen'),
+              'Top-level>Remote-iframe>Remote-iframe: fullscreen disabled');
+          assert_false(data.allowedfeatures.includes('camera'),
+              'Top-level>Remote-iframe>Remote-iframe: camera disabled');
+          assert_true(data.allowedfeatures.includes('accelerometer'),
+              'Top-level>Remote-iframe>Remote-iframe: accelerometer enabled');
+          assert_false(data.allowedfeatures.includes('usb'),
+              'Top-level>Remote-iframe>Remote-iframe: usb disabled');
+          assert_false(data.allowedfeatures.includes('midi'),
+              'Top-level>Remote-iframe>Remote-iframe: midi disabled');
+          assert_false(data.allowedfeatures.includes('vr'),
+              'Top-level>Remote-iframe>Remote-iframe: vr disabled');
+          frame_count = frame_count + 1;
+        }
+      }
+      if (frame_count >= 4) {
+        window.removeEventListener('message', handler);
+        t.done();
+      }
+    }));
+
+   document.body.appendChild(local_frame);
+   document.body.appendChild(remote_frame);
+}, 'Feature Policy nested test');
+
+  </script>
+</body>

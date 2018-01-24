@@ -1,3 +1,6 @@
+import subprocess
+
+from ..config import *
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -75,6 +78,19 @@ class ChromeAndroidBrowser(Browser):
         self.server = ChromeDriverServer(self.logger,
                                          binary=webdriver_binary,
                                          args=webdriver_args)
+
+    def _adb_run(self, args):
+        self.logger.info('adb ' + ' '.join(args))
+        subprocess.check_call(['adb'] + args)
+
+    def setup(self):
+        self._adb_run(['wait-for-device'])
+        self._adb_run(['forward', '--remove-all'])
+        self._adb_run(['reverse', '--remove-all'])
+        # TODO: Use ports from config.
+        ports = [8000, 8001, 8443, 8888]
+        for port in ports:
+            self._adb_run(['reverse', 'tcp:%d' % port, 'tcp:%d' % port])
 
     def start(self, **kwargs):
         self.server.start(block=False)

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<body>
+<script>
+'use strict';
+var same_origin = 'https://{{domains[]}}:{{ports[https][0]}}';
+var cross_origin = 'https://{{domains[www1]}}:{{ports[https][0]}}';
+var same_origin_src = '/feature-policy/resources/feature-policy-subframe-policy.https.sub.html';
+var cross_origin_src = cross_origin + same_origin_src;
+
+let local_frame = document.createElement('iframe');
+let remote_frame = document.createElement('iframe');
+local_frame.src = same_origin_src;
+remote_frame.src = cross_origin_src;
+
+window.addEventListener('message', function(evt) {
+  if (evt.source === local_frame.contentWindow) {
+    parent.postMessage({frame: 'local', allowedfeatures: evt.data}, '*');
+  }
+  else if (evt.source === remote_frame.contentWindow) {
+    parent.postMessage({frame: 'remote', allowedfeatures: evt.data}, '*');
+  }
+});
+
+document.body.appendChild(local_frame);
+document.body.appendChild(remote_frame);
+</script>
+</body>
+

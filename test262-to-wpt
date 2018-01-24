@@ -202,14 +202,16 @@ class WPTestBuilder(object):
         mode = os.stat(self.path)[ST_MODE]
         if S_ISDIR(mode):
             # Check root folder contains 'test'.
-            test_dir = os.path.join(path, "test")
+            test_dir = path
+            if not re.search("test262/test", path):
+                test_dir = os.path.join(path, "test")
             mode = os.stat(test_dir)[ST_MODE]
             if not S_ISDIR(mode):
                 print("Could not locate 'test' folder at %s" % path)
                 exit(1)
             print "Generating web-platform-test wrappers for test262"
             # Blacklist 'harness' from root folders.
-            folders = []
+            folders = [test_dir]
             for each in os.listdir(test_dir):
                 if each == 'harness':
                     continue

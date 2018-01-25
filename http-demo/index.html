@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <title>Inconsistency in response parsing</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function script(src) {
+  var s = document.createElement('script');
+  s.setAttribute('src', src + '&time=' + new Date().getTime());
+  document.body.appendChild(s);
+  return new Promise(function(resolve, reject) {
+      s.onload = resolve;
+	  s.onerror = reject;
+    });
+}
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=0');
+      });
+}, 'zero leading characters in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=1');
+      });
+}, 'one leading character in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=2');
+      });
+}, 'two leading characters in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=3');
+      });
+}, 'three leading characters in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=4');
+      });
+}, 'four leading characters in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=5');
+      });
+}, 'five leading characters in second response');
+
+promise_test(function(t) {
+  return Promise.resolve()
+    .then(function() {
+        return script('index.py?seq=1');
+      })
+    .then(function() {
+        return script('index.py?seq=2&leading=6');
+      });
+}, 'six leading characters in second response');
+</script>

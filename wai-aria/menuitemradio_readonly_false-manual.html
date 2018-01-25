@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>menuitemradio readonly false</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -74,14 +75,14 @@
                [
                   "property",
                   "role",
-                  "is",
-                  "ROLE_SYSTEM_RADIOBUTTON or ROLE_SYSTEM_MENUITEM"
+                  "isAny",
+                  "[ROLE_SYSTEM_RADIOBUTTON, ROLE_SYSTEM_MENUITEM]"
                ]
             ],
             "UIA" : [
                [
                   "property",
-                  "Control Type",
+                  "ControlType",
                   "is",
                   "MenuItem"
                ],
@@ -95,7 +96,7 @@
                   "property",
                   "controlPatterns",
                   "contains",
-                  "SelectItem"
+                  "SelectionItem"
                ],
                [
                   "property",
@@ -126,4 +127,3 @@
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

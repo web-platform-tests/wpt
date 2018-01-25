@@ -2,10 +2,14 @@ import logging
 import os
 import platform
 import re
+import shutil
 import stat
+import subprocess
+import sys
 from abc import ABCMeta, abstractmethod
 from ConfigParser import RawConfigParser
 from distutils.spawn import find_executable
+from io import BytesIO
 
 from utils import call, get, untar, unzip
 
@@ -70,9 +74,9 @@ class Firefox(Browser):
             raise ValueError("Unable to construct a valid Firefox package name for current platform")
 
         if platform == "linux":
-            bits = "-%s" % uname[-1]
+            bits = "-%s" % uname[4]
         elif platform == "win":
-            bits = "64" if uname[-1] == "x86_64" else "32"
+            bits = "64" if uname[4] == "x86_64" else "32"
         else:
             bits = ""
 
@@ -89,7 +93,7 @@ class Firefox(Browser):
             raise ValueError("Unable to construct a valid Geckodriver package name for current platform")
 
         if platform in ("linux", "win"):
-            bits = "64" if uname[-1] == "x86_64" else "32"
+            bits = "64" if uname[4] == "x86_64" else "32"
         else:
             bits = ""
 
@@ -227,7 +231,7 @@ class Chrome(Browser):
             raise ValueError("Unable to construct a valid Chrome package name for current platform")
 
         if platform == "linux":
-            bits = "64" if uname[-1] == "x86_64" else "32"
+            bits = "64" if uname[4] == "x86_64" else "32"
         elif platform == "mac":
             bits = "64"
         elif platform == "win":
@@ -277,6 +281,140 @@ class Chrome(Browser):
                 logger.critical("dbus not running and can't be started")
                 sys.exit(1)
 
+class ChromeAndroid(Browser):
+    """Chrome-specific interface for android.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "chrome_android"
+    requirements = "requirements_chrome_android.txt"
+
+    def install(self, dest=None):
+        raise NotImplementedError
+
+    def platform_string(self):
+        raise NotImplementedError
+
+    def find_webdriver(self):
+        return find_executable("chromedriver")
+
+    def install_webdriver(self, dest=None):
+        """Install latest Webdriver."""
+        if dest is None:
+            dest = os.pwd
+        latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
+        url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (latest,
+                                                                                     self.platform_string())
+        unzip(get(url).raw, dest)
+
+        path = find_executable("chromedriver", dest)
+        st = os.stat(path)
+        os.chmod(path, st.st_mode | stat.S_IEXEC)
+        return path
+
+    def version(self, root):
+        raise NotImplementedError
+
+    def prepare_environment(self):
+        # https://bugs.chromium.org/p/chromium/issues/detail?id=713947
+        logger.debug("DBUS_SESSION_BUS_ADDRESS %s" % os.environ.get("DBUS_SESSION_BUS_ADDRESS"))
+        if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
+            if find_executable("dbus-launch"):
+                logger.debug("Attempting to start dbus")
+                dbus_conf = subprocess.check_output(["dbus-launch"])
+                logger.debug(dbus_conf)
+
+                # From dbus-launch(1):
+                #
+                # > When dbus-launch prints bus information to standard output,
+                # > by default it is in a simple key-value pairs format.
+                for line in dbus_conf.strip().split("\n"):
+                    key, _, value = line.partition("=")
+                    os.environ[key] = value
+            else:
+                logger.critical("dbus not running and can't be started")
+                sys.exit(1)
+
+
+class Opera(Browser):
+    """Opera-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "opera"
+    binary = "/usr/bin/opera"
+    requirements = "requirements_opera.txt"
+
+    def install(self, dest=None):
+        raise NotImplementedError
+
+    def platform_string(self):
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
+
+        if platform is None:
+            raise ValueError("Unable to construct a valid Opera package name for current platform")
+
+        if platform == "linux":
+            bits = "64" if uname[4] == "x86_64" else "32"
+        elif platform == "mac":
+            bits = "64"
+        elif platform == "win":
+            bits = "32"
+
+        return "%s%s" % (platform, bits)
+
+    def find_webdriver(self):
+        return find_executable("operadriver")
+
+    def install_webdriver(self, dest=None):
+        """Install latest Webdriver."""
+        if dest is None:
+            dest = os.pwd
+        latest = get("https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest").json()["tag_name"]
+        url = "https://github.com/operasoftware/operachromiumdriver/releases/download/%s/operadriver_%s.zip" % (latest,
+                                                                                                                self.platform_string())
+        unzip(get(url).raw, dest)
+
+        operadriver_dir = os.path.join(dest, "operadriver_%s" % self.platform_string())
+        shutil.move(os.path.join(operadriver_dir, "operadriver"), dest)
+        shutil.rmtree(operadriver_dir)
+
+        path = find_executable("operadriver")
+        st = os.stat(path)
+        os.chmod(path, st.st_mode | stat.S_IEXEC)
+        return path
+
+    def version(self, root):
+        """Retrieve the release version of the installed browser."""
+        output = call(self.binary, "--version")
+        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+
+    def prepare_environment(self):
+        # https://bugs.chromium.org/p/chromium/issues/detail?id=713947
+        logger.debug("DBUS_SESSION_BUS_ADDRESS %s" % os.environ.get("DBUS_SESSION_BUS_ADDRESS"))
+        if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
+            if find_executable("dbus-launch"):
+                logger.debug("Attempting to start dbus")
+                dbus_conf = subprocess.check_output(["dbus-launch"])
+                logger.debug(dbus_conf)
+
+                # From dbus-launch(1):
+                #
+                # > When dbus-launch prints bus information to standard output,
+                # > by default it is in a simple key-value pairs format.
+                for line in dbus_conf.strip().split("\n"):
+                    key, _, value = line.partition("=")
+                    os.environ[key] = value
+            else:
+                logger.critical("dbus not running and can't be started")
+                sys.exit(1)
+
 
 class Edge(Browser):
     """Edge-specific interface.
@@ -292,6 +430,29 @@ class Edge(Browser):
 
     def find_webdriver(self):
         return find_executable("MicrosoftWebDriver")
+
+    def install_webdriver(self, dest=None):
+        """Install latest Webdriver."""
+        raise NotImplementedError
+
+    def version(self):
+        raise NotImplementedError
+
+
+class InternetExplorer(Browser):
+    """Internet Explorer-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
+    product = "ie"
+    requirements = "requirements_ie.txt"
+
+    def install(self, dest=None):
+        raise NotImplementedError
+
+    def find_webdriver(self):
+        return find_executable("IEDriverServer.exe")
 
     def install_webdriver(self, dest=None):
         """Install latest Webdriver."""

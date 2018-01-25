@@ -10,6 +10,7 @@ import testloader
 import wptcommandline
 import wptlogging
 import wpttest
+from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
 
@@ -37,6 +38,7 @@ def setup_logging(*args, **kwargs):
     global logger
     logger = wptlogging.setup(*args, **kwargs)
 
+
 def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
@@ -44,7 +46,8 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
     run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=debug,
                                     extras=run_info_extras)
 
-    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"]).load()
+    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
+                                               manifest_download=kwargs["manifest_download"]).load()
 
     manifest_filters = []
     meta_filters = []
@@ -65,8 +68,10 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
                                         chunk_type=kwargs["chunk_type"],
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
-                                        include_https=ssl_env.ssl_enabled)
+                                        include_https=ssl_env.ssl_enabled,
+                                        skip_timeout=kwargs["skip_timeout"])
     return run_info, test_loader
+
 
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
@@ -121,7 +126,7 @@ def get_pause_after_test(test_loader, **kwargs):
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
             return False
-        if kwargs["repeat"] == 1 and total_tests == 1:
+        if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and total_tests == 1:
             return True
         return False
     return kwargs["pause_after_test"]
@@ -140,6 +145,12 @@ def run_tests(config, test_paths, product, **kwargs):
         env_extras = get_env_extras(**kwargs)
 
         check_args(**kwargs)
+
+        if kwargs["install_fonts"]:
+            env_extras.append(FontInstaller(
+                font_dir=kwargs["font_dir"],
+                ahem=os.path.join(kwargs["tests_root"], "fonts/Ahem.ttf")
+            ))
 
         if "test_loader" in kwargs:
             run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=None,
@@ -190,7 +201,7 @@ def run_tests(config, test_paths, product, **kwargs):
                     logger.info("Repetition %i / %i" % (repeat_count, repeat))
 
                 unexpected_count = 0
-                logger.suite_start(test_loader.test_ids, run_info)
+                logger.suite_start(test_loader.test_ids, name='web-platform-test', run_info=run_info)
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
 
@@ -209,10 +220,9 @@ def run_tests(config, test_paths, product, **kwargs):
                                                         ssl_env=ssl_env,
                                                         **kwargs)
 
-
                     executor_cls = executor_classes.get(test_type)
                     executor_kwargs = get_executor_kwargs(test_type,
-                                                          test_environment.external_config,
+                                                          test_environment.config,
                                                           test_environment.cache_manager,
                                                           run_info,
                                                           **kwargs)
@@ -226,6 +236,17 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
 
+                    if test_type == "testharness":
+                        run_tests = {"testharness": []}
+                        for test in test_loader.tests["testharness"]:
+                            if test.testdriver and not executor_cls.supports_testdriver:
+                                logger.test_start(test.id)
+                                logger.test_end(test.id, status="SKIP")
+                            else:
+                                run_tests["testharness"].append(test)
+                    else:
+                        run_tests = test_loader.tests
+
                     with ManagerGroup("web-platform-tests",
                                       kwargs["processes"],
                                       test_source_cls,
@@ -234,12 +255,13 @@ def run_tests(config, test_paths, product, **kwargs):
                                       browser_kwargs,
                                       executor_cls,
                                       executor_kwargs,
+                                      kwargs["rerun"],
                                       kwargs["pause_after_test"],
                                       kwargs["pause_on_unexpected"],
                                       kwargs["restart_on_unexpected"],
                                       kwargs["debug_info"]) as manager_group:
                         try:
-                            manager_group.run(test_type, test_loader.tests)
+                            manager_group.run(test_type, run_tests)
                         except KeyboardInterrupt:
                             logger.critical("Main thread got signal")
                             manager_group.stop()
@@ -251,8 +273,13 @@ def run_tests(config, test_paths, product, **kwargs):
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 logger.suite_end()
-
     return unexpected_total == 0
+
+
+def check_stability(**kwargs):
+    import stability
+    return stability.check_stability(logger, **kwargs)
+
 
 def start(**kwargs):
     if kwargs["list_test_groups"]:
@@ -261,8 +288,11 @@ def start(**kwargs):
         list_disabled(**kwargs)
     elif kwargs["list_tests"]:
         list_tests(**kwargs)
+    elif kwargs["verify"]:
+        check_stability(**kwargs)
     else:
         return not run_tests(**kwargs)
+
 
 def main():
     """Main entry point when calling from the command line"""
@@ -277,7 +307,8 @@ def main():
         return start(**kwargs)
     except Exception:
         if kwargs["pdb"]:
-            import pdb, traceback
+            import pdb
+            import traceback
             print traceback.format_exc()
             pdb.post_mortem()
         else:

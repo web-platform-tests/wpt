@@ -1,0 +1,1 @@
+Feature-Policy: midi 'none'; payment 'self'; camera *; usb 'self'; vr *; fullscreen https://{{domains[www]}}:{{ports[https][0]}}; accelerometer https://{{domains[www]}}:{{ports[https][0]}};

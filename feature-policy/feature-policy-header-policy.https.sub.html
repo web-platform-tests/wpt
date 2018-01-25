@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<body>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script src=/feature-policy/resources/featurepolicy.js></script>
+  <script>
+  'use strict';
+  var same_origin = 'https://{{domains[]}}:{{ports[https][0]}}';
+  var cross_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+  var same_origin_src = '/feature-policy/resources/feature-policy-allowedfeatures.html';
+  var cross_origin_src = cross_origin + same_origin_src;
+  var allowlists = [
+    {feature: 'fullscreen', allowlist: ['*']},
+    {feature: 'payment', allowlist: [same_origin]},
+    {feature: 'geolocation', allowlist: [same_origin]},
+    {feature: 'midi', allowlist: []},
+    {feature: 'camera', allowlist: [same_origin, cross_origin, 'https://www.example.com']}];
+
+  test_allowlists(
+      allowlists,
+      document.policy,
+      'Test allowed features in document.policy');
+
+  // sub frames should inherit the same policy from the main document.
+  async_test(t => {
+    test_allowed_features_for_subframe(
+        t,
+        ['fullscreen', 'payment', 'geolocation', 'camera'],
+        ['midi'],
+        same_origin_src)
+  }, 'Test allowed features in a same-origin iframe');
+  async_test(t => {
+    test_allowed_features_for_subframe(
+        t,
+        ['fullscreen', 'camera'],
+        // payment and geolocation is only allowed only for self origin.
+        ['midi', 'payment', 'geolocation'],
+        cross_origin_src)
+  }, 'Test allowed features in a cross-origin iframe');
+
+// dynamically update sub frame's container policy
+var allow = "fullscreen 'self'; payment 'src'; midi 'src'; camera 'none'; geolocation 'self' 'src'"
+async_test(t => {
+  test_allowed_features_for_subframe(
+      t,
+      ['fullscreen', 'payment', 'geolocation'],
+      ['midi', 'camera'],
+      same_origin_src,
+      allow)
+}, 'Test allowed features in a same-origin iframe with allow');
+
+async_test(t => {
+  test_allowed_features_for_subframe(
+      t,
+      ['payment', 'geolocation'],
+      ['fullscreen', 'midi', 'camera'],
+      cross_origin_src,
+      allow)
+}, 'Test allowed features in a cross-origin iframe with allow');
+
+  </script>
+</body>

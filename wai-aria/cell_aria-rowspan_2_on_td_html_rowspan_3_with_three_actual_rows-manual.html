@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>cell aria-rowspan 2 on td html rowspan 3 with three actual rows</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -56,9 +57,10 @@
                   "objectAttributes",
                   "doesNotContain",
                   "rowspan:2"
-               ],
+               ]
+            ],
+            "MSAA" : [
                [
-                  "MSAA",
                   "property",
                   "role",
                   "is",
@@ -68,9 +70,9 @@
             "UIA" : [
                [
                   "property",
-                  "Control Type",
+                  "ControlType",
                   "is",
-                  "TableItem"
+                  "DataItem"
                ],
                [
                   "property",
@@ -110,4 +112,3 @@
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

@@ -10,7 +10,8 @@ import pytest
 from tools.wpt import wpt
 
 
-# Tests currently don't work on Windows for path reasons
+pytestmark = pytest.mark.skipif(os.name == "nt",
+                                reason="Tests currently don't work on Windows for path reasons")
 
 def test_missing():
     with pytest.raises(SystemExit):
@@ -25,6 +26,9 @@ def test_help():
     assert excinfo.value.code == 0
 
 
+@pytest.mark.slow
+@pytest.mark.system_dependent
+@pytest.mark.remote_network
 def test_run_firefox():
     # TODO: It seems like there's a bug in argparse that makes this argument order required
     # should try to work around that
@@ -44,6 +48,8 @@ def test_run_firefox():
         del os.environ["MOZ_HEADLESS"]
 
 
+@pytest.mark.slow
+@pytest.mark.system_dependent
 def test_run_chrome():
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
@@ -52,6 +58,8 @@ def test_run_chrome():
     assert excinfo.value.code == 0
 
 
+@pytest.mark.slow
+@pytest.mark.remote_network
 def test_install_chromedriver():
     chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
     if os.path.exists(chromedriver_path):
@@ -63,6 +71,8 @@ def test_install_chromedriver():
     os.unlink(chromedriver_path)
 
 
+@pytest.mark.slow
+@pytest.mark.remote_network
 def test_install_firefox():
     fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
     if os.path.exists(fx_path):
@@ -91,6 +101,26 @@ html/browsers/offline/appcache/workers/resources/appcache-worker.py
     assert err == ""
 
 
+def test_files_changed_ignore():
+    from tools.wpt.testfiles import exclude_ignored
+    files = ["resources/testharness.js", "resources/webidl2/index.js", "test/test.js"]
+    changed, ignored = exclude_ignored(files, ignore_rules=["resources/testharness*"])
+    assert changed == [os.path.join(wpt.wpt_root, item) for item in
+                       ["resources/webidl2/index.js", "test/test.js"]]
+    assert ignored == [os.path.join(wpt.wpt_root, item) for item in
+                       ["resources/testharness.js"]]
+
+
+def test_files_changed_ignore_rules():
+    from tools.wpt.testfiles import compile_ignore_rule
+    assert compile_ignore_rule("foo*bar*/baz").pattern == "^foo\*bar[^/]*/baz$"
+    assert compile_ignore_rule("foo**bar**/baz").pattern == "^foo\*\*bar.*/baz$"
+    assert compile_ignore_rule("foobar/baz/*").pattern == "^foobar/baz/[^/]*$"
+    assert compile_ignore_rule("foobar/baz/**").pattern == "^foobar/baz/.*$"
+
+
+@pytest.mark.slow  # this updates the manifest
+@pytest.mark.system_dependent
 def test_tests_affected(capsys):
     # This doesn't really work properly for random commits because we test the files in
     # the current working directory for references to the changed files, not the ones at
@@ -101,9 +131,10 @@ def test_tests_affected(capsys):
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
     assert "html/browsers/offline/appcache/workers/appcache-worker.html" in out
-    assert err == ""
 
 
+@pytest.mark.slow
+@pytest.mark.system_dependent
 def test_serve():
     def test():
         s = socket.socket()

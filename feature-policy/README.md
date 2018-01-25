@@ -1,9 +1,7 @@
 # Feature Policy Guide
 ## How to Test a New Feature with Feature Policy
 
-This directory contains a framework to test features with feature policy. Please
-refer to `/content/common/feature_policy/README.md` for more details on feature
-policy.
+This directory contains a framework to test features with feature policy.
 
 When adding a new feature to feature policy, the following cases should be tested:
 * feature enabled by header policy [HTTP tests]
@@ -30,7 +28,7 @@ HTTP tests are used to test features with header policy.
 
 * Define the header policy in `<feature-name>-<enabled | disabled | enabled-on-self-origin>-by-feature-policy.https.sub.html.headers`. Example:
 
-    Feature-Policy: {"feature-name": ["*"]}
+    Feature-Policy: feature-name *
 
 
 * In `<feature-name>-<enabled | disabled | enabled-on-self-origin>-by-feature-policy.https.sub.html`:
@@ -39,8 +37,8 @@ HTTP tests are used to test features with header policy.
 * test if feature is enabled / disabled in a cross-origin iframe.
 
 Examples:
-`/payment-request/payment-disabled-by-feature-policy.https.sub.html`
-`/payment-request/payment-disabled-by-feature-policy.https.sub.html.headers`
+`/feature-policy/payment-disabled-by-feature-policy.https.sub.html`
+`/feature-policy/payment-disabled-by-feature-policy.https.sub.html.headers`
 
 ### How to Write Container Policy Tests
 Simply use `test_feature_availability()` with the optional argument
@@ -49,7 +47,7 @@ Simply use `test_feature_availability()` with the optional argument
 * feature is enabled / disabled in a cross-origin iframe.
 
 Example:
-`/payment-request/payment-allowed-by-feature-policy-attribute.https.sub.html`
+`/feature-policy/payment-allowed-by-feature-policy-attribute.https.sub.html`
 
 ### How to Write Container Policy Tests with Redirect
 Similar to the section above, append
@@ -57,5 +55,5 @@ Similar to the section above, append
 passed to `test_feature_availability()`.
 
 Example:
-`/payment-request/payment-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html`
+`/feature-policy/payment-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html`
 

@@ -433,15 +433,25 @@ policies and contribution forms [3].
         // all imported scripts have been fetched and executed. It's the
         // equivalent of an onload event for a document. All tests should have
         // been added by the time this event is received, thus it's not
-        // necessary to wait until the onactivate event.
-        on_event(self, "install",
-                function(event) {
-                    this_obj.all_loaded = true;
-                    if (this_obj.on_loaded_callback) {
-                        this_obj.on_loaded_callback();
-                    }
-                });
+        // necessary to wait until the onactivate event. However, tests for
+        // installed service workers need another event which is equivalent to
+        // the onload event because oninstall is fired only on installation. The
+        // onmessage event is used for that purpose since tests using
+        // testharness.js should ask the result to its service worker by
+        // PostMessage. If the onmessage event is triggered on the service
+        // worker's context, that means the worker's script has been evaluated.
+        on_event(self, "install", on_all_loaded);
+        on_event(self, "message", on_all_loaded);
+        function on_all_loaded() {
+            if (this_obj.all_loaded)
+                return;
+            this_obj.all_loaded = true;
+            if (this_obj.on_loaded_callback) {
+              this_obj.on_loaded_callback();
+            }
+        }
     }
+
     ServiceWorkerTestEnvironment.prototype = Object.create(WorkerTestEnvironment.prototype);
 
     ServiceWorkerTestEnvironment.prototype.add_on_loaded_callback = function(callback) {
@@ -569,12 +579,21 @@ policies and contribution forms [3].
 
         var waitingFor = null;
 
+        // This is null unless we are recording all events, in which case it
+        // will be an Array object.
+        var recordedEvents = null;
+
         var eventHandler = test.step_func(function(evt) {
             assert_true(!!waitingFor,
                         'Not expecting event, but got ' + evt.type + ' event');
             assert_equals(evt.type, waitingFor.types[0],
                           'Expected ' + waitingFor.types[0] + ' event, but got ' +
                           evt.type + ' event instead');
+
+            if (Array.isArray(recordedEvents)) {
+                recordedEvents.push(evt);
+            }
+
             if (waitingFor.types.length > 1) {
                 // Pop first event from array
                 waitingFor.types.shift();
@@ -585,7 +604,10 @@ policies and contribution forms [3].
             // need to set waitingFor.
             var resolveFunc = waitingFor.resolve;
             waitingFor = null;
-            resolveFunc(evt);
+            // Likewise, we should reset the state of recordedEvents.
+            var result = recordedEvents || evt;
+            recordedEvents = null;
+            resolveFunc(result);
         });
 
         for (var i = 0; i < eventTypes.length; i++) {
@@ -595,13 +617,35 @@ policies and contribution forms [3].
         /**
          * Returns a Promise that will resolve after the specified event or
          * series of events has occured.
+         *
+         * @param options An optional options object. If the 'record' property
+         *                on this object has the value 'all', when the Promise
+         *                returned by this function is resolved,  *all* Event
+         *                objects that were waited for will be returned as an
+         *                array.
+         *
+         * For example,
+         *
+         * ```js
+         * const watcher = new EventWatcher(t, div, [ 'animationstart',
+         *                                            'animationiteration',
+         *                                            'animationend' ]);
+         * return watcher.wait_for([ 'animationstart', 'animationend' ],
+         *                         { record: 'all' }).then(evts => {
+         *   assert_equals(evts[0].elapsedTime, 0.0);
+         *   assert_equals(evts[1].elapsedTime, 2.0);
+         * });
+         * ```
          */
-        this.wait_for = function(types) {
+        this.wait_for = function(types, options) {
             if (waitingFor) {
                 return Promise.reject('Already waiting for an event or events');
             }
             if (typeof types == 'string') {
                 types = [types];
+            }
+            if (options && options.record && options.record === 'all') {
+                recordedEvents = [];
             }
             return new Promise(function(resolve, reject) {
                 waitingFor = {
@@ -952,6 +996,10 @@ policies and contribution forms [3].
 
     function assert_array_equals(actual, expected, description)
     {
+        assert(typeof actual === "object" && actual !== null && "length" in actual,
+               "assert_array_equals", description,
+               "value is ${actual}, expected array",
+               {actual:actual});
         assert(actual.length === expected.length,
                "assert_array_equals", description,
                "lengths differ, expected ${expected} got ${actual}",
@@ -1209,11 +1257,22 @@ policies and contribution forms [3].
             if (e instanceof AssertionError) {
                 throw e;
             }
+
+            assert(typeof e === "object",
+                   "assert_throws", description,
+                   "${func} threw ${e} with type ${type}, not an object",
+                   {func:func, e:e, type:typeof e});
+
+            assert(e !== null,
+                   "assert_throws", description,
+                   "${func} threw null, not an object",
+                   {func:func});
+
             if (code === null) {
                 throw new AssertionError('Test bug: need to pass exception to assert_throws()');
             }
             if (typeof code === "object") {
-                assert(typeof e == "object" && "name" in e && e.name == code.name,
+                assert("name" in e && e.name == code.name,
                        "assert_throws", description,
                        "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
                                     {func:func, actual:e, actual_name:e.name,
@@ -1292,8 +1351,7 @@ policies and contribution forms [3].
             var required_props = { code: name_code_map[name] };
 
             if (required_props.code === 0 ||
-               (typeof e == "object" &&
-                "name" in e &&
+               ("name" in e &&
                 e.name !== e.name.toUpperCase() &&
                 e.name !== "DOMException")) {
                 // New style exception: also test the name property.
@@ -1305,13 +1363,8 @@ policies and contribution forms [3].
             //in.  It might be an instanceof the appropriate interface on some
             //unknown other window.  TODO: Work around this somehow?
 
-            assert(typeof e == "object",
-                   "assert_throws", description,
-                   "${func} threw ${e} with type ${type}, not an object",
-                   {func:func, e:e, type:typeof e});
-
             for (var prop in required_props) {
-                assert(typeof e == "object" && prop in e && e[prop] == required_props[prop],
+                assert(prop in e && e[prop] == required_props[prop],
                        "assert_throws", description,
                        "${func} threw ${e} that is not a DOMException " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
                        {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]});
@@ -1521,11 +1574,6 @@ policies and contribution forms [3].
         this._add_cleanup(callback);
     };
 
-    Test.prototype.force_timeout = function() {
-        this.set_status(this.TIMEOUT);
-        this.phase = this.phases.HAS_RESULT;
-    };
-
     Test.prototype.set_timeout = function()
     {
         if (this.timeout_length !== null) {
@@ -1551,6 +1599,8 @@ policies and contribution forms [3].
         this.phase = this.phases.HAS_RESULT;
         this.done();
     };
+
+    Test.prototype.force_timeout = Test.prototype.timeout;
 
     Test.prototype.done = function()
     {
@@ -1663,7 +1713,13 @@ policies and contribution forms [3].
         this.tests = new Array();
 
         var this_obj = this;
-        remote.onerror = function(error) { this_obj.remote_error(error); };
+        // If remote context is cross origin assigning to onerror is not
+        // possible, so silently catch those errors.
+        try {
+          remote.onerror = function(error) { this_obj.remote_error(error); };
+        } catch (e) {
+          // Ignore.
+        }
 
         // Keeping a reference to the remote object and the message handler until
         // remote_done() is seen prevents the remote object and its message channel
@@ -2036,11 +2092,7 @@ policies and contribution forms [3].
         var message_port;
 
         if (is_service_worker(worker)) {
-            // Microsoft Edge's implementation of ServiceWorker doesn't support MessagePort yet.
-            // Feature detection isn't a straightforward option here; it's only possible in the
-            // worker's script context.
-            var isMicrosoftEdgeBrowser = navigator.userAgent.includes("Edge");
-            if (window.MessageChannel && !isMicrosoftEdgeBrowser) {
+            if (window.MessageChannel) {
                 // The ServiceWorker's implicit MessagePort is currently not
                 // reliably accessible from the ServiceWorkerGlobalScope due to
                 // Blink setting MessageEvent.source to null for messages sent
@@ -2210,12 +2262,29 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
-            if (!document.body || document.readyState == "loading") {
+            if (!document.readyState == "loading") {
                 return;
             }
-            node = output_document.createElement("div");
+            node = output_document.createElementNS("http://www.w3.org/1999/xhtml", "div");
             node.id = "log";
-            output_document.body.appendChild(node);
+            if (output_document.body) {
+                output_document.body.appendChild(node);
+            } else {
+                var is_svg = false;
+                var output_window = output_document.defaultView;
+                if (output_window && "SVGSVGElement" in output_window) {
+                    is_svg = output_document.documentElement instanceof output_window.SVGSVGElement;
+                }
+                if (is_svg) {
+                    var foreignObject = output_document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                    foreignObject.setAttribute("width", "100%");
+                    foreignObject.setAttribute("height", "100%");
+                    output_document.documentElement.appendChild(foreignObject);
+                    foreignObject.appendChild(node);
+                } else {
+                    output_document.documentElement.appendChild(node);
+                }
+            }
         }
         this.output_document = output_document;
         this.output_node = node;

@@ -1,7 +1,8 @@
 import pytest
 
-from tests.support.inline import inline
+from tests.actions.support.mouse import assert_move_to_coordinates, get_center
 from tests.actions.support.refine import get_events, filter_dict
+from tests.support.inline import inline
 from tests.support.wait import wait
 
 
@@ -10,16 +11,9 @@ def link_doc(dest):
     return inline(content)
 
 
-def get_center(rect):
-    return {
-        "x": rect["width"] / 2 + rect["x"],
-        "y": rect["height"] / 2 + rect["y"],
-    }
-
-
 # TODO use pytest.approx once we upgrade to pytest > 3.0
 def approx(n, m, tolerance=1):
-    return abs(n - m) < tolerance
+    return abs(n - m) <= tolerance
 
 
 def test_click_at_coordinates(session, test_actions_page, mouse_chain):
@@ -33,11 +27,8 @@ def test_click_at_coordinates(session, test_actions_page, mouse_chain):
         .perform()
     events = get_events(session)
     assert len(events) == 4
+    assert_move_to_coordinates(div_point, "outer", events)
     for e in events:
-        if e["type"] != "mousemove":
-            assert e["pageX"] == div_point["x"]
-            assert e["pageY"] == div_point["y"]
-            assert e["target"] == "outer"
         if e["type"] != "mousedown":
             assert e["buttons"] == 0
         assert e["button"] == 0
@@ -48,6 +39,30 @@ def test_click_at_coordinates(session, test_actions_page, mouse_chain):
     ]
     filtered_events = [filter_dict(e, expected[0]) for e in events]
     assert expected == filtered_events[1:]
+
+
+def test_context_menu_at_coordinates(session, test_actions_page, mouse_chain):
+    div_point = {
+        "x": 82,
+        "y": 187,
+    }
+    mouse_chain \
+        .pointer_move(div_point["x"], div_point["y"]) \
+        .pointer_down(button=2) \
+        .pointer_up(button=2) \
+        .perform()
+    events = get_events(session)
+    expected = [
+        {"type": "mousedown", "button": 2},
+        {"type": "contextmenu",  "button": 2},
+    ]
+    assert len(events) == 4
+    filtered_events = [filter_dict(e, expected[0]) for e in events]
+    mousedown_contextmenu_events = [
+        x for x in filtered_events
+        if x["type"] in ["mousedown", "contextmenu"]
+    ]
+    assert expected == mousedown_contextmenu_events
 
 
 def test_click_element_center(session, test_actions_page, mouse_chain):
@@ -65,7 +80,7 @@ def test_click_element_center(session, test_actions_page, mouse_chain):
             assert e["target"] == "outer"
 
 
-def test_click_navigation(session, url):
+def test_click_navigation(session, url, release_actions):
     destination = url("/webdriver/tests/actions/support/test_actions_wdspec.html")
     start = link_doc(destination)
 
@@ -88,7 +103,12 @@ def test_click_navigation(session, url):
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])
 @pytest.mark.parametrize("dx, dy",
     [(20, 0), (0, 15), (10, 15), (-20, 0), (10, -15), (-10, -15)])
-def test_drag_and_drop(session, test_actions_page, mouse_chain, dx, dy, drag_duration):
+def test_drag_and_drop(session,
+                       test_actions_page,
+                       mouse_chain,
+                       dx,
+                       dy,
+                       drag_duration):
     drag_target = session.find.css("#dragTarget", all=False)
     initial_rect = drag_target.rect
     initial_center = get_center(initial_rect)

@@ -4,22 +4,42 @@ import urlparse
 import re
 
 import webdriver
+import mozlog
 
 from tests.support.asserts import assert_error
 from tests.support.http_request import HTTPRequest
+from tests.support.wait import wait
 from tests.support import merge_dictionaries
 
 default_host = "http://127.0.0.1"
 default_port = "4444"
 
+logger = mozlog.get_default_logger()
+
+
+def ignore_exceptions(f):
+    def inner(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except webdriver.error.WebDriverException as e:
+            logger.warning("Ignored exception %s" % e)
+    inner.__name__ = f.__name__
+    return inner
+
+
+@ignore_exceptions
 def _ensure_valid_window(session):
-    """If current window is not open anymore, ensure to have a valid one selected."""
+    """If current window is not open anymore, ensure to have a valid
+    one selected.
+
+    """
     try:
         session.window_handle
     except webdriver.NoSuchWindowException:
         session.window_handle = session.handles[0]
 
 
+@ignore_exceptions
 def _dismiss_user_prompts(session):
     """Dismisses any open user prompts in windows."""
     current_window = session.window_handle
@@ -34,6 +54,16 @@ def _dismiss_user_prompts(session):
     session.window_handle = current_window
 
 
+@ignore_exceptions
+def _restore_window_state(session):
+    """Reset window to an acceptable size, bringing it out of maximized,
+    minimized, or fullscreened state
+
+    """
+    session.window.size = (800, 600)
+
+
+@ignore_exceptions
 def _restore_windows(session):
     """Closes superfluous windows opened by the test without ending
     the session implicitly by closing the last window.
@@ -91,8 +121,8 @@ def create_window(session):
     return create_window
 
 
-def http(session):
-    return HTTPRequest(session.transport.host, session.transport.port)
+def http(configuration):
+    return HTTPRequest(configuration["host"], configuration["port"])
 
 
 def server_config():
@@ -128,13 +158,14 @@ def session(configuration, request):
                                              capabilities={"alwaysMatch": configuration["capabilities"]})
     try:
         _current_session.start()
-    except webdriver.errors.SessionNotCreatedException:
+    except webdriver.error.SessionNotCreatedException:
         if not _current_session.session_id:
             raise
 
     # finalisers are popped off a stack,
     # making their ordering reverse
     request.addfinalizer(lambda: _switch_to_top_level_browsing_context(_current_session))
+    request.addfinalizer(lambda: _restore_window_state(_current_session))
     request.addfinalizer(lambda: _restore_windows(_current_session))
     request.addfinalizer(lambda: _dismiss_user_prompts(_current_session))
     request.addfinalizer(lambda: _ensure_valid_window(_current_session))
@@ -158,8 +189,6 @@ def new_session(configuration, request):
         _session = webdriver.Session(configuration["host"],
                                      configuration["port"],
                                      capabilities=None)
-        # TODO: merge in some capabilities from the confguration capabilities
-        # since these might be needed to start the browser
         value = _session.send_command("POST", "session", body=body)
         # Don't set the global session until we are sure this succeeded
         _current_session = _session
@@ -173,12 +202,23 @@ def new_session(configuration, request):
     return create_session
 
 
+def add_browser_capabilites(configuration):
+    def update_capabilities(capabilities):
+        # Make sure there aren't keys in common.
+        assert not set(configuration["capabilities"]).intersection(set(capabilities))
+        result = dict(configuration["capabilities"])
+        result.update(capabilities)
+        return result
+    return update_capabilities
+
+
 def url(server_config):
     def inner(path, protocol="http", query="", fragment=""):
         port = server_config["ports"][protocol][0]
         host = "%s:%s" % (server_config["host"], port)
         return urlparse.urlunsplit((protocol, host, path, query, fragment))
 
+    inner.__name__ = "url"
     return inner
 
 def create_dialog(session):
@@ -215,5 +255,31 @@ def create_dialog(session):
         session.send_session_command("POST",
                                      "execute/async",
                                      {"script": spawn, "args": []})
+        wait(session,
+             lambda s: s.send_session_command("GET", "alert/text") == text,
+             "modal has not appeared",
+             timeout=15,
+             ignored_exceptions=webdriver.NoSuchAlertException)
 
     return create_dialog
+
+
+def clear_all_cookies(session):
+    """Removes all cookies associated with the current active document"""
+    session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
+
+
+def is_element_in_viewport(session, element):
+    """Check if element is outside of the viewport"""
+    return session.execute_script("""
+        let el = arguments[0];
+
+        let rect = el.getBoundingClientRect();
+        let viewport = {
+          height: window.innerHeight || document.documentElement.clientHeight,
+          width: window.innerWidth || document.documentElement.clientWidth,
+        };
+
+        return !(rect.right < 0 || rect.bottom < 0 ||
+            rect.left > viewport.width || rect.top > viewport.height)
+    """, args=(element,))

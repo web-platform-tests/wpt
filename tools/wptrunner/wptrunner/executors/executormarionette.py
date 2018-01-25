@@ -1,15 +1,9 @@
-import hashlib
-import httplib
 import os
 import socket
 import threading
-import time
 import traceback
 import urlparse
 import uuid
-from collections import defaultdict
-
-from ..wpttest import WdspecResult, WdspecSubtestResult
 
 errors = None
 marionette = None
@@ -23,16 +17,17 @@ from .base import (ExecutorException,
                    RefTestImplementation,
                    TestExecutor,
                    TestharnessExecutor,
+                   WdspecExecutor,
+                   WdspecRun,
+                   WebDriverProtocol,
+                   extra_timeout,
                    testharness_result_converter,
                    reftest_result_converter,
-                   strip_server,
-                   WdspecExecutor)
+                   strip_server)
+
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
 
-# Extra timeout to use after internal test timeout at which the harness
-# should force a timeout
-extra_timeout = 5 # seconds
 
 
 def do_delayed_imports():
@@ -48,12 +43,13 @@ def do_delayed_imports():
 
 
 class MarionetteProtocol(Protocol):
-    def __init__(self, executor, browser, timeout_multiplier=1):
+    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):
         do_delayed_imports()
 
         Protocol.__init__(self, executor, browser)
         self.marionette = None
         self.marionette_port = browser.marionette_port
+        self.capabilities = capabilities
         self.timeout_multiplier = timeout_multiplier
         self.timeout = None
         self.runner_handle = None
@@ -68,29 +64,25 @@ class MarionetteProtocol(Protocol):
                                                 port=self.marionette_port,
                                                 socket_timeout=None,
                                                 startup_timeout=startup_timeout)
+        try:
+            self.logger.debug("Waiting for Marionette connection")
+            while True:
+                try:
+                    self.marionette.raise_for_port()
+                    break
+                except IOError:
+                    # When running in a debugger wait indefinitely for Firefox to start
+                    if self.executor.debug_info is None:
+                        raise
 
-        # XXX Move this timeout somewhere
-        self.logger.debug("Waiting for Marionette connection")
-        while True:
-            success = self.marionette.wait_for_port(60 * self.timeout_multiplier)
-            #When running in a debugger wait indefinitely for firefox to start
-            if success or self.executor.debug_info is None:
-                break
+            self.logger.debug("Starting Marionette session")
+            self.marionette.start_session()
+            self.logger.debug("Marionette session started")
 
-        session_started = False
-        if success:
-            try:
-                self.logger.debug("Starting Marionette session")
-                self.marionette.start_session()
-            except Exception as e:
-                self.logger.warning("Starting marionette session failed: %s" % e)
-            else:
-                self.logger.debug("Marionette session started")
-                session_started = True
-
-        if not success or not session_started:
-            self.logger.warning("Failed to connect to Marionette")
+        except Exception as e:
+            self.logger.warning("Failed to start a Marionette session: %s" % e)
             self.executor.runner.send_message("init_failed")
+
         else:
             try:
                 self.after_connect()
@@ -104,7 +96,7 @@ class MarionetteProtocol(Protocol):
     def teardown(self):
         try:
             self.marionette._request_in_app_shutdown()
-            self.marionette.delete_session(send_request=False, reset_session_id=True)
+            self.marionette.delete_session(send_request=False)
         except Exception:
             # This is typically because the session never started
             pass
@@ -164,22 +156,38 @@ class MarionetteProtocol(Protocol):
             runner_handle = handles.pop(0)
 
         for handle in handles:
-            self.marionette.switch_to_window(handle)
-            self.marionette.close()
+            try:
+                self.marionette.switch_to_window(handle)
+                self.marionette.close()
+            except errors.NoSuchWindowException:
+                # We might have raced with the previous test to close this
+                # window, skip it.
+                pass
 
         self.marionette.switch_to_window(runner_handle)
         if runner_handle != self.runner_handle:
             self.load_runner(protocol)
 
     def wait(self):
-        socket_timeout = self.marionette.client.sock.gettimeout()
+        try:
+            socket_timeout = self.marionette.client.socket_timeout
+        except AttributeError:
+            # This can happen if there was a crash
+            return
         if socket_timeout:
-            self.marionette.timeout.script = socket_timeout / 2
+            try:
+                self.marionette.timeout.script = socket_timeout / 2
+            except (socket.error, IOError):
+                self.logger.debug("Socket closed")
+                return
 
         self.marionette.switch_to_window(self.runner_handle)
         while True:
             try:
                 self.marionette.execute_async_script("")
+            except errors.NoSuchWindowException:
+                # The window closed
+                break
             except errors.ScriptTimeoutException:
                 self.logger.debug("Script timed out")
                 pass
@@ -187,7 +195,7 @@ class MarionetteProtocol(Protocol):
                 self.logger.debug("Socket closed")
                 break
             except Exception as e:
-                self.logger.error(traceback.format_exc(e))
+                self.logger.warning(traceback.format_exc(e))
                 break
 
     def on_environment_change(self, old_environment, new_environment):
@@ -284,57 +292,6 @@ class MarionetteProtocol(Protocol):
             self.marionette.execute_script(script)
 
 
-class RemoteMarionetteProtocol(Protocol):
-    def __init__(self, executor, browser):
-        do_delayed_imports()
-        Protocol.__init__(self, executor, browser)
-        self.webdriver_binary = executor.webdriver_binary
-        self.webdriver_args = executor.webdriver_args
-        self.capabilities = self.executor.capabilities
-        self.session_config = None
-        self.server = None
-
-    def setup(self, runner):
-        """Connect to browser via the Marionette HTTP server."""
-        try:
-            self.server = GeckoDriverServer(
-                self.logger,
-                binary=self.webdriver_binary,
-                args=self.webdriver_args)
-            self.server.start(block=False)
-            self.logger.info(
-                "WebDriver HTTP server listening at %s" % self.server.url)
-            self.session_config = {"host": self.server.host,
-                                   "port": self.server.port,
-                                   "capabilities": self.capabilities}
-        except Exception:
-            self.logger.error(traceback.format_exc())
-            self.executor.runner.send_message("init_failed")
-        else:
-            self.executor.runner.send_message("init_succeeded")
-
-    def teardown(self):
-        if self.server is not None and self.server.is_alive:
-            self.server.stop()
-
-    @property
-    def is_alive(self):
-        """Test that the Marionette connection is still alive.
-
-        Because the remote communication happens over HTTP we need to
-        make an explicit request to the remote.  It is allowed for
-        WebDriver spec tests to not have a WebDriver session, since this
-        may be what is tested.
-
-        An HTTP request to an invalid path that results in a 404 is
-        proof enough to us that the server is alive and kicking.
-        """
-        conn = httplib.HTTPConnection(self.server.host, self.server.port)
-        conn.request("HEAD", self.server.base_path + "invalid")
-        res = conn.getresponse()
-        return res.status == 404
-
-
 class ExecuteAsyncScriptRun(object):
     def __init__(self, logger, func, protocol, url, timeout):
         self.logger = logger
@@ -347,7 +304,7 @@ class ExecuteAsyncScriptRun(object):
         self.result_flag = threading.Event()
 
     def run(self):
-        index = self.url.rfind("/storage/");
+        index = self.url.rfind("/storage/")
         if index != -1:
             # Clear storage
             self.protocol.clear_origin(self.url)
@@ -376,9 +333,17 @@ class ExecuteAsyncScriptRun(object):
             wait_timeout = None
 
         flag = self.result_flag.wait(wait_timeout)
-        if self.result[1] is None:
+
+        if self.result == (None, None):
             self.logger.debug("Timed out waiting for a result")
             self.result = False, ("EXTERNAL-TIMEOUT", None)
+        elif self.result[1] is None:
+            # We didn't get any data back from the test, so check if the
+            # browser is still responsive
+            if self.protocol.is_alive:
+                self.result = False, ("ERROR", None)
+            else:
+                self.result = False, ("CRASH", None)
         return self.result
 
     def _run(self):
@@ -405,13 +370,14 @@ class ExecuteAsyncScriptRun(object):
 
 class MarionetteTestharnessExecutor(TestharnessExecutor):
     def __init__(self, browser, server_config, timeout_multiplier=1,
-                 close_after_done=True, debug_info=None, **kwargs):
+                 close_after_done=True, debug_info=None, capabilities=None,
+                 **kwargs):
         """Marionette-based executor for testharness.js tests"""
         TestharnessExecutor.__init__(self, browser, server_config,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
 
-        self.protocol = MarionetteProtocol(self, browser, timeout_multiplier)
+        self.protocol = MarionetteProtocol(self, browser, capabilities, timeout_multiplier)
         self.script = open(os.path.join(here, "testharness_marionette.js")).read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
@@ -470,7 +436,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                  screenshot_cache=None, close_after_done=True,
                  debug_info=None, reftest_internal=False,
                  reftest_screenshot="unexpected",
-                 group_metadata=None, **kwargs):
+                 group_metadata=None, capabilities=None, **kwargs):
         """Marionette-based executor for reftests"""
         RefTestExecutor.__init__(self,
                                  browser,
@@ -478,7 +444,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                                  screenshot_cache=screenshot_cache,
                                  timeout_multiplier=timeout_multiplier,
                                  debug_info=debug_info)
-        self.protocol = MarionetteProtocol(self, browser)
+        self.protocol = MarionetteProtocol(self, browser, capabilities,
+                                           timeout_multiplier)
         self.implementation = (InternalRefTestImplementation
                                if reftest_internal
                                else RefTestImplementation)(self)
@@ -500,10 +467,14 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         self.implementation.setup(**self.implementation_kwargs)
 
     def teardown(self):
-        self.implementation.teardown()
-        handle = self.protocol.marionette.window_handles[0]
-        self.protocol.marionette.switch_to_window(handle)
-        super(self.__class__, self).teardown()
+        try:
+            self.implementation.teardown()
+            handle = self.protocol.marionette.window_handles[0]
+            self.protocol.marionette.switch_to_window(handle)
+            super(self.__class__, self).teardown()
+        except Exception as e:
+            # Ignore errors during teardown
+            self.logger.warning(traceback.format_exc(e))
 
     def is_alive(self):
         return self.protocol.is_alive
@@ -532,15 +503,15 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         assert viewport_size is None
         assert dpi is None
 
-        timeout =  self.timeout_multiplier * test.timeout if self.debug_info is None else None
+        timeout = self.timeout_multiplier * test.timeout if self.debug_info is None else None
 
         test_url = self.test_url(test)
 
         return ExecuteAsyncScriptRun(self.logger,
-                             self._screenshot,
-                             self.protocol,
-                             test_url,
-                             timeout).run()
+                                     self._screenshot,
+                                     self.protocol,
+                                     test_url,
+                                     timeout).run()
 
     def _screenshot(self, marionette, url, timeout):
         marionette.navigate(url)
@@ -595,89 +566,15 @@ class InternalRefTestImplementation(object):
         try:
             self.executor.protocol.marionette._send_message("reftest:teardown", {})
             self.executor.protocol.marionette.set_context(self.executor.protocol.marionette.CONTEXT_CONTENT)
-        except socket.error:
-            pass
-
-class WdspecRun(object):
-    def __init__(self, func, session, path, timeout):
-        self.func = func
-        self.result = (None, None)
-        self.session = session
-        self.path = path
-        self.timeout = timeout
-        self.result_flag = threading.Event()
-
-    def run(self):
-        """Runs function in a thread and interrupts it if it exceeds the
-        given timeout.  Returns (True, (Result, [SubtestResult ...])) in
-        case of success, or (False, (status, extra information)) in the
-        event of failure.
-        """
-
-        executor = threading.Thread(target=self._run)
-        executor.start()
-
-        flag = self.result_flag.wait(self.timeout)
-        if self.result[1] is None:
-            self.result = False, ("EXTERNAL-TIMEOUT", None)
-
-        return self.result
-
-    def _run(self):
-        try:
-            self.result = True, self.func(self.session, self.path, self.timeout)
-        except (socket.timeout, IOError):
-            self.result = False, ("CRASH", None)
         except Exception as e:
-            message = getattr(e, "message")
-            if message:
-                message += "\n"
-            message += traceback.format_exc(e)
-            self.result = False, ("ERROR", message)
-        finally:
-            self.result_flag.set()
+            # Ignore errors during teardown
+            self.logger.warning(traceback.format_exc(e))
+
+
+
+class GeckoDriverProtocol(WebDriverProtocol):
+    server_cls = GeckoDriverServer
 
 
 class MarionetteWdspecExecutor(WdspecExecutor):
-    def __init__(self, browser, server_config, webdriver_binary,
-                 timeout_multiplier=1, close_after_done=True, debug_info=None,
-                 capabilities=None, webdriver_args=None, binary=None, **kwargs):
-        self.do_delayed_imports()
-        WdspecExecutor.__init__(self, browser, server_config,
-                                timeout_multiplier=timeout_multiplier,
-                                debug_info=debug_info)
-        self.webdriver_binary = webdriver_binary
-        self.webdriver_args = webdriver_args + ["--binary", binary]
-        self.capabilities = capabilities
-        self.protocol = RemoteMarionetteProtocol(self, browser)
-
-    def is_alive(self):
-        return self.protocol.is_alive
-
-    def on_environment_change(self, new_environment):
-        pass
-
-    def do_test(self, test):
-        timeout = test.timeout * self.timeout_multiplier + extra_timeout
-
-        success, data = WdspecRun(self.do_wdspec,
-                                  self.protocol.session_config,
-                                  test.abs_path,
-                                  timeout).run()
-
-        if success:
-            return self.convert_result(test, data)
-
-        return (test.result_cls(*data), [])
-
-    def do_wdspec(self, session_config, path, timeout):
-        harness_result = ("OK", None)
-        subtest_results = pytestrunner.run(path,
-                                           self.server_config,
-                                           session_config,
-                                           timeout=timeout)
-        return (harness_result, subtest_results)
-
-    def do_delayed_imports(self):
-        global pytestrunner
-        from . import pytestrunner
+    protocol_cls = GeckoDriverProtocol

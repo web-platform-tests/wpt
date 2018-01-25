@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>menuitemcheckbox readonly true</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
@@ -75,7 +76,7 @@
                   "property",
                   "role",
                   "isAny",
-                  "ROLE_SYSTEM_CHECKBUTTON or ROLE_SYSTEM_MENUITEM"
+                  "[ROLE_SYSTEM_CHECKBUTTON, ROLE_SYSTEM_MENUITEM]"
                ],
                [
                   "property",
@@ -87,7 +88,7 @@
             "UIA" : [
                [
                   "property",
-                  "Control Type",
+                  "ControlType",
                   "is",
                   "MenuItem"
                ],
@@ -126,4 +127,3 @@
   <div id="ATTAmessages"></div>
   </body>
 </html>
-

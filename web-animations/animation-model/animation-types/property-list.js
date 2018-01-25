@@ -1,6 +1,6 @@
 'use strict';
 
-var gCSSProperties = {
+const gCSSProperties = {
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
@@ -146,7 +146,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-backgrounds-3/#border-bottom-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.borderBottomStyle = 'solid';
       return element;
     }
@@ -233,7 +233,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-backgrounds-3/#border-left-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.borderLeftStyle = 'solid';
       return element;
     }
@@ -252,7 +252,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-backgrounds-3/#border-right-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.borderRightStyle = 'solid';
       return element;
     }
@@ -285,7 +285,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-backgrounds-3/#border-top-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.borderTopStyle = 'solid';
       return element;
     }
@@ -402,7 +402,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-multicol/#propdef-column-rule-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.columnRuleStyle = 'solid';
       return element;
     }
@@ -616,6 +616,16 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-fonts-3/#propdef-font-variant-position
     types: [
       { type: 'discrete', options: [ [ 'sub', 'super' ] ] }
+    ]
+  },
+  'font-variation-settings': {
+    // https://drafts.csswg.org/css-fonts-4/#descdef-font-face-font-variation-settings
+    types: [
+      'fontVariationSettings',
+      { type: 'discrete',
+        options: [ ['"wght" 1.1, "wdth" 1', '"wdth" 5'],
+                   ['"wdth" 5', 'normal']
+                 ] },
     ]
   },
   'font-weight': {
@@ -1034,7 +1044,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-ui-3/#propdef-outline-width
     types: [ 'length' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.outlineStyle = 'solid';
       return element;
     }
@@ -1042,12 +1052,6 @@ var gCSSProperties = {
   'overflow': {
     // https://drafts.csswg.org/css-overflow/#propdef-overflow
     types: [
-    ]
-  },
-  'overflow-clip-box': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/overflow-clip-box
-    types: [
-      { type: 'discrete', options: [ [ 'padding-box', 'content-box' ] ] }
     ]
   },
   'overflow-wrap': {
@@ -1358,7 +1362,7 @@ var gCSSProperties = {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-shadow
     types: [ 'textShadowList' ],
     setup: t => {
-      var element = createElement(t);
+      const element = createElement(t);
       element.style.color = 'green';
       return element;
     }
@@ -1463,29 +1467,56 @@ var gCSSProperties = {
 };
 
 function testAnimationSamples(animation, idlName, testSamples) {
-  var type = animation.effect.target.type;
-  var target = type
-               ? animation.effect.target.parentElement
-               : animation.effect.target;
-  testSamples.forEach(function(testSample) {
+  const type = animation.effect.target.type;
+  const target = animation.effect.target.constructor.name === 'CSSPseudoElement'
+                 ? animation.effect.target.parentElement
+                 : animation.effect.target;
+  for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
     assert_equals(getComputedStyle(target, type)[idlName],
                   testSample.expected,
-                  'The value should be ' + testSample.expected +
-                  ' at ' + testSample.time + 'ms');
-  });
+                  `The value should be ${testSample.expected}` +
+                  ` at ${testSample.time}ms`);
+  }
+}
+
+function toOrderedArray(string) {
+  return string.split(/\s*,\s/).sort();
+}
+
+// This test is for some list-based CSS properties such as font-variant-settings
+// don't specify an order for serializing computed values.
+// This test is for such the property.
+function testAnimationSamplesWithAnyOrder(animation, idlName, testSamples) {
+  const type = animation.effect.target.type;
+  const target = animation.effect.target.constructor.name === 'CSSPseudoElement'
+                 ? animation.effect.target.parentElement
+                 : animation.effect.target;
+  for (const testSample of testSamples) {
+    animation.currentTime = testSample.time;
+
+    // Convert to array and sort the expected and actual value lists first
+    // before comparing them.
+    const computedValues =
+      toOrderedArray(getComputedStyle(target, type)[idlName]);
+    const expectedValues = toOrderedArray(testSample.expected);
+
+    assert_array_equals(computedValues, expectedValues,
+                        `The computed values should be ${expectedValues}` +
+                        ` at ${testSample.time}ms`);
+  }
 }
 
 function testAnimationSampleMatrices(animation, idlName, testSamples) {
-  var target = animation.effect.target;
-  testSamples.forEach(function(testSample) {
+  const target = animation.effect.target;
+  for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    var actual = getComputedStyle(target)[idlName];
-    var expected = createMatrixFromArray(testSample.expected);
+    const actual = getComputedStyle(target)[idlName];
+    const expected = createMatrixFromArray(testSample.expected);
     assert_matrix_equals(actual, expected,
-                         'The value should be ' + expected +
-                         ' at ' + testSample.time + 'ms but got ' + actual);
-  });
+                         `The value should be ${expected} at`
+                         + ` ${testSample.time}ms but got ${actual}`);
+  }
 }
 
 function createTestElement(t, setup) {
@@ -1493,7 +1524,7 @@ function createTestElement(t, setup) {
 }
 
 function isSupported(property) {
-  var testKeyframe = new TestKeyframe(propertyToIDL(property));
+  const testKeyframe = new TestKeyframe(propertyToIDL(property));
   try {
     // Since TestKeyframe returns 'undefined' for |property|,
     // the KeyframeEffect constructor will throw
@@ -1504,7 +1535,7 @@ function isSupported(property) {
 }
 
 function TestKeyframe(testProp) {
-  var _propAccessCount = 0;
+  let _propAccessCount = 0;
 
   Object.defineProperty(this, testProp, {
     get: function() { _propAccessCount++; },
@@ -1517,7 +1548,7 @@ function TestKeyframe(testProp) {
 }
 
 function propertyToIDL(property) {
-  // https://w3c.github.io/web-animations/#animation-property-name-to-idl-attribute-name
+  // https://drafts.csswg.org/web-animations/#animation-property-name-to-idl-attribute-name
   if (property === 'float') {
     return 'cssFloat';
   }
@@ -1526,11 +1557,11 @@ function propertyToIDL(property) {
                             return str.substr(1).toUpperCase(); });
 }
 function calcFromPercentage(idlName, percentageValue) {
-  var examElem = document.createElement('div');
+  const examElem = document.createElement('div');
   document.body.appendChild(examElem);
   examElem.style[idlName] = percentageValue;
 
-  var calcValue = getComputedStyle(examElem)[idlName];
+  const calcValue = getComputedStyle(examElem)[idlName];
   document.body.removeChild(examElem);
 
   return calcValue;

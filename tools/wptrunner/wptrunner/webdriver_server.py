@@ -11,9 +11,9 @@ import urlparse
 import mozprocess
 
 
-__all__ = ["SeleniumServer", "ChromeDriverServer",
-           "GeckoDriverServer", "ServoDriverServer",
-           "WebDriverServer"]
+__all__ = ["SeleniumServer", "ChromeDriverServer", "OperaDriverServer",
+           "GeckoDriverServer", "InternetExplorerDriverServer", "EdgeDriverServer",
+           "ServoDriverServer", "WebDriverServer"]
 
 
 class WebDriverServer(object):
@@ -72,7 +72,7 @@ class WebDriverServer(object):
             "Waiting for server to become accessible: %s" % self.url)
         try:
             wait_for_service((self.host, self.port))
-        except:
+        except Exception:
             self.logger.error(
                 "WebDriver HTTP server was not accessible "
                 "within the timeout:\n%s" % traceback.format_exc())
@@ -125,8 +125,6 @@ class SeleniumServer(WebDriverServer):
 
 
 class ChromeDriverServer(WebDriverServer):
-    default_base_path = "/wd/hub"
-
     def __init__(self, logger, binary="chromedriver", port=None,
                  base_path="", args=None):
         WebDriverServer.__init__(
@@ -137,9 +135,25 @@ class ChromeDriverServer(WebDriverServer):
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
 
-
 class EdgeDriverServer(WebDriverServer):
-    def __init__(self, logger, binary="MicrosoftWebDriver.exe", port=None,
+    def __init__(self, logger, binary="microsoftwebdriver.exe", port=None,
+                 base_path="", args=None):
+        WebDriverServer.__init__(
+            self, logger, binary, port=port, base_path=base_path, args=args)
+
+    def make_command(self):
+        return [self.binary,
+                "--port=%s" % str(self.port)] + self._args
+
+class OperaDriverServer(ChromeDriverServer):
+    def __init__(self, logger, binary="operadriver", port=None,
+                 base_path="", args=None):
+        ChromeDriverServer.__init__(
+            self, logger, binary, port=port, base_path=base_path, args=args)
+
+
+class InternetExplorerDriverServer(WebDriverServer):
+    def __init__(self, logger, binary="IEDriverServer.exe", port=None,
                  base_path="", host="localhost", args=None):
         WebDriverServer.__init__(
             self, logger, binary, host=host, port=port, args=args)
@@ -165,10 +179,11 @@ class GeckoDriverServer(WebDriverServer):
 
 
 class ServoDriverServer(WebDriverServer):
-    def __init__(self, logger, binary="servo", binary_args=None, host="127.0.0.1", port=None):
+    def __init__(self, logger, binary="servo", binary_args=None, host="127.0.0.1",
+                 port=None, args=None):
         env = os.environ.copy()
         env["RUST_BACKTRACE"] = "1"
-        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env)
+        WebDriverServer.__init__(self, logger, binary, host=host, port=port, env=env, args=args)
         self.binary_args = binary_args
 
     def make_command(self):

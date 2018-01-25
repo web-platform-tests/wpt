@@ -10,18 +10,24 @@ logger = logging.getLogger(__name__)
 
 
 class Kwargs(dict):
-    def set_if_none(self, name, value, err_fn=None, desc=None, extra_cond=None):
+    def set_if_none(self,
+                    name,            # type: str
+                    value,           # type: Any
+                    err_fn=None,     # type: (Kwargs, str) -> Any
+                    desc=None,       # type: str
+                    extra_cond=None  # type: (Kwargs) -> bool
+                    ):
         if desc is None:
             desc = name
 
-        if self[name] is None:
+        if name not in self or self[name] is None:
             if extra_cond is not None and not extra_cond(self):
                 return
             if callable(value):
                 value = value()
             if not value:
                 if err_fn is not None:
-                    return err_fn(kwargs, "Failed to find %s" % desc)
+                    return err_fn(self, "Failed to find %s" % desc)
                 else:
                     return
             self[name] = value

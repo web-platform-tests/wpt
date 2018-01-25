@@ -17,7 +17,7 @@ from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
 
-from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, any_variants, skip_variants
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, any_variants, skip_variants
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -56,7 +56,7 @@ For example, to make the lint tool ignore all '%s'
 errors in the %s file,
 you could add the following line to the lint.whitelist file.
 
-%s:%s"""
+%s: %s"""
 
 def all_filesystem_paths(repo_root):
     path_filter = PathFilter(repo_root, extras=[".git/*"])
@@ -108,13 +108,13 @@ def _all_files_equal(paths):
     return True
 
 
-def check_path_length(repo_root, path, css_mode):
+def check_path_length(repo_root, path):
     if len(path) + 1 > 150:
         return [("PATH LENGTH", "/%s longer than maximum path length (%d > 150)" % (path, len(path) + 1), path, None)]
     return []
 
 
-def check_worker_collision(repo_root, path, css_mode):
+def check_worker_collision(repo_root, path):
     endings = [(".any.html", ".any.js"),
                (".any.worker.html", ".any.js"),
                (".worker.html", ".worker.js")]
@@ -127,12 +127,19 @@ def check_worker_collision(repo_root, path, css_mode):
     return []
 
 
+def check_ahem_copy(repo_root, path):
+    lpath = path.lower()
+    if "ahem" in lpath and lpath.endswith(".ttf"):
+        return [("AHEM COPY", "Don't add extra copies of Ahem, use /fonts/Ahem.ttf", path, None)]
+    return []
+
+
 drafts_csswg_re = re.compile(r"https?\:\/\/drafts\.csswg\.org\/([^/?#]+)")
 w3c_tr_re = re.compile(r"https?\:\/\/www\.w3c?\.org\/TR\/([^/?#]+)")
 w3c_dev_re = re.compile(r"https?\:\/\/dev\.w3c?\.org\/[^/?#]+\/([^/?#]+)")
 
 
-def check_css_globally_unique(repo_root, paths, css_mode):
+def check_css_globally_unique(repo_root, paths):
     """
     Checks that CSS filenames are sufficiently unique
 
@@ -147,7 +154,6 @@ def check_css_globally_unique(repo_root, paths, css_mode):
 
     :param repo_root: the repository root
     :param paths: list of all paths
-    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``paths``
 
     """
@@ -159,11 +165,9 @@ def check_css_globally_unique(repo_root, paths, css_mode):
         if os.name == "nt":
             path = path.replace("\\", "/")
 
-        if not css_mode:
-            if not path.startswith("css/"):
-                continue
+        if not path.startswith("css/"):
+            continue
 
-        # we're within css or in css_mode after all that
         source_file = SourceFile(repo_root, path, "/")
         if source_file.name_is_non_test:
             # If we're name_is_non_test for a reason apart from support, ignore it.
@@ -325,6 +329,11 @@ class W3CTestOrgRegexp(Regexp):
     error = "W3C-TEST.ORG"
     description = "External w3c-test.org domain used"
 
+class WebPlatformTestRegexp(Regexp):
+    pattern = b"web\-platform\.test"
+    error = "WEB-PLATFORM.TEST"
+    description = "Internal web-platform.test domain used"
+
 class Webidl2Regexp(Regexp):
     pattern = b"webidl2\.js"
     error = "WEBIDL2.JS"
@@ -348,18 +357,34 @@ class PrintRegexp(Regexp):
     file_extensions = [".py"]
     description = "Print function used"
 
+class LayoutTestsRegexp(Regexp):
+    pattern = b"eventSender|testRunner|window\.internals"
+    error = "LAYOUTTESTS APIS"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "eventSender/testRunner/window.internals used; these are LayoutTests-specific APIs (WebKit/Blink)"
+
+class SpecialPowersRegexp(Regexp):
+    pattern = b"SpecialPowers"
+    error = "SPECIALPOWERS API"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "SpecialPowers used; this is gecko-specific and not supported in wpt"
+
+
 regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
             CRRegexp,
             SetTimeoutRegexp,
             W3CTestOrgRegexp,
+            WebPlatformTestRegexp,
             Webidl2Regexp,
             ConsoleRegexp,
             GenerateTestsRegexp,
-            PrintRegexp]]
+            PrintRegexp,
+            LayoutTestsRegexp,
+            SpecialPowersRegexp]]
 
-def check_regexp_line(repo_root, path, f, css_mode):
+def check_regexp_line(repo_root, path, f):
     errors = []
 
     applicable_regexps = [regexp for regexp in regexps if regexp.applies(path)]
@@ -371,12 +396,12 @@ def check_regexp_line(repo_root, path, f, css_mode):
 
     return errors
 
-def check_parsed(repo_root, path, f, css_mode):
+def check_parsed(repo_root, path, f):
     source_file = SourceFile(repo_root, path, "/", contents=f.read())
 
     errors = []
 
-    if css_mode or path.startswith("css/"):
+    if path.startswith("css/"):
         if (source_file.type == "support" and
             not source_file.name_is_non_test and
             not source_file.name_is_reference):
@@ -403,7 +428,7 @@ def check_parsed(repo_root, path, f, css_mode):
         return [("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None)]
 
     for reftest_node in source_file.reftest_nodes:
-        href = reftest_node.attrib.get("href", "")
+        href = reftest_node.attrib.get("href", "").strip(space_chars)
         parts = urlsplit(href)
         if parts.scheme or parts.netloc:
             errors.append(("ABSOLUTE-URL-REF",
@@ -493,13 +518,25 @@ def check_parsed(repo_root, path, f, css_mode):
             if all(seen_elements[name] for name in required_elements):
                 break
 
+    if source_file.testdriver_nodes:
+        if len(source_file.testdriver_nodes) > 1:
+            errors.append(("MULTIPLE-TESTDRIVER",
+                           "More than one <script src='/resources/testdriver.js'>", path, None))
+
+        testdriver_vendor_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testdriver-vendor.js']")
+        if not testdriver_vendor_nodes:
+            errors.append(("MISSING-TESTDRIVER-VENDOR",
+                           "Missing <script src='/resources/testdriver-vendor.js'>", path, None))
+        else:
+            if len(testdriver_vendor_nodes) > 1:
+                errors.append(("MULTIPLE-TESTDRIVER-VENDOR",
+                               "More than one <script src='/resources/testdriver-vendor.js'>", path, None))
 
     for element in source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src]"):
         src = element.attrib["src"]
-        for name in ["testharness", "testharnessreport"]:
+        for name in ["testharness", "testharnessreport", "testdriver", "testdriver-vendor"]:
             if "%s.js" % name == src or ("/%s.js" % name in src and src != "/resources/%s.js" % name):
                 errors.append(("%s-PATH" % name.upper(), "%s.js script seen with incorrect path" % name, path, None))
-
 
     return errors
 
@@ -528,7 +565,7 @@ class OpenModeCheck(ASTCheck):
 
 ast_checkers = [item() for item in [OpenModeCheck]]
 
-def check_python_ast(repo_root, path, f, css_mode):
+def check_python_ast(repo_root, path, f):
     if not path.endswith(".py"):
         return []
 
@@ -548,7 +585,7 @@ broken_js_metadata = re.compile(b"//\s*META:")
 broken_python_metadata = re.compile(b"#\s*META:")
 
 
-def check_script_metadata(repo_root, path, f, css_mode):
+def check_script_metadata(repo_root, path, f):
     if path.endswith(".any.js"):
         meta_re = js_meta_re
         broken_metadata = broken_js_metadata
@@ -618,52 +655,49 @@ def check_script_metadata(repo_root, path, f, css_mode):
     return errors
 
 
-def check_path(repo_root, path, css_mode):
+def check_path(repo_root, path):
     """
     Runs lints that check the file path.
 
     :param repo_root: the repository root
     :param path: the path of the file within the repository
-    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``path``
     """
 
     errors = []
     for path_fn in path_lints:
-        errors.extend(path_fn(repo_root, path, css_mode))
+        errors.extend(path_fn(repo_root, path))
     return errors
 
 
-def check_all_paths(repo_root, paths, css_mode):
+def check_all_paths(repo_root, paths):
     """
     Runs lints that check all paths globally.
 
     :param repo_root: the repository root
     :param paths: a list of all the paths within the repository
-    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``f``
     """
 
     errors = []
     for paths_fn in all_paths_lints:
-        errors.extend(paths_fn(repo_root, paths, css_mode))
+        errors.extend(paths_fn(repo_root, paths))
     return errors
 
 
-def check_file_contents(repo_root, path, f, css_mode):
+def check_file_contents(repo_root, path, f):
     """
     Runs lints that check the file contents.
 
     :param repo_root: the repository root
     :param path: the path of the file within the repository
     :param f: a file-like object with the file contents
-    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``f``
     """
 
     errors = []
     for file_fn in file_lints:
-        errors.extend(file_fn(repo_root, path, f, css_mode))
+        errors.extend(file_fn(repo_root, path, f))
         f.seek(0)
     return errors
 
@@ -717,6 +751,27 @@ def changed_files(wpt_root):
     return [os.path.relpath(item, wpt_root) for item in changed]
 
 
+def lint_paths(kwargs, wpt_root):
+    if kwargs.get("paths"):
+        r = os.path.realpath(wpt_root)
+        paths = [os.path.relpath(os.path.realpath(x), r) for x in kwargs["paths"]]
+    elif kwargs["all"]:
+        paths = list(all_filesystem_paths(wpt_root))
+    else:
+        changed_paths = changed_files(wpt_root)
+        force_all = False
+        # If we changed the lint itself ensure that we retest everything
+        for path in changed_paths:
+            path = path.replace(os.path.sep, "/")
+            if path == "lint.whitelist" or path.startswith("tools/lint/"):
+                force_all = True
+                break
+        paths = (list(changed_paths) if not force_all
+                 else list(all_filesystem_paths(wpt_root)))
+
+    return paths
+
+
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("paths", nargs="*",
@@ -745,16 +800,15 @@ def main(**kwargs):
                      (False, False): "normal"}[(kwargs.get("json", False),
                                                 kwargs.get("markdown", False))]
 
-    paths = list(kwargs.get("paths") if kwargs.get("paths") else
-                 changed_files(repo_root) if not kwargs.get("all") else
-                 all_filesystem_paths(repo_root))
-
     if output_format == "markdown":
         setup_logging(True)
-    return lint(repo_root, paths, output_format, kwargs.get("css_mode", False))
+
+    paths = lint_paths(kwargs, repo_root)
+
+    return lint(repo_root, paths, output_format)
 
 
-def lint(repo_root, paths, output_format, css_mode):
+def lint(repo_root, paths, output_format):
     error_count = defaultdict(int)
     last = None
 
@@ -795,15 +849,15 @@ def lint(repo_root, paths, output_format, css_mode):
             paths.remove(path)
             continue
 
-        errors = check_path(repo_root, path, css_mode)
+        errors = check_path(repo_root, path)
         last = process_errors(errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path, 'rb') as f:
-                errors = check_file_contents(repo_root, path, f, css_mode)
+                errors = check_file_contents(repo_root, path, f)
                 last = process_errors(errors) or last
 
-    errors = check_all_paths(repo_root, paths, css_mode)
+    errors = check_all_paths(repo_root, paths)
     last = process_errors(errors) or last
 
     if output_format in ("normal", "markdown"):
@@ -813,7 +867,7 @@ def lint(repo_root, paths, output_format, css_mode):
                 logger.info(line)
     return sum(itervalues(error_count))
 
-path_lints = [check_path_length, check_worker_collision]
+path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
 all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 

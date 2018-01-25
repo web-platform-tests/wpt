@@ -56,7 +56,7 @@ const expected = {
   WritableStreamDefaultController: {
     constructor: {
       type: 'constructor',
-      length: 4
+      length: 0
     },
     error: {
       type: 'method',
@@ -127,8 +127,10 @@ for (const c in expected) {
                         `${name} should take ${properties[name].length} arguments`);
           if (type === 'constructor') {
             assert_true(IsConstructor(prototype[name]), `${name} should be a constructor`);
+            assert_equals(prototype[name].name, c, `${name}.name should be '${c}'`);
           } else {
             assert_false(IsConstructor(prototype[name]), `${name} should not be a constructor`);
+            assert_equals(prototype[name].name, name, `${name}.name should be '${name}`);
           }
         }, `${fullName} should be a ${type}`);
         break;
@@ -145,7 +147,7 @@ for (const c in expected) {
 const sinkMethods = {
   start: {
     length: 1,
-    trigger: () => {}
+    trigger: () => Promise.resolve()
   },
   write: {
     length: 2,
@@ -192,28 +194,32 @@ for (const method in sinkMethods) {
     });
   }, `sink method ${method} should be called even when it's located on the prototype chain`);
 
-  if (method !== 'start') {
-    promise_test(t => {
-      const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
-                              'getOwnPropertyDescriptor', 'defineProperty', 'has', 'set', 'deleteProperty', 'ownKeys',
-                              'apply', 'construct'];
-      const handler = {
-        get: t.step_func((target, property) => {
-          if (property === 'type') {
-            return undefined;
-          }
-          assert_in_array(property, ['start', method], `only start() and ${method}() should be called`);
-          return () => Promise.resolve();
-        })
-      };
-      for (const trap of unreachedTraps) {
-        handler[trap] = t.unreached_func(`${trap} should not be trapped`);
-      }
-      const sink = new Proxy({}, handler);
-      const ws = new WritableStream(sink);
-      return trigger(ws.getWriter());
-    }, `unexpected properties should not be accessed when calling sink method ${method}`);
-  }
+  promise_test(t => {
+    const unreachedTraps = ['getPrototypeOf', 'setPrototypeOf', 'isExtensible', 'preventExtensions',
+                            'getOwnPropertyDescriptor', 'defineProperty', 'has', 'set', 'deleteProperty', 'ownKeys',
+                            'apply', 'construct'];
+    const touchedProperties = [];
+    const handler = {
+      get: t.step_func((target, property) => {
+        touchedProperties.push(property);
+        if (property === 'type') {
+          return undefined;
+        }
+        return () => Promise.resolve();
+      })
+    };
+    for (const trap of unreachedTraps) {
+      handler[trap] = t.unreached_func(`${trap} should not be trapped`);
+    }
+    const sink = new Proxy({}, handler);
+    const ws = new WritableStream(sink);
+    assert_array_equals(touchedProperties, ['type', 'write', 'close', 'abort', 'start'],
+                        'expected properties should be got');
+    return trigger(ws.getWriter()).then(() => {
+      assert_array_equals(touchedProperties, ['type', 'write', 'close', 'abort', 'start'],
+                          'no properties should be accessed on method call');
+    });
+  }, `unexpected properties should not be accessed when calling sink method ${method}`);
 }
 
 done();

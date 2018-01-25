@@ -3,6 +3,7 @@ import platform
 import signal
 import subprocess
 import sys
+import tempfile
 
 import mozinfo
 import mozleak
@@ -133,6 +134,24 @@ def update_properties():
             {"debug", "e10s", "stylo"})
 
 
+def write_server_locations_file(config):
+    fd, path = tempfile.mkstemp()
+    with os.fdopen(fd, "w") as f:
+        f.write("http://127.0.0.1:%d    primary\n" % config["ports"]["http"][0])
+        for scheme, ports in config["ports"].items():
+            # https://bugzilla.mozilla.org/show_bug.cgi?id=1422857
+            if scheme == "ws":
+                scheme = "http"
+            elif scheme == "wss":
+                scheme = "https"
+
+            for port in ports:
+                for domain in config['domains'].values():
+                    f.write("%s://%s:%d\n" % (scheme, domain, port))
+        f.flush()
+    return path
+
+
 class FirefoxBrowser(Browser):
     used_ports = set()
     init_timeout = 60
@@ -173,6 +192,8 @@ class FirefoxBrowser(Browser):
         self.stylo_threads = stylo_threads
         self.chaos_mode_flags = chaos_mode_flags
 
+        self.server_locations = write_server_locations_file(self.config)
+
     def settings(self, test):
         return {"check_leaks": self.leak_check and not test.leaks}
 
@@ -189,7 +210,7 @@ class FirefoxBrowser(Browser):
         if self.chaos_mode_flags is not None:
             env["MOZ_CHAOSMODE"] = str(self.chaos_mode_flags)
 
-        locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
+        locations = ServerLocations(filename=self.server_locations)
 
         preferences = self.load_prefs()
 

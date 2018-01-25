@@ -1,16 +1,16 @@
+// https://w3c.github.io/payment-handler/#the-canmakepaymentevent
+
 'use strict';
 
 if (self.importScripts) {
   importScripts('/resources/testharness.js');
 }
 
-// https://w3c.github.io/payment-handler/#the-canmakepaymentevent
-
 test(() => {
   try {
     new CanMakePaymentEvent('test');
   } catch (err) {
-    assert_true(false, `Unexpected exception: ${err.message}`);
+    assert_unreached(`Unexpected exception: ${err.message}`);
   }
 }, 'CanMakePaymentEvent can be constructed in service worker.');
 

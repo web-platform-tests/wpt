@@ -3,12 +3,12 @@ import platform
 import signal
 import subprocess
 import sys
+import tempfile
 
 import mozinfo
 import mozleak
 from mozprocess import ProcessHandler
 from mozprofile import FirefoxProfile, Preferences
-from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 from mozrunner.utils import get_stack_fixer_function
 from mozcrash import mozcrash
@@ -188,12 +188,9 @@ class FirefoxBrowser(Browser):
         if self.chaos_mode_flags is not None:
             env["MOZ_CHAOSMODE"] = str(self.chaos_mode_flags)
 
-        locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
-
         preferences = self.load_prefs()
 
-        self.profile = FirefoxProfile(locations=locations,
-                                      preferences=preferences)
+        self.profile = FirefoxProfile(preferences=preferences)
         self.profile.set_preferences({"marionette.port": self.marionette_port,
                                       "dom.disable_open_during_load": False,
                                       "network.dns.localDomains": ",".join(hostnames),

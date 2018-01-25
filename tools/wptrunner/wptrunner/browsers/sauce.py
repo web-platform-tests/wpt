@@ -159,7 +159,7 @@ class SauceConnect():
 
         # Timeout config vars
         each_sleep_secs = 1
-        max_wait = 10
+        max_wait = 30
         kill_wait = 5
 
         tot_wait = 0

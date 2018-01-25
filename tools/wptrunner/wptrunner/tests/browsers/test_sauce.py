@@ -11,8 +11,8 @@ sauce = pytest.importorskip("wptrunner.browsers.sauce")
 
 def test_sauceconnect_success():
     with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-         mock.patch.object(sauce.subprocess, "Popen") as Popen,\
-         mock.patch.object(sauce.os.path, "exists") as exists:
+            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+            mock.patch.object(sauce.os.path, "exists") as exists:
         # Act as if it's still running
         Popen.return_value.poll.return_value = None
         Popen.return_value.returncode = None
@@ -38,9 +38,9 @@ def test_sauceconnect_success():
 ])
 def test_sauceconnect_failure_exit(readyfile, returncode):
     with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-         mock.patch.object(sauce.subprocess, "Popen") as Popen,\
-         mock.patch.object(sauce.os.path, "exists") as exists,\
-         mock.patch.object(sauce.time, "sleep") as sleep:
+            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+            mock.patch.object(sauce.os.path, "exists") as exists,\
+            mock.patch.object(sauce.time, "sleep") as sleep:
         Popen.return_value.poll.return_value = returncode
         Popen.return_value.returncode = returncode
         exists.return_value = readyfile
@@ -60,9 +60,9 @@ def test_sauceconnect_failure_exit(readyfile, returncode):
 
 def test_sauceconnect_failure_never_ready():
     with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-         mock.patch.object(sauce.subprocess, "Popen") as Popen,\
-         mock.patch.object(sauce.os.path, "exists") as exists,\
-         mock.patch.object(sauce.time, "sleep") as sleep:
+            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+            mock.patch.object(sauce.os.path, "exists") as exists,\
+            mock.patch.object(sauce.time, "sleep") as sleep:
         Popen.return_value.poll.return_value = None
         Popen.return_value.returncode = None
         exists.return_value = False

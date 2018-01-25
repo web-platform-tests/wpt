@@ -1,1 +1,0 @@
-Feature-Policy: midi *; payment 'self'; camera 'self'; usb *; vr 'none'; fullscreen 'self'; accelerometer *;

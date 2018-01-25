@@ -26,8 +26,8 @@ function installAPI(global) {
                 */
             }
         },
-        IsHTMLDDA: function() {
-            return global.document.all;
+        IsHTMLDDA: function(arg) {
+            return (!arg || arg == "") ? null : global.document.all;
         },
         global: global
     };

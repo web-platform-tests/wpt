@@ -133,12 +133,7 @@ function prepareTest(test262, attrs, strict) {
         return output.join("\n");
     }
     function run_in_eval(str) {
-        let ret = []
-        let lines = str.split("\n");
-        lines.forEach(function(line) {
-            ret.push('"' + line.replace(/"/g, '\\"') + '"');
-        });
-        return 'eval(' + ret.join(" +\n") + ');';
+        return 'eval("' + str.replace(/"/g, '\\"') + '");';
     }
     let test_code = test262();
     let negative = attrs.negative || {}

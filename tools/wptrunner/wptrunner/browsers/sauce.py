@@ -113,8 +113,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"host": "web-platform.test",
-            "bind_hostname": "true",
+    return {"bind_hostname": "true",
             "supports_debugger": False}
 
 

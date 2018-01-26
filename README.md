@@ -21,6 +21,13 @@ Note: because of the frequent creation and deletion of branches in this
 repo, it is recommended to "prune" stale branches when fetching updates,
 i.e. use `git pull --prune` (or `git fetch -p && git merge`).
 
+If you would prefer not to do this by hand on Windows, there is an
+[installer script](http://github.com/thejohnjansen/WPTWindowsInstaller) you can use.
+This installer will install python, git, webdrivers, and other tools; it will
+also clone the repo for you and attempt to execute one test to verify
+everything worked.
+
+
 Running the Tests
 =================
 
@@ -96,10 +103,10 @@ line syntax is:
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
 ```bash
-python wpt product [tests]
+python wpt run product [tests]
 ```
 
-where `product` is currently `firefox` or `chrome` and `[tests]` is a
+where `product` is currently `firefox` or `chrome` or `edge` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
 browser instance and install required dependencies. The command is
 very configurable; for examaple to specify a particular binary use

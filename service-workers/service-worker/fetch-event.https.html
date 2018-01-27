@@ -174,49 +174,71 @@ async_test(function(t) {
       .catch(unreached_rejection(t));
   }, 'Service Worker fetches other file in fetch event');
 
-async_test(function(t) {
-    var scope = 'resources/simple.html?form-post';
-    var frame_name = 'xhr-post-frame';
-    service_worker_unregister_and_register(t, worker, scope)
-      .then(function(reg) {
+// Creates a form and an iframe and does a form submission that navigates the
+// frame to |action_url|. Returns the frame after navigation.
+function submit_form(action_url) {
+  return new Promise(resolve => {
+      const frame = document.createElement('iframe');
+      frame.name = 'post-frame';
+      document.body.appendChild(frame);
+      const form = document.createElement('form');
+      form.target = frame.name;
+      form.action = action_url;
+      form.method = 'post';
+      const input1 = document.createElement('input');
+      input1.type = 'text';
+      input1.value = 'testValue1';
+      input1.name = 'testName1'
+      form.appendChild(input1);
+      const input2 = document.createElement('input');
+      input2.type = 'text';
+      input2.value = 'testValue2';
+      input2.name = 'testName2'
+      form.appendChild(input2);
+      document.body.appendChild(form);
+      frame.onload = function() {
+        document.body.removeChild(form);
+        resolve(frame);
+      };
+      form.submit();
+    });
+}
+
+promise_test(t => {
+    const scope = 'resources/simple.html?form-post';
+    return service_worker_unregister_and_register(t, worker, scope)
+      .then(reg => {
+          add_result_callback(() => { reg.unregister(); });
           return wait_for_state(t, reg.installing, 'activated');
         })
-      .then(function(sw) {
-         return new Promise(function(resolve) {
-            var frame = document.createElement('iframe');
-            frame.name = frame_name;
-            document.body.appendChild(frame);
-            var form = document.createElement('form');
-            form.target = frame_name;
-            form.action = scope;
-            form.method = 'post';
-            var input1 = document.createElement('input');
-            input1.type = 'text';
-            input1.value = 'testValue1';
-            input1.name = 'testName1'
-            form.appendChild(input1);
-            var input2 = document.createElement('input');
-            input2.type = 'text';
-            input2.value = 'testValue2';
-            input2.name = 'testName2'
-            form.appendChild(input2);
-            document.body.appendChild(form);
-            frame.onload = function() {
-              document.body.removeChild(form);
-              resolve(frame);
-            };
-            form.submit();
-          });
+      .then(() => {
+          return submit_form(scope);
         })
-      .then(function(frame) {
+      .then(frame => {
           assert_equals(frame.contentDocument.body.textContent,
                         'POST:application/x-www-form-urlencoded:' +
                         'testName1=testValue1&testName2=testValue2');
           frame.remove();
-          return service_worker_unregister_and_done(t, scope);
-        })
-      .catch(unreached_rejection(t));
+        });
   }, 'Service Worker responds to fetch event with POST form');
+
+promise_test(t => {
+    // Add '?ignore' to scope so the service worker falls back to network.
+    const scope = 'resources/echo-content.py?ignore';
+    return service_worker_unregister_and_register(t, worker, scope)
+      .then(reg => {
+          add_result_callback(() => { reg.unregister(); });
+          return wait_for_state(t, reg.installing, 'activated');
+        })
+      .then(() => {
+          return submit_form(scope);
+        })
+      .then(frame => {
+          assert_equals(frame.contentDocument.body.textContent,
+                        'testName1=testValue1&testName2=testValue2');
+          frame.remove();
+        });
+  }, 'Service Worker falls back to network in fetch event with POST form');
 
 async_test(function(t) {
     var scope = 'resources/simple.html?multiple-respond-with';

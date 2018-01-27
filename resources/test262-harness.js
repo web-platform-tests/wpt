@@ -1,5 +1,6 @@
 // Based on Test262-Web-Runner. See https://github.com/bakkot/test262-web-runner/main.js.
 function installAPI(global) {
+    global.global = global;
     global.$262 = {
         createRealm: function() {
             var iframe = global.document.createElement('iframe');
@@ -29,7 +30,6 @@ function installAPI(global) {
         IsHTMLDDA: function(arg) {
             return (!arg || arg == "") ? null : global.document.all;
         },
-        global: global
     };
     return global.$262;
 }

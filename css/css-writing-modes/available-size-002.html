@@ -4,7 +4,7 @@
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
 <link rel="help" href="https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto">
 <link rel="match" href="reference/available-size-001-ref.html">
-<meta name="assert" content="When an orthogonal flow's parent doesn't have a definite block size but does have a fixed max-height, but isn't a scroller, do not use that size.">
+<meta name="assert" content="When an orthogonal flow's ancestor doesn't have a definite block size but does have a fixed max-height, but isn't a scroller, do not use that size.">
 <meta name="flags" content="">
 <style>
 body > div {
@@ -15,7 +15,7 @@ body > div {
   position: relative; /* to act as a container of #green */
 }
 
-div > div { writing-mode: vertical-rl; }
+div > div > div { writing-mode: vertical-rl; }
 
 span {
   background: white;
@@ -34,9 +34,11 @@ span {
 <p>Test passes if there is a <strong>green rectangle</strong> below and <strong>no red</strong>.
 
 <div>
-  <aside id="green">0</aside>
-  <div>0 0 0 0 <span>0</span> 0 0 0</div> <!-- If this div take its height from
-  the max-height of its parent (which it shouldn't, since it's not a scroller),
-  it should wrap just right for the white 0 to
-  overlap with the green one. -->
+  <div>
+    <aside id="green">0</aside>
+    <div>0 0 0 0 <span>0</span> 0 0 0</div> <!-- If this div takes its height from
+    the max-height of its parent (which it shouldn't, since it's not a scroller),
+    it should wrap just right for the white 0 to
+    overlap with the green one. -->
+  </div>
 </div>

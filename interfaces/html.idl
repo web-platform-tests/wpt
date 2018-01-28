@@ -1376,10 +1376,7 @@ interface ImageData {
   readonly attribute Uint8ClampedArray data;
 };
 
-[Constructor,
- Constructor(Path2D path),
- Constructor(sequence<Path2D> paths, optional CanvasFillRule fillRule = "nonzero"),
- Constructor(DOMString d),
+[Constructor(optional (Path2D or DOMString) path),
  Exposed=(Window,Worker)]
 interface Path2D {
   void addPath(Path2D path, optional DOMMatrix2DInit transform);

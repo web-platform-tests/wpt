@@ -19,10 +19,7 @@ body > div {
   padding: 1ch 0;
 }
 
-/* Double nesting of orthogonal flow, because we want the innermost one
- to not have a parent with a definite block size,
- but want the scrolling outermost one to have a height. */
-div > div { writing-mode: horizontal-tb; }
+div > div { padding-bottom: 2ch; } /* so that the content height of the parent and of the fixed size scrolling ancestor are different */
 div > div > div { writing-mode: vertical-rl; }
 
 span {

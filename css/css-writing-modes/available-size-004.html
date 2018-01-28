@@ -14,13 +14,9 @@ body > div {
   width: 300px; /* Shrinkwrapping this div is not what we're interested in testing here, so give it a width. See nested-orthogonal-001.html for that. */
   color: transparent;
   position: relative; /* to act as a container of #green */
-  writing-mode: vertical-lr;
 }
 
-/* Double nesting of orthogonal flow, because we want the innermost one
- to not have a parent with a definite block size,
- but want the scrolling outermost one to have a height. */
-div > div { writing-mode: horizontal-tb; }
+div > div { padding-bottom: 2ch; } /* so that the content height of the parent and of the fixed size ancestor are different */
 div > div > div { writing-mode: vertical-rl; }
 
 span {

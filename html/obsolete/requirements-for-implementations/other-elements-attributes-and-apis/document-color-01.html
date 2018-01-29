@@ -50,4 +50,24 @@ test(function() {
 
   document.body = body;
 }, "setting document color attributes with no body");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument();
+  doc.replaceChild(doc.createElement('test'), doc.documentElement);
+  var new_body = doc.createElement('body');
+  doc.documentElement.appendChild(new_body);
+
+  doc.fgColor = "red";
+  doc.bgColor = "red";
+  doc.linkColor = "red";
+  doc.vlinkColor = "red";
+  doc.alinkColor = "red";
+
+  assert_equals(new_body.attributes.length, 0, 'new_body.attributes.length');
+  assert_equals(doc.fgColor, "");
+  assert_equals(doc.bgColor, "");
+  assert_equals(doc.linkColor, "");
+  assert_equals(doc.vlinkColor, "");
+  assert_equals(doc.alinkColor, "");
+}, "document color attributes when the root element is a test element");
 </script>

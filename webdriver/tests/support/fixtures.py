@@ -151,8 +151,14 @@ def session(configuration, request):
     new one and assume that if that fails there is already a valid session. This makes it
     possible to recover from some errors that might leave the session in a bad state, but
     does not demand that we start a new session per test."""
+    def can_reuse_current_session():
+        global _current_session
+        if _current_session is None:
+            return False
+        return _current_session.transport.host == configuration["host"] and _current_session.transport.port == configuration["port"]
+
     global _current_session
-    if _current_session is None:
+    if not can_reuse_current_session():
         _current_session = webdriver.Session(configuration["host"],
                                              configuration["port"],
                                              capabilities={"alwaysMatch": configuration["capabilities"]})

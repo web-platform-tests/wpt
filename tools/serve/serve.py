@@ -203,6 +203,8 @@ subdomains = [u"www",
               u"天気の良い日",
               u"élève"]
 
+not_subdomains = [u"nonexistent-origin"]
+
 class RoutesBuilder(object):
     def __init__(self):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
@@ -468,6 +470,12 @@ def get_subdomains(host):
             for subdomain in subdomains}
 
 
+def get_not_subdomains(host):
+    #This assumes that the tld is ascii-only or already in punycode
+    return {subdomain: (subdomain.encode("idna"), host)
+            for subdomain in not_subdomains}
+
+
 def start_servers(host, ports, paths, routes, bind_hostname, config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
@@ -626,12 +634,16 @@ def get_ports(config, ssl_environment):
 def normalise_config(config, ports):
     host = config["external_host"] if config["external_host"] else config["host"]
     domains = get_subdomains(host)
+    not_domains = get_not_subdomains(host)
     ports_ = {}
     for scheme, ports_used in ports.iteritems():
         ports_[scheme] = ports_used
 
     for key, value in domains.iteritems():
         domains[key] = ".".join(value)
+
+    for key, value in not_domains.iteritems():
+        not_domains[key] = ".".join(value)
 
     domains[""] = host
 
@@ -644,6 +656,7 @@ def normalise_config(config, ports):
     config_ = config.copy()
     config_["host"] = host
     config_["domains"] = domains
+    config_["not_domains"] = not_domains
     config_["ports"] = ports_
     return config_
 

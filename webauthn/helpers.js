@@ -1,5 +1,4 @@
-
-/* Useful constants for working with COSE key objects */
+// Useful constants for working with COSE key objects
 const cose_kty = 1;
 const cose_kty_ec2 = 2;
 const cose_alg = 3;
@@ -9,6 +8,60 @@ const cose_crv = -1;
 const cose_crv_P256 = 1;
 const cose_crv_x = -2;
 const cose_crv_y = -3;
+
+/**
+ * These are the default arguments that will be passed to navigator.credentials.create()
+ * unless modified by a specific test case
+ */
+var createCredentialDefaultArgs = {
+    options: {
+        publicKey: {
+            // Relying Party:
+            rp: {
+                name: "Acme"
+            },
+
+            // User:
+            user: {
+                id: new Uint8Array(), // Won't survive the copy, must be rebuilt
+                name: "john.p.smith@example.com",
+                displayName: "John P. Smith",
+                icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
+            },
+
+            pubKeyCredParams: [{
+                type: "public-key",
+                alg: cose_alg_ECDSA_w_SHA256,
+            }],
+
+            timeout: 60000, // 1 minute
+            excludeCredentials: [] // No excludeList
+        }
+    }
+};
+
+/**
+ * These are the default arguments that will be passed to navigator.credentials.get()
+ * unless modified by a specific test case
+ */
+var getCredentialDefaultArgs = {
+    options: {
+        publicKey: {
+            timeout: 60000
+            // allowCredentials: [newCredential]
+        }
+    }
+};
+
+function createCredential() {
+    // if a credential wasn't passed in, create one
+    let challengeBytes = new Uint8Array(16);
+    window.crypto.getRandomValues(challengeBytes);
+    var createArgs = cloneObject(createCredentialDefaultArgs);
+    createArgs.options.publicKey.challenge = challengeBytes;
+    createArgs.options.publicKey.user.id = new Uint8Array();
+    return navigator.credentials.create(createArgs.options);
+}
 
 /**
  * TestCase
@@ -118,61 +171,70 @@ class TestCase {
 
     /**
      * run the test function with the top-level properties of the test object applied as arguments
+     * expects the test to pass, and then validates the results
      */
-    test(desc) {
-        promise_test(() => {
-            return this.doIt()
-                .then((ret) => {
-                    // check the result
-                    this.validateRet(ret);
-                    return ret;
-                });
-        }, desc);
+    testPasses(desc) {
+        return this.doIt()
+            .then((ret) => {
+                // check the result
+                this.validateRet(ret);
+                return ret;
+            });
+    }
+
+    /**
+     * run the test function with the top-level properties of the test object applied as arguments
+     * expects the test to fail
+     */
+    testFails(t, testDesc, expectedErr) {
+        return promise_rejects(t, expectedErr, this.doIt(), "Expected bad parameters to fail");
+    }
+
+    /**
+     * Runs the test that's implemented by the class by calling the doIt() function
+     * @param  {String} desc                A description of the test being run
+     * @param  [Error|String] expectedErr   A string matching an error type, such as "SecurityError" or an object with a .name value that is an error type string
+     */
+    runTest(desc, expectedErr) {
+        promise_test((t) => {
+            return Promise.resolve().then(() => {
+                return this.testSetup();
+            }).then(() => {
+                if (expectedErr === undefined) {
+                    return this.testPasses(desc);
+                } else {
+                    return this.testFails(t, desc, expectedErr);
+                }
+            }).then(() => {
+                return this.testTeardown();
+            })
+        }, desc)
+    }
+
+    /**
+     * called before runTest
+     * virtual method expected to be overridden by child class if needed
+     */
+    testSetup() {
+        return Promise.resolve();
+    }
+
+    /**
+     * called after runTest
+     * virtual method expected to be overridden by child class if needed
+     */
+    testTeardown() {
+        return Promise.resolve();
     }
 
     /**
      * validates the value returned from the test function
+     * virtual method expected to be overridden by child class
      */
     validateRet() {
         throw new Error("Not implemented");
     }
-
-    /**
-     * calls doIt() with testObject() and expects it to fail with a TypeError()
-     */
-    testBadArgs(testDesc) {
-        promise_test(function(t) {
-            return promise_rejects(t, new TypeError(), this.doIt(), "Expected bad parameters to fail");
-        }.bind(this), testDesc);
-    }
 }
-
-var createCredentialDefaultArgs = {
-    options: {
-        publicKey: {
-            // Relying Party:
-            rp: {
-                name: "Acme"
-            },
-
-            // User:
-            user: {
-                id: new Uint8Array(), // Won't survive the copy, must be rebuilt
-                name: "john.p.smith@example.com",
-                displayName: "John P. Smith",
-                icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
-            },
-
-            pubKeyCredParams: [{
-                type: "public-key",
-                alg: cose_alg_ECDSA_w_SHA256,
-            }],
-
-            timeout: 60000, // 1 minute
-            excludeCredentials: [] // No excludeList
-        }
-    }
-};
 
 function cloneObject(o) {
     return JSON.parse(JSON.stringify(o));
@@ -235,15 +297,8 @@ class GetCredentialsTest extends TestCase {
         // default arguments
         let challengeBytes = new Uint8Array(16);
         window.crypto.getRandomValues(challengeBytes);
-        this.testObject = {
-            options: {
-                publicKey: {
-                    challenge: challengeBytes,
-                    // timeout: 60000,
-                    // allowCredentials: [newCredential]
-                }
-            }
-        };
+        this.testObject = cloneObject(getCredentialDefaultArgs);
+        this.testObject.options.publicKey.challenge = challengeBytes;
 
         // how to order the properties of testObject when passing them to makeCredential
         this.argOrder = [
@@ -266,33 +321,28 @@ class GetCredentialsTest extends TestCase {
         // if a Promise was passed in, add it to the list
         if (arg instanceof Promise) {
             this.credentialPromiseList.push(arg);
-            return;
+            return this;
         }
 
         // if a credential object was passed in, convert it to a Promise for consistency
         if (typeof arg === "object") {
             this.credentialPromiseList.push(Promise.resolve(arg));
-            return;
+            return this;
         }
 
-        // if a credential wasn't passed in, create one
-        let challengeBytes = new Uint8Array(16);
-        window.crypto.getRandomValues(challengeBytes);
-        var createArgs = cloneObject(createCredentialDefaultArgs);
-        createArgs.options.publicKey.challenge = challengeBytes;
-        createArgs.options.publicKey.user.id = new Uint8Array();
-        var p = navigator.credentials.create(createArgs.options);
+        // if no credential specified then create one
+        var p = createCredential();
         this.credentialPromiseList.push(p);
 
         return this;
     }
 
-    test() {
+    testSetup(desc) {
         if (!this.credentialPromiseList.length) {
             throw new Error("Attempting list without defining credential to test");
         }
 
-        Promise.all(this.credentialPromiseList)
+        return Promise.all(this.credentialPromiseList)
             .then((credList) => {
                 var idList = credList.map((cred) => {
                     return {
@@ -302,12 +352,15 @@ class GetCredentialsTest extends TestCase {
                     };
                 });
                 this.testObject.options.publicKey.allowCredentials = idList;
-                return super.test();
+                // return super.test(desc);
+            })
+            .catch((err) => {
+                throw Error(err);
             });
     }
 
     validateRet(ret) {
-        validatePublicKeyCredential (ret);
+        validatePublicKeyCredential(ret);
         validateAuthenticatorAssertionResponse(ret.response);
     }
 }

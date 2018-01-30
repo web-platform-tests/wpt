@@ -26,8 +26,8 @@ def test_get_named_session_cookie(session, url):
     assert isinstance(cookie["secure"], bool)
     assert "httpOnly" in cookie
     assert isinstance(cookie["httpOnly"], bool)
-    assert "expiry" in cookie
-    assert cookie.get("expiry") is None
+    if "expiry" in cookie:
+        assert cookie.get("expiry") is None
 
     assert cookie["name"] == "foo"
     assert cookie["value"] == "bar"

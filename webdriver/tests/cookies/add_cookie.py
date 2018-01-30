@@ -136,8 +136,8 @@ def test_add_session_cookie(session, url):
     assert isinstance(cookie["name"], basestring)
     assert "value" in cookie
     assert isinstance(cookie["value"], basestring)
-    assert "expiry" in cookie
-    assert cookie.get("expiry") is None
+    if "expiry" in cookie:
+        assert cookie.get("expiry") is None
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"

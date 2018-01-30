@@ -29,6 +29,18 @@ test(() => {
 }, 'CanMakePaymentEvent can be constructed with an EventInitDict, even if not trusted');
 
 test(() => {
+  const ev = new CanMakePaymentEvent('test', {
+    topLevelOrigin: 'https://foo.com',
+    paymentRequestOrigin: 'https://bar.com',
+    methodData: [],
+    modifiers: [],
+  });
+  assert_false(ev.isTrusted, 'constructed in script, so not be trusted');
+  assert_equals(ev.topLevelOrigin, 'https://foo.com');
+  assert_equals(ev.paymentRequestOrigin, 'https://bar.com');
+}, 'CanMakePaymentEvent can be constructed with a CanMakePaymentEventInit, even if not trusted');
+
+test(() => {
   const ev = new CanMakePaymentEvent('test');
   self.addEventListener('test', evt => {
     assert_equals(ev, evt);

@@ -1,0 +1,36 @@
+<!doctype html>
+<!--/
+specs:
+  - id: browsers.html#navigating-across-documents
+    steps: [6]
+
+description: |
+  1. Creates an iframe with `src="navigation_unload_data_url-1.html"`, which has
+      an unload handler that will attempt to set its location to a data url.
+      This must NOT be allowed, per
+      https://github.com/whatwg/html/commit/2a11eef8f92b0335328890dc2cb1e281d18553eb
+  2. Set an onload handler on this window, which will set the iframe `src`
+      to a data url that contains a script which sends the message `"pass"`; this
+      will trigger the unload handler in the iframe (whose attempted navigation
+      must be aborted).
+  3. If the semantics are implemented correctly, a message `"pass"` from the data
+      url script will be received.
+/-->
+<title>Data URL navigation from unload handler</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe src="navigation_unload_data_url-1.html"></iframe>
+<script>
+var test = async_test();
+var iframe = document.querySelector("iframe");
+
+window.onload = test.step_func(function() {
+  iframe.contentWindow.location.href = "data:text/html,load<script>parent.postMessage('pass', '*')<\/script>";
+});
+
+window.onmessage = test.step_func(function(e) {
+  assert_equals(e.data, "pass");
+  test.done();
+});
+</script>

@@ -1,13 +1,10 @@
 promise_test(() => fetch("resources/data-urls.json").then(res => res.json()).then(runDataURLTests), "Setup.");
 function runDataURLTests(tests) {
   for(let i = 0; i < tests.length; i++) {
-    const input = tests[i][0];
-    let expectedMimeType = tests[i][1];
-    const expectedBody = expectedMimeType !== null ? tests[i][2] : null;
+    const input = tests[i][0],
+          expectedMimeType = tests[i][1],
+          expectedBody = expectedMimeType !== null ? tests[i][2] : null;
     promise_test(t => {
-      if(expectedMimeType === "") {
-        expectedMimeType = "text/plain;charset=US-ASCII";
-      }
       if(expectedMimeType === null) {
         return promise_rejects(t, new TypeError(), fetch(input));
       } else {

@@ -13,7 +13,7 @@
     element = document.createElement("div");
     document.body.appendChild(element);
 
-    let values = ["auto", "legacy", "space-around"].concat(invalidPositionValues);
+    let values = ["auto", "legacy", "space-around", "left", "safe right"].concat(invalidPositionValues);
 
     values.forEach(function(value) {
         test(function() {

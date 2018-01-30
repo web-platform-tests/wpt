@@ -14,7 +14,7 @@
 <script src="/css/css-align/resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
 <script>
-    let classes = Object.assign({"Normal":"normal", "Stretch":"stretch"},
+    let classes = Object.assign({"Normal":"normal", "Stretch":"stretch", "Left":"left", "Right":"right"},
                                 selfPositionClasses, baselineClasses, overflowClasses);
 
     for (var key in classes) {
@@ -23,10 +23,10 @@
         element.className = "justifyItems" + key;
         document.body.appendChild(element);
         test(function() {
-            let computedValue = specifiedValue;
-            if (specifiedValue === "baseline")
-                computedValue = "first baseline";
-            checkValues(element, "justifyItems", "justify-items", "", computedValue);
+            if (specifiedValue === "first baseline")
+                checkValues(element, "justifyItems", "justify-items", "", "baseline");
+            else
+                checkValues(element, "justifyItems", "justify-items", "", specifiedValue);
         }, "Checking justify-items: " + specifiedValue);
     }
 </script>

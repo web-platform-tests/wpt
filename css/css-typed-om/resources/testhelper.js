@@ -40,10 +40,10 @@ function assert_style_value_equals(a, b) {
     case 'CSSTransformValue':
       assert_style_value_array_equals(a, b);
       break;
-    case 'CSSRotation':
+    case 'CSSRotate':
       assert_style_value_equals(a.angle, b.angle);
       // fallthrough
-    case 'CSSTranslation':
+    case 'CSSTranslate':
     case 'CSSScale':
       assert_style_value_equals(a.x, b.x);
       assert_style_value_equals(a.y, b.y);
@@ -116,7 +116,12 @@ function createElementWithInlineStyleMap(test, cssText) {
 // Creates a new div element with inline style |cssText| and returns
 // its computed style property map.
 function createComputedStyleMap(test, cssText) {
-  return createDivWithStyle(test, cssText).computedStyleMap();
+  return createElementWithComputedStyleMap(test, cssText)[1];
+}
+// Same as createComputedStyleMap but also returns the element itself.
+function createElementWithComputedStyleMap(test, cssText) {
+  let elem = createDivWithStyle(test, cssText);
+  return [elem, elem.computedStyleMap()];
 }
 
 // Creates a new style element with a rule |cssText| and returns

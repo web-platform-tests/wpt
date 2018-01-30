@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<title>position:sticky elements should not affect the flow position of other elements</title>
-<link rel="match" href="position-sticky-inflow-position-ref.html" />
-<link rel="help" href="https://www.w3.org/TR/css-position-3/#sticky-pos" />
-<meta name="assert" content="This test checks that position:sticky elements do not affect the flow position of other elements" />
+<title>Reference for position:sticky elements should not affect the flow position of other elements</title>
 
 <style>
 .scroller {
@@ -14,8 +11,6 @@
 
 .sticky {
   background-color: green;
-  position: sticky;
-  top: 150px;
 }
 
 .box {
@@ -32,14 +27,15 @@
 }
 
 .padding {
-  height: 500px;
+  height: 450px;
 }
 </style>
 
 <div class="scroller">
   <div class="before box"></div>
-  <div class="sticky box"></div>
+  <div class="box"></div>
   <div class="after box"></div>
+  <div class="sticky box"></div>
   <div class="padding"></div>
 </div>
 

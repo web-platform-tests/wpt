@@ -1,0 +1,9 @@
+<script>
+'use strict';
+
+Promise.resolve().then(() => navigator.xr.requestDevice()).then(XRDevice => {
+  window.parent.postMessage({ enabled: true }, '*');
+}, error => {
+  window.parent.postMessage({ enabled: false }, '*');
+});
+</script>

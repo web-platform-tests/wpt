@@ -40,7 +40,7 @@ function assert_style_value_equals(a, b) {
     case 'CSSTransformValue':
       assert_style_value_array_equals(a, b);
       break;
-    case 'CSSRotation':
+    case 'CSSRotate':
       assert_style_value_equals(a.angle, b.angle);
       // fallthrough
     case 'CSSTranslate':

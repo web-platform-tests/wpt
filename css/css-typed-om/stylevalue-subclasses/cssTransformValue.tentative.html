@@ -20,7 +20,7 @@ test(() => {
   const values = [
     new CSSScale(1, 1),
     new CSSTranslate(CSS.px(1), CSS.px(1)),
-    new CSSRotation(CSS.deg(90))
+    new CSSRotate(CSS.deg(90))
   ];
 
   const transform = new CSSTransformValue(values);
@@ -66,11 +66,11 @@ test(() => {
 
 test(() => {
   const transform = new CSSTransformValue([
-    new CSSRotation(CSS.number(1), CSS.number(2), CSS.number(3), CSS.deg(90))
+    new CSSRotate(CSS.number(1), CSS.number(2), CSS.number(3), CSS.deg(90))
   ]);
   const expectedMatrix = (new DOMMatrixReadOnly()).rotateAxisAngle(1, 2, 3, 90);
   assert_matrix_approx_equals(transform.toMatrix(), expectedMatrix, EPSILON);
-}, 'CSSTransformValue.toMatrix returns correct matrix for CSSRotation');
+}, 'CSSTransformValue.toMatrix returns correct matrix for CSSRotate');
 
 test(() => {
   const transform = new CSSTransformValue([
@@ -134,7 +134,7 @@ test(() => {
   const transformMatrix = new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
   let transformArray = [
     new CSSTranslate(CSS.px(1), CSS.px(1), CSS.px(1)),
-    new CSSRotation(1, 2, 3, CSS.deg(90)),
+    new CSSRotate(1, 2, 3, CSS.deg(90)),
     new CSSScale(2, 3, 2),
     new CSSMatrixComponent(transformMatrix),
   ];

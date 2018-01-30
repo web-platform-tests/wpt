@@ -40,6 +40,10 @@
         assert_equals(media[3], undefined, "MediaList indexed getter with out of range after append method");
         assert_equals(media.item(2), "speech", "MediaList item method after append method");
         assert_equals(media.item(3), null, "MediaList item method after append method");
+
+        media.mediaText = null;
+        assert_equals(media.mediaText, "", "MediaList mediaText attribute should be empty string in case of null");
+        assert_equals(media.toString(), "", "MediaList toString method should be empty string in case of null");
     });
     </script>
 </head>

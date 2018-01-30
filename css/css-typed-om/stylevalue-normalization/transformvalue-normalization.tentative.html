@@ -95,27 +95,27 @@ const gTestCases = [
   },
   {
     cssText: 'rotate(90deg)',
-    expected: new CSSRotation(CSS.deg(90)),
+    expected: new CSSRotate(CSS.deg(90)),
     desc: 'rotate()'
   },
   {
     cssText: 'rotate3d(1, 2, 3, 90deg)',
-    expected: new CSSRotation(CSS.number(1), CSS.number(2), CSS.number(3), CSS.deg(90)),
+    expected: new CSSRotate(CSS.number(1), CSS.number(2), CSS.number(3), CSS.deg(90)),
     desc: 'rotate3d()'
   },
   {
     cssText: 'rotateX(90deg)',
-    expected: new CSSRotation(CSS.number(1), CSS.number(0), CSS.number(0), CSS.deg(90)),
+    expected: new CSSRotate(CSS.number(1), CSS.number(0), CSS.number(0), CSS.deg(90)),
     desc: 'rotateX()'
   },
   {
     cssText: 'rotateY(90deg)',
-    expected: new CSSRotation(CSS.number(0), CSS.number(1), CSS.number(0), CSS.deg(90)),
+    expected: new CSSRotate(CSS.number(0), CSS.number(1), CSS.number(0), CSS.deg(90)),
     desc: 'rotateY()'
   },
   {
     cssText: 'rotateZ(90deg)',
-    expected: new CSSRotation(CSS.number(0), CSS.number(0), CSS.number(1), CSS.deg(90)),
+    expected: new CSSRotate(CSS.number(0), CSS.number(0), CSS.number(1), CSS.deg(90)),
     desc: 'rotateZ()'
   },
   {
@@ -156,7 +156,7 @@ test(t => {
       'translate(1px) rotateX(90deg) perspective(1px) skew(90deg) scale3d(1, 2, 3)',
       new CSSTransformValue([
         new CSSTranslate(CSS.px(1), CSS.px(0)),
-        new CSSRotation(CSS.number(1), CSS.number(0), CSS.number(0), CSS.deg(90)),
+        new CSSRotate(CSS.number(1), CSS.number(0), CSS.number(0), CSS.deg(90)),
         new CSSPerspective(CSS.px(1)),
         new CSSSkew(CSS.deg(90), CSS.deg(0)),
         new CSSScale(CSS.number(1), CSS.number(2), CSS.number(3)),

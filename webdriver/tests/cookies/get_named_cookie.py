@@ -77,7 +77,7 @@ def test_duplicated_cookie(session, url, server_config):
     result = session.transport.send("POST", "session/%s/cookie" % session.session_id, create_cookie_request)
     assert result.status == 200
     assert "value" in result.body
-    assert isinstance(result.body["value"], dict)
+    assert result.body["value"] is None
 
     session.url = inline("<script>document.cookie = 'hello=newworld; domain=%s; path=/';</script>" % server_config["domains"][""])
     result = session.transport.send("GET", "session/%s/cookie" % session.session_id)

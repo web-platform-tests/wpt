@@ -34,10 +34,8 @@
 </video>
 <audio src="resources/sound_5.oga?single-download-preload"></audio>
 <script>
-var xhr = new XMLHttpRequest();
-xhr.open("GET", "resources/dummy.xml?single-download-preload");
-xhr.send();
 promise_test(async t => {
+    await (await fetch("resources/dummy.xml?single-download-preload")).arrayBuffer();
     await new Promise(async (resolve, reject) => {
         if (!isPreloadAndRTSupported()) {
             reject("Unsupported APIs");

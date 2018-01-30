@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<title>Service Worker: canvas tainting of the fetched image using cached responses</title>
+<meta charset="utf-8">
+<title>Service Worker: canvas tainting of the fetched video</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -8,8 +9,8 @@
 <body>
 <script>
 do_canvas_tainting_tests({
-  resource_path: base_path() + 'resources/fetch-access-control.py?PNGIMAGE',
-  cache: true
+  resource_path: base_path() + 'resources/fetch-access-control.py?VIDEO',
+  cache: false
 });
 </script>
 </body>

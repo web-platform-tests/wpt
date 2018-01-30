@@ -54,13 +54,20 @@ var getCredentialDefaultArgs = {
     }
 };
 
-function createCredential() {
-    // if a credential wasn't passed in, create one
+function createCredential(opts) {
+    opts = opts || {};
+
+    // set the default options
+    var createArgs = cloneObject(createCredentialDefaultArgs);
     let challengeBytes = new Uint8Array(16);
     window.crypto.getRandomValues(challengeBytes);
-    var createArgs = cloneObject(createCredentialDefaultArgs);
     createArgs.options.publicKey.challenge = challengeBytes;
     createArgs.options.publicKey.user.id = new Uint8Array();
+
+    // change the defaults with any options that were passed in
+    extendObject (createArgs, opts);
+
+    // create the credential, return the Promise
     return navigator.credentials.create(createArgs.options);
 }
 
@@ -239,6 +246,16 @@ class TestCase {
 
 function cloneObject(o) {
     return JSON.parse(JSON.stringify(o));
+}
+
+function extendObject(dst, src) {
+    Object.keys(src).forEach(function(key) {
+        if (typeof src[key] === "object") {
+            extendObject (dst[key], src[key]);
+        } else {
+            dst[key] = src[key];
+        }
+    });
 }
 
 /**

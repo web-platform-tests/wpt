@@ -15,9 +15,9 @@
 
 test(() => {
   let rule = document.styleSheets[0].rules[0];
-  rule.attributeStyleMap.set('width', CSS.px(200));
+  rule.styleMap.set('width', CSS.px(200));
   assert_equals(getComputedStyle(target).width, '200px')
-  rule.attributeStyleMap.set('width', CSS.px(150));
+  rule.styleMap.set('width', CSS.px(150));
   assert_equals(getComputedStyle(target).width, '150px')
 });
 </script>

@@ -18,7 +18,8 @@ var createCredentialDefaultArgs = {
         publicKey: {
             // Relying Party:
             rp: {
-                name: "Acme"
+                name: "Acme",
+                icon: "https://www.w3.org/StyleSheets/TR/2016/logos/W3C"
             },
 
             // User:

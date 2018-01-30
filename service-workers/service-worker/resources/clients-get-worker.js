@@ -4,11 +4,6 @@
 // the `event` object. In the case of the `onmessage` handler, it provides the
 // Client instance attributes of the requested clients.
 self.onfetch = function(e) {
-  // NOTE: Until FetchEvent.resultingClientId is implemented some browsers
-  // return null for the FetchEvent.clientId on navigation requests.  Since
-  // this is not in the spec yet, though, we don't strictly enforce it in the
-  // test any more.
-
   if (/\/clientId$/.test(e.request.url)) {
     e.respondWith(new Response(e.clientId));
     return;

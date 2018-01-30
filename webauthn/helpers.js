@@ -250,12 +250,18 @@ function cloneObject(o) {
 
 function extendObject(dst, src) {
     Object.keys(src).forEach(function(key) {
-        if (typeof src[key] === "object") {
+        if (isSimpleObject(src[key])) {
             extendObject (dst[key], src[key]);
         } else {
             dst[key] = src[key];
         }
     });
+}
+
+function isSimpleObject(o) {
+    return (typeof o === "object" &&
+        !Array.isArray(o) &&
+        !(o instanceof ArrayBuffer));
 }
 
 /**

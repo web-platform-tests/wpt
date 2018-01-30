@@ -2,7 +2,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/media.js"></script>
-<script src="common.js"></script>
+<script src="/common/namespaces.js"></script>
+<script src="common.sub.js"></script>
 <script>
 
 function makeOversizedCanvas() {
@@ -99,6 +100,26 @@ promise_test( t => {
 promise_test( t => {
   return promise_rejects(t, new TypeError(), createImageBitmap(null));
 }, "createImageBitmap with null image source.");
+
+promise_test( t => {
+  var context = document.createElement("canvas").getContext("2d");
+  return promise_rejects(t, new TypeError(), createImageBitmap(context));
+}, "createImageBitmap with CanvasRenderingContext2D image source.");
+
+promise_test( t => {
+  var context = document.createElement("canvas").getContext("webgl");
+  return promise_rejects(t, new TypeError(), createImageBitmap(context));
+}, "createImageBitmap with WebGLRenderingContext image source.");
+
+promise_test( t => {
+  var buffer = new Uint8Array();
+  return promise_rejects(t, new TypeError(), createImageBitmap(buffer));
+}, "createImageBitmap with Uint8Array image source.");
+
+promise_test( t => {
+  var buffer = new ArrayBuffer(8);
+  return promise_rejects(t, new TypeError(), createImageBitmap(buffer));
+}, "createImageBitmap with ArrayBuffer image source.");
 
 promise_test( t => {
   return promise_rejects(t, "InvalidStateError",

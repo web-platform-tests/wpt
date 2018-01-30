@@ -43,14 +43,29 @@ function makeVideo() {
     });
 }
 
-function makeImage() {
-    return new Promise(resolve => {
-        var img = new Image();
-        img.onload = function() {
-            resolve(img);
-        };
-        img.src = "/images/pattern.png";
-    });
+function makeMakeHTMLImage(src) {
+    return function() {
+        return new Promise(resolve => {
+            var img = new Image();
+            img.onload = function() {
+                resolve(img);
+            };
+            img.src = src;
+        });
+    }
+}
+
+function makeMakeSVGImage(src) {
+    return function() {
+        return new Promise((resolve, reject) => {
+            var image = document.createElementNS(NAMESPACES.svg, "image");
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.setAttribute("externalResourcesRequired", "true");
+            image.setAttributeNS(NAMESPACES.xlink, 'xlink:href', src);
+            document.body.appendChild(image);
+        });
+    }
 }
 
 function makeImageData() {
@@ -100,7 +115,10 @@ function makeBlob() {
 var imageSourceTypes = [
     { name: 'an HTMLCanvasElement', factory: makeCanvas },
     { name: 'an HTMLVideoElement',  factory: makeVideo },
-    { name: 'an HTMLImageElement',  factory: makeImage },
+    { name: 'a bitmap HTMLImageElement', factory: makeMakeHTMLImage("/images/pattern.png") },
+    { name: 'a vector HTMLImageElement', factory: makeMakeHTMLImage("/images/pattern.svg") },
+    { name: 'a bitmap SVGImageElement', factory: makeMakeSVGImage("/images/pattern.png") },
+    { name: 'a vector SVGImageElement', factory: makeMakeSVGImage("/images/pattern.svg") },
     { name: 'an OffscreenCanvas',   factory: makeOffscreenCanvas },
     { name: 'an ImageData',         factory: makeImageData },
     { name: 'an ImageBitmap',       factory: makeImageBitmap },

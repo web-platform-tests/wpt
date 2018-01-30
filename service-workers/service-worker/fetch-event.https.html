@@ -197,7 +197,7 @@ function submit_form(action_url) {
       form.appendChild(input2);
       document.body.appendChild(form);
       frame.onload = function() {
-        document.body.removeChild(form);
+        form.remove();
         resolve(frame);
       };
       form.submit();
@@ -206,9 +206,11 @@ function submit_form(action_url) {
 
 promise_test(t => {
     const scope = 'resources/simple.html?form-post';
+    let registration;
     return service_worker_unregister_and_register(t, worker, scope)
       .then(reg => {
-          add_result_callback(() => { reg.unregister(); });
+          registration = reg;
+          add_completion_callback(() => { reg.unregister(); });
           return wait_for_state(t, reg.installing, 'activated');
         })
       .then(() => {
@@ -219,15 +221,18 @@ promise_test(t => {
                         'POST:application/x-www-form-urlencoded:' +
                         'testName1=testValue1&testName2=testValue2');
           frame.remove();
+          return registration.unregister();
         });
   }, 'Service Worker responds to fetch event with POST form');
 
 promise_test(t => {
     // Add '?ignore' to scope so the service worker falls back to network.
     const scope = 'resources/echo-content.py?ignore';
+    let registration;
     return service_worker_unregister_and_register(t, worker, scope)
       .then(reg => {
-          add_result_callback(() => { reg.unregister(); });
+          registration = reg;
+          add_completion_callback(() => { reg.unregister(); });
           return wait_for_state(t, reg.installing, 'activated');
         })
       .then(() => {
@@ -237,6 +242,7 @@ promise_test(t => {
           assert_equals(frame.contentDocument.body.textContent,
                         'testName1=testValue1&testName2=testValue2');
           frame.remove();
+          return registration.unregister();
         });
   }, 'Service Worker falls back to network in fetch event with POST form');
 

@@ -18,7 +18,7 @@ function canvas_taint_test(url, cross_origin, expected_result) {
 
 
 // Runs all the tests. The given |params| has these properties:
-// * |resource_path|: the relative path to the (image) resource to test.
+// * |resource_path|: the relative path to the (image/video) resource to test.
 // * |cache|: when true, the service worker bounces responses into
 //   Cache Storage and back out before responding with them.
 function do_canvas_tainting_tests(params) {

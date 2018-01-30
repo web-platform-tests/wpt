@@ -28,7 +28,7 @@ test(() => {
 
   customElements.define('my-builtin', MyBuiltinElement, { extends: 'address' });
   let element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p:address', { is: 'my-builtin'});
-  assert_true(element instanceof MyElement);
+  assert_true(element instanceof MyBuiltinElement);
   assert_equals(element.prefix, 'p');
 }, 'builtin: document.createElementNS should create custom elements with prefixes.');
 

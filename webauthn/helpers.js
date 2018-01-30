@@ -447,7 +447,7 @@ var debug = function() {};
 // note that the polyfill only gets loaded if navigator.credentials create doesn't exist
 // AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
 function ensureInterface() {
-    if (typeof navigator.credentials.create !== "function") {
+    if (typeof navigator.credentials === "object" && typeof navigator.credentials.create !== "function") {
         debug = console.log;
 
         return loadJavaScript("/webauthn/webauthn-polyfill/webauthn-polyfill.js")

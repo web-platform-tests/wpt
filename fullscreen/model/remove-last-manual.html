@@ -29,10 +29,11 @@ async_test(function(t)
             assert_equals(document.fullscreenElement, first);
             document.onfullscreenchange = t.step_func_done(function(event)
             {
-                // When the asynchronous steps of "exit fullscreen" ran, only
-                // /first/ was in the top layer, and thus we exited fully.
-                assert_equals(document.fullscreenElement, null);
-                assert_equals(event.target, first);
+                // When the asynchronous steps of "exit fullscreen" ran, /last/
+                // was no longer connected to the document, and so the event
+                // has the document as its target.
+                assert_equals(document.fullscreenElement, first);
+                assert_equals(event.target, document);
             });
         });
     });

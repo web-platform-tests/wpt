@@ -22,10 +22,13 @@ async_test(t => {
     document.onfullscreenchange = t.step_func_done(() => {
       assert_equals(document.fullscreenElement, null, "document's fullscreen element");
 
-      // the iframe's contentDocument has become undefined, but the reference
-      // we're holding on to should not have a fullscreen element either.
-      assert_equals(iframe.contentDocuemnt, undefined, "iframe's content document");
-      assert_equals(iframeDoc.fullscreenElement, null, "iframe's fullscreen element");
+      // Because the iframe was removed, its browsing context was discarded and
+      // its contentDocument has become null. Because that browsing context was
+      // neither a descendant browsing context nor had an active document,
+      // nothing at all was done with it in the exit fullscreen algorithm, so
+      // its fullscreenElement is unchanged.
+      assert_equals(iframe.contentDocument, null, "iframe's content document");
+      assert_equals(iframeDoc.fullscreenElement, iframeDoc.body, "iframe's fullscreen element");
     });
   });
 });

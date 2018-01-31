@@ -80,6 +80,89 @@ function createRandomString(len) {
     return text;
 }
 
+// TODO: remove this debug code
+// function printHex(msg, buf) {
+//     // if the buffer was a TypedArray (e.g. Uint8Array), grab its buffer and use that
+//     if (ArrayBuffer.isView(buf) && buf.buffer instanceof ArrayBuffer) {
+//         buf = buf.buffer;
+//     }
+
+//     // check the arguments
+//     if ((typeof msg != "string") ||
+//         (typeof buf != "object")) {
+//         console.log("Bad args to printHex");
+//         return;
+//     }
+//     if (!(buf instanceof ArrayBuffer)) {
+//         console.log("Attempted printHex with non-ArrayBuffer:", buf);
+//         return;
+//     }
+//     // print the buffer as a 16 byte long hex string
+//     var arr = new Uint8Array(buf);
+//     var len = buf.byteLength;
+//     var i, str = "";
+//     console.log(msg);
+//     for (i = 0; i < len; i++) {
+//         var hexch = arr[i].toString(16);
+//         hexch = (hexch.length == 1) ? ("0" + hexch) : hexch;
+//         str += hexch.toUpperCase() + " ";
+//         if (i && !((i + 1) % 16)) {
+//             console.log(str);
+//             str = "";
+//         }
+//     }
+//     // print the remaining bytes
+//     if ((i) % 16) {
+//         console.log(str);
+//     }
+// }
+
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+// Useful constants for working with attestation data
+const authenticator_data_user_present = 0x01;
+const authenticator_data_user_verified = 0x04;
+const authenticator_data_attested_cred_data = 0x40;
+const authenticator_data_extension_data = 0x80;
+
+function parseAuthenticatorData(buf) {
+    if (buf.byteLength < 37) {
+        throw new TypeError ("parseAuthenticatorData: buffer must be at least 37 bytes");
+    }
+
+    printHex ("authnrData", buf);
+
+    var authnrData = new DataView(buf);
+    var authnrDataObj = {};
+    authnrDataObj.length = buf.byteLength;
+
+    authnrDataObj.rpIdHash = new Uint8Array (buf.slice (0,32));
+    authnrDataObj.rawFlags = authnrData.getUint8(32);
+    authnrDataObj.counter = authnrData.getUint32(33, false);
+    authnrDataObj.rawCounter = [];
+    authnrDataObj.rawCounter[0] = authnrData.getUint8(33);
+    authnrDataObj.rawCounter[1] = authnrData.getUint8(34);
+    authnrDataObj.rawCounter[2] = authnrData.getUint8(35);
+    authnrDataObj.rawCounter[3] = authnrData.getUint8(36);
+    authnrDataObj.flags = {};
+
+    authnrDataObj.flags.userPresent = (authnrDataObj.rawFlags&authenticator_data_user_present)?true:false;
+    authnrDataObj.flags.userVerified = (authnrDataObj.rawFlags&authenticator_data_user_verified)?true:false;
+    authnrDataObj.flags.attestedCredentialData = (authnrDataObj.rawFlags&authenticator_data_attested_cred_data)?true:false;
+    authnrDataObj.flags.extensionData = (authnrDataObj.rawFlags&authenticator_data_extension_data)?true:false;
+
+    // console.log ("authnrDataObj", authnrDataObj);
+    // console.log ("rawFlags:", authnrDataObj.rawFlags.toString(16));
+    // console.log ("rawCounter[0]:", authnrDataObj.rawCounter[0].toString(16));
+    // console.log ("rawCounter[1]:", authnrDataObj.rawCounter[1].toString(16));
+    // console.log ("rawCounter[2]:", authnrDataObj.rawCounter[2].toString(16));
+    // console.log ("rawCounter[3]:", authnrDataObj.rawCounter[3].toString(16));
+
+    return authnrDataObj;
+}
+
 /**
  * TestCase
  *
@@ -222,8 +305,8 @@ class TestCase {
                 } else {
                     return this.testFails(t, desc, expectedErr);
                 }
-            }).then(() => {
-                return this.testTeardown();
+            }).then((res) => {
+                return this.testTeardown(res);
             })
         }, desc)
     }
@@ -233,15 +316,52 @@ class TestCase {
      * virtual method expected to be overridden by child class if needed
      */
     testSetup() {
+        if (this.beforeTestFn) {
+            this.beforeTestFn.call(this);
+        }
+
         return Promise.resolve();
+    }
+
+    /**
+     * Adds a callback function that gets called in the TestCase context
+     * and within the testing process.
+     */
+    beforeTest(fn) {
+        if (typeof fn !== "function") {
+            throw new Error ("Tried to call non-function before test");
+        }
+
+        this.beforeTestFn = fn;
+
+        return this;
     }
 
     /**
      * called after runTest
      * virtual method expected to be overridden by child class if needed
      */
-    testTeardown() {
+    testTeardown(res) {
+        if (this.afterTestFn) {
+            this.afterTestFn.call(this, res);
+        }
+
         return Promise.resolve();
+    }
+
+    /**
+     * Adds a callback function that gets called in the TestCase context
+     * and within the testing process. Good for validating results.
+     */
+    afterTest(fn) {
+        console.log ("AFTER TEST");
+        if (typeof fn !== "function") {
+            throw new Error ("Tried to call non-function after test");
+        }
+
+        this.afterTestFn = fn;
+
+        return this;
     }
 
     /**
@@ -421,12 +541,16 @@ function validatePublicKeyCredential(cred) {
 function validateAuthenticatorAttestationResponse(attr) {
     // class
     assert_class_string(attr, "AuthenticatorAttestationResponse", "Expected credentials.create() to return instance of 'AuthenticatorAttestationResponse' class");
+
     // clientDataJSON
     assert_idl_attribute(attr, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with clientDataJSON attribute");
     assert_readonly(attr, "clientDataJSON", "credentials.create() should return AuthenticatorAttestationResponse with readonly clientDataJSON attribute");
+    // TODO: clientDataJSON() and make sure fields are correct
+
     // attestationObject
     assert_idl_attribute(attr, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with attestationObject attribute");
     assert_readonly(attr, "attestationObject", "credentials.create() should return AuthenticatorAttestationResponse with readonly attestationObject attribute");
+    // TODO: parseAuthenticatorData() and make sure flags are correct
 }
 
 /**
@@ -435,15 +559,20 @@ function validateAuthenticatorAttestationResponse(attr) {
 function validateAuthenticatorAssertionResponse(assert) {
     // class
     assert_class_string(assert, "AuthenticatorAssertionResponse", "Expected credentials.create() to return instance of 'AuthenticatorAssertionResponse' class");
+
     // clientDataJSON
     assert_idl_attribute(assert, "clientDataJSON", "credentials.get() should return AuthenticatorAssertionResponse with clientDataJSON attribute");
     assert_readonly(assert, "clientDataJSON", "credentials.get() should return AuthenticatorAssertionResponse with readonly clientDataJSON attribute");
+    // TODO: clientDataJSON() and make sure fields are correct
+
     // signature
     assert_idl_attribute(assert, "signature", "credentials.get() should return AuthenticatorAssertionResponse with signature attribute");
     assert_readonly(assert, "signature", "credentials.get() should return AuthenticatorAssertionResponse with readonly signature attribute");
+
     // authenticatorData
     assert_idl_attribute(assert, "authenticatorData", "credentials.get() should return AuthenticatorAssertionResponse with authenticatorData attribute");
     assert_readonly(assert, "authenticatorData", "credentials.get() should return AuthenticatorAssertionResponse with readonly authenticatorData attribute");
+    // TODO: parseAuthenticatorData() and make sure flags are correct
 }
 
 //************* BEGIN DELETE AFTER 1/1/2018 *************** //

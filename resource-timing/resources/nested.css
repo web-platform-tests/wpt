@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: remoteFont;
-    src: url('/fonts/Ahem.ttf?id=n1');
+    src: url('/fonts/Ahem-crossorigin.ttf?id=n1');
 }
 ol {
     font-family: remoteFont;

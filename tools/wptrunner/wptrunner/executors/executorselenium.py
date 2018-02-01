@@ -8,7 +8,8 @@ import traceback
 import urlparse
 import uuid
 
-from .base import (Protocol,
+from .base import (CallbackHandler,
+                   Protocol,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
@@ -113,12 +114,69 @@ class SeleniumProtocol(Protocol):
                 self.logger.error(traceback.format_exc(e))
                 break
 
+    def send_testdriver_message(self, message_type, status, message=None):
+        obj = {
+            "type": "testdriver-%s" % str(message_type),
+            "status": str(status)
+        }
+        if message:
+            obj["message"] = str(message)
+        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+    def find_elements_by_css_selector(self, selector):
+        return self.webdriver.find_elements_by_css_selector(selector)
+
+    def click_element(self, element):
+        return element.click()
+
+    def current_window_handle(self):
+        return self.webdriver.current_window_handle
+
+    def switch_to_window(self, handle):
+        self.webdriver.switch_to_window(handle)
+
+    def close_old_windows(self):
+        exclude = self.current_window_handle()
+        handles = [item for item in self.webdriver.window_handles if item != exclude]
+        for handle in handles:
+            try:
+                self.webdriver.switch_to_window(handle)
+                self.webdriver.close_window()
+            except exceptions.NoSuchWindowException:
+                pass
+        self.webdriver.switch_to_window(exclude)
+        return exclude
+
+    def get_test_window(self, window_id, parent):
+        test_window = None
+        if window_id:
+            try:
+                # Try this, it's in Level 1 but nothing supports it yet
+                win_s = self.webdriver.execute_script("return window['%s'];" % self.window_id)
+                win_obj = json.loads(win_s)
+                test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
+            except Exception:
+                pass
+
+        if test_window is None:
+            after = self.webdriver.window_handles
+            if len(after) == 2:
+                test_window = next(iter(set(after) - set([parent])))
+            elif after[0] == parent and len(after) > 2:
+                # Hope the first one here is the test window
+                test_window = after[1]
+            else:
+                raise Exception("unable to find test window")
+
+        assert test_window != parent
+        return test_window
+
 
 class SeleniumRun(object):
-    def __init__(self, func, webdriver, url, timeout):
+    def __init__(self, func, protocol, url, timeout):
         self.func = func
         self.result = None
-        self.webdriver = webdriver
+        self.protocol = protocol
         self.url = url
         self.timeout = timeout
         self.result_flag = threading.Event()
@@ -127,7 +185,7 @@ class SeleniumRun(object):
         timeout = self.timeout
 
         try:
-            self.webdriver.set_script_timeout((timeout + extra_timeout) * 1000)
+            self.protocol.webdriver.set_script_timeout((timeout + extra_timeout) * 1000)
         except exceptions.ErrorInResponseException:
             self.logger.error("Lost WebDriver connection")
             return Stop
@@ -144,7 +202,7 @@ class SeleniumRun(object):
 
     def _run(self):
         try:
-            self.result = True, self.func(self.webdriver, self.url, self.timeout)
+            self.result = True, self.func(self.protocol, self.url, self.timeout)
         except exceptions.TimeoutException:
             self.result = False, ("EXTERNAL-TIMEOUT", None)
         except (socket.timeout, exceptions.ErrorInResponseException):
@@ -188,7 +246,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         url = self.test_url(test)
 
         success, data = SeleniumRun(self.do_testharness,
-                                    self.protocol.webdriver,
+                                    self.protocol,
                                     url,
                                     test.timeout * self.timeout_multiplier).run()
 
@@ -197,41 +255,20 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_testharness(self, webdriver, url, timeout):
+    def do_testharness(self, protocol, url, timeout):
         format_map = {"abs_url": url,
                       "url": strip_server(url),
                       "window_id": self.window_id,
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
 
-        parent = webdriver.current_window_handle
-        handles = [item for item in webdriver.window_handles if item != parent]
-        for handle in handles:
-            try:
-                webdriver.switch_to_window(handle)
-                webdriver.close()
-            except exceptions.NoSuchWindowException:
-                pass
-        webdriver.switch_to_window(parent)
+        webdriver = protocol.webdriver
+        parent_window = protocol.close_old_windows()
+        # Now start the test harness
+        protocol.webdriver.execute_script(self.script % format_map)
+        test_window = protocol.get_test_window(webdriver, parent_window)
 
-        webdriver.execute_script(self.script % format_map)
-        try:
-            # Try this, it's in Level 1 but nothing supports it yet
-            win_s = webdriver.execute_script("return window['%s'];" % self.window_id)
-            win_obj = json.loads(win_s)
-            test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
-        except Exception:
-            after = webdriver.window_handles
-            if len(after) == 2:
-                test_window = next(iter(set(after) - set([parent])))
-            elif after[0] == parent and len(after) > 2:
-                # Hope the first one here is the test window
-                test_window = after[1]
-            else:
-                raise Exception("unable to find test window")
-        assert test_window != parent
-
-        handler = CallbackHandler(webdriver, test_window, self.logger)
+        handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
             result = webdriver.execute_async_script(
                 self.script_resume % format_map)
@@ -239,67 +276,6 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
             if done:
                 break
         return rv
-
-
-class CallbackHandler(object):
-    def __init__(self, webdriver, test_window, logger):
-        self.webdriver = webdriver
-        self.test_window = test_window
-        self.logger = logger
-
-    def __call__(self, result):
-        self.logger.debug("Got async callback: %s" % result[1])
-        try:
-            attr = getattr(self, "process_%s" % result[1])
-        except AttributeError:
-            raise ValueError("Unknown callback type %r" % result[1])
-        else:
-            return attr(result)
-
-    def process_complete(self, result):
-        rv = [result[0]] + result[2]
-        return True, rv
-
-    def process_action(self, result):
-        parent = self.webdriver.current_window_handle
-        try:
-            self.webdriver.switch_to.window(self.test_window)
-            action = result[2]["action"]
-            self.logger.debug("Got action: %s" % action)
-            if action == "click":
-                selector = result[2]["selector"]
-                elements = self.webdriver.find_elements_by_css_selector(selector)
-                if len(elements) == 0:
-                    raise ValueError("Selector matches no elements")
-                elif len(elements) > 1:
-                    raise ValueError("Selector matches multiple elements")
-                self.logger.debug("Clicking element: %s" % selector)
-                try:
-                    elements[0].click()
-                except (exceptions.ElementNotInteractableException,
-                        exceptions.ElementNotVisibleException) as e:
-                    self._send_message("complete",
-                                       "failure",
-                                       e)
-                    self.logger.debug("Clicking element failed: %s" % str(e))
-                else:
-                    self._send_message("complete",
-                                       "success")
-                    self.logger.debug("Clicking element succeeded")
-        finally:
-            self.webdriver.switch_to.window(parent)
-
-        return False, None
-
-    def _send_message(self, message_type, status, message=None):
-        obj = {
-            "type": "testdriver-%s" % str(message_type),
-            "status": str(status)
-        }
-        if message:
-            obj["message"] = str(message)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
-
 
 
 class SeleniumRefTestExecutor(RefTestExecutor):

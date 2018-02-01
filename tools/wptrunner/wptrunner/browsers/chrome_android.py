@@ -20,7 +20,7 @@ __wptrunner__ = {"product": "chrome_android",
                  "env_extras": "env_extras",
                  "env_options": "env_options"}
 
-_wptserve_ports = []
+_wptserve_ports = set()
 
 
 def check_args(**kwargs):
@@ -38,9 +38,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     from selenium.webdriver import DesiredCapabilities
 
     # Use extend() to modify the global list in place.
-    _wptserve_ports.extend(
+    _wptserve_ports.update(set(
         server_config['ports']['http'] + server_config['ports']['https'] +
-        server_config['ports']['ws'] + server_config['ports']['wss'])
+        server_config['ports']['ws'] + server_config['ports']['wss']
+    ))
 
     executor_kwargs = base_executor_kwargs(test_type, server_config,
                                            cache_manager, **kwargs)

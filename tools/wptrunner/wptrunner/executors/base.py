@@ -476,3 +476,83 @@ class WebDriverProtocol(Protocol):
         conn.request("HEAD", self.server.base_path + "invalid")
         res = conn.getresponse()
         return res.status == 404
+
+
+class CallbackHandler(object):
+    """Handle callbacks from testdriver-using tests.
+
+    The default implementation here makes sense for things that are roughly like
+    WebDriver. Things that are more different to WebDriver may need to create a
+    fully custom implementation."""
+
+    def __init__(self, logger, protocol, test_window):
+        self.protocol = protocol
+        self.test_window = test_window
+        self.logger = logger
+        self.callbacks = {
+            "action": self.process_action,
+            "complete": self.process_complete
+        }
+
+        self.actions = {
+            "click": ClickAction(self.logger, self.protocol)
+        }
+
+    def __call__(self, result):
+        self.logger.debug("Got async callback: %s" % result[1])
+        try:
+            return self.callbacks[result[1]](result)
+        except KeyError:
+            raise ValueError("Unknown callback type %r" % result[1])
+
+    def process_complete(self, result):
+        rv = [result[0]] + result[2]
+        return True, rv
+
+    def process_action(self, result):
+        parent = self.protocol.current_window_handle()
+        try:
+            self.protocol.switch_to_window(self.test_window)
+            action = result[2]["action"]
+            self.logger.debug("Got action: %s" % action)
+            try:
+                action_handler = self.actions[action]
+            except KeyError:
+                raise ValueError("Unknown action %s" % action)
+            success = action_handler(result[2])
+            if success:
+                self._send_message("complete", "success")
+                self.logger.debug("Action %s succeeded" % action)
+            else:
+                self._send_message("complete", "failure")
+                self.logger.debug("Action %s failed" % action)
+        finally:
+            self.protocol.switch_to_window(parent)
+
+        return False, None
+
+    def _send_message(self, message_type, status, message=None):
+        self.protocol.send_testdriver_message(message_type, status, message=None)
+
+
+class ClickAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, data):
+        selector = data["selector"]
+        elements = self.protocol.find_elements_by_css_selector(selector)
+        print elements
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+        self.logger.debug("Clicking element: %s" % selector)
+        try:
+            self.protocol.click_element(elements[0])
+        except Exception as e:
+            self.logger.warning(e)
+            return False
+        else:
+            return True

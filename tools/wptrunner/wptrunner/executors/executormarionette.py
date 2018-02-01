@@ -1,3 +1,4 @@
+import json
 import os
 import socket
 import threading
@@ -11,7 +12,8 @@ pytestrunner = None
 
 here = os.path.join(os.path.split(__file__)[0])
 
-from .base import (ExecutorException,
+from .base import (CallbackHandler,
+                   ExecutorException,
                    Protocol,
                    RefTestExecutor,
                    RefTestImplementation,
@@ -27,7 +29,6 @@ from .base import (ExecutorException,
 
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
-
 
 
 def do_delayed_imports():
@@ -169,6 +170,7 @@ class MarionetteProtocol(Protocol):
         self.marionette.switch_to_window(runner_handle)
         if runner_handle != self.runner_handle:
             self.load_runner(protocol)
+        return self.runner_handle
 
     def dismiss_alert(self, f):
         while True:
@@ -182,6 +184,31 @@ class MarionetteProtocol(Protocol):
                     pass
             else:
                 break
+
+    def get_test_window(self, window_id, parent):
+        test_window = None
+        if window_id:
+            try:
+                # Try this, it's in Level 1 but nothing supports it yet
+                win_s = self.marionette.execute_script("return window['%s'];" % self.window_id)
+                win_obj = json.loads(win_s)
+                test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
+            except Exception:
+                pass
+
+        if test_window is None:
+            after = self.marionette.window_handles
+            if len(after) == 2:
+                test_window = next(iter(set(after) - set([parent])))
+            elif after[0] == parent and len(after) > 2:
+                # Hope the first one here is the test window
+                test_window = after[1]
+            else:
+                raise Exception("unable to find test window")
+
+        assert test_window != parent
+        return test_window
+
 
     def wait(self):
         try:
@@ -306,13 +333,33 @@ class MarionetteProtocol(Protocol):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
+    def find_elements_by_css_selector(self, selector):
+        return self.marionette.find_elements("css selector", selector)
+
+    def click_element(self, element):
+        return element.click()
+
+    def current_window_handle(self):
+        return self.marionette.current_window_handle
+
+    def switch_to_window(self, handle):
+        self.marionette.switch_to_window(handle)
+
+    def send_testdriver_message(self, message_type, status, message=None):
+        obj = {
+            "type": "testdriver-%s" % str(message_type),
+            "status": str(status)
+        }
+        if message:
+            obj["message"] = str(message)
+        self.marionette.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
 
 class ExecuteAsyncScriptRun(object):
     def __init__(self, logger, func, protocol, url, timeout):
         self.logger = logger
         self.result = (None, None)
         self.protocol = protocol
-        self.marionette = protocol.marionette
         self.func = func
         self.url = url
         self.timeout = timeout
@@ -363,7 +410,7 @@ class ExecuteAsyncScriptRun(object):
 
     def _run(self):
         try:
-            self.result = True, self.func(self.marionette, self.url, self.timeout)
+            self.result = True, self.func(self.protocol, self.url, self.timeout)
         except errors.ScriptTimeoutException:
             self.logger.debug("Got a marionette timeout")
             self.result = False, ("EXTERNAL-TIMEOUT", None)
@@ -384,6 +431,8 @@ class ExecuteAsyncScriptRun(object):
 
 
 class MarionetteTestharnessExecutor(TestharnessExecutor):
+    supports_testdriver = True
+
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  close_after_done=True, debug_info=None, capabilities=None,
                  **kwargs):
@@ -394,6 +443,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
         self.protocol = MarionetteProtocol(self, browser, capabilities, timeout_multiplier)
         self.script = open(os.path.join(here, "testharness_marionette.js")).read()
+        self.script_resume = open(os.path.join(here, "testharness_marionette_resume.js")).read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
 
@@ -425,24 +475,34 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_testharness(self, marionette, url, timeout):
-        if self.close_after_done:
-            marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
-            self.protocol.close_old_windows(self.protocol)
+    def do_testharness(self, protocol, url, timeout):
+        protocol.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        parent_window = protocol.close_old_windows(protocol)
 
         if timeout is not None:
             timeout_ms = str(timeout * 1000)
         else:
             timeout_ms = "null"
 
-        script = self.script % {"abs_url": url,
-                                "url": strip_server(url),
-                                "window_id": self.window_id,
-                                "timeout_multiplier": self.timeout_multiplier,
-                                "timeout": timeout_ms,
-                                "explicit_timeout": timeout is None}
+        format_map = {"abs_url": url,
+                      "url": strip_server(url),
+                      "window_id": self.window_id,
+                      "timeout_multiplier": self.timeout_multiplier,
+                      "timeout": timeout_ms,
+                      "explicit_timeout": timeout is None}
 
-        rv = marionette.execute_async_script(script, new_sandbox=False)
+        script = self.script % format_map
+
+        rv = protocol.marionette.execute_script(script, new_sandbox=False)
+        test_window = protocol.get_test_window(self.window_id, parent_window)
+
+        handler = CallbackHandler(self.logger, protocol, test_window)
+        while True:
+            result = protocol.marionette.execute_async_script(
+                self.script_resume % format_map)
+            done, rv = handler(result)
+            if done:
+                break
         return rv
 
 

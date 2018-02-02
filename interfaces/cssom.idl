@@ -21,7 +21,10 @@ interface StyleSheet {
   attribute boolean disabled;
 };
 
-[Exposed=Window]
+[ConstructorCallWith=Document,
+ RaisesException=Constructor,
+ Constructor(DOMString text, optional CSSStyleSheetInit options),
+ Exposed=Window]
 interface CSSStyleSheet : StyleSheet {
   readonly attribute CSSRule? ownerRule;
   [SameObject] readonly attribute CSSRuleList cssRules;

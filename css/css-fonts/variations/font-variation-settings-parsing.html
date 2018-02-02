@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testing the parsing of the font-variation-settings property</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script>
+        valueParserTests = [
+            { input: "'wght' 1000, '9 ~A' -45",           output: "\"9 ~A\" -45, \"wght\" 1000",    valid: true,  message: "Axis tag with valid non-letter ascii characters" },
+            { input: "'\u001Fbdc' 123",                   output: "",                               valid: false, message: "Invalid character below allowed range"},
+            { input: "'abc\u007F' 123",                   output: "",                               valid: false, message: "Invalid character above allowed range"},
+            { input: "'wght' 1e3, 'slnt' -450.0e-1 ",     output: "\"slnt\" -45, \"wght\" 1000",    valid: true,  message: "Axis values in scientific form are valid" },
+            { input: "normal",                            output: "normal",                         valid: true,  message: "'normal' value is valid" },
+            { input: "'a' 1234",                          output: "",                               valid: false, message: "Tag with less than 4 characters is invalid"},
+            { input: "'abcde' 1234",                      output: "",                               valid: false, message: "Tag with more than 4 characters is invalid"},
+            { input: "'wght' 200, ",                      output: "",                               valid: false, message: "Trailing comma is invalid"},
+            { input: "abcd 123",                          output: "",                               valid: false, message: "Unquoted tags are invalid"},
+            { input: "'abcd\" 123",                       output: "",                               valid: false, message: "Unmatched quotes around tag are invalid" },
+            { input: "'abcd'",                            output: "",                               valid: false, message: "Tag without value isinvalid"},
+            { input: "123",                               output: "",                               valid: false, message: "Value without tag is invalid"},
+            { input: "123 'abcd'",                        output: "",                               valid: false, message: "Value before tag is invalid"},
+            { input: "'wght' 200 'abcd' 400",             output: "",                               valid: false, message: "Missing comma between axes is invalid"},
+            { input: "'wght' calc(100 + 200)",            output: "\"wght\" 300",                   valid: true,  message: "Calculations should be supported" },
+            { input: "'wght' calc(100%)",                 output: "",                               valid: false, message: "Percentages should not be supported" },
+            { input: "'wght' calc(100px + 200px)",        output: "",                               valid: false, message: "Units should not be supported" },
+            { input: "'wght' 42%",                        output: "",                               valid: false, message: "Percentages should not be supported" },
+            { input: "'wght' 100px",                      output: "",                               valid: false, message: "Units should not be supported" }
+        ];
+
+        valueParserTests.forEach(function (testCase) {
+            test(() => {
+                var element = document.getElementById("value-parser-test");
+                element.style.fontVariationSettings = testCase.input;
+                var computed = window.getComputedStyle(element).fontVariationSettings;
+                if (testCase.valid) {
+                    assert_equals(computed, testCase.output, testCase.message);
+                }
+                else {
+                    assert_equals(computed, "normal", testCase.message);
+                }                
+
+                element.style.fontVariationSettings = "";
+            },  "Property value: " + testCase.message);
+        });
+
+        valueParserTests.forEach(function (testCase) {
+            test(() => { assert_equals(window.CSS.supports("font-variation-settings", testCase.input), testCase.valid, testCase.message); }, "@supports: " + testCase.message);
+        });
+
+    </script>
+</body>
+</html>

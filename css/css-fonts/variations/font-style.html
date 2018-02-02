@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testing new font-style values introduced in CSS Fonts level 4</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+        @keyframes fontStyleAnimation {
+            from {font-style: oblique -12deg;}
+            to   {font-style: oblique 12deg;}
+        }
+
+        #animation-test.animate {
+            animation-name: fontStyleAnimation;
+            animation-duration: 10s;
+        }
+
+        #transition-test {
+            font-style: oblique -12deg;
+            transition-property: font-style;
+            transition-duration: 10s;
+        }
+
+        #transition-test.animate {
+            font-style: oblique 12deg;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="shorthand-test">Shorthand test</div>
+    <div id="animation-test">Animation test</div>
+    <div id="transition-test">Transition test</div>
+    
+    <script>
+        "use strict";
+
+        var testFontStyle = [
+            { style: "italic",            expectedResult: true,  message: "'italic' is valid" },
+            { style: "italic 20deg",      expectedResult: false, message: "'italic' followed by angle is invalid" },
+            { style: "italic a",          expectedResult: false, message: "'italic' followed by non-number is invalid" },
+            { style: "oblique",           expectedResult: true,  message: "'oblique' is valid" },
+            { style: "oblique 0deg",      expectedResult: true,  message: "'oblique' followed by zero degrees is valid" },
+            { style: "oblique 20deg",     expectedResult: true,  message: "'oblique' followed by positive angle in degrees is valid" },
+            { style: "oblique 0.5rad",    expectedResult: true,  message: "'oblique' followed by positive angle in radians is valid" },
+            { style: "oblique 20grad",    expectedResult: true,  message: "'oblique' followed by positive angle in gradians is valid" },
+            { style: "oblique 0.1turn",   expectedResult: true,  message: "'oblique' followed by positive angle in turns is valid" },
+            { style: "oblique 20px",      expectedResult: false, message: "'oblique' followed by number with invalid unit type is in valid" },
+            { style: "oblique -20deg",    expectedResult: true,  message: "'oblique' followed by negative angle is valid" },
+            { style: "oblique 20.1deg",   expectedResult: true,  message: "'oblique' followed by fractional angle is valid" },
+            { style: "oblique 90deg",     expectedResult: true,  message: "'oblique' followed by maxumum 90 degree angle is valid" },
+            { style: "oblique -90deg",    expectedResult: true,  message: "'oblique' followed by minimum -90 degree angle is valid" },
+            { style: "oblique 90.01deg",  expectedResult: false, message: "'oblique' followed by positive out of range angle is in invalid" },
+            { style: "oblique -90.01deg", expectedResult: false, message: "'oblique' followed by positive out of range angle is in invalid" },
+            { style: "oblique 10",        expectedResult: false, message: "'oblique' followed by unit-less value is invalid" },
+            { style: "oblique 20deg ",    expectedResult: true,  message: "'oblique' followed by positive angle is valid" },
+            { style: "oblique a",         expectedResult: false, message: "'oblique' followed by non-number is invalid" },
+            { style: "oblique 20deg a",   expectedResult: false, message: "'oblique' and angle followed by non-number is invalid" },
+            { style: "oblique -",         expectedResult: false, message: "'oblique' followed by isolated minus is invalid" },
+            { style: "oblique - 20deg",   expectedResult: false, message: "'oblique' followed by minus and angle separated by space is invalid" },
+            { style: "oblique -a",        expectedResult: false, message: "'oblique' followed by minus and non-number is invalid" }
+            ];
+
+        testFontStyle.forEach(function (testCase) {
+            test(() => { assert_equals(window.CSS.supports("font-style", testCase.style), testCase.expectedResult, "Font-style: " + testCase.message); }, "Font-style: " + testCase.message);
+        });
+
+        var testFontShorthand = [
+            { value: "italic 500 24pt Arial",        isValid:true,  expectedStyle: "italic",        expectedWeight:"500", message: "'italic' followed by valid weight" },
+            { value: "oblique 50 24pt Arial",        isValid:true,  expectedStyle: "oblique",       expectedWeight:"50",  message: "'oblique' followed by valid small weight" },
+            { value: "oblique 500 24pt Arial",       isValid:true,  expectedStyle: "oblique",       expectedWeight:"500", message: "'oblique' followed by valid large weight" },
+            { value: "oblique 45deg 500 24pt Arial", isValid:true,  expectedStyle: "oblique 45deg", expectedWeight:"500", message: "'oblique' with positive angle followed by valid weight" },
+            { value: "oblique -45deg 500 24pt Arial", isValid:true,  expectedStyle: "oblique -45deg", expectedWeight:"500", message: "'oblique' with negative angle followed by valid weight" }
+        ];
+
+        testFontShorthand.forEach(function (testCase) {
+            test(() => {
+                assert_equals(window.CSS.supports("font", testCase.value), testCase.isValid, "Font shorthand: " + testCase.message);
+
+                var testElement = document.getElementById("shorthand-test");
+                testElement.setAttribute("style", "font:" + testCase.value);
+                var style = window.getComputedStyle(testElement);
+                assert_equals(style.fontStyle, testCase.expectedStyle, "Font shorthand expected style: " + testCase.message);
+                assert_equals(style.fontWeight, testCase.expectedWeight, "Font shorthand expected weight: " + testCase.message);
+            }, "Font shorthand: " + testCase.message);
+
+        });
+
+        async_test(function (test) {
+            var animationElement = document.getElementById("animation-test");
+
+            // Verify starting value
+            assert_equals(window.getComputedStyle(animationElement).fontStyle, "normal", "Font style before animation");
+            // Start animation 
+            animationElement.classList.add("animate");
+
+            var waitForAnimationStep = test.step_func(function() {
+                var computedFontStyle = window.getComputedStyle(animationElement).fontStyle;
+                if (computedFontStyle != "normal" &&
+                    computedFontStyle != "oblique -12deg" &&
+                    computedFontStyle != "oblique 12deg") {
+                    test.done();
+                }
+                else {
+                    window.requestAnimationFrame(waitForAnimationStep);
+                }
+            });
+            waitForAnimationStep();
+
+        }, "font-style animation");
+        
+        async_test(function (test) {
+            var transitionElement = document.getElementById("transition-test");
+
+            // Verify starting value
+            assert_equals(window.getComputedStyle(transitionElement).fontStyle, "oblique -12deg", "Font style before transition");
+            // Start transition
+            transitionElement.classList.add("animate");
+
+            var waitForTransitionStep = test.step_func(function() {
+                var computedFontStyle = window.getComputedStyle(transitionElement).fontStyle;
+                if (computedFontStyle != "normal" &&
+                    computedFontStyle != "oblique -12deg" &&
+                    computedFontStyle != "oblique 12deg") {
+                    test.done();
+                }
+                else {
+                    window.requestAnimationFrame(waitForTransitionStep);
+                }
+            });
+            waitForTransitionStep();
+
+        }, "font-style transition");
+
+    </script>
+</body>
+</html>

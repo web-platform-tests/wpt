@@ -21,7 +21,7 @@
       mojo.internal.exposeNamespace('mojo.common.mojom');
   if (mojo.config.autoLoadMojomDeps) {
     mojo.internal.loadMojomIfNecessary(
-        'mojo/common/string16.mojom', '../../../../mojo/common/string16.mojom.js');
+        'mojo/public/mojom/base/string16.mojom', '../../../../mojo/public/mojom/base/string16.mojom.js');
   }
 
 

@@ -12,8 +12,8 @@ def main(request, response):
 
     if "id" in request.GET:
         body = body + """<script>
-let output = [...self.location.ancestorOrigins]
-top.postMessage({ id: %s, output }, "*")
+let output = [...self.location.ancestorOrigins];
+top.postMessage({ id: %s, output }, "*");
 </script>
 """ % request.GET.first("id")
 

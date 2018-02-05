@@ -31,13 +31,13 @@
             { value: "oblique 100deg 24px Arial",                           isValid:false,                                   message: "'oblique' with negative angle, value out of range" },
             { value: "oblique -100deg 24px Arial",                          isValid:false,                                   message: "'oblique' with positive angle, value out of range" },
 
-            // font-weight adn font-style combined
+            // font-weight and font-style combined
             { value: "oblique 50 24px Arial",                               isValid:true,   expectedStyle: "oblique",        expectedWeight:"50",    message: "'oblique' followed by valid small weight" },
             { value: "oblique 500 24px Arial",                              isValid:true,   expectedStyle: "oblique",        expectedWeight:"500",   message: "'oblique' followed by valid large weight" },
             { value: "oblique 45deg 500 24px Arial",                        isValid:true,   expectedStyle: "oblique 45deg",  expectedWeight:"500",   message: "'oblique' with positive angle followed by valid weight" },
             { value: "oblique -45deg 500 24px Arial",                       isValid:true,   expectedStyle: "oblique -45deg", expectedWeight:"500",   message: "'oblique' with negative angle followed by valid weight" },
 
-            // font-weight adn font-style combined, with calc()
+            // font-weight and font-style combined, with calc()
             { value: "oblique calc(200 + 300) 24px Arial",                  isValid:true,  expectedStyle: "oblique",         expectedWeight:"500",   message: "'oblique' followed by valid calc() weight" },
             { value: "oblique 30deg calc(200 + 300) 24px Arial",            isValid:true,  expectedStyle: "oblique 30deg",   expectedWeight:"500",   message: "'oblique' with angle followed by valid calc() weight" },
             { value: "oblique calc(900 + 300) 24px Arial",                  isValid:false,                                                           message: "'oblique' followed by invalid calc() weight" },

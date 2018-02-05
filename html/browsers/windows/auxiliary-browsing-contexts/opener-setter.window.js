@@ -7,7 +7,6 @@
   [],
   Symbol()
 ].forEach(val => {
-  const title = typeof val === "symbol" ? "Symbol" : String(val);
   test(t => {
     const frame = document.body.appendChild(document.createElement("iframe")),
           win = frame.contentWindow;
@@ -35,5 +34,5 @@
 
     openerSet("x");
     assert_equals(win.opener, "x");
-  }, "Setting window.opener to " + title);
+  }, "Setting window.opener to " + String(val)); // String() needed for symbols
 });

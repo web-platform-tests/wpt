@@ -51,8 +51,7 @@ test(function() {
   document.body = body;
 }, "setting document color attributes with no body");
 
-test(function() {
-  var doc = document.implementation.createHTMLDocument();
+function testBogusRootElement(doc) {
   doc.replaceChild(doc.createElement('test'), doc.documentElement);
   var new_body = doc.createElement('body');
   doc.documentElement.appendChild(new_body);
@@ -69,5 +68,21 @@ test(function() {
   assert_equals(doc.linkColor, "");
   assert_equals(doc.vlinkColor, "");
   assert_equals(doc.alinkColor, "");
-}, "document color attributes when the root element is a test element");
+}
+
+test(function() {
+  var iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  var doc = iframe.contentDocument;
+  // Use standards mode for doc
+  doc.open();
+  doc.write('<!doctype html>');
+  doc.close();
+  testBogusRootElement(doc);
+}, "document color attributes when the root element is a test element (iframe)");
+
+test(function() {
+  var doc = document.implementation.createHTMLDocument();
+  testBogusRootElement(doc);
+}, "document color attributes when the root element is a test element (createHTMLDocument)");
 </script>

@@ -27,24 +27,25 @@ test(function() {
   setColorAttributes(document, 'green');
 
   var body = document.documentElement.removeChild(document.body);
-
+  this.add_cleanup(function() {
+    // Re-add body and reset color attributes.
+    document.body = body;
+    setColorAttributes(document, '');
+  });
   // When there is no body element, the color attributes return an
   // empty string upon getting.
   checkColorAttributes(document, '');
-
-  // Re-add body and reset color attributes.
-  document.body = body;
-  setColorAttributes(document, '');
 }, "getting document color attributes with no body");
 
 test(function() {
   var body = document.documentElement.removeChild(document.body);
+  this.add_cleanup(function() {
+    document.body = body;
+  });
 
   // When there is no body element, setting the color attributes has no effect.
   setColorAttributes(document, 'red');
   checkColorAttributes(document, '');
-
-  document.body = body;
 }, "setting document color attributes with no body");
 
 function testBogusRootElement(doc) {

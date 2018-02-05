@@ -14,7 +14,7 @@
             <span style="font: menu; font-size: 10px;">(default)</span>
         </div>
     </div>
-    
+
     <script>
 
         testRelativeWeights = [
@@ -34,7 +34,7 @@
         var testcases = document.getElementById("testcases");
         var testcase_template = testcases.firstElementChild; testcases.removeChild(testcase_template);
         testRelativeWeights.forEach(function(element) {
-            
+
             var base = testcase_template.cloneNode(true);
             base.children[2].textContent = element.baseWeight;
             base.style.fontWeight = element.baseWeight;

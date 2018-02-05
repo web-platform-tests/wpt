@@ -36,7 +36,8 @@
             { style: "oblique -a",        expectedResult: false, message: "'oblique' followed by minus and non-number is invalid" },
             { style: "oblique calc(50deg)",     expectedResult: true,  message: "'oblique' followed by calc is valid" },
             { style: "oblique calc(-120deg)",   expectedResult: true,  message: "'oblique' followed by calc is valid even if it must be clamped (no computation)" },
-            { style: "oblique calc(6 * 20deg)", expectedResult: true,  message: "'oblique' followed by calc is valid even if it must be clamped (with computation)" }
+            { style: "oblique calc(6 * 20deg)", expectedResult: true,  message: "'oblique' followed by calc is valid even if it must be clamped (with computation)" },
+            { style: "oblique calc(0.1rad + 1deg)", expectedResult: true,  message: "'oblique' followed by calc is valid even if it mixes units (with computation)" }
         ];
 
         testFontStyle.forEach(function (testCase) {

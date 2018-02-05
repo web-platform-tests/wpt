@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Testing the interpolation of new font-weight values introduced in CSS Fonts level 4</title>
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-weight-prop" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
@@ -31,17 +32,16 @@
         <div id="animation-test">A</div>
         <div id="transition-test">A</div>
     </div>
-    
+
     <script>
-        "use strict";
 
         async_test(function (test) {
             var animationElement = document.getElementById("animation-test");
 
             // Verify starting value
             assert_equals(window.getComputedStyle(animationElement).fontWeight, "400", "Font weight before animation");
-            
-            // Start animation 
+
+            // Start animation
             animationElement.classList.add("animate");
 
             var waitForAnimationStep = test.step_func(function() {
@@ -56,13 +56,13 @@
             waitForAnimationStep();
 
         }, "font-weight animation");
-        
+
         async_test(function (test) {
             var transitionElement = document.getElementById("transition-test");
 
             // Verify starting value
             assert_equals(window.getComputedStyle(transitionElement).fontWeight, "100", "Font weight before transition");
-            
+
             // Start transition
             transitionElement.classList.add("animate");
 

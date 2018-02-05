@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Testing the inheritance of the font-variation-settings property</title>
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#propdef-font-variation-settings" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -24,12 +25,12 @@
             var actualValue = window.getComputedStyle(elementParent).fontVariationSettings;
             assert_equals(actualValue, "\"yyyy\" 2", "Duplicate axis tags should be removed, favoring the latter axis tag's value.");
         }, "Test font-variation-settings for duplicates using " + parentValue);
-        
+
         test(() => {
             var actualValue = window.getComputedStyle(elementChildInherited).fontVariationSettings;
             assert_equals(actualValue, "\"yyyy\" 2", "Child should inherit the parent value directly.");
         }, "Test font-variation-settings for child inheritance");
-        
+
         test(() => {
             var actualValue = window.getComputedStyle(elementChildOverride).fontVariationSettings;
             assert_equals(actualValue, "\"aaaa\" 4, \"bbbb\" 2, \"cccc\" 1", "Child should override parent value.");

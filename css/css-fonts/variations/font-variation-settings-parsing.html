@@ -2,11 +2,13 @@
 <html>
 <head>
     <title>Testing the parsing of the font-variation-settings property</title>
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#propdef-font-variation-settings" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
     <script>
+
         valueParserTests = [
             { input: "'wght' 1000, '9 ~A' -45",           output: "\"9 ~A\" -45, \"wght\" 1000",    valid: true,  message: "Axis tag with valid non-letter ascii characters" },
             { input: "'\u001Fbdc' 123",                   output: "",                               valid: false, message: "Invalid character below allowed range"},
@@ -39,7 +41,7 @@
                 }
                 else {
                     assert_equals(computed, "normal", testCase.message);
-                }                
+                }
 
                 element.style.fontVariationSettings = "";
             },  "Property value: " + testCase.message);

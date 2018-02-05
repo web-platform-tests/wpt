@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Testing font shorthand for new values introduced in CSS Fonts level 4</title>
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-prop" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -9,6 +10,7 @@
     <div id="shorthand-test">Shorthand test</div>
 
     <script>
+
         testFontShorthand = [
             { value: "calc(24px) Arial",                                     isValid:true,   message: "Font weight specified as number" },
 
@@ -61,6 +63,7 @@
             }, "Font shorthand: " + testCase.message);
 
         });
+
     </script>
 </body>
 </html>

@@ -133,12 +133,6 @@ def get_pause_after_test(test_loader, **kwargs):
 
 
 def run_tests(config, test_paths, product, **kwargs):
-    kwargs.update({
-        "config": config,
-        "test_paths": test_paths,
-        "product": product
-    })
-
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 

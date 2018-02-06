@@ -114,7 +114,7 @@
     8.5.  The stats selection algorithm
       2.  If selector is null, gather stats for the whole connection, add them to result,
           return result, and abort these steps.
-   */
+  */
   promise_test(t => {
     const pc = new RTCPeerConnection();
     return pc.getStats()
@@ -124,6 +124,7 @@
     });
   }, 'getStats() with no argument should return stats report containing peer-connection stats on an empty PC');
 
+
   promise_test(t => {
     const pc = new RTCPeerConnection();
     return getTrackFromUserMedia('audio')
@@ -131,12 +132,16 @@
       pc.addTrack(track, mediaStream);
       return pc.getStats();
     })
+      .then(statsReport => {
+        return pc.getStats();
+      })
     .then(statsReport => {
       validateStatsReport(statsReport);
       assert_stats_report_has_stats(statsReport, ['peer-connection']);
       assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
     });
   }, 'getStats() with no argument should return stats report containing peer-connection stats and outbound-track-stats');
+/*
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -152,6 +157,7 @@
     });
   }, 'getStats() with no argument should return stats for no-stream tracks');
 
+*/
   /*
     8.5.  The stats selection algorithm
       3.  If selector is an RTCRtpSender, gather stats for and add the following objects
@@ -159,7 +165,8 @@
         - All RTCOutboundRTPStreamStats objects corresponding to selector.
         - All stats objects referenced directly or indirectly by the RTCOutboundRTPStreamStats
           objects added.
-   */
+  */
+/*
   promise_test(() => {
     const pc = new RTCPeerConnection();
     return getTrackFromUserMedia('audio')
@@ -173,7 +180,7 @@
       });
     });
   }, `getStats() on track associated with RtpSender should return stats report containing outbound-rtp stats`);
-
+*/
 
   /*
     8.5.  The stats selection algorithm
@@ -182,7 +189,8 @@
         - All RTCInboundRTPStreamStats objects corresponding to selector.
         - All stats objects referenced directly or indirectly by the RTCInboundRTPStreamStats
           added.
-   */
+  */
+/*
   promise_test(() => {
     const pc = new RTCPeerConnection();
     const transceiver = pc.addTransceiver('audio');
@@ -193,14 +201,14 @@
       assert_stats_report_has_stats(statsReport, ['inbound-rtp']);
     });
   }, `getStats() on track associated with RtpReceiver should return stats report containing inbound-rtp stats`);
-
+*/
   /*
     8.6   Mandatory To Implement Stats
       An implementation MUST support generating statistics of the following types
       when the corresponding objects exist on a PeerConnection, with the attributes
       that are listed when they are valid for that object.
    */
-
+/*
   const mandatoryStats = [
     "codec",
     "inbound-rtp",
@@ -339,5 +347,5 @@
     }));
 
   }, `getStats() with connected peer connections having tracks and data channel should return all mandatory to implement stats`);
-
+*/
 </script>

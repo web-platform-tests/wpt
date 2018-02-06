@@ -39,12 +39,12 @@
 
 @font-feature-values fontB {
   @styleset { crossedW: 5; several: 1 3 5; }
-  @styleset { altW: 4; }
+  @styleset { altW: 5; }
 }
 
 @font-feature-values fontB {
   @styleset {
-    AlTw: 5;
+    AlTw: 4;
     defined-for-fontB: 5;
     scriptJ: 3;
   }
@@ -65,21 +65,21 @@ div { margin: 0 20px; }
 }
 
 #test2 {
-  /* testing case-insensitivity of styleset name */
+  /* testing case-sensitivity of styleset name */
   font-family: fontB;
   font-variant-alternates: styleset(altW);
 }
 
 #test3 {
-  /* testing case-insensitivity of styleset name */
+  /* testing case-sensitivity of styleset function */
   font-family: fontB;
-  font-variant-alternates: styleset(ALTW);
+  font-variant-alternates: STYLESET(defined-for-fontB);
 }
 
 #test4 {
   /* testing escapes in styleset name */
   font-family: fontB;
-  font-variant-alternates: styleset(\41 ltW);
+  font-variant-alternates: styleset(\61 ltW);
 }
 
 #test5 {
@@ -91,14 +91,14 @@ div { margin: 0 20px; }
 #test6 {
   /* testing one feature doesn't affect another */
   font-variant-alternates: styleset(somethingElse);
-  -moz-font-feature-settings: "ss05" on;
+  font-feature-settings: "ss05" on;
 }
 
 #test7 {
   /* testing font-specificity of feature value rule */
   font-family: fontA;
   font-variant-alternates: styleset(scriptJ);
-  -moz-font-feature-settings: "ss06";
+  font-feature-settings: "ss06";
 }
 
 #test8 {

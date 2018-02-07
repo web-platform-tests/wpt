@@ -11,10 +11,14 @@
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //  createDataChannelPair
   //  awaitMessage
+  //  getTrackFromUserMedia
+  //  addTrackOrTransceiver
 
   // The following helper functions are called from RTCTransport-helper.js:
+  //  waitConnectingIceTransport
   //  getIceTransportFromSctp
-  //  awaitMessage
+  //  getIceTransportsFromSenderReceiver
+
 
   function validateIceCandidates(candidates) {
     assert_greater_than(candidates.length, 0,

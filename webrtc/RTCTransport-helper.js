@@ -1,5 +1,16 @@
 'use strict';
 
+/*
+  Code using this helper should also include RTCPeerConnection-helper.js
+  in the main HTML file
+
+  The following helper functions are called from RTCPeerConnection-helper.js:
+    getTrackFromUserMedia
+    addTrackOrTransceiver
+    exchangeIceCandidates
+    doSignalingHandshake
+*/
+
 // Wait for a connecting dtlsTransport to transist
 // into connected state.
 function waitConnectingDtlsTransport(dtlsTransport) {
@@ -115,8 +126,12 @@ function getIceTransportsFromSenderReceiver(pc) {
   return [...iceTransports];
 }
 
+// Create DTLS transports by creating data channels
+// and connecting two peer connections. Returns an
+// array of two RTCDtlsTransports, which obtained
+// from RTCSctpTransport in pc.sctp.
 function createDtlsTransportsFromSctp(pc1, pc2) {
-  pc1.createDataChannel('test');
+  pc1.createDataChannel('');
   exchangeIceCandidates(pc1, pc2);
 
   return doSignalingHandshake(pc1, pc2)
@@ -128,6 +143,11 @@ function createDtlsTransportsFromSctp(pc1, pc2) {
   });
 }
 
+// Create DTLS transports by adding tracks and connecting
+// two peer connections. Returns an array of two array of
+// RTCDtlsTransports. This is because each peer connection
+// may have multiple underlying DTLS transports for each
+// RTP/RTCP sender/receivers.
 function createDtlsTransportsFromSenderReceiver(pc1, pc2) {
   return getTrackFromUserMedia('audio')
   .then(([track, mediaStream]) => {

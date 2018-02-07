@@ -213,6 +213,16 @@ def test_ref_absolute_url(caplog):
     assert "ref/absolute.html" in caplog.text
 
 
+def test_about_blank_as_ref(caplog):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["about_blank_ref.html"], "normal")
+            assert rv == 1
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+    assert caplog.text == ""
+
+
 def test_ref_same_file_empty(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:

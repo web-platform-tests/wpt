@@ -16,8 +16,9 @@
 
   // The following helper functions are called from RTCTransport-helper.js:
   //  waitConnectingIceTransport
-  //  getIceTransportFromSctp
+  //  getIceTransportFromSctpTransport
   //  getIceTransportsFromSenderReceiver
+  //  createIceTransportsFromSenderReceiver
 
 
   function validateIceCandidates(candidates) {
@@ -87,11 +88,8 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    return createDataChannelPair(pc1, pc2)
-    .then(() => {
-      const iceTransport1 = getIceTransportFromSctp(pc1);
-      const iceTransport2 = getIceTransportFromSctp(pc2);
-
+    return createIceTransportsFromSctp(pc1, pc2)
+    .then(([iceTransport1, iceTransport2]) => {
       return Promise.all([
         waitConnectingIceTransport(iceTransport1),
         waitConnectingIceTransport(iceTransport2)
@@ -107,23 +105,15 @@
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
 
-    return getTrackFromUserMedia('audio')
-    .then(([track, mediaStream]) => {
-      addTrackOrTransceiver(pc1, track, mediaStream);
+    return createIceTransportsFromSenderReceiver(pc1, pc2)
+    .then(([iceTransports1, iceTransports2]) => {
+      const iceTransports = [...iceTransports1, ...iceTransports2];
 
-      return doSignalingHandshake(pc1, pc2)
-      .then(() => {
-        const iceTransports1 = getIceTransportsFromSenderReceiver(pc1);
-        const iceTransports2 = getIceTransportsFromSenderReceiver(pc2);
-
-        const iceTransports = [...iceTransports1, ...iceTransports2];
-
-        return Promise.all(iceTransports.map(
-          iceTransport => {
-            return waitConnectingIceTransport()
-            .then(() => validateConnectedIceTransport(iceTransport));
-          }));
-      });
+      return Promise.all(iceTransports.map(
+        iceTransport => {
+          return waitConnectingIceTransport(iceTransport)
+          .then(() => validateConnectedIceTransport(iceTransport));
+        }));
     });
   }, 'RTP - Connected ICE transports should have relevants attributes set');
 
@@ -164,7 +154,7 @@
       .then(() => pc2.createAnswer()))
     .then(answer => pc1.setRemoteDescription(answer))
     .then(() => {
-      const iceTransport = getIceTransportFromSctp(pc1);
+      const iceTransport = getIceTransportFromSctpTransport(pc1.sctp);
 
       validateUnconnectedIceTransport(iceTransport);
     });

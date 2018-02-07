@@ -51,9 +51,7 @@ function waitConnectingIceTransport(iceTransport) {
   });
 }
 
-// Get a RTCDtlsTransport from pc.sctp
-function getDtlsTransportFromSctp(pc) {
-  const sctpTransport = pc.sctp;
+function getDtlsTransportFromSctpTransport(sctpTransport) {
   assert_true(sctpTransport instanceof RTCSctpTransport,
     'Expect pc.sctp to be instantiated from RTCSctpTransport');
 
@@ -64,8 +62,8 @@ function getDtlsTransportFromSctp(pc) {
   return dtlsTransport;
 }
 
-function getIceTransportFromSctp(pc) {
-  const dtlsTransport = getDtlsTransportFromSctp(pc);
+function getIceTransportFromSctpTransport(sctpTransport) {
+  const dtlsTransport = getDtlsTransportFromSctpTransport(sctpTransport);
 
   const iceTransport = dtlsTransport.transport;
   assert_true(iceTransport instanceof RTCIceTransport,
@@ -117,6 +115,16 @@ function getIceTransportFromDtlsTransport(dtlsTransport) {
   return iceTransport;
 }
 
+function getIceTransportsFromDtlsTransports(dtlsTransports) {
+  const iceTransports = new Set();
+
+  for (const dtlsTransport of dtlsTransports) {
+    iceTransports.add(getIceTransportFromDtlsTransport(dtlsTransport));
+  }
+
+  return [...iceTransports];
+}
+
 function getIceTransportsFromSenderReceiver(pc) {
   const dtlsTransports = getDtlsTransportsFromSenderReceiver(pc);
 
@@ -136,8 +144,8 @@ function createDtlsTransportsFromSctp(pc1, pc2) {
 
   return doSignalingHandshake(pc1, pc2)
   .then(() => {
-    const dtlsTransport1 = getDtlsTransportFromSctp(pc1);
-    const dtlsTransport2 = getDtlsTransportFromSctp(pc2);
+    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
+    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
 
     return [dtlsTransport1, dtlsTransport2];
   });
@@ -161,5 +169,25 @@ function createDtlsTransportsFromSenderReceiver(pc1, pc2) {
 
       return [dtlsTransports1, dtlsTransports2];
     });
+  });
+}
+
+function createIceTransportsFromSctp(pc1, pc2) {
+  return createDtlsTransportsFromSctp(pc1, pc2)
+  .then(([dtlsTransport1, dtlsTransport2]) => {
+    const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
+    const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
+
+    return [iceTransport1, iceTransport2];
+  });
+}
+
+function createIceTransportsFromSenderReceiver(pc1, pc2) {
+  return createDtlsTransportsFromSenderReceiver(pc1, pc2)
+  .then(([dtlsTransports1, dtlsTransports2]) => {
+    const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
+    const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
+
+    return [iceTransports1, iceTransports2];
   });
 }

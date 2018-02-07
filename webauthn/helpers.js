@@ -62,7 +62,7 @@ function createCredential(opts) {
     let challengeBytes = new Uint8Array(16);
     window.crypto.getRandomValues(challengeBytes);
     createArgs.options.publicKey.challenge = challengeBytes;
-    createArgs.options.publicKey.user.id = new Uint8Array();
+    createArgs.options.publicKey.user.id = new Uint8Array(16);
 
     // change the defaults with any options that were passed in
     extendObject (createArgs, opts);

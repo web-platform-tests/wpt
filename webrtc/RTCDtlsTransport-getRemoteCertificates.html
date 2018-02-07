@@ -9,10 +9,15 @@
   'use strict';
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   exchangeIceCandidates
-  //   doSignalingHandshake
+  //  exchangeIceCandidates
+  //  doSignalingHandshake
 
-  function testConnectedDtlsTransport(dtlsTransport) {
+  // The following helper functions are called from RTCTransport-helper.js:
+  //  waitConnectingDtlsTransport
+  //  createDtlsTransportsFromSctp
+  //  createDtlsTransportsFromSenderReceiver
+
+  function validateConnectedDtlsTransport(dtlsTransport) {
     const certs = dtlsTransport.getRemoteCertificates();
 
     assert_greater_than(certs.length, 0,
@@ -24,7 +29,7 @@
     }
   }
 
-  function testConnectingDtlsTransport(dtlsTransport) {
+  function validateConnectingDtlsTransport(dtlsTransport) {
     if (dtlsTransport.state !== 'connected') {
       assert_array_equals(dtlsTransport.getCertificates(), [],
         'Expect DTLS certificates be initially empty until become connected');
@@ -32,7 +37,7 @@
 
     return waitConnectingDtlsTransport()
     .then(() => {
-      testConnectedDtlsTransport(dtlsTransport);
+      validateConnectedDtlsTransport(dtlsTransport);
     });
   }
 
@@ -44,7 +49,7 @@
     .then(([dtlsTransports1, dtlsTransports2]) => {
       return Promise.all(
         [...dtlsTransports1, ... dtlsTransports2]
-        .map(testConnectingDtlsTransport));
+        .map(validateConnectingDtlsTransport));
     });
   });
 
@@ -55,8 +60,8 @@
     return createDtlsTransportsFromSctp(pc1, pc2)
     .then(([dtlsTransport1, dtlsTransport2]) => {
       return Promise.all([
-        testConnectingDtlsTransport(dtlsTransport1),
-        testConnectingDtlsTransport(dtlsTransport2)
+        validateConnectingDtlsTransport(dtlsTransport1),
+        validateConnectingDtlsTransport(dtlsTransport2)
       ]);
     });
   }, 'SCTP - connected DTLS transports should have valid remote certificates');

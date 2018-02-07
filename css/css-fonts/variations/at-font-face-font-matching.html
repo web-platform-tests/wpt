@@ -3,10 +3,8 @@
 <head>
     <title>Testing @font-face font matching logic introduced in CSS Fonts level 4</title>
     <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-matching-algorithm" />
-    <script src="../../../../resources/testharness.js"></script>
-    <script src="../../../../resources/testharnessreport.js"></script>
-    <!-- PART OF THIS TEST REQUIRES THAT YOU INSTALL THE [csstest-*.ttf] FONTS OF THE [resources] FOLDER -->
-    <meta name="flags" content="font" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
     <style>
         .test
         {
@@ -17,9 +15,14 @@
             clear:both;
         }
 
-        @font-face { font-family: descriptorPriorityTest; src: local('CSSTest Weights 100');  font-stretch : 125%; }
-        @font-face { font-family: descriptorPriorityTest; src: local('CSSTest Weights 200');  font-style: italic; }
-        @font-face { font-family: descriptorPriorityTest; src: local('CSSTest Weights 300');  font-weight: 350; }
+        @font-face { font-family: W100; src: url('./resources/csstest-weights-100-kerned.ttf'); }
+        @font-face { font-family: W200; src: url('./resources/csstest-weights-200-kerned.ttf'); }
+        @font-face { font-family: W300; src: url('./resources/csstest-weights-300-kerned.ttf'); }
+
+
+        @font-face { font-family: descriptorPriorityTest; src: url('./resources/csstest-weights-100-kerned.ttf'); font-stretch : 125%; }
+        @font-face { font-family: descriptorPriorityTest; src: url('./resources/csstest-weights-200-kerned.ttf'); font-style: italic; }
+        @font-face { font-family: descriptorPriorityTest; src: url('./resources/csstest-weights-300-kerned.ttf'); font-weight: 350; }
     </style>
     <style id="dynamicStyles">
     </style>
@@ -27,15 +30,20 @@
 <body>
 
     <span style="position: absolute; top: -100vh;">
-        <span style="font-family: 'CSSTest Weights 100';">A</span>
-        <span style="font-family: 'CSSTest Weights 200';">A</span>
-        <span style="font-family: 'CSSTest Weights 300';">A</span>
+        <span style="font-family: 'W100';">A</span>
+        <span style="font-family: 'W200';">A</span>
+        <span style="font-family: 'W300';">A</span>
     </span>
 
     <div id="master" class="test">A1 A2 A2 A3 A3 A3</div>
     <div id="test" class="test">A1 A2 A2 A3 A3 A3</div>
     <div style="clear:both"></div>
     <script>
+
+        // wait for the fonts to load
+        // -- this should not be necessary if the fonts are installed as required
+        // -- but if they are not, the test is otherwise unstable
+        var once_fonts_are_ready = (document.fonts ? document.fonts.ready : new Promise(function(ready) { window.onload = time => [...document.querySelectorAll('body > span:nth-child(1) > span')].every(e => e.offsetWidth > 20) ? ready() : requestAnimationFrame(window.onload) }));
 
         var masterElement = document.getElementById("master");
         var testElement = document.getElementById("test");
@@ -65,21 +73,24 @@
         }
 
         var descriptorPriorityCases = [
-            { weight: "normal", style: "oblique -5deg", stretch: "125%",   expectedFamily: "'CSSTest Weights 100'", description: "Stretch has higher priority than style"},
-            { weight: "350",    style: "normal",        stretch: "125%",   expectedFamily: "'CSSTest Weights 100'", description: "Stretch has higher priority than weight"},
-            { weight: "350",    style: "oblique -5deg", stretch: "normal", expectedFamily: "'CSSTest Weights 200'", description: "Style has higher priority than weight"}
+            { weight: "normal", style: "oblique -5deg", stretch: "125%",   expectedFamily: "'W100'", description: "Stretch has higher priority than style"},
+            { weight: "350",    style: "normal",        stretch: "125%",   expectedFamily: "'W100'", description: "Stretch has higher priority than weight"},
+            { weight: "350",    style: "oblique -5deg", stretch: "normal", expectedFamily: "'W200'", description: "Style has higher priority than weight"}
         ];
 
         descriptorPriorityCases.forEach(function (testCase) {
-            test(() => {
-                verifyFont("descriptorPriorityTest", testCase.weight, testCase.style, testCase.stretch, testCase.expectedFamily);
-            }, "Descriptor mathcing priority: " + testCase.description);
+            promise_test(
+                assert => once_fonts_are_ready.then(assert => {
+                    verifyFont("descriptorPriorityTest", testCase.weight, testCase.style, testCase.stretch, testCase.expectedFamily);
+                }), 
+                "Descriptor mathcing priority: " + testCase.description
+            );
         });
 
-        function createFontFaceRules(descriptorName, fontFaceFamily, expectedFamily, expectedMatch, unexpectedMatch) {
+        function createFontFaceRules(fontFaceFamily, descriptorName, expectedMatch, unexpectedMatch) {
             dynamicStyles.innerHTML =
-                "@font-face { font-family: " + fontFaceFamily + "; src: local(" + expectedFamily + "); "+ descriptorName + ": " + expectedMatch   + "; }" +
-                "@font-face { font-family: " + fontFaceFamily + "; src: local('CSSTest Weights 200'); " + descriptorName + ": " + unexpectedMatch + "; }";
+                "@font-face { font-family: " + fontFaceFamily + "; src: url('./resources/csstest-weights-100-kerned.ttf'); "+ descriptorName + ": " + expectedMatch   + "; }" +
+                "@font-face { font-family: " + fontFaceFamily + "; src: url('./resources/csstest-weights-200-kerned.ttf'); " + descriptorName + ": " + unexpectedMatch + "; }";
         }
 
         function testDescriptor(descriptorName, testCases) {
@@ -88,16 +99,17 @@
                     for(let i = 0; i < testCase.testDescriptors.length - 1; i++) {
                         let expectedMatch   = testCase.testDescriptors[i];
                         let unexpectedMatch = testCase.testDescriptors[i + 1];
-                        test(() => {
-                            createFontFaceRules(descriptorName, "MatchTestFamily", "'CSSTest Weights 100'", expectedMatch, unexpectedMatch);
+                        promise_test(
+                            assert => once_fonts_are_ready.then(assert => {
+                                createFontFaceRules("MatchTestFamily", descriptorName, expectedMatch, unexpectedMatch);
 
-                            let testWeight  = (descriptorName == "font-weight")  ? testCase.value : "normal";
-                            let testStyle   = (descriptorName == "font-style")   ? testCase.value : "normal";
-                            let testStretch = (descriptorName == "font-stretch") ? testCase.value : "normal";
+                                let testWeight  = (descriptorName == "font-weight")  ? testCase.value : "normal";
+                                let testStyle   = (descriptorName == "font-style")   ? testCase.value : "normal";
+                                let testStretch = (descriptorName == "font-stretch") ? testCase.value : "normal";
 
-                            verifyFont("MatchTestFamily", testWeight, testStyle, testStretch, "'CSSTest Weights 100'");
-
-                        }, "Matching " + descriptorName + ": '" + testCase.value + "' should prefer '" + expectedMatch + "' over '" + unexpectedMatch + "'");
+                                verifyFont("MatchTestFamily", testWeight, testStyle, testStretch, "'W100'");
+                            }), 
+                            "Matching " + descriptorName + ": '" + testCase.value + "' should prefer '" + expectedMatch + "' over '" + unexpectedMatch + "'");
                     }
             });
         }

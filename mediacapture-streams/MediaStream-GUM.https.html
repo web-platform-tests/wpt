@@ -6,8 +6,8 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 
-<p class="instructions">Use a test device with color camera(embedded or external).</p>
-<p class="instructions">When prompted, accept to share your color stream.</p>
+<p class="instructions">Use a test device with camera(embedded or external).</p>
+<p class="instructions">When prompted, accept to share camera.</p>
 
 <script>
 
@@ -28,7 +28,7 @@ promise_test(t => {
   })
   .catch(error => {
     assert_equals(error.name, "OverconstrainedError", "An impossible constraint triggers a OverconstrainedError");
-    assert_equals(error.constraint, "width", "The name of the not satisfied error is given in error.constraint");
+    assert_equals(error.constraint, "width", "The name of the unsatisfied constraint is given in error.constraint");
   });
 }, "Tests that setting an impossible constraint in getUserMedia fails");
 
@@ -54,6 +54,6 @@ promise_test(t => {
 
 promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaDevices.getUserMedia({doesnotexist: true}));
-}, "Tests that getUserMedia is rejected with a TypeError when used with an unknown constraint");
+}, "Tests that getUserMedia is rejected with a TypeError when used with an unknown device type");
 
 </script>

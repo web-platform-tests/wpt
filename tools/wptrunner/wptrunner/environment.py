@@ -133,6 +133,7 @@ class TestEnvironment(object):
 
         #TODO: allow non-default configuration for ssl
 
+        local_config["external_host"] = self.options.get("external_host", None)
         local_config["ssl"]["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
 
         config = serve.merge_json(default_config, local_config)

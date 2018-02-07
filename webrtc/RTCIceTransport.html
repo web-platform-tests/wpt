@@ -4,84 +4,72 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
-<script src="RTCIceTransport-helper.js"></script>
+<script src="RTCTransport-helper.js"></script>
 <script>
   'use strict';
-
-  // Test is based on the following editor draft:
-  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //  createDataChannelPair
   //  awaitMessage
 
-  /*
-    5.6.  RTCIceTransport Interface
-      interface RTCIceTransport {
-        readonly attribute RTCIceRole           role;
-        readonly attribute RTCIceComponent      component;
-        readonly attribute RTCIceTransportState state;
-        readonly attribute RTCIceGathererState  gatheringState;
-        sequence<RTCIceCandidate> getLocalCandidates();
-        sequence<RTCIceCandidate> getRemoteCandidates();
-        RTCIceCandidatePair?      getSelectedCandidatePair();
-        RTCIceParameters?         getLocalParameters();
-        RTCIceParameters?         getRemoteParameters();
-        ...
-      };
+  // The following helper functions are called from RTCTransport-helper.js:
+  //  getIceTransportFromSctp
+  //  awaitMessage
 
-      getLocalCandidates
-        Returns a sequence describing the local ICE candidates gathered for this
-        RTCIceTransport and sent in onicecandidate
+  function validateIceCandidates(candidates) {
+    assert_greater_than(candidates.length, 0,
+      'Expect at least one ICE candidate returned from get*Candidates()');
 
-      getRemoteCandidates
-        Returns a sequence describing the remote ICE candidates received by this
-        RTCIceTransport via addIceCandidate()
-
-      getSelectedCandidatePair
-        Returns the selected candidate pair on which packets are sent, or null if
-        there is no such pair.
-
-      getLocalParameters
-        Returns the local ICE parameters received by this RTCIceTransport via
-        setLocalDescription , or null if the parameters have not yet been received.
-
-      getRemoteParameters
-        Returns the remote ICE parameters received by this RTCIceTransport via
-        setRemoteDescription or null if the parameters have not yet been received.
-   */
-
-  function testConnectedIceTransports(iceTransport1, iceTransport2) {
-    validateConnectedIceTransport(iceTransport1);
-    validateConnectedIceTransport(iceTransport2);
-
-    assert_equals(
-      iceTransport1.getLocalCandidates().length,
-      iceTransport2.getRemoteCandidates().length,
-      `Expect iceTransport1 to have same number of local candidate as iceTransport2's remote candidates`);
-
-    assert_equals(
-      iceTransport1.getRemoteCandidates().length,
-      iceTransport2.getLocalCandidates().length,
-      `Expect iceTransport1 to have same number of remote candidate as iceTransport2's local candidates`);
-
-    const candidatePair1 = iceTransport1.getSelectedCandidatePair();
-    const candidatePair2 = iceTransport2.getSelectedCandidatePair();
-
-    assert_equals(candidatePair1.local.candidate, candidatePair2.remote.candidate,
-      'Expect selected local candidate of one pc is the selected remote candidate or another');
-
-    assert_equals(candidatePair1.remote.candidate, candidatePair2.local.candidate,
-      'Expect selected local candidate of one pc is the selected remote candidate or another');
-
-    assert_equals(iceTransport1.role, 'controlling',
-      `Expect offerer's iceTransport to take the controlling role`);
-
-    assert_equals(iceTransport2.role, 'controlled',
-      `Expect answerer's iceTransport to take the controlled role`);
+    for(const candidate of candidates) {
+     assert_true(candidate instanceof RTCIceCandidate,
+       'Expect candidate elements to be instance of RTCIceCandidate');
+    }
   }
 
-  function testUnconnectedIceTransport(iceTransport) {
+  function validateIceCandidateParameter(param) {
+   assert_not_equals(param, null,
+     'Expect candidate parameter to be non-null after data channels are connected');
+
+   assert_equals(typeof param.usernameFragment, 'string',
+     'Expect param.usernameFragment to be set with string value');
+
+   assert_equals(typeof param.password, 'string',
+     'Expect param.password to be set with string value');
+  }
+
+  function validateConnectedIceTransport(iceTransport) {
+    const { state, gatheringState, role, component } = iceTransport;
+
+    assert_true(role === 'controlling' || role === 'controlled',
+      'Expect RTCIceRole to be either controlling or controlled');
+
+    assert_true(component === 'rtp' || component === 'rtcp',
+      'Expect RTCIceComponent to be either rtp or rtcp');
+
+    assert_true(state === 'connected' || state === 'completed',
+      'Expect ICE transport to be in connected or completed state after data channels are connected');
+
+    assert_true(gatheringState === 'gathering' || gatheringState === 'completed',
+      'Expect ICE transport to be in gathering or completed gatheringState after data channels are connected');
+
+    validateIceCandidates(iceTransport.getLocalCandidates());
+    validateIceCandidates(iceTransport.getRemoteCandidates());
+
+    const candidatePair = iceTransport.getSelectedCandidatePair();
+    assert_not_equals(candidatePair, null,
+      'Expect selected candidate pair to be non-null after ICE transport is connected');
+
+    assert_true(candidatePair.local instanceof RTCIceCandidate,
+      'Expect candidatePair.local to be instance of RTCIceCandidate');
+
+    assert_true(candidatePair.remote instanceof RTCIceCandidate,
+      'Expect candidatePair.remote to be instance of RTCIceCandidate');
+
+    validateIceCandidateParameter(iceTransport.getLocalParameters());
+    validateIceCandidateParameter(iceTransport.getRemoteParameters());
+  }
+
+  function validateUnconnectedIceTransport(iceTransport) {
     assert_array_equals(iceTransport.getRemoteCandidates(), [],
       'Expect iceTransport to not have any remote candidate');
 
@@ -96,19 +84,20 @@
     t.add_cleanup(() => pc2.close());
 
     return createDataChannelPair(pc1, pc2)
-    .then(([channel1, channel2]) => {
-      // Send a ping message and wait for it just to make sure
-      // that the connection is fully working before testing
-      channel1.send('ping');
-      return awaitMessage(channel2);
-    })
     .then(() => {
       const iceTransport1 = getIceTransportFromSctp(pc1);
       const iceTransport2 = getIceTransportFromSctp(pc2);
 
-      testMatchingIceCandidate(iceTransport1, iceTransport2);
+      return Promise.all([
+        waitConnectingIceTransport(iceTransport1),
+        waitConnectingIceTransport(iceTransport2)
+      ])
+      .then(() => {
+        validateConnectedIceTransport(iceTransport1);
+        validateConnectedIceTransport(iceTransport2);
+      });
     });
-  }, 'SCTP - Two connected iceTransports should has matching local/remote candidates returned');
+  }, 'SCTP - Connected ICE transports should have relevants attributes set');
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
@@ -116,44 +105,42 @@
 
     return getTrackFromUserMedia('audio')
     .then(([track, mediaStream]) => {
-      pc1.addTrack(track, mediaStream);
+      addTrackOrTransceiver(pc1, track, mediaStream);
 
-      return pc1.createOffer()
-      .then(offer => Promise.all([
-        pc1.setLocalDescription(offer),
-        pc2.setRemoteDescription(offer)
-      ]))
-      .then(() => pc2.createAnswer())
-      .then(answer => Promise.all([
-        pc2.setLocalDescription(answer),
-        pc1.setRemoteDescription(answer)
-      ]))
+      return doSignalingHandshake(pc1, pc2)
       .then(() => {
-        const [iceTransport1] = getIceTransportsFromSenderReceiver(pc1)
-        const [iceTransport2] = getIceTransportsFromSenderReceiver(pc2)
+        const iceTransports1 = getIceTransportsFromSenderReceiver(pc1);
+        const iceTransports2 = getIceTransportsFromSenderReceiver(pc2);
 
-        testConnectedIceTransports(iceTransport1, iceTransport2)
-      })
+        const iceTransports = [...iceTransports1, ...iceTransports2];
+
+        return Promise.all(iceTransports.map(
+          iceTransport => {
+            return waitConnectingIceTransport()
+            .then(() => validateConnectedIceTransport(iceTransport));
+          }));
+      });
     });
-  }, 'RTP - Two connected iceTransports should has matching local/remote candidates returned')
+  }, 'RTP - Connected ICE transports should have relevants attributes set');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
     return getTrackFromUserMedia('audio')
     .then(([track, mediaStream]) => {
-      pc.addTrack(track, mediaStream);
+      addTrackOrTransceiver(pc, track, mediaStream);
 
+      // setLocalDescription should initialize sender/receiver.transport
       return pc.createOffer()
       .then(offer => pc.setLocalDescription(offer))
       .then(() => {
-        const iceTransports = getIceTransportsFromSenderReceiver(pc)
+        const iceTransports = getIceTransportsFromSenderReceiver(pc);
 
         for (const iceTransport of iceTransports) {
-          testUnconnectedIceTransport(iceTransport)
+          validateUnconnectedIceTransport(iceTransport);
         }
-      })
-    })
+      });
+    });
   }, 'RTP - Unconnected iceTransport should have empty remote candidates and selected pair');
 
   promise_test(t => {
@@ -163,8 +150,9 @@
     t.add_cleanup(() => pc2.close());
     pc1.createDataChannel('');
 
-    // setRemoteDescription(answer) without the other peer
-    // setting answer it's localDescription
+    // pc1.setRemoteDescription(answer) without pc2 setting answer to it's
+    // localDescription. This is because pc1.sctp is only set after setting
+    // answer description.
     return pc1.createOffer()
     .then(offer =>
       pc1.setLocalDescription(offer)
@@ -174,7 +162,7 @@
     .then(() => {
       const iceTransport = getIceTransportFromSctp(pc1);
 
-      testUnconnectedIceTransport(iceTransport)
+      validateUnconnectedIceTransport(iceTransport);
     });
   }, 'SCTP - Unconnected iceTransport should have empty remote candidates and selected pair');
 

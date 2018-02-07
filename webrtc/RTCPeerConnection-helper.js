@@ -476,6 +476,30 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
   const ontrackPromise = addEventListenerPromise(t, callee, 'track');
   await exchangeOffer(caller, callee);
   return ontrackPromise;
+
+// A dependency agnostic way of adding track depending
+// on the supported method on a browser. Uses addTransceiver(track)
+// first if available, otherwise use addTrack(track, mediaStream).
+function addTrackOrTransceiver(pc, track, mediaStream) {
+  if (typeof pc.addTransceiver === 'function') {
+    return pc.addTransceiver(track);
+  } else if (typeof pc.addTrack === 'function') {
+    // Note: The mediaStream argument is optional in the spec, but we require
+    // it for now so that we can test older versions of Firefox that only
+    // implements addTrack with compulsary mediaStream argument.
+    return pc.addTrack(track, mediaStream);
+  } else if (typeof pc.addStream === 'function') {
+    // FIXME: Remove this case of using addStream once most major browsers
+    // support addTrack or addTransceiver.
+    console.warn(
+      '[DEPRECATED] Neither addTrack nor addTransceiver is supported on this browser.',
+      'Using the legacy pc.addStream as a temporary measure so that we can test',
+      'some of the higher level WebRTC features.');
+
+    return pc.addStream(mediaStream)
+  } else {
+    throw new Error('This test requires either addTrack or addTransceiver implemented');
+  }
 }
 
 // The resolver has a |promise| that can be resolved or rejected using |resolve|

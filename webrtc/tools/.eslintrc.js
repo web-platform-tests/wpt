@@ -1,7 +1,7 @@
 module.exports = {
   rules: {
     'no-undef': 1,
-    'no-unused-vars': 0
+    'no-unused-vars': 0,
   },
   plugins: [
     'html'
@@ -111,6 +111,7 @@ module.exports = {
     getUserMediaTracksAndStreams: true,
     performOffer: true,
     Resolver: true,
+    addTrackOrTransceiver: true,
 
     // RTCRtpCapabilities-helper.js
     validateRtpCapabilities: true,
@@ -152,5 +153,16 @@ module.exports = {
     validateIceCandidateStats: true,
     validateIceCandidatePairStats: true,
     validateCertificateStats: true,
+
+    // RTCTransport-helper.js
+    waitConnectingDtlsTransport: true,
+    waitConnectingIceTransport: true,
+    getDtlsTransportFromSctp: true,
+    getIceTransportFromSctp: true,
+    getDtlsTransportsFromSenderReceiver: true,
+    getIceTransportFromDtlsTransport: true,
+    getIceTransportsFromSenderReceiver: true,
+    createDtlsTransportsFromSctp: true,
+    createDtlsTransportsFromSenderReceiver: true,
   }
 }

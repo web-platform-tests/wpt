@@ -2,6 +2,7 @@ module.exports = {
   rules: {
     'no-undef': 1,
     'no-unused-vars': 0,
+    'semi': [1, 'always']
   },
   plugins: [
     'html'
@@ -157,12 +158,14 @@ module.exports = {
     // RTCTransport-helper.js
     waitConnectingDtlsTransport: true,
     waitConnectingIceTransport: true,
-    getDtlsTransportFromSctp: true,
-    getIceTransportFromSctp: true,
+    getDtlsTransportFromSctpTransport: true,
+    getIceTransportFromSctpTransport: true,
     getDtlsTransportsFromSenderReceiver: true,
     getIceTransportFromDtlsTransport: true,
     getIceTransportsFromSenderReceiver: true,
     createDtlsTransportsFromSctp: true,
     createDtlsTransportsFromSenderReceiver: true,
+    createIceTransportsFromSctp: true,
+    createIceTransportsFromSenderReceiver: true,
   }
 }

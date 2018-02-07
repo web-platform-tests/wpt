@@ -51,7 +51,7 @@
         [...dtlsTransports1, ... dtlsTransports2]
         .map(validateConnectingDtlsTransport));
     });
-  });
+  }, 'RTP - connected DTLS transports should have valid remote certificates');
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();

@@ -24,7 +24,7 @@ var createCredentialDefaultArgs = {
 
             // User:
             user: {
-                id: new Uint8Array(), // Won't survive the copy, must be rebuilt
+                id: new Uint8Array(16), // Won't survive the copy, must be rebuilt
                 name: "john.p.smith@example.com",
                 displayName: "John P. Smith",
                 icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
@@ -369,7 +369,7 @@ class CreateCredentialsTest extends TestCase {
         window.crypto.getRandomValues(challengeBytes);
         this.testObject = cloneObject(createCredentialDefaultArgs);
         // cloneObject can't clone the BufferSource in user.id, so let's recreate it.
-        this.testObject.options.publicKey.user.id = new Uint8Array();
+        this.testObject.options.publicKey.user.id = new Uint8Array(16);
         this.testObject.options.publicKey.challenge = challengeBytes;
 
         // how to order the properties of testObject when passing them to makeCredential

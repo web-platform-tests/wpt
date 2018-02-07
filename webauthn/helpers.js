@@ -80,42 +80,6 @@ function createRandomString(len) {
     return text;
 }
 
-// TODO: remove this debug code
-// function printHex(msg, buf) {
-//     // if the buffer was a TypedArray (e.g. Uint8Array), grab its buffer and use that
-//     if (ArrayBuffer.isView(buf) && buf.buffer instanceof ArrayBuffer) {
-//         buf = buf.buffer;
-//     }
-
-//     // check the arguments
-//     if ((typeof msg != "string") ||
-//         (typeof buf != "object")) {
-//         console.log("Bad args to printHex");
-//         return;
-//     }
-//     if (!(buf instanceof ArrayBuffer)) {
-//         console.log("Attempted printHex with non-ArrayBuffer:", buf);
-//         return;
-//     }
-//     // print the buffer as a 16 byte long hex string
-//     var arr = new Uint8Array(buf);
-//     var len = buf.byteLength;
-//     var i, str = "";
-//     console.log(msg);
-//     for (i = 0; i < len; i++) {
-//         var hexch = arr[i].toString(16);
-//         hexch = (hexch.length == 1) ? ("0" + hexch) : hexch;
-//         str += hexch.toUpperCase() + " ";
-//         if (i && !((i + 1) % 16)) {
-//             console.log(str);
-//             str = "";
-//         }
-//     }
-//     // print the remaining bytes
-//     if ((i) % 16) {
-//         console.log(str);
-//     }
-// }
 
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
@@ -152,13 +116,6 @@ function parseAuthenticatorData(buf) {
     authnrDataObj.flags.userVerified = (authnrDataObj.rawFlags&authenticator_data_user_verified)?true:false;
     authnrDataObj.flags.attestedCredentialData = (authnrDataObj.rawFlags&authenticator_data_attested_cred_data)?true:false;
     authnrDataObj.flags.extensionData = (authnrDataObj.rawFlags&authenticator_data_extension_data)?true:false;
-
-    // console.log ("authnrDataObj", authnrDataObj);
-    // console.log ("rawFlags:", authnrDataObj.rawFlags.toString(16));
-    // console.log ("rawCounter[0]:", authnrDataObj.rawCounter[0].toString(16));
-    // console.log ("rawCounter[1]:", authnrDataObj.rawCounter[1].toString(16));
-    // console.log ("rawCounter[2]:", authnrDataObj.rawCounter[2].toString(16));
-    // console.log ("rawCounter[3]:", authnrDataObj.rawCounter[3].toString(16));
 
     return authnrDataObj;
 }
@@ -354,7 +311,6 @@ class TestCase {
      * and within the testing process. Good for validating results.
      */
     afterTest(fn) {
-        console.log ("AFTER TEST");
         if (typeof fn !== "function") {
             throw new Error ("Tried to call non-function after test");
         }
@@ -586,7 +542,7 @@ var debug = function() {};
 // AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
 function ensureInterface() {
     if (typeof navigator.credentials === "object" && typeof navigator.credentials.create !== "function") {
-        debug = console.log;
+        // debug = onsole.log;
 
         return loadJavaScript("/webauthn/webauthn-polyfill/webauthn-polyfill.js")
             .then(() => {

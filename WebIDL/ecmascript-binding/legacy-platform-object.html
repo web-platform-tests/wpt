@@ -4,6 +4,10 @@
 <link rel="help" href="https://heycam.github.io/webidl/#es-legacy-platform-objects">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<div id="4892.123"></div>
+<div id="4294967294"></div>
+<div id="4294967295"></div>
+<div id="4294967296"></div>
 <script>
 function assert_prop_desc_equals(object, property_key, expected) {
   let actual = Object.getOwnPropertyDescriptor(object, property_key);
@@ -188,4 +192,20 @@ test(function() {
                           {value: option0, writable: true, enumerable: true,
                            configurable: true});
 }, "Test [[DefineOwnProperty]] with indexed property setter support.");
+
+test(function() {
+    // https://heycam.github.io/webidl/#is-an-array-index
+    assert_equals(document.all["4892.123"].id, "4892.123",
+        "Numbers with decimal points are not treated as array indices");
+    assert_equals(document.all["-0"], undefined, "'-0' is special cased");
+    assert_equals(document.all[-0], document.all[0], "-0 is treated as 0");
+    assert_equals(document.all["-23"], undefined,
+        "numbers smaller than 0 are not treated as array indices");
+    assert_equals(document.all["4294967295"].id, "4294967295",
+        "numbers larger or equal to 2^32 - 1 are not treated as array indices");
+    assert_equals(document.all["4294967296"].id, "4294967296",
+        "numbers larger or equal to 2^32 - 1 are not treated as array indices");
+    assert_equals(document.all["4294967294"], undefined, // even though div#4294967294 exists
+        "numbers smaller than 2^32 - 1 are treated as array indices");
+}, "Test 'is an array index' abstract operation.");
 </script>

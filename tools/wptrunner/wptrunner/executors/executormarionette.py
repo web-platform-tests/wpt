@@ -14,7 +14,6 @@ here = os.path.join(os.path.split(__file__)[0])
 
 from .base import (CallbackHandler,
                    ExecutorException,
-                   Protocol,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestExecutor,
@@ -26,7 +25,14 @@ from .base import (CallbackHandler,
                    testharness_result_converter,
                    reftest_result_converter,
                    strip_server)
-
+from .protocol import (BaseProtocolPart,
+                       TestharnessProtocolPart,
+                       PrefsProtocolPart,
+                       Protocol,
+                       StorageProtocolPart,
+                       SelectorProtocolPart,
+                       ClickProtocolPart,
+                       TestDriverProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
 
@@ -43,78 +49,17 @@ def do_delayed_imports():
         from marionette_driver import marionette, errors
 
 
-class MarionetteProtocol(Protocol):
-    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):
-        do_delayed_imports()
-
-        Protocol.__init__(self, executor, browser)
-        self.marionette = None
-        self.marionette_port = browser.marionette_port
-        self.capabilities = capabilities
-        self.timeout_multiplier = timeout_multiplier
+class MarionetteBaseProtocolPart(BaseProtocolPart):
+    def __init__(self, parent):
+        super(MarionetteBaseProtocolPart, self).__init__(parent)
         self.timeout = None
-        self.runner_handle = None
 
-    def setup(self, runner):
-        """Connect to browser via Marionette."""
-        Protocol.setup(self, runner)
+    def setup(self):
+        self.marionette = self.parent.marionette
 
-        self.logger.debug("Connecting to Marionette on port %i" % self.marionette_port)
-        startup_timeout = marionette.Marionette.DEFAULT_STARTUP_TIMEOUT * self.timeout_multiplier
-        self.marionette = marionette.Marionette(host='localhost',
-                                                port=self.marionette_port,
-                                                socket_timeout=None,
-                                                startup_timeout=startup_timeout)
-        try:
-            self.logger.debug("Waiting for Marionette connection")
-            while True:
-                try:
-                    self.marionette.raise_for_port()
-                    break
-                except IOError:
-                    # When running in a debugger wait indefinitely for Firefox to start
-                    if self.executor.debug_info is None:
-                        raise
-
-            self.logger.debug("Starting Marionette session")
-            self.marionette.start_session()
-            self.logger.debug("Marionette session started")
-
-        except Exception as e:
-            self.logger.warning("Failed to start a Marionette session: %s" % e)
-            self.executor.runner.send_message("init_failed")
-
-        else:
-            try:
-                self.after_connect()
-            except Exception:
-                self.logger.warning("Post-connection steps failed")
-                self.logger.error(traceback.format_exc())
-                self.executor.runner.send_message("init_failed")
-            else:
-                self.executor.runner.send_message("init_succeeded")
-
-    def teardown(self):
-        try:
-            self.marionette._request_in_app_shutdown()
-            self.marionette.delete_session(send_request=False)
-        except Exception:
-            # This is typically because the session never started
-            pass
-        if self.marionette is not None:
-            del self.marionette
-
-    @property
-    def is_alive(self):
-        """Check if the Marionette connection is still active."""
-        try:
-            self.marionette.current_window_handle
-        except Exception:
-            return False
-        return True
-
-    def after_connect(self):
-        self.load_runner(self.executor.last_environment["protocol"])
+    def execute_script(self, script, async=False):
+        method = self.marionette.execute_async_script if async else self.marionette.execute_script
+        return method(script, new_sandbox=False)
 
     def set_timeout(self, timeout):
         """Set the Marionette script timeout.
@@ -122,13 +67,60 @@ class MarionetteProtocol(Protocol):
         :param timeout: Script timeout in seconds
 
         """
-        self.marionette.timeout.script = timeout
-        self.timeout = timeout
+        if timeout != self.timeout:
+            self.marionette.timeout.script = timeout
+            self.timeout = timeout
 
-    def load_runner(self, protocol):
+    @property
+    def current_window(self):
+        return self.marionette.current_window_handle
+
+    def set_window(self, handle):
+        self.marionette.switch_to_window(handle)
+
+    def wait(self):
+        try:
+            socket_timeout = self.marionette.client.socket_timeout
+        except AttributeError:
+            # This can happen if there was a crash
+            return
+        if socket_timeout:
+            try:
+                self.marionette.timeout.script = socket_timeout / 2
+            except (socket.error, IOError):
+                self.logger.debug("Socket closed")
+                return
+
+        while True:
+            try:
+                self.marionette.execute_async_script("")
+            except errors.NoSuchWindowException:
+                # The window closed
+                break
+            except errors.ScriptTimeoutException:
+                self.logger.debug("Script timed out")
+                pass
+            except (socket.timeout, IOError):
+                self.logger.debug("Socket closed")
+                break
+            except Exception as e:
+                self.logger.warning(traceback.format_exc(e))
+                break
+
+
+class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
+    def __init__(self, parent):
+        super(MarionetteTestharnessProtocolPart, self).__init__(parent)
+        self.runner_handle = None
+
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def load_runner(self, url_protocol):
         # Check if we previously had a test window open, and if we did make sure it's closed
         self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
-        url = urlparse.urljoin(self.executor.server_url(protocol), "/testharness_runner.html")
+        url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
+                               "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         self.runner_handle = self.marionette.current_window_handle
         try:
@@ -143,7 +135,7 @@ class MarionetteProtocol(Protocol):
         self.marionette.execute_script(
             "document.title = '%s'" % threading.current_thread().name.replace("'", '"'))
 
-    def close_old_windows(self, protocol):
+    def close_old_windows(self, url_protocol):
         handles = self.marionette.window_handles
         runner_handle = None
         try:
@@ -169,7 +161,7 @@ class MarionetteProtocol(Protocol):
 
         self.marionette.switch_to_window(runner_handle)
         if runner_handle != self.runner_handle:
-            self.load_runner(protocol)
+            self.load_runner(url_protocol)
         return self.runner_handle
 
     def dismiss_alert(self, f):
@@ -210,50 +202,11 @@ class MarionetteProtocol(Protocol):
         return test_window
 
 
-    def wait(self):
-        try:
-            socket_timeout = self.marionette.client.socket_timeout
-        except AttributeError:
-            # This can happen if there was a crash
-            return
-        if socket_timeout:
-            try:
-                self.marionette.timeout.script = socket_timeout / 2
-            except (socket.error, IOError):
-                self.logger.debug("Socket closed")
-                return
+class MarionettePrefsProtocolPart(PrefsProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
 
-        self.marionette.switch_to_window(self.runner_handle)
-        while True:
-            try:
-                self.marionette.execute_async_script("")
-            except errors.NoSuchWindowException:
-                # The window closed
-                break
-            except errors.ScriptTimeoutException:
-                self.logger.debug("Script timed out")
-                pass
-            except (socket.timeout, IOError):
-                self.logger.debug("Socket closed")
-                break
-            except Exception as e:
-                self.logger.warning(traceback.format_exc(e))
-                break
-
-    def on_environment_change(self, old_environment, new_environment):
-        #Unset all the old prefs
-        for name in old_environment.get("prefs", {}).iterkeys():
-            value = self.executor.original_pref_values[name]
-            if value is None:
-                self.clear_user_pref(name)
-            else:
-                self.set_pref(name, value)
-
-        for name, value in new_environment.get("prefs", {}).iteritems():
-            self.executor.original_pref_values[name] = self.get_pref(name)
-            self.set_pref(name, value)
-
-    def set_pref(self, name, value):
+    def set(self, name, value):
         if value.lower() not in ("true", "false"):
             try:
                 int(value)
@@ -285,7 +238,7 @@ class MarionetteProtocol(Protocol):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
-    def clear_user_pref(self, name):
+    def clear(self, name):
         self.logger.info("Clearing pref %s" % (name))
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
@@ -296,7 +249,7 @@ class MarionetteProtocol(Protocol):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
-    def get_pref(self, name):
+    def get(self, name):
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
                                           .getService(Components.interfaces.nsIPrefBranch);
@@ -316,6 +269,11 @@ class MarionetteProtocol(Protocol):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
+
+class MarionetteStorageProtocolPart(StorageProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
     def clear_origin(self, url):
         self.logger.info("Clearing origin %s" % (url))
         script = """
@@ -333,19 +291,28 @@ class MarionetteProtocol(Protocol):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
 
-    def find_elements_by_css_selector(self, selector):
+
+class MarionetteSelectorProtocolPart(SelectorProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def elements_by_selector(self, selector):
         return self.marionette.find_elements("css selector", selector)
 
-    def click_element(self, element):
+
+class MarionetteClickProtocolPart(ClickProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def element(self, element):
         return element.click()
 
-    def current_window_handle(self):
-        return self.marionette.current_window_handle
 
-    def switch_to_window(self, handle):
-        self.marionette.switch_to_window(handle)
+class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
 
-    def send_testdriver_message(self, message_type, status, message=None):
+    def send_message(self, message_type, status, message=None):
         obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)
@@ -353,6 +320,83 @@ class MarionetteProtocol(Protocol):
         if message:
             obj["message"] = str(message)
         self.marionette.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+
+class MarionetteProtocol(Protocol):
+    implements = [MarionetteBaseProtocolPart,
+                  MarionetteTestharnessProtocolPart,
+                  MarionettePrefsProtocolPart,
+                  MarionetteStorageProtocolPart,
+                  MarionetteSelectorProtocolPart,
+                  MarionetteClickProtocolPart,
+                  MarionetteTestDriverProtocolPart]
+
+    def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):
+        do_delayed_imports()
+
+        super(MarionetteProtocol, self).__init__(executor, browser)
+        self.marionette = None
+        self.marionette_port = browser.marionette_port
+        self.capabilities = capabilities
+        self.timeout_multiplier = timeout_multiplier
+        self.runner_handle = None
+
+    def connect(self):
+        self.logger.debug("Connecting to Marionette on port %i" % self.marionette_port)
+        startup_timeout = marionette.Marionette.DEFAULT_STARTUP_TIMEOUT * self.timeout_multiplier
+        self.marionette = marionette.Marionette(host='localhost',
+                                                port=self.marionette_port,
+                                                socket_timeout=None,
+                                                startup_timeout=startup_timeout)
+
+        self.logger.debug("Waiting for Marionette connection")
+        while True:
+            try:
+                self.marionette.raise_for_port()
+                break
+            except IOError:
+                # When running in a debugger wait indefinitely for Firefox to start
+                if self.executor.debug_info is None:
+                    raise
+
+        self.logger.debug("Starting Marionette session")
+        self.marionette.start_session()
+        self.logger.debug("Marionette session started")
+
+    def after_connect(self):
+        self.testharness.load_runner(self.executor.last_environment["protocol"])
+
+    def teardown(self):
+        try:
+            self.marionette._request_in_app_shutdown()
+            self.marionette.delete_session(send_request=False)
+        except Exception:
+            # This is typically because the session never started
+            pass
+        if self.marionette is not None:
+            del self.marionette
+        super(MarionetteProtocol, self).teardown()
+
+    @property
+    def is_alive(self):
+        try:
+            self.marionette.current_window_handle
+        except Exception:
+            return False
+        return True
+
+    def on_environment_change(self, old_environment, new_environment):
+        #Unset all the old prefs
+        for name in old_environment.get("prefs", {}).iterkeys():
+            value = self.executor.original_pref_values[name]
+            if value is None:
+                self.prefs.clear(name)
+            else:
+                self.prefs.set(name, value)
+
+        for name, value in new_environment.get("prefs", {}).iteritems():
+            self.executor.original_pref_values[name] = self.get_pref(name)
+            self.prefs.set(name, value)
 
 
 class ExecuteAsyncScriptRun(object):
@@ -369,19 +413,18 @@ class ExecuteAsyncScriptRun(object):
         index = self.url.rfind("/storage/")
         if index != -1:
             # Clear storage
-            self.protocol.clear_origin(self.url)
+            self.protocol.storage.clear_origin(self.url)
 
         timeout = self.timeout
 
         try:
             if timeout is not None:
-                if timeout + extra_timeout != self.protocol.timeout:
-                    self.protocol.set_timeout(timeout + extra_timeout)
+                self.protocol.base.set_timeout(timeout + extra_timeout)
             else:
                 # We just want it to never time out, really, but marionette doesn't
                 # make that possible. It also seems to time out immediately if the
                 # timeout is set too high. This works at least.
-                self.protocol.set_timeout(2**28 - 1)
+                self.protocol.base.set_timeout(2**28 - 1)
         except IOError:
             self.logger.error("Lost marionette connection before starting test")
             return Stop
@@ -459,7 +502,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         self.protocol.on_environment_change(self.last_environment, new_environment)
 
         if new_environment["protocol"] != self.last_environment["protocol"]:
-            self.protocol.load_runner(new_environment["protocol"])
+            self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
         timeout = (test.timeout * self.timeout_multiplier if self.debug_info is None
@@ -476,8 +519,8 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(*data), [])
 
     def do_testharness(self, protocol, url, timeout):
-        protocol.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
-        parent_window = protocol.close_old_windows(protocol)
+        protocol.base.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        parent_window = protocol.testharness.close_old_windows(protocol)
 
         if timeout is not None:
             timeout_ms = str(timeout * 1000)
@@ -493,13 +536,13 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
         script = self.script % format_map
 
-        rv = protocol.marionette.execute_script(script, new_sandbox=False)
-        test_window = protocol.get_test_window(self.window_id, parent_window)
+        rv = protocol.base.execute_script(script)
+        test_window = protocol.testharness.get_test_window(self.window_id, parent_window)
 
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
-            result = protocol.marionette.execute_async_script(
-                self.script_resume % format_map)
+            result = protocol.base.execute_script(
+                self.script_resume % format_map, async=True)
             done, rv = handler(result)
             if done:
                 break
@@ -566,8 +609,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 self.has_window = False
 
             if not self.has_window:
-                self.protocol.marionette.execute_script(self.script)
-                self.protocol.marionette.switch_to_window(self.protocol.marionette.window_handles[-1])
+                self.protocol.base.execute_script(self.script)
+                self.protocol.base.set_window(self.protocol.marionette.window_handles[-1])
                 self.has_window = True
 
         result = self.implementation.run_test(test)

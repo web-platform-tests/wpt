@@ -8,6 +8,7 @@ import urlparse
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
+from protocol import Protocol
 
 here = os.path.split(__file__)[0]
 
@@ -199,6 +200,9 @@ class TestExecutor(object):
         message += traceback.format_exc(e)
         return test.result_cls(status, message), []
 
+    def wait(self):
+        self.protocol.base.wait()
+
 
 class TestharnessExecutor(TestExecutor):
     convert_result = testharness_result_converter
@@ -367,25 +371,6 @@ class WdspecExecutor(TestExecutor):
         from . import pytestrunner
 
 
-class Protocol(object):
-    def __init__(self, executor, browser):
-        self.executor = executor
-        self.browser = browser
-
-    @property
-    def logger(self):
-        return self.executor.logger
-
-    def setup(self, runner):
-        pass
-
-    def teardown(self):
-        pass
-
-    def wait(self):
-        pass
-
-
 class WdspecRun(object):
     def __init__(self, func, session, path, timeout):
         self.func = func
@@ -426,6 +411,14 @@ class WdspecRun(object):
             self.result_flag.set()
 
 
+class ConnectionlessProtocol(Protocol):
+    def connect(self):
+        pass
+
+    def after_connect(self):
+        pass
+
+
 class WebDriverProtocol(Protocol):
     server_cls = None
 
@@ -437,24 +430,21 @@ class WebDriverProtocol(Protocol):
         self.session_config = None
         self.server = None
 
-    def setup(self, runner):
+    def connect(self):
         """Connect to browser via the HTTP server."""
-        try:
-            self.server = self.server_cls(
-                self.logger,
-                binary=self.webdriver_binary,
-                args=self.webdriver_args)
-            self.server.start(block=False)
-            self.logger.info(
-                "WebDriver HTTP server listening at %s" % self.server.url)
-            self.session_config = {"host": self.server.host,
-                                   "port": self.server.port,
-                                   "capabilities": self.capabilities}
-        except Exception:
-            self.logger.error(traceback.format_exc())
-            self.executor.runner.send_message("init_failed")
-        else:
-            self.executor.runner.send_message("init_succeeded")
+        self.server = self.server_cls(
+            self.logger,
+            binary=self.webdriver_binary,
+            args=self.webdriver_args)
+        self.server.start(block=False)
+        self.logger.info(
+            "WebDriver HTTP server listening at %s" % self.server.url)
+        self.session_config = {"host": self.server.host,
+                               "port": self.server.port,
+                               "capabilities": self.capabilities}
+
+    def after_connect(self):
+        pass
 
     def teardown(self):
         if self.server is not None and self.server.is_alive:
@@ -499,40 +489,44 @@ class CallbackHandler(object):
         }
 
     def __call__(self, result):
+        url, command, payload = result
         self.logger.debug("Got async callback: %s" % result[1])
         try:
-            return self.callbacks[result[1]](result)
+            callback = self.callbacks[command]
         except KeyError:
             raise ValueError("Unknown callback type %r" % result[1])
+        return callback(url, payload)
 
-    def process_complete(self, result):
-        rv = [result[0]] + result[2]
+    def process_complete(self, url, payload):
+        rv = [url] + payload
         return True, rv
 
-    def process_action(self, result):
-        parent = self.protocol.current_window_handle()
+    def process_action(self, url, payload):
+        parent = self.protocol.base.current_window
         try:
-            self.protocol.switch_to_window(self.test_window)
-            action = result[2]["action"]
+            self.protocol.base.set_window(self.test_window)
+            action = payload["action"]
             self.logger.debug("Got action: %s" % action)
             try:
                 action_handler = self.actions[action]
             except KeyError:
                 raise ValueError("Unknown action %s" % action)
-            success = action_handler(result[2])
-            if success:
-                self._send_message("complete", "success")
-                self.logger.debug("Action %s succeeded" % action)
-            else:
+            try:
+                action_handler(payload)
+            except Exception as e:
+                self.logger.warning("Action %s failed" % action)
+                self.logger.warning(traceback.format_exc())
                 self._send_message("complete", "failure")
-                self.logger.debug("Action %s failed" % action)
+            else:
+                self.logger.debug("Action %s completed" % action)
+                self._send_message("complete", "success")
         finally:
-            self.protocol.switch_to_window(parent)
+            self.protocol.base.set_window(parent)
 
         return False, None
 
     def _send_message(self, message_type, status, message=None):
-        self.protocol.send_testdriver_message(message_type, status, message=None)
+        self.protocol.testdriver.send_message(message_type, status, message=message)
 
 
 class ClickAction(object):
@@ -540,19 +534,12 @@ class ClickAction(object):
         self.logger = logger
         self.protocol = protocol
 
-    def __call__(self, data):
-        selector = data["selector"]
-        elements = self.protocol.find_elements_by_css_selector(selector)
-        print elements
+    def __call__(self, payload):
+        selector = payload["selector"]
+        elements = self.protocol.select.elements_by_selector(selector)
         if len(elements) == 0:
             raise ValueError("Selector matches no elements")
         elif len(elements) > 1:
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
-        try:
-            self.protocol.click_element(elements[0])
-        except Exception as e:
-            self.logger.warning(e)
-            return False
-        else:
-            return True
+        self.protocol.click.element(elements[0])

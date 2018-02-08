@@ -9,12 +9,17 @@ import urlparse
 import uuid
 
 from .base import (CallbackHandler,
-                   Protocol,
                    RefTestExecutor,
                    RefTestImplementation,
                    TestharnessExecutor,
                    extra_timeout,
                    strip_server)
+from .protocol import (BaseProtocolPart,
+                       TestharnessProtocolPart,
+                       Protocol,
+                       SelectorProtocolPart,
+                       ClickProtocolPart,
+                       TestDriverProtocolPart)
 from ..testrunner import Stop
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -33,73 +38,23 @@ def do_delayed_imports():
     from selenium.webdriver.remote.remote_connection import RemoteConnection
 
 
-class SeleniumProtocol(Protocol):
-    def __init__(self, executor, browser, capabilities, **kwargs):
-        do_delayed_imports()
+class SeleniumBaseProtocolPart(BaseProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
 
-        Protocol.__init__(self, executor, browser)
-        self.capabilities = capabilities
-        self.url = browser.webdriver_url
-        self.webdriver = None
+    def execute_script(self, script, async=False):
+        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
+        return method(script)
 
-    def setup(self, runner):
-        """Connect to browser via Selenium's WebDriver implementation."""
-        self.runner = runner
-        self.logger.debug("Connecting to Selenium on URL: %s" % self.url)
+    def set_timeout(self, timeout):
+        self.webdriver.set_script_timeout(timeout * 1000)
 
-        session_started = False
-        try:
-            self.webdriver = webdriver.Remote(command_executor=RemoteConnection(self.url.strip("/"),
-                                                                                resolve_ip=False),
-                                              desired_capabilities=self.capabilities)
-        except Exception:
-            self.logger.warning(
-                "Connecting to Selenium failed:\n%s" % traceback.format_exc())
-        else:
-            self.logger.debug("Selenium session started")
-            session_started = True
+    @property
+    def current_window(self):
+        return self.webdriver.current_window_handle
 
-        if not session_started:
-            self.logger.warning("Failed to connect to Selenium")
-            self.executor.runner.send_message("init_failed")
-        else:
-            try:
-                self.after_connect()
-            except Exception:
-                print >> sys.stderr, traceback.format_exc()
-                self.logger.warning(
-                    "Failed to connect to navigate initial page")
-                self.executor.runner.send_message("init_failed")
-            else:
-                self.executor.runner.send_message("init_succeeded")
-
-    def teardown(self):
-        self.logger.debug("Hanging up on Selenium session")
-        try:
-            self.webdriver.quit()
-        except Exception:
-            pass
-        del self.webdriver
-
-    def is_alive(self):
-        try:
-            # Get a simple property over the connection
-            self.webdriver.current_window_handle
-        # TODO what exception?
-        except (socket.timeout, exceptions.ErrorInResponseException):
-            return False
-        return True
-
-    def after_connect(self):
-        self.load_runner("http")
-
-    def load_runner(self, protocol):
-        url = urlparse.urljoin(self.executor.server_url(protocol),
-                               "/testharness_runner.html")
-        self.logger.debug("Loading %s" % url)
-        self.webdriver.get(url)
-        self.webdriver.execute_script("document.title = '%s'" %
-                                      threading.current_thread().name.replace("'", '"'))
+    def set_window(self, handle):
+        self.webdriver.switch_to_window(handle)
 
     def wait(self):
         while True:
@@ -114,29 +69,21 @@ class SeleniumProtocol(Protocol):
                 self.logger.error(traceback.format_exc(e))
                 break
 
-    def send_testdriver_message(self, message_type, status, message=None):
-        obj = {
-            "type": "testdriver-%s" % str(message_type),
-            "status": str(status)
-        }
-        if message:
-            obj["message"] = str(message)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
-    def find_elements_by_css_selector(self, selector):
-        return self.webdriver.find_elements_by_css_selector(selector)
+class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
 
-    def click_element(self, element):
-        return element.click()
-
-    def current_window_handle(self):
-        return self.webdriver.current_window_handle
-
-    def switch_to_window(self, handle):
-        self.webdriver.switch_to_window(handle)
+    def load_runner(self, url_protocol):
+        url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
+                               "/testharness_runner.html")
+        self.logger.debug("Loading %s" % url)
+        self.webdriver.get(url)
+        self.webdriver.execute_script("document.title = '%s'" %
+                                      threading.current_thread().name.replace("'", '"'))
 
     def close_old_windows(self):
-        exclude = self.current_window_handle()
+        exclude = self.webdriver.current_window_handle
         handles = [item for item in self.webdriver.window_handles if item != exclude]
         for handle in handles:
             try:
@@ -172,6 +119,83 @@ class SeleniumProtocol(Protocol):
         return test_window
 
 
+class SeleniumSelectorProtocolPart(SelectorProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def elements_by_selector(self, selector):
+        return self.webdriver.find_elements_by_css_selector(selector)
+
+
+class SeleniumClickProtocolPart(ClickProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def element(self, element):
+        return element.click()
+
+
+class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def send_message(self, message_type, status, message=None):
+        obj = {
+            "type": "testdriver-%s" % str(message_type),
+            "status": str(status)
+        }
+        if message:
+            obj["message"] = str(message)
+        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+
+
+class SeleniumProtocol(Protocol):
+    implements = [SeleniumBaseProtocolPart,
+                  SeleniumTestharnessProtocolPart,
+                  SeleniumSelectorProtocolPart,
+                  SeleniumClickProtocolPart,
+                  SeleniumTestDriverProtocolPart]
+
+    def __init__(self, executor, browser, capabilities, **kwargs):
+        do_delayed_imports()
+
+        super(SeleniumProtocol, self).__init__(executor, browser)
+        self.capabilities = capabilities
+        self.url = browser.webdriver_url
+        self.webdriver = None
+
+    def connect(self):
+        """Connect to browser via Selenium's WebDriver implementation."""
+        self.logger.debug("Connecting to Selenium on URL: %s" % self.url)
+
+        self.webdriver = webdriver.Remote(command_executor=RemoteConnection(self.url.strip("/"),
+                                                                            resolve_ip=False),
+                                          desired_capabilities=self.capabilities)
+
+    def after_conect(self):
+        pass
+
+    def teardown(self):
+        self.logger.debug("Hanging up on Selenium session")
+        try:
+            self.webdriver.quit()
+        except Exception:
+            pass
+        del self.webdriver
+
+    def is_alive(self):
+        try:
+            # Get a simple property over the connection
+            self.webdriver.current_window_handle
+        # TODO what exception?
+        except (socket.timeout, exceptions.ErrorInResponseException):
+            return False
+        return True
+
+    def after_connect(self):
+        self.testharness.load_runner(self.executor.last_environment["protocol"])
+
+
 class SeleniumRun(object):
     def __init__(self, func, protocol, url, timeout):
         self.func = func
@@ -185,7 +209,7 @@ class SeleniumRun(object):
         timeout = self.timeout
 
         try:
-            self.protocol.webdriver.set_script_timeout((timeout + extra_timeout) * 1000)
+            self.protocol.base.set_timeout((timeout + extra_timeout))
         except exceptions.ErrorInResponseException:
             self.logger.error("Lost WebDriver connection")
             return Stop
@@ -240,7 +264,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
 
     def on_environment_change(self, new_environment):
         if new_environment["protocol"] != self.last_environment["protocol"]:
-            self.protocol.load_runner(new_environment["protocol"])
+            self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
         url = self.test_url(test)
@@ -262,16 +286,15 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                       "timeout_multiplier": self.timeout_multiplier,
                       "timeout": timeout * 1000}
 
-        webdriver = protocol.webdriver
-        parent_window = protocol.close_old_windows()
+        parent_window = protocol.testharness.close_old_windows()
         # Now start the test harness
-        protocol.webdriver.execute_script(self.script % format_map)
-        test_window = protocol.get_test_window(webdriver, parent_window)
+        protocol.base.execute_script(self.script % format_map)
+        test_window = protocol.testharness.get_test_window(webdriver, parent_window)
 
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
-            result = webdriver.execute_async_script(
-                self.script_resume % format_map)
+            result = protocol.base.execute_script(
+                self.script_resume % format_map, async=True)
             done, rv = handler(result)
             if done:
                 break
@@ -318,11 +341,12 @@ class SeleniumRefTestExecutor(RefTestExecutor):
         assert dpi is None
 
         return SeleniumRun(self._screenshot,
-                           self.protocol.webdriver,
+                           self.protocol,
                            self.test_url(test),
                            test.timeout).run()
 
-    def _screenshot(self, webdriver, url, timeout):
+    def _screenshot(self, protocol, url, timeout):
+        webdriver = protocol.webdriver
         webdriver.get(url)
 
         webdriver.execute_async_script(self.wait_script)

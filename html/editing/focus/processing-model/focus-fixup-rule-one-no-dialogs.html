@@ -13,6 +13,7 @@
   <button id="button3">Button 3</button>
   <fieldset id="fieldset1"><button id="button4">Button 4</button></fieldset>
   <fieldset id="fieldset2" disabled><legend><button id="button5">Button 5</button></legend></fieldset>
+  <button id="button6">Button 6</button>
   <div id="div" tabindex="0">Div</div>
   <div id="editable" contenteditable=true>editor</div>
 </div>
@@ -82,6 +83,25 @@ test(() => {
   assert_not_equals(document.activeElement, button, "After changing a legend element, the button must no longer be focused");
   assert_equals(document.activeElement, document.body, "After changing a legend element, the body must be focused");
 }, "Changing the first legend element in disabled <fieldset>");
+
+async_test(t => {
+  const button = document.querySelector("#button6");
+  button.focus();
+
+  assert_equals(document.activeElement, button, "Sanity check: the button must start focused");
+
+  const newButton = document.createElement("button");
+  newButton.id = "button7";
+  newButton.innerText = "Button 7";
+  newButton.autofocus = true;
+
+  button.parentElement.insertBefore(newButton, button.nextElementSibling);
+
+  t.step_timeout(() => {
+    assert_equals(document.activeElement, newButton, "After inserting a button with autofocus, that button must be focused");
+    t.done();
+  });
+}, "Inserting a button with autofocus");
 
 test(() => {
   const div = document.querySelector("#div");

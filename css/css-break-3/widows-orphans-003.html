@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Fragmentation level 3 Test: widows and line boxes</title>
+<title>CSS Fragmentation level 3 Test: orphans and block level boxes</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
 <link rel="help" href="https://drafts.csswg.org/css-break/#widows-orphans">
-<link rel="match" href="reference/widows-001-ref.html">
-<meta name="assert" content="The widows property affects block containers that establish an inline formatting context">
+<link rel="match" href="reference/widows-orphans-001-ref.html">
+<meta name="assert" content="The orphans property has no effect on block container boxes that contains only block-level boxes.">
 <meta name="flags" content="">
 <style>
 div p { margin: 0; }
 
 div {
-  columns: 4;
+  columns: 2;
   column-gap: 0;
   position: absolute; /* shrinkwrap. Using an explicit width in 'ch' with a monospace font would be fine as well if all UAs supported 'ch', but some don't. */
-}
-div p {
-  orphans: 1; /* to avoid interference */
-  widows: 2;
+
+  orphans: 4;
 }
 
-/* The lines of each paragraphs should be kept together if the widows property applies,
-   or spread over the 4 columns if it fails to,
-   or all above one-another in a single column if multicol doesn't work. */
+/* If the property applied to block container boxes that contain block-level boxes,
+   it would force the two two-line paragraphs to stick together.*/
 
 </style>
 <body>

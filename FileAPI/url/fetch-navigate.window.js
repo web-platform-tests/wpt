@@ -1,9 +1,10 @@
 // META: script=resources/test-helpers.sub.js
+// META: timeout=long
 
 // We can't really detect when a cross origin navigation has failed, so instead
 // detect when it succeeds, and assume it failed if it didn't succeed before
 // this timeout.
-const load_timeout = 1000;
+const load_timeout = 2000;
 
 promise_test(t => {
   const blob_contents = 'hello world';

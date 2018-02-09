@@ -38,13 +38,13 @@ for (const {matrix, desc} of gTestMatrices) {
   test(() => {
     const component = new CSSMatrixComponent(matrix);
     assert_matrix_approx_equals(component.matrix, matrix, EPSILON);
-    assert_equals(component.is2D, matrix.is2D);
+    assert_false(component.is2D);
   }, 'CSSMatrixComponent can be constructed from ' + desc + ' without a CSSMatrixComponentOptions');
 
   test(() => {
     const component = new CSSMatrixComponent(matrix, null);
     assert_matrix_approx_equals(component.matrix, matrix, EPSILON);
-    assert_equals(component.is2D, matrix.is2D);
+    assert_false(component.is2D);
   }, 'CSSMatrixComponent can be constructed from ' + desc + ' with an invalid CSSMatrixComponentOptions');
 
   test(() => {

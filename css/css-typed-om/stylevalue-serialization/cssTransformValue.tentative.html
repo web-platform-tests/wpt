@@ -96,7 +96,7 @@ const gTestCases = [
     desc: 'CSSTransformValue containing CSSMathValues'
   },
   {
-    value: new CSSMatrixComponent(new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6])),
+    value: new CSSMatrixComponent(new DOMMatrixReadOnly([1, 2, 3, 4, 5, 6]), {is2D: true}),
     cssText: 'matrix(1, 2, 3, 4, 5, 6)',
     desc: 'CSSMatrixComponent with 6 elements'
   },

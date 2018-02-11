@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/cssom-1/#css-declaration-blocks">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<body>
 <script>
 function createTestElement(style) {
   let wrapper = document.createElement("div");
@@ -109,4 +110,24 @@ test(function() {
   assert_equals(elem.getAttribute("style"), "z-index: 50; invalid",
                 "style attribute after removing non-existing properties");
 }, "Removing non-existing property or setting invalid value on CSS declaration block shouldn't queue mutation record");
+
+test(function() {
+  let elem = createTestElement("background-image: url(./);");
+  let style = elem.style;
+  let base = document.createElement("base");
+  base.href = "/";
+  document.body.appendChild(elem);
+  let originalComputedValue = getComputedStyle(elem).backgroundImage;
+  document.head.appendChild(base);
+  this.add_cleanup(() => {
+    document.head.removeChild(base);
+    document.body.removeChild(elem);
+  });
+  style.setProperty("background-color", "green");
+  assert_equals(getComputedStyle(elem).backgroundImage, originalComputedValue,
+                "getComputedStyle(elem).backgroundImage after setting background-color");
+  style.setProperty("background-image", "url(./)");
+  assert_not_equals(getComputedStyle(elem).backgroundImage, originalComputedValue,
+                    "getComputedStyle(elem).backgroundImage after setting background-image");
+}, "Changes to CSS declaration block after a base URL change");
 </script>

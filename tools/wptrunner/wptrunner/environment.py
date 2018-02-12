@@ -90,12 +90,15 @@ class TestEnvironment(object):
         self.stash.__enter__()
         self.ssl_env.__enter__()
         self.cache_manager.__enter__()
-        for cm in self.env_extras:
-            cm.__enter__(self.options)
-        self.setup_server_logging()
+
         self.config = self.load_config()
+        self.setup_server_logging()
         ports = serve.get_ports(self.config, self.ssl_env)
         self.config = serve.normalise_config(self.config, ports)
+
+        for cm in self.env_extras:
+            cm.__enter__(self.options, self.config)
+
         self.servers = serve.start(self.config, self.ssl_env,
                                    self.get_routes())
         if self.options.get("supports_debugger") and self.debug_info and self.debug_info.interactive:

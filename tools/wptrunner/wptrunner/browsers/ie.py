@@ -42,7 +42,8 @@ def env_extras(**kwargs):
     return []
 
 def env_options():
-    return {"bind_hostname": "true",
+    return {"host": "web-platform.test",
+            "bind_hostname": "true",
             "supports_debugger": False}
 
 class InternetExplorerBrowser(Browser):

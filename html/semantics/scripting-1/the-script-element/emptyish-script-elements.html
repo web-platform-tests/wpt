@@ -13,6 +13,7 @@
 <script id="whitespace-child"> </script>
 
 <script id="gets-a-no-text-child"></script>
+<script id="gets-an-empty-text-child"></script>
 <script id="gets-a-text-child"></script>
 <script id="gets-a-comment-child"></script>
 <script id="gets-a-text-descendant"></script>
@@ -38,6 +39,13 @@ test(() => {
   el.appendChild(document.createTextNode("window.getsANoTextChildExecuted = true;"));
   assert_true(window.getsANoTextChildExecuted);
 }, "A script with an empty element inserted bails early, before setting already-started, so can be executed when adding text");
+
+test(() => {
+  const el = document.querySelector("#gets-an-empty-text-child");
+  el.appendChild(document.createTextNode(""));
+  el.appendChild(document.createTextNode("window.getsAnEmptyTextChildExecuted = true;"));
+  assert_true(window.getsAnEmptyTextChildExecuted);
+}, "A script with an empty text node inserted bails early, before setting already-started, so can be executed when adding text");
 
 test(() => {
   const el = document.querySelector("#gets-a-text-child");

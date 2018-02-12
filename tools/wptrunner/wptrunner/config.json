@@ -1,4 +1,4 @@
-{"host": "%(host)s",
+{"host": "web-platform.test",
  "ports":{"http":[8000, 8001],
           "https":[8443],
           "ws":[8888]},

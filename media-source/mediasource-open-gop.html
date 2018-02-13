@@ -22,13 +22,11 @@ if (subType == 'webm') {
         var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
 
         test.expectEvent(sourceBufferVideo, "updateend");
+        test.expectEvent(mediaElement, "playing");
         sourceBufferVideo.appendBuffer(dataVideo);
+        mediaElement.play();
         test.waitForExpectedEvents(function() {
-            test.expectEvent(mediaElement, "playing");
-            mediaElement.play();
-            test.waitForExpectedEvents(function() {
-                test.done();
-            });
+            test.done();
         });
     });
   }, "Test support for webm clusters that do not start with a keyframe.");
@@ -42,13 +40,11 @@ if (subType == 'webm') {
         var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
 
         test.expectEvent(sourceBufferVideo, "updateend");
+        test.expectEvent(mediaElement, "playing");
         sourceBufferVideo.appendBuffer(dataVideo);
+        mediaElement.play();
         test.waitForExpectedEvents(function() {
-            test.expectEvent(mediaElement, "playing");
-            mediaElement.play();
-            test.waitForExpectedEvents(function() {
-                test.done();
-            });
+            test.done();
         });
     });
   }, "Test support for mp4 segments that do not start with a keyframe.");

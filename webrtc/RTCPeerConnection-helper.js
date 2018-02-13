@@ -493,11 +493,6 @@ function addTrackOrTransceiver(pc, track, mediaStream) {
   } else if (typeof pc.addStream === 'function') {
     // FIXME: Remove this case of using addStream once most major browsers
     // support addTrack or addTransceiver.
-    console.warn(
-      '[DEPRECATED] Neither addTrack nor addTransceiver is supported on this browser.',
-      'Using the legacy pc.addStream as a temporary measure so that we can test',
-      'some of the higher level WebRTC features.');
-
     return pc.addStream(mediaStream)
   } else {
     throw new Error('This test requires either addTrack or addTransceiver implemented');

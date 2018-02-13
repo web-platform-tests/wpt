@@ -11,43 +11,26 @@
     doSignalingHandshake
 */
 
-// Wait for a connecting dtlsTransport to transist
-// into connected state.
-function waitConnectingDtlsTransport(dtlsTransport) {
+// Wait for all DTLS and ICE transport of a peer connection
+// to turn to connected or completed state. When the RTCPeerConnectionState
+// is "connected", all RTCIceTransports and RTCDtlsTransports are in the
+// "connected", "completed" or "closed" state and at least one of them is in the
+// "connected" or "completed" state.
+function waitConnectingPc(pc) {
   return new Promise((resolve, reject) => {
-    if (dtlsTransport.state === 'connected') {
-      resolve(dtlsTransport);
-    } else {
-      dtlsTransport.addEventListener('statechange', () => {
-        const { state } = dtlsTransport;
-
-        if (state === 'connected') {
-          resolve(dtlsTransport);
-        } else if (['closed', 'failed'].includes(state)) {
-          reject(new Error(`dtlsTransport transition to unexpected state ${state}`));
-        }
-      });
-
-      dtlsTransport.addEventListener('error', reject);
+    if (pc.connectionState === 'connected') {
+      resolve();
     }
-  });
-}
 
-function waitConnectingIceTransport(iceTransport) {
-  return new Promise((resolve, reject) => {
-    if (['connected', 'completed'].includes(iceTransport.state)) {
-      resolve(iceTransport);
-    } else {
-      iceTransport.addEventListener('statechange', () => {
-        const { state } = iceTransport;
+    pc.addEventListener('connectionstatechange', () => {
+      const { connectionState } = pc;
 
-        if(['connected', 'completed'].includes(iceTransport.state)) {
-          resolve(iceTransport);
-        } else if (['closed', 'failed', 'disconnected'].includes(state)) {
-          reject(new Error(`dtlsTransport transition to unexpected state ${state}`));
-        }
-      });
-    }
+      if (connectionState === 'connected') {
+        resolve();
+      } else if (['closed', 'failed'].includes(connectionState)) {
+        reject(new Error(`one of DTLS/ICE transports transition to unexpected state ${connectionState}`));
+      }
+    });
   });
 }
 
@@ -80,30 +63,38 @@ function getDtlsTransportsFromSenderReceiver(pc) {
   const senders = pc.getSenders();
   const receivers = pc.getReceivers();
 
-  assert_greater_than(senders.length, 0,
-    'Expect pc to have at least one sender');
+  const dtlsTransportsSet = new Set();
 
-  assert_greater_than(receivers.length, 0,
-    'Expect pc to have at least one receiver');
+  function adddDtlsTransport(transport) {
+    // Add a dtls transport to the result set, if it is
+    // not null/undefined. Although the spec mandates both
+    // transport and rtcpTransport fields must be set together,
+    // we validate that requirement in separate test cases.
+    if (transport) {
+      assert_true(transport instanceof RTCDtlsTransport,
+        'Expect transport to be an RTCDtlsTransport');
 
-  const dtlsTransports = new Set();
+      dtlsTransportsSet.add(transport);
+    }
+  }
 
   for (const sender of senders) {
-    dtlsTransports.add(sender.transport);
-    dtlsTransports.add(sender.rtcpTransport);
+    adddDtlsTransport(sender.transport);
+    adddDtlsTransport(sender.rtcpTransport);
   }
 
   for (const receiver of receivers) {
-    dtlsTransports.add(receiver.transport);
-    dtlsTransports.add(receiver.rtcpTransport);
+    adddDtlsTransport(receiver.transport);
+    adddDtlsTransport(receiver.rtcpTransport);
   }
 
-  for (const dtlsTransport of dtlsTransports) {
-    assert_true(dtlsTransport instanceof RTCDtlsTransport,
-      'Expect sctp.transport to be an RTCDtlsTransport');
+  const dtlsTransports = [...dtlsTransportsSet];
+
+  if (dtlsTransports.length === 0) {
+    assert_unreached('Expect to get at least one unique RTCDtlsTransport from sender receivers');
   }
 
-  return [...dtlsTransports];
+  return dtlsTransports;
 }
 
 function getIceTransportFromDtlsTransport(dtlsTransport) {

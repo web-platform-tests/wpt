@@ -11,61 +11,57 @@
         <div id="log"></div>
         <script>
 
-          var subType = MediaSourceUtil.getSubType(MediaSourceUtil.VIDEO_ONLY_TYPE);
-          if (subType == 'webm') {
-            var manifestFilenameVideo = "webm/test-v-no-keyframe-cluster-manifest.json";
+var subType = MediaSourceUtil.getSubType(MediaSourceUtil.VIDEO_ONLY_TYPE);
+if (subType == 'webm') {
+  var manifestFilenameVideo = "webm/test-v-no-keyframe-cluster-manifest.json";
 
-            mediasource_test(function(test, mediaElement, mediaSource) {
-              mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
-              MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
-              {
-                  var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
-                  sourceBufferVideo.timestampOffset = 0;
-                  sourceBufferVideo.appendWindowEnd = 1;
+  mediasource_test(function(test, mediaElement, mediaSource) {
+    mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
+    MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
+    {
+        var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
 
-                  test.expectEvent(sourceBufferVideo, "updateend");
-                  sourceBufferVideo.appendBuffer(dataVideo);
-                  test.waitForExpectedEvents(function() {
-                      test.expectEvent(mediaElement, "playing");
-                      mediaElement.play();
-                      test.waitForExpectedEvents(function() {
-                          test.done();
-                      });
-                  });
-              });
-            }, "Test support for webm clusters that do not start with a keyframe.");
-          } else {
-            var manifestFilenameVideoInit = "mp4/test-v-no-keyframe-segment-manifest-init.json";
-            var manifestFilenameVideo = "mp4/test-v-no-keyframe-segment-manifest.json";
+        test.expectEvent(sourceBufferVideo, "updateend");
+        sourceBufferVideo.appendBuffer(dataVideo);
+        test.waitForExpectedEvents(function() {
+            test.expectEvent(mediaElement, "playing");
+            mediaElement.play();
+            test.waitForExpectedEvents(function() {
+                test.done();
+            });
+        });
+    });
+  }, "Test support for webm clusters that do not start with a keyframe.");
+} else {
+  var manifestFilenameVideoInit = "mp4/test-v-no-keyframe-segment-manifest-init.json";
+  var manifestFilenameVideo = "mp4/test-v-no-keyframe-segment-manifest.json";
 
-            mediasource_test(function(test, mediaElement, mediaSource) {
-              mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
-              MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideoInit, function(typeVideoInit, dataVideoInit)
-              {
-                  MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
-                  {
-                      var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
-                      sourceBufferVideo.timestampOffset = 0;
-                      sourceBufferVideo.appendWindowEnd = 1;
+  mediasource_test(function(test, mediaElement, mediaSource) {
+    mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
+    MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideoInit, function(typeVideoInit, dataVideoInit)
+    {
+        MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
+        {
+            var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
 
-                      test.expectEvent(sourceBufferVideo, "updateend");
-                      sourceBufferVideo.appendBuffer(dataVideoInit);
-                      test.waitForExpectedEvents(function()
-                      {
-                          test.expectEvent(sourceBufferVideo, "updateend");
-                          sourceBufferVideo.appendBuffer(dataVideo);
-                          test.waitForExpectedEvents(function() {
-                              test.expectEvent(mediaElement, "playing");
-                              mediaElement.play();
-                              test.waitForExpectedEvents(function() {
-                                  test.done();
-                              });
-                          });
-                      });
-                  });
-              });
-            }, "Test support for mp4 segments that do not start with a keyframe.");
-          }
+            test.expectEvent(sourceBufferVideo, "updateend");
+            sourceBufferVideo.appendBuffer(dataVideoInit);
+            test.waitForExpectedEvents(function()
+            {
+                test.expectEvent(sourceBufferVideo, "updateend");
+                sourceBufferVideo.appendBuffer(dataVideo);
+                test.waitForExpectedEvents(function() {
+                    test.expectEvent(mediaElement, "playing");
+                    mediaElement.play();
+                    test.waitForExpectedEvents(function() {
+                        test.done();
+                    });
+                });
+            });
+        });
+    });
+  }, "Test support for mp4 segments that do not start with a keyframe.");
+}
 
         </script>
     </body>

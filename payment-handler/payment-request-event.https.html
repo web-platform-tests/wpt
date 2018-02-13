@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tests for PaymentRequestEvent</title>
+<link rel="help" href="https://w3c.github.io/payment-handler/#the-paymentrequestevent">
+<link rel="manifest" href="/payment-handler/basic-card.json">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<p>When the payment sheet is shown, please authorize the mock payment.</p>
+<script>
+function installPaymentHandler(iframe) {
+  iframe.contentWindow.postMessage('install', window.location.origin);
+}
+
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin) {
+    console.log(`Unrecognized origin "${event.origin}"`);
+    return;
+  }
+  if (event.data === 'success') {
+    runTests();
+  } else {
+    console.log(`Unrecognized response "${event.data}"`);
+  }
+});
+
+function runTests() {
+  promise_test(async t => {
+    const response = await new PaymentRequest(
+      [{supportedMethods: 'basic-card'}],
+      {
+        id: 'test-payment-request-identifier',
+        total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
+      },
+    ).show();
+    response.complete('success');
+    assert_equals(response.requestId, 'test-payment-request-identifier');
+    assert_equals(response.methodName, 'basic-card');
+    assert_array_equals(response.details.billingAddress.addressLine, [
+      '1875 Explorer St #1000',
+    ]);
+    assert_equals(response.details.billingAddress.city, 'Reston');
+    assert_equals(response.details.billingAddress.country, 'US');
+    assert_equals(response.details.billingAddress.dependentLocality, '');
+    assert_equals(response.details.billingAddress.languageCode, '');
+    assert_equals(response.details.billingAddress.organization, 'Google');
+    assert_equals(response.details.billingAddress.phone, '+15555555555');
+    assert_equals(response.details.billingAddress.postalCode, '20190');
+    assert_equals(response.details.billingAddress.recipient, 'Jon Doe');
+    assert_equals(response.details.billingAddress.region, 'VA');
+    assert_equals(response.details.billingAddress.sortingCode, '');
+    assert_equals(response.details.cardNumber, '4111111111111111');
+    assert_equals(response.details.cardSecurityCode, '123');
+    assert_equals(response.details.cardholderName, 'Jon Doe');
+    assert_equals(response.details.expiryMonth, '12');
+    assert_equals(response.details.expiryYear, '2028');
+  }, 'Can perform payment');
+}
+</script>
+<!-- Use a different scope for the payment handler, because Chrome closes all
+  payment handler scoped windows after payment. Use an iframe instead of setting
+  the scope manually, because `navigator.serviceWorker.ready` works only for the
+  current scope. -->
+<iframe id="payment-app-iframe" src="payment-app/install.html" onload="installPaymentHandler(this)"></iframe>

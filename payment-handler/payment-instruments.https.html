@@ -11,7 +11,9 @@ async function registerServiceWorkerAndClearInstruments() {
     'basic-card.js',
   );
   if (!registration) {
-    await navigator.serviceWorker.register('basic-card.js');
+    await navigator.serviceWorker.register('basic-card.js', {
+      scope: './payment-app/',
+    });
     registration = await navigator.serviceWorker.ready;
   }
   await registration.paymentManager.instruments.clear();
@@ -85,6 +87,14 @@ promise_test(async t => {
 
 promise_test(async t => {
   const registration = await registerServiceWorkerAndClearInstruments();
+  const result = await registration.paymentManager.instruments.get(
+    'non-existing-instrument-key',
+  );
+  assert_equals(result, undefined);
+}, 'Getting a non-existing instrument returns undefined');
+
+promise_test(async t => {
+  const registration = await registerServiceWorkerAndClearInstruments();
   await registration.paymentManager.instruments.set('existing-instrument-key', {
     name: 'Instrument Name v1',
     icons: [
@@ -133,33 +143,52 @@ promise_test(async t => {
 
 promise_test(async t => {
   const registration = await registerServiceWorkerAndClearInstruments();
+  await registration.paymentManager.instruments.set('existing-instrument-key', {
+    name: 'Instrument Name',
+    icons: [
+      {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
+    ],
+    enabledMethods: ['basic-card'],
+    capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
+  });
+  await registration.paymentManager.instruments.clear();
   const result = await registration.paymentManager.instruments.get(
-    'non-existing-instrument-key',
+    'existing-instrument-key',
   );
   assert_equals(result, undefined);
-}, 'Getting a non-existing instrument returns undefined');
+}, 'Clearing the instruments');
 
 promise_test(async t => {
   const registration = await registerServiceWorkerAndClearInstruments();
-  const setPromise = registration.paymentManager.instruments.set('instrument-key', {
-    name: 'Instrument Name',
-    icons: [
-      {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/jif'},
-    ],
-    enabledMethods: ['basic-card'],
-  });
+  const setPromise = registration.paymentManager.instruments.set(
+    'instrument-key',
+    {
+      name: 'Instrument Name',
+      icons: [
+        {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/jif'},
+      ],
+      enabledMethods: ['basic-card'],
+    },
+  );
   return promise_rejects(t, 'TypeError', setPromise);
 }, 'Cannot register instruments with invalid icon media type image/jif');
 
 promise_test(async t => {
   const registration = await registerServiceWorkerAndClearInstruments();
-  const setPromise = registration.paymentManager.instruments.set('instrument-key', {
-    name: 'Instrument Name',
-    icons: [
-      {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/pn' + 'g'.repeat(100000)},
-    ],
-    enabledMethods: ['basic-card'],
-  });
+  const setPromise = registration.paymentManager.instruments.set(
+    'instrument-key',
+    {
+      name: 'Instrument Name',
+      icons: [
+        {
+          src: '/images/rgrg-256x256.png',
+          sizes: '256x256',
+          type: 'image/pn' + 'g'.repeat(100000),
+        },
+      ],
+      enabledMethods: ['basic-card'],
+    },
+  );
   return promise_rejects(t, 'TypeError', setPromise);
 }, 'Cannot register instruments with very long icon media type image/pngggggg...');
 
@@ -180,13 +209,16 @@ promise_test(async t => {
 
 promise_test(async t => {
   const registration = await registerServiceWorkerAndClearInstruments();
-  const setPromise = registration.paymentManager.instruments.set('instrument-key', {
-    name: 'Instrument Name',
-    icons: [
-      {src: '/images/rgrg-256x256.png', sizes: '256 256', type: 'image/png'},
-    ],
-    enabledMethods: ['basic-card'],
-  });
+  const setPromise = registration.paymentManager.instruments.set(
+    'instrument-key',
+    {
+      name: 'Instrument Name',
+      icons: [
+        {src: '/images/rgrg-256x256.png', sizes: '256 256', type: 'image/png'},
+      ],
+      enabledMethods: ['basic-card'],
+    },
+  );
   return promise_rejects(t, 'TypeError', setPromise);
 }, 'Cannot register instruments with invalid icon size "256 256" (missing "x")');
 
@@ -248,7 +280,7 @@ promise_test(async t => {
   return promise_rejects(t, new TypeError(), setPromise);
 }, 'Cannot register instruments with an existing non-https icon URL');
 
-async function testKeys(existingKey, nonExistingKey) {
+async function testUnusualStrings(existingKey, nonExistingKey) {
   const registration = await registerServiceWorkerAndClearInstruments();
   await registration.paymentManager.instruments.set(existingKey, {
     name: existingKey,
@@ -286,10 +318,10 @@ async function testKeys(existingKey, nonExistingKey) {
 
 promise_test(async t => {
   const length = 100000;
-  await testKeys('0'.repeat(length), '1'.repeat(length));
+  await testUnusualStrings('0'.repeat(length), '1'.repeat(length));
 }, "Don't crash on very long key, name, method, and capability strings.");
 
 promise_test(async t => {
-  await testKeys('foo\0bar', 'foo\0baz');
+  await testUnusualStrings('foo\0bar', 'foo\0baz');
 }, "Don't crash on null characters in key, name, method, and capability strings.");
 </script>

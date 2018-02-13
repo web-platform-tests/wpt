@@ -1,4 +1,12 @@
 self.addEventListener('paymentrequest', event => {
+  const expectedId = 'test-payment-request-identifier';
+  if (event.paymentRequestId !== expectedId) {
+    const msg = `Expected payment request identifier "${expectedId}", but got "${
+      event.paymentRequestId
+    }"`;
+    event.respondWith(Promise.reject(new Error(msg)));
+    return;
+  }
   event.respondWith({
     methodName: 'basic-card',
     details: {

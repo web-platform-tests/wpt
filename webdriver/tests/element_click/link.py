@@ -16,7 +16,7 @@ def click(session, element):
                                         <a href="/webdriver/tests/element_click/support/input.html">Helloooooooooooooooooooo Worlddddddddddddddd</a>
                                     </p>"""])
 
-def test_element_click_link(session, element):
+def test_click_link(session, element):
     # 14.1 Step 7
     session.url = inline(element)
     element = session.find.css("a", all=False)
@@ -27,14 +27,14 @@ def test_element_click_link(session, element):
     assert element.attribute("value") == "Hello World"
 
 
-def test_element_click_link_unload_event(session):
+def test_click_link_unload_event(session):
     # 14.1 Step 7
     session.url = inline("""<body onunload="checkUnload()">
                                 <a href="/webdriver/tests/element_click/support/input.html">click here</a>
-                                <input id=unloadCheck type=checkbox>
+                                <input type=checkbox>
                                 <script>
                                 function checkUnload() {
-                                    document.getElementById("unloadCheck").checked = true;
+                                    document.getElementsByTagName("input")[0].checked = true;
                                 }
                                 </script>
                             </body>""")
@@ -48,29 +48,27 @@ def test_element_click_link_unload_event(session):
     session.back()
 
     element = session.find.css("input", all=False)
-    response = session.execute_script("return document.getElementById(\"unloadCheck\").checked;")
+    response = session.execute_script("return document.getElementsByTagName(\"input\")[0].checked;")
     assert response is True
 
 
-def test_element_click_link_hash(session):
+def test_click_link_hash(session):
     # 14.1 Step 7
     session.url = inline("<a href=\"#\">aaaa</a>")
-    OldUrl = session.url
+    oldUrl = session.url
 
     element = session.find.css("a", all=False)
     response = click(session, element)
     assert_success(response)
 
-    NewUrl = session.url
-    assert OldUrl + "#" == NewUrl
+    newUrl = session.url
+    assert "%s%s" %(oldUrl, "#") == newUrl
 
 
-def test_element_click_link_closes_window(session):
+def test_click_link_closes_window(session, create_window):
     # 14.1 Step 7
-    session.execute_script("window.open();")
+    session.window_handle = create_window()
 
-    handles = session.handles
-    session.window_handle = handles[1]
     session.url = inline("<a href=\"/webdriver/tests/element_click/support/close_window.html\">asdf</a>")
     element = session.find.css("a", all=False)
     response = click(session, element)

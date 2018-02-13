@@ -33,30 +33,21 @@ if (subType == 'webm') {
     });
   }, "Test support for webm clusters that do not start with a keyframe.");
 } else {
-  var manifestFilenameVideoInit = "mp4/test-v-no-keyframe-segment-manifest-init.json";
   var manifestFilenameVideo = "mp4/test-v-no-keyframe-segment-manifest.json";
 
   mediasource_test(function(test, mediaElement, mediaSource) {
     mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
-    MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideoInit, function(typeVideoInit, dataVideoInit)
+    MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
     {
-        MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function(typeVideo, dataVideo)
-        {
-            var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
+        var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
 
-            test.expectEvent(sourceBufferVideo, "updateend");
-            sourceBufferVideo.appendBuffer(dataVideoInit);
-            test.waitForExpectedEvents(function()
-            {
-                test.expectEvent(sourceBufferVideo, "updateend");
-                sourceBufferVideo.appendBuffer(dataVideo);
-                test.waitForExpectedEvents(function() {
-                    test.expectEvent(mediaElement, "playing");
-                    mediaElement.play();
-                    test.waitForExpectedEvents(function() {
-                        test.done();
-                    });
-                });
+        test.expectEvent(sourceBufferVideo, "updateend");
+        sourceBufferVideo.appendBuffer(dataVideo);
+        test.waitForExpectedEvents(function() {
+            test.expectEvent(mediaElement, "playing");
+            mediaElement.play();
+            test.waitForExpectedEvents(function() {
+                test.done();
             });
         });
     });

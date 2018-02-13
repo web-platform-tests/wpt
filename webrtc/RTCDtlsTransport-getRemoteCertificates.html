@@ -13,7 +13,7 @@
   //  doSignalingHandshake
 
   // The following helper functions are called from RTCTransport-helper.js:
-  //  waitConnectingDtlsTransport
+  //  waitConnectingPc
   //  createDtlsTransportsFromSctp
   //  createDtlsTransportsFromSenderReceiver
 
@@ -34,11 +34,6 @@
       assert_array_equals(dtlsTransport.getCertificates(), [],
         'Expect DTLS certificates be initially empty until become connected');
     }
-
-    return waitConnectingDtlsTransport()
-    .then(() => {
-      validateConnectedDtlsTransport(dtlsTransport);
-    });
   }
 
   promise_test(t => {
@@ -47,9 +42,21 @@
 
     return createDtlsTransportsFromSenderReceiver(pc1, pc2)
     .then(([dtlsTransports1, dtlsTransports2]) => {
-      return Promise.all(
-        [...dtlsTransports1, ... dtlsTransports2]
-        .map(validateConnectingDtlsTransport));
+      const dtlsTransports = [...dtlsTransports1, ... dtlsTransports2];
+
+      for (const dtlsTransport of dtlsTransports) {
+        validateConnectingDtlsTransport(dtlsTransport);
+      }
+
+      return Promise.all([
+        waitConnectingPc(pc1),
+        waitConnectingPc(pc2)
+      ])
+      .then(() => {
+        for (const dtlsTransport of dtlsTransports) {
+          validateConnectedDtlsTransport(dtlsTransport);
+        }
+      });
     });
   }, 'RTP - connected DTLS transports should have valid remote certificates');
 
@@ -58,11 +65,20 @@
     const pc2 = new RTCPeerConnection();
 
     return createDtlsTransportsFromSctp(pc1, pc2)
-    .then(([dtlsTransport1, dtlsTransport2]) => {
+    .then(dtlsTransports => {
+      for (const dtlsTransport of dtlsTransports) {
+        validateConnectingDtlsTransport(dtlsTransport);
+      }
+
       return Promise.all([
-        validateConnectingDtlsTransport(dtlsTransport1),
-        validateConnectingDtlsTransport(dtlsTransport2)
-      ]);
+        waitConnectingPc(pc1),
+        waitConnectingPc(pc2)
+      ])
+      .then(() => {
+        for (const dtlsTransport of dtlsTransports) {
+          validateConnectedDtlsTransport(dtlsTransport);
+        }
+      });
     });
   }, 'SCTP - connected DTLS transports should have valid remote certificates');
 

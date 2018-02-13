@@ -2,7 +2,6 @@ module.exports = {
   rules: {
     'no-undef': 1,
     'no-unused-vars': 0,
-    'semi': [1, 'always']
   },
   plugins: [
     'html'
@@ -156,8 +155,7 @@ module.exports = {
     validateCertificateStats: true,
 
     // RTCTransport-helper.js
-    waitConnectingDtlsTransport: true,
-    waitConnectingIceTransport: true,
+    waitConnectingPc: true,
     getDtlsTransportFromSctpTransport: true,
     getIceTransportFromSctpTransport: true,
     getDtlsTransportsFromSenderReceiver: true,

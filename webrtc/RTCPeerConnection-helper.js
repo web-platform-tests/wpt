@@ -479,14 +479,16 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
 
 // A dependency agnostic way of adding track depending
 // on the supported method on a browser. Uses addTransceiver(track)
-// first if available, otherwise use addTrack(track, mediaStream).
+// first if available, otherwise use addTrack(track, mediaStream)
+// or falls back to the legacy addStream method (which has been removed
+// from the spec).
 function addTrackOrTransceiver(pc, track, mediaStream) {
   if (typeof pc.addTransceiver === 'function') {
     return pc.addTransceiver(track);
   } else if (typeof pc.addTrack === 'function') {
     // Note: The mediaStream argument is optional in the spec, but we require
     // it for now so that we can test older versions of Firefox that only
-    // implements addTrack with compulsary mediaStream argument.
+    // implements addTrack with compulsory mediaStream argument.
     return pc.addTrack(track, mediaStream);
   } else if (typeof pc.addStream === 'function') {
     // FIXME: Remove this case of using addStream once most major browsers

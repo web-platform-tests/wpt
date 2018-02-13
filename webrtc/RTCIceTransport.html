@@ -15,11 +15,10 @@
   //  addTrackOrTransceiver
 
   // The following helper functions are called from RTCTransport-helper.js:
-  //  waitConnectingIceTransport
+  //  waitConnectingPc
   //  getIceTransportFromSctpTransport
   //  getIceTransportsFromSenderReceiver
   //  createIceTransportsFromSenderReceiver
-
 
   function validateIceCandidates(candidates) {
     assert_greater_than(candidates.length, 0,
@@ -31,9 +30,9 @@
     }
   }
 
-  function validateIceCandidateParameter(param) {
+  function validateIceParameter(param) {
    assert_not_equals(param, null,
-     'Expect candidate parameter to be non-null after data channels are connected');
+     'Expect candidate parameter to be non-null after peer connections are connected');
 
    assert_equals(typeof param.usernameFragment, 'string',
      'Expect param.usernameFragment to be set with string value');
@@ -52,10 +51,10 @@
       'Expect RTCIceComponent to be either rtp or rtcp');
 
     assert_true(state === 'connected' || state === 'completed',
-      'Expect ICE transport to be in connected or completed state after data channels are connected');
+      'Expect ICE transport to be in connected or completed state after peer connections are connected');
 
     assert_true(gatheringState === 'gathering' || gatheringState === 'completed',
-      'Expect ICE transport to be in gathering or completed gatheringState after data channels are connected');
+      'Expect ICE transport to be in gathering or completed gatheringState after peer connections are connected');
 
     validateIceCandidates(iceTransport.getLocalCandidates());
     validateIceCandidates(iceTransport.getRemoteCandidates());
@@ -70,8 +69,8 @@
     assert_true(candidatePair.remote instanceof RTCIceCandidate,
       'Expect candidatePair.remote to be instance of RTCIceCandidate');
 
-    validateIceCandidateParameter(iceTransport.getLocalParameters());
-    validateIceCandidateParameter(iceTransport.getRemoteParameters());
+    validateIceParameter(iceTransport.getLocalParameters());
+    validateIceParameter(iceTransport.getRemoteParameters());
   }
 
   function validateUnconnectedIceTransport(iceTransport) {
@@ -91,8 +90,8 @@
     return createIceTransportsFromSctp(pc1, pc2)
     .then(([iceTransport1, iceTransport2]) => {
       return Promise.all([
-        waitConnectingIceTransport(iceTransport1),
-        waitConnectingIceTransport(iceTransport2)
+        waitConnectingPc(pc1),
+        waitConnectingPc(pc2)
       ])
       .then(() => {
         validateConnectedIceTransport(iceTransport1);
@@ -108,12 +107,15 @@
     return createIceTransportsFromSenderReceiver(pc1, pc2)
     .then(([iceTransports1, iceTransports2]) => {
       const iceTransports = [...iceTransports1, ...iceTransports2];
-
-      return Promise.all(iceTransports.map(
-        iceTransport => {
-          return waitConnectingIceTransport(iceTransport)
-          .then(() => validateConnectedIceTransport(iceTransport));
-        }));
+      return Promise.all([
+        waitConnectingPc(pc1),
+        waitConnectingPc(pc2)
+      ])
+      .then(() => {
+        for (const iceTransport of iceTransports) {
+          validateConnectedIceTransport(iceTransport);
+        }
+      });
     });
   }, 'RTP - Connected ICE transports should have relevants attributes set');
 

@@ -3,8 +3,16 @@ import importlib
 import imp
 
 from .browsers import product_list
+from collections import OrderedDict
+from typing import List
+from abc import ABCMeta
+from typing import Callable
+from typing import Dict
+from typing import Tuple
+from types import ModuleType
 
 def products_enabled(config):
+    # type: (OrderedDict) -> List[str]
     names = config.get("products", {}).keys()
     if not names:
         return product_list
@@ -12,6 +20,7 @@ def products_enabled(config):
         return names
 
 def product_module(config, product):
+    # type: (OrderedDict, str) -> ModuleType
     here = os.path.join(os.path.split(__file__)[0])
     product_dir = os.path.join(here, "browsers")
 
@@ -30,7 +39,10 @@ def product_module(config, product):
     return module
 
 
-def load_product(config, product):
+def load_product(config,  # type: OrderedDict
+                 product,  # type: str
+                 ):
+    # type: (...) -> Tuple[Callable, ABCMeta, Callable, Dict[str, ABCMeta], Callable, Dict[str, str], Callable, Callable]
     module = product_module(config, product)
     data = module.__wptrunner__
 

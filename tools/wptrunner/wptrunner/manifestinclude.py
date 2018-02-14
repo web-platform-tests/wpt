@@ -11,34 +11,50 @@ import urlparse
 from wptmanifest.node import DataNode
 from wptmanifest.backends import conditional
 from wptmanifest.backends.conditional import ManifestItem
+from wptrunner.wptmanifest.node import DataNode
+from manifest.item import RefTest
+from manifest.item import TestharnessTest
+from manifest.item import WebdriverSpecTest
+from typing import Union
+from typing import List
+from typing import Text
+from manifest.manifest import Manifest
+from typing import Dict
+from typing import Any
+from typing import Optional
 
 
 class IncludeManifest(ManifestItem):
     def __init__(self, node):
+        # type: (DataNode) -> None
         """Node in a tree structure representing the paths
         that should be included or excluded from the test run.
 
         :param node: AST Node corresponding to this Node.
         """
         ManifestItem.__init__(self, node)
-        self.child_map = {}
+        self.child_map = {}  # type: Dict[str, IncludeManifest]
 
     @classmethod
     def create(cls):
+        # type: () -> IncludeManifest
         """Create an empty IncludeManifest tree"""
         node = DataNode(None)
         return cls(node)
 
     def set_defaults(self):
+        # type: () -> None
         if not self.has_key("skip"):
             self.set("skip", "False")
 
     def append(self, child):
+        # type: (IncludeManifest) -> None
         ManifestItem.append(self, child)
         self.child_map[child.name] = child
         assert len(self.child_map) == len(self.children)
 
     def include(self, test):
+        # type: (Union[RefTest, TestharnessTest, WebdriverSpecTest]) -> bool
         """Return a boolean indicating whether a particular test should be
         included in a test run, based on the IncludeManifest tree rooted on
         this object.
@@ -48,6 +64,7 @@ class IncludeManifest(ManifestItem):
         return self._include(test, path_components)
 
     def _include(self, test, path_components):
+        # type: (RefTest, List[Text]) -> bool
         if path_components:
             next_path_part = path_components.pop()
             if next_path_part in self.child_map:
@@ -67,7 +84,8 @@ class IncludeManifest(ManifestItem):
                     return True
 
     def _get_components(self, url):
-        rv = []
+        # type: (Text) -> List[Text]
+        rv = []  # type: List[Text]
         url_parts = urlparse.urlsplit(url)
         variant = ""
         if url_parts.query:
@@ -80,6 +98,7 @@ class IncludeManifest(ManifestItem):
         return rv
 
     def _add_rule(self, test_manifests, url, direction):
+        # type: (Dict[Manifest, Dict[str, str]], str, str) -> None
         maybe_path = os.path.join(os.path.abspath(os.curdir), url)
         rest, last = os.path.split(maybe_path)
         fragment = query = None
@@ -133,6 +152,7 @@ class IncludeManifest(ManifestItem):
             node.set("skip", str(skip))
 
     def add_include(self, test_manifests, url_prefix):
+        # type: (Dict[Manifest, Dict[str, str]], str) -> Optional[Any]
         """Add a rule indicating that tests under a url path
         should be included in test runs
 

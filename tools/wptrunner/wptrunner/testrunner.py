@@ -9,6 +9,28 @@ from collections import namedtuple
 from multiprocessing import Process, current_process, Queue
 
 from mozlog import structuredlog
+from mozlog.structuredlog import StructuredLogger
+from multiprocessing.queues import Queue
+from typing import Union
+from wptrunner.browsers.base import NullBrowser
+from wptrunner.browsers.chrome import ChromeBrowser
+from wptrunner.wpttest import ReftestTest
+from wptrunner.wpttest import TestharnessTest
+from typing import Any
+from typing import Text
+from abc import ABCMeta
+from threading import _Event
+from typing import Dict
+from typing import Optional
+from wptrunner.testrunner import initializing_browser
+from wptrunner.testrunner import running
+from collections import deque
+from typing import Tuple
+from typing import List
+from wptrunner.wpttest import ReftestResult
+from wptrunner.wpttest import TestharnessResult
+from wptrunner.wpttest import TestharnessSubtestResult
+from wptrunner.wpttest import WdspecTest
 
 # Special value used as a sentinal in various commands
 Stop = object()
@@ -148,13 +170,20 @@ manager_count = 0
 
 
 def next_manager_number():
+    # type: () -> int
     global manager_count
     local = manager_count = manager_count + 1
     return local
 
 
 class BrowserManager(object):
-    def __init__(self, logger, browser, command_queue, no_timeout=False):
+    def __init__(self,
+                 logger,  # type: StructuredLogger
+                 browser,  # type: Union[NullBrowser, ChromeBrowser]
+                 command_queue,  # type: Queue
+                 no_timeout=False,  # type: bool
+                 ):
+        # type: (...) -> None
         self.logger = logger
         self.browser = browser
         self.no_timeout = no_timeout
@@ -167,6 +196,7 @@ class BrowserManager(object):
         self.command_queue = command_queue
 
     def update_settings(self, test):
+        # type: (Union[ReftestTest, TestharnessTest]) -> bool
         browser_settings = self.browser.settings(test)
         restart_required = ((self.browser_settings is not None and
                              self.browser_settings != browser_settings) or
@@ -176,6 +206,7 @@ class BrowserManager(object):
         return restart_required
 
     def init(self):
+        # type: () -> bool
         """Launch the browser that is being tested,
         and the TestRunner process that will run the tests."""
         # It seems that this lock is helpful to prevent some race that otherwise
@@ -208,25 +239,30 @@ class BrowserManager(object):
         return succeeded
 
     def send_message(self, command, *args):
+        # type: (Text, *Any) -> None
         self.command_queue.put((command, args))
 
     def init_timeout(self):
+        # type: () -> None
         # This is called from a seperate thread, so we send a message to the
         # main loop so we get back onto the manager thread
         self.logger.debug("init_failed called from timer")
         self.send_message("init_failed")
 
     def after_init(self):
+        # type: () -> None
         """Callback when we have started the browser, started the remote
         control connection, and we are ready to start testing."""
         if self.init_timer is not None:
             self.init_timer.cancel()
 
     def stop(self, force=False):
+        # type: (bool) -> None
         self.browser.stop(force=force)
         self.started = False
 
     def cleanup(self):
+        # type: () -> None
         if self.init_timer is not None:
             self.init_timer.cancel()
 
@@ -254,9 +290,22 @@ RunnerManagerState = _RunnerManagerState()
 
 
 class TestRunnerManager(threading.Thread):
-    def __init__(self, suite_name, test_queue, test_source_cls, browser_cls, browser_kwargs,
-                 executor_cls, executor_kwargs, stop_flag, rerun=1, pause_after_test=False,
-                 pause_on_unexpected=False, restart_on_unexpected=True, debug_info=None):
+    def __init__(self,
+                 suite_name,  # type: Text
+                 test_queue,  # type: Queue
+                 test_source_cls,  # type: ABCMeta
+                 browser_cls,  # type: ABCMeta
+                 browser_kwargs,  # type: Dict[str, Any]
+                 executor_cls,  # type: ABCMeta
+                 executor_kwargs,  # type: Dict[str, Any]
+                 stop_flag,  # type: _Event
+                 rerun=1,  # type: int
+                 pause_after_test=False,  # type: bool
+                 pause_on_unexpected=False,  # type: bool
+                 restart_on_unexpected=True,  # type: bool
+                 debug_info=None,  # type: None
+                 ):
+        # type: (...) -> None
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -314,6 +363,7 @@ class TestRunnerManager(threading.Thread):
         self.browser = None
 
     def run(self):
+        # type: () -> None
         """Main loop for the TestManager.
 
         TestManagers generally receive commands from their
@@ -372,6 +422,7 @@ class TestRunnerManager(threading.Thread):
         self.logger.debug("TestRunnerManager main loop terminated")
 
     def wait_event(self):
+        # type: () -> Optional[Any]
         dispatch = {
             RunnerManagerState.before_init: {},
             RunnerManagerState.initializing:
@@ -434,9 +485,11 @@ class TestRunnerManager(threading.Thread):
             return f(*data)
 
     def should_stop(self):
+        # type: () -> bool
         return self.child_stop_flag.is_set() or self.parent_stop_flag.is_set()
 
     def start_init(self):
+        # type: () -> initializing_browser
         test, test_group, group_metadata = self.get_next_test()
         if test is None:
             return RunnerManagerState.stop()
@@ -444,6 +497,7 @@ class TestRunnerManager(threading.Thread):
             return RunnerManagerState.initializing(test, test_group, group_metadata, 0)
 
     def init(self):
+        # type: () -> Optional[Any]
         assert isinstance(self.state, RunnerManagerState.initializing)
         if self.state.failure_count > self.max_restarts:
             self.logger.error("Max restarts exceeded")
@@ -464,6 +518,7 @@ class TestRunnerManager(threading.Thread):
             self.start_test_runner()
 
     def start_test_runner(self):
+        # type: () -> None
         # Note that we need to be careful to start the browser before the
         # test runner to ensure that any state set when the browser is started
         # can be passed in to the test runner.
@@ -488,6 +543,7 @@ class TestRunnerManager(threading.Thread):
         # Now we wait for either an init_succeeded event or an init_failed event
 
     def init_succeeded(self):
+        # type: () -> running
         assert isinstance(self.state, RunnerManagerState.initializing)
         self.browser.after_init()
         return RunnerManagerState.running(self.state.test,
@@ -495,6 +551,7 @@ class TestRunnerManager(threading.Thread):
                                           self.state.group_metadata)
 
     def init_failed(self):
+        # type: () -> initializing_browser
         assert isinstance(self.state, RunnerManagerState.initializing)
         self.browser.after_init()
         self.stop_runner(force=True)
@@ -503,7 +560,10 @@ class TestRunnerManager(threading.Thread):
                                                self.state.group_metadata,
                                                self.state.failure_count + 1)
 
-    def get_next_test(self, test_group=None):
+    def get_next_test(self,
+                      test_group=None,  # type: None
+                      ):
+        # type: (...) -> Tuple[Union[ReftestTest, TestharnessTest], deque, Dict[str, Dict]]
         test = None
         while test is None:
             while test_group is None or len(test_group) == 0:
@@ -516,6 +576,7 @@ class TestRunnerManager(threading.Thread):
         return test, test_group, group_metadata
 
     def run_test(self):
+        # type: () -> Optional[Any]
         assert isinstance(self.state, RunnerManagerState.running)
         assert self.state.test is not None
 
@@ -531,7 +592,11 @@ class TestRunnerManager(threading.Thread):
         self.run_count += 1
         self.send_message("run_test", self.state.test)
 
-    def test_ended(self, test, results):
+    def test_ended(self,
+                   test,  # type: Union[ReftestTest, TestharnessTest]
+                   results,  # type: Tuple[Union[ReftestResult, TestharnessResult], List[TestharnessSubtestResult]]
+                   ):
+        # type: (...) -> running
         """Handle the end of a test.
 
         Output the result of each subtest, and the result of the overall
@@ -603,6 +668,7 @@ class TestRunnerManager(threading.Thread):
         return self.after_test_end(self.state.test, True)
 
     def after_test_end(self, test, restart):
+        # type: (Union[ReftestTest, TestharnessTest], bool) -> running
         assert isinstance(self.state, RunnerManagerState.running)
         if self.run_count == self.rerun:
             test, test_group, group_metadata = self.get_next_test()
@@ -627,6 +693,7 @@ class TestRunnerManager(threading.Thread):
         return RunnerManagerState.initializing(self.state.test, self.state.test_group, self.state.group_metadata, 0)
 
     def log(self, action, kwargs):
+        # type: (Text, Union[Dict[str, Text], Dict[str, str]]) -> None
         getattr(self.logger, action)(**kwargs)
 
     def error(self, message):
@@ -634,6 +701,7 @@ class TestRunnerManager(threading.Thread):
         self.restart_runner()
 
     def stop_runner(self, force=False):
+        # type: (bool) -> None
         """Stop the TestRunner and the browser binary."""
         if self.test_runner_proc is None:
             return
@@ -647,6 +715,7 @@ class TestRunnerManager(threading.Thread):
             self.cleanup()
 
     def teardown(self):
+        # type: () -> None
         self.logger.debug("teardown in testrunnermanager")
         self.test_runner_proc = None
         self.command_queue.close()
@@ -655,6 +724,7 @@ class TestRunnerManager(threading.Thread):
         self.remote_queue = None
 
     def ensure_runner_stopped(self):
+        # type: () -> None
         self.logger.debug("ensure_runner_stopped")
         if self.test_runner_proc is None:
             return
@@ -675,9 +745,11 @@ class TestRunnerManager(threading.Thread):
         return RunnerManagerState.stop()
 
     def send_message(self, command, *args):
+        # type: (Text, *Any) -> None
         self.remote_queue.put((command, args))
 
     def cleanup(self):
+        # type: () -> None
         self.logger.debug("TestManager cleanup")
         if self.browser:
             self.browser.cleanup()
@@ -699,7 +771,11 @@ class TestRunnerManager(threading.Thread):
                 break
 
 
-def make_test_queue(tests, test_source_cls, **test_source_kwargs):
+def make_test_queue(tests,  # type: Union[List[ReftestTest], List[TestharnessTest], List[WdspecTest]]
+                    test_source_cls,  # type: ABCMeta
+                    **test_source_kwargs  # type: Any
+                    ):
+    # type: (...) -> Queue
     queue = test_source_cls.make_queue(tests, **test_source_kwargs)
 
     # There is a race condition that means sometimes we continue
@@ -711,14 +787,22 @@ def make_test_queue(tests, test_source_cls, **test_source_kwargs):
 
 
 class ManagerGroup(object):
-    def __init__(self, suite_name, size, test_source_cls, test_source_kwargs,
-                 browser_cls, browser_kwargs,
-                 executor_cls, executor_kwargs,
-                 rerun=1,
-                 pause_after_test=False,
-                 pause_on_unexpected=False,
-                 restart_on_unexpected=True,
-                 debug_info=None):
+    def __init__(self,
+                 suite_name,  # type: Text
+                 size,  # type: int
+                 test_source_cls,  # type: ABCMeta
+                 test_source_kwargs,  # type: Dict[Text, int]
+                 browser_cls,  # type: ABCMeta
+                 browser_kwargs,  # type: Dict[str, Any]
+                 executor_cls,  # type: ABCMeta
+                 executor_kwargs,  # type: Dict[str, Any]
+                 rerun=1,  # type: int
+                 pause_after_test=False,  # type: bool
+                 pause_on_unexpected=False,  # type: bool
+                 restart_on_unexpected=True,  # type: bool
+                 debug_info=None,  # type: None
+                 ):
+        # type: (...) -> None
         """Main thread object that owns all the TestManager threads."""
         self.suite_name = suite_name
         self.size = size
@@ -741,12 +825,15 @@ class ManagerGroup(object):
         self.logger = structuredlog.StructuredLogger(suite_name)
 
     def __enter__(self):
+        # type: () -> ManagerGroup
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        # type: (None, None, None) -> None
         self.stop()
 
     def run(self, test_type, tests):
+        # type: (str, Dict[Text, List[TestharnessTest]]) -> None
         """Start all managers in the group"""
         self.logger.debug("Using %i processes" % self.size)
         type_tests = tests[test_type]
@@ -779,15 +866,18 @@ class ManagerGroup(object):
         return any(manager.is_alive() for manager in self.pool)
 
     def wait(self):
+        # type: () -> None
         """Wait for all the managers in the group to finish"""
         for item in self.pool:
             item.join()
 
     def stop(self):
+        # type: () -> None
         """Set the stop flag so that all managers in the group stop as soon
         as possible"""
         self.stop_flag.set()
         self.logger.debug("Stop flag set in ManagerGroup")
 
     def unexpected_count(self):
+        # type: () -> int
         return sum(item.unexpected_count for item in self.pool)

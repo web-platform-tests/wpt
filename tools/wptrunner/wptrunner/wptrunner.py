@@ -13,6 +13,15 @@ import wpttest
 from font import FontInstaller
 from testrunner import ManagerGroup
 from browsers.base import NullBrowser
+from typing import Any
+from collections import OrderedDict
+from sslutils.openssl import OpenSSLEnvironment
+from typing import Dict
+from typing import Tuple
+from wptrunner.testloader import TestLoader
+from wptrunner.wpttest import RunInfo
+from typing import cast
+from manifest.item import Test as Manifest_Test
 
 here = os.path.split(__file__)[0]
 
@@ -35,11 +44,21 @@ metadata files are used to store the expected test results.
 """
 
 def setup_logging(*args, **kwargs):
+    # type: (*Any, **Any) -> None
     global logger
     logger = wptlogging.setup(*args, **kwargs)
 
 
-def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, **kwargs):
+def get_loader(test_paths,  # type: OrderedDict
+               product,  # type: str
+               ssl_env,  # type: OpenSSLEnvironment
+               debug=None,  # type: None
+               run_info_extras=None,  # type: Dict
+               **_kwargs  # type: Any
+               ):
+    # type: (...) -> Tuple[RunInfo, TestLoader]
+    kwargs = cast(Dict[unicode, Any], _kwargs)
+    
     if run_info_extras is None:
         run_info_extras = {}
 
@@ -121,7 +140,9 @@ def list_tests(test_paths, product, **kwargs):
         print test
 
 
-def get_pause_after_test(test_loader, **kwargs):
+def get_pause_after_test(test_loader, **_kwargs):
+    # type: (TestLoader, **Any) -> bool
+    kwargs = cast(Dict[unicode, Any], _kwargs)
     total_tests = sum(len(item) for item in test_loader.tests.itervalues())
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
@@ -132,7 +153,9 @@ def get_pause_after_test(test_loader, **kwargs):
     return kwargs["pause_after_test"]
 
 
-def run_tests(config, test_paths, product, **kwargs):
+def run_tests(config, test_paths, product, **_kwargs):
+    # type: (OrderedDict, OrderedDict, str, **Any) -> bool
+    kwargs = cast(Dict[unicode, Any], _kwargs)
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 
@@ -238,7 +261,7 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.test_end(test.id, status="SKIP")
 
                     if test_type == "testharness":
-                        run_tests = {"testharness": []}
+                        run_tests = {"testharness": []}  # type: Dict[unicode, Manifest_Test]
                         for test in test_loader.tests["testharness"]:
                             if test.testdriver and not executor_cls.supports_testdriver:
                                 logger.test_start(test.id)
@@ -282,7 +305,9 @@ def check_stability(**kwargs):
     return stability.check_stability(logger, **kwargs)
 
 
-def start(**kwargs):
+def start(**_kwargs):
+    # type: (**Any) -> bool
+    kwargs = cast(Dict[unicode, Any], _kwargs)
     if kwargs["list_test_groups"]:
         list_test_groups(**kwargs)
     elif kwargs["list_disabled"]:
@@ -297,20 +322,26 @@ def start(**kwargs):
 
 def main():
     """Main entry point when calling from the command line"""
-    kwargs = wptcommandline.parse_args()
-
+    from pyannotate_runtime import collect_types
+    collect_types.init_types_collection()
     try:
-        if kwargs["prefs_root"] is None:
-            kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
+        with collect_types.collect():
+            kwargs = wptcommandline.parse_args()
 
-        setup_logging(kwargs, {"raw": sys.stdout})
+            try:
+                if kwargs["prefs_root"] is None:
+                    kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
 
-        return start(**kwargs)
-    except Exception:
-        if kwargs["pdb"]:
-            import pdb
-            import traceback
-            print traceback.format_exc()
-            pdb.post_mortem()
-        else:
-            raise
+                setup_logging(kwargs, {"raw": sys.stdout})
+
+                return start(**kwargs)
+            except Exception:
+                if kwargs["pdb"]:
+                    import pdb
+                    import traceback
+                    print traceback.format_exc()
+                    pdb.post_mortem()
+                else:
+                    raise
+    finally:
+        collect_types.dump_stats(os.path.join(here, "foo.bar"))

@@ -1,7 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Payment Handler Installer</title>
-<link rel="manifest" href="/payment-handler/basic-card.json">
 <p>Payment Handler Installer</p>
 <script>
 window.addEventListener('message', event => {
@@ -9,21 +8,10 @@ window.addEventListener('message', event => {
     console.log(`Unrecognized origin "${event.origin}"`);
     return;
   }
-  if (event.data === 'install') {
-    navigator.serviceWorker.register('../basic-card.js', {scope: '.'}).then(() => {
-      navigator.serviceWorker.ready.then(registration => {
-        registration.paymentManager.instruments.clear().then(() => {
-          registration.paymentManager.instruments.set('instrument-key', {
-            name: 'Instrument Name',
-            icons: [
-              {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
-            ],
-            enabledMethods: ['basic-card'],
-            capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
-          }).then(() => {
-            event.source.postMessage('success', window.location.origin);
-          });
-        });
+  if (event.data === 'installAndActivate') {
+    navigator.serviceWorker.register('../basic-card.js', {scope: '.'}).then(registration => {
+      navigator.serviceWorker.ready.then(() => {
+        event.source.postMessage('success', window.location.origin);
       });
     });
   } else {

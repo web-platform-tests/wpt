@@ -7,8 +7,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <p>When the payment sheet is shown, please authorize the mock payment.</p>
 <script>
-function installPaymentHandler(iframe) {
-  iframe.contentWindow.postMessage('install', window.location.origin);
+function installAndActivateServiceWorker(iframe) {
+  iframe.contentWindow.postMessage('installAndActivate', window.location.origin);
 }
 
 window.addEventListener('message', event => {
@@ -17,7 +17,20 @@ window.addEventListener('message', event => {
     return;
   }
   if (event.data === 'success') {
-    runTests();
+    navigator.serviceWorker.getRegistration('payment-app/').then(registration => {
+      registration.paymentManager.instruments.clear().then(() => {
+        registration.paymentManager.instruments.set('instrument-key', {
+          name: 'Instrument Name',
+          icons: [
+            {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
+          ],
+          enabledMethods: ['basic-card'],
+          capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
+        }).then(() => {
+          runTests();
+        });
+      });
+    });
   } else {
     console.log(`Unrecognized response "${event.data}"`);
   }
@@ -57,7 +70,7 @@ function runTests() {
 }
 </script>
 <!-- Use a different scope for the payment handler, because Chrome closes all
-  payment handler scoped windows after payment. Use an iframe instead of setting
-  the scope manually, because `navigator.serviceWorker.ready` works only for the
-  current scope. -->
-<iframe id="payment-app-iframe" src="payment-app/install.html" onload="installPaymentHandler(this)"></iframe>
+     payment handler scoped windows after payment. Use an iframe because
+     `navigator.serviceWorker.ready` returns the service worker for the current
+     page. -->
+<iframe id="payment-app-iframe" src="payment-app/install.html" onload="installAndActivateServiceWorker(this)"></iframe>

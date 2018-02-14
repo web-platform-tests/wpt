@@ -84,6 +84,7 @@ class TestEnvironment(object):
         self.cache_manager = multiprocessing.Manager()
         self.stash = serve.stash.StashServer()
         self.env_extras = env_extras
+        self.env_extras_cms = None
 
 
     def __enter__(self):
@@ -96,8 +97,15 @@ class TestEnvironment(object):
         ports = serve.get_ports(self.config, self.ssl_env)
         self.config = serve.normalise_config(self.config, ports)
 
-        for cm in self.env_extras:
-            cm.__enter__(self.options, self.config)
+        assert self.env_extras_cms == None, (
+            "A TestEnvironment object cannot be nested")
+
+        self.env_extras_cms = []
+
+        for env in self.env_extras:
+            cm = env.use(self.options, self.config)
+            cm.__enter__()
+            self.env_extras_cms.append(cm)
 
         self.servers = serve.start(self.config, self.ssl_env,
                                    self.get_routes())
@@ -111,8 +119,11 @@ class TestEnvironment(object):
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
                 server.kill()
-        for cm in self.env_extras:
+        for cm in self.env_extras_cms:
             cm.__exit__(exc_type, exc_val, exc_tb)
+
+        self.env_extras_cms = None
+
         self.cache_manager.__exit__(exc_type, exc_val, exc_tb)
         self.ssl_env.__exit__(exc_type, exc_val, exc_tb)
         self.stash.__exit__()

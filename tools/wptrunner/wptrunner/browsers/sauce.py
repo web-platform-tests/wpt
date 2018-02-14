@@ -134,7 +134,26 @@ class SauceConnect():
         self.sc_process = None
         self.temp_dir = None
 
-    def __enter__(self, env_options, env_config):
+        # Because this class implements the context manager protocol, it is
+        # possible for instances to be provided to the `with` statement
+        # directly. The `use` method is defined so that data which is not
+        # available during object initialization can be provided prior to this
+        # moment. The `use` method must be invoked in preparation for the
+        # context manager protocol, but this additional constraint is not
+        # itself part of the protocol. A dedicated flag is maintained in order
+        # to provide a more descriptive error to callers who fail to honor this
+        # constraint.
+        self.use_invoked = False
+
+    def use(self, env_options, env_config):
+        self.use_invoked = True
+        self.env_config = env_config
+
+        return self
+
+    def __enter__(self):
+        assert self.use_invoked, 'The `use` method has been invoked.'
+
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()
             get_tar("https://saucelabs.com/downloads/sc-4.4.9-linux.tar.gz", self.temp_dir)
@@ -152,7 +171,7 @@ class SauceConnect():
             "--metrics-address=0.0.0.0:9876",
             "--readyfile=./sauce_is_ready",
             "--tunnel-domains",
-            ",".join(env_config['domains'].values())
+            ",".join(self.env_config['domains'].values())
         ])
 
         # Timeout config vars

@@ -117,7 +117,13 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"external_host": "web-platform.test",
+    # > The host is deliberately not the default on Firefox, because Firefox is
+    # > set to always resolve the specified domains to localhost through its
+    # > `network.dns.localDomains` pref.
+    #
+    # https://github.com/w3c/web-platform-tests/pull/9480
+    return {"host": "127.0.0.1",
+            "external_host": "web-platform.test",
             "bind_hostname": "false",
             "certificate_domain": "web-platform.test",
             "supports_debugger": True}

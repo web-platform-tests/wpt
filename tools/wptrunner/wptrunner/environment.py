@@ -133,6 +133,9 @@ class TestEnvironment(object):
             "ssl": {}
         }
 
+        if "host" in self.options:
+            local_config["host"] = self.options["host"]
+
         with open(default_config_path) as f:
             default_config = json.load(f)
 

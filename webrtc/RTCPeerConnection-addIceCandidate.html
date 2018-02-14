@@ -334,6 +334,15 @@ a=rtcp-rsize
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
       promise_rejects(t, new TypeError(),
+                      pc.addIceCandidate(null)));
+  }, 'Add null candidate should reject with TypeError');
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+
+    return pc.setRemoteDescription(sessionDesc)
+    .then(() =>
+      promise_rejects(t, new TypeError(),
         pc.addIceCandidate({
           candidate: candidateStr1
         })));

@@ -20,7 +20,7 @@ run_applicable_tox () {
 
 
 if [[ $(./wpt test-jobs --includes tools_unittest; echo $?) -eq 0 ]]; then
-    pip install -U tox codecov
+    pip install -U tox codecov coverage
     cd tools
     run_applicable_tox
     cd $WPT_ROOT
@@ -36,3 +36,6 @@ else
     echo "Skipping wptrunner unittest"
 fi
 
+cd "$WPT_ROOT/tools"
+coverage combine . wptrunner/
+codecov

@@ -565,3 +565,7 @@ interface DOMTokenList {
   [CEReactions] stringifier attribute DOMString value;
   //  iterable<DOMString>;
 };
+
+partial interface Window {
+  [Replaceable] readonly attribute any event;
+};

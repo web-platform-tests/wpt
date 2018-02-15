@@ -44,6 +44,7 @@ function doTest([html, dom]) {
     HTMLCollection: ['document.body.children'],
     DOMTokenList: ['document.body.classList'],
   });
+  idlArray.add_untested_idls("[PrimaryGlobal] interface Window {};");
   idlArray.test();
 }
 

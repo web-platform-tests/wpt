@@ -133,26 +133,22 @@ class SauceConnect():
         self.sauce_connect_binary = kwargs.get("sauce_connect_binary")
         self.sc_process = None
         self.temp_dir = None
+        self.env_config = None
 
+    def __call__(self, env_options, env_config):
+        self.env_config = env_config
+
+        return self
+
+    def __enter__(self):
         # Because this class implements the context manager protocol, it is
         # possible for instances to be provided to the `with` statement
         # directly. The `use` method is defined so that data which is not
         # available during object initialization can be provided prior to this
         # moment. The `use` method must be invoked in preparation for the
         # context manager protocol, but this additional constraint is not
-        # itself part of the protocol. A dedicated flag is maintained in order
-        # to provide a more descriptive error to callers who fail to honor this
-        # constraint.
-        self.use_invoked = False
-
-    def use(self, env_options, env_config):
-        self.use_invoked = True
-        self.env_config = env_config
-
-        return self
-
-    def __enter__(self):
-        assert self.use_invoked, 'The `use` method has been invoked.'
+        # itself part of the protocol.
+        assert self.env_config is not None, 'The `use` method has been invoked.'
 
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()
@@ -198,6 +194,7 @@ class SauceConnect():
             raise SauceException("Unable to start Sauce Connect Proxy. Process exited with code %s", self.sc_process.returncode)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.env_config = None
         self.sc_process.terminate()
         if self.temp_dir and os.path.exists(self.temp_dir):
             try:

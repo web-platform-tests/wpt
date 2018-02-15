@@ -17,7 +17,7 @@ class FontInstaller(object):
         self.created_dir = False
         self.fonts = fonts
 
-    def use(self, env_options=None, env_config=None):
+    def __call__(self, env_options=None, env_config=None):
         return self
 
     def __enter__(self):

@@ -103,7 +103,7 @@ class TestEnvironment(object):
         self.env_extras_cms = []
 
         for env in self.env_extras:
-            cm = env.use(self.options, self.config)
+            cm = env(self.options, self.config)
             cm.__enter__()
             self.env_extras_cms.append(cm)
 

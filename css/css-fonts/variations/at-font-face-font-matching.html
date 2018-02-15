@@ -82,7 +82,7 @@
             promise_test(
                 assert => once_fonts_are_ready.then(assert => {
                     verifyFont("descriptorPriorityTest", testCase.weight, testCase.style, testCase.stretch, testCase.expectedFamily);
-                }), 
+                }),
                 "Descriptor mathcing priority: " + testCase.description
             );
         });
@@ -108,7 +108,7 @@
                                 let testStretch = (descriptorName == "font-stretch") ? testCase.value : "normal";
 
                                 verifyFont("MatchTestFamily", testWeight, testStyle, testStretch, "'W100'");
-                            }), 
+                            }),
                             "Matching " + descriptorName + ": '" + testCase.value + "' should prefer '" + expectedMatch + "' over '" + unexpectedMatch + "'");
                     }
             });

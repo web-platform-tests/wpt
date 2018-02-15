@@ -4,7 +4,6 @@
     <title>Testing new font-matching algorithm for font-weight values introduced in CSS Fonts level 4</title>
     <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-matching-algorithm" />
     <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
 
@@ -106,7 +105,7 @@
         // -- this should not be necessary if the fonts are installed as required
         // -- but if they are not, the test is otherwise unstable
         var once_fonts_are_ready = (document.fonts ? document.fonts.ready : new Promise(function(ready) { window.onload = time => [...document.querySelectorAll('body > span:nth-child(1) > span')].every(e => e.offsetWidth > 20) ? ready() : requestAnimationFrame(window.onload) }));
-        
+
         var testcases = document.querySelector("#testcases");
         var testcaseTemplate = document.querySelector('.testcase'); testcaseTemplate.remove();
         testFontFaceMatch.forEach(function(element) {

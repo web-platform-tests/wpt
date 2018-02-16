@@ -1,7 +1,9 @@
 import os
+from typing import Text
 
 
 def expected_path(metadata_path, test_path):
+    # type: (str, Text) -> Text
     """Path to the expectation data file for a given test path.
 
     This is defined as metadata_path + relative_test_path + .ini

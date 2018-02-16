@@ -4,6 +4,14 @@ import socket
 from abc import ABCMeta, abstractmethod
 
 from ..wptcommandline import require_arg
+from mozlog.structuredlog import StructuredLogger
+from typing import Union
+from typing import Any
+from typing import Dict
+from wptrunner.wpttest import ReftestTest
+from wptrunner.wpttest import TestharnessTest
+from typing import Tuple
+from typing import Optional
 
 here = os.path.split(__file__)[0]
 
@@ -61,6 +69,7 @@ class Browser(object):
     init_timeout = 30
 
     def __init__(self, logger):
+        # type: (StructuredLogger) -> None
         """Abstract class serving as the basis for Browser implementations.
 
         The Browser is used in the TestRunnerManager to start and stop the browser
@@ -73,17 +82,21 @@ class Browser(object):
         self.logger = logger
 
     def __enter__(self):
+        # type: () -> Browser
         self.setup()
         return self
 
     def __exit__(self, *args, **kwargs):
+        # type: (*None, **Any) -> None
         self.cleanup()
 
     def setup(self):
+        # type: () -> None
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
     def settings(self, test):
+        # type: (Union[ReftestTest, TestharnessTest]) -> Dict
         return {}
 
     @abstractmethod
@@ -111,10 +124,12 @@ class Browser(object):
         raise NotImplementedError("ssl testing not supported")
 
     def cleanup(self):
+        # type: () -> None
         """Browser-specific cleanup that is run after the testrun is finished"""
         pass
 
     def executor_browser(self):
+        # type: () -> Tuple[type, Dict]
         """Returns the ExecutorBrowser subclass for this Browser subclass and the keyword arguments
         with which it should be instantiated"""
         return ExecutorBrowser, {}
@@ -131,18 +146,22 @@ class Browser(object):
 
 class NullBrowser(Browser):
     def __init__(self, logger, **kwargs):
+        # type: (StructuredLogger, **Any) -> None
         super(NullBrowser, self).__init__(logger)
 
     def start(self, **kwargs):
+        # type: (**Any) -> None
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
         actually own the browser process (e.g. Servo where we start one browser
         per test)"""
         pass
 
     def stop(self, force=False):
+        # type: (bool) -> None
         pass
 
     def pid(self):
+        # type: () -> Optional[Any]
         return None
 
     def is_alive(self):

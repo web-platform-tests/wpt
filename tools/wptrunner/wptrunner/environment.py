@@ -10,6 +10,18 @@ from mozlog import get_default_logger, handlers, proxy
 
 from wptlogging import LogLevelRewriter
 from wptserve.handlers import StringHandler
+from collections import OrderedDict
+from sslutils.openssl import OpenSSLEnvironment
+from typing import Dict
+from typing import List
+from typing import Any
+from typing import Text
+from typing import Tuple
+from typing import Union
+from wptserve.handlers import ErrorHandler
+from wptserve.handlers import FileHandler
+from wptserve.handlers import PythonScriptHandler
+from mozlog.structuredlog import StructuredLogger
 
 here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
@@ -19,6 +31,7 @@ sslutils = None
 
 
 def do_delayed_imports(logger, test_paths):
+    # type: (StructuredLogger, OrderedDict) -> None
     global serve, sslutils
 
     serve_root = serve_path(test_paths)
@@ -44,10 +57,12 @@ def do_delayed_imports(logger, test_paths):
 
 
 def serve_path(test_paths):
+    # type: (OrderedDict) -> str
     return test_paths["/"]["tests_path"]
 
 
 def get_ssl_kwargs(**kwargs):
+    # type: (**Any) -> Dict[str, str]
     if kwargs["ssl_type"] == "openssl":
         args = {"openssl_binary": kwargs["openssl_binary"]}
     elif kwargs["ssl_type"] == "pregenerated":
@@ -60,6 +75,7 @@ def get_ssl_kwargs(**kwargs):
 
 
 def ssl_env(logger, **kwargs):
+    # type: (StructuredLogger, **Any) -> OpenSSLEnvironment
     ssl_env_cls = sslutils.environments[kwargs["ssl_type"]]
     return ssl_env_cls(logger, **get_ssl_kwargs(**kwargs))
 
@@ -69,7 +85,15 @@ class TestEnvironmentError(Exception):
 
 
 class TestEnvironment(object):
-    def __init__(self, test_paths, ssl_env, pause_after_test, debug_info, options, env_extras):
+    def __init__(self,
+                 test_paths,  # type: OrderedDict
+                 ssl_env,  # type: OpenSSLEnvironment
+                 pause_after_test,  # type: bool
+                 debug_info,  # type: None
+                 options,  # type: Dict[str, str]
+                 env_extras,  # type: List
+                 ):
+        # type: (...) -> None
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
         self.test_paths = test_paths
@@ -87,6 +111,7 @@ class TestEnvironment(object):
 
 
     def __enter__(self):
+        # type: () -> TestEnvironment
         self.stash.__enter__()
         self.ssl_env.__enter__()
         self.cache_manager.__enter__()
@@ -103,6 +128,7 @@ class TestEnvironment(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        # type: (None, None, None) -> None
         self.process_interrupts()
 
         for scheme, servers in self.servers.iteritems():
@@ -118,9 +144,11 @@ class TestEnvironment(object):
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     def process_interrupts(self):
+        # type: () -> None
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     def load_config(self):
+        # type: () -> Dict[Text, Any]
         default_config_path = os.path.join(serve_path(self.test_paths), "config.default.json")
         local_config_path = os.path.join(here, "config.json")
 
@@ -129,6 +157,7 @@ class TestEnvironment(object):
 
         with open(local_config_path) as f:
             data = f.read()
+            self.options['host'] = 'web-platform.test'
             local_config = json.loads(data % self.options)
 
         #TODO: allow non-default configuration for ssl
@@ -155,6 +184,7 @@ class TestEnvironment(object):
         return config
 
     def setup_server_logging(self):
+        # type: () -> None
         server_logger = get_default_logger(component="wptserve")
         assert server_logger is not None
         log_filter = handlers.LogLevelFilter(lambda x:x, "info")
@@ -173,6 +203,7 @@ class TestEnvironment(object):
             pass
 
     def get_routes(self):
+        # type: () -> List[Tuple[str, str, Union[ErrorHandler, FileHandler, PythonScriptHandler]]]
         route_builder = serve.RoutesBuilder()
 
         for path, format_args, content_type, route in [
@@ -202,6 +233,7 @@ class TestEnvironment(object):
         return route_builder.get_routes()
 
     def ensure_started(self):
+        # type: () -> None
         # Pause for a while to ensure that the server has a chance to start
         for _ in xrange(20):
             failed = self.test_servers()
@@ -211,6 +243,7 @@ class TestEnvironment(object):
         raise EnvironmentError("Servers failed to start (scheme:port): %s" % ("%s:%s" for item in failed))
 
     def test_servers(self):
+        # type: () -> None
         failed = []
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:

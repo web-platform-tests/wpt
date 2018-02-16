@@ -2,6 +2,18 @@ import os
 from collections import defaultdict
 
 from wptmanifest.parser import atoms
+from manifest.item import WebdriverSpecTest
+from typing import List
+from typing import Text
+from typing import Dict
+from manifest.item import RefTest as Manifest_RefTest
+from typing import Optional
+from typing import Union
+from typing import Any
+from typing import Iterator
+from typing import Set
+from typing import Type
+from manifest.item import TestharnessTest as Manifest_TestharnessTest
 
 atom_reset = atoms["Reset"]
 enabled_tests = set(["testharness", "reftest", "wdspec"])
@@ -60,11 +72,13 @@ class WdspecSubtestResult(SubtestResult):
 
 
 def get_run_info(metadata_root, product, **kwargs):
+    # type: (str, str, **Any) -> RunInfo
     return RunInfo(metadata_root, product, **kwargs)
 
 
 class RunInfo(dict):
     def __init__(self, metadata_root, product, debug, extras=None):
+        # type: (str, str, None, Dict) -> None
         import mozinfo
 
         self._update_mozinfo(metadata_root)
@@ -85,12 +99,13 @@ class RunInfo(dict):
             self.update(extras)
 
     def _update_mozinfo(self, metadata_root):
+        # type: (str) -> None
         """Add extra build information from a mozinfo.json file in a parent
         directory"""
         import mozinfo
 
         path = metadata_root
-        dirs = set()
+        dirs = set()  # type: Set[str]
         while path != os.path.expanduser('~'):
             if path in dirs:
                 break
@@ -102,15 +117,23 @@ class RunInfo(dict):
 
 class Test(object):
 
-    result_cls = None
-    subtest_result_cls = None
-    test_type = None
+    result_cls = None  # type: Optional[Type[Result]]
+    subtest_result_cls = None  # type: Optional[Type[SubtestResult]]
+    test_type = None  # type: Optional[str]
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http"):
+    def __init__(self,
+                 tests_root,  # type: str
+                 url,  # type: Text
+                 inherit_metadata,  # type: List
+                 test_metadata,  # type: None
+                 timeout=None,  # type: Optional[int]
+                 path=None,  # type: Optional[Text]
+                 protocol="http",  # type: str
+                 ):
+        # type: (...) -> None
         self.tests_root = tests_root
         self.url = url
         self._inherit_metadata = inherit_metadata
@@ -120,15 +143,18 @@ class Test(object):
         self.environment = {"protocol": protocol, "prefs": self.prefs}
 
     def __eq__(self, other):
+        # type: (Test) -> bool
         return self.id == other.id
 
     def update_metadata(self, metadata=None):
+        # type: (Dict) -> Dict
         if metadata is None:
             metadata = {}
         return metadata
 
     @classmethod
     def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+        # type: (WebdriverSpecTest, List, None) -> Test
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         return cls(manifest_item.source_file.tests_root,
@@ -141,6 +167,7 @@ class Test(object):
 
     @property
     def id(self):
+        # type: () -> Text
         return self.url
 
     @property
@@ -152,12 +179,14 @@ class Test(object):
         return os.path.join(self.tests_root, self.path)
 
     def _get_metadata(self, subtest=None):
+        # type: (Optional[Text]) -> Optional[Any]
         if self._test_metadata is not None and subtest is not None:
             return self._test_metadata.get_subtest(subtest)
         else:
             return self._test_metadata
 
     def itermeta(self, subtest=None):
+        # type: (Optional[Text]) -> Iterator
         for metadata in self._inherit_metadata:
             yield metadata
 
@@ -169,6 +198,7 @@ class Test(object):
                     yield subtest_meta
 
     def disabled(self, subtest=None):
+        # type: (Optional[Text]) -> Optional[Any]
         for meta in self.itermeta(subtest):
             disabled = meta.disabled
             if disabled is not None:
@@ -177,6 +207,7 @@ class Test(object):
 
     @property
     def restart_after(self):
+        # type: () -> bool
         for meta in self.itermeta(None):
             restart_after = meta.restart_after
             if restart_after is not None:
@@ -208,7 +239,8 @@ class Test(object):
 
     @property
     def prefs(self):
-        prefs = {}
+        # type: () -> Dict
+        prefs = {}  # type: Dict
         for meta in self.itermeta():
             meta_prefs = meta.prefs
             if atom_reset in prefs:
@@ -219,6 +251,7 @@ class Test(object):
         return prefs
 
     def expected(self, subtest=None):
+        # type: (Optional[Text]) -> str
         if subtest is None:
             default = self.result_cls.default_expected
         else:
@@ -242,8 +275,17 @@ class TestharnessTest(Test):
     subtest_result_cls = TestharnessSubtestResult
     test_type = "testharness"
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", testdriver=False):
+    def __init__(self,
+                 tests_root,  # type: str
+                 url,  # type: Text
+                 inherit_metadata,  # type: List
+                 test_metadata,  # type: None
+                 timeout=None,  # type: int
+                 path=None,  # type: Text
+                 protocol="http",  # type: str
+                 testdriver=False,  # type: bool
+                 ):
+        # type: (...) -> None
         Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol)
 
@@ -251,6 +293,7 @@ class TestharnessTest(Test):
 
     @classmethod
     def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+        # type: (Manifest_TestharnessTest, List, None) -> TestharnessTest
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
@@ -265,6 +308,7 @@ class TestharnessTest(Test):
 
     @property
     def id(self):
+        # type: () -> Text
         return self.url
 
 
@@ -280,8 +324,19 @@ class ReftestTest(Test):
     result_cls = ReftestResult
     test_type = "reftest"
 
-    def __init__(self, tests_root, url, inherit_metadata, test_metadata, references,
-                 timeout=None, path=None, viewport_size=None, dpi=None, protocol="http"):
+    def __init__(self,
+                 tests_root,  # type: str
+                 url,  # type: Text
+                 inherit_metadata,  # type: List
+                 test_metadata,  # type: None
+                 references,  # type: List
+                 timeout=None,  # type: Optional[int]
+                 path=None,  # type: Optional[Text]
+                 viewport_size=None,  # type: None
+                 dpi=None,  # type: None
+                 protocol="http",  # type: str
+                 ):
+        # type: (...) -> None
         Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol)
 
@@ -300,6 +355,7 @@ class ReftestTest(Test):
                       test_metadata,
                       nodes=None,
                       references_seen=None):
+        # type: (Manifest_RefTest, List, None, Optional[Dict], Optional[Set]) -> ReftestTest
 
         timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
 
@@ -355,7 +411,10 @@ class ReftestTest(Test):
 
         return node
 
-    def update_metadata(self, metadata):
+    def update_metadata(self, metadata=None):
+        # type: (Dict[str, Dict]) -> Dict[str, Dict]
+        if metadata is None:
+            metadata = {}
         if "url_count" not in metadata:
             metadata["url_count"] = defaultdict(int)
         for reference, _ in self.references:
@@ -368,6 +427,7 @@ class ReftestTest(Test):
 
     @property
     def id(self):
+        # type: () -> Text
         return self.url
 
     @property
@@ -388,9 +448,13 @@ class WdspecTest(Test):
 manifest_test_cls = {"reftest": ReftestTest,
                      "testharness": TestharnessTest,
                      "manual": ManualTest,
-                     "wdspec": WdspecTest}
+                     "wdspec": WdspecTest}  # type: Dict[str, Type[Test]]
 
 
-def from_manifest(manifest_test, inherit_metadata, test_metadata):
+def from_manifest(manifest_test,  # type: Union[Manifest_RefTest, Manifest_TestharnessTest]
+                  inherit_metadata,  # type: List
+                  test_metadata,  # type: None
+                  ):
+    # type: (...) -> Test
     test_cls = manifest_test_cls[manifest_test.item_type]
     return test_cls.from_manifest(manifest_test, inherit_metadata, test_metadata)

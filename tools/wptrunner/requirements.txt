@@ -3,3 +3,4 @@ mozinfo >= 0.7
 mozlog >= 3.5
 mozdebug >= 0.1
 urllib3[secure]
+typing

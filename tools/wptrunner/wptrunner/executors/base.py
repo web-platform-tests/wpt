@@ -8,6 +8,10 @@ import urlparse
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
+from multiprocessing.managers import SyncManager
+from typing import Any
+from typing import Dict
+from typing import Text
 
 here = os.path.split(__file__)[0]
 
@@ -17,6 +21,7 @@ extra_timeout = 5  # seconds
 
 
 def executor_kwargs(test_type, server_config, cache_manager, **kwargs):
+    # type: (str, Dict[Text, Any], SyncManager, **Any) -> Dict[str, Any]
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1

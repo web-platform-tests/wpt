@@ -1,3 +1,8 @@
+from typing import Optional
+from typing import Text
+from typing import Union
+from typing import List
+
 class NodeVisitor(object):
     def visit(self, node):
         # This is ugly as hell, but we don't have multimethods and
@@ -9,9 +14,10 @@ class NodeVisitor(object):
 
 class Node(object):
     def __init__(self, data=None):
+        # type: (Optional[Text]) -> None
         self.data = data
-        self.parent = None
-        self.children = []
+        self.parent = None  # type: Optional[Node]
+        self.children = []  # type: List[Node]
 
     def append(self, other):
         other.parent = self
@@ -48,6 +54,7 @@ class Node(object):
 
 class DataNode(Node):
     def append(self, other):
+        # type: (Node) -> None
         # Append that retains the invariant that child data nodes
         # come after child nodes of other types
         other.parent = self
@@ -64,6 +71,7 @@ class DataNode(Node):
 
 class KeyValueNode(Node):
     def append(self, other):
+        # type: (Node) -> None
         # Append that retains the invariant that conditional nodes
         # come before unconditional nodes
         other.parent = self

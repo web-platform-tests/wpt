@@ -9,6 +9,11 @@ import traceback
 import urlparse
 
 import mozprocess
+from mozlog.structuredlog import StructuredLogger
+from typing import List
+from mypy_extensions import NoReturn
+from typing import Set
+from typing import Tuple
 
 
 __all__ = ["SeleniumServer", "ChromeDriverServer", "OperaDriverServer",
@@ -20,10 +25,18 @@ class WebDriverServer(object):
     __metaclass__ = abc.ABCMeta
 
     default_base_path = "/"
-    _used_ports = set()
+    _used_ports = set()  # type: Set[int]
 
-    def __init__(self, logger, binary, host="127.0.0.1", port=None,
-                 base_path="", env=None, args=None):
+    def __init__(self,
+                 logger,  # type: StructuredLogger
+                 binary,  # type: str
+                 host="127.0.0.1",  # type: str
+                 port=None,  # type: None
+                 base_path="",  # type: str
+                 env=None,  # type: None
+                 args=None,  # type: List
+                 ):
+        # type: (...) -> None
         if binary is None:
             raise ValueError("WebDriver server binary must be given "
                              "to --webdriver-binary argument")
@@ -47,12 +60,14 @@ class WebDriverServer(object):
         """Returns the full command for starting the server process as a list."""
 
     def start(self, block=False):
+        # type: (bool) -> None
         try:
             self._run(block)
         except KeyboardInterrupt:
             self.stop()
 
     def _run(self, block):
+        # type: (bool) -> None
         self._cmd = self.make_command()
         self._proc = mozprocess.ProcessHandler(
             self._cmd,
@@ -82,26 +97,31 @@ class WebDriverServer(object):
             self._proc.wait()
 
     def stop(self, force=False):
+        # type: (bool) -> int
         if self.is_alive:
             return self._proc.kill()
         return not self.is_alive
 
     @property
     def is_alive(self):
+        # type: () -> bool
         return hasattr(self._proc, "proc") and self._proc.poll() is None
 
     def on_output(self, line):
+        # type: (str) -> None
         self.logger.process_output(self.pid,
                                    line.decode("utf8", "replace"),
                                    command=" ".join(self._cmd))
 
     @property
     def pid(self):
+        # type: () -> int
         if self._proc is not None:
             return self._proc.pid
 
     @property
     def url(self):
+        # type: () -> str
         return "http://%s:%i%s" % (self.host, self.port, self.base_path)
 
     @property
@@ -112,6 +132,7 @@ class WebDriverServer(object):
 
     @staticmethod
     def _find_next_free_port():
+        # type: () -> int
         port = get_free_port(4444, exclude=WebDriverServer._used_ports)
         WebDriverServer._used_ports.add(port)
         return port
@@ -131,6 +152,7 @@ class ChromeDriverServer(WebDriverServer):
             self, logger, binary, port=port, base_path=base_path, args=args)
 
     def make_command(self):
+        # type: () -> List[str]
         return [self.binary,
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else ""] + self._args
@@ -197,6 +219,7 @@ class ServoDriverServer(WebDriverServer):
 
 
 def cmd_arg(name, value=None):
+    # type: (str, str) -> str
     prefix = "-" if platform.system() == "Windows" else "--"
     rv = prefix + name
     if value is not None:
@@ -205,6 +228,7 @@ def cmd_arg(name, value=None):
 
 
 def get_free_port(start_port, exclude=None):
+    # type: (int, Set[int]) -> NoReturn
     """Get the first port number after start_port (inclusive) that is
     not currently bound.
 
@@ -227,6 +251,7 @@ def get_free_port(start_port, exclude=None):
 
 
 def wait_for_service(addr, timeout=15):
+    # type: (Tuple[str, int], int) -> NoReturn
     """Waits until network service given as a tuple of (host, port) becomes
     available or the `timeout` duration is reached, at which point
     ``socket.error`` is raised."""

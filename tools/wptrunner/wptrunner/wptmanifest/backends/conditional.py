@@ -1,17 +1,27 @@
 import operator
 
-from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode
+from ..node import NodeVisitor, Node, DataNode, ConditionalNode, KeyValueNode, ListNode, ValueNode
 from ..parser import parse
+from typing import Text
+from typing import Callable
+from wptrunner.wptmanifest.node import ValueNode
+from typing import Dict
+from typing import Any
+from wptrunner.wptmanifest.node import DataNode
+from typing import Optional
+from typing import Union
+from typing import List
 
 
 class ConditionalValue(object):
     def __init__(self, node, condition_func):
+        # type: (ValueNode, Callable) -> None
         self.node = node
         self.condition_func = condition_func
         if isinstance(node, ConditionalNode):
             assert len(node.children) == 2
-            self.condition_node = self.node.children[0]
-            self.value_node = self.node.children[1]
+            self.condition_node = self.node.children[0]  # type: Optional[Node]
+            self.value_node = self.node.children[1]  # type: Node
         else:
             assert isinstance(node, (ValueNode, ListNode))
             self.condition_node = None
@@ -19,6 +29,7 @@ class ConditionalValue(object):
 
     @property
     def value(self):
+        # type: () -> Union[Text, List[Text]]
         if isinstance(self.value_node, ValueNode):
             return self.value_node.data
         else:
@@ -26,9 +37,11 @@ class ConditionalValue(object):
 
     @value.setter
     def value(self, value):
+        # type: (str) -> None
         self.value_node.data = value
 
     def __call__(self, run_info):
+        # type: (Dict[str, str]) -> bool
         return self.condition_func(run_info)
 
     def set_value(self, value):
@@ -179,10 +192,11 @@ class Compiler(NodeVisitor):
 
 class ManifestItem(object):
     def __init__(self, node=None, **kwargs):
+        # type: (DataNode, **Any) -> None
         self.node = node
-        self.parent = None
-        self.children = []
-        self._data = {}
+        self.parent = None  # type: Optional[ManifestItem]
+        self.children = []  # type: List[ManifestItem]
+        self._data = {}  # type: Dict[str, List[ConditionalValue]]
 
     def __repr__(self):
         return "<ManifestItem %s>" % (self.node.data)
@@ -204,6 +218,7 @@ class ManifestItem(object):
 
     @property
     def root(self):
+        # type: () -> ManifestItem
         node = self
         while node.parent is not None:
             node = node.parent
@@ -211,15 +226,18 @@ class ManifestItem(object):
 
     @property
     def name(self):
+        # type: () -> Text
         return self.node.data
 
     def has_key(self, key):
+        # type: (str) -> bool
         for node in [self, self.root]:
             if key in node._data:
                 return True
         return False
 
     def get(self, key, run_info=None):
+        # type: (str, Dict[str, str]) -> Union[unicode, List[unicode]]
         if run_info is None:
             run_info = {}
 
@@ -235,6 +253,7 @@ class ManifestItem(object):
         raise KeyError
 
     def set(self, key, value, condition=None):
+        # type: (str, str, None) -> None
         # First try to update the existing value
         if key in self._data:
             cond_values = self._data[key]
@@ -280,6 +299,7 @@ class ManifestItem(object):
         self._data[node.data] = values
 
     def append(self, child):
+        # type: (ManifestItem) -> ManifestItem
         self.children.append(child)
         child.parent = self
         if child.node.parent != self.node:

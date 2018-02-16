@@ -5,6 +5,10 @@ from wptmanifest.backends import static
 from wptmanifest.backends.static import ManifestItem
 
 import expected
+from typing import Any
+from typing import Optional
+from typing import Text
+from wptrunner.wpttest import RunInfo
 
 """Manifest structure used to store expected results of a test.
 
@@ -225,6 +229,7 @@ class SubtestNode(TestNode):
 
 
 def get_manifest(metadata_root, test_path, url_base, run_info):
+    # type: (str, Text, Text, RunInfo) -> Optional[ExpectedManifest]
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
@@ -246,6 +251,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info):
         return None
 
 def get_dir_manifest(path, run_info):
+    # type: (Text, RunInfo) -> Optional[ExpectedManifest]
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 

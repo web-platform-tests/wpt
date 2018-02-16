@@ -8,9 +8,16 @@ from distutils.spawn import find_executable
 import config
 import wpttest
 import formatters
+from typing import Any
+from typing import Dict
+from argparse import ArgumentParser
+from typing import List
+from typing import Optional
+from typing import Callable
 
 
 def abs_path(path):
+    # type: (str) -> str
     return os.path.abspath(os.path.expanduser(path))
 
 
@@ -25,6 +32,7 @@ def url_or_path(path):
 
 
 def require_arg(kwargs, name, value_func=None):
+    # type: (Dict[str, Any], str, Callable[[Any], bool]) -> None
     if value_func is None:
         value_func = lambda x: x is not None
 
@@ -34,6 +42,7 @@ def require_arg(kwargs, name, value_func=None):
 
 
 def create_parser(product_choices=None):
+    # type: (None) -> ArgumentParser
     from mozlog import commandline
 
     import products
@@ -142,9 +151,9 @@ scheme host and port.""")
                               help="Extra argument for the WebDriver binary")
 
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
-                              help="Path to root directory containing test metadata"),
+                              help="Path to root directory containing test metadata")
     config_group.add_argument("--tests", action="store", type=abs_path, dest="tests_root",
-                              help="Path to root directory containing test files"),
+                              help="Path to root directory containing test files")
     config_group.add_argument("--run-info", action="store", type=abs_path,
                               help="Path to directory containing extra json files to add to run info")
     config_group.add_argument("--product", action="store", choices=product_choices,
@@ -256,6 +265,7 @@ scheme host and port.""")
 
 
 def set_from_config(kwargs):
+    # type: (Dict[str, Any]) -> None
     if kwargs["config"] is None:
         config_path = config.path()
     else:
@@ -301,8 +311,9 @@ def set_from_config(kwargs):
 
 
 def get_test_paths(config):
+    # type: (OrderedDict) -> OrderedDict
     # Set up test_paths
-    test_paths = OrderedDict()
+    test_paths = OrderedDict()  # type: OrderedDict[str, Dict[str, str]]
 
     for section in config.iterkeys():
         if section.startswith("manifest:"):
@@ -316,8 +327,9 @@ def get_test_paths(config):
 
 
 def exe_path(name):
+    # type: (Optional[str]) -> Optional[str]
     if name is None:
-        return
+        return None
 
     path = find_executable(name)
     if path and os.access(path, os.X_OK):
@@ -327,6 +339,7 @@ def exe_path(name):
 
 
 def check_args(kwargs):
+    # type: (Dict[str, Optional[Any]]) -> Dict[str, Any]
     set_from_config(kwargs)
 
     for test_paths in kwargs["test_paths"].itervalues():
@@ -505,6 +518,7 @@ def create_parser_reduce(product_choices=None):
 
 
 def parse_args():
+    # type: () -> Dict[str, Any]
     parser = create_parser()
     rv = vars(parser.parse_args())
     check_args(rv)

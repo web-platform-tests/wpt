@@ -7,27 +7,34 @@ from Queue import Empty
 from collections import defaultdict, OrderedDict, deque
 from multiprocessing import Queue
 
+from manifest import manifest
+from manifest import update as manifest_update
+from manifest.download import download_from_github
+from manifest import log as manifest_log
+
 import manifestinclude
 import manifestexpected
 import wpttest
 from mozlog import structured
-
-manifest = None
-manifest_update = None
-download_from_github = None
-manifest_log = None
-
-def do_delayed_imports():
-    # This relies on an already loaded module having set the sys.path correctly :(
-    global manifest, manifest_update, download_from_github, manifest_log
-    from manifest import manifest
-    from manifest import update as manifest_update
-    from manifest.download import download_from_github
-    from manifest import log as manifest_log
-
+from typing import List
+from typing import Text
+from typing import Any
+from typing import Union
+from wptrunner.wpttest import ReftestTest
+from wptrunner.wpttest import TestharnessTest
+from wptrunner.wpttest import WdspecTest
+from manifest.item import Test as Manifest_Test
+from typing import Iterator
+from typing import Set
+from typing import Tuple
+from manifest.manifest import Manifest
+from typing import Dict
+from wptrunner.wpttest import RunInfo
+from typing import Optional
 
 class TestChunker(object):
     def __init__(self, total_chunks, chunk_number):
+        # type: (int, int) -> None
         self.total_chunks = total_chunks
         self.chunk_number = chunk_number
         assert self.chunk_number <= self.total_chunks
@@ -40,10 +47,14 @@ class TestChunker(object):
 
 class Unchunked(TestChunker):
     def __init__(self, *args, **kwargs):
+        # type: (*int, **Any) -> None
         TestChunker.__init__(self, *args, **kwargs)
         assert self.total_chunks == 1
 
-    def __call__(self, manifest):
+    def __call__(self,
+                 manifest,  # type: List[Tuple[str, Text, Set[Manifest_Test]]]
+                 ):
+        # type: (...) -> Iterator[Tuple[str, Text, Set[Manifest_Test]]]
         for item in manifest:
             yield item
 
@@ -342,6 +353,7 @@ class EqualTimeChunker(TestChunker):
 
 class TestFilter(object):
     def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None):
+        # type: (Dict[Manifest, Dict[str, str]], List[str], None, None) -> None
         if manifest_path is not None and include is None:
             self.manifest = manifestinclude.get_manifest(manifest_path)
         else:
@@ -357,7 +369,10 @@ class TestFilter(object):
             for item in exclude:
                 self.manifest.add_exclude(test_manifests, item)
 
-    def __call__(self, manifest_iter):
+    def __call__(self,
+                 manifest_iter,  # type: Iterator
+                 ):
+        # type: (...) -> Iterator[Tuple[str, Text, Set[Manifest_Test]]]
         for test_type, test_path, tests in manifest_iter:
             include_tests = set()
             for test in tests:
@@ -378,7 +393,7 @@ class TagFilter(object):
 
 class ManifestLoader(object):
     def __init__(self, test_paths, force_manifest_update=False, manifest_download=False):
-        do_delayed_imports()
+        # type: (OrderedDict, bool, bool) -> None
         self.test_paths = test_paths
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
@@ -387,6 +402,7 @@ class ManifestLoader(object):
             self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
 
     def load(self):
+        # type: () -> Dict[Manifest, Dict[str, str]]
         rv = {}
         for url_base, paths in self.test_paths.iteritems():
             manifest_file = self.load_manifest(url_base=url_base,
@@ -431,6 +447,7 @@ class ManifestLoader(object):
         manifest.write(manifest_file, manifest_path)
 
     def load_manifest(self, tests_path, metadata_path, url_base="/"):
+        # type: (str, str, str) -> Manifest
         manifest_path = os.path.join(metadata_path, "MANIFEST.json")
         if (not os.path.exists(manifest_path) or
             self.force_manifest_update):
@@ -445,6 +462,7 @@ class ManifestLoader(object):
         return manifest_file
 
 def iterfilter(filters, iter):
+    # type: (List[TestFilter], Iterator) -> Iterator[Any]
     for f in filters:
         iter = f(iter)
     for item in iter:
@@ -452,16 +470,18 @@ def iterfilter(filters, iter):
 
 class TestLoader(object):
     def __init__(self,
-                 test_manifests,
-                 test_types,
-                 run_info,
-                 manifest_filters=None,
-                 meta_filters=None,
-                 chunk_type="none",
-                 total_chunks=1,
-                 chunk_number=1,
-                 include_https=True,
-                 skip_timeout=False):
+                 test_manifests,  # type: Dict[Manifest, Dict[str, str]]
+                 test_types,  # type: Set[str]
+                 run_info,  # type: RunInfo
+                 manifest_filters=None,  # type: List[TestFilter]
+                 meta_filters=None,  # type: List
+                 chunk_type="none",  # type: str
+                 total_chunks=1,  # type: int
+                 chunk_number=1,  # type: int
+                 include_https=True,  # type: bool
+                 skip_timeout=False,  # type: bool
+                 ):
+        # type: (...) -> None
 
         self.test_types = test_types
         self.run_info = run_info
@@ -470,8 +490,8 @@ class TestLoader(object):
         self.meta_filters = meta_filters if meta_filters is not None else []
 
         self.manifests = test_manifests
-        self.tests = None
-        self.disabled_tests = None
+        self.tests = None  # type: Optional[Dict[str, List[Manifest_Test]]]
+        self.disabled_tests = None  # type: Optional[Dict[str, List[Manifest_Test]]]
         self.include_https = include_https
         self.skip_timeout = skip_timeout
 
@@ -485,14 +505,15 @@ class TestLoader(object):
                         "equal_time": EqualTimeChunker}[chunk_type](total_chunks,
                                                                     chunk_number)
 
-        self._test_ids = None
+        self._test_ids = None  # type: Optional[List[Text]]
 
-        self.directory_manifests = {}
+        self.directory_manifests = {}  # type: Dict[str, manifestexpected.ExpectedManifest]
 
         self._load_tests()
 
     @property
     def test_ids(self):
+        # type: () -> List[Text]
         if self._test_ids is None:
             self._test_ids = []
             for test_dict in [self.disabled_tests, self.tests]:
@@ -500,7 +521,12 @@ class TestLoader(object):
                     self._test_ids += [item.id for item in test_dict[test_type]]
         return self._test_ids
 
-    def get_test(self, manifest_test, inherit_metadata, test_metadata):
+    def get_test(self,
+                 manifest_test,  # type: Manifest_Test
+                 inherit_metadata,  # type: List
+                 test_metadata,  # type: None
+                 ):
+        # type: (...) -> Manifest_Test
         if test_metadata is not None:
             inherit_metadata.append(test_metadata)
             test_metadata = test_metadata.get_test(manifest_test.id)
@@ -508,6 +534,7 @@ class TestLoader(object):
         return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata)
 
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
+        # type: (Manifest, str, Text) -> List
         rv = []
         path_parts = os.path.dirname(test_path).split(os.path.sep)
         for i in xrange(1,len(path_parts) + 1):
@@ -521,13 +548,15 @@ class TestLoader(object):
         return rv
 
     def load_metadata(self, test_manifest, metadata_path, test_path):
+        # type: (Manifest, str, Text) -> Tuple[List, None]
         inherit_metadata = self.load_dir_metadata(test_manifest, metadata_path, test_path)
         test_metadata = manifestexpected.get_manifest(
             metadata_path, test_path, test_manifest.url_base, self.run_info)
         return inherit_metadata, test_metadata
 
     def iter_tests(self):
-        manifest_items = []
+        # type: () -> Iterator[Tuple[Text, str, Manifest_Test]]
+        manifest_items = []  # type: List[Manifest_Test]
 
         for manifest in sorted(self.manifests.keys(), key=lambda x:x.url_base):
             manifest_iter = iterfilter(self.manifest_filters,
@@ -546,14 +575,20 @@ class TestLoader(object):
                                    self.iter_wpttest(inherit_metadata, test_metadata, tests)):
                 yield test_path, test_type, test
 
-    def iter_wpttest(self, inherit_metadata, test_metadata, tests):
+    def iter_wpttest(self,
+                     inherit_metadata,  # type: List
+                     test_metadata,  # type: None
+                     tests,  # type: Set[Manifest_Test]
+                     ):
+        # type: (...) -> Iterator[Manifest_Test]
         for manifest_test in tests:
             yield self.get_test(manifest_test, inherit_metadata, test_metadata)
 
     def _load_tests(self):
+        # type: () -> None
         """Read in the tests from the manifest file and add them to a queue"""
         tests = {"enabled":defaultdict(list),
-                 "disabled":defaultdict(list)}
+                 "disabled":defaultdict(list)}  # type: Dict[str, Dict[str, List[Manifest_Test]]]
 
         for test_path, test_type, test in self.iter_tests():
             enabled = not test.disabled()
@@ -582,6 +617,7 @@ class TestSource(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, test_queue):
+        # type: (Queue) -> None
         self.test_queue = test_queue
         self.current_group = None
         self.current_metadata = None
@@ -593,6 +629,7 @@ class TestSource(object):
         pass
 
     def group(self):
+        # type: () -> Tuple[deque, Dict[str, Dict]]
         if not self.current_group or len(self.current_group) == 0:
             try:
                 self.current_group, self.current_metadata = self.test_queue.get(block=False)
@@ -628,11 +665,15 @@ class GroupedSource(TestSource):
 
 class SingleTestSource(TestSource):
     @classmethod
-    def make_queue(cls, tests, **kwargs):
+    def make_queue(cls,
+                   tests,  # type: Union[List[ReftestTest], List[TestharnessTest], List[WdspecTest]]
+                   **kwargs  # type: Any
+                   ):
+        # type: (...) -> Queue
         test_queue = Queue()
         processes = kwargs["processes"]
-        queues = [deque([]) for _ in xrange(processes)]
-        metadatas = [{} for _ in xrange(processes)]
+        queues = [deque([]) for _ in xrange(processes)]  # type: List[deque]
+        metadatas = [{} for _ in xrange(processes)]  # type: List[Dict]
         for test in tests:
             idx = hash(test.id) % processes
             group = queues[idx]

@@ -2,15 +2,20 @@ import ConfigParser
 import os
 import sys
 from collections import OrderedDict
+from typing import Any
+from typing import Optional
+from typing import List
 
 here = os.path.split(__file__)[0]
 
 class ConfigDict(dict):
     def __init__(self, base_path, *args, **kwargs):
+        # type: (str, *Any, **Any) -> None
         self.base_path = base_path
         dict.__init__(self, *args, **kwargs)
 
     def get_path(self, key, default=None):
+        # type: (str, None) -> Optional[Any]
         if key not in self:
             return default
         path = self[key]
@@ -18,6 +23,7 @@ class ConfigDict(dict):
         return os.path.abspath(os.path.join(self.base_path, path))
 
 def read(config_path):
+    # type: (str) -> OrderedDict
     config_path = os.path.abspath(config_path)
     config_root = os.path.split(config_path)[0]
     parser = ConfigParser.SafeConfigParser()
@@ -26,7 +32,7 @@ def read(config_path):
 
     subns = {"pwd": os.path.abspath(os.path.curdir)}
 
-    rv = OrderedDict()
+    rv = OrderedDict()  # type: OrderedDict
     for section in parser.sections():
         rv[section] = ConfigDict(config_root)
         for key in parser.options(section):
@@ -35,6 +41,7 @@ def read(config_path):
     return rv
 
 def path(argv=None):
+    # type: (Optional[List[str]]) -> str
     if argv is None:
         argv = []
     path = None
@@ -57,4 +64,5 @@ def path(argv=None):
     return os.path.abspath(path)
 
 def load():
+    # type: () -> OrderedDict
     return read(path(sys.argv))

@@ -7,8 +7,17 @@ from multiprocessing import Queue
 
 from mozlog import commandline, stdadapter, set_default_logger
 from mozlog.structuredlog import StructuredLogger
+from mozlog.handlers.base import LogLevelFilter
+from typing import List
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Text
+from typing import IO
+from typing import Tuple
 
 def setup(args, defaults):
+    # type: (Dict[str, Any], Dict[Text, IO[bytes]]) -> StructuredLogger
     logger = args.pop('log', None)
     if logger:
         set_default_logger(logger)
@@ -25,6 +34,7 @@ def setup(args, defaults):
 
 
 def setup_stdlib_logger():
+    # type: () -> None
     logging.root.handlers = []
     logging.root = stdadapter.std_logging_adapter(logging.root)
 
@@ -41,11 +51,13 @@ class LogLevelRewriter(object):
     :param to_level: Log level to set for the affected messages
     """
     def __init__(self, inner, from_levels, to_level):
+        # type: (LogLevelFilter, List[str], str) -> None
         self.inner = inner
         self.from_levels = [item.upper() for item in from_levels]
         self.to_level = to_level.upper()
 
     def __call__(self, data):
+        # type: (Dict[Text, Any]) -> Optional[Any]
         if data["action"] == "log" and data["level"].upper() in self.from_levels:
             data = data.copy()
             data["level"] = self.to_level
@@ -54,12 +66,14 @@ class LogLevelRewriter(object):
 
 class LogThread(threading.Thread):
     def __init__(self, queue, logger, level):
+        # type: (Queue, StructuredLogger, str) -> None
         self.queue = queue
         self.log_func = getattr(logger, level)
         threading.Thread.__init__(self, name="Thread-Log")
         self.daemon = True
 
     def run(self):
+        # type: () -> None
         while True:
             try:
                 msg = self.queue.get()
@@ -103,13 +117,15 @@ class LoggingWrapper(StringIO):
 
 class CaptureIO(object):
     def __init__(self, logger, do_capture):
+        # type: (StructuredLogger, bool) -> None
         self.logger = logger
         self.do_capture = do_capture
-        self.logging_queue = None
-        self.logging_thread = None
-        self.original_stdio = None
+        self.logging_queue = None  # type: Optional[Queue]
+        self.logging_thread = None  # type: Optional[LogThread]
+        self.original_stdio = None  # type: Optional[Tuple[IO[str], IO[str]]]
 
     def __enter__(self):
+        # type: () -> None
         if self.do_capture:
             self.original_stdio = (sys.stdout, sys.stderr)
             self.logging_queue = Queue()
@@ -119,6 +135,7 @@ class CaptureIO(object):
             self.logging_thread.start()
 
     def __exit__(self, *args, **kwargs):
+        # type: (*None, **Any) -> None
         if self.do_capture:
             sys.stdout, sys.stderr = self.original_stdio
             if self.logging_queue is not None:

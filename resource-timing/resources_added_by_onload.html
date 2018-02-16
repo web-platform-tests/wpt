@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing entries are ready by onload</title>
+<link rel="author" title="Google" href="http://www.google.com/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webperftestharness.js"></script>
+<script src="resources/webperftestharnessextension.js"></script>
+</head>
+<body background='resources/blue.png?id=1' onload="check_resource_added('body');">
+<script>
+setup({explicit_done: true, timeout: 30000});
+let resourceCounter = 4;
+const totalNumberOfResources = 13;
+function check_resource_added(expectedType) {
+    const entries = performance.getEntriesByType('resource');
+    resourceCounter++;
+    test_greater_or_equals(entries.length, resourceCounter,
+        'There should be at least ' + resourceCounter + ' resource entries.');
+    const filter = entries.filter(entry => entry.initiatorType == expectedType);
+    test_greater_than(filter.length, 0, 'There should be entry with initiatorType ' + expectedType);
+    if (resourceCounter == totalNumberOfResources)
+        done();
+}
+</script>
+<style onload="check_resource_added('css');">
+    @import "/fonts/Ahem.ttf";
+</style>
+<link rel="stylesheet" href="resources/resource_timing_test0.css?id=1" onload="check_resource_added('link');"></link>
+<script src="resources/empty_script.js" onload="check_resource_added('script');"></script>
+<img src="resources/resource_timing_test0.png?id=1" onload="check_resource_added('img');"></img>
+<embed src="resources/resource_timing_test0.css?id=2" type="text/css" onload="check_resource_added('embed');"></embed>
+<iframe src="resources/blank_page_green.htm" width="100px" height="100px" onload="check_resource_added('iframe');"></iframe>
+<input type="image" src="resources/blue.png?id=3" onload="check_resource_added('input');"></input>
+<object type="image/png" data="resources/resource_timing_test0.png?id=2" onload="check_resource_added('object');"></object>
+<h1>Description</h1>
+<p>This test validates that initiator types from DOM elements are ready by onload.</p>
+<div id="log"></div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Async XHR Resource Timing entries are ready by onload</title>
+<link rel="author" title="Google" href="http://www.google.com/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webperftestharness.js"></script>
+<script src="resources/webperftestharnessextension.js"></script>
+</head>
+<body>
+<script>
+setup({explicit_done: true, timeout: 30000});
+let resourceCounter = 4;
+const totalNumberOfResources = 7;
+function check_resource_added() {
+    const entries = performance.getEntriesByType('resource');
+    resourceCounter++;
+    test_greater_or_equals(entries.length, resourceCounter,
+        'There should be at least ' + resourceCounter + ' resource entries.');
+    const filter = entries.filter(entry => entry.initiatorType == 'xmlhttprequest');
+    test_equals(filter.length, resourceCounter - 4, 'There should be ' + (resourceCounter - 4) + ' xmlhttprequest entries');
+    if (resourceCounter == totalNumberOfResources)
+        done();
+}
+
+const xhr1 = new XMLHttpRequest;
+xhr1.open('GET', 'resources/empty_script.js', true);
+xhr1.onreadystatechange = function() {
+    if (xhr1.readyState > 2)
+        check_resource_added();
+}
+xhr1.send();
+
+const xhr2 = new XMLHttpRequest;
+xhr2.open('GET', 'resources/blue.png', true);
+xhr2.onload = check_resource_added;
+xhr2.send();
+</script>
+<script>
+const xhr3 = new XMLHttpRequest;
+xhr3.open('GET', 'resources/resource_timing_test0.png', true);
+xhr3.onloadend = check_resource_added;
+xhr3.send();
+</script>
+<h1>Description</h1>
+<p>This test validates that async XHR entries are ready by onload.</p>
+<div id="log"></div>
+</body>
+</html>

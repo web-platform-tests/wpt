@@ -11,8 +11,11 @@
 // payment handler scoped windows after payment.
 const SCOPE = 'payment-app/';
 async function installPaymentHandlerAndRunTheTests() {
-  const registration = await navigator.serviceWorker.register('basic-card.js', {scope: SCOPE});
-  const serviceWorker = registration.installing || registration.waiting || registration.active;
+  const registration = await navigator.serviceWorker.register('basic-card.js', {
+    scope: SCOPE,
+  });
+  const serviceWorker =
+    registration.installing || registration.waiting || registration.active;
   if (serviceWorker) {
     waitForServiceWorkerActivation();
     return;
@@ -42,12 +45,12 @@ async function installPaymentHandlerInServiceWorker() {
   const registration = await navigator.serviceWorker.getRegistration(SCOPE);
   await registration.paymentManager.instruments.clear();
   await registration.paymentManager.instruments.set('instrument-key', {
-      name: 'Instrument Name',
-      icons: [
-        {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
-      ],
-      enabledMethods: ['basic-card'],
-      capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
+    name: 'Instrument Name',
+    icons: [
+      {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
+    ],
+    enabledMethods: ['basic-card'],
+    capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
   });
   runTests();
 }
@@ -55,13 +58,55 @@ async function installPaymentHandlerInServiceWorker() {
 function runTests() {
   promise_test(async t => {
     const response = await new PaymentRequest(
-      [{supportedMethods: 'basic-card'}],
+      [
+        {supportedMethods: 'basic-card', data: {supportedTypes: ['prepaid']}},
+        {supportedMethods: 'interledger', data: {supportedNetworks: ['mir']}},
+      ],
       {
         id: 'test-payment-request-identifier',
         total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
+        displayItems: [
+          {label: 'Item 1', amount: {currency: 'CAD', value: '0.005'}},
+          {label: 'Item 2', amount: {currency: 'EUR', value: '0.005'}},
+        ],
+        modifiers: [
+          {
+            supportedMethods: 'basic-card',
+            data: {supportedNetworks: ['mir']},
+            total: {
+              label: 'MIR total',
+              amount: {currency: 'USD', value: '0.0099'},
+            },
+            additionalDisplayItems: [
+              {label: 'Item 3', amount: {currency: 'GBP', value: '-0.0001'}},
+            ],
+          },
+          {
+            supportedMethods: 'basic-card',
+            data: {supportedNetworks: ['visa']},
+            total: {
+              label: 'VISA total',
+              amount: {currency: 'USD', value: '0.0098'},
+            },
+            additionalDisplayItems: [
+              {label: 'Item 4', amount: {currency: 'CNY', value: '-0.0002'}},
+            ],
+          },
+          {
+            supportedMethods: 'interledger',
+            data: {supportedTypes: ['prepaid']},
+            total: {
+              label: 'Prepaid total',
+              amount: {currency: 'USD', value: '0.0097'},
+            },
+            additionalDisplayItems: [
+              {label: 'Item 5', amount: {currency: 'JPY', value: '-0.0003'}},
+            ],
+          },
+        ],
       },
     ).show();
-    response.complete('success');
+    const promise = response.complete('success');
     assert_equals(response.requestId, 'test-payment-request-identifier');
     assert_equals(response.methodName, 'basic-card');
     assert_array_equals(response.details.billingAddress.addressLine, [
@@ -82,6 +127,7 @@ function runTests() {
     assert_equals(response.details.cardholderName, 'Jon Doe');
     assert_equals(response.details.expiryMonth, '12');
     assert_equals(response.details.expiryYear, '2028');
+    return promise;
   }, 'Can perform payment');
 }
 

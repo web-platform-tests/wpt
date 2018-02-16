@@ -97,7 +97,7 @@ class TestEnvironment(object):
         ports = serve.get_ports(self.config, self.ssl_env)
         self.config = serve.normalise_config(self.config, ports)
 
-        assert self.env_extras_cms == None, (
+        assert self.env_extras_cms is None, (
             "A TestEnvironment object cannot be nested")
 
         self.env_extras_cms = []

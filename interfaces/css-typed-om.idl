@@ -13,7 +13,6 @@ interface StylePropertyMapReadOnly {
        see https://github.com/heycam/webidl/issues/60 */
     sequence<CSSStyleValue> getAll(DOMString property);
     boolean has(DOMString property);
-    stringifier;
 };
 
 callback UpdateFunction = CSSStyleValue (CSSStyleValue oldValue);

@@ -143,12 +143,12 @@ class SauceConnect():
     def __enter__(self):
         # Because this class implements the context manager protocol, it is
         # possible for instances to be provided to the `with` statement
-        # directly. The `use` method is defined so that data which is not
-        # available during object initialization can be provided prior to this
-        # moment. The `use` method must be invoked in preparation for the
-        # context manager protocol, but this additional constraint is not
+        # directly. This class implements the callable protocol so that data
+        # which is not available during object initialization can be provided
+        # prior to this moment. Instances must be invoked in preparation for
+        # the context manager protocol, but this additional constraint is not
         # itself part of the protocol.
-        assert self.env_config is not None, 'The `use` method has been invoked.'
+        assert self.env_config is not None, 'The instance has been invoked.'
 
         if not self.sauce_connect_binary:
             self.temp_dir = tempfile.mkdtemp()

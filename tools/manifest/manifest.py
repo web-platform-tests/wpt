@@ -229,9 +229,14 @@ def load(tests_root, manifest):
 
 
 def write(manifest, manifest_path):
+    from tempfile import NamedTemporaryFile
+
     dir_name = os.path.dirname(manifest_path)
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
-    with open(manifest_path, "wb") as f:
-        json.dump(manifest.to_json(), f, sort_keys=True, indent=1, separators=(',', ': '))
-        f.write("\n")
+
+    temp_manifest = NamedTemporaryFile(mode="wb", dir=dir_name)
+    json.dump(manifest.to_json(), temp_manifest.file,
+              sort_keys=True, indent=1, separators=(',', ': '))
+    temp_manifest.write("\n")
+    os.rename(temp_manifest.name, manifest_path)

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<html>
+<head>
+<title>CSS Values and Units: Range checking clamped values</title>
+<link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
+<link rel="help" href="https://drafts.csswg.org/css-values/#calc-range">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+	.test { border: thick solid; width: calc(-50px); animation: bounce 2s infinite linear;}
+	@keyframes bounce {
+	  0% { width: calc(50px); }
+	}
+</style>
+</head>
+<body>
+	<div id='testDiv'>foo</div>
+</body>
+</html>
+<script>
+	function checkWidth() {
+		return (window.getComputedStyle(testDiv)["width"]);
+	}
+
+	async_test(function(t) {
+		testDiv.setAttribute("class", "test");
+		setTimeout('clampedWidth = checkWidth();', 1500);
+		t.step_timeout(function() { 
+			assert_equals ( clampedWidth, "0px" );
+			t.done();
+		}, 2000);
+	})
+</script>
+<!DOCTYPE html>

@@ -1,6 +1,6 @@
 coverage==4.5.1
 coveralls==1.2.0
-pip
+pip==9.0.1
 flake8==3.5.0
 sphinx==1.7.0
 wheel

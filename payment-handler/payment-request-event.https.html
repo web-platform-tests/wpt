@@ -5,44 +5,12 @@
 <link rel="manifest" href="/payment-handler/basic-card.json">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="register-and-activate-service-worker.js"></script>
 <p>When the payment sheet is shown, please authorize the mock payment.</p>
 <script>
 // Use a different scope for the payment handler, because Chrome closes all
 // payment handler scoped windows after payment.
-const SCOPE = 'payment-app/';
-async function installPaymentHandlerAndRunTheTests() {
-  const registration = await navigator.serviceWorker.register('basic-card.js', {
-    scope: SCOPE,
-  });
-  const serviceWorker =
-    registration.installing || registration.waiting || registration.active;
-  if (serviceWorker) {
-    waitForServiceWorkerActivation();
-    return;
-  }
-
-  registration.addEventListener('updatefound', event => {
-    waitForServiceWorkerActivation();
-  });
-}
-
-async function waitForServiceWorkerActivation() {
-  const registration = await navigator.serviceWorker.getRegistration(SCOPE);
-  if (registration.active) {
-    installPaymentHandlerInServiceWorker();
-    return;
-  }
-
-  const serviceWorker = registration.installing || registration.waiting;
-  serviceWorker.addEventListener('statechange', event => {
-    if (event.target.state == 'activated') {
-      installPaymentHandlerInServiceWorker();
-    }
-  });
-}
-
-async function installPaymentHandlerInServiceWorker() {
-  const registration = await navigator.serviceWorker.getRegistration(SCOPE);
+async function setInstrumentsAndRunTests(registration) {
   await registration.paymentManager.instruments.clear();
   await registration.paymentManager.instruments.set('instrument-key', {
     name: 'Instrument Name',
@@ -131,5 +99,9 @@ function runTests() {
   }, 'Can perform payment');
 }
 
-installPaymentHandlerAndRunTheTests();
+registerAndActiveServiceWorker(
+  'basic-card.js',
+  'payment-app/',
+  setInstrumentsAndRunTests,
+);
 </script>

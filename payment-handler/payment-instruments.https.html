@@ -56,7 +56,7 @@ function runTests(registration) {
   }, 'Deleting an existing instrument the second time returns false');
 
   promise_test(async t => {
-    const registration = await registerServiceWorkerAndClearInstruments();
+    await registration.paymentManager.instruments.clear();
     const result = await registration.paymentManager.instruments.delete(
       'non-existing-instrument-key',
     );
@@ -192,7 +192,7 @@ function runTests(registration) {
         enabledMethods: ['basic-card'],
       },
     );
-    return promise_rejects(t, 'TypeError', setPromise);
+    return promise_rejects(t, new TypeError(), setPromise);
   }, 'Cannot register instruments with invalid icon media type image/jif');
 
   promise_test(async t => {
@@ -205,13 +205,13 @@ function runTests(registration) {
           {
             src: '/images/rgrg-256x256.png',
             sizes: '256x256',
-            type: 'image/pn' + 'g'.repeat(100000),
+            type: 'image/pn' + 'g'.repeat(1000),
           },
         ],
         enabledMethods: ['basic-card'],
       },
     );
-    return promise_rejects(t, 'TypeError', setPromise);
+    return promise_rejects(t, new TypeError(), setPromise);
   }, 'Cannot register instruments with very long icon media type image/pngggggg...');
 
   promise_test(async t => {
@@ -245,7 +245,7 @@ function runTests(registration) {
         enabledMethods: ['basic-card'],
       },
     );
-    return promise_rejects(t, 'TypeError', setPromise);
+    return promise_rejects(t, new TypeError(), setPromise);
   }, 'Cannot register instruments with invalid icon size "256 256" (missing "x")');
 
   promise_test(async t => {
@@ -352,5 +352,5 @@ function runTests(registration) {
   }, "Don't crash on null characters in key, name, method, and capability strings.");
 }
 
-registerAndActiveServiceWorker( 'basic-card.js', 'payment-app/', runTests);
+registerAndActiveServiceWorker('basic-card.js', 'payment-app/', runTests);
 </script>

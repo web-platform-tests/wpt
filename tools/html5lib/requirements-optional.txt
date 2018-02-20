@@ -10,4 +10,4 @@ datrie==0.7.1
 
 # charade can be used as a fallback in case we are unable to determine
 # the encoding of a document.
-charade
+charade==1.0.3

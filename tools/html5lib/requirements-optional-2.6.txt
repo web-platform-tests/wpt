@@ -2,4 +2,4 @@
 
 # Can be used to force attributes to be serialized in alphabetical
 # order.
-ordereddict
+ordereddict==1.1

@@ -2,4 +2,4 @@ invoke
 tox
 gitpython
 towncrier
-wheel
+wheel==0.30.0

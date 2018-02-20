@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: Nested report</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.onload = function() {
+  async_test(function(test) {
+    var observer = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_equals(reports.length, 1);
+        assert_equals(reports[0].body.message, "Test message.");
+      });
+      test.done();
+    });
+    observer.observe();
+
+    // The observer should still receive this report even though disconnect() is
+    // called immediately afterwards.
+    let report = new CustomReport("Test message.");
+    report.send();
+    observer.disconnect();
+  });
+};
+</script>
+</body>
+</html>

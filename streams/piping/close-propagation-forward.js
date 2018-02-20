@@ -454,6 +454,9 @@ promise_test(() => {
     resolveWritePromise();
 
     return pipePromise;
+  }).then(() => flushAsyncEvents()).then(() => {
+    assert_array_equals(ws.events, ['write', 'a'],
+      'the chunk must have been written, but close must not have happened yet');
   });
 
 }, 'Closing must be propagated forward: shutdown must not occur until the final write completes; preventClose = true');

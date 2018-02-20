@@ -2,4 +2,4 @@
 
 flake8
 nose
-ordereddict # Python 2.6
+ordereddict==1.1 # Python 2.6

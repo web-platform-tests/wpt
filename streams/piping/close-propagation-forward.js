@@ -491,7 +491,7 @@ promise_test(() => {
 
   return writeCalledPromise.then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(ws.events, ['write', 'a'],
-      'the chunk must have been written, but close must not have happened yet');
+      'the first chunk must have been written, but close must not have happened yet');
     assert_false(pipeComplete, 'the pipe should not complete while the first write is pending');
 
     rs.controller.close();
@@ -540,7 +540,7 @@ promise_test(() => {
 
   return writeCalledPromise.then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(ws.events, ['write', 'a'],
-      'the chunk must have been written, but close must not have happened yet');
+      'the first chunk must have been written, but close must not have happened yet');
     assert_false(pipeComplete, 'the pipe should not complete while the first write is pending');
 
     rs.controller.close();

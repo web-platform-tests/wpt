@@ -797,9 +797,14 @@ def main(**kwargs):
     if output_format == "markdown":
         setup_logging(True)
 
-    paths = lint_paths(kwargs, repo_root)
-
-    return lint(repo_root, paths, output_format)
+    try:
+        paths = lint_paths(kwargs, repo_root)
+    except Exception as e:
+        logger.error(e)
+        raise
+    finally:
+        logger.shutdown()
+        return lint(repo_root, paths, output_format)
 
 
 def lint(repo_root, paths, output_format):

@@ -1,5 +1,5 @@
 -r requirements.txt
 
 flake8==3.5.0
-nose
+nose==1.3.7
 ordereddict==1.1 # Python 2.6

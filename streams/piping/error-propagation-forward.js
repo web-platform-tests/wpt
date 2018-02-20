@@ -474,6 +474,6 @@ promise_test(t => {
     assert_array_equals(ws.events, ['write', 'a', 'write', 'b', 'abort', error1], 'sink abort should be called');
   });
 
-}, 'Errors must be propagated forward: abort should not happen until all queued writes complete');
+}, 'Errors must be propagated forward: shutdown must not occur until the final write completes; becomes errored after first write');
 
 done();

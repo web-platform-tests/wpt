@@ -1,6 +1,6 @@
 coverage==4.5.1
 hypothesis==3.45.2
-pympler
+pympler==0.5
 pytest
 six==1.11.0
 zope.interface

@@ -62,7 +62,7 @@ self.addEventListener('paymentrequest', event => {
     return;
   }
 
-  const total = methodData.total;
+  const total = event.total;
   if (!total) {
     const msg = 'Expected total';
     event.respondWith(Promise.reject(new Error(msg)));

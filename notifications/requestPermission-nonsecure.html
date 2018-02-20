@@ -13,11 +13,16 @@ if (Notification.permission == "granted") {
         t.step(function () {
             Notification.requestPermission().then(
                     function(result) {
-                        assert_equals("denied", result, "Notifications must be requested from a secure context.")
+                        assert_equals(
+                            "denied", result,
+                            "Notifications must be requested from a secure context.")
                     });
             t.done();
         })
-    })
+    });
+    assert_equals(
+        "denied", Notification.permission,
+        "Notification.permission must return 'denied' in an insecure context")
 }
 </script>
 

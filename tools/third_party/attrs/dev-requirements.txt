@@ -3,4 +3,4 @@ hypothesis==3.45.2
 pympler==0.5
 pytest==3.4.0
 six==1.11.0
-zope.interface
+zope.interface==4.4.3

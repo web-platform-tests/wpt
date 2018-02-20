@@ -2,5 +2,5 @@ coverage==4.5.1
 coveralls
 pip
 flake8==3.5.0
-sphinx
+sphinx==1.7.0
 wheel

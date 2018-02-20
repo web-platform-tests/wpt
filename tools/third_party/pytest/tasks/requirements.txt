@@ -1,4 +1,4 @@
-invoke
+invoke==0.22.1
 tox
 gitpython
 towncrier

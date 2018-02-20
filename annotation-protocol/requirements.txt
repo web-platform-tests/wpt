@@ -1,1 +1,1 @@
-wptserve
+wptserve==1.4.0

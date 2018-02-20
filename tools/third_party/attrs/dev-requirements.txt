@@ -2,5 +2,5 @@ coverage
 hypothesis
 pympler
 pytest
-six
+six==1.11.0
 zope.interface

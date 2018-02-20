@@ -1,6 +1,6 @@
 coverage
 coveralls
 pip
-flake8
+flake8==3.5.0
 sphinx
 wheel

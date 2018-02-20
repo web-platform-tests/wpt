@@ -133,3 +133,4 @@ class CaptureIO(object):
                         pass
                 self.logging_queue.close()
                 self.logger.info("queue closed")
+                self.logger.shutdown()

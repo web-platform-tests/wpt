@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification constructor (basic)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_timeout: true })
+if (Notification.permission == "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are cleared, and then reload this page.")
+} else {
+    async_test(function (t) {
+        t.step(function () {
+            var notification = new Notification("New Email Received")
+            notification.onerror = function(e) {
+                assert_equals(Object.prototype.toString.call(e), "[object Event]")
+                assert_equals(e.type, "error")
+                Notification.requestPermission()
+                t.done()
+            }
+        })
+    })
+}
+</script>
+

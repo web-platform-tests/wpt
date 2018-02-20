@@ -273,9 +273,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("Got %i unexpected results" % unexpected_count)
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
-                logger.suite_end()
-    return unexpected_total == 0
-
+    return unexpected_count == 0
 
 def check_stability(**kwargs):
     import stability

@@ -2,4 +2,4 @@
 
 # lxml is supported with its own treebuilder ("lxml") and otherwise
 # uses the standard ElementTree support
-lxml
+lxml==4.1.1

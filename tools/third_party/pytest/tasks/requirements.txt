@@ -1,5 +1,5 @@
 invoke==0.22.1
 tox==2.9.1
 gitpython==2.1.8
-towncrier
+towncrier==17.8.0
 wheel==0.30.0

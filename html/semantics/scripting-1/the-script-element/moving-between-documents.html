@@ -65,12 +65,10 @@ for (const type of ["text/javascript", "module"]) {
 
       iframe.contentDocument.close();
 
-      t.step_timeout(() => {
-        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-        assert_equals(iframe.contentWindow.didExecute, undefined,
-          "The script must not have executed in the iframe window");
-        t.done();
-      }, 3000);
+      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
+      assert_equals(iframe.contentWindow.didExecute, undefined,
+        "The script must not have executed in the iframe window");
+      t.done();
     });
 
     document.body.appendChild(iframe);

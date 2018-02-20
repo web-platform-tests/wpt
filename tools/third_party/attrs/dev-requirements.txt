@@ -1,5 +1,5 @@
 coverage==4.5.1
-hypothesis
+hypothesis==3.45.2
 pympler
 pytest
 six==1.11.0

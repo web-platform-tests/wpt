@@ -2,7 +2,7 @@
 
 # We support a Genshi treewalker that can be used to serialize Genshi
 # streams.
-genshi
+genshi==0.7
 
 # DATrie can be used in place of our Python trie implementation for
 # slightly better parsing performance.

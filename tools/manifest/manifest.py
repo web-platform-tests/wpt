@@ -86,13 +86,13 @@ class Manifest(object):
             if not is_new:
                 old_hash, old_type = self._path_hash[rel_path]
                 old_files[old_type].remove(rel_path)
-                if old_type == "reftest" and new_type != old_type:
-                    reftest_changes = True
                 if old_hash != file_hash:
                     new_type, manifest_items = source_file.manifest_items()
                     hash_changed = True
                 else:
                     new_type, manifest_items = old_type, self._data[old_type][rel_path]
+                if old_type == "reftest" and new_type != old_type:
+                    reftest_changes = True
             else:
                 new_type, manifest_items = source_file.manifest_items()
 

@@ -51,4 +51,4 @@ main() {
     $VENV/bin/python tools/build.py "$@"
 }
 
-main
+main "$@"

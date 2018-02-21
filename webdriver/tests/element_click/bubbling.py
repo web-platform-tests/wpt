@@ -1,6 +1,5 @@
 from tests.support.asserts import assert_success
 from tests.support.inline import inline
-from time import sleep
 
 def click(session, element):
     return session.transport.send(

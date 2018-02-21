@@ -2,11 +2,11 @@
 set -ex
 
 SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
+WPT_ROOT=$(readlink -f $SCRIPT_DIR/..)
 cd $WPT_ROOT
 
 main() {
-    cd css
+    cd $WPT_ROOT/css
 
     if [ -z $VENV ]; then
         VENV=tools/_virtualenv

@@ -38,7 +38,7 @@ def test_click_event_bubbles_to_parents(session):
     three, two, one = session.find.css("div")
     one.click()
 
-    clicks = session.execute_script("return window.clicks;")
+    clicks = session.execute_script("return window.clicks")
     assert one in clicks
     assert two in clicks
     assert three in clicks
@@ -79,7 +79,7 @@ def test_spin_event_loop(session):
     three, two, one = session.find.css("div")
     one.click()
 
-    delayed_clicks = session.execute_script("return window.delayedClicks;")
+    delayed_clicks = session.execute_script("return window.delayedClicks")
     assert one in delayed_clicks
     assert two in delayed_clicks
     assert three in delayed_clicks

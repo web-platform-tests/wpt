@@ -1,6 +1,6 @@
 from tests.support.asserts import assert_success
 from tests.support.inline import inline
-
+from time import sleep
 
 def click(session, element):
     return session.transport.send(
@@ -28,9 +28,10 @@ def test_click_event_bubbles_to_parents(session):
         <script>
         window.clicks = [];
 
-        for (let level of document.querySelectorAll("div")) {
-          level.addEventListener("click", ({currentTarget}) => {
-            window.clicks.push(currentTarget);
+        var elements = document.querySelectorAll("div");
+        for (var level = 0; level < elements.length; level++) {
+          elements[level].addEventListener("click", function(clickEvent) {
+            window.clicks.push(clickEvent.currentTarget);
           });
         }
         </script>
@@ -38,7 +39,7 @@ def test_click_event_bubbles_to_parents(session):
     three, two, one = session.find.css("div")
     one.click()
 
-    clicks = session.execute_script("return window.clicks")
+    clicks = session.execute_script("return window.clicks;")
     assert one in clicks
     assert two in clicks
     assert three in clicks
@@ -67,9 +68,11 @@ def test_spin_event_loop(session):
         <script>
         window.delayedClicks = [];
 
-        for (let level of document.querySelectorAll("div")) {
-          level.addEventListener("click", ({currentTarget}) => {
-            setTimeout(() => window.delayedClicks.push(currentTarget), 100);
+        var elements = document.querySelectorAll("div");
+        for (var level = 0; level < elements.length; level++) {
+          elements[level].addEventListener("click", function(clickEvent) {
+            var target = clickEvent.currentTarget;
+            setTimeout(function() { window.delayedClicks.push(target); }, 100);
           });
         }
         </script>
@@ -77,7 +80,7 @@ def test_spin_event_loop(session):
     three, two, one = session.find.css("div")
     one.click()
 
-    delayed_clicks = session.execute_script("return window.delayedClicks")
+    delayed_clicks = session.execute_script("return window.delayedClicks;")
     assert one in delayed_clicks
     assert two in delayed_clicks
     assert three in delayed_clicks

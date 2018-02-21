@@ -22,53 +22,71 @@
 
 for (const type of ["text/javascript", "module"]) {
   async_test(t => {
+    window.t = t;
+
     t.add_cleanup(() => {
       window.didExecute = undefined;
+      window.t = undefined;
     });
 
     const iframe = document.createElement("iframe");
-    iframe.onload = t.step_func_done(() => {
+    iframe.onload = t.step_func(() => {
+      iframe.contentWindow.t = t;
+
       iframe.contentDocument.write("<streaming-element>");
       document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
-      iframe.contentDocument.write(`<script id="s1" type="${type}">window.didExecute = true;<` + "/script>");
+      iframe.contentDocument.write(
+        `<script id="s1" type="${type}"
+                 onload="t.unreached_func('onload')"
+                 onerror="t.unreached_func('onerror')">
+        window.didExecute = true;<` + "/script>"
+      );
       iframe.contentDocument.write("</streaming-element>");
-
-      const s = document.querySelector("#s1");
-      s.onload = t.unreached_func("onload");
-      s.onerror = t.unreached_func("onerror");
 
       iframe.contentDocument.close();
 
-      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-      assert_equals(iframe.contentWindow.didExecute, undefined,
-        "The script must not have executed in the iframe window");
+      // Needs a delay to allow any error/load events to fire (and fail the test if they do).
+      t.step_timeout(() => {
+        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
+        assert_equals(iframe.contentWindow.didExecute, undefined,
+          "The script must not have executed in the iframe window");
+        t.done();
+      }, 1000);
     });
 
     document.body.appendChild(iframe);
   }, `${type}: moving to another document during parsing, inline script`);
 
   async_test(t => {
+    window.t = t;
     t.add_cleanup(() => {
       window.didExecute = undefined;
+      window.t = undefined;
     });
 
     const iframe = document.createElement("iframe");
     iframe.onload = t.step_func(() => {
+      iframe.contentWindow.t = t;
+
       iframe.contentDocument.write("<streaming-element>");
       document.body.appendChild(iframe.contentDocument.querySelector("streaming-element"));
-      iframe.contentDocument.write(`<script id="s2" type="${type}" src="resources/flag-setter.js"><` + "/script>");
+      iframe.contentDocument.write(
+        `<script id="s1" type="${type}" src="resources/flag-setter.js"
+                 onload="t.unreached_func('onload')"
+                 onerror="t.unreached_func('onerror')">
+        <` + "/script>"
+      );
       iframe.contentDocument.write("</streaming-element>");
-
-      const s = document.querySelector("#s2");
-      s.onload = t.unreached_func("onload");
-      s.onerror = t.unreached_func("onerror");
 
       iframe.contentDocument.close();
 
-      assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
-      assert_equals(iframe.contentWindow.didExecute, undefined,
-        "The script must not have executed in the iframe window");
-      t.done();
+      // Needs a delay to allow any error/load events to fire (and fail the test if they do).
+      t.step_timeout(() => {
+        assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
+        assert_equals(iframe.contentWindow.didExecute, undefined,
+          "The script must not have executed in the iframe window");
+        t.done();
+      }, 1000);
     });
 
     document.body.appendChild(iframe);
@@ -83,9 +101,9 @@ for (const type of ["text/javascript", "module"]) {
     iframe.onload = t.step_func(() => {
       const s = document.createElement("script");
       s.type = type;
-      s.src = "resources/slow-flag-setter.py";
       s.onload = t.unreached_func("onload");
       s.onerror = t.unreached_func("onerror");
+      s.src = "resources/slow-flag-setter.py";
 
       // Start the fetch
       document.body.appendChild(s);
@@ -114,9 +132,9 @@ for (const type of ["text/javascript", "module"]) {
 
     const s = document.createElement("script");
     s.type = type;
-    s.src = "resources/slow-flag-setter.py";
     s.onload = t.unreached_func("onload");
     s.onerror = t.unreached_func("onerror");
+    s.src = "resources/slow-flag-setter.py";
 
     // Start the fetch
     document.body.appendChild(s);
@@ -132,6 +150,6 @@ for (const type of ["text/javascript", "module"]) {
       assert_equals(window.didExecute, undefined, "The script must not have executed in this window");
       t.done();
     }, 3000);
-  }, `${type}: moving to a document where scripting is disabled during fetching`);
+  }, `${type}: moving to a createHTMLDocument document where scripting is disabled during fetching`);
 }
 </script>

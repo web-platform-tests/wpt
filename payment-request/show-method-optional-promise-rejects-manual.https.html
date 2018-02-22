@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test for PaymentRequest.show(optional promise) method</title>
+<title>Test for PaymentRequest.show(optional detailsPromise) method</title>
 <link rel="help" href="https://w3c.github.io/browser-payment-api/#show-method">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+  // See function testBadUpdate() for test details!
   setup({
     allow_uncaught_exception: true,
     explicit_done: true,
     explicit_timeout: true,
   });
+
+  // == TEST DATA ===
   // PaymentMethod
   const validMethod = Object.freeze({
     supportedMethods: "valid-but-wont-ever-match",
@@ -143,15 +146,21 @@
     total: validTotal,
     data: recursiveData,
   });
-
-  function testBadUpdate(testAssertion, badDetails, expectedError, errorCode) {
+  // == END OF TEST DATA ===
+  /*
+    These test work by creating a "valid" payment request and then
+    performing a bad update via `show(detailsPromise)`.
+    The `badDetails` cause detailsPromise to reject with `expectedError`.
+    */
+  function testBadUpdate(testAssertion, badDetails, expectedError) {
     promise_test(async t => {
       const request = new PaymentRequest(
         validMethods,
         validDetails,
         validOptions
       );
-      const acceptPromise = request.show(Promise.resolve(badDetails));
+      const detailsPromise = Promise.resolve(badDetails);
+      const acceptPromise = request.show(detailsPromise);
       await promise_rejects(
         t,
         expectedError,
@@ -262,6 +271,7 @@
   ">
   Must throw as Modifier has a recursive dictionary.
   </button></li>
+
   <li><button onclick="done();">Done!</button></li>
 </ol>
 

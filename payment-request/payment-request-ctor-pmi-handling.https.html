@@ -60,6 +60,8 @@ test(() => {
     "i488jh6-g18-fck-yb-v7-i",
     "x-x-t-t-c34-o",
     "basic-card",
+    // gets coerced to "basic-card", for compat with old version of spec
+    ["basic-card"],
   ];
   for (const validMethod of validMethods) {
     try {
@@ -106,7 +108,7 @@ test(() => {
     "this is not supported",
     " ",
     "foo,var",
-    ["bar", "foo", "bas"], // stringifies to "foo,bar,bas"
+    ["visa","mastercard"], // stringifies to "visa,mastercard"
   ];
   for (const invalidMethod of invalidMethods) {
     assert_throws(

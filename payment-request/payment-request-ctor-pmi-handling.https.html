@@ -106,7 +106,7 @@ test(() => {
     "this is not supported",
     " ",
     "foo,var",
-    ["bar", "foo", "bas"], // stringifies to "foo,bar,bas"
+    ["foo", "bar", "bas"], // stringifies to "foo,bar,bas"
   ];
   for (const invalidMethod of invalidMethods) {
     assert_throws(

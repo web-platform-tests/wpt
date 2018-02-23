@@ -55,8 +55,10 @@ class SafariBrowser(Browser):
     """
 
     def __init__(self, logger, webdriver_binary, webdriver_args=None):
-        """Creates a new representation of Safari.  The `binary` argument gives
-        the browser binary to use for testing."""
+        """Creates a new representation of Safari.  The `webdriver_binary`
+        argument gives the WebDriver binary to use for testing. (The browser
+        binary location cannot be specified, as Safari and SafariDriver are
+        coupled.)"""
         Browser.__init__(self, logger)
         self.server = SafariDriverServer(self.logger,
                                          binary=webdriver_binary,

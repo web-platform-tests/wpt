@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tab-under navigations are blocked</title>
+<button>Click for tab-under</button>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+// TODO(csharrison): Link to spec issue for this change.
+var t = async_test("Tab-unders are blocked");
+function doTabUnder() {
+  var new_window = window.open();
+  assert_not_equals(null, new_window, "unable to open a new window");
+
+  // Navigate cross-origin without user activation.
+  window.location = "http://{{domains[www2]}}:{{ports[http][0]}}/";
+
+  // The navigation should fail. Set a reasonable timeout so if it succeeds the
+  // successful navigation will have occurred before the timeout. A failed test
+  // Will successfully navigate to / and timeout.
+  t.step_timeout(() => t.done(), 1000);
+};
+
+// A simulated click using test_driver is required to allow the popup to
+// proceed with user activation.
+var button = document.getElementsByTagName('button')[0];
+button.addEventListener("click", t.step_func(doTabUnder));
+test_driver.click(button);
+</script>

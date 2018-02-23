@@ -60,21 +60,22 @@ class WebDriverServer(object):
             env=self.env,
             storeOutput=False)
 
+        self.logger.debug("Starting WebDriver: %s" % ' '.join(self._cmd))
         try:
             self._proc.run()
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise IOError(
-                    "WebDriver HTTP server executable not found: %s" % self.binary)
+                    "WebDriver executable not found: %s" % self.binary)
             raise
 
         self.logger.debug(
-            "Waiting for server to become accessible: %s" % self.url)
+            "Waiting for WebDriver to become accessible: %s" % self.url)
         try:
             wait_for_service((self.host, self.port))
         except Exception:
             self.logger.error(
-                "WebDriver HTTP server was not accessible "
+                "WebDriver was not accessible "
                 "within the timeout:\n%s" % traceback.format_exc())
             raise
 

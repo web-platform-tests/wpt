@@ -20,6 +20,8 @@ def test_webdriver_special_key_sends_keydown(session,
             document.body.addEventListener("keydown",
                     function(e) { e.preventDefault() });
         """)
+    key_reporter.click()
+    session.execute_script("resetEvents();")
     key_chain.key_down(getattr(Keys, name)).perform()
 
     # only interested in keydown

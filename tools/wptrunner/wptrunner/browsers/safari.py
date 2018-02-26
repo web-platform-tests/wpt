@@ -1,21 +1,20 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this file,
-# You can obtain one at http://mozilla.org/MPL/2.0/.
-
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import SafariDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,
                                           SeleniumRefTestExecutor)
+from ..executors.executorsafari import SafariDriverWdspecExecutor
 
 
 __wptrunner__ = {"product": "safari",
                  "check_args": "check_args",
                  "browser": "SafariBrowser",
                  "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor"},
+                              "reftest": "SeleniumRefTestExecutor",
+                              "wdspec": "SafariDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
+                 "env_extras": "env_extras",
                  "env_options": "env_options"}
 
 
@@ -23,8 +22,9 @@ def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(**kwargs):
-    return {"webdriver_binary": kwargs["webdriver_binary"]}
+def browser_kwargs(test_type, run_info_data, **kwargs):
+    return {"webdriver_binary": kwargs["webdriver_binary"],
+            "webdriver_args": kwargs.get("webdriver_args")}
 
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
@@ -41,9 +41,12 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     return executor_kwargs
 
 
+def env_extras(**kwargs):
+    return []
+
+
 def env_options():
-    return {"host": "web-platform.test",
-            "bind_hostname": "true"}
+    return {"bind_hostname": "true"}
 
 
 class SafariBrowser(Browser):
@@ -51,17 +54,21 @@ class SafariBrowser(Browser):
     ``wptrunner.webdriver.SafariDriverServer``.
     """
 
-    def __init__(self, logger, webdriver_binary="/usr/bin/safaridriver"):
-        """Creates a new representation of Safari.  The `binary` argument gives
-        the browser binary to use for testing."""
+    def __init__(self, logger, webdriver_binary, webdriver_args=None):
+        """Creates a new representation of Safari.  The `webdriver_binary`
+        argument gives the WebDriver binary to use for testing. (The browser
+        binary location cannot be specified, as Safari and SafariDriver are
+        coupled.)"""
         Browser.__init__(self, logger)
-        self.server = SafariDriverServer(self.logger)
+        self.server = SafariDriverServer(self.logger,
+                                         binary=webdriver_binary,
+                                         args=webdriver_args)
 
-    def start(self):
+    def start(self, **kwargs):
         self.server.start(block=False)
 
-    def stop(self):
-        self.server.stop()
+    def stop(self, force=False):
+        self.server.stop(force=force)
 
     def pid(self):
         return self.server.pid

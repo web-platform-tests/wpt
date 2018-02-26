@@ -226,6 +226,7 @@ class Chrome(BrowserSetup):
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
 
+
 class ChromeAndroid(BrowserSetup):
     name = "chrome_android"
     browser_cls = browser.ChromeAndroid
@@ -314,6 +315,23 @@ https://selenium-release.storage.googleapis.com/index.html
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class Safari(BrowserSetup):
+    name = "safari"
+    browser_cls = browser.Safari
+
+    def install(self, venv):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                raise WptrunError("Unable to locate safaridriver binary")
+
+            kwargs["webdriver_binary"] = self.browser.find_webdriver()
+
+
 class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
@@ -349,6 +367,7 @@ product_setup = {
     "chrome_android": ChromeAndroid,
     "edge": Edge,
     "ie": InternetExplorer,
+    "safari": Safari,
     "servo": Servo,
     "sauce": Sauce,
     "opera": Opera,

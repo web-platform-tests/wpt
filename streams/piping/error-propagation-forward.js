@@ -552,21 +552,21 @@ promise_test(t => {
 
   return writeCalledPromise.then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(ws.events, ['write', 'a'],
-      'the first chunk must have been written, but abort must not have happened yet');
+      'the first chunk must have been written, but abort must not have happened');
     assert_false(pipeComplete, 'the pipe should not complete while the first write is pending');
 
     rs.controller.error(error1);
     resolveWritePromise();
   }).then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(ws.events, ['write', 'a', 'write', 'b'],
-      'the second chunk must have been written, but abort must not have happened yet');
+      'the second chunk must have been written, but abort must not have happened');
     assert_false(pipeComplete, 'the pipe should not complete while the second write is pending');
 
     resolveWritePromise();
     return pipePromise;
   }).then(() => flushAsyncEvents()).then(() => {
     assert_array_equals(ws.events, ['write', 'a', 'write', 'b'],
-      'all chunks must have been written, but abort must not have happened yet');
+      'all chunks must have been written, but abort must not have happened');
   });
 
 }, 'Errors must be propagated forward: shutdown must not occur until the final write completes; becomes errored after first write; preventAbort = true');

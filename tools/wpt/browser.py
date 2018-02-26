@@ -469,10 +469,7 @@ class Sauce(Browser):
         return None
 
 class WebKit(Browser):
-    """WebKit-specific interface.
-
-    Includes installation, webdriver installation, and wptrunner setup methods.
-    """
+    """WebKit-specific interface."""
 
     product = "webkit"
     requirements = "requirements_webkit.txt"

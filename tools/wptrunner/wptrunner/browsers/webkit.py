@@ -8,7 +8,7 @@ from ..webdriver_server import WebKitDriverServer
 
 __wptrunner__ = {"product": "webkit",
                  "check_args": "check_args",
-                 "browser": "WebKit",
+                 "browser": "WebKitBrowser",
                  "browser_kwargs": "browser_kwargs",
                  "executor": {"testharness": "SeleniumTestharnessExecutor",
                               "reftest": "SeleniumRefTestExecutor",
@@ -65,7 +65,11 @@ def env_options():
             "bind_hostname": "true"}
 
 
-class WebKit(Browser):
+class WebKitBrowser(Browser):
+    """Generic WebKit browser is backed by WebKit's WebDriver implementation,
+    which is supplied through ``wptrunner.webdriver.WebKitDriverServer``.
+    """
+
     def __init__(self, logger, binary, webdriver_binary=None,
                  webdriver_args=None):
         Browser.__init__(self, logger)

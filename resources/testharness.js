@@ -13,6 +13,8 @@ policies and contribution forms [3].
 /* Documentation: http://web-platform-tests.org/writing-tests/testharness-api.html
  * (../docs/_writing-tests/testharness-api.md) */
 
+console.log("DO NOT MERGE");
+
 (function ()
 {
     var debug = false;

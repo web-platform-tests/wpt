@@ -201,7 +201,7 @@ class WebKitDriverServer(WebDriverServer):
         WebDriverServer.__init__(self, logger, binary, port=port, args=args)
 
     def make_command(self):
-        return [self.binary, "--port=%s" % str(self.port) ] + self._args
+        return [self.binary, "--port=%s" % str(self.port)] + self._args
 
 
 def cmd_arg(name, value=None):

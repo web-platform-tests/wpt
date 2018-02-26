@@ -30,4 +30,5 @@ product_list = ["chrome",
                 "sauce",
                 "servo",
                 "servodriver",
-                "opera"]
+                "opera",
+                "webkit"]

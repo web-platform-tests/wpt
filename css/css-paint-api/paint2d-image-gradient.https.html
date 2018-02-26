@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<link rel="help" href="https://www.w3.org/TR/css-paint-api-1/#drawing-an-image">
+<link rel="match" href="paint2d-image-gradient-ref.html">
+<style>
+#output {
+    width: 300px;
+    height: 300px;
+    border-image-source: linear-gradient(0deg, red, blue);
+    background-image: paint(gradients);
+}
+</style>
+<script src="/common/reftest-wait.js"></script>
+<script src="/common/worklet-reftest.js"></script>
+<body>
+<div id="output"></div>
+
+<script id="code" type="text/worklet">
+    registerPaint('gradients', class {
+        static get inputProperties() { return [ 'border-image-source' ]; };
+        paint(ctx, geom, styleMap) {
+            ctx.fillStyle = 'green';
+            ctx.fillRect(0, 0, geom.width, geom.height);
+            ctx.drawImage(styleMap.get('border-image-source'), 0, 0);
+        }
+    });
+</script>
+
+<script>
+    importWorkletAndTerminateTestAfterAsyncPaint(CSS.paintWorklet, document.getElementById('code').textContent);
+</script>
+</body>
+</html>

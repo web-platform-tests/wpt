@@ -31,12 +31,16 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 
 
 def capabilities_for_port(webkit_port, binary, binary_args):
+    from selenium.webdriver import DesiredCapabilities
+
     if webkit_port == "gtk":
-        return {"browserName": "MiniBrowser",
-                "version": "",
-                "platform": "ANY",
-                "webkitgtk:browserOptions": {"binary": binary,
-                                             "args": binary_args}}
+        capabilities = dict(DesiredCapabilities.WEBKITGTK.copy())
+        capabilities["webkitgtk:browserOptions"] = {
+            "binary": binary,
+            "args": binary_args
+        }
+        return capabilities
+
     return None
 
 

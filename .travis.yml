@@ -22,6 +22,7 @@ install:
 env:  # required at the top-level for allow_failures to work below
   global:
     - SAUCE_USERNAME=w3c-ttwf
+    - RUN_JOBS=1
 matrix:
   fast_finish: true
   include:

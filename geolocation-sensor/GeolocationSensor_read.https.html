@@ -7,15 +7,15 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 const properties = [
-    'timestamp',
-    'latitude',
-    'longitude',
-    'altitude',
-    'accuracy',
-    'altitudeAccuracy',
-    'heading',
-    'speed'
-  ];
+  'timestamp',
+  'latitude',
+  'longitude',
+  'altitude',
+  'accuracy',
+  'altitudeAccuracy',
+  'heading',
+  'speed'
+];
 
 promise_test(async t => {
   const geo = await GeolocationSensor.read({ signal: null });

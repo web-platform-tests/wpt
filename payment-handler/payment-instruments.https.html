@@ -212,7 +212,7 @@ function runTests(registration) {
       },
     );
     return promise_rejects(t, new TypeError(), setPromise);
-  }, 'Cannot register instruments with very long icon media type image/pngggggg...');
+  }, "Don't crash when registering instruments with very long icon media type image/pngggggg...");
 
   promise_test(async t => {
     await registration.paymentManager.instruments.clear();

@@ -8,8 +8,6 @@
 <script src="register-and-activate-service-worker.js"></script>
 <p>When the payment sheet is shown, please authorize the mock payment.</p>
 <script>
-// Use a different scope for the payment handler, because Chrome closes all
-// payment handler scoped windows after payment.
 async function setInstrumentsAndRunTests(registration) {
   await registration.paymentManager.instruments.clear();
   await registration.paymentManager.instruments.set('instrument-key', {

@@ -129,6 +129,21 @@ can be pushed here without any further review by supplying a link to the
 upstream review. (The Gecko, Servo, and Chromium projects use this approach at
 the time of writing.)
 
+Landing changes
+---------------
+
+A pull request that is approved (without outstanding comments) and that passes
+the automated tests can be landed by anyone who has been granted the relevant
+GitHub permissions.
+
+If you need help getting your approved pull request landed, try asking in the
+([archived](https://w3.logbot.info/testing)) `#testing` channel on
+[irc.w3.org](https://www.w3.org/wiki/IRC) (port 6665).
+
+We prefer a workflow without merge commits, using the "Rebase and merge" button
+if the pull request contains logically separated commits, and the "Squash and
+merge" button otherwise.
+
 
 Running the Tests
 =================

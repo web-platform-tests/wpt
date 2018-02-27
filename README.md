@@ -21,6 +21,107 @@ Note: because of the frequent creation and deletion of branches in this
 repo, it is recommended to "prune" stale branches when fetching updates,
 i.e. use `git pull --prune` (or `git fetch -p && git merge`).
 
+Contributing
+============
+
+Save the Web, Write Some Tests!
+
+Absolutely everyone is welcome (and even encouraged) to contribute to
+test development, so long as you fulfill the contribution requirements
+detailed in the [Contributing Guidelines][contributing]. No test is
+too small or too simple, especially if it corresponds to something for
+which you've noted an interoperability bug in a browser.
+
+The way to contribute is just as usual:
+
+* Fork this repository (and make sure you're still relatively in sync
+  with it if you forked a while ago).
+* Create a branch for your changes:
+  `git checkout -b topic`.
+* Make your changes.
+* Run the lint script described below.
+* Commit locally and push that to your repo.
+* Send in a pull request based on the above.
+
+Issues with web-platform-tests
+------------------------------
+
+If you spot an issue with a test and are not comfortable providing a
+pull request per above to fix it, please
+[file a new issue](https://github.com/w3c/web-platform-tests/issues/new).
+Thank you!
+
+Lint tool
+---------
+
+We have a lint tool for catching common mistakes in test files. You
+can run it manually by starting the `lint` executable from the root of
+your local web-platform-tests working directory like this:
+
+```
+./wpt lint
+```
+
+The lint tool is also run automatically for every submitted pull
+request, and reviewers will not merge branches with tests that have
+lint errors, so you must fix any errors the lint tool reports.
+
+In the unusual case of error reports for things essential to a
+certain test or that for other exceptional reasons shouldn't prevent
+a merge of a test, update and commit the `lint.whitelist` file in the
+web-platform-tests root directory to suppress the error reports.
+
+For more details, see the [lint-tool documentation][lint-tool].
+
+[lint-tool]: http://web-platform-tests.org/writing-tests/lint-tool.html
+
+Adding command-line scripts ("tools" subdirs)
+---------------------------------------------
+
+Sometimes you may want to add a script to the repository that's meant
+to be used from the command line, not from a browser (e.g., a script
+for generating test files). If you want to ensure (e.g., for security
+reasons) that such scripts won't be handled by the HTTP server, but
+will instead only be usable from the command line, then place them in
+either:
+
+* the `tools` subdir at the root of the repository, or
+
+* the `tools` subdir at the root of any top-level directory in the
+  repository which contains the tests the script is meant to be used
+  with
+
+Any files in those `tools` directories won't be handled by the HTTP
+server; instead the server will return a 404 if a user navigates to
+the URL for a file within them.
+
+If you want to add a script for use with a particular set of tests but
+there isn't yet any `tools` subdir at the root of a top-level
+directory in the repository containing those tests, you can create a
+`tools` subdir at the root of that top-level directory and place your
+scripts there.
+
+For example, if you wanted to add a script for use with tests in the
+`notifications` directory, create the `notifications/tools` subdir and
+put your script there.
+
+Test Review
+===========
+
+We can sometimes take a little while to go through pull requests
+because we have to go through all the tests and ensure that they match
+the specification correctly. But we look at all of them, and take
+everything that we can.
+
+OWNERS files are used only to indicate who should be notified of pull
+requests.  If you are interested in receiving notifications of proposed
+changes to tests in a given directory, feel free to add yourself to the
+OWNERS file. Anyone with expertise in the specification under test can
+approve a pull request.  In particular, if a test change has already
+been adequately reviewed "upstream" in another repository, it can be
+pushed here without any further review by supplying a link to the
+upstream review.
+
 Running the Tests
 =================
 
@@ -294,107 +395,6 @@ Branches
 In the vast majority of cases the **only** upstream branch that you
 should need to care about is `master`. If you see other branches in
 the repository, you can generally safely ignore them.
-
-Contributing
-============
-
-Save the Web, Write Some Tests!
-
-Absolutely everyone is welcome (and even encouraged) to contribute to
-test development, so long as you fulfill the contribution requirements
-detailed in the [Contributing Guidelines][contributing]. No test is
-too small or too simple, especially if it corresponds to something for
-which you've noted an interoperability bug in a browser.
-
-The way to contribute is just as usual:
-
-* Fork this repository (and make sure you're still relatively in sync
-  with it if you forked a while ago).
-* Create a branch for your changes:
-  `git checkout -b topic`.
-* Make your changes.
-* Run the lint script described below.
-* Commit locally and push that to your repo.
-* Send in a pull request based on the above.
-
-Issues with web-platform-tests
-------------------------------
-
-If you spot an issue with a test and are not comfortable providing a
-pull request per above to fix it, please
-[file a new issue](https://github.com/w3c/web-platform-tests/issues/new).
-Thank you!
-
-Lint tool
----------
-
-We have a lint tool for catching common mistakes in test files. You
-can run it manually by starting the `lint` executable from the root of
-your local web-platform-tests working directory like this:
-
-```
-./wpt lint
-```
-
-The lint tool is also run automatically for every submitted pull
-request, and reviewers will not merge branches with tests that have
-lint errors, so you must fix any errors the lint tool reports.
-
-In the unusual case of error reports for things essential to a
-certain test or that for other exceptional reasons shouldn't prevent
-a merge of a test, update and commit the `lint.whitelist` file in the
-web-platform-tests root directory to suppress the error reports.
-
-For more details, see the [lint-tool documentation][lint-tool].
-
-[lint-tool]: http://web-platform-tests.org/writing-tests/lint-tool.html
-
-Adding command-line scripts ("tools" subdirs)
----------------------------------------------
-
-Sometimes you may want to add a script to the repository that's meant
-to be used from the command line, not from a browser (e.g., a script
-for generating test files). If you want to ensure (e.g., for security
-reasons) that such scripts won't be handled by the HTTP server, but
-will instead only be usable from the command line, then place them in
-either:
-
-* the `tools` subdir at the root of the repository, or
-
-* the `tools` subdir at the root of any top-level directory in the
-  repository which contains the tests the script is meant to be used
-  with
-
-Any files in those `tools` directories won't be handled by the HTTP
-server; instead the server will return a 404 if a user navigates to
-the URL for a file within them.
-
-If you want to add a script for use with a particular set of tests but
-there isn't yet any `tools` subdir at the root of a top-level
-directory in the repository containing those tests, you can create a
-`tools` subdir at the root of that top-level directory and place your
-scripts there.
-
-For example, if you wanted to add a script for use with tests in the
-`notifications` directory, create the `notifications/tools` subdir and
-put your script there.
-
-Test Review
-===========
-
-We can sometimes take a little while to go through pull requests
-because we have to go through all the tests and ensure that they match
-the specification correctly. But we look at all of them, and take
-everything that we can.
-
-OWNERS files are used only to indicate who should be notified of pull
-requests.  If you are interested in receiving notifications of proposed
-changes to tests in a given directory, feel free to add yourself to the
-OWNERS file. Anyone with expertise in the specification under test can
-approve a pull request.  In particular, if a test change has already
-been adequately reviewed "upstream" in another repository, it can be
-pushed here without any further review by supplying a link to the
-upstream review.
 
 Getting Involved
 ================

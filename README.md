@@ -55,7 +55,7 @@ excluded from your proxy lookups.
 
 
 Running Tests Manually
-======================
+----------------------
 
 The test server can be started using
 ```

@@ -106,21 +106,29 @@ For example, if you wanted to add a script for use with tests in the
 put your script there.
 
 Test Review
-===========
+-----------
 
-We can sometimes take a little while to go through pull requests
-because we have to go through all the tests and ensure that they match
-the specification correctly. But we look at all of them, and take
-everything that we can.
+All changes to this repository should be reviewed in public before landing.
+There is, however, no centralized authority that appoints reviewers: any person
+who is sufficiently qualified to verify the correctness and readability of the
+changes is welcome to approve them. (In particular, [the OWNERS files](#owners)
+do not limit the list of acceptable reviewers; they are used for notifications
+only.)
 
-OWNERS files are used only to indicate who should be notified of pull
-requests.  If you are interested in receiving notifications of proposed
-changes to tests in a given directory, feel free to add yourself to the
-OWNERS file. Anyone with expertise in the specification under test can
-approve a pull request.  In particular, if a test change has already
-been adequately reviewed "upstream" in another repository, it can be
-pushed here without any further review by supplying a link to the
-upstream review.
+Despite this, there is a shortage of reviewers and the time they have available
+to do reviews, and so it can take a while for some pull requests to be reviewed.
+But we do look at all of them, and take everything that we can.
+
+If you find there is a delay in the review of your pull request, it may be worth
+trying to find someone with relevant experience, such as an engineer working on
+the relevant feature in a browser, yourself.
+
+Note that there is no requirement that the review is done on GitHub; if a test
+change has already been adequately reviewed "upstream" in another repository, it
+can be pushed here without any further review by supplying a link to the
+upstream review. (The Gecko, Servo, and Chromium projects use this approach at
+the time of writing.)
+
 
 Running the Tests
 =================
@@ -411,6 +419,15 @@ is [archived][ircarchive].
 [ircw3org]: https://www.w3.org/wiki/IRC
 [ircarchive]: http://logs.glob.uno/?c=w3%23testing
 [mailarchive]: https://lists.w3.org/Archives/Public/public-test-infra/
+
+<span id="owners">Notifications about changes</span>
+----------------------------------------------------
+
+If you are interested in receiving notifications of proposed changes to tests in
+a given directory, feel free to add yourself to the OWNERS file.
+(The notifications are the only effect of being listed in OWNERS files; it does
+not assign you any responsibility to do reviews.)
+
 
 Documentation
 =============

@@ -263,7 +263,7 @@ def annotation_get(request, response):
 
     if base.startswith("temp-") and tempAnnotations[base]:
         response.headers.update(load_headers_from_file(headers_file))
-        response.headers.set('Etag', hashlib.sha1(base).hexdigest())
+        response.headers.set('ETag', hashlib.sha1(base).hexdigest())
         data = dump_json(tempAnnotations[base])
         if data != "" :
             response.content = data
@@ -279,7 +279,7 @@ def annotation_get(request, response):
         etag = "{0}{1}{2}".format(statinfo.st_ino, statinfo.st_mtime,
                                   statinfo.st_size)
         # obfuscate so we don't leak info; hexdigest for string compatibility
-        response.headers.set('Etag', hashlib.sha1(etag).hexdigest())
+        response.headers.set('ETag', hashlib.sha1(etag).hexdigest())
 
         with open(requested_file, 'r') as data_file:
             data = data_file.read()
@@ -403,8 +403,8 @@ def annotation_delete(request, response):
 
 if __name__ == '__main__':
     print 'http://' + myhost + ':{0}/'.format(port)
-    print 'container URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/"
-    print 'example annotation URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/anno1.json"
+    print 'container URI is http://' + myhost + ':{0}/'.format(port) + "annotations/"
+    print 'example annotation URI is http://' + myhost + ':{0}/'.format(port) + "annotations/anno1.json"
 
     routes = [
         ("GET", "", wptserve.handlers.file_handler),

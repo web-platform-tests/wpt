@@ -2,13 +2,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>CSS Text Test: line-break - normal and iteration marks</title>
-		<!-- iteration marks -->
+		<title>CSS Text Test: line-break - strict and postfixes</title>
+		<!-- postfixes -->
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
 		<link rel="help" title="5.2. Breaking Rules for Punctuation: the 'line-break' property" href="http://www.w3.org/TR/css-text-3/#line-break" />
-		<link rel="match" href="reference/line-break-normal-021-ref.xht" />
+		<link rel="match" href="reference/line-break-strict-017a-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
-		<meta name="assert" content="This test verifies that 'line-break: normal' does not allow line breaking before iteration marks such as IDEOGRAPHIC ITERATION MARK (U+3005) and VERTICAL IDEOGRAPHIC ITERATION MARK (U+3B)." />
+		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before postfixes such as PERCENT SIGN (U+0025) and CENT SIGN (U+00A2)." />
 		<style type="text/css">
 			@font-face
 			{
@@ -20,7 +20,7 @@
 				*/
 			}
 			.test span {
-				line-break: normal;						// The property to be tested
+				line-break: strict;						// The property to be tested
 			}
 			p.test, p.control {
 				border: 1px solid gray;
@@ -43,53 +43,58 @@
 		<p>
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
-		<!-- iteration marks -->
 		<div class="wrapper">
+			<!-- postfixes PERCENT SIGN -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x3005;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x0025;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x3005;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x0025;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
+			<!-- postfixes CENT SIGN -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x303b;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x00a2;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x303b;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x00a2;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
+			<!-- postfixes DEGREE SIGN -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x309d;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x00b0;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x309d;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x00b0;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
+			<!-- postfixes PER MILLE SIGN -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x309e;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x2030;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x309e;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x2030;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
+			<!-- postfixes PRIME -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x30fd;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x2032;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x30fd;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x2032;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
+			<!-- postfixes DOUBLE PRIME -->
 			<p class="test" lang="ja">
-				<span>サンプル文サンプル文<span class="target">&#x30fe;</span>サンプル文</span>
+				<span>サンプル文サンプル文<span class="target">&#x2033;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x30fe;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#x2033;</span>サンプル文</span>
 			</p>
 		</div>
 	</body>

@@ -142,7 +142,9 @@ scheme host and port.""")
                               help="Extra argument for the WebDriver binary")
 
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
-                              help="Path to root directory containing test metadata"),
+                              help="Path to root directory containing test metadata manifest file"),
+    config_group.add_argument("--expected-path", action="store", type=abs_path, dest="expected_root",
+                              help="Path to root directory containing test expectation metadata"),
     config_group.add_argument("--tests", action="store", type=abs_path, dest="tests_root",
                               help="Path to root directory containing test files"),
     config_group.add_argument("--manifest", action="store", type=abs_path, dest="manifest_path",
@@ -452,6 +454,10 @@ def check_args(kwargs):
         # Default to the internal reftest implementation on Linux and OSX
         kwargs["reftest_internal"] = sys.platform.startswith("linux") or sys.platform.startswith("darwin")
 
+    if kwargs["expected_root"] is None:
+        # Default to metadata_root (legacy behaviour, before it was split into two flags).
+        kwargs["expected_root"] = kwargs["metadata_root"]
+
     return kwargs
 
 
@@ -488,7 +494,9 @@ def create_parser_update(product_choices=None):
                         default=None, help="Browser for which metadata is being updated")
     parser.add_argument("--config", action="store", type=abs_path, help="Path to config file")
     parser.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
-                        help="Path to the folder containing test metadata"),
+                        help="Path to the folder containing test metadata manifest"),
+    parser.add_argument("--expected-path", action="store", type=abs_path, dest="expected_root",
+                        help="Path to the folder containing expected test result metadata"),
     parser.add_argument("--tests", action="store", type=abs_path, dest="tests_root",
                         help="Path to web-platform-tests"),
     parser.add_argument("--manifest", action="store", type=abs_path, dest="manifest_path",

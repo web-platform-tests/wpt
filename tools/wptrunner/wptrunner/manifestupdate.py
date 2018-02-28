@@ -439,19 +439,19 @@ def make_expr(prop_set, status, boolean_properties=None):
     return root
 
 
-def get_manifest(metadata_root, test_path, url_base, property_order=None,
+def get_manifest(expectation_root, test_path, url_base, property_order=None,
                  boolean_properties=None):
     """Get the ExpectedManifest for a particular test path, or None if there is no
     metadata stored for that test path.
 
-    :param metadata_root: Absolute path to the root of the metadata directory
+    :param expectation_root: Absolute path to the root of the metadata directory
     :param test_path: Path to the test(s) relative to the test root
     :param url_base: Base url for serving the tests in this manifest
     :param property_order: List of properties to use in expectation metadata
                            from most to least significant.
     :param boolean_properties: Set of properties in property_order that should
                                be treated as boolean."""
-    manifest_path = expected.expected_path(metadata_root, test_path)
+    manifest_path = expected.expected_path(expectation_root, test_path)
     try:
         with open(manifest_path) as f:
             return compile(f, test_path, url_base, property_order=property_order,

@@ -59,15 +59,20 @@ class WdspecSubtestResult(SubtestResult):
     statuses = set(["PASS", "FAIL", "ERROR"])
 
 
-def get_run_info(metadata_root, product, **kwargs):
-    return RunInfo(metadata_root, product, **kwargs)
+def get_run_info(expectation_root, product, **kwargs):
+    """Gets a RunInfo for the given args.
+
+    :param (string) expectation_root: Absolute path to the root for expectation manifest files.
+    :param (string) product: Product to run the tests for (e.g. chrome-63.0).
+    """
+    return RunInfo(expectation_root, product, **kwargs)
 
 
 class RunInfo(dict):
-    def __init__(self, metadata_root, product, debug, extras=None):
+    def __init__(self, expectation_root, product, debug, extras=None):
         import mozinfo
 
-        self._update_mozinfo(metadata_root)
+        self._update_mozinfo(expectation_root)
         self.update(mozinfo.info)
         self["product"] = product
         if debug is not None:
@@ -84,12 +89,12 @@ class RunInfo(dict):
         if extras is not None:
             self.update(extras)
 
-    def _update_mozinfo(self, metadata_root):
+    def _update_mozinfo(self, expectation_root):
         """Add extra build information from a mozinfo.json file in a parent
         directory"""
         import mozinfo
 
-        path = metadata_root
+        path = expectation_root
         dirs = set()
         while path != os.path.expanduser('~'):
             if path in dirs:

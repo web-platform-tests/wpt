@@ -65,6 +65,7 @@ def exit(msg):
 def args_general(kwargs):
     kwargs.set_if_none("tests_root", wpt_root)
     kwargs.set_if_none("metadata_root", wpt_root)
+    kwargs.set_if_none("expectation_root", kwargs.get("metadata_root"))
     kwargs.set_if_none("manifest_update", True)
     kwargs.set_if_none("manifest_download", True)
 

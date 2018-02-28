@@ -159,7 +159,12 @@ def get_parser():
                         dest="metadata_root",
                         action="store",
                         default=wpt_root,
-                        help="Directory that will contain MANIFEST.json")
+                        help="Directory that will contain the metadata MANIFEST.json")
+    parser.add_argument("--expected-path",
+                        dest="expected_root",
+                        action="store",
+                        default=wpt_root,
+                        help="Root directory that will contain expected test result metadata.")
     parser.add_argument("--config-file",
                         action="store",
                         type=str,

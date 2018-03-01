@@ -4,13 +4,13 @@ title: Safari
 ---
 To run Safari on macOS, some manual setup is required:
 
-  * Disable "Block pop-up windows" in the security preferences.
+  * Allow Safari to be controlled by SafariDriver: `safaridriver --enable`
 
-  * Ensure that "Allow Remote Automation" is enabled in the "Develop" menu.
+  * Allow pop-up windows:
+    `defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically 1`
 
-  * Import the web-platform.test certificate and root certificate authority in
-    `tools/certs/` into the keychain of the user that will run the tests, and
-    manually mark the root as trusted.
+  * Trust the certificate:
+    `security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem`
 
   * Set `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` in your environment. This is a
     workaround for a known

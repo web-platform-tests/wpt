@@ -3,15 +3,13 @@ from ..webdriver_server import SafariDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,
                                           SeleniumRefTestExecutor)
-from ..executors.executorsafari import SafariDriverWdspecExecutor
 
 
 __wptrunner__ = {"product": "safari",
                  "check_args": "check_args",
                  "browser": "SafariBrowser",
                  "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor",
-                              "wdspec": "SafariDriverWdspecExecutor"},
+                              "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",

@@ -23,5 +23,5 @@ update the /etc/hosts file to include
 After this, we may run wpt with the `chrome_android` product
 
 ```
-./wpt run chrome_android <test>
+./wpt run chrome_android [test_list]
 ```

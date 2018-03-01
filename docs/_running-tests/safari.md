@@ -16,9 +16,13 @@ To run Safari on macOS, some manual setup is required:
     workaround for a known
     [macOS High Sierra issue](https://github.com/w3c/web-platform-tests/issues/9007).
 
-Now, run the tests with `./wpt run safari`.
+Now, run the tests using the `safari` product:
+```
+./wpt run safari [test_list]
+```
 
 This will use the `safaridriver` found on the path, which will be stable Safari.
-To run Safari Technology Preview instead, use the
-`--webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver"`
-command line argument.
+To run Safari Technology Preview instead, use the `--webdriver-binary` argument:
+```
+./wpt run --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari [test_list]
+```

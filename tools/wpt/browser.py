@@ -412,6 +412,9 @@ class Safari(Browser):
     def install(self, dest=None):
         raise NotImplementedError
 
+    def find_binary(self):
+        raise NotImplementedError
+
     def find_webdriver(self):
         return find_executable("safaridriver")
 

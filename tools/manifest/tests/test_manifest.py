@@ -269,14 +269,13 @@ def test_reftest_computation_chain_update_node_change():
                        ("reftest_node", test2.path, {test2})]
 
     #test2 changes to support type
-    s3 = SourceFileWithTest("test2", "1"*40, item.SupportFile)
+    s2 = SourceFileWithTest("test2", "1"*40, item.SupportFile)
 
-    # This doesn't check whether the reftest graph was computed or not,
-    # the m.update([s3]) assert will just check whether m.update() returned True (I think).
-    # Regardless, the test works even when the graph isn't being recomputed.
-    assert m.update([s3]) is True
-    test3 = s3.manifest_items()[1][0]
-    assert list(m) == [("support", test3.path, {test3})]
+    assert m.update([s1,s2]) is True
+    test3 = s2.manifest_items()[1][0]
+
+    assert list(m) == [("reftest", test1.path, {test1}),
+                       ("support", test3.path, {test3})]
 
 
 def test_iterpath():

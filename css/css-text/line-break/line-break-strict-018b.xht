@@ -2,10 +2,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>CSS Reftest Reference</title>
-		<!-- reftest for line-break-normal-022.xht -->
+		<title>CSS Text Test: line-break - strict and prefixes</title>
+		<!-- prefixes -->
 		<link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
+		<link rel="help" title="5.2. Breaking Rules for Punctuation: the 'line-break' property" href="http://www.w3.org/TR/css-text-3/#line-break" />
+		<link rel="match" href="reference/line-break-strict-018b-ref.xht" />
 		<meta http-equiv="content-language" content="en, ja" />
+		<meta name="assert" content="This test verifies that 'line-break: strict' does not allow line breaking before prefixes such as EURO SIGN (U+20AC) and FULLWIDTH DOLLAR SIGN (U+FF04)." />
 		<style type="text/css">
 			@font-face
 			{
@@ -16,7 +19,10 @@
 				mplus-1p-regular.ttf can be downloaded at/from [TBD later]
 				*/
 			}
-			p.control {
+			.test span {
+				line-break: strict;						// The property to be tested
+			}
+			p.test, p.control {
 				border: 1px solid gray;
 				color: blue;
 				font-family: "mplus-1p-regular";
@@ -33,26 +39,26 @@
 			}
 		</style>
 	</head>
-	<body  lang="en">
+	<body lang="en">
 		<p>
 			Test passes if the highlighted characters in each pair of rectangles are at the exact same horizontal position.
 		</p>
 		<div class="wrapper">
-			<!-- inseparable characters TWO DOT LEADER -->
-			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x2025;</span>サンプル文</span>
+			<!-- prefixes FULLWIDTH POUND SIGN -->
+			<p class="test" lang="ja">
+				<span>サンプル文サンプル文<span class="target">&#xffe1;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x2025;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#xffe1;</span>サンプル文</span>
 			</p>
 		</div>
 		<div class="wrapper">
-			<!-- inseparable characters HORIZONTAL ELLIPSIS -->
-			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x2026;</span>サンプル文</span>
+			<!-- prefixes FULLWIDTH YEN SIGN -->
+			<p class="test" lang="ja">
+				<span>サンプル文サンプル文<span class="target">&#xffe5;</span>サンプル文</span>
 			</p>
 			<p class="control" lang="ja">
-				<span>サンプル文サンプル<br />文<span class="target">&#x2026;</span>サンプル文</span>
+				<span>サンプル文サンプル<br />文<span class="target">&#xffe5;</span>サンプル文</span>
 			</p>
 		</div>
 	</body>

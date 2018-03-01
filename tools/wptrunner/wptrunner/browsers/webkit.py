@@ -41,7 +41,7 @@ def capabilities_for_port(webkit_port, binary, binary_args):
         }
         return capabilities
 
-    return None
+    return {}
 
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,

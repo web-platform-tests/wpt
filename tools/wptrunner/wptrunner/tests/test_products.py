@@ -5,20 +5,22 @@ from os.path import join, dirname
 
 import pytest
 
-sys.path.insert(0, join(dirname(__file__), "..", ".."))
+from .base import all_products, active_products
 
 from wptrunner import products
 
 
+@active_products("product")
 def test_load_active_product(product):
     """test we can successfully load the product of the current testenv"""
     products.load_product({}, product)
     # test passes if it doesn't throw
 
 
-def test_load_all_products(all_product):
+@all_products("product")
+def test_load_all_products(product):
     """test every product either loads or throws ImportError"""
     try:
-        products.load_product({}, all_product)
+        products.load_product({}, product)
     except ImportError:
         pass

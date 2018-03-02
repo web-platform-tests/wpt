@@ -1,0 +1,25 @@
+[Constructor(ResizeObserverCallback callback),
+    Exposed=Window]
+interface ResizeObserver {
+    void observe(Element target);
+    void unobserve(Element target);
+    void disconnect();
+};
+
+callback ResizeObserverCallback = void (sequence<ResizeObserverEntry> entries, ResizeObserver observer)
+
+[Constructor(Element target)
+]
+interface ResizeObserverEntry {
+    readonly attribute Element target;
+    readonly attribute DOMRectReadOnly contentRect;
+};
+
+[Constructor(Element target)
+]
+interface ResizeObservation {
+    readonly attribute Element target;
+    readonly attribute float broadcastWidth;
+    readonly attribute float broadcastHeight;
+    boolean isActive();
+};

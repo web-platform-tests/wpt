@@ -169,9 +169,6 @@ enum CSSMathOperator {
     "max",
 };
 
-// FIXME: Uncomment this when IDLHarness supports CSS namespaces:
-// https://github.com/web-platform-tests/wpt/issues/7583
-/*
 partial namespace CSS {
     CSSUnitValue number(double value);
     CSSUnitValue percent(double value);
@@ -220,7 +217,6 @@ partial namespace CSS {
     // <flex>
     CSSUnitValue fr(double value);
 };
-*/
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet),
  Constructor(sequence<CSSTransformComponent> transforms)]

@@ -1,0 +1,11 @@
+[Exposed=Worklet]
+interface WorkletGlobalScope {
+};
+
+interface Worklet {
+    [NewObject] Promise<void> addModule(USVString moduleURL, optional WorkletOptions options);
+};
+
+dictionary WorkletOptions {
+    RequestCredentials credentials = "omit";
+};

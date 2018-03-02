@@ -7,6 +7,6 @@ interface Gyroscope : Sensor {
 
 enum LocalCoordinateSystem { "device", "screen" };
 
-dictionary GyroscopeSensorOptions : SensorOptions {
+dictionary GyroscopeSensorOptions : SensorOptions  {
   LocalCoordinateSystem referenceFrame = "device";
 };

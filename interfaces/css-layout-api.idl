@@ -1,0 +1,179 @@
+[Exposed=LayoutWorklet]
+interface LayoutChild {
+    readonly attribute StylePropertyMapReadOnly styleMap;
+
+    IntrinsicSizesRequest intrinsicSizes();
+    FragmentRequest layoutNextFragment(ConstraintSpace space, ChildBreakToken breakToken);
+};
+
+[Exposed=LayoutWorklet]
+interface Fragment {
+    readonly attribute double inlineSize;
+    readonly attribute double blockSize;
+
+    attribute double inlineOffset;
+    attribute double blockOffset;
+
+    readonly attribute any data;
+
+    readonly attribute ChildBreakToken? breakToken;
+};
+
+/* NOTE EVERYTHING BELOW HERE IS SPECULATIVE */
+interface LineFragment : Fragment {
+    readonly attribute sequence<LineFragmentSegment> segments;
+};
+
+interface LineFragmentSegment {
+    readonly attribute LineFragmentSegmentType type;
+    readonly attribute LineFragmentSegmentBreakType breakType;
+    readonly attribute FontMetrics? metrics;
+    readonly attribute double inlineOffset;
+};
+
+enum LineFragmentSegmentType {
+    "word-break",
+    "atomic-inline",
+    /* TODO add others here, not sure yet. */
+};
+
+enum LineFragmentSegmentBreakType {
+    "something"
+    /* TODO add others here, not sure yet. */
+};
+
+[Constructor(optional ConstraintSpaceOptions options),Exposed=LayoutWorklet]
+interface ConstraintSpace {
+    readonly attribute double inlineSize;
+    readonly attribute double blockSize;
+
+    readonly attribute boolean inlineSizeFixed;
+    readonly attribute boolean blockSizeFixed;
+
+    readonly attribute double percentageInlineSize;
+    readonly attribute double percentageBlockSize;
+
+    readonly attribute double? blockFragmentationOffset;
+    readonly attribute BlockFragmentationType blockFragmentationType;
+
+    readonly attribute any data;
+};
+
+dictionary ConstraintSpaceOptions {
+    double inlineSize = Infinity;
+    double blockSize = Infinity;
+
+    boolean inlineSizeFixed = false;
+    boolean blockSizeFixed = false;
+
+    double? percentageInlineSize = null;
+    double? percentageBlockSize = null;
+
+    double? blockFragmentationOffset = null;
+    BlockFragmentationType blockFragmentationType = "none";
+
+    any data = null;
+};
+
+enum BlockFragmentationType { "none", "page", "column", "region" };
+
+[Exposed=LayoutWorklet]
+interface ChildBreakToken {
+    readonly attribute BreakType breakType;
+    readonly attribute LayoutChild child;
+};
+
+[Exposed=LayoutWorklet]
+interface BreakToken {
+    readonly attribute sequence<ChildBreakToken> childBreakTokens;
+    readonly attribute any data;
+};
+
+dictionary BreakTokenOptions {
+    sequence<ChildBreakToken> childBreakTokens;
+    any data = null;
+};
+
+enum BreakType { "none", "line", "column", "page", "region" };
+
+[Exposed=LayoutWorklet]
+interface LayoutEdgeSizes {
+  readonly attribute double inlineStart;
+  readonly attribute double inlineEnd;
+
+  readonly attribute double blockStart;
+  readonly attribute double blockEnd;
+
+  // Convenience attributes for the sum in one direction.
+  readonly attribute double inline;
+  readonly attribute double block;
+};
+
+[Exposed=LayoutWorklet]
+interface LayoutEdges {
+  readonly attribute LayoutEdgeSizes border;
+  readonly attribute LayoutEdgeSizes scrollbar;
+  readonly attribute LayoutEdgeSizes padding;
+
+  readonly attribute LayoutEdgeSizes all;
+};
+
+[Exposed=LayoutWorklet]
+partial interface LayoutWorkletGlobalScope {
+    double resolveInlineSize(ConstraintSpace constraintSpace,
+                             StylePropertyMapReadOnly styleMap);
+
+    double resolveBlockSize(ConstraintSpace constraintSpace,
+                            StylePropertyMapReadOnly styleMap,
+                            optional double autoBlockSize);
+
+    double resolveLength(ConstraintSpace constraintSpace, CSSStyleValue value);
+};
+
+partial interface CSS {
+    [SameObject] readonly attribute Worklet layoutWorklet;
+};
+
+[Global=(Worklet,LayoutWorklet),Exposed=LayoutWorklet]
+interface LayoutWorkletGlobalScope : WorkletGlobalScope {
+    void registerLayout(DOMString name, VoidFunction layoutCtor);
+};
+
+[Exposed=LayoutWorklet]
+enum ChildDisplayType {
+    "block",
+    "normal",
+};
+
+[Exposed=LayoutWorklet]
+interface FragmentRequest {
+  // Has internal slots:
+  // [[layoutChild]] - The layout child to generate the fragment for.
+  // [[constraintSpace]] - The constraint space to perform layout in.
+  // [[breakToken]] - The break token to resume the layout with.
+};
+
+[Exposed=LayoutWorklet]
+interface IntrinsicSizesRequest {
+  // Has internal slots:
+  // [[layoutChild]] - The layout child to calculate the intrinsic sizes for.
+};
+
+// This is the final return value from the author defined layout() method.
+dictionary FragmentResultOptions {
+    double inlineSize = 0;
+    double blockSize = 0;
+    sequence<Fragment> childFragments = [];
+    any data = null;
+    BreakTokenOptions breakToken = null;
+};
+
+dictionary IntrinsicSizesResultOptions {
+    double maxContentSize;
+    double minContentSize;
+};
+
+interface IntrinsicSizes {
+  readonly attribute double minContentSize;
+  readonly attribute double maxContentSize;
+};

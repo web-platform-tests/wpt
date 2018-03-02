@@ -1,0 +1,27 @@
+[Exposed=Window]
+partial interface Navigator {
+    [SameObject] readonly attribute BudgetService budget;
+};
+
+[Exposed=Worker]
+partial interface WorkerNavigator {
+    [SameObject] readonly attribute BudgetService budget;
+};
+
+[Exposed=(Window,Worker)]
+interface BudgetService {
+    Promise<double> getCost(OperationType operation);
+    Promise<sequence<BudgetState>> getBudget();
+
+    Promise<boolean> reserve(OperationType operation);
+};
+
+[Exposed=(Window,Worker)]
+interface BudgetState {
+  readonly attribute double budgetAt;
+  readonly attribute DOMTimeStamp time;
+};
+
+enum OperationType {
+  "silent-push"
+};

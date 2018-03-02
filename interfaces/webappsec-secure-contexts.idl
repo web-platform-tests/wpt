@@ -1,0 +1,11 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the webappsec-secure-contexts spec.
+// See https://w3c.github.io/webappsec-secure-contexts/
+
+partial interface Window {
+  readonly attribute boolean isSecureContext;
+};
+
+partial interface WorkerGlobalScope {
+  readonly attribute boolean isSecureContext;
+};

@@ -1,0 +1,10 @@
+interface PerformanceLongTaskTiming : PerformanceEntry {
+    readonly attribute FrozenArray<TaskAttributionTiming> attribution;
+};
+
+interface TaskAttributionTiming : PerformanceEntry {
+    readonly attribute DOMString containerType;
+    readonly attribute DOMString containerSrc;
+    readonly attribute DOMString containerId;
+    readonly attribute DOMString containerName;
+};

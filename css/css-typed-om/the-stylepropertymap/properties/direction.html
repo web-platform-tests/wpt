@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>'z-index' property</title>
+<title>'direction' property</title>
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-get">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-set">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#property-stle-value-normalization">
@@ -13,11 +13,9 @@
 <script>
 'use strict';
 
-runPropertyTests('z-index', [
-  { syntax: 'auto'},
-  // FIXME: This also supports <integer> but the testharness
-  // doesn't support that yet.
-  // { syntax: '<integer>' }
+runPropertyTests('direction', [
+  { syntax: 'ltr' },
+  { syntax: 'rtl' },
 ]);
 
 </script>

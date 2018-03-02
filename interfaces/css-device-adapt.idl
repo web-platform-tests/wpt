@@ -1,0 +1,8 @@
+partial interface CSSRule {
+    const unsigned short VIEWPORT_RULE = 15;
+};
+
+[Exposed=Window]
+interface CSSViewportRule : CSSRule {
+    readonly attribute CSSStyleDeclaration style;
+};

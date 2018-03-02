@@ -1,0 +1,4 @@
+
+        partial interface HTMLInputElement {
+            [CEReactions] attribute DOMString capture;
+        };

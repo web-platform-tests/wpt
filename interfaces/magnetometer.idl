@@ -8,7 +8,7 @@ interface Magnetometer : Sensor {
 
 enum LocalCoordinateSystem { "device", "screen" };
 
-dictionary MagnetometerSensorOptions : SensorOptions {
+dictionary MagnetometerSensorOptions :  SensorOptions  {
   LocalCoordinateSystem referenceFrame = "device";
 };
 

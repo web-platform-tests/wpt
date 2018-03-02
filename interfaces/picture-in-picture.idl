@@ -1,0 +1,26 @@
+partial interface HTMLVideoElement {
+  Promise<PictureInPictureWindow> requestPictureInPicture();
+
+  attribute EventHandler onenterpictureinpicture;
+  attribute EventHandler onleavepictureinpicture;
+
+  [CEReactions]
+  attribute boolean disablePictureInPicture;
+};
+
+partial interface Document {
+  readonly attribute boolean pictureInPictureEnabled;
+
+  Promise<void> exitPictureInPicture();
+};
+
+partial interface DocumentOrShadowRoot {
+  readonly attribute Element? pictureInPictureElement;
+};
+
+interface PictureInPictureWindow {
+  readonly attribute long width;
+  readonly attribute long height;
+
+  attribute EventHandler onresize;
+};

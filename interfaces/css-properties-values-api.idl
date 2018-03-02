@@ -1,0 +1,11 @@
+dictionary PropertyDescriptor {
+  required DOMString name;
+           DOMString syntax       = "*";
+           boolean   inherits     = false;
+           DOMString initialValue;
+};
+
+partial interface CSS {
+  static void registerProperty(PropertyDescriptor descriptor);
+  static void unregisterProperty(DOMString name);
+};

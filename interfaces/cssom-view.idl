@@ -131,7 +131,6 @@ partial interface Range {
   [NewObject] DOMRect getBoundingClientRect();
 };
 
-/* TODO This is commented out because: "Partial interface MouseEvent with no original interface"
 partial interface MouseEvent {
   readonly attribute double screenX;
   readonly attribute double screenY;
@@ -151,7 +150,6 @@ partial dictionary MouseEventInit {
   double clientX = 0.0;
   double clientY = 0.0;
 };
-*/
 
 enum CSSBoxType { "margin", "border", "padding", "content" };
 dictionary BoxQuadOptions {
@@ -175,9 +173,7 @@ interface GeometryUtils {
 
 Text implements GeometryUtils; // like Range
 Element implements GeometryUtils;
-/* TODO Commented out because: "CSSPseudoElement implements GeometryUtils, but CSSPseudoElement is undefined."
 CSSPseudoElement implements GeometryUtils;
-*/
 Document implements GeometryUtils;
 
 typedef (Text or Element or CSSPseudoElement or Document) GeometryNode;

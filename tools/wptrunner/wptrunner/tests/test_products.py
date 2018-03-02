@@ -38,15 +38,7 @@ def test_load_all_products(product):
 
 
 @active_products("product", marks={
-    "firefox": pytest.mark.xfail(reason="#9750"),
-    "chrome": pytest.mark.xfail(reason="#9750"),
-    "chrome_android": pytest.mark.xfail(reason="#9750"),
-    "edge": pytest.mark.xfail(reason="#9750"),
-    "ie": pytest.mark.xfail(reason="#9750"),
-    "opera": pytest.mark.xfail(reason="#9750"),
-    "safari": pytest.mark.xfail(reason="#9750"),
     "sauce": pytest.mark.skip("needs env extras kwargs"),
-    "servodriver": pytest.mark.xfail(reason="#9750"),
 })
 def test_server_start_config(product):
     (check_args,

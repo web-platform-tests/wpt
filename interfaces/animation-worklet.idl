@@ -1,0 +1,30 @@
+partial interface Window {
+    [SameObject] readonly attribute Worklet animationWorklet;
+};
+
+callback VoidFunction = void ();
+
+[Global=Worklet]
+interface AnimationWorkletGlobalScope : WorkletGlobalScope {
+    void registerAnimator(DOMString name, VoidFunction animatorCtor);
+};
+
+[Constructor (DOMString animatorName,
+              optional (AnimationEffectReadOnly or array)? effects = null,
+              AnimationTimeline? timeline,
+              optional WorkletAnimationOptions)]
+interface WorkletAnimation : Animation {
+        readonly attribute DOMString animatorName;
+};
+
+interface WorkletGroupEffectReadOnly :  GroupEffectReadOnly {};
+
+interface WorkletGroupEffect :  WorkletGroupEffectReadOnly {};
+WorkletGroupEffect implements AnimationEffectMutable;
+WorkletGroupEffect implements GroupEffectMutable;
+
+[Exposed=Worklet]
+partial interface AnimationEffectReadOnly {
+    // Intended for use inside Animation Worklet scope to drive the effect.
+    attribute double localTime;
+};

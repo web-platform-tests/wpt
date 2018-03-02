@@ -8,7 +8,7 @@ interface Accelerometer : Sensor {
 
 enum LocalCoordinateSystem { "device", "screen" };
 
-dictionary AccelerometerSensorOptions : SensorOptions {
+dictionary AccelerometerSensorOptions :  SensorOptions  {
   LocalCoordinateSystem referenceFrame = "device";
 };
 

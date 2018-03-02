@@ -38,7 +38,7 @@ def env_extras(**kwargs):
     return []
 
 def env_options():
-    return {"bind_hostname": "true",
+    return {"bind_hostname": True,
             "supports_debugger": False}
 
 class EdgeBrowser(Browser):

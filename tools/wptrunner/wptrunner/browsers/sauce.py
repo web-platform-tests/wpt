@@ -113,7 +113,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"bind_hostname": "true",
+    return {"bind_hostname": True,
             "supports_debugger": False}
 
 

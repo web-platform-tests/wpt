@@ -1,7 +1,3 @@
-// GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the CSS Conditional Rules spec.
-// See https://drafts.csswg.org/css-conditional/
-
 partial interface CSSRule {
     const unsigned short SUPPORTS_RULE = 12;
 };

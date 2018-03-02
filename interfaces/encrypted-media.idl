@@ -1,7 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Encrypted Media Extensions" spec.
-// See: https://w3c.github.io/encrypted-media/
+// Content of this file was automatically extracted from the encrypted-media spec.
+// See https://w3c.github.io/encrypted-media/
 
 [Exposed=Window]
 partial interface Navigator {

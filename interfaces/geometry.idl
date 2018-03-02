@@ -12,7 +12,7 @@ interface DOMPointReadOnly {
 
     DOMPoint matrixTransform(optional DOMMatrixInit matrix);
 
-    [Default] toJSON();
+    [Default] object toJSON();
 };
 
 [Constructor(optional unrestricted double x = 0, optional unrestricted double y = 0,
@@ -52,7 +52,7 @@ interface DOMRectReadOnly {
     readonly attribute unrestricted double bottom;
     readonly attribute unrestricted double left;
 
-    [Default] toJSON();
+    [Default] object toJSON();
 };
 
 [Constructor(optional unrestricted double x = 0, optional unrestricted double y = 0,
@@ -76,8 +76,7 @@ dictionary DOMRectInit {
     unrestricted double height = 0;
 };
 
-[NoInterfaceObject,
- LegacyArrayClass]
+[LegacyArrayClass]
 interface DOMRectList {
     readonly attribute unsigned long length;
     getter DOMRect? item(unsigned long index);
@@ -97,7 +96,7 @@ interface DOMQuad {
     [SameObject] readonly attribute DOMPoint p4;
     [NewObject] DOMRect getBounds();
 
-    [Default] toJSON();
+    [Default] object toJSON();
 };
 
 dictionary DOMQuadInit {
@@ -178,7 +177,7 @@ interface DOMMatrixReadOnly {
     [NewObject] Float64Array toFloat64Array();
 
     [Exposed=Window] stringifier;
-    [Default] toJSON();
+    [Default] object toJSON();
 };
 
 [Constructor(optional (DOMString or sequence<unrestricted double>) init),

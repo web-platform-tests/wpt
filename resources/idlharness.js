@@ -2027,7 +2027,16 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
     // check for globals, since otherwise we'll invoke window.close().  And we
     // have to skip this test for anything that on the proto chain of "self",
     // since that does in fact have implicit-this behavior.
-    if (!member["static"]) {
+
+    // For the entries/keys/values properties created by iterable declarations,
+    // the behavior is different for iterable<value_type> and
+    // iterable<key_type, value_type>, and for iterable<value_type> the function
+    // object should be the same as on Array, which will not throw if invoked
+    // with {}. We don't store which kind of iterable declaration was used, so
+    // all we can do here is to not make those assertions. TODO: propagate that
+    // information test the relevant behavior here.
+    var is_iterable_member = member["type"] === "operation" && member["idlType"] === "iterator";
+    if (!member["static"] && !is_iterable_member) {
         var cb;
         if (!this.is_global() &&
             memberHolderObject[member.name] != self[member.name])

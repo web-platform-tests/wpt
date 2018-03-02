@@ -139,7 +139,7 @@ Text includes Slotable;
 interface NodeList {
   getter Node? item(unsigned long index);
   readonly attribute unsigned long length;
-//  iterable<Node>;
+  iterable<Node>;
 };
 
 
@@ -551,5 +551,5 @@ interface DOMTokenList {
   [CEReactions] void replace(DOMString token, DOMString newToken);
   boolean supports(DOMString token);
   [CEReactions] stringifier attribute DOMString value;
-  //  iterable<DOMString>;
+  iterable<DOMString>;
 };

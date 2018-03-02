@@ -47,6 +47,7 @@ interface LinkStyle {
 };
 
 ProcessingInstruction implements LinkStyle;
+
 [Exposed=Window,
  LegacyArrayClass]
 interface CSSRuleList {
@@ -121,6 +122,18 @@ interface CSSStyleDeclaration {
   [CEReactions] CSSOMString removeProperty(CSSOMString property);
   readonly attribute CSSRule? parentRule;
   [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString cssFloat;
+};
+
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString _camel_cased_attribute;
+};
+
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString _webkit_cased_attribute;
+};
+
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString _dashed_attribute;
 };
 
 [Exposed=Window,

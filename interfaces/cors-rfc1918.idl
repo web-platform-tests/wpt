@@ -1,0 +1,9 @@
+enum AddressSpace { "local", "private", "public" };
+
+partial interface Document {
+  readonly attribute AddressSpace addressSpace;
+};
+
+partial interface WorkerGlobalScope {
+  readonly attribute AddressSpace addressSpace;
+};

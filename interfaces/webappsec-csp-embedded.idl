@@ -1,0 +1,3 @@
+partial interface HTMLIFrameElement {
+  [CEReactions] attribute DOMString csp;
+};

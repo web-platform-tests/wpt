@@ -113,16 +113,23 @@ class Firefox(Browser):
         if dest is None:
             dest = os.getcwd()
 
-        filename = FactoryScraper('daily', branch='mozilla-central').download()
+        filename = FactoryScraper('daily', branch='mozilla-central', destination=dest).download()
 
         try:
-            #When tested in OSX, mozinstall will refuse to install if firefox is already installed
             mozinstall.install(filename, dest)
-        except Exception as e:
-            # Instead of printing an error message we should uninstall the currently
-            # installed Firefox and reinstall here.
-            # currently, uninstall in mozinstall doesn't seem to be able to deal with this very well
-            print("Firefox already installed. Please uninstall and try again.")
+        except mozinstall.mozinstall.InstallError as e:
+            platform = {
+                "Linux": "linux",
+                "Windows": "win",
+                "Darwin": "mac"
+            }.get(uname[0])
+
+            if(platform=="mac"):
+                mozinstall.uninstall(dest+'/Firefox Nightly.app')
+                mozinstall.install(filename, dest)
+            else:
+                raise
+
         os.remove(filename)
         return find_executable("firefox", os.path.join(dest, "firefox"))
 

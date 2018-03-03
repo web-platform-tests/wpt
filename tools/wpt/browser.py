@@ -124,7 +124,7 @@ class Firefox(Browser):
                 "Darwin": "mac"
             }.get(uname[0])
 
-            if(platform=="mac"):
+            if platform == "mac":
                 mozinstall.uninstall(dest+'/Firefox Nightly.app')
                 mozinstall.install(filename, dest)
             else:

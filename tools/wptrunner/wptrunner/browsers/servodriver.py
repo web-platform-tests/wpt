@@ -55,7 +55,6 @@ def env_extras(**kwargs):
 def env_options():
     return {"host_ip": "127.0.0.1",
             "host": "web-platform.test",
-            "bind_hostname": True,
             "testharnessreport": "testharnessreport-servodriver.js",
             "supports_debugger": True}
 

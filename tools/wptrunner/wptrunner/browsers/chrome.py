@@ -60,7 +60,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"bind_hostname": True}
+    return {}
 
 
 class ChromeBrowser(Browser):

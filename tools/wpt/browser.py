@@ -11,7 +11,6 @@ from ConfigParser import RawConfigParser
 from datetime import datetime, timedelta
 from distutils.spawn import find_executable
 from io import BytesIO
-import time
 
 from utils import call, get, untar, unzip
 from mozdownload import FactoryScraper

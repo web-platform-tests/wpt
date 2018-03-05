@@ -11,6 +11,7 @@ from ConfigParser import RawConfigParser
 from datetime import datetime, timedelta
 from distutils.spawn import find_executable
 from io import BytesIO
+import time
 
 from utils import call, get, untar, unzip
 from mozdownload import FactoryScraper
@@ -118,13 +119,12 @@ class Firefox(Browser):
         try:
             mozinstall.install(filename, dest)
         except mozinstall.mozinstall.InstallError as e:
-            platform = {
-                "Linux": "linux",
-                "Windows": "win",
-                "Darwin": "mac"
-            }.get(uname[0])
-
-            if platform == "mac":
+            if uname[0] == "Darwin":
+                # mozinstall will fail here if nightly is already installed in the venv
+                # This only occurs on macOS because shutil.copy_tree() is called in
+                # mozinstall._install_dmg and will fail if the file already exists.
+                # copytree isn't used while installing on Windows/linux, so the same error
+                # won't be thrown if we try to rewrite there.
                 mozinstall.uninstall(dest+'/Firefox Nightly.app')
                 mozinstall.install(filename, dest)
             else:

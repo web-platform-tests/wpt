@@ -1,6 +1,6 @@
 from tests.support.fixtures import clear_all_cookies
 from datetime import datetime, timedelta
-from time import sleep
+
 def test_add_domain_cookie(session, url, server_config):
     session.url = url("/common/blank.html")
     clear_all_cookies(session)
@@ -51,7 +51,7 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
             "secure": False
         }
     }
-    sleep(20)
+
     result = session.transport.send("POST", "session/%s/cookie" % session.session_id, create_cookie_request)
     assert result.status == 200
     assert "value" in result.body

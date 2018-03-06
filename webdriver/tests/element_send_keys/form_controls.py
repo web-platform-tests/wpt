@@ -21,7 +21,7 @@ def element_send_keys(session, element, text):
 def add_event_listeners(element):
     element.session.execute_script("""
         window.events = [];
-        var trackedEvents = ["focus", "change", "keypress", "keydown", "keyup", "input"]
+        var trackedEvents = ["focus", "change", "keypress", "keydown", "keyup", "input"];
         for (var i = 0; i < trackedEvents.length; i++) {
           arguments[0].addEventListener(trackedEvents[i], function(eventObject) { window.events.push(eventObject.type) });
         }

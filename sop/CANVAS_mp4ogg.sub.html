@@ -67,7 +67,7 @@
         var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: wildcard, UC: true");
         var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: wildcard, UC: false");
         var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: use-credentials, O: A, UC: true");
-        
+
         // -------------------- IMPLEMENTATIONS -------------------------------
         // ----- SAME-ORIGIN -----
         function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_() {
@@ -1414,8 +1414,7 @@
 
             document.body.appendChild(video);
         }
-        
-        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
+               function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
             var video = document.createElement('video');
             video.crossOrigin = "anonymous";
             video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_.step_func_done(function() {
@@ -1500,8 +1499,7 @@
             video.style.display = 'none';
 
             document.body.appendChild(video);
-        }        
-
+        }
         function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_() {
             var video = document.createElement('video');
             video.crossOrigin = "anonymous";
@@ -1588,8 +1586,7 @@
 
             document.body.appendChild(video);
         }
-        
-        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true() {
+               function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true() {
             var video = document.createElement('video');
             video.crossOrigin = "use-credentials";
             video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true.step_func_done(function() {

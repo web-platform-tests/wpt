@@ -26,10 +26,10 @@
             { value: "123 'abcd'",                        expectedComputedValue: "",                               isValid: false, message: "Value before tag is invalid"},
             { value: "'wght' 200 'abcd' 400",             expectedComputedValue: "",                               isValid: false, message: "Missing comma between axes is invalid"},
             { value: "'wght' calc(100 + 200)",            expectedComputedValue: "\"wght\" 300",                   isValid: true,  message: "Calculations should be supported" },
-            { value: "'wght' calc(100%)",                 expectedComputedValue: "",                               isValid: false, message: "Percentages should not be supported" },
             { value: "'wght' 100px",                      expectedComputedValue: "",                               isValid: false, message: "Units should not be supported" },
             { value: "'wght' calc(100px + 200px)",        expectedComputedValue: "",                               isValid: false, message: "Units should not be supported (in calc)" },
-            { value: "'wght' 42%",                        expectedComputedValue: "",                               isValid: false, message: "Percentages should not be supported" }
+            { value: "'wght' 42%",                        expectedComputedValue: "",                               isValid: false, message: "Percentages should not be supported" },
+            { value: "'wght' calc(100%)",                 expectedComputedValue: "",                               isValid: false, message: "Percentages should not be supported (in calc)" },
         ];
 
         valueParserTests.forEach(function (testCase) {

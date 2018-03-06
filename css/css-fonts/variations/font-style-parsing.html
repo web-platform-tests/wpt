@@ -26,7 +26,7 @@
             { style: "oblique 90deg",     expectedResult: true,  message: "'oblique' followed by maxumum 90 degree angle is valid" },
             { style: "oblique -90deg",    expectedResult: true,  message: "'oblique' followed by minimum -90 degree angle is valid" },
             { style: "oblique 90.01deg",  expectedResult: false, message: "'oblique' followed by positive out of range angle is in invalid" },
-            { style: "oblique -90.01deg", expectedResult: false, message: "'oblique' followed by positive out of range angle is in invalid" },
+            { style: "oblique -90.01deg", expectedResult: false, message: "'oblique' followed by negative out of range angle is in invalid" },
             { style: "oblique 10",        expectedResult: false, message: "'oblique' followed by unit-less value is invalid" },
             { style: "oblique 20deg ",    expectedResult: true,  message: "'oblique' followed by positive angle is valid" },
             { style: "oblique a",         expectedResult: false, message: "'oblique' followed by non-number is invalid" },

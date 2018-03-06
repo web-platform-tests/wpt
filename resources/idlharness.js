@@ -2067,6 +2067,50 @@ IdlInterface.prototype.add_iterable_members = function(member)
           [{ name: "callback", idlType: {idlType: "function"}},
            { name: "thisValue", idlType: {idlType: "any"}, optional: true}]}));
 };
+//@}
+IdlInterface.prototype.add_maplike_members = function(member)
+//@{
+{
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "size", idlType: "maplike", arguments: []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "entries", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "keys", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "values", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "get", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "has", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "clear", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "delete", idlType: "maplike", arguments []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "set", idlType: "maplike", arguments []}));
+};
+//@}
+IdlInterface.prototype.add_setlike_members =function(member)
+//@{
+{
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "size", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "values", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "entries", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "keys", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "has", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "add", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "delete", idlType: "setlike", arguments[]}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "clear", idlType: "setlike", arguments[]}));
+}
 
 IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, member) {
     if (member.has_extended_attribute("Default")) {
@@ -2194,7 +2238,12 @@ IdlInterface.prototype.test_members = function()
         case "iterable":
             this.add_iterable_members(member);
             break;
-        // TODO: add setlike and maplike handling.
+        case "maplike":
+            this.add_maplike_members(member);
+            break;
+        case "setlike":
+            this.add_setlike_members(member);
+            break;
         default:
             break;
         }

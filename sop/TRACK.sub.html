@@ -47,7 +47,7 @@
         }
 
         function f_test_HD_A_TRACK_ED_A_w() {
-            var video = document.createElement('video');
+            video = document.createElement('video');
 
             var source2 = document.createElement('source');
             source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py';
@@ -59,7 +59,7 @@
             source.type = 'video/mp4';
             video.appendChild(source);
 
-            var track = document.createElement('track');
+            track = document.createElement('track');
             track.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/webvtt.py';
             track.default = "true";
             video.appendChild(track);
@@ -104,7 +104,7 @@
         // -------------------- FUNCTION CALLS -------------------------------
         // ----- SAME-ORIGIN -----
         f_test_HD_A_TRACK_ED_A_r();
-        f_test_HD_A_TRACK_ED_A_w();
+        // f_test_HD_A_TRACK_ED_A_w();
 
         // ----- CROSS-ORIGIN -----
         f_test_HD_A_TRACK_ED_B_r();

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IFRAME, EMBED, OBJECT with SVG test cases - bugged in FF</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        
+        // ----- CROSS-ORIGIN -----
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+     
+        function f_test_HD_A_object_ED_A_x() {
+            ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=OBJECT - HD to ED - same-origin execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_object_HD_A_r() {
+            var ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=read&description=OBJECT - ED to HD - same-origin read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_object_HD_A_w() {
+            var ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=write&description=OBJECT - ED to HD - same-origin write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        // ------------------------
+        // ----- CROSS-ORIGIN -----
+        // ------------------------
+
+        function f_test_HD_A_object_ED_B_x() {
+            var ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=OBJECT - HD to ED - cross-origin execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_object_HD_A_r() {
+            var ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial read&description=OBJECT - ED to HD - cross-origin partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_object_HD_A_w() {
+            var ee = document.createElement('object');
+            ee.width = 0;
+            ee.height = 0;
+            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial write&description=OBJECT - ED to HD - cross-origin partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_object_ED_A_x();
+        
+        f_test_ED_A_object_HD_A_r();
+        f_test_ED_A_object_HD_A_w();
+        
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_object_ED_B_x();
+        
+        f_test_ED_B_object_HD_A_r();
+        f_test_ED_B_object_HD_A_w();
+        
+
+    </script>
+
+    <div id="log"></div>
+
+    <div id="loadbar_OBJECT - ED to HD - same-origin write" style="display: none"><p>Not empty</p></div>
+
+</body>
+</html>

@@ -99,15 +99,6 @@
             document.body.appendChild(ee);
         }
 
-        function f_test_HD_A_object_ED_A_x() {
-            ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=OBJECT - HD to ED - same-origin execute';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
         function f_test_HD_A_embed_ED_A_r() {
             var ee = document.createElement('embed');
             ee.width = 0;
@@ -139,15 +130,6 @@
             document.body.appendChild(ee);
         }
 
-        function f_test_HD_A_embed_ED_A_x() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=EMBED - HD to ED - same-origin execute';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(window[0]);
-        }
-
         function f_test_ED_A_iframe_HD_A_r() {
             var ee = document.createElement('iframe');
             ee.width = 0;
@@ -165,43 +147,6 @@
             document.body.appendChild(ee);
             fetch_tests_from_window(ee.contentWindow);
         }
-
-        function f_test_ED_A_object_HD_A_r() {
-            var ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=read&description=OBJECT - ED to HD - same-origin read';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_A_object_HD_A_w() {
-            var ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=write&description=OBJECT - ED to HD - same-origin write';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_A_embed_HD_A_r() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=read&description=EMBED - ED to HD - same-origin read';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_A_embed_HD_A_w() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=write&description=EMBED - ED to HD - same-origin write';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
 
         // ------------------------
         // ----- CROSS-ORIGIN -----
@@ -264,15 +209,6 @@
             document.body.appendChild(ee);
         }
 
-        function f_test_HD_A_object_ED_B_x() {
-            var ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=OBJECT - HD to ED - cross-origin execute';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
         function f_test_HD_A_embed_ED_B_r() {
             var ee = document.createElement('embed');
             ee.width = 0;
@@ -297,15 +233,6 @@
             document.body.appendChild(ee);
         }
 
-        function f_test_HD_A_embed_ED_B_x() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=execute&description=EMBED - HD to ED - cross-origin execute';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
         function f_test_ED_B_iframe_HD_A_r() {
             var ee = document.createElement('iframe');
             ee.width = 0;
@@ -324,43 +251,6 @@
             fetch_tests_from_window(ee.contentWindow);
         }
 
-        function f_test_ED_B_object_HD_A_r() {
-            var ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial read&description=OBJECT - ED to HD - cross-origin partial read';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_B_object_HD_A_w() {
-            var ee = document.createElement('object');
-            ee.width = 0;
-            ee.height = 0;
-            ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial write&description=OBJECT - ED to HD - cross-origin partial write';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_B_embed_HD_A_r() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial read&description=EMBED - ED to HD - cross-origin partial read';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-        function f_test_ED_B_embed_HD_A_w() {
-            var ee = document.createElement('embed');
-            ee.width = 0;
-            ee.height = 0;
-            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg_script.py?operation=partial write&description=EMBED - ED to HD - cross-origin partial write';
-            document.body.appendChild(ee);
-            fetch_tests_from_window(ee.contentWindow);
-        }
-
-
         // -------------------- FUNCTION CALLS -------------------------------
         // ----- SAME-ORIGIN -----
         f_test_HD_A_iframe_ED_A_r();
@@ -368,43 +258,30 @@
         f_test_HD_A_iframe_ED_A_x();
         f_test_HD_A_object_ED_A_r();
         f_test_HD_A_object_ED_A_w();
-        f_test_HD_A_object_ED_A_x();
         f_test_HD_A_embed_ED_A_r();
         f_test_HD_A_embed_ED_A_w();
-        // f_test_HD_A_embed_ED_A_x();
-
+      
         f_test_ED_A_iframe_HD_A_r();
         f_test_ED_A_iframe_HD_A_w();
-        f_test_ED_A_object_HD_A_r();
-        f_test_ED_A_object_HD_A_w();
-        // f_test_ED_A_embed_HD_A_r();
-        // f_test_ED_A_embed_HD_A_w();
-
+        
         // ----- CROSS-ORIGIN -----
         f_test_HD_A_iframe_ED_B_r();
         f_test_HD_A_iframe_ED_B_w();
         f_test_HD_A_iframe_ED_B_x();
         f_test_HD_A_object_ED_B_r();
         f_test_HD_A_object_ED_B_w();
-        f_test_HD_A_object_ED_B_x();
         f_test_HD_A_embed_ED_B_r();
         f_test_HD_A_embed_ED_B_w();
-        // f_test_HD_A_embed_ED_B_x();
-
+      
         f_test_ED_B_iframe_HD_A_r();
         f_test_ED_B_iframe_HD_A_w();
-        f_test_ED_B_object_HD_A_r();
-        f_test_ED_B_object_HD_A_w();
-        // f_test_ED_B_embed_HD_A_r();
-        // f_test_ED_B_embed_HD_A_w();
-
+      
 
     </script>
 
     <div id="log"></div>
 
     <div id="loadbar_IFRAME - ED to HD - same-origin write" style="display: none"><p>Not empty</p></div>
-    <div id="loadbar_OBJECT - ED to HD - same-origin write" style="display: none"><p>Not empty</p></div>
 
 </body>
 </html>

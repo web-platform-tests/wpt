@@ -94,7 +94,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__empty_value__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = '';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -106,7 +106,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__empty_value__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = '';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -118,7 +118,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -130,7 +130,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -181,7 +181,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-top-navigation';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -193,7 +193,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-top-navigation';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -245,7 +245,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-top-navigation';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -257,7 +257,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-top-navigation';
             ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -450,7 +450,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__not_set__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -461,7 +461,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__not_set__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -481,7 +481,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__empty_value__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = '';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -493,7 +493,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__empty_value__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = '';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -505,7 +505,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -517,7 +517,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -539,7 +539,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-same-origin';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -551,7 +551,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-same-origin';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -563,7 +563,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -575,7 +575,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -588,7 +588,7 @@
             ee.height = 0;
             ee.sandbox = 'allow-scripts allow-same-origin';
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -600,7 +600,7 @@
             ee.height = 0;
             ee.sandbox = 'allow-scripts allow-same-origin';
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -622,7 +622,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -634,7 +634,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -657,7 +657,7 @@
             ee.height = 0;
             ee.sandbox = 'allow-same-origin allow-same-origin';
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -669,7 +669,7 @@
             ee.height = 0;
             ee.sandbox = 'allow-same-origin allow-same-origin';
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
             document.body.appendChild(ee);
@@ -680,7 +680,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
@@ -692,7 +692,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+                assert_equals(ee.contentDocument, null);
             });
             ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';

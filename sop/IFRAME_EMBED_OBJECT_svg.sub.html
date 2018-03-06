@@ -157,7 +157,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';
@@ -169,7 +169,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_iframe_ED_B_w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';
@@ -190,7 +190,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_object_ED_B_r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';
@@ -202,7 +202,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_object_ED_B_w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.data = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';
@@ -214,7 +214,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_embed_ED_B_r.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';
@@ -226,7 +226,7 @@
             ee.width = 0;
             ee.height = 0;
             ee.onload = test_HD_A_embed_ED_B_w.step_func_done(function() {
-                assert_throws("SECURITY_ERR", function() {ee.getSVGDocument();});
+                assert_equals(ee.getSVGDocument(), null);
             });
 
             ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py';

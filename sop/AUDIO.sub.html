@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUDIO test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_AUDIO_ED_A_r = async_test("AUDIO - partial same-origin read");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_AUDIO_ED_B_r = async_test("AUDIO - partial cross-origin read");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_AUDIO_ED_A_r() {
+            var audio = document.createElement('audio');
+            audio.onloadeddata = test_HD_A_AUDIO_ED_A_r.step_func_done(function() {
+                audio.muted = true;
+                audio.play();
+                audio.pause();
+                assert_true(audio.duration >= 4);
+            });
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp3.py';
+            source.type = 'audio/mpeg';
+            audio.appendChild(source);
+
+            audio.controls = true;
+            audio.style.display = 'none';
+
+            document.body.appendChild(audio);
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_AUDIO_ED_B_r() {
+            var audio = document.createElement('audio');
+            audio.onloadeddata = test_HD_A_AUDIO_ED_B_r.step_func_done(function() {
+                audio.muted = true;
+                audio.play();
+                audio.pause();
+                assert_true(audio.duration >= 4);
+            });
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp3.py';
+            source.type = 'audio/mpeg';
+            audio.appendChild(source);
+
+            audio.controls = true;
+            audio.style.display = 'none';
+
+            document.body.appendChild(audio);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_AUDIO_ED_A_r();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_AUDIO_ED_B_r();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

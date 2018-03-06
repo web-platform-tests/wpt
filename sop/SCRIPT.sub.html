@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SCRIPT test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_script_ED_A_r = async_test("SCRIPT - HD A - ED A - same-origin partial read");
+        var test_HD_A_script_ED_A_w = async_test("SCRIPT - HD A - ED A - same-origin partial write");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_script_ED_B_r = async_test("SCRIPT - HD A - ED B - cross-origin partial read");
+        var test_HD_A_script_ED_B_w = async_test("SCRIPT - HD A - ED B - cross-origin partial write");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+        function f_test_HD_A_script_ED_A_r() {
+            var ee = document.createElement('script');
+            ee.onload = test_HD_A_script_ED_A_r.step_func_done(function(){
+                var source = embedded_f_test_HD_A_script_ED_A_r.toString();
+                assert_greater_than(source.indexOf("secret"), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/js.py?script_name=embedded_f_test_HD_A_script_ED_A_r';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_script_ED_A_w() {
+            var ee = document.createElement('script');
+            ee.onload = test_HD_A_script_ED_A_w.step_func_done(function(){
+                var oldSecret = embedded_f_test_HD_A_script_ED_A_w();
+                embedded_f_test_HD_A_script_ED_A_w = function() {return 1;};
+                var newSecret = embedded_f_test_HD_A_script_ED_A_w();
+                assert_equals(oldSecret, 42);
+                assert_equals(newSecret, 1);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/js.py?script_name=embedded_f_test_HD_A_script_ED_A_w';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_script_ED_A_x() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=execute&description=SCRIPT - HD A - ED A - same-origin execute';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_ED_A_script_HD_A_r() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=read&description=SCRIPT - ED A - HD A - same-origin read';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_ED_A_script_HD_A_w() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=write&description=SCRIPT - ED A - HD A - same-origin write';
+            document.body.appendChild(ee);
+        }
+
+        // ------------------------
+        // ----- CROSS-ORIGIN -----
+        // ------------------------
+
+        function f_test_HD_A_script_ED_B_r() {
+            var ee = document.createElement('script');
+            ee.onload = test_HD_A_script_ED_B_r.step_func_done(function(){
+                var source = embedded_f_test_HD_A_script_ED_B_r.toString();
+                assert_greater_than(source.indexOf("secret"), 0);
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/js.py?script_name=embedded_f_test_HD_A_script_ED_B_r';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_script_ED_B_w() {
+            var ee = document.createElement('script');
+            ee.onload = test_HD_A_script_ED_B_w.step_func_done(function(){
+                var oldSecret = embedded_f_test_HD_A_script_ED_B_w();
+                embedded_f_test_HD_A_script_ED_B_w = function() {return 1;};
+                var newSecret = embedded_f_test_HD_A_script_ED_B_w();
+                assert_equals(oldSecret, 42);
+                assert_equals(newSecret, 1);
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/js.py?script_name=embedded_f_test_HD_A_script_ED_B_w';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_script_ED_B_x() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=execute&description=SCRIPT - HD A - ED B - cross-origin execute';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_ED_B_script_HD_A_r() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=read&description=SCRIPT - ED B - HD A - cross-origin read';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_ED_B_script_HD_A_w() {
+            var ee = document.createElement('script');
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/js_script.py?operation=write&description=SCRIPT - ED B - HD A - cross-origin write';
+            document.body.appendChild(ee);
+        }
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_script_ED_A_r();
+        f_test_HD_A_script_ED_A_w();
+        f_test_HD_A_script_ED_A_x();
+
+        f_test_ED_A_script_HD_A_r();
+        f_test_ED_A_script_HD_A_w();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_script_ED_B_r();
+        f_test_HD_A_script_ED_B_w();
+        f_test_HD_A_script_ED_B_x();
+
+        f_test_ED_B_script_HD_A_r();
+        f_test_ED_B_script_HD_A_w();
+
+    </script>
+
+    <div id="log"></div>
+
+    <div id="loadbar_SCRIPT - ED A - HD A - same-origin write" style="display: none"><p>Not empty</p></div>
+    <div id="loadbar_SCRIPT - ED B - HD A - cross-origin write" style="display: none"><p>Not empty</p></div>
+
+</body>
+</html>

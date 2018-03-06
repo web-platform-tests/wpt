@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PICTURE test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_PICTURE_ED_A_r = async_test("PICTURE - partial same-origin read");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_PICTURE_ED_B_r = async_test("PICTURE - partial cross-origin read");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_PICTURE_ED_A_r() {
+            var picture = document.createElement('picture');
+            var source = document.createElement('source');
+            var img = document.createElement('img');
+            img.onload = test_HD_A_PICTURE_ED_A_r.step_func_done(function() {
+                assert_equals(img.width, 111);
+            });
+            source.srcset = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/png.py';
+            source.media = "(min-width: 1px)";
+            picture.appendChild(source);
+            picture.appendChild(img);
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_PICTURE_ED_B_r() {
+            var picture = document.createElement('picture');
+            var source = document.createElement('source');
+            var img = document.createElement('img');
+            img.onload = test_HD_A_PICTURE_ED_B_r.step_func_done(function() {
+                assert_equals(img.width, 111);
+            });
+            source.srcset = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/png.py';
+            source.media = "(min-width: 1px)";
+            picture.appendChild(source);
+            picture.appendChild(img);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_PICTURE_ED_A_r();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_PICTURE_ED_B_r();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

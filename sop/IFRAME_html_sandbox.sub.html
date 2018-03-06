@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IFRAME sandbox test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_iframe_ED_A_html_sandbox__not_set__r = async_test("IFRAME - Sandbox: Not Set - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__not_set__w = async_test("IFRAME - Sandbox: Not Set - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__empty_value__r = async_test("IFRAME - Sandbox: empty value - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__empty_value__w = async_test("IFRAME - Sandbox: empty value - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__r = async_test("IFRAME - Sandbox: allow-scripts - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__w = async_test("IFRAME - Sandbox: allow-scripts - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__r = async_test("IFRAME - Sandbox: allow-same-origin - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__w = async_test("IFRAME - Sandbox: allow-same-origin - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-top-navigation - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-top-navigation - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__r = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__w = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-same-origin allow-top-navigation - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-same-origin allow-top-navigation - HD to ED - same-origin - write");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - same-origin - read");
+        var test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - same-origin - write");
+
+
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_iframe_ED_B_html_sandbox__not_set__r = async_test("IFRAME - Sandbox: Not Set - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__not_set__w = async_test("IFRAME - Sandbox: Not Set - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__empty_value__r = async_test("IFRAME - Sandbox: empty value - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__empty_value__w = async_test("IFRAME - Sandbox: empty value - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__r = async_test("IFRAME - Sandbox: allow-scripts - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__w = async_test("IFRAME - Sandbox: allow-scripts - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__r = async_test("IFRAME - Sandbox: allow-same-origin - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__w = async_test("IFRAME - Sandbox: allow-same-origin - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-top-navigation - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-top-navigation - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__r = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__w = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-same-origin allow-top-navigation - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-same-origin allow-top-navigation - HD to ED - cross-origin - write");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - cross-origin - read");
+        var test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w = async_test("IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - cross-origin - write");
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+        function f_test_HD_A_iframe_ED_A_html_sandbox__not_set__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__not_set__r.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('ED: HTML'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__not_set__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__not_set__w.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                htmlDoc.body.innerHTML = 'New content';
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('New content'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__not_set__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: Not Set - HD to ED - same-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__empty_value__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__empty_value__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = '';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__empty_value__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__empty_value__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = '';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts - HD to ED - same-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__r.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('ED: HTML'), 0);
+            });
+            ee.sandbox = 'allow-same-origin';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__w.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                htmlDoc.body.innerHTML = 'New content';
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('New content'), 0);
+            });
+            ee.sandbox = 'allow-same-origin';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__r.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('ED: HTML'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__w.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                htmlDoc.body.innerHTML = 'New content';
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('New content'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - same-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - same-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-same-origin allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__r.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('ED: HTML'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-same-origin allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__w.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                htmlDoc.body.innerHTML = 'New content';
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('New content'), 0);
+            });
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('ED: HTML'), 0);
+            });
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w.step_func_done(function() {
+                var htmlDoc = ee.contentDocument;
+                htmlDoc.body.innerHTML = 'New content';
+                var htmlSource = htmlDoc.documentElement.innerHTML;
+                assert_greater_than(htmlSource.indexOf('New content'), 0);
+            });
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - same-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        // ------------------------------------------------------------------
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__not_set__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=read&description=IFRAME - Sandbox: Not set - ED to HD - same-origin - read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__not_set__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=write&description=IFRAME - Sandbox: Not set - ED to HD - same-origin - write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts - ED to HD - same-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write fail&description=IFRAME - Sandbox: allow-scripts - ED to HD - same-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=read&description=IFRAME - Sandbox: allow-scripts allow-same-origin - ED to HD - same-origin - read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=write&description=IFRAME - Sandbox: allow-scripts allow-same-origin - ED to HD - same-origin - write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - ED to HD - same-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write success&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - ED to HD - same-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=read&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - ED to HD - same-origin - read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=write&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - ED to HD - same-origin - write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        // ------------------------
+        // ----- CROSS-ORIGIN -----
+        // ------------------------
+        function f_test_HD_A_iframe_ED_B_html_sandbox__not_set__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__not_set__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__not_set__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__not_set__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__not_set__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: Not Set - HD to ED - cross-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__empty_value__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__empty_value__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = '';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__empty_value__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__empty_value__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = '';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts - HD to ED - cross-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-same-origin';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-same-origin';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-same-origin - HD to ED - cross-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - HD to ED - cross-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-same-origin allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-same-origin allow-same-origin';
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.onload = test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w.step_func_done(function() {
+                assert_throws("SECURITY_ERR", function(){var htmlDoc = ee.contentDocument;});
+            });
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html.py';
+            document.body.appendChild(ee);
+        }
+
+        function f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__x() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=execute&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - HD to ED - cross-origin - execute';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__not_set__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: Not set - ED to HD - cross-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts - ED to HD - cross-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write fail&description=IFRAME - Sandbox: allow-scripts - ED to HD - cross-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts allow-same-origin - ED to HD - cross-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write fail&description=IFRAME - Sandbox: allow-scripts allow-same-origin - ED to HD - cross-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - ED to HD - cross-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write fail&description=IFRAME - Sandbox: allow-scripts allow-top-navigation - ED to HD - cross-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial read&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - ED to HD - cross-origin - partial read';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        function f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w() {
+            var ee = document.createElement('iframe');
+            ee.width = 0;
+            ee.height = 0;
+            ee.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';
+            ee.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/html_script.py?operation=partial write fail&description=IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - ED to HD - cross-origin - partial write';
+            document.body.appendChild(ee);
+            fetch_tests_from_window(ee.contentWindow);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_iframe_ED_A_html_sandbox__not_set__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__not_set__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__not_set__x();
+        f_test_HD_A_iframe_ED_A_html_sandbox__empty_value__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__empty_value__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts__x();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin__x();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_top_navigation__x();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_same_origin_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__x();
+
+        f_test_ED_A_iframe_HD_A_html_sandbox__not_set__r();
+        f_test_ED_A_iframe_HD_A_html_sandbox__not_set__w();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts__r();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts__w();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__r();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__w();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__r();
+        // f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__w(); // breaks the framework because writing location.hash via writing location somehow leads to the status page not loading
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r();
+        f_test_ED_A_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w();
+
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_iframe_ED_B_html_sandbox__not_set__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__not_set__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__not_set__x();
+        f_test_HD_A_iframe_ED_B_html_sandbox__empty_value__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__empty_value__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts__x();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin__x();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_top_navigation__x();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_same_origin_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w();
+        f_test_HD_A_iframe_ED_B_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__x();
+
+        f_test_ED_B_iframe_HD_A_html_sandbox__not_set__r();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts__r();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts__w();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__r();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin__w();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__r();
+        // f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_top_navigation__w(); // breaks the framework because writing location.hash via writing location somehow leads to the status page not loading
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__r();
+        f_test_ED_B_iframe_HD_A_html_sandbox__allow_scripts_allow_same_origin_allow_top_navigation__w();
+
+    </script>
+
+    <div id="log"></div>
+
+    <div id="loadbar_IFRAME - Sandbox: Not set - ED to HD - same-origin - write" style="display: none"><p>Not empty</p></div>
+    <div id="loadbar_IFRAME - Sandbox: allow-scripts allow-same-origin - ED to HD - same-origin - write" style="display: none"><p>Not empty</p></div>
+    <div id="loadbar_IFRAME - Sandbox: allow-scripts allow-same-origin allow-top-navigation - ED to HD - same-origin - write" style="display: none"><p>Not empty</p></div>
+
+
+</body>
+</html>

@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CANVAS MP4OGG test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: A, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: A, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: B, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: B, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: Not Set, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: A, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: A, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: B, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: B, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: anonymous, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: A, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: A, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: B, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: B, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_ = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - same-origin - CO: use-credentials, O: wildcard, UC: false");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: A, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: A, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: B, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: B, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: Not Set, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: A, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: A, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_ = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false = async_test("CANVAS - MP4OGG - cross-origin - CO: anonymous, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true = async_test("CANVAS - MP4OGG - cross-origin - CO: use-credentials, O: A, UC: true");
+        
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=Not Set&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=Not Set&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=B&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=B&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+        
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }        
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=Not Set';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=Not Set';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false() {
+            var video = document.createElement('video');
+            video.crossOrigin = "anonymous";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=wildcard&credentials=false';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=wildcard&credentials=false';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+        
+        function f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true() {
+            var video = document.createElement('video');
+            video.crossOrigin = "use-credentials";
+            video.onloadeddata = test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=video.videoWidth; c.height=video.videoHeight;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+                var pixel = ctx.getImageData(2,3,1,1);
+                var data = pixel.data;
+                assert_true(data[0] == 253 || data[0] == 254 || data[0] == 255);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py?origin=A&credentials=true';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py?origin=A&credentials=true';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_mp4ogg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

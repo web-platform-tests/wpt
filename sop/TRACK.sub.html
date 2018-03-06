@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TRACK test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_TRACK_ED_A_r = async_test("TRACK - same-origin read");
+        var test_HD_A_TRACK_ED_A_w = async_test("TRACK - same-origin write");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_TRACK_ED_B_r = async_test("TRACK - cross-origin read");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_TRACK_ED_A_r() {
+            var video = document.createElement('video');
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            var track = document.createElement('track');
+            track.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/webvtt.py';
+            track.default = "true";
+            video.appendChild(track);
+
+            video.style.display = "none";
+
+            video.onloadeddata = test_HD_A_TRACK_ED_A_r.step_func_done(function() {
+                assert_true(track.track.cues[0] && track.track.cues[0].text == 'Teststring for WebVTT');
+            });
+            document.body.appendChild(video);
+        }
+
+        function f_test_HD_A_TRACK_ED_A_w() {
+            var video = document.createElement('video');
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            var track = document.createElement('track');
+            track.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/webvtt.py';
+            track.default = "true";
+            video.appendChild(track);
+
+            video.style.display = "none";
+
+            video.onloadeddata = test_HD_A_TRACK_ED_A_w.step_func_done(function() {
+                assert_equals(typeof track.track.cues[0], typeof new VTTCue(0.5, 5, "Teststring for WebVTT"));
+                track.track.cues[0].text = "Overwritten text";
+                assert_equals("Overwritten text", track.track.cues[0].text);
+            });
+            document.body.appendChild(video);
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_TRACK_ED_B_r() {
+            var video = document.createElement('video');
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            var track = document.createElement('track');
+            track.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/webvtt.py';
+            track.default = "true";
+            video.appendChild(track);
+
+            video.style.display = "none";
+
+            video.onloadeddata = test_HD_A_TRACK_ED_B_r.step_func_done(function() {
+                assert_true(track.track.cues[0] == undefined);
+            });
+            document.body.appendChild(video);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_TRACK_ED_A_r();
+        f_test_HD_A_TRACK_ED_A_w();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_TRACK_ED_B_r();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

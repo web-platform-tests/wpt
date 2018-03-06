@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CANVAS SVG test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_true = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: A, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_false = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: A, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_true = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: B, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_false = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: B, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false = async_test("CANVAS - SVG - same-origin - CO: Not Set, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: A, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: A, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: B, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: B, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false = async_test("CANVAS - SVG - same-origin - CO: anonymous, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: A, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: A, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: B, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: B, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_ = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false = async_test("CANVAS - SVG - same-origin - CO: use-credentials, O: wildcard, UC: false");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: Not Set, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: Not Set, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: Not Set, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: A, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_false = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: A, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: B, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: B, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_false = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: B, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false = async_test("CANVAS - SVG - cross-origin - CO: Not Set, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: A, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: A, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: A, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_ = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: wildcard, UC: Not Set");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: wildcard, UC: true");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false = async_test("CANVAS - SVG - cross-origin - CO: anonymous, O: wildcard, UC: false");
+        var test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true = async_test("CANVAS - SVG - cross-origin - CO: use-credentials, O: A, UC: true");
+        
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=false';
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=Not Set&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=B&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false() {
+            var img = document.createElement("img");
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                assert_throws("SECURITY_ERR", function(){ctx.getImageData(2,3,1,1);} );
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=Not Set';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=true';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false() {
+            var img = document.createElement("img");
+            img.crossOrigin = "anonymous";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=wildcard&credentials=false';
+        }
+
+        function f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true() {
+            var img = document.createElement("img");
+            img.crossOrigin = "use-credentials";
+            img.onload = test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true.step_func_done(function() {
+                var c = document.createElement("canvas");
+                c.width=img.width; c.height=img.height;
+                var ctx = c.getContext("2d");
+                ctx.drawImage(img, 0, 0); /* Put img on canvas at pos 0x0 */
+                var pixel = ctx.getImageData(2,3,1,1); /* Read color of 1x1 pixel at position 2/3 */
+                var data = pixel.data;
+                assert_equals(data[0], 255);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/svg.py?origin=A&credentials=true';
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin__not_set__origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_anonymous_origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_A_r_cross_origin_use_credentials_origin_wildcard_credentials_false();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin__not_set__credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_b_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin__not_set__origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_a_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials__not_set_();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_true();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_anonymous_origin_wildcard_credentials_false();
+        f_test_HD_A_CANVAS_with_svg_ED_B_r_cross_origin_use_credentials_origin_a_credentials_true();
+    
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LINK test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+
+        // ----- CROSS-ORIGIN -----
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=Not set&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=Not set&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=Not set&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=Not set&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: Not set, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: anonymous, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=Not set&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=A&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=B&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=Not set&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=true&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=false&operation=read success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED A&origin=wildcard&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - HD to ED - same-origin - CO: use-credentials, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: Not set, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: anonymous, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=Not set&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=A&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=B&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=use-credentials&credentials=Not set&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED A&to=HD A&origin=wildcard&crossorigin=use-credentials&credentials=false&operation=write success&description=LINK - ED to HD - same-origin - CO: use-credentials, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+
+        // ------------------------
+        // ----- CROSS-ORIGIN -----
+        // ------------------------
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=Not set&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=Not set&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=true&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=true&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=false&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=Not set&crossorigin=Not set&credentials=false&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=Not set&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=Not set&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=true&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=true&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=false&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=Not set&credentials=false&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=Not set&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=Not set&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=true&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=true&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=false&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=B&crossorigin=Not set&credentials=false&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=true&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=true&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=false&operation=read fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=Not set&credentials=false&operation=write fail&description=LINK - HD to ED - cross-origin - CO: Not set, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials__not_set__r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: Not set - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=true&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_false_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=false&operation=read success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: false - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=wildcard&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - HD to ED - cross-origin - CO: anonymous, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_use_credentials_origin_a_credentials_true_r() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=use-credentials&credentials=true&operation=read success&description=LINK - HD to ED - cross-origin - CO: use-credentials, O: A, UC: true - read';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_HD_A_LINK_ED_B_cross_origin_use_credentials_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=HD A&to=ED B&origin=A&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - HD to ED - cross-origin - CO: use-credentials, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=Not set&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: Not set, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=Not set&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: Not set, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=Not set&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: Not set, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=B&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: B, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=B&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: B, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=B&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: B, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=Not set&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=Not set&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=Not set&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: Not set, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: A, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: A, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=Not set&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: wildcard, UC: Not set - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: wildcard, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_false_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=wildcard&crossorigin=anonymous&credentials=false&operation=write success&description=LINK - ED to HD - cross-origin - CO: anonymous, O: wildcard, UC: false - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+        function f_test_ED_B_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_true_w() {
+            var wrapper = document.createElement("iframe");
+            wrapper.width = 0;
+            wrapper.height = 0;
+            wrapper.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/css_wrapper.py?from=ED B&to=HD A&origin=A&crossorigin=use-credentials&credentials=true&operation=write success&description=LINK - ED to HD - cross-origin - CO: use-credentials, O: A, UC: true - write';
+            document.body.appendChild(wrapper);
+            fetch_tests_from_window(wrapper.contentWindow);
+        }
+
+
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin__not_set__credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_a_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_b_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin__not_set__origin_wildcard_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin__not_set__credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_a_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_b_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_anonymous_origin_wildcard_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin__not_set__credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_a_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_b_credentials_false_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_true_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_true_w();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_false_r();
+        f_test_HD_A_LINK_ED_A_cross_origin_use_credentials_origin_wildcard_credentials_false_w();
+
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_a_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_b_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin__not_set__credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_b_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin__not_set__credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_b_credentials_false_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials__not_set__w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials_true_w();
+        f_test_ED_A_LINK_HD_A_cross_origin_use_credentials_origin_wildcard_credentials_false_w();
+
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin__not_set__credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_a_credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_b_credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin__not_set__origin_wildcard_credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_a_credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials__not_set__r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials__not_set__w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_true_w();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_false_r();
+        f_test_HD_A_LINK_ED_B_cross_origin_anonymous_origin_wildcard_credentials_false_w();
+        f_test_HD_A_LINK_ED_B_cross_origin_use_credentials_origin_a_credentials_true_r();
+        f_test_HD_A_LINK_ED_B_cross_origin_use_credentials_origin_a_credentials_true_w();
+
+
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin__not_set__credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_a_credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_b_credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin__not_set__origin_wildcard_credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_a_credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials__not_set__w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_true_w();
+        f_test_ED_B_LINK_HD_A_cross_origin_anonymous_origin_wildcard_credentials_false_w();
+        f_test_ED_B_LINK_HD_A_cross_origin_use_credentials_origin_a_credentials_true_w();
+
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

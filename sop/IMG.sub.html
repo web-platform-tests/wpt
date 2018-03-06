@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IMG test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_IMG_ED_A_r = async_test("IMG - partial same-origin read");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_IMG_ED_B_r = async_test("IMG - partial cross-origin read");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_IMG_ED_A_r() {
+            var img = document.createElement('img');
+            img.onload = test_HD_A_IMG_ED_A_r.step_func_done(function() {
+                assert_equals(img.width, 111);
+            });
+            img.src='http://{{domains[]}}:{{ports[http][0]}}/sop/resources/png.py';
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_IMG_ED_B_r() {
+            var img = document.createElement('img');
+            img.onload = test_HD_A_IMG_ED_B_r.step_func_done(function() {
+                assert_equals(img.width, 111);
+            });
+            img.src='http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/png.py';
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_IMG_ED_A_r();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_IMG_ED_B_r();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

@@ -26,14 +26,6 @@ self.addEventListener('canmakepayment', event => {
     return;
   }
 
-  for (const attribute of ['total', 'displayItems']) {
-    if (attribute in event) {
-      const msg = `Unexpected "${attribute}" attribute in CanMakePaymentEvent.`;
-      event.respondWith(Promise.reject(new Error(msg)));
-      return;
-    }
-  }
-
   if (event.modifiers.length !== 1) {
     const msg = 'Expected exactly one modifier';
     event.respondWith(Promise.reject(new Error(msg)));

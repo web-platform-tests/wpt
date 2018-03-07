@@ -134,6 +134,21 @@ def check_ahem_copy(repo_root, path):
     return []
 
 
+def check_git_ignore(repo_root, path):
+    try:
+        match = subprocess.check_output(["git", "check-ignore", "--verbose", "--no-index", path])
+        match_filter, _ = match.split()
+        _, _, filter_string = match_filter.split(':')
+        # If the matching filter reported by check-ignore is a special-case exception,
+        # that's fine. Otherwise, it requires a new special-case exception.
+        if filter_string != '!' + path:
+            return [("IGNORED PATH", "%s matches an ignore filter in .gitignore - please add a .gitignore exception" % path, path, None)]
+    except subprocess.CalledProcessError:
+        # Nonzero return code means that no match exists.
+        pass
+    return []
+
+
 drafts_csswg_re = re.compile(r"https?\:\/\/drafts\.csswg\.org\/([^/?#]+)")
 w3c_tr_re = re.compile(r"https?\:\/\/www\.w3c?\.org\/TR\/([^/?#]+)")
 w3c_dev_re = re.compile(r"https?\:\/\/dev\.w3c?\.org\/[^/?#]+\/([^/?#]+)")
@@ -278,7 +293,9 @@ def filter_whitelist_errors(data, errors):
 
     for i, (error_type, msg, path, line) in enumerate(errors):
         normpath = os.path.normcase(path)
-        if error_type in data:
+        # Allow whitelisting all lint errors except the IGNORED PATH lint,
+        # which explains how to fix it correctly and shouldn't be ignored.
+        if error_type in data and error_type != "IGNORED PATH":
             wl_files = data[error_type]
             for file_match, allowed_lines in iteritems(wl_files):
                 if None in allowed_lines or line in allowed_lines:
@@ -839,6 +856,13 @@ def lint(repo_root, paths, output_format):
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
 all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
+
+# Don't break users of the lint that don't have git installed.
+try:
+    subprocess.check_output(["git", "--version"])
+    path_lints += [check_git_ignore]
+except subprocess.CalledProcessError:
+    pass
 
 if __name__ == "__main__":
     args = create_parser().parse_args()

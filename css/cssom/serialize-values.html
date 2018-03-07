@@ -90,6 +90,7 @@
 
     function counter() {
       var values = ['counter(par-num)',
+                    { actual: 'counter(par-num, decimal)', serialized: 'counter(par-num)' },
                     'counter(par-num, upper-roman)'];
       return iterable(values);
     }

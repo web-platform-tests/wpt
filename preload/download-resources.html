@@ -2,9 +2,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
-<script>
-    var t = async_test('Makes sure that preloaded resources are downloaded');
-</script>
 <link rel=preload href="resources/dummy.js" as=script>
 <link rel=preload href="resources/dummy.css" as=style>
 <link rel=preload href="resources/square.png" as=image>
@@ -16,12 +13,53 @@
 <link rel=preload href="resources/dummy.xml?novalue">
 <link rel=preload href="resources/dummy.xml" as="fetch">
 <body>
-<script src="resources/dummy.js?pipe=trickle(d5)&download-resources"></script>
 <script>
-    window.addEventListener("load", t.step_func(function() {
-        verifyPreloadAndRTSupport()
+function useAllResources() {
+    let style = document.createElement("style");
+    style.appendChild(document.createTextNode("@font-face { font-family:ahem; src: url(resources/CanvasTest.ttf); }span { font-family: ahem, Arial; }"));
+    document.body.appendChild(style);
+    let link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "resources/dummy.css";
+    document.body.appendChild(link);
+    let script = document.createElement("script");
+    script.src = "resources/dummy.js";
+    document.body.appendChild(script);
+    let img = new Image();
+    img.src = "resources/square.png";
+    document.body.appendChild(img);
+    let video = document.createElement("video");
+    video.src = "resources/white.mp4";
+    let track = document.createElement("track");
+    track.kind = "subtitles";
+    track.src = "resources/foo.vtt";
+    track.srclang = "en";
+    video.appendChild(track);
+    document.body.appendChild(video);
+    let audio = document.createElement("audio");
+    audio.src = "resources/sound_5.oga";
+    document.body.appendChild(audio);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "resources/dummy.xml");
+    xhr.send();
+}
+promise_test(async t => {
+    await new Promise(async (resolve, reject) => {
+        if (!isPreloadAndRTSupported()) {
+            reject("Unsupported APIs");
+        }
+        await untilResourceDownloaded("resources/dummy.js");
+        await untilResourceDownloaded("resources/dummy.css");
+        await untilResourceDownloaded("resources/square.png");
+        await untilResourceDownloaded("resources/CanvasTest.ttf");
+        await untilResourceDownloaded("resources/white.mp4");
+        await untilResourceDownloaded("resources/sound_5.oga");
+        await untilResourceDownloaded("resources/foo.vtt");
+        await untilResourceDownloaded("resources/dummy.xml");
         verifyNumberOfDownloads("resources/dummy.js", 1);
         verifyNumberOfDownloads("resources/dummy.css", 1);
+        verifyNumberOfDownloads("resources/square.png", 1);
         verifyNumberOfDownloads("resources/CanvasTest.ttf", 1);
         verifyNumberOfDownloads("resources/white.mp4", 1);
         verifyNumberOfDownloads("resources/sound_5.oga", 1);
@@ -29,7 +67,9 @@
         verifyNumberOfDownloads("resources/dummy.xml?foo=bar", 0);
         verifyNumberOfDownloads("resources/dummy.xml?novalue", 0);
         verifyNumberOfDownloads("resources/dummy.xml", 1);
-        t.done();
-    }));
+        useAllResources();
+        resolve();
+    });
+}, 'Makes sure that preloaded resources are downloaded');
 </script>
 </body>

@@ -2,9 +2,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
-<script>
-    var t = async_test('Makes sure that preloaded resources are not downloaded again when used');
-</script>
 <link rel=preload href="resources/dummy.js?single-download-preload" as=script>
 <link rel=preload href="resources/dummy.css?single-download-preload" as=style>
 <link rel=preload href="resources/square.png?single-download-preload" as=image>
@@ -16,12 +13,11 @@
 <link rel=preload href="resources/dummy.xml?foo=bar" as=foobarxmlthing>
 <link rel=preload href="resources/dummy.xml?single-download-preload">
 <body>
-<script src="resources/dummy.js?pipe=trickle(d3)&single-download-preload"></script>
 <style>
     #background {
         width: 200px;
         height: 200px;
-        background-image: url(resources/square.png?backgroundi&single-download-preload);
+        background-image: url(resources/square.png?background&single-download-preload);
     }
     @font-face {
       font-family:ahem;
@@ -38,24 +34,32 @@
 </video>
 <audio src="resources/sound_5.oga?single-download-preload"></audio>
 <script>
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "resources/dummy.xml?single-download-preload");
-    xhr.send();
-
-    window.addEventListener("load", t.step_func(function() {
-        verifyPreloadAndRTSupport();
-        setTimeout(t.step_func(function() {
-            verifyNumberOfDownloads("resources/dummy.js?single-download-preload", 1);
-            verifyNumberOfDownloads("resources/dummy.css?single-download-preload", 1);
-            verifyNumberOfDownloads("resources/square.png?single-download-preload", 1);
-            verifyNumberOfDownloads("resources/square.png?background&single-download-preload", 1);
-            verifyNumberOfDownloads("resources/CanvasTest.ttf?single-download-preload", 1);
-            verifyNumberOfDownloads("resources/dummy.xml?foobar", 0);
-            verifyNumberOfDownloads("resources/foo.vtt?single-download-preload", 1);
-            verifyNumberOfDownloads("resources/dummy.xml?single-download-preload", 1);
-            // FIXME: We should verify for video and audio as well, but they seem to (flakily?) trigger multiple partial requests.
-            t.done();
-        }), 0);
-    }));
+promise_test(async t => {
+    await (await fetch("resources/dummy.xml?single-download-preload")).arrayBuffer();
+    await new Promise(async (resolve, reject) => {
+        if (!isPreloadAndRTSupported()) {
+            reject("Unsupported APIs");
+        }
+        await untilResourceDownloaded("resources/dummy.js?single-download-preload");
+        await untilResourceDownloaded("resources/dummy.css?single-download-preload");
+        await untilResourceDownloaded("resources/square.png?single-download-preload");
+        await untilResourceDownloaded("resources/square.png?background&single-download-preload");
+        await untilResourceDownloaded("resources/CanvasTest.ttf?single-download-preload");
+        await untilResourceDownloaded("resources/white.mp4?single-download-preload");
+        await untilResourceDownloaded("resources/sound_5.oga?single-download-preload");
+        await untilResourceDownloaded("resources/foo.vtt?single-download-preload");
+        await untilResourceDownloaded("resources/dummy.xml?single-download-preload");
+        verifyNumberOfDownloads("resources/dummy.js?single-download-preload", 1);
+        verifyNumberOfDownloads("resources/dummy.css?single-download-preload", 1);
+        verifyNumberOfDownloads("resources/square.png?single-download-preload", 1);
+        verifyNumberOfDownloads("resources/square.png?background&single-download-preload", 1);
+        verifyNumberOfDownloads("resources/CanvasTest.ttf?single-download-preload", 1);
+        verifyNumberOfDownloads("resources/dummy.xml?foobar", 0);
+        verifyNumberOfDownloads("resources/foo.vtt?single-download-preload", 1);
+        verifyNumberOfDownloads("resources/dummy.xml?single-download-preload", 1);
+        // FIXME: We should verify for video and audio as well, but they seem to (flakily?) trigger multiple partial requests.
+        resolve();
+    });
+}, 'Makes sure that preloaded resources are not downloaded again when used');
 </script>
 <span>PASS - this text is here just so that the browser will download the font.</span>

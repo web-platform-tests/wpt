@@ -1,17 +1,25 @@
-function verifyPreloadAndRTSupport()
-{
+function verifyPreloadAndRTSupport() {
     var link = window.document.createElement("link");
     assert_true(link.relList && link.relList.supports("preload"), "Preload not supported");
     assert_true(!!window.PerformanceResourceTiming, "ResourceTiming not supported");
 }
 
-function getAbsoluteURL(url)
-{
+function isPreloadAndRTSupported() {
+    var link = window.document.createElement("link");
+    if (!link.relList || !link.relList.supports("preload")) {
+        return false;
+    }
+    if (!window.PerformanceResourceTiming) {
+        return false;
+    }
+    return true;
+}
+
+function getAbsoluteURL(url) {
     return new URL(url, location.href).href;
 }
 
-function verifyNumberOfDownloads(url, number)
-{
+function verifyNumberOfDownloads(url, number) {
     var numDownloads = 0;
     performance.getEntriesByName(getAbsoluteURL(url)).forEach(entry => {
         if (entry.transferSize > 0) {
@@ -19,4 +27,22 @@ function verifyNumberOfDownloads(url, number)
         }
     });
     assert_equals(numDownloads, number, url);
+}
+
+function untilResourceDownloaded(url) {
+    let absoluteURL = getAbsoluteURL(url);
+    if (performance.getEntriesByName(absoluteURL).length >= 1) {
+        return true;
+    }
+
+    return new Promise((resolve, reject) => {
+      let observer = new PerformanceObserver(list => {
+          list.getEntries().forEach(entry => {
+              if (entry.name == absoluteURL) {
+                  resolve();
+              }
+          });
+      });
+      observer.observe({entryTypes: ["resource"]});
+    });
 }

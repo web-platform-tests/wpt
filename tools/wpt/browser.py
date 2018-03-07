@@ -99,8 +99,6 @@ class Firefox(Browser):
         }.get(uname[0])
 
         if platform is None:
-            # This was earlier checked in platform_string, which isn't needed anymore since we switched
-            # to using mozdownload.
             raise ValueError("Unable to construct a valid Firefox package name for current platform")
 
         if dest is None:

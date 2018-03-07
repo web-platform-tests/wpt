@@ -1,0 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the css-fonts spec.
+// See https://drafts.csswg.org/css-fonts/
+
+interface CSSFontFaceRule : CSSRule {
+    readonly attribute CSSStyleDeclaration style;
+}

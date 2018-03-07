@@ -1,0 +1,17 @@
+@charset "utf-8";
+.test div {
+	background-color: #FF0000;
+	font-weight: bold;
+	color: white;
+	height: 90px;
+	width: 90px;
+	font-family: Arial, Helvetica, sans-serif; 
+	}
+.ýäè {
+	background-color: #00FF00;
+	font-weight: bold;
+	color: white;
+	height: 100px;
+	width: 100px;
+	font-family: Arial, Helvetica, sans-serif; 
+	}

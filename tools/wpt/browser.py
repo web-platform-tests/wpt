@@ -69,25 +69,6 @@ class Firefox(Browser):
     platform_ini = "firefox/platform.ini"
     requirements = "requirements_firefox.txt"
 
-    def platform_string(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
-
-        if platform is None:
-            raise ValueError("Unable to construct a valid Firefox package name for current platform")
-
-        if platform == "linux":
-            bits = "-%s" % uname[4]
-        elif platform == "win":
-            bits = "64" if uname[4] == "x86_64" else "32"
-        else:
-            bits = ""
-
-        return "%s%s" % (platform, bits)
-
     def platform_string_geckodriver(self):
         platform = {
             "Linux": "linux",
@@ -111,27 +92,46 @@ class Firefox(Browser):
         from mozdownload import FactoryScraper
         import mozinstall
 
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
+
+        if platform is None:
+            # This was earlier checked in platform_string, which isn't needed anymore since we switched
+            # to using mozdownload.
+            raise ValueError("Unable to construct a valid Firefox package name for current platform")
+
         if dest is None:
             dest = os.getcwd()
 
         filename = FactoryScraper('daily', branch='mozilla-central', destination=dest).download()
 
         try:
-            mozinstall.install(filename, dest)
+            install_dest = mozinstall.install(filename, dest)
         except mozinstall.mozinstall.InstallError as e:
-            if uname[0] == "Darwin":
+            if platform == "mac":
                 # mozinstall will fail here if nightly is already installed in the venv
                 # This only occurs on macOS because shutil.copy_tree() is called in
                 # mozinstall._install_dmg and will fail if the file already exists.
                 # copytree isn't used while installing on Windows/linux, so the same error
                 # won't be thrown if we try to rewrite there.
                 mozinstall.uninstall(dest+'/Firefox Nightly.app')
-                mozinstall.install(filename, dest)
+                install_dest = mozinstall.install(filename, dest)
             else:
                 raise
 
         os.remove(filename)
-        return find_executable("firefox", os.path.join(dest, "firefox"))
+
+        if platform == "linux":
+            bin_path = os.path.join(install_dest, "firefox")
+        elif platform == "win":
+            bin_path = os.path.join(install_dest, "core")
+        elif platform == "mac":
+            bin_path = os.path.join(install_dest, "Contents", "MacOS")
+
+        return find_executable("firefox", bin_path)
 
     def find_binary(self):
         return find_executable("firefox")

@@ -65,8 +65,6 @@ def test_help():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "darwin",
-                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
 def test_run_firefox(manifest_dir):
@@ -122,8 +120,6 @@ def test_install_chromedriver():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "darwin",
-                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
 def test_install_firefox():

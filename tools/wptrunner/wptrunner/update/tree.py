@@ -178,9 +178,9 @@ class GitTree(object):
                        add all files under that path.
         """
         if prefix is None:
-            args = ("-a",)
+            args = ("-f", "-a",)
         else:
-            args = ("--no-ignore-removal", prefix)
+            args = ("-f", "--no-ignore-removal", prefix)
         self.git("add", *args)
 
     def list_refs(self, ref_filter=None):

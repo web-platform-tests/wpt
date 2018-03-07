@@ -13,8 +13,10 @@
 "use strict";
 
 const input1 = document.querySelector("input");
+
 const input2 = document.createElement("input");
 input2.autofocus = true;
+document.body.appendChild(input2);
 
 step_timeout(() => {
     assert_equals(document.activeElement, input1);

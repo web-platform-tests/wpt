@@ -332,7 +332,7 @@ promise_test(() => {
 
   return closed.then(() => assert_true(startCalled));
 
-}, 'Underlying source: calling error after close should throw');
+}, 'Underlying source: calling error after close should not throw');
 
 promise_test(() => {
 

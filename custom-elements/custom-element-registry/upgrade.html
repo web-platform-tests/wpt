@@ -48,6 +48,7 @@ test(() => {
   const container = document.createElement("div");
   const subContainer = document.createElement("span");
   const subSubContainer = document.createElement("span");
+  container.appendChild(subContainer);
   subContainer.appendChild(el1);
   subContainer.appendChild(subSubContainer);
   subSubContainer.appendChild(el2);
@@ -64,6 +65,34 @@ test(() => {
   assert_true(el1 instanceof Element1, "element 1 must now be upgraded");
   assert_true(el2 instanceof Element2, "element 2 must now be upgraded");
 }, "Two elements as descendants of the upgraded node");
+
+test(() => {
+  const el1 = document.createElement("element-d-1");
+  const el2 = document.createElement("element-d-2");
+
+  const container = document.createElement("div");
+  const subContainer = document.createElement("span");
+  subContainer.attachShadow({ mode: "open" });
+  const subSubContainer = document.createElement("span");
+  subSubContainer.attachShadow({ mode: "open" });
+
+  container.appendChild(subContainer);
+  subContainer.shadowRoot.appendChild(el1);
+  subContainer.shadowRoot.appendChild(subSubContainer);
+  subSubContainer.shadowRoot.appendChild(el2);
+
+  class Element1 extends HTMLElement {}
+  class Element2 extends HTMLElement {}
+  customElements.define("element-d-1", Element1);
+  customElements.define("element-d-2", Element2);
+
+  assert_false(el1 instanceof Element1, "element 1 must not yet be upgraded");
+  assert_false(el2 instanceof Element2, "element 2 must not yet be upgraded");
+
+  customElements.upgrade(container);
+  assert_true(el1 instanceof Element1, "element 1 must now be upgraded");
+  assert_true(el2 instanceof Element2, "element 2 must now be upgraded");
+}, "Two elements as shadow-including descendants (and not descendants) of the upgraded node");
 
 test(() => {
   const template = document.createElement("template");

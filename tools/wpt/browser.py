@@ -132,7 +132,28 @@ class Firefox(Browser):
         return find_executable("firefox", bin_path)
 
     def find_binary(self):
-        return find_executable("firefox")
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
+
+        dest = os.path.join(os.getcwd(), "_venv")
+        binary = None
+
+        if platform == "linux" :
+            binary = find_executable("firefox", os.path.join(dest, "firefox"))
+        elif platform == "win" :
+            import mozinstall
+            binary = mozinstall.get_binary(dest, 'firefox')
+        elif platform == "mac" :
+            binary = find_executable("firefox", os.path.join(dest, "Firefox Nightly.app", "Contents", "MacOS"))
+
+        if binary == None:
+            return find_executable("firefox")
+
+        return binary
+
 
     def find_certutil(self):
         path = find_executable("certutil")

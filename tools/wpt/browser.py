@@ -123,7 +123,7 @@ class Firefox(Browser):
         os.remove(filename)
 
         if platform == "linux":
-            bin_path = os.path.join(install_dest, "firefox")
+            bin_path = install_dest
         elif platform == "win":
             bin_path = os.path.join(install_dest, "core")
         elif platform == "mac":

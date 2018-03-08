@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the entries-api spec.
+// Content of this file was automatically extracted from the File and Directory Entries API spec.
 // See https://wicg.github.io/entries-api/
 
 partial interface File {

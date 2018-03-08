@@ -300,22 +300,28 @@ function extractViewInfo(view) {
 promise_test(() => {
   let pullCount = 0;
   let controller;
-  let byobRequest;
-  let viewDefined = false;
-  let viewInfo;
+  let byobRequests = [];
 
   const stream = new ReadableStream({
     start(c) {
       controller = c;
     },
     pull() {
-      byobRequest = controller.byobRequest;
+      const byobRequest = controller.byobRequest;
       const view = byobRequest.view;
-      viewDefined = view !== undefined;
-      viewInfo = extractViewInfo(view);
-
-      view[0] = 0x01;
-      byobRequest.respond(1);
+      byobRequests[pullCount] = {
+        defined: byobRequest !== undefined,
+        viewDefined: view !== undefined,
+        viewInfo: extractViewInfo(view)
+      };
+      if (pullCount === 0) {
+        view[0] = 0x01;
+        byobRequest.respond(1);
+      } else if (pullCount === 1) {
+        view[0] = 0x02;
+        view[1] = 0x03;
+        byobRequest.respond(2);
+      }
 
       ++pullCount;
     },
@@ -326,28 +332,50 @@ promise_test(() => {
   });
 
   const reader = stream.getReader();
-  const readPromise = reader.read();
-  const ignoredReadPromise = reader.read();
+  const p0 = reader.read();
+  const p1 = reader.read();
 
   assert_equals(pullCount, 0, 'No pull() as start() just finished and is not yet reflected to the state of the stream');
 
   return Promise.resolve().then(() => {
     assert_equals(pullCount, 1, 'pull() must have been invoked once');
-    assert_not_equals(byobRequest, undefined, 'byobRequest must not be undefined');
-    assert_true(viewDefined, 'byobRequest.view must not be undefined');
-    assert_equals(viewInfo.constructor, Uint8Array, 'view.constructor should be Uint8Array');
-    assert_equals(viewInfo.bufferByteLength, 16, 'view.buffer.byteLength should be 16');
-    assert_equals(viewInfo.byteOffset, 0, 'view.byteOffset should be 0');
-    assert_equals(viewInfo.byteLength, 16, 'view.byteLength should be 16');
-    return readPromise;
+    const byobRequest = byobRequests[0];
+    assert_true(byobRequest.defined, 'first byobRequest must not be undefined');
+    assert_true(byobRequest.viewDefined, 'first byobRequest.view must not be undefined');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'first view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 16, 'first view.buffer.byteLength should be 16');
+    assert_equals(viewInfo.byteOffset, 0, 'first view.byteOffset should be 0');
+    assert_equals(viewInfo.byteLength, 16, 'first view.byteLength should be 16');
+
+    return p0;
   }).then(result => {
+    assert_equals(pullCount, 2, 'pull() must have been invoked twice');
     assert_not_equals(result.value, undefined);
     assert_equals(result.value.constructor, Uint8Array);
     assert_equals(result.value.buffer.byteLength, 16);
     assert_equals(result.value.byteOffset, 0);
     assert_equals(result.value.byteLength, 1);
     assert_equals(result.value[0], 0x01);
-    assert_equals(pullCount, 1, 'pull() should only be invoked once');
+    const byobRequest = byobRequests[1];
+    assert_true(byobRequest.defined, 'second byobRequest must not be undefined');
+    assert_true(byobRequest.viewDefined, 'second byobRequest.view must not be undefined');
+    const viewInfo = byobRequest.viewInfo;
+    assert_equals(viewInfo.constructor, Uint8Array, 'second view.constructor should be Uint8Array');
+    assert_equals(viewInfo.bufferByteLength, 16, 'second view.buffer.byteLength should be 16');
+    assert_equals(viewInfo.byteOffset, 0, 'second view.byteOffset should be 0');
+    assert_equals(viewInfo.byteLength, 16, 'second view.byteLength should be 16');
+
+    return p1;
+  }).then(result => {
+    assert_equals(pullCount, 2, 'pull() should only be invoked twice');
+    assert_not_equals(result.value, undefined);
+    assert_equals(result.value.constructor, Uint8Array);
+    assert_equals(result.value.buffer.byteLength, 16);
+    assert_equals(result.value.byteOffset, 0);
+    assert_equals(result.value.byteLength, 2);
+    assert_equals(result.value[0], 0x02);
+    assert_equals(result.value[1], 0x03);
   });
 }, 'ReadableStream with byte source: autoAllocateChunkSize');
 

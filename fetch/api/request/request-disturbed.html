@@ -49,6 +49,17 @@
       }, "Check creating a new request from a disturbed request");
 
       promise_test(function() {
+        assert_true(bodyConsumed.bodyUsed , "bodyUsed is true when request is disturbed");
+        const originalBody = bodyConsumed.body;
+        const bodyReplaced = new Request(bodyConsumed, { body: "Replaced body" });
+        assert_not_equals(bodyReplaced.body, originalBody, "new request's body is new");
+        assert_false(bodyReplaced.bodyUsed, "bodyUsed is false when request is not disturbed");
+        return bodyReplaced.text(text => {
+          assert_equals(text, "Replaced body");
+        });
+      }, "Check creating a new request with a new body from a disturbed request");
+
+      promise_test(function() {
         var bodyRequest = new Request("", initValuesDict);
         const originalBody = bodyRequest.body;
         assert_false(bodyRequest.bodyUsed , "bodyUsed is false when request is not disturbed");

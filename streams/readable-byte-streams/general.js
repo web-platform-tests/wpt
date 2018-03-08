@@ -693,7 +693,7 @@ promise_test(() => {
     },
     type: 'bytes'
   }, {
-    highWaterMark: 256
+    highWaterMark: 0
   });
 
   const reader = stream.getReader();
@@ -717,9 +717,9 @@ promise_test(() => {
     assert_equals(result[2].done, false, 'result[2].done');
     assert_equals(result[2].value.byteLength, 1, 'result[2].value.byteLength');
     assert_equals(byobRequest, undefined, 'byobRequest should be undefined');
-    assert_equals(desiredSizes[0], 256, 'desiredSize on pull should be 256');
-    assert_equals(desiredSizes[1], 256, 'desiredSize after 1st enqueue() should be 256');
-    assert_equals(desiredSizes[2], 256, 'desiredSize after 2nd enqueue() should be 256');
+    assert_equals(desiredSizes[0], 0, 'desiredSize on pull should be 0');
+    assert_equals(desiredSizes[1], 0, 'desiredSize after 1st enqueue() should be 0');
+    assert_equals(desiredSizes[2], 0, 'desiredSize after 2nd enqueue() should be 0');
     assert_equals(pullCount, 1, 'pull() should only be called once');
   });
 }, 'ReadableStream with byte source: Respond to pull() by enqueue() asynchronously');

@@ -725,6 +725,55 @@ promise_test(() => {
 }, 'ReadableStream with byte source: Respond to pull() by enqueue() asynchronously');
 
 promise_test(() => {
+  let pullCount = 0;
+
+  let byobRequest;
+  const desiredSizes = [];
+
+  const stream = new ReadableStream({
+    pull(c) {
+      byobRequest = c.byobRequest;
+      desiredSizes.push(c.desiredSize);
+
+      if (pullCount < 3) {
+        c.enqueue(new Uint8Array(1));
+      } else {
+        c.close();
+      }
+
+      ++pullCount;
+    },
+    type: 'bytes'
+  }, {
+    highWaterMark: 256
+  });
+
+  const reader = stream.getReader();
+
+  const p0 = reader.read();
+  const p1 = reader.read();
+  const p2 = reader.read();
+
+  assert_equals(pullCount, 0, 'No pull as start() just finished and is not yet reflected to the state of the stream');
+
+  return Promise.all([p0, p1, p2]).then(result => {
+    assert_equals(pullCount, 4, 'pullCount after completion of all read()s');
+
+    assert_equals(result[0].done, false, 'result[0].done');
+    assert_equals(result[0].value.byteLength, 1, 'result[0].value.byteLength');
+    assert_equals(result[1].done, false, 'result[1].done');
+    assert_equals(result[1].value.byteLength, 1, 'result[1].value.byteLength');
+    assert_equals(result[2].done, false, 'result[2].done');
+    assert_equals(result[2].value.byteLength, 1, 'result[2].value.byteLength');
+    assert_equals(byobRequest, undefined, 'byobRequest should be undefined');
+    assert_equals(desiredSizes[0], 256, 'desiredSize on pull should be 256');
+    assert_equals(desiredSizes[1], 256, 'desiredSize after 1st enqueue() should be 256');
+    assert_equals(desiredSizes[2], 256, 'desiredSize after 2nd enqueue() should be 256');
+    assert_equals(desiredSizes[3], 256, 'desiredSize after 3rd enqueue() should be 256');
+  });
+}, 'ReadableStream with byte source: Respond to multiple pull() by separate enqueue()');
+
+promise_test(() => {
   let controller;
 
   let pullCount = 0;

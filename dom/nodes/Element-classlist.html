@@ -407,6 +407,7 @@ function testClassList(e, desc) {
   checkReplace("a", "a", "b", true, "b");
   checkReplace("a", "A", "b", false, "a");
   checkReplace("a b", "b", "A", true, "a A");
+  checkReplace("a b", "c", "a", false, "a b");
   checkReplace("a b c", "d", "e", false, "a b c");
   // https://github.com/whatwg/dom/issues/443
   checkReplace("a a a  b", "a", "a", true, "a b");

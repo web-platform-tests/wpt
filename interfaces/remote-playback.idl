@@ -1,3 +1,6 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the remote-playback spec.
+// See https://w3c.github.io/remote-playback/
 
           [Exposed=Window]
           interface RemotePlayback : EventTarget {

@@ -1,3 +1,6 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Screen Orientation API spec.
+// See https://w3c.github.io/screen-orientation/
 
           partial interface Screen {
             [SameObject] readonly attribute ScreenOrientation orientation;

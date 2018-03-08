@@ -137,6 +137,20 @@ promise_test(t => {
       throw error1;
     }
   });
+  const writer = ws.getWriter();
+
+  return Promise.all([
+    promise_rejects(t, error1, writer.abort(undefined), 'first abort() must have matching rejection'),
+    promise_rejects(t, error1, writer.abort(undefined), 'second abort() must have matching rejection')
+  ]);
+}, 'WritableStream if sink\'s abort throws, the promise returned by multiple writer.abort()s reject');
+
+promise_test(t => {
+  const ws = new WritableStream({
+    abort() {
+      throw error1;
+    }
+  });
 
   return promise_rejects(t, error1, ws.abort(undefined),
     'rejection reason of abortPromise must be the error thrown by abort');
@@ -195,7 +209,6 @@ promise_test(t => {
     abortPromise,
     promise_rejects(t, new TypeError(), writer.write(), 'writing should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.close(), 'closing should reject with a TypeError'),
-    promise_rejects(t, new TypeError(), writer.abort(), 'aborting should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.ready, 'ready should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError')
   ]).then(() => {
@@ -1233,10 +1246,27 @@ promise_test(t => {
   const abortPromise1 = ws.abort();
   const abortPromise2 = ws.abort();
   return Promise.all([
-    abortPromise1,
-    promise_rejects(t, new TypeError(), abortPromise2, 'second abort() should reject')
+    abortPromise1.then(
+      v => assert_equals(v, undefined, 'first abort() should fulfill with undefined')),
+    abortPromise2.then(
+      v => assert_equals(v, undefined, 'second abort() should fulfill with undefined')),
   ]);
-}, 'when calling abort() twice on the same stream, the second call should reject');
+}, 'when calling abort() twice on the same stream, both calls should fulfill with undefined');
+
+promise_test(t => {
+  const ws = new WritableStream({
+    start(c) {
+      c.error(error1);
+    }
+  });
+
+  const writer = ws.getWriter();
+
+  return promise_rejects(t, error1, writer.closed, 'writer.closed should reject').then(() => {
+    return writer.abort().then(
+      v => assert_equals(v, undefined, 'abort() should fulfill with undefined'));
+  });
+}, 'calling abort() on an errored stream should fulfill with undefined');
 
 promise_test(t => {
   let controller;

@@ -1,3 +1,6 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the pointerevents spec.
+// See https://w3c.github.io/pointerevents/
 
 dictionary PointerEventInit : MouseEventInit {
     long        pointerId = 0;

@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the WebUSB API spec.
+// See https://wicg.github.io/webusb/
+
 dictionary USBDeviceFilter {
   unsigned short vendorId;
   unsigned short productId;

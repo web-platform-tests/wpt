@@ -306,12 +306,14 @@ class FirefoxBrowser(Browser):
         """Write a line of output from the firefox process to the log"""
         if "GLib-GObject-CRITICAL" in line:
             line = "";
-        data = line.decode("utf8", "replace")
-        if self.stack_fixer:
-            data = self.stack_fixer(data)
-        self.logger.process_output(self.pid(),
-                                   data,
-                                   command=" ".join(self.runner.command))
+            return
+        if(line):
+            data = line.decode("utf8", "replace")
+            if self.stack_fixer:
+                data = self.stack_fixer(data)
+            self.logger.process_output(self.pid(),
+                                      data,
+                                      command=" ".join(self.runner.command))
 
     def is_alive(self):
         if self.runner:

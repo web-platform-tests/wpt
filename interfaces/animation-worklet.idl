@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the animation-worklet spec.
+// See https://wicg.github.io/animation-worklet/
+
 partial interface Window {
     [SameObject] readonly attribute Worklet animationWorklet;
 };

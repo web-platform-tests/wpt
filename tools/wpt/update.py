@@ -32,4 +32,6 @@ def update_expectations(venv, **kwargs):
         updater = WPTUpdate(logger, **kwargs)
         updater.run()
     except Exception as e:
+        raise
+    finally:
         logger.shutdown()

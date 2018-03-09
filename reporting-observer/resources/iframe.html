@@ -1,0 +1,10 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<script>
+window.onload = function() {
+  // The observer in the parent frame should receive this report.
+  var report = new CustomReport("Cross frame message.");
+  report.send();
+  window.console.log("in frame");
+};
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Reporting: futureOnly option</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+window.onload = function() {
+  async_test(function(test) {
+    var observer = new ReportingObserver(function(reports, observer) {
+      test.step(function() {
+        assert_equals(reports.length, 1);
+        assert_equals(reports[0].body.message, "1");
+      });
+
+      test.done();
+    }, {"futureOnly": true});
+
+    var report = new CustomReport("0");
+    report.send();
+
+    observer.observe();
+
+    // The observer should receive this report but not the one send before
+    // observe() was called.
+    var report = new CustomReport("1");
+    report.send();
+  });
+};
+</script>
+</body>
+</html>

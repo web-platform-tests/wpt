@@ -1,5 +1,4 @@
-<html>
-<body>
+<!DOCTYPE html>
 <script>
 function openModal(name) {
     switch (name) {
@@ -15,16 +14,10 @@ function openModal(name) {
     case "print":
         return print();
     break;
-    case "execCommandPrint":
-        return document.execCommand("print", true, null);
-    break;
   }
 }
 
 onmessage = function(e) {
-    let name = e.data;
-    parent.postMessage(openModal(name), "*");
+    parent.postMessage(openModal(e.data), "*");
 }
 </script>
-</body>
-</html>

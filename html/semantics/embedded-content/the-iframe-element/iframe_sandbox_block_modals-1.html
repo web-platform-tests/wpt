@@ -8,7 +8,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <iframe sandbox="allow-scripts"></iframe>
 <script>
-    let modaleName = "alert";
+    let modalName = "alert";
     let expectedValue = undefined;
 
     let timeOutForFailingToOpenModal = 500;
@@ -18,14 +18,11 @@
         iframe.onload = function() {
             window.addEventListener("message", t.step_func_done(e => {
                 e.source.close();
-                assert_less_than(new Date().getTime() - startTime, timeOutForFailingToOpenModal, "Call to open modal dialog did not returned immediately");
+                assert_less_than(new Date().getTime() - startTime, timeOutForFailingToOpenModal, "Call to open modal dialog did not return immediately");
                 assert_equals(e.data, expectedValue, "Call to open modal dialog did not return expected value");
             }));
-            setTimeout(t.step_func_done(e => {
-                assert_unreached("Call to open modal dialog did not returned immediately");
-            }), timeOutForFailingToOpenModal);
             startTime = new Date().getTime();
-            iframe.contentWindow.postMessage(modaleName, "*");
+            iframe.contentWindow.postMessage(modalName, "*");
         }
         iframe.src = "support/iframe-that-opens-modals.html";
     }, "Frames without `allow-modals` should not be able to open modal dialogs");

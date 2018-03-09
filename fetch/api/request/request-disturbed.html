@@ -69,7 +69,7 @@
         assert_not_equals(originalBody, undefined, "body should not be undefined");
         assert_not_equals(originalBody, null, "body should not be null");
         assert_not_equals(requestFromRequest.body, originalBody, "new request's body is new");
-        return requestFromRequest.text(text => {
+        return requestFromRequest.text().then(text => {
           assert_equals(text, "Request's body");
         });
       }, "Input request used for creating new request became disturbed");
@@ -85,7 +85,7 @@
         assert_not_equals(originalBody, null, "body should not be null");
         assert_not_equals(requestFromRequest.body, originalBody, "new request's body is new");
 
-        return requestFromRequest.text(text => {
+        return requestFromRequest.text().then(text => {
           assert_equals(text, "init body");
         });
       }, "Input request used for creating new request became disturbed even if body is not used");

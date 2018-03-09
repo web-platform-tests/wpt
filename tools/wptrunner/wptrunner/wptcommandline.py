@@ -4,6 +4,7 @@ import os
 import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
+from datetime import datetime, timedelta
 
 import config
 import wpttest
@@ -82,6 +83,24 @@ scheme host and port.""")
     mode_group.add_argument("--verify-log-full", action="store_true",
                             default=False,
                             help="Output per-iteration test results when running verify")
+    mode_group.add_argument("--verify-repeat-loop", action="store",
+                            default=10,
+                            help="Run tests in a loop for a number of times",
+                            type=int)
+    mode_group.add_argument("--verify-repeat-restart", action="store",
+                            default=5,
+                            help="Restart the whole process",
+                            type=int)
+    mode_group.add_argument("--verify-no-chaos-mode", action="store_false",
+                            default=True,
+                            help="Disable chaos mode when running on Firefox")
+    mode_group.add_argument("--verify-max-time", action="store",
+                            default=None,
+                            help="The maximum number of minutes for each test to run",
+                            type=lambda x: timedelta(minutes=float(x)))
+    mode_group.add_argument("--verify-no-output-results", action="store_false",
+                            default=True,
+                            help="Prints individuals test results and messages")
 
     test_selection_group = parser.add_argument_group("Test Selection")
     test_selection_group.add_argument("--test-types", action="store",

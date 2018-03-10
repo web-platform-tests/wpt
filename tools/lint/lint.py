@@ -624,6 +624,32 @@ def check_script_metadata(repo_root, path, f):
     return errors
 
 
+def check_multiple_identical_values(repo_root, paths):
+    """
+    Runs lints that check for multiple identical paths
+    in all_paths_lints.
+
+    :param repo_root: the repository root
+    :param paths: a list of all the paths within the repository
+    :returns: a list of errors found in ``path``
+    """
+
+    file_dict = dict()
+    errors = []
+    for paths in paths:
+        file, file_extension =  os.path.splitext(paths)
+        if file not in file_dict.keys():
+            file_dict[file] = list()
+            file_dict[file].append(file_extension)
+        else:
+            file_dict[file].append(file_extension)
+    for f in file_dict.keys():
+        if len(file_dict[f]) > 0:
+            errors.extend(paths(repo_root, paths))
+
+    return errors
+
+
 def check_path(repo_root, path):
     """
     Runs lints that check the file path.
@@ -837,7 +863,7 @@ def lint(repo_root, paths, output_format):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
-all_paths_lints = [check_css_globally_unique]
+all_paths_lints = [check_css_globally_unique, check_multiple_identical_values]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 if __name__ == "__main__":

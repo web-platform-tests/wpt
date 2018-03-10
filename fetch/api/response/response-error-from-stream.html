@@ -8,19 +8,16 @@
   </head>
   <body>
     <script>
-      /*************************************************************************
-       *
-       *  These tests originate from issue https://github.com/whatwg/fetch/issues/676
-       *
-       ************************************************************************/
-      const errorThrown = new Error('ReadableStream error');
+      function CustomTestError() {
+        const error = Error();
+        error.name = 'custom-test-error';
+        return error;
+      }
 
       function newStreamWithStartError() {
         return new ReadableStream({
           start(controller) {
-            // controller.close();
-            // controller.error(Error('Test 1 Error'));
-            controller.error(errorThrown);
+            controller.error(CustomTestError());
           }
         })
       }
@@ -28,37 +25,29 @@
       function newStreamWithPullError() {
         return new ReadableStream({
           pull(controller) {
-            // controller.close();
-            // controller.error(Error('Test 1 Error'));
-            controller.error(errorThrown);
+            controller.error(CustomTestError());
           }
         })
       }
 
       function runRequestPromiseTest(stream, responseReaderMethod, testDescription) {
-        promise_test(_ => {
-          return new Response(stream)[responseReaderMethod]()
-          .then(
-            ok => assert_false(true, 'ReadableStream Promise should throw error and not resolve'),
-            error => assert_equals(error, errorThrown, "ReadableStream error does not propagate to Response Promise rejection")
+        promise_test(test => {
+          return promise_rejects(
+            test,
+            CustomTestError(),
+            new Response(stream)[responseReaderMethod](),
+            'CustomTestError should propagate'
           )
         }, testDescription)
       }
 
-      promise_test(_ => {
-        return newStreamWithStartError().getReader().read()
-        .then(
-          ok => assert_false(true, 'ReadableStream Promise should throw error and not resolve'),
-          error => assert_equals(error, errorThrown, "ReadableStream error does not propagate to Promise")
-        )
+
+      promise_test(test => {
+        return promise_rejects(test, CustomTestError(), newStreamWithStartError().getReader().read(), 'CustomTestError should propagate')
       }, "ReadableStreamDefaultReader Promise receives ReadableStream start() Error")
 
-      promise_test(_ => {
-        return newStreamWithPullError().getReader().read()
-        .then(
-          ok => assert_false(true, 'ReadableStream Promise should throw error and not resolve'),
-          error => assert_equals(error, errorThrown, "ReadableStream error does not propagate to Promise")
-        )
+      promise_test(test => {
+        return promise_rejects(test, CustomTestError(), newStreamWithPullError().getReader().read(), 'CustomTestError should propagate')
       }, "ReadableStreamDefaultReader Promise receives ReadableStream pull() Error")
 
 

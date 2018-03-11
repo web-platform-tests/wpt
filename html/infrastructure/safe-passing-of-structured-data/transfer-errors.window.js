@@ -1,5 +1,5 @@
 function assert_transfer_error(transferList) {
-  assert_throws("DATA_CLONE_ERR", () => self.postMessage({ get whatever() { throw 1 } }, "*", transferList));
+  assert_throws("DataCloneError", () => self.postMessage({ get whatever() { throw 1 } }, "*", transferList));
 }
 
 test(() => {

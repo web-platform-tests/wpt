@@ -21,16 +21,16 @@
       new PresentationRequest('http://@');
     }, 'Call PresentationRequest constructor with an invalid URL. SyntaxError Exception expected.');
 
-    assert_throws('NotFoundError', () => {
+    assert_throws('NotSupportedError', () => {
         new PresentationRequest('unsupported://example.com');
-    }, 'Call PresentationRequest constructor with an unsupported URL. NotFoundError expected.');
+    }, 'Call PresentationRequest constructor with an unsupported URL. NotSupportedError expected.');
 
     assert_throws('SyntaxError', function() {
       new PresentationRequest(['presentation.html', 'http://@']);
     }, 'Call PresentationRequest constructor with a sequence of URLs, one of them invalid. SyntaxError Exception expected.');
 
-    assert_throws('NotFoundError', function() {
+    assert_throws('NotSupportedError', function() {
       new PresentationRequest(['unsupported://example.com', 'invalid://example.com']);
-    }, 'Call PresentationRequest constructor only with a sequence of unsupported URLs. NotFoundError Exception expected.');
+    }, 'Call PresentationRequest constructor only with a sequence of unsupported URLs. NotSupportedError Exception expected.');
   });
 </script>

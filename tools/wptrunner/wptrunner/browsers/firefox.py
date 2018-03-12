@@ -306,7 +306,7 @@ class FirefoxBrowser(Browser):
         """Write a line of output from the firefox process to the log"""
         if "GLib-GObject-CRITICAL" in line:
             return
-        if(line):
+        if line:
             data = line.decode("utf8", "replace")
             if self.stack_fixer:
                 data = self.stack_fixer(data)

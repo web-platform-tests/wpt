@@ -2,6 +2,7 @@
 *.py[co]
 .virtualenv
 _venv
+.pytest_cache/
 
 # Node
 node_modules

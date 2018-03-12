@@ -3,6 +3,7 @@
 .virtualenv/
 _venv/
 .cache/
+.pytest_cache/
 
 # Node
 node_modules/

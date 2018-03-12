@@ -20,6 +20,7 @@ policies and contribution forms [3].
     var settings = {
         output:true,
         harness_timeout:{
+            "short":2000,
             "normal":10000,
             "long":60000
         },
@@ -239,7 +240,9 @@ policies and contribution forms [3].
         var metas = document.getElementsByTagName("meta");
         for (var i = 0; i < metas.length; i++) {
             if (metas[i].name == "timeout") {
-                if (metas[i].content == "long") {
+                if (metas[i].content == "short") {
+                    return settings.harness_timeout.short;
+                } else if (metas[i].content == "long") {
                     return settings.harness_timeout.long;
                 }
                 break;

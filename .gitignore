@@ -12,6 +12,7 @@ node_modules/
 /MANIFEST.json
 
 testharness_runner.html
+!/testharness_runner.html
 !/tools/wptrunner/wptrunner/testharness_runner.html
 
 _certs

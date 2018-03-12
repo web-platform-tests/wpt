@@ -8,9 +8,7 @@ _venv
 node_modules
 
 # WPT repo stuff
-MANIFEST.json
-!content-security-policy/support/manifest.json
-!payment-handler/manifest.json
+/MANIFEST.json
 
 testharness_runner.html
 !/tools/wptrunner/wptrunner/testharness_runner.html

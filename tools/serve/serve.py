@@ -662,10 +662,6 @@ def normalise_config(config, ports):
 
     domains[""] = host
 
-    ports_ = {}
-    for scheme, ports_used in ports.iteritems():
-        ports_[scheme] = ports_used
-
     if "bind_hostname" in config:
         logger.warning("bind_hostname in config is deprecated; use bind_address instead")
         bind_address = config["bind_hostname"]

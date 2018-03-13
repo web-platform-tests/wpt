@@ -662,10 +662,6 @@ def normalise_config(config, ports):
 
     domains[""] = host
 
-    ports_ = {}
-    for scheme, ports_used in ports.iteritems():
-        ports_[scheme] = ports_used
-
     # make a (shallow) copy of the config and update that, so that the
     # normalized config can be used in place of the original one.
     config_ = config.copy()

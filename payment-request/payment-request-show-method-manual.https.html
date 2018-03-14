@@ -63,8 +63,8 @@ function manualTest3(button){
       defaultDetails);
     const acceptPromise = request.show();
     await promise_rejects(t, "NotSupportedError", acceptPromise);
-    done();
   }, button.textContent.trim());
+  done();
 }
 </script>
 

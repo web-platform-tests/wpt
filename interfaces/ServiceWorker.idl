@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Service Workers spec.
+// See https://w3c.github.io/ServiceWorker/
+
 [SecureContext, Exposed=(Window,Worker)]
 interface ServiceWorker : EventTarget {
   readonly attribute USVString scriptURL;

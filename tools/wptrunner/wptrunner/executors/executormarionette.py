@@ -125,8 +125,6 @@ class MarionetteProtocol(Protocol):
         self.timeout = timeout
 
     def load_runner(self, protocol):
-        # Check if we previously had a test window open, and if we did make sure it's closed
-        self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
         url = urlparse.urljoin(self.executor.server_url(protocol), "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         self.runner_handle = self.marionette.current_window_handle
@@ -427,7 +425,6 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
 
     def do_testharness(self, marionette, url, timeout):
         if self.close_after_done:
-            marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
             self.protocol.close_old_windows(self.protocol)
 
         if timeout is not None:

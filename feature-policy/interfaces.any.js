@@ -3,11 +3,6 @@
 
 "use strict";
 
-if (self.importScripts) {
-  importScripts('/resources/testharness.js');
-  importScripts('/resources/WebIDLParser.js', '/resources/idlharness.js');
-}
-
 // https://wicg.github.io/feature-policy/
 
 var idlArray = new IdlArray();

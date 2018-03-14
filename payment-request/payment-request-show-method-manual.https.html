@@ -31,16 +31,6 @@ test(() => {
   }
 }, "Must be possible to construct a payment request");
 
-promise_test(async t => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const acceptPromise = request.show(); // Sets state to "interactive"
-  const timeout = new Promise((_, reject) => setTimeout(async () => {
-    await request.abort();
-    reject(new Error("Test has failed"));
-  }, 100));
-  await Promise.race(promise_rejects(t, "SecurityError", acceptPromise), timeout);
-}, `Calling show() without being triggered by user interaction throws`);
-
 function manualTest1(button){
   button.disabled = true;
   promise_test(async t => {

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- Copyright © 2017 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
+<meta charset="utf-8">
+<title>Test for PaymentRequest.show() method</title>
+<link rel="help" href="https://w3c.github.io/browser-payment-api/#show-method">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+const defaultMethods = Object.freeze([
+  { supportedMethods: "basic-card" },
+  { supportedMethods: "https://apple.com/pay" }
+]);
+
+const defaultDetails = Object.freeze({
+  total: {
+    label: "Total",
+    amount: {
+      currency: "USD",
+      value: "1.00",
+    },
+  },
+});
+
+promise_test(async t => {
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  const acceptPromise = request.show();
+  await promise_rejects(t, "SecurityError", acceptPromise);
+}, `Calling show() without being triggered by user interaction throws`);
+</script>

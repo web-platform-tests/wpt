@@ -304,6 +304,8 @@ class TestRunnerManager(threading.Thread):
         # This is started in the actual new thread
         self.logger = None
 
+        self.test_count = 0
+        self.subtest_count = 0
         self.unexpected_count = 0
 
         # This may not really be what we want
@@ -548,6 +550,7 @@ class TestRunnerManager(threading.Thread):
             expected = test.expected(result.name)
             is_unexpected = expected != result.status
 
+            self.subtest_count += 1
             if is_unexpected:
                 self.unexpected_count += 1
                 self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
@@ -569,6 +572,7 @@ class TestRunnerManager(threading.Thread):
             if self.browser.check_for_crashes():
                 status = "CRASH"
 
+        self.test_count += 1
         is_unexpected = expected != status
         if is_unexpected:
             self.unexpected_count += 1
@@ -788,6 +792,12 @@ class ManagerGroup(object):
         as possible"""
         self.stop_flag.set()
         self.logger.debug("Stop flag set in ManagerGroup")
+
+    def test_count(self):
+        return sum(item.test_count for item in self.pool)
+
+    def subtest_count(self):
+        return sum(item.subtest_count for item in self.pool)
 
     def unexpected_count(self):
         return sum(item.unexpected_count for item in self.pool)

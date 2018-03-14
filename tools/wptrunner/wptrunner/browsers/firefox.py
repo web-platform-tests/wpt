@@ -124,7 +124,7 @@ def env_options():
     # https://github.com/w3c/web-platform-tests/pull/9480
     return {"host_ip": "127.0.0.1",
             "host": "web-platform.test",
-            "bind_hostname": False,
+            "bind_address": False,
             "certificate_domain": "web-platform.test",
             "supports_debugger": True}
 
@@ -304,12 +304,15 @@ class FirefoxBrowser(Browser):
 
     def on_output(self, line):
         """Write a line of output from the firefox process to the log"""
-        data = line.decode("utf8", "replace")
-        if self.stack_fixer:
-            data = self.stack_fixer(data)
-        self.logger.process_output(self.pid(),
-                                   data,
-                                   command=" ".join(self.runner.command))
+        if "GLib-GObject-CRITICAL" in line:
+            return
+        if line:
+            data = line.decode("utf8", "replace")
+            if self.stack_fixer:
+                data = self.stack_fixer(data)
+            self.logger.process_output(self.pid(),
+                                      data,
+                                      command=" ".join(self.runner.command))
 
     def is_alive(self):
         if self.runner:

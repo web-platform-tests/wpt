@@ -16,8 +16,7 @@ test(t => {
 }, 'Has the default value 0');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 100);
+  const anim = createDiv(t).animate(null, 100);
   anim.effect.timing.delay = 100;
   assert_equals(anim.effect.timing.delay, 100, 'set delay 100');
   assert_equals(anim.effect.getComputedTiming().delay, 100,
@@ -25,8 +24,7 @@ test(t => {
 }, 'Can be set to a positive number');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 100);
+  const anim = createDiv(t).animate(null, 100);
   anim.effect.timing.delay = -100;
   assert_equals(anim.effect.timing.delay, -100, 'set delay -100');
   assert_equals(anim.effect.getComputedTiming().delay, -100,
@@ -34,8 +32,7 @@ test(t => {
 }, 'Can be set to a negative number');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 100);
+  const anim = createDiv(t).animate(null, 100);
   anim.effect.timing.delay = 100;
   assert_equals(anim.effect.getComputedTiming().progress, null);
   assert_equals(anim.effect.getComputedTiming().currentIteration, null);
@@ -43,19 +40,13 @@ test(t => {
    + ' make it no longer active');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { fill: 'both',
-                             duration: 100 });
+  const anim = createDiv(t).animate(null, { fill: 'both', duration: 100 });
   anim.effect.timing.delay = -50;
   assert_equals(anim.effect.getComputedTiming().progress, 0.5);
 }, 'Can set a negative delay to seek into the active interval');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { fill: 'both',
-                             duration: 100 });
+  const anim = createDiv(t).animate(null, { fill: 'both', duration: 100 });
   anim.effect.timing.delay = -100;
   assert_equals(anim.effect.getComputedTiming().progress, 1);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0);
@@ -69,7 +60,7 @@ test(t => {
       anim.effect.timing.delay = invalid;
     }, `setting ${invalid}`);
     assert_throws({ name: 'TypeError' }, () => {
-      div.animate({}, { delay: invalid });
+      div.animate(null, { delay: invalid });
     }, `animate() with ${invalid}`);
   }
 }, 'Throws when setting invalid values');

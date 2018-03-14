@@ -16,39 +16,36 @@ test(t => {
 }, 'Has the default value 0');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { iterationStart: 0.2,
-                             iterations: 1,
-                             fill: 'both',
-                             duration: 100,
-                             delay: 1 });
+  const anim = createDiv(t).animate(null,
+                                    { iterationStart: 0.2,
+                                      iterations: 1,
+                                      fill: 'both',
+                                      duration: 100,
+                                      delay: 1 });
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
 }, 'Changing the value updates computed timing when backwards-filling');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { iterationStart: 0.2,
-                             iterations: 1,
-                             fill: 'both',
-                             duration: 100,
-                             delay: 0 });
+  const anim = createDiv(t).animate(null,
+                                    { iterationStart: 0.2,
+                                      iterations: 1,
+                                      fill: 'both',
+                                      duration: 100,
+                                      delay: 0 });
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
 }, 'Changing the value updates computed timing during the active phase');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { iterationStart: 0.2,
-                             iterations: 1,
-                             fill: 'both',
-                             duration: 100,
-                             delay: 0 });
+  const anim = createDiv(t).animate(null,
+                                    { iterationStart: 0.2,
+                                      iterations: 1,
+                                      fill: 'both',
+                                      duration: 100,
+                                      delay: 0 });
   anim.finish();
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
@@ -63,7 +60,7 @@ test(t => {
       anim.effect.timing.iterationStart = invalid;
     }, `setting ${invalid}`);
     assert_throws({ name: 'TypeError' }, () => {
-      div.animate({}, { iterationStart: invalid });
+      div.animate(null, { iterationStart: invalid });
     }, `animate() with ${invalid}`);
   }
 }, 'Throws when setting invalid values');

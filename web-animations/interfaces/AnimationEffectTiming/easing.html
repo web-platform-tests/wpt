@@ -29,7 +29,7 @@ function assert_progress(animation, currentTime, easingFunction) {
 for (const options of gEasingTests) {
   test(t => {
     const target = createDiv(t);
-    const anim = target.animate([ { opacity: 0 }, { opacity: 1 } ],
+    const anim = target.animate(null,
                                 { duration: 1000 * MS_PER_SEC,
                                   fill: 'forwards' });
     anim.effect.timing.easing = options.easing;
@@ -47,8 +47,7 @@ for (const options of gEasingTests) {
 
 for (const invalidEasing of gInvalidEasings) {
   test(t => {
-    const div = createDiv(t);
-    const anim = div.animate({ opacity: [ 0, 1 ] }, 100 * MS_PER_SEC);
+    const anim = createDiv(t).animate(null, 100 * MS_PER_SEC);
     assert_throws({ name: 'TypeError' },
                   () => {
                     anim.effect.timing.easing = invalidEasing;
@@ -68,7 +67,7 @@ test(t => {
   const delay = 1000 * MS_PER_SEC;
 
   const target = createDiv(t);
-  const anim = target.animate([ { opacity: 0 }, { opacity: 1 } ],
+  const anim = target.animate(null,
                               { duration: 1000 * MS_PER_SEC,
                                 fill: 'both',
                                 delay: delay,

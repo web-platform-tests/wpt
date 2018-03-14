@@ -16,8 +16,7 @@ test(t => {
 }, 'Has the default value \'auto\'');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   anim.effect.timing.duration = 123.45;
   assert_time_equals_literal(anim.effect.timing.duration, 123.45,
                              'set duration 123.45');
@@ -26,8 +25,7 @@ test(t => {
 }, 'Can be set to a double value');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   anim.effect.timing.duration = 'auto';
   assert_equals(anim.effect.timing.duration, 'auto', 'set duration \'auto\'');
   assert_equals(anim.effect.getComputedTiming().duration, 0,
@@ -35,16 +33,14 @@ test(t => {
 }, 'Can be set to the string \'auto\'');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, { duration: 'auto' });
+  const anim = createDiv(t).animate(null, { duration: 'auto' });
   assert_equals(anim.effect.timing.duration, 'auto', 'set duration \'auto\'');
   assert_equals(anim.effect.getComputedTiming().duration, 0,
                 'getComputedTiming() after set duration \'auto\'');
 }, 'Can be set to \'auto\' using a dictionary object');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   anim.effect.timing.duration = Infinity;
   assert_equals(anim.effect.timing.duration, Infinity, 'set duration Infinity');
   assert_equals(anim.effect.getComputedTiming().duration, Infinity,
@@ -52,98 +48,85 @@ test(t => {
 }, 'Can be set to Infinity');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, -1);
+    createDiv(t).animate(null, -1);
   });
 }, 'animate() throws when passed a negative number');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, -Infinity);
+    createDiv(t).animate(null, -Infinity);
   });
 }, 'animate() throws when passed negative Infinity');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, NaN);
+    createDiv(t).animate(null, NaN);
   });
 }, 'animate() throws when passed a NaN value');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, { duration: -1 });
+    createDiv(t).animate(null, { duration: -1 });
   });
 }, 'animate() throws when passed a negative number using a dictionary object');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, { duration: -Infinity });
+    createDiv(t).animate(null, { duration: -Infinity });
   });
 }, 'animate() throws when passed negative Infinity using a dictionary object');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, { duration: NaN });
+    createDiv(t).animate(null, { duration: NaN });
   });
 }, 'animate() throws when passed a NaN value using a dictionary object');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, { duration: 'abc' });
+    createDiv(t).animate(null, { duration: 'abc' });
   });
 }, 'animate() throws when passed a string other than \'auto\' using a'
    + ' dictionary object');
 
 test(t => {
-  const div = createDiv(t);
   assert_throws({ name: 'TypeError' }, () => {
-    div.animate({ opacity: [ 0, 1 ] }, { duration: '100' });
+    createDiv(t).animate(null, { duration: '100' });
   });
 }, 'animate() throws when passed a string containing a number using a'
    + ' dictionary object');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_throws({ name: 'TypeError' }, () => {
     anim.effect.timing.duration = -1;
   });
 }, 'Throws when setting a negative number');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_throws({ name: 'TypeError' }, () => {
     anim.effect.timing.duration = -Infinity;
   });
 }, 'Throws when setting negative infinity');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_throws({ name: 'TypeError' }, () => {
     anim.effect.timing.duration = NaN;
   });
 }, 'Throws when setting a NaN value');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_throws({ name: 'TypeError' }, () => {
     anim.effect.timing.duration = 'abc';
   });
 }, 'Throws when setting a string other than \'auto\'');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_throws({ name: 'TypeError' }, () => {
     anim.effect.timing.duration = '100';
   });
@@ -170,8 +153,7 @@ promise_test(t => {
 }, 'Extending an effect\'s duration does not change the start or current time');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate(null, { duration: 100000, fill: 'both' });
+  const anim = createDiv(t).animate(null, { duration: 100000, fill: 'both' });
   anim.finish();
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress when animation is finished');

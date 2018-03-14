@@ -17,8 +17,7 @@
 // Tests on Element
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate(null);
+  const anim = createDiv(t).animate(null);
   assert_class_string(anim, 'Animation', 'Returned object is an Animation');
 }, 'Element.animate() creates an Animation object');
 
@@ -75,8 +74,7 @@ test(t => {
 
 for (const subtest of gEmptyKeyframeListTests) {
   test(t => {
-    const div = createDiv(t);
-    const anim = div.animate(subtest, 2000);
+    const anim = createDiv(t).animate(subtest, 2000);
     assert_not_equals(anim, null);
   }, 'Element.animate() accepts empty keyframe lists ' +
      `(input: ${JSON.stringify(subtest)})`);
@@ -84,8 +82,7 @@ for (const subtest of gEmptyKeyframeListTests) {
 
 for (const subtest of gKeyframesTests) {
   test(t => {
-    const div = createDiv(t);
-    const anim = div.animate(subtest.input, 2000);
+    const anim = createDiv(t).animate(subtest.input, 2000);
     assert_frame_lists_equal(anim.effect.getKeyframes(), subtest.output);
   }, `Element.animate() accepts ${subtest.desc}`);
 }
@@ -109,17 +106,15 @@ for (const invalidEasing of gInvalidEasings) {
 }
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.effect.timing.duration, 2000);
   // Also check that unspecified parameters receive their default values
   assert_equals(anim.effect.timing.fill, 'auto');
 }, 'Element.animate() accepts a double as an options argument');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] },
-                           { duration: Infinity, fill: 'forwards' });
+  const anim = createDiv(t).animate(null,
+                                    { duration: Infinity, fill: 'forwards' });
   assert_equals(anim.effect.timing.duration, Infinity);
   assert_equals(anim.effect.timing.fill, 'forwards');
   // Also check that unspecified parameters receive their default values
@@ -127,26 +122,22 @@ test(t => {
 }, 'Element.animate() accepts a KeyframeAnimationOptions argument');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] });
+  const anim = createDiv(t).animate(null);
   assert_equals(anim.effect.timing.duration, 'auto');
 }, 'Element.animate() accepts an absent options argument');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.id, '');
 }, 'Element.animate() correctly sets the id attribute when no id is specified');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, { id: 'test' });
+  const anim = createDiv(t).animate(null, { id: 'test' });
   assert_equals(anim.id, 'test');
 }, 'Element.animate() correctly sets the id attribute');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.timeline, document.timeline);
 }, 'Element.animate() correctly sets the Animation\'s timeline');
 
@@ -157,7 +148,7 @@ async_test(t => {
 
   iframe.addEventListener('load', t.step_func(() => {
     const div = createDiv(t, iframe.contentDocument);
-    const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+    const anim = div.animate(null, 2000);
     assert_equals(anim.timeline, iframe.contentDocument.timeline);
     iframe.remove();
     t.done();
@@ -168,8 +159,7 @@ async_test(t => {
    'triggered on an element in a different document');
 
 test(t => {
-  const div = createDiv(t);
-  const anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.playState, 'running');
 }, 'Element.animate() calls play on the Animation');
 

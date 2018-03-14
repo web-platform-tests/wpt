@@ -157,9 +157,8 @@ for (const invalid of gBadDurationValues) {
 
 for (const invalidEasing of gInvalidEasings) {
   test(t => {
-    const div = createDiv(t);
     assert_throws(new TypeError, () => {
-      div.animate({ easing: invalidEasing }, 2000);
+      createDiv(t).animate({ easing: invalidEasing }, 2000);
     });
   }, `Element.animate() does not accept invalid easing: '${invalidEasing}'`);
 }

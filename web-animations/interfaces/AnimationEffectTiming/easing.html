@@ -37,17 +37,7 @@ for (const options of gEasingTests) {
     assert_progress(anim, 500 * MS_PER_SEC, easing);
     assert_progress(anim, 750 * MS_PER_SEC, easing);
     assert_progress(anim, 1000 * MS_PER_SEC, easing);
-  }, options.desc);
-}
-
-for (const invalidEasing of gInvalidEasings) {
-  test(t => {
-    const anim = createDiv(t).animate(null, 100 * MS_PER_SEC);
-    assert_throws({ name: 'TypeError' },
-                  () => {
-                    anim.effect.timing.easing = invalidEasing;
-                  });
-  }, `Throws on invalid easing: '${invalidEasing}'`);
+  }, `Allows setting the easing to a ${options.desc}`);
 }
 
 for (const easing of gRoundtripEasings) {
@@ -55,7 +45,7 @@ for (const easing of gRoundtripEasings) {
     const anim = createDiv(t).animate(null);
     anim.effect.timing.easing = easing;
     assert_equals(anim.effect.timing.easing, easing);
-  }, `Canonical easing '${easing}' is returned as set`);
+  }, `Updates the specified value when setting the easing to '${easing}'`);
 }
 
 test(t => {
@@ -84,7 +74,7 @@ test(t => {
   anim.effect.timing.easing = 'steps(2, end)';
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'easing replace to steps(2, end) again at after phase');
-}, 'Allows the easing to be changed while the animation is in progress');
+}, 'Allows setting the easing of an animation in progress');
 
 </script>
 </body>

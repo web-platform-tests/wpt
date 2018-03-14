@@ -11,11 +11,6 @@
 'use strict';
 
 test(t => {
-  const anim = createDiv(t).animate(null);
-  assert_equals(anim.effect.timing.direction, 'normal');
-}, 'Has the default value \'normal\'');
-
-test(t => {
   const anim = createDiv(t).animate(null, 2000);
 
   const directions = ['normal', 'reverse', 'alternate', 'alternate-reverse'];

@@ -11,11 +11,6 @@
 'use strict';
 
 test(t => {
-  const anim = createDiv(t).animate(null);
-  assert_equals(anim.effect.timing.endDelay, 0);
-}, 'Has the default value 0');
-
-test(t => {
   const anim = createDiv(t).animate(null, 2000);
   anim.effect.timing.endDelay = 123.45;
   assert_time_equals_literal(anim.effect.timing.endDelay, 123.45,

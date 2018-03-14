@@ -8,6 +8,7 @@
 <script src="../../resources/easing-tests.js"></script>
 <script src="../../resources/keyframe-utils.js"></script>
 <script src="../../resources/keyframe-tests.js"></script>
+<script src="../../resources/timing-utils.js"></script>
 <body>
 <div id="log"></div>
 <iframe width="10" height="10" id="iframe"></iframe>
@@ -108,8 +109,7 @@ for (const invalidEasing of gInvalidEasings) {
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.effect.timing.duration, 2000);
-  // Also check that unspecified parameters receive their default values
-  assert_equals(anim.effect.timing.fill, 'auto');
+  assert_default_timing_except(anim.effect, ['duration']);
 }, 'Element.animate() accepts a double as an options argument');
 
 test(t => {
@@ -117,13 +117,12 @@ test(t => {
                                     { duration: Infinity, fill: 'forwards' });
   assert_equals(anim.effect.timing.duration, Infinity);
   assert_equals(anim.effect.timing.fill, 'forwards');
-  // Also check that unspecified parameters receive their default values
-  assert_equals(anim.effect.timing.direction, 'normal');
+  assert_default_timing_except(anim.effect, ['duration', 'fill']);
 }, 'Element.animate() accepts a KeyframeAnimationOptions argument');
 
 test(t => {
   const anim = createDiv(t).animate(null);
-  assert_equals(anim.effect.timing.duration, 'auto');
+  assert_default_timing_except(anim.effect, []);
 }, 'Element.animate() accepts an absent options argument');
 
 test(t => {

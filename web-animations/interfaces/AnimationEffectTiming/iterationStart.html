@@ -11,11 +11,6 @@
 'use strict';
 
 test(t => {
-  const anim = createDiv(t).animate(null);
-  assert_equals(anim.effect.timing.iterationStart, 0);
-}, 'Has the default value 0');
-
-test(t => {
   const anim = createDiv(t).animate(null,
                                     { iterationStart: 0.2,
                                       iterations: 1,

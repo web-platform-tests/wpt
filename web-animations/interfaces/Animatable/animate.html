@@ -9,6 +9,7 @@
 <script src="../../resources/keyframe-utils.js"></script>
 <script src="../../resources/keyframe-tests.js"></script>
 <script src="../../resources/timing-utils.js"></script>
+<script src="../../resources/timing-tests.js"></script>
 <body>
 <div id="log"></div>
 <iframe width="10" height="10" id="iframe"></iframe>
@@ -97,15 +98,6 @@ for (const subtest of gInvalidKeyframesTests) {
   }, `Element.animate() does not accept ${subtest.desc}`);
 }
 
-for (const invalidEasing of gInvalidEasings) {
-  test(t => {
-    const div = createDiv(t);
-    assert_throws(new TypeError, () => {
-      div.animate({ easing: invalidEasing }, 2000);
-    });
-  }, `Element.animate() does not accept invalid easing: '${invalidEasing}'`);
-}
-
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.effect.timing.duration, 2000);
@@ -124,6 +116,23 @@ test(t => {
   const anim = createDiv(t).animate(null);
   assert_default_timing_except(anim.effect, []);
 }, 'Element.animate() accepts an absent options argument');
+
+for (const invalid of gBadDelayValues) {
+  test(t => {
+    assert_throws(new TypeError, () => {
+      createDiv(t).animate(null, { delay: invalid });
+    });
+  }, `Element.animate() does not accept invalid delay value: ${invalid}`);
+}
+
+for (const invalidEasing of gInvalidEasings) {
+  test(t => {
+    const div = createDiv(t);
+    assert_throws(new TypeError, () => {
+      div.animate({ easing: invalidEasing }, 2000);
+    });
+  }, `Element.animate() does not accept invalid easing: '${invalidEasing}'`);
+}
 
 test(t => {
   const anim = createDiv(t).animate(null, 2000);

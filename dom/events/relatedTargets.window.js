@@ -1,3 +1,5 @@
+// https://dom.spec.whatwg.org/#concept-event-dispatch
+
 const host = document.createElement("div"),
       child = host.appendChild(document.createElement("p")),
       shadow = host.attachShadow({ mode: "closed" }),

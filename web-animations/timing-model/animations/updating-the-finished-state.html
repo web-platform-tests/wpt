@@ -417,5 +417,38 @@ async_test(t => {
   };
 }, 'Animation finish event is fired again after replaying from start');
 
+async_test(t => {
+  const anim = createDiv(t).animate(null,
+                                    { duration: 100000, endDelay: 50000 });
+  anim.onfinish = t.step_func(event => {
+    assert_unreached('finish event should not be fired');
+  });
+
+  anim.ready.then(() => {
+    anim.currentTime = 100000;
+    return waitForAnimationFrames(2);
+  }).then(t.step_func(() => {
+    t.done();
+  }));
+}, 'finish event is not fired at the end of the active interval when the'
+   + ' endDelay has not expired');
+
+async_test(t => {
+  const anim = createDiv(t).animate(null,
+                                    { duration: 100000, endDelay: 30000 });
+  anim.ready.then(() => {
+    anim.currentTime = 110000; // during endDelay
+    anim.onfinish = t.step_func(event => {
+      assert_unreached('onfinish event should not be fired during endDelay');
+    });
+    return waitForAnimationFrames(2);
+  }).then(t.step_func(() => {
+    anim.onfinish = t.step_func(event => {
+      t.done();
+    });
+    anim.currentTime = 130000; // after endTime
+  }));
+}, 'finish event is fired after the endDelay has expired');
+
 </script>
 </body>

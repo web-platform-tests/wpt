@@ -352,12 +352,12 @@ promise_test(() => {
   }).then(result => {
     assert_equals(pullCount, 2, 'pull() must have been invoked twice');
     const value = result.value;
-    assert_not_equals(value, undefined);
-    assert_equals(value.constructor, Uint8Array);
-    assert_equals(value.buffer.byteLength, 16);
-    assert_equals(value.byteOffset, 0);
-    assert_equals(value.byteLength, 1);
-    assert_equals(value[0], 0x01);
+    assert_not_equals(value, undefined, 'first read should have a value');
+    assert_equals(value.constructor, Uint8Array, 'first value should be a Uint8Array');
+    assert_equals(value.buffer.byteLength, 16, 'first value.buffer.byteLength should be 16');
+    assert_equals(value.byteOffset, 0, 'first value.byteOffset should be 0');
+    assert_equals(value.byteLength, 1, 'first value.byteLength should be 1');
+    assert_equals(value[0], 0x01, 'first value[0] should be 0x01');
     const byobRequest = byobRequests[1];
     assert_true(byobRequest.defined, 'second byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'second byobRequest.view must not be undefined');
@@ -371,13 +371,13 @@ promise_test(() => {
   }).then(result => {
     assert_equals(pullCount, 2, 'pull() should only be invoked twice');
     const value = result.value;
-    assert_not_equals(value, undefined);
-    assert_equals(value.constructor, Uint8Array);
-    assert_equals(value.buffer.byteLength, 16);
-    assert_equals(value.byteOffset, 0);
-    assert_equals(value.byteLength, 2);
-    assert_equals(value[0], 0x02);
-    assert_equals(value[1], 0x03);
+    assert_not_equals(value, undefined, 'second read should have a value');
+    assert_equals(value.constructor, Uint8Array, 'second value should be a Uint8Array');
+    assert_equals(value.buffer.byteLength, 16, 'second value.buffer.byteLength should be 16');
+    assert_equals(value.byteOffset, 0, 'second value.byteOffset should be 0');
+    assert_equals(value.byteLength, 2, 'second value.byteLength should be 2');
+    assert_equals(value[0], 0x02, 'second value[0] should be 0x02');
+    assert_equals(value[1], 0x03, 'second value[1] should be 0x03');
   });
 }, 'ReadableStream with byte source: autoAllocateChunkSize');
 
@@ -418,12 +418,12 @@ promise_test(() => {
   const reader = stream.getReader();
   return reader.read().then(result => {
     const value = result.value;
-    assert_not_equals(value, undefined);
-    assert_equals(value.constructor, Uint8Array);
-    assert_equals(value.buffer.byteLength, 16);
-    assert_equals(value.byteOffset, 0);
-    assert_equals(value.byteLength, 1);
-    assert_equals(value[0], 0x01);
+    assert_not_equals(value, undefined, 'first read should have a value');
+    assert_equals(value.constructor, Uint8Array, 'first value should be a Uint8Array');
+    assert_equals(value.buffer.byteLength, 16, 'first value.buffer.byteLength should be 16');
+    assert_equals(value.byteOffset, 0, 'first value.byteOffset should be 0');
+    assert_equals(value.byteLength, 1, 'first value.byteLength should be 1');
+    assert_equals(value[0], 0x01, 'first value[0] should be 0x01');
     const byobRequest = byobRequests[0];
     assert_true(byobRequest.defined, 'first byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'first byobRequest.view must not be undefined');
@@ -438,13 +438,13 @@ promise_test(() => {
     return byobReader.read(new Uint8Array(32));
   }).then(result => {
     const value = result.value;
-    assert_not_equals(value, undefined);
-    assert_equals(value.constructor, Uint8Array);
-    assert_equals(value.buffer.byteLength, 32);
-    assert_equals(value.byteOffset, 0);
-    assert_equals(value.byteLength, 2);
-    assert_equals(value[0], 0x02);
-    assert_equals(value[1], 0x03);
+    assert_not_equals(value, undefined, 'second read should have a value');
+    assert_equals(value.constructor, Uint8Array, 'second value should be a Uint8Array');
+    assert_equals(value.buffer.byteLength, 32, 'second value.buffer.byteLength should be 32');
+    assert_equals(value.byteOffset, 0, 'second value.byteOffset should be 0');
+    assert_equals(value.byteLength, 2, 'second value.byteLength should be 2');
+    assert_equals(value[0], 0x02, 'second value[0] should be 0x02');
+    assert_equals(value[1], 0x03, 'second value[1] should be 0x03');
     const byobRequest = byobRequests[1];
     assert_true(byobRequest.defined, 'second byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'second byobRequest.view must not be undefined');

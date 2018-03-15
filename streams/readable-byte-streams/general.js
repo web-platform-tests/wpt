@@ -351,12 +351,13 @@ promise_test(() => {
     return p0;
   }).then(result => {
     assert_equals(pullCount, 2, 'pull() must have been invoked twice');
-    assert_not_equals(result.value, undefined);
-    assert_equals(result.value.constructor, Uint8Array);
-    assert_equals(result.value.buffer.byteLength, 16);
-    assert_equals(result.value.byteOffset, 0);
-    assert_equals(result.value.byteLength, 1);
-    assert_equals(result.value[0], 0x01);
+    const value = result.value;
+    assert_not_equals(value, undefined);
+    assert_equals(value.constructor, Uint8Array);
+    assert_equals(value.buffer.byteLength, 16);
+    assert_equals(value.byteOffset, 0);
+    assert_equals(value.byteLength, 1);
+    assert_equals(value[0], 0x01);
     const byobRequest = byobRequests[1];
     assert_true(byobRequest.defined, 'second byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'second byobRequest.view must not be undefined');
@@ -369,13 +370,14 @@ promise_test(() => {
     return p1;
   }).then(result => {
     assert_equals(pullCount, 2, 'pull() should only be invoked twice');
-    assert_not_equals(result.value, undefined);
-    assert_equals(result.value.constructor, Uint8Array);
-    assert_equals(result.value.buffer.byteLength, 16);
-    assert_equals(result.value.byteOffset, 0);
-    assert_equals(result.value.byteLength, 2);
-    assert_equals(result.value[0], 0x02);
-    assert_equals(result.value[1], 0x03);
+    const value = result.value;
+    assert_not_equals(value, undefined);
+    assert_equals(value.constructor, Uint8Array);
+    assert_equals(value.buffer.byteLength, 16);
+    assert_equals(value.byteOffset, 0);
+    assert_equals(value.byteLength, 2);
+    assert_equals(value[0], 0x02);
+    assert_equals(value[1], 0x03);
   });
 }, 'ReadableStream with byte source: autoAllocateChunkSize');
 
@@ -415,12 +417,13 @@ promise_test(() => {
 
   const reader = stream.getReader();
   return reader.read().then(result => {
-    assert_not_equals(result.value, undefined);
-    assert_equals(result.value.constructor, Uint8Array);
-    assert_equals(result.value.buffer.byteLength, 16);
-    assert_equals(result.value.byteOffset, 0);
-    assert_equals(result.value.byteLength, 1);
-    assert_equals(result.value[0], 0x01);
+    const value = result.value;
+    assert_not_equals(value, undefined);
+    assert_equals(value.constructor, Uint8Array);
+    assert_equals(value.buffer.byteLength, 16);
+    assert_equals(value.byteOffset, 0);
+    assert_equals(value.byteLength, 1);
+    assert_equals(value[0], 0x01);
     const byobRequest = byobRequests[0];
     assert_true(byobRequest.defined, 'first byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'first byobRequest.view must not be undefined');
@@ -434,13 +437,14 @@ promise_test(() => {
     const byobReader = stream.getReader({ mode: 'byob' });
     return byobReader.read(new Uint8Array(32));
   }).then(result => {
-    assert_not_equals(result.value, undefined);
-    assert_equals(result.value.constructor, Uint8Array);
-    assert_equals(result.value.buffer.byteLength, 32);
-    assert_equals(result.value.byteOffset, 0);
-    assert_equals(result.value.byteLength, 2);
-    assert_equals(result.value[0], 0x02);
-    assert_equals(result.value[1], 0x03);
+    const value = result.value;
+    assert_not_equals(value, undefined);
+    assert_equals(value.constructor, Uint8Array);
+    assert_equals(value.buffer.byteLength, 32);
+    assert_equals(value.byteOffset, 0);
+    assert_equals(value.byteLength, 2);
+    assert_equals(value[0], 0x02);
+    assert_equals(value[1], 0x03);
     const byobRequest = byobRequests[1];
     assert_true(byobRequest.defined, 'second byobRequest must not be undefined');
     assert_true(byobRequest.viewDefined, 'second byobRequest.view must not be undefined');

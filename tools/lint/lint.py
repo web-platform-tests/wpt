@@ -748,19 +748,18 @@ def changed_files(wpt_root):
 def lint_paths(kwargs, wpt_root):
     if kwargs.get("paths"):
         #make new list in case there are multiple added directories
-        paths=[]
+        paths = []
         for path in kwargs.get("paths"):
             if os.path.isdir(path):
             # create extension for called directory and merge it with the existing path
-                new_Path = os.path.realpath(os.path.join(wpt_root, path))
-                extension = path+'/'
+                new_path = os.path.realpath(os.path.join(wpt_root, path))
                 # get all files from new path
                 path_dir = list(all_filesystem_paths(new_Path))
                 # add the extension to the strings for all files from the new path,
                 # so they may be called from the current directory
-                paths = [extension + extended_path for extended_path in path_dir]
+                path_dir = [os.path.join(path+os.path.sep,extended_path) for extended_path in path_dir]
                 # add all files from a given directory to our master list of files to check
-                paths=paths+path_dir
+                paths = paths + path_dir
 
     elif kwargs["all"]:
         paths = list(all_filesystem_paths(wpt_root))

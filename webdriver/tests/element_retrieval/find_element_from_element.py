@@ -79,4 +79,4 @@ def test_parent_htmldocument(session):
     from_element = session.execute_script("return document.documentElement")
 
     response = find_element(session, from_element.id, "xpath", "..")
-    assert_success(response)
+    assert_error(response, "invalid selector")

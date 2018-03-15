@@ -36,3 +36,11 @@ const gBadDurationValues = [
 const gBadIterationStartValues = [
   -1, NaN, Infinity, -Infinity
 ];
+
+// ------------------------------
+//  iterations values
+// ------------------------------
+
+const gBadIterationsValues = [
+  -1, -Infinity, NaN
+];

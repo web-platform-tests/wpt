@@ -172,6 +172,15 @@ for (const invalid of gBadIterationStartValues) {
      invalid);
 }
 
+for (const invalid of gBadIterationsValues) {
+  test(t => {
+    assert_throws(new TypeError, () => {
+      createDiv(t).animate(null, { iterations: invalid });
+    });
+  }, 'Element.animate() does not accept invalid iterations value: ' +
+     invalid);
+}
+
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.id, '');

@@ -59,9 +59,9 @@ you could add the following line to the lint.whitelist file.
 
 %s: %s"""
 
-def all_filesystem_paths(repo_root):
+def all_filesystem_paths(repo_root, extended_path):
     path_filter = PathFilter(repo_root, extras=[".git/*"])
-    for dirpath, dirnames, filenames in os.walk(repo_root):
+    for dirpath, dirnames, filenames in os.walk(extended_path):
         for filename in filenames:
             path = os.path.relpath(os.path.join(dirpath, filename), repo_root)
             if path_filter(path):
@@ -754,10 +754,8 @@ def lint_paths(kwargs, wpt_root):
             # create extension for called directory and merge it with the existing path
                 new_path = os.path.realpath(os.path.join(wpt_root, path))
                 # get all files from new path
-                path_dir = list(all_filesystem_paths(new_Path))
-                # add the extension to the strings for all files from the new path,
-                # so they may be called from the current directory
-                path_dir = [os.path.join(path+os.path.sep,extended_path) for extended_path in path_dir]
+                path_dir = list(all_filesystem_paths(wpt_root, new_Path))
+             
                 # add all files from a given directory to our master list of files to check
                 paths = paths + path_dir
 

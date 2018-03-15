@@ -751,24 +751,20 @@ def changed_files(wpt_root):
 
 def lint_paths(kwargs, wpt_root):
     if kwargs.get("paths"):
-        #make new list in case there are multiple added directories
         paths = []
         for path in kwargs.get("paths"):
             if os.path.isdir(path):
-            # create extension for called directory and merge it with the existing path
                 new_path = os.path.realpath(os.path.join(wpt_root, path))
-                # get all files from new path
                 path_dir = list(all_filesystem_paths(wpt_root, new_path))
-             
-                # add all files from a given directory to our master list of files to check
                 paths.extend(path_dir)
+            elif os.path.isfile(path):
+                paths.extend(path)
 
     elif kwargs["all"]:
         paths = list(all_filesystem_paths(wpt_root))
     else:
         changed_paths = changed_files(wpt_root)
         force_all = False
-        # If we changed the lint itself ensure that we retest everything
         for path in changed_paths:
             path = path.replace(os.path.sep, "/")
             if path == "lint.whitelist" or path.startswith("tools/lint/"):

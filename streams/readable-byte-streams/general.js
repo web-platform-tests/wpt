@@ -300,7 +300,7 @@ function extractViewInfo(view) {
 promise_test(() => {
   let pullCount = 0;
   let controller;
-  let byobRequests = [];
+  const byobRequests = [];
 
   const stream = new ReadableStream({
     start(c) {

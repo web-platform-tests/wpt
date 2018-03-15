@@ -31,7 +31,7 @@ function assert_default_timing_except(effect, propertiesToSkip) {
     }
 
     assert_equals(
-      effect.timing[prop],
+      effect.getTiming()[prop],
       defaults[prop],
       `${prop} parameter has default value:`
     );

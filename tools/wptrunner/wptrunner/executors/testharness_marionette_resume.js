@@ -17,12 +17,12 @@ function process_event(event) {
                status.message,
                status.stack,
                subtest_results];
-    clearTimeout(window.timer);
+    clearTimeout(window.wrappedJSObject.timer);
     break;
 
   case "action":
-    window.setMessageListener(function(event) {
-      window.message_queue.push(event);
+    window.wrappedJSObject.setMessageListener(function(event) {
+      window.wrappedJSObject.message_queue.push(event);
     });
     payload = data;
     break;
@@ -33,14 +33,14 @@ function process_event(event) {
   callback(["%(url)s", data.type, payload]);
 }
 
-window.removeEventListener("message", window.current_listener);
-if (window.message_queue.length) {
-  var next = window.message_queue.shift();
+window.wrappedJSObject.removeEventListener("message", window.wrappedJSObject.current_listener);
+if (window.wrappedJSObject.message_queue.length) {
+  var next = window.wrappedJSObject.message_queue.shift();
   process_event(next);
 } else {
-  window.addEventListener(
+  window.wrappedJSObject.addEventListener(
     "message", function f(event) {
-      window.removeEventListener("message", f);
+      window.wrappedJSObject.removeEventListener("message", f);
       process_event(event);
     }, false);
 }

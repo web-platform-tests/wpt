@@ -50,3 +50,14 @@ async_test(t => {
   shadowChild.remove();
   t.done();
 }, "Reset if relatedTarget pointed to a shadow tree pre-dispatch");
+
+async_test(t => {
+  host.addEventListener("heya", t.unreached_func());
+  const event = new FocusEvent("heya", { relatedTarget: shadow, cancelable:true });
+  event.preventDefault();
+  assert_true(event.defaultPrevented);
+  assert_true(host.dispatchEvent(event));
+  assert_equals(event.target, null);
+  assert_equals(event.relatedTarget, null);
+  t.done();
+}, "Reset targets on early return");

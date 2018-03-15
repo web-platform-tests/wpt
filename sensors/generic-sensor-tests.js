@@ -273,7 +273,7 @@ function runGenericSensorTests(sensorType) {
                     () => { new sensorType({frequency: freq}) },
                     `when freq is ${freq}`);
     });
-  }, `${sensorType.name}: throw 'TypeError' if frequency is an incorrect value type`);
+  }, `${sensorType.name}: throw 'TypeError' if frequency is invalid`);
 
   if (spatialSensors.indexOf(sensorType.name) == -1) {
     // The sensorType does not represent a spatial sensor.

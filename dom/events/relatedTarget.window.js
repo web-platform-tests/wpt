@@ -52,13 +52,13 @@ async_test(t => {
 }, "Reset if relatedTarget pointed to a shadow tree pre-dispatch");
 
 async_test(t => {
-  const event = new FocusEvent("heya", { relatedTarget: shadow, cancelable:true }),
+  const event = new FocusEvent("heya", { relatedTarget: shadow, cancelable: true }),
         callback = t.unreached_func();
   host.addEventListener("heya", callback);
   t.add_cleanup(() => host.removeEventListener("heya", callback));
   event.preventDefault();
   assert_true(event.defaultPrevented);
-  assert_true(host.dispatchEvent(event));
+  assert_false(host.dispatchEvent(event));
   assert_equals(event.target, null);
   assert_equals(event.relatedTarget, null);
   // Check that the dispatch flag is cleared

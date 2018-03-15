@@ -52,12 +52,34 @@ async_test(t => {
 }, "Reset if relatedTarget pointed to a shadow tree pre-dispatch");
 
 async_test(t => {
-  host.addEventListener("heya", t.unreached_func());
-  const event = new FocusEvent("heya", { relatedTarget: shadow, cancelable:true });
+  const event = new FocusEvent("heya", { relatedTarget: shadow, cancelable:true }),
+        callback = t.unreached_func();
+  host.addEventListener("heya", callback);
+  t.add_cleanup(() => host.removeEventListener("heya", callback));
   event.preventDefault();
   assert_true(event.defaultPrevented);
   assert_true(host.dispatchEvent(event));
   assert_equals(event.target, null);
   assert_equals(event.relatedTarget, null);
+  // Check that the dispatch flag is cleared
+  event.initEvent("x");
+  assert_equals(event.type, "x");
   t.done();
 }, "Reset targets on early return");
+
+async_test(t => {
+  const input = document.body.appendChild(document.createElement("input")),
+        event = new MouseEvent("click", { relatedTarget: shadow });
+  let seen = false;
+  t.add_cleanup(() => input.remove());
+  input.type = "checkbox";
+  input.oninput = t.step_func(() => {
+    assert_equals(event.target, null);
+    assert_equals(event.relatedTarget, null);
+    assert_equals(event.composedPath().length, 0);
+    seen = true;
+  });
+  assert_true(input.dispatchEvent(event));
+  assert_true(seen);
+  t.done();
+}, "Reset targets before activation behavior");

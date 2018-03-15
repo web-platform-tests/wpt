@@ -28,3 +28,11 @@ const gGoodDurationValues = [
 const gBadDurationValues = [
   -1, NaN, -Infinity, 'abc', '100'
 ];
+
+// ------------------------------
+//  iterationStart values
+// ------------------------------
+
+const gBadIterationStartValues = [
+  -1, NaN, Infinity, -Infinity
+];

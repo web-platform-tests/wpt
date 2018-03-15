@@ -163,6 +163,15 @@ for (const invalidEasing of gInvalidEasings) {
   }, `Element.animate() does not accept invalid easing: '${invalidEasing}'`);
 }
 
+for (const invalid of gBadIterationStartValues) {
+  test(t => {
+    assert_throws(new TypeError, () => {
+      createDiv(t).animate(null, { iterationStart: invalid });
+    });
+  }, 'Element.animate() does not accept invalid iterationStart value: ' +
+     invalid);
+}
+
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
   assert_equals(anim.id, '');

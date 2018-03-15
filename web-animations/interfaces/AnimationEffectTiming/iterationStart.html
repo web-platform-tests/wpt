@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
+<script src="../../resources/timing-tests.js"></script>
 <body>
 <div id="log"></div>
 <script>
@@ -20,7 +21,8 @@ test(t => {
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
-}, 'Changing the value updates computed timing when backwards-filling');
+}, 'Allows setting the iterationStart of an animation in progress:'
+   + ' backwards-filling');
 
 test(t => {
   const anim = createDiv(t).animate(null,
@@ -32,7 +34,8 @@ test(t => {
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 2);
-}, 'Changing the value updates computed timing during the active phase');
+}, 'Allows setting the iterationStart of an animation in progress:'
+   + ' active phase');
 
 test(t => {
   const anim = createDiv(t).animate(null,
@@ -45,20 +48,17 @@ test(t => {
   anim.effect.timing.iterationStart = 2.5;
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.5);
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3);
-}, 'Changing the value updates computed timing when forwards-filling');
+}, 'Allows setting the iterationStart of an animation in progress:'
+   + ' forwards-filling');
 
-test(t => {
-  const div = createDiv(t);
-  const anim = div.animate(null);
-  for (let invalid of [-1, NaN, Infinity]) {
+for (const invalid of gBadIterationStartValues) {
+  test(t => {
+    const anim = createDiv(t).animate(null);
     assert_throws({ name: 'TypeError' }, () => {
       anim.effect.timing.iterationStart = invalid;
     }, `setting ${invalid}`);
-    assert_throws({ name: 'TypeError' }, () => {
-      div.animate(null, { iterationStart: invalid });
-    }, `animate() with ${invalid}`);
-  }
-}, 'Throws when setting invalid values');
+  }, `Throws when setting invalid iterationStart value: ${invalid}`);
+}
 
 </script>
 </body>

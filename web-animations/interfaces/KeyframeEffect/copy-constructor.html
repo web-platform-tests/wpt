@@ -75,8 +75,8 @@ test(t => {
                                       direction: 'alternate' } );
 
   const copiedEffect = new KeyframeEffect(effect);
-  const timingA = effect.timing;
-  const timingB = copiedEffect.timing;
+  const timingA = effect.getTiming();
+  const timingB = copiedEffect.getTiming();
   assert_not_equals(timingA, timingB, 'different timing objects');
   assert_equals(timingA.delay, timingB.delay, 'same delay');
   assert_equals(timingA.endDelay, timingB.endDelay, 'same endDelay');

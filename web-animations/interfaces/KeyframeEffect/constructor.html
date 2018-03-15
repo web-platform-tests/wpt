@@ -33,7 +33,7 @@ test(t => {
     const effect = new KeyframeEffect(target, {
       left: ['10px', '20px']
     }, { easing: easing });
-    assert_equals(effect.timing.easing, expected,
+    assert_equals(effect.getTiming().easing, expected,
                   `resulting easing for '${easing}'`);
   }
 }, 'easing values are parsed correctly when passed to the ' +
@@ -126,7 +126,7 @@ for (const subtest of gInvalidKeyframesTests) {
 test(t => {
   const effect = new KeyframeEffect(target, { left: ['10px', '20px'] });
 
-  const timing = effect.timing;
+  const timing = effect.getTiming();
   assert_equals(timing.delay, 0, 'default delay');
   assert_equals(timing.endDelay, 0, 'default endDelay');
   assert_equals(timing.fill, 'auto', 'default fill');
@@ -152,7 +152,7 @@ for (const subtest of gKeyframeEffectOptionTests) {
       return field in subtest.expected ? subtest.expected[field] : defaultValue;
     };
 
-    const timing = effect.timing;
+    const timing = effect.getTiming();
     assert_equals(timing.delay, expected('delay', 0),
                   'timing delay');
     assert_equals(timing.fill, expected('fill', 'auto'),

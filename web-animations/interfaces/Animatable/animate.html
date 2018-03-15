@@ -58,22 +58,6 @@ test(t => {
 }, 'Element.animate() creates an Animation object with a KeyframeEffect'
    + ' that is created in the relevant realm of the target element');
 
-test(t => {
-  const iframe = window.frames[0];
-  const div = createDiv(t, iframe.document);
-  const anim = div.animate(null);
-  assert_equals(Object.getPrototypeOf(anim.effect.timing),
-                iframe.AnimationEffectTiming.prototype,
-                'The prototype of the created AnimationEffectTiming is that'
-                + ' defined on the relevant global for the target element');
-  assert_not_equals(Object.getPrototypeOf(anim.effect.timing),
-                    AnimationEffectTiming.prototype,
-                    'The prototype of the created AnimationEffectTiming is NOT'
-                    + ' that of the current global');
-}, 'Element.animate() creates an Animation object with a KeyframeEffect'
-   + ' whose AnimationEffectTiming object is created in the relevant realm'
-   + ' of the target element');
-
 for (const subtest of gEmptyKeyframeListTests) {
   test(t => {
     const anim = createDiv(t).animate(subtest, 2000);
@@ -100,15 +84,15 @@ for (const subtest of gInvalidKeyframesTests) {
 
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
-  assert_equals(anim.effect.timing.duration, 2000);
+  assert_equals(anim.effect.getTiming().duration, 2000);
   assert_default_timing_except(anim.effect, ['duration']);
 }, 'Element.animate() accepts a double as an options argument');
 
 test(t => {
   const anim = createDiv(t).animate(null,
                                     { duration: Infinity, fill: 'forwards' });
-  assert_equals(anim.effect.timing.duration, Infinity);
-  assert_equals(anim.effect.timing.fill, 'forwards');
+  assert_equals(anim.effect.getTiming().duration, Infinity);
+  assert_equals(anim.effect.getTiming().fill, 'forwards');
   assert_default_timing_except(anim.effect, ['duration', 'fill']);
 }, 'Element.animate() accepts a KeyframeAnimationOptions argument');
 
@@ -127,7 +111,7 @@ for (const invalid of gBadDelayValues) {
 
 test(t => {
   const anim = createDiv(t).animate(null, { duration: 'auto' });
-  assert_equals(anim.effect.timing.duration, 'auto', 'set duration \'auto\'');
+  assert_equals(anim.effect.getTiming().duration, 'auto', 'set duration \'auto\'');
   assert_equals(anim.effect.getComputedTiming().duration, 0,
                 'getComputedTiming() after set duration \'auto\'');
 }, 'Element.animate() accepts a duration of \'auto\' using a dictionary'

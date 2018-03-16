@@ -60,7 +60,7 @@ you could add the following line to the lint.whitelist file.
 %s: %s"""
 
 def all_filesystem_paths(repo_root, subdir=None):
-    path_filter = PathFilter(repo_root, extras = [".git/*"])
+    path_filter = PathFilter(repo_root, extras=[".git/*"])
     if subdir:
         expanded_path = subdir
     else:
@@ -744,8 +744,8 @@ def output_error_count(error_count):
 
 
 def changed_files(wpt_root):
-    revish = testfiles.get_revish(revish = None)
-    changed, _ = testfiles.files_changed(revish, set(), include_uncommitted = True, include_new = True)
+    revish = testfiles.get_revish(revish=None)
+    changed, _ = testfiles.files_changed(revish, set(), include_uncommitted=True, include_new=True)
     return [os.path.relpath(item, wpt_root) for item in changed]
 
 
@@ -816,7 +816,7 @@ def lint(repo_root, paths, output_format):
     last = None
 
     with open(os.path.join(repo_root, "lint.whitelist")) as f:
-        whitelist, ignored_files = parse_whitelist(f)
+        whitelist, ignored_files=parse_whitelist(f)
 
     output_errors = {"json": output_errors_json,
                      "markdown": output_errors_markdown,

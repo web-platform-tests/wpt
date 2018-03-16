@@ -120,8 +120,10 @@ function perform_test() {
     addEntryIfExists(entries, expected_entries, pathname + 'empty.py?id=audio-source-ogg', 'source');
     addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-source', 'source');
     addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-img', 'img');
+    addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-notsupported-img', 'img');
     addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-img-src', 'img');
     addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-img-srcset', 'img');
+    addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=picture-99x-img-src', 'img');
     addEntryIfExists(entries, expected_entries, pathname + 'blue.png?id=svg-image', 'image');
     addEntryIfExists(entries, expected_entries, pathname + 'nested.css', 'link');
     addEntryIfExists(entries, expected_entries, pathname + 'nested.css?id=prefetch', 'link');

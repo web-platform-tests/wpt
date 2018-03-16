@@ -90,8 +90,17 @@
             <img src="blue.png?id=picture-img" />
         </picture>
         <picture>
+            <source srcset="blue.png?id=picture-notsupported-source" type="image/notsupported" />
+            <img src="blue.png?id=picture-notsupported-img" />
+        </picture>
+        <picture>
             <img src="blue.png?id=picture-img-src"
                 srcset="blue.png?id=picture-img-srcset"
+                sizes="67px"></img>
+        </picture>
+        <picture>
+            <img src="blue.png?id=picture-99x-img-src"
+                srcset="blue.png?id=picture-99x-img-srcset 99x"
                 sizes="67px"></img>
         </picture>
     </body>

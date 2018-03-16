@@ -38,4 +38,6 @@ install_chrome() {
       sudo apt-get install --fix-broken
       sudo dpkg --install $deb_archive
     fi
+
+    echo $(which google-chrome-$channel)
 }

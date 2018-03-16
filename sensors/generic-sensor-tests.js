@@ -46,6 +46,11 @@ function reading_to_array(sensor) {
 }
 
 function runGenericSensorTests(sensorType) {
+  test(() => {
+    assert_throws('NotSupportedError',
+                  () => new sensorType({"unsupported" : true}));
+  }, `${sensorType.name}: not constructed with unsupported options`);
+
   promise_test(async t => {
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);

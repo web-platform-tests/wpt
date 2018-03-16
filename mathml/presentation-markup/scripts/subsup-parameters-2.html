@@ -34,17 +34,26 @@
     requestAnimationFrame(() => { document.fonts.ready.then(runTests); });
   });
 
+  /*
+    These two tests verify that:
+    - In msub, the script is at the right of the base minus the italic correction.
+    - In msup, the script is just at the right of the base.
+    - In msubsup, the scripts are shifted by the italic correction.
+    - In mmultiscripts, postscript pairs are shifted by the italic correction.
+    - In mmultiscripts, prescript pairs are vertically aligned.
+  */
   function runTests() {
     test(function() {
-      assert_approx_equals(getBox("ref001").left - getBox("sub001").right, 0, epsilon, "msub");
+      var v = 0;
+      assert_approx_equals(getBox("base001").right - getBox("sub001").left, v, epsilon, "msub");
       assert_approx_equals(getBox("sup002").left, getBox("base002").right, epsilon, "msup");
-      assert_approx_equals(getBox("sup003").left - getBox("sub003").left, 0, epsilon, "msubsup");
-      assert_approx_equals(getBox("sup004").left - getBox("sub004").left, 0, epsilon, "mmultiscripts postscripts");
+      assert_approx_equals(getBox("sup003").left - getBox("sub003").left, v, epsilon, "msubsup");
+      assert_approx_equals(getBox("sup004").left - getBox("sub004").left, v, epsilon, "mmultiscripts postscripts");
       assert_approx_equals(getBox("sup005").left - getBox("sub005").left, 0, epsilon, "mmultiscripts prescripts");
     }, "Null Italic Correction");
     test(function() {
       var v = 3000 * emToPx;
-      assert_approx_equals(getBox("ref011").left - getBox("sub011").left, v, epsilon, "msub");
+      assert_approx_equals(getBox("base011").right - getBox("sub011").left, v, epsilon, "msub");
       assert_approx_equals(getBox("sup012").left, getBox("base012").right, epsilon, "msup");
       assert_approx_equals(getBox("sup013").left - getBox("sub013").left, v, epsilon, "msubsup");
       assert_approx_equals(getBox("sup014").left - getBox("sub014").left, v, epsilon, "mmultiscripts postscripts");
@@ -58,10 +67,9 @@
   <p>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight5000;">
       <msub>
-        <mo lspace="0px" rspace="0px">&#x2AFF;</mo>
+        <mo id="base001" lspace="0px" rspace="0px">&#x2AFF;</mo>
         <mspace id="sub001" height="1em" width="1em" mathbackground="blue"/>
       </msub>
-      <mspace id="ref001" height="1em" width="1em" mathbackground="green"/>
     </math>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight5000;">
       <msup>
@@ -91,10 +99,9 @@
   <p>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight2000-2AFF-italiccorrection3000;">
       <msub>
-        <mo lspace="0px" rspace="0px">&#x2AFF;</mo>
+        <mo id="base011" lspace="0px" rspace="0px">&#x2AFF;</mo>
         <mspace id="sub011" height="1em" width="1em" mathbackground="blue"/>
       </msub>
-      <mspace id="ref011" height="1em" width="1em" mathbackground="green"/>
     </math>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight2000-2AFF-italiccorrection3000;">
       <msup>

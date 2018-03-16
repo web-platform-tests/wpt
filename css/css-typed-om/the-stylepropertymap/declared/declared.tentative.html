@@ -31,8 +31,8 @@ const target = document.getElementById('target');
 const styleMap = document.styleSheets[0].rules[0].styleMap;
 
 test(() => {
-  const properties = styleMap.getProperties();
-  assert_array_equals(properties, ['height', 'transition-duration', 'width', '--foo']);
+  const properties = [...styleMap.keys()];
+  assert_array_equals(properties, ['height', 'width', '--foo', 'transition-duration']);
 }, 'Declared StylePropertyMap only contains properties in the style rule');
 
 test(() => {
@@ -45,7 +45,7 @@ test(() => {
 }, 'Declared StylePropertyMap does not contain inline styles');
 
 test(() => {
-  assert_style_value_equals(styleMap.get('--foo'), new CSSUnparsedValue(' auto'));
+  assert_style_value_equals(styleMap.get('--foo'), new CSSUnparsedValue([' auto']));
 }, 'Declared StylePropertyMap contains custom property declarations');
 
 test(() => {

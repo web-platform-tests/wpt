@@ -27,7 +27,7 @@ import logging
 
 logger = None
 
-def setup_logging(prefix = False):
+def setup_logging(prefix=False):
     global logger
     if logger is None:
         logger = logging.getLogger(os.path.basename(os.path.splitext(__file__)[0]))
@@ -59,7 +59,7 @@ you could add the following line to the lint.whitelist file.
 
 %s: %s"""
 
-def all_filesystem_paths(repo_root, subdir = None):
+def all_filesystem_paths(repo_root, subdir=None):
     path_filter = PathFilter(repo_root, extras = [".git/*"])
     if subdir:
         expanded_path = subdir

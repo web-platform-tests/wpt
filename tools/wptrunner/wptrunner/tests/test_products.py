@@ -58,6 +58,8 @@ def test_server_start_config(product):
             start.assert_called_once()
             args = start.call_args
             config = args[0][0]
-            if "host" in env_options:
-                assert config["host"] == env_options["host"]
+            if "host_ip" in env_options:
+                assert config["host_ip"] == env_options["host_ip"]
+            else:
+                assert config["host_ip"] == config["host"]
             assert isinstance(config["bind_address"], bool)

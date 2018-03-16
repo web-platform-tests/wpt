@@ -165,7 +165,7 @@ class TestEnvironment(object):
         if not self.ssl_env.ssl_enabled:
             config["ports"]["https"] = [None]
 
-        host = self.options.get("certificate_domain", config["host"])
+        host = config["host"]
         hosts = [host]
         hosts.extend("%s.%s" % (item[0], host) for item in serve.get_subdomains(host).values())
         key_file, certificate = self.ssl_env.host_cert_path(hosts)
@@ -240,7 +240,7 @@ class TestEnvironment(object):
 
     def test_servers(self):
         failed = []
-        host = self.config.get("host_ip") or self.config.get("host")
+        host = self.config["host_ip"]
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
                 if self.test_server_port:

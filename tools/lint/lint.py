@@ -756,8 +756,9 @@ def lint_paths(kwargs, wpt_root):
             if os.path.isdir(path):
                 path_dir = list(all_filesystem_paths(wpt_root, path))
                 paths.extend(path_dir)
-            else:
-                paths.extend(path)
+            elif os.path.isfile(path):
+                paths.append(os.path.relpath(os.path.abspath(path), wpt_root))
+
 
     elif kwargs["all"]:
         paths = list(all_filesystem_paths(wpt_root))

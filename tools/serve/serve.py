@@ -675,6 +675,8 @@ def normalise_config(config, ports):
     config_["not_domains"] = not_domains
     config_["ports"] = ports_
     config_["bind_address"] = bind_address
+    if config.get("host_ip", None) is None:
+        config_["host_ip"] = host
     return config_
 
 
@@ -692,7 +694,7 @@ def get_ssl_config(config, ssl_environment):
 
 
 def start(config, ssl_environment, routes, **kwargs):
-    host = config.get("host_ip") or config["host"]
+    host = config["host_ip"]
     ports = get_ports(config, ssl_environment)
     paths = get_paths(config)
     bind_address = config["bind_address"]

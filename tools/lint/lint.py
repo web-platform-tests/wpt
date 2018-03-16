@@ -816,7 +816,7 @@ def lint(repo_root, paths, output_format):
     last = None
 
     with open(os.path.join(repo_root, "lint.whitelist")) as f:
-        whitelist, ignored_files = parse_whitelist(f)
+        whitelist, ignored_files=parse_whitelist(f)
 
     output_errors = {"json": output_errors_json,
                      "markdown": output_errors_markdown,

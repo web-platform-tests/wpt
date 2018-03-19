@@ -64,6 +64,10 @@ function make_url(uuid, id, value, content, info) {
   if ("cache_control" in info) {
     cache_control = "&cache_control=" + info.cache_control;
   }
+  var pragma = "";
+  if ("pragma" in info) {
+    pragma = "&Pragma=" + info.pragma;
+  }
   var redirect = "";
 
   var ignore_request_headers = "";
@@ -75,7 +79,7 @@ function make_url(uuid, id, value, content, info) {
     "&content=" + content +
     "&" + id + "=" + value +
     "&expires=" + dates[info.state] +
-    vary + cache_control + ignore_request_headers;
+    vary + cache_control + pragma + ignore_request_headers;
   // If there's a redirect, the target is the script without any redirect at
   // either the same domain or a different domain.
   if ("redirect" in info) {

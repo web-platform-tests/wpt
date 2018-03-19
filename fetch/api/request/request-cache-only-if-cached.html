@@ -69,6 +69,16 @@
         expected_validation_headers: [false, false],
         expected_no_cache_headers: [false, false],
       },
+      {
+        name: 'RequestCache "only-if-cached" mode checks the cache for previously cached content and does not go to the network if a response was no-store',
+        state: "stale",
+        cache_control: "no-store",
+        pragma: "no-cache",
+        request_cache: ["default", "only-if-cached"],
+        response: [null, "error"],
+        expected_validation_headers: [false],
+        expected_no_cache_headers: [false]
+      },
     ];
     run_tests(tests);
     </script>

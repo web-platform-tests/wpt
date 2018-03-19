@@ -53,7 +53,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"host_ip": "127.0.0.1",
+    return {"server_host": "127.0.0.1",
             "testharnessreport": "testharnessreport-servodriver.js",
             "supports_debugger": True}
 

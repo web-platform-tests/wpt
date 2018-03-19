@@ -65,7 +65,7 @@ class FakeBluetooth {
   constructor() {
     this.fake_bluetooth_ptr_ = new bluetooth.mojom.FakeBluetoothPtr();
     Mojo.bindInterface(bluetooth.mojom.FakeBluetooth.name,
-        mojo.makeRequest(this.fake_bluetooth_ptr_).handle, "process");
+        mojo.makeRequest(this.fake_bluetooth_ptr_).handle, 'process');
   }
 
   // Set it to indicate whether the platform supports BLE. For example,
@@ -101,6 +101,15 @@ class FakeBluetooth {
   async allResponsesConsumed() {
     let {consumed} = await this.fake_bluetooth_ptr_.allResponsesConsumed();
     return consumed;
+  }
+
+  // Returns a promise that resolves with a FakeChooser that clients can use to
+  // simulate chooser events.
+  async getManualChooser() {
+    if (typeof this.fake_chooser_ === 'undefined') {
+      this.fake_chooser_ = new FakeChooser();
+    }
+    return this.fake_chooser_;
   }
 }
 
@@ -164,8 +173,12 @@ class FakeCentral {
           scanResult.scanRecord.manufacturerData, Number);
     }
 
-    // TODO(https://crbug.com/817603): Add a conversion process for serviceData
-    // when the field is added in Mojo.
+    // Convert serviceData from a record<DOMString, BufferSource> into a
+    // map<string, array<uint8>> for Mojo.
+    if ('serviceData' in scanResult.scanRecord) {
+      scanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
+          scanResult.scanRecord.serviceData, BluetoothUUID.getService);
+    }
 
     await this.fake_central_ptr_.simulateAdvertisementReceived(
         new bluetooth.mojom.ScanResult(scanResult));
@@ -430,6 +443,17 @@ class FakeRemoteGATTDescriptor {
         gatt_code, value, ...this.ids_);
 
     if (!success) throw 'setNextReadDescriptorResponse failed';
+  }
+}
+
+// FakeChooser allows clients to simulate events that a user would trigger when
+// using the Bluetooth chooser, and monitor the events that are produced.
+class FakeChooser {
+  constructor() {
+    this.fake_bluetooth_chooser_ptr_ =
+        new content.mojom.FakeBluetoothChooserPtr();
+    Mojo.bindInterface(content.mojom.FakeBluetoothChooser.name,
+        mojo.makeRequest(this.fake_bluetooth_chooser_ptr_).handle, 'process');
   }
 }
 

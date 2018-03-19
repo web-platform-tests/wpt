@@ -440,14 +440,22 @@ interface Comment : CharacterData {
 };
 
 
-[Constructor,
- Exposed=Window]
-interface Range {
+[Exposed=Window]
+interface AbstractRange {
   readonly attribute Node startContainer;
   readonly attribute unsigned long startOffset;
   readonly attribute Node endContainer;
   readonly attribute unsigned long endOffset;
   readonly attribute boolean collapsed;
+};
+
+[Exposed=Window]
+interface StaticRange : AbstractRange {
+};
+
+[Constructor,
+ Exposed=Window]
+interface Range : AbstractRange {
   readonly attribute Node commonAncestorContainer;
 
   void setStart(Node node, unsigned long offset);
@@ -548,7 +556,7 @@ interface DOMTokenList {
   [CEReactions] void add(DOMString... tokens);
   [CEReactions] void remove(DOMString... tokens);
   [CEReactions] boolean toggle(DOMString token, optional boolean force);
-  [CEReactions] void replace(DOMString token, DOMString newToken);
+  [CEReactions] boolean replace(DOMString token, DOMString newToken);
   boolean supports(DOMString token);
   [CEReactions] stringifier attribute DOMString value;
   //  iterable<DOMString>;

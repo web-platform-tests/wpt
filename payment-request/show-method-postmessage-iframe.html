@@ -32,7 +32,6 @@ window.onmessage = async event => {
         source.postMessage(response.toJSON(), window.location.origin);
         await response.complete();
       } catch (err) {
-        console.error(err);
         source.postMessage({ requestId: "fail" }, window.location.origin);
         await request.abort();
       }

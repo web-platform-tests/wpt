@@ -136,13 +136,12 @@ async_test(function(t) {
 
 async_test(function(t) {
     var offscreenCanvas = new OffscreenCanvas(0, 0);
-    offscreenCanvas.convertToBlob().then(t.step_func_done(function() {
-        assert_false("convertToBlob didn't throw, but should be");
+    offscreenCanvas.convertToBlob().then(t.step_func_done(function(blob) {
+        assert_equals(null, blob, "convertToBlob should return null as result blob.");
     }), t.step_func_done(function(e) {
-        assert_true(e instanceof DOMException);
-        assert_equals(e.name, "IndexSizeError");
+        assert_false("convertToBlob should not throw an exception.");
     }));
-}, "Test that call convertToBlob on a OffscreenCanvas with size 0 throws exception");
+}, "Test that calls convertToBlob on a OffscreenCanvas with size 0 returns a null blob");
 
 </script>
 

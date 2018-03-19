@@ -250,16 +250,13 @@ def main():
     venv.install("requests")
 
     args, wpt_args = get_parser().parse_known_args()
-    return run(venv, wpt_args, **vars(args))
+    return setup_and_run(venv, wpt_args, **vars(args))
 
 
-def run(venv, wpt_args, **kwargs):
-    global logger
-
+def setup_and_run(venv, wpt_args, **kwargs):
     do_delayed_imports()
 
     retcode = 0
-    parser = get_parser()
 
     wpt_args = create_parser().parse_args(wpt_args)
 
@@ -353,16 +350,15 @@ def run(venv, wpt_args, **kwargs):
                              status="failed" if inconsistent else "passed")
     else:
         logger.info("No tests run.")
+        retcode = 3
 
     return retcode
 
 
 if __name__ == "__main__":
     try:
-        retcode = main()
+        sys.exit(main())
     except Exception:
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    else:
-        sys.exit(retcode)

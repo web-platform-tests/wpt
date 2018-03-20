@@ -18,14 +18,14 @@ function transfer_tests(name, create) {
     const transferable = await create();
     self.postMessage(null, "*", [transferable]);
     assert_throws("DataCloneError", () => self.postMessage(null, "*", [transferable]));
-  }, `Serialize should make the ${name} detached, so it cannot be transferred again.`);
+  }, `Serialize should make the ${name} detached, so it cannot be transferred again`);
 
   promise_test(async () => {
     const transferable = await create(),
           customError = new Error("hi");
     self.postMessage(null, "*", [transferable]);
     assert_throws(customError, () => self.postMessage({ get whatever() { throw customError } }, "*", [transferable]));
-  }, `Serialize should throw before a detached ${name} is found.`);
+  }, `Serialize should throw before a detached ${name} is found`);
 
   promise_test(async () => {
     const transferable = await create();
@@ -38,7 +38,7 @@ function transfer_tests(name, create) {
     };
     assert_throws("DataCloneError", () => self.postMessage(message, "*", [transferable]));
     assert_true(seen);
-  }, `Cannot transfer ${name} detached while the message was serialized.`);
+  }, `Cannot transfer ${name} detached while the message was serialized`);
 }
 
 transfer_tests("ArrayBuffer", () => new ArrayBuffer(1));

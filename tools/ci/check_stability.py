@@ -22,7 +22,7 @@ from tools.wpt import markdown
 from tools import localpaths
 
 logger = None
-run, write_inconsistent, write_results = None, None, None
+stability_run, write_inconsistent, write_results = None, None, None
 wptrunner = None
 
 def setup_logging():
@@ -37,8 +37,9 @@ def setup_logging():
 
 
 def do_delayed_imports():
-    global run, write_inconsistent, write_results, wptrunner
-    from tools.wpt.stability import run, write_inconsistent, write_results
+    global stability_run, write_inconsistent, write_results, wptrunner
+    from tools.wpt.stability import run as stability_run
+    from tools.wpt.stability import write_inconsistent, write_results
     from wptrunner import wptrunner
 
 
@@ -250,10 +251,10 @@ def main():
     venv.install("requests")
 
     args, wpt_args = get_parser().parse_known_args()
-    return setup_and_run(venv, wpt_args, **vars(args))
+    return run(venv, wpt_args, **vars(args))
 
 
-def setup_and_run(venv, wpt_args, **kwargs):
+def run(venv, wpt_args, **kwargs):
     do_delayed_imports()
 
     retcode = 0
@@ -332,7 +333,7 @@ def setup_and_run(venv, wpt_args, **kwargs):
 
 
         wpt_logger = wptrunner.logger
-        iterations, results, inconsistent = run(venv, wpt_logger, **wpt_kwargs)
+        iterations, results, inconsistent = stability_run(venv, wpt_logger, **wpt_kwargs)
 
     if results:
         if inconsistent:
@@ -350,7 +351,9 @@ def setup_and_run(venv, wpt_args, **kwargs):
                              status="failed" if inconsistent else "passed")
     else:
         logger.info("No tests run.")
-        retcode = 3
+        # Be conservative and only return errors when we know for sure tests are changed.
+        if tests_changed:
+            retcode = 3
 
     return retcode
 

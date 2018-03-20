@@ -30,5 +30,17 @@ Note that if the element to be clicked does not have a unique ID, the
 document must not have any DOM mutations made between the function
 being called and the promise settling.
 
+### `test_driver.send_keys(element, keys)`
+
+<!-- This function causes a click to occur on the target element (an
+`Element` object), potentially scrolling the document to make it
+possible to click it. It returns a `Promise` that resolves after the
+click has occured or rejects if the element cannot be clicked (for
+example, it is obscured by an element on top of it).
+
+Note that if the element to be clicked does not have a unique ID, the
+document must not have any DOM mutations made between the function
+being called and the promise settling. -->
+
 
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}

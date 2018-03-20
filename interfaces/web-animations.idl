@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content of this file was automatically extracted from the Web Animations spec.
-// See https://w3c.github.io/web-animations/
+// See https://drafts.csswg.org/web-animations/
 
 [Exposed=Window]
 interface AnimationTimeline {

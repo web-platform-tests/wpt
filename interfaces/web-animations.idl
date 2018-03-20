@@ -17,11 +17,11 @@ interface DocumentTimeline : AnimationTimeline {
 };
 
 [Exposed=Window,
- Constructor (optional AnimationEffectReadOnly? effect = null,
+ Constructor (optional AnimationEffect? effect = null,
               optional AnimationTimeline? timeline)]
 interface Animation : EventTarget {
              attribute DOMString                id;
-             attribute AnimationEffectReadOnly? effect;
+             attribute AnimationEffect?         effect;
              attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
              attribute double?                  currentTime;
@@ -43,36 +43,13 @@ interface Animation : EventTarget {
 enum AnimationPlayState { "idle", "running", "paused", "finished" };
 
 [Exposed=Window]
-interface AnimationEffectReadOnly {
-    readonly attribute AnimationEffectTimingReadOnly timing;
-    ComputedTimingProperties getComputedTiming();
+interface AnimationEffect {
+    EffectTiming         getTiming();
+    ComputedEffectTiming getComputedTiming();
+    void                 updateTiming(optional OptionalEffectTiming timing);
 };
 
-[Exposed=Window]
-interface AnimationEffectTimingReadOnly {
-    readonly attribute double                             delay;
-    readonly attribute double                             endDelay;
-    readonly attribute FillMode                           fill;
-    readonly attribute double                             iterationStart;
-    readonly attribute unrestricted double                iterations;
-    readonly attribute (unrestricted double or DOMString) duration;
-    readonly attribute PlaybackDirection                  direction;
-    readonly attribute DOMString                          easing;
-};
-
-[Exposed=Window]
-interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
-    inherit attribute double                             delay;
-    inherit attribute double                             endDelay;
-    inherit attribute FillMode                           fill;
-    inherit attribute double                             iterationStart;
-    inherit attribute unrestricted double                iterations;
-    inherit attribute (unrestricted double or DOMString) duration;
-    inherit attribute PlaybackDirection                  direction;
-    inherit attribute DOMString                          easing;
-};
-
-dictionary AnimationEffectTimingProperties {
+dictionary EffectTiming {
     double                             delay = 0;
     double                             endDelay = 0;
     FillMode                           fill = "auto";
@@ -83,7 +60,22 @@ dictionary AnimationEffectTimingProperties {
     DOMString                          easing = "linear";
 };
 
-dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
+dictionary OptionalEffectTiming {
+    double                             delay;
+    double                             endDelay;
+    FillMode                           fill;
+    double                             iterationStart;
+    unrestricted double                iterations;
+    (unrestricted double or DOMString) duration;
+    PlaybackDirection                  direction;
+    DOMString                          easing;
+};
+
+enum FillMode { "none", "forwards", "backwards", "both", "auto" };
+
+enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
+
+dictionary ComputedEffectTiming : EffectTiming {
     unrestricted double  endTime;
     unrestricted double  activeDuration;
     double?              localTime;
@@ -91,32 +83,17 @@ dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
     unrestricted double? currentIteration;
 };
 
-enum FillMode { "none", "forwards", "backwards", "both", "auto" };
-
-enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
-
 [Exposed=Window,
  Constructor ((Element or CSSPseudoElement)? target,
               object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options),
- Constructor (KeyframeEffectReadOnly source)]
-interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
-    readonly attribute (Element or CSSPseudoElement)? target;
-    readonly attribute IterationCompositeOperation    iterationComposite;
-    readonly attribute CompositeOperation             composite;
+ Constructor (KeyframeEffect source)]
+interface KeyframeEffect : AnimationEffect {
+    attribute (Element or CSSPseudoElement)? target;
+    attribute IterationCompositeOperation    iterationComposite;
+    attribute CompositeOperation             composite;
     sequence<object> getKeyframes ();
-};
-
-[Exposed=Window,
- Constructor ((Element or CSSPseudoElement)? target,
-              object? keyframes,
-              optional (unrestricted double or KeyframeEffectOptions) options),
- Constructor (KeyframeEffectReadOnly source)]
-interface KeyframeEffect : KeyframeEffectReadOnly {
-    inherit attribute (Element or CSSPseudoElement)? target;
-    inherit attribute IterationCompositeOperation    iterationComposite;
-    inherit attribute CompositeOperation             composite;
-    void setKeyframes (object? keyframes);
+    void             setKeyframes (object? keyframes);
 };
 
 dictionary BaseComputedKeyframe {
@@ -138,7 +115,7 @@ dictionary BaseKeyframe {
     CompositeOperation? composite = null;
 };
 
-dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
+dictionary KeyframeEffectOptions : EffectTiming {
     IterationCompositeOperation iterationComposite = "replace";
     CompositeOperation          composite = "replace";
 };

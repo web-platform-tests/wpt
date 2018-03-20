@@ -102,7 +102,8 @@ function check_PointerEvent(event, testNamePrefix) {
         }
     }, pointerTestName + ".pressure value is valid");
 
-    // Check mouse-specific properties
+    // Check mouse-specific properties. Some checks are based on the fact that current mouse
+    // devices don't report some attributes.
     if (event.pointerType === "mouse") {
         // TA: 1.9, 1.10, 1.13
         test(function () {
@@ -112,7 +113,15 @@ function check_PointerEvent(event, testNamePrefix) {
             assert_equals(event.tiltY, 0, event.type + ".tiltY is 0 for mouse");
             assert_true(event.isPrimary, event.type + ".isPrimary is true for mouse");
         }, pointerTestName + " properties for pointerType = mouse");
-        // Check properties for pointers other than mouse
+    }
+
+    // Check touch-specific properties. Some checks are based on the fact that current touch
+    // screens don't report some attributes.
+    if (event.pointerType === "touch" && event.type == "pointerup") {
+        test(function () {
+            assert_equals(event.width, 1, "width of touch pointerup should be 1");
+            assert_equals(event.height, 1, "height of touch pointerup should be 1");
+        }, pointerTestName + " properties for pointerType = touch");
     }
 }
 

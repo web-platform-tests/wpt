@@ -1,11 +1,6 @@
-function assert_transfer_error(transferList, exception = "DataCloneError") {
-  assert_throws(exception, () => self.postMessage({ get whatever() { throw exception } }, "*", transferList));
+function assert_transfer_error(transferList) {
+  assert_throws("DataCloneError", () => self.postMessage({ get whatever() { throw new Error("You should not have gotten to this point") } }, "*", transferList));
 }
-
-test(() => {
-  const b = new ArrayBuffer(1);
-  assert_transfer_error([b, b]);
-}, "Cannot transfer the same object twice");
 
 test(() => {
   [self, self.document, new Image()].forEach(val => {
@@ -13,30 +8,40 @@ test(() => {
   });
 }, "Cannot transfer all objects");
 
-test(() => {
-  const b = new ArrayBuffer(1);
-  self.postMessage(null, "*", [b]);
-  assert_transfer_error([b], new Error("hi"));
-  assert_throws("DataCloneError", () => self.postMessage(null, '*', [b]));
-}, "Serialize throws before a transferred detached ArrayBuffer is found");
+function transfer_tests(name, create) {
+  promise_test(async () => {
+    const transferable = await create();
+    assert_transfer_error([transferable, transferable]);
+  }, `Cannot transfer the same ${name} twice`);
 
-promise_test(() => {
-  return self.createImageBitmap(document.createElement("canvas")).then(bitmap => {
-    bitmap.close();
-    assert_transfer_error([bitmap], new Error("hi"));
-    assert_throws("DataCloneError", () => self.postMessage(null, '*', [bitmap]));
-  })
-}, "Serialize throws before a transferred detached ImageBitmap is found");
+  promise_test(async () => {
+    const transferable = await create();
+    self.postMessage(null, "*", [transferable]);
+    assert_throws("DataCloneError", () => self.postMessage(null, "*", [transferable]));
+  }, `Serialize should make the ${name} detached, so it cannot be transferred again.`);
 
-test(() => {
-  let seen = false;
-  const b = new ArrayBuffer(32),
-        message = {
-    get a() {
-      self.postMessage(null, '*', [b]);
-      seen = true;
-    }
-  };
-  assert_throws("DataCloneError", () => self.postMessage(message, '*', [b]));
-  assert_true(seen);
-}, "Cannot transfer an object detached while message was serialized")
+  promise_test(async () => {
+    const transferable = await create(),
+          customError = new Error("hi");
+    self.postMessage(null, "*", [transferable]);
+    assert_throws(customError, () => self.postMessage({ get whatever() { throw customError } }, "*", [transferable]));
+  }, `Serialize should throw before a detached ${name} is found.`);
+
+  promise_test(async () => {
+    const transferable = await create();
+    let seen = false;
+    const message = {
+      get a() {
+        self.postMessage(null, '*', [transferable]);
+        seen = true;
+      }
+    };
+    assert_throws("DataCloneError", () => self.postMessage(message, "*", [transferable]));
+    assert_true(seen);
+  }, `Cannot transfer ${name} detached while the message was serialized.`);
+}
+
+transfer_tests("ArrayBuffer", () => new ArrayBuffer(1));
+transfer_tests("MessagePort", () => new MessageChannel().port1);
+transfer_tests("ImageBitmap", () => self.createImageBitmap(document.createElement("canvas")));
+transfer_tests("OffscreenCanvas", () => new OffscreenCanvas(1, 1));

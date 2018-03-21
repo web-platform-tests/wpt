@@ -644,8 +644,7 @@ def get_ports(config, ssl_environment):
     return rv
 
 
-
-def normalise_config(config, ports):
+def normalise_config(config, ports, base_path=repo_root):
     if "host" in config:
         logger.warning("host in config is deprecated; use browser_host instead")
         host = config["host"]
@@ -682,6 +681,20 @@ def normalise_config(config, ports):
     config_["bind_address"] = bind_address
     if config.get("server_host", None) is None:
         config_["server_host"] = host
+
+    path_properties = ["doc_root",
+                       "ws_doc_root",
+                       ("ssl", "openssl", "base_path"),
+                       ("ssl", "pregenerated", "host_key_path"),
+                       ("ssl", "pregenerated", "host_cert_path")]
+    for key in path_properties:
+        target = config_
+        if not isinstance(key, (str, unicode)):
+            for key_part in key[:-1]:
+                target = target[key_part]
+            key = key[-1]
+        target[key] = os.path.join(base_path, target[key])
+
     return config_
 
 
@@ -690,11 +703,11 @@ def get_paths(config):
             "ws_doc_root": config["ws_doc_root"]}
 
 
-def get_ssl_config(config, ssl_environment):
+def get_ssl_config(config, ssl_environment, base_path=repo_root):
     external_domains = config["domains"].values()
     key_path, cert_path = ssl_environment.host_cert_path(external_domains)
-    return {"key_path": key_path,
-            "cert_path": cert_path,
+    return {"key_path": os.path.join(base_path, key_path),
+            "cert_path": os.path.join(base_path, cert_path),
             "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
 
 
@@ -821,10 +834,9 @@ def run(**kwargs):
 
     with get_ssl_environment(config) as ssl_env:
         ports = get_ports(config, ssl_env)
-        config = normalise_config(config, ports)
+        config = normalise_config(config, ports, repo_root)
         host = config["browser_host"]
         bind_address = config["bind_address"]
-
         if config["check_subdomains"]:
             paths = get_paths(config)
             ssl_config = get_ssl_config(config, ssl_env)

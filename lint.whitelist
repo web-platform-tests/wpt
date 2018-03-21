@@ -38,6 +38,7 @@ TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: WebIDL/*
 TRAILING WHITESPACE: webvtt/*
 TRAILING WHITESPACE: encoding/legacy*/*
+TRAILING WHITESPACE: server-timing/resources/parsing/*.sub.headers
 
 ## File types that should never be checked ##
 
@@ -89,7 +90,7 @@ PRINT STATEMENT: */tools/*
 AHEM COPY: fonts/Ahem.ttf
 
 # None of these are actually Ahem
-AHEM COPY: css/fonts/ahem-extra/AHEM_*.TTF
+AHEM COPY: fonts/ahem-extra/AHEM_*.TTF
 
 # https://github.com/w3c/web-platform-tests/issues/7437
 AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
@@ -99,15 +100,20 @@ AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
 # Intentional use of CRLF
 CR AT EOL: WebIDL/valid/idl/documentation-dos.widl
 CR AT EOL: cors/resources/cors-headers.asis
+CR AT EOL: html/form-elements/the-textarea-element/multiline-placeholder-cr.html
+CR AT EOL: html/form-elements/the-textarea-element/multiline-placeholder-crlf.html
+CR AT EOL: html/input/the-placeholder-attribute/multiline-cr.html
+CR AT EOL: html/input/the-placeholder-attribute/multiline-crlf.html
 CR AT EOL: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
 CR AT EOL: webvtt/parsing/file-parsing/tests/support/newlines.vtt
 
 # Intentional use of tabs
 INDENT TABS: html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
 
-# Test generation files containing print statements
+# Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
 PRINT STATEMENT: encrypted-media/polyfill/make-polyfill-tests.py
+PRINT STATEMENT: webdriver/tests/support/fixtures.py
 
 # semi-legitimate use of console.*
 CONSOLE: console/*
@@ -148,7 +154,6 @@ SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-002.html
 SET TIMEOUT: css/selectors/selector-placeholder-shown-type-change-003.html
 SET TIMEOUT: css/selectors/selector-read-write-type-change-002.html
 SET TIMEOUT: css/selectors/selector-required-type-change-002.html
-SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
@@ -192,6 +197,7 @@ SET TIMEOUT: screen-orientation/lock-bad-argument.html
 SET TIMEOUT: screen-orientation/onchange-event.html
 SET TIMEOUT: screen-orientation/resources/sandboxed-iframe-locking.html
 SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
+SET TIMEOUT: service-workers/cache-storage/script-tests/cache-abort.js
 SET TIMEOUT: service-workers/service-worker/activation.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-frame-resource.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-request-redirect.https.html
@@ -221,14 +227,15 @@ SET TIMEOUT: streams/writable-streams/byte-length-queuing-strategy.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: webaudio/js/lodash.js
 SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html
+SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
 SET TIMEOUT: websockets/*
 SET TIMEOUT: webstorage/eventTestHarness.js
 SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
-SET TIMEOUT: XMLHttpRequest/resources/init.htm
-SET TIMEOUT: XMLHttpRequest/resources/xmlhttprequest-timeout.js
+SET TIMEOUT: xhr/resources/init.htm
+SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/generate-callback.html
@@ -304,6 +311,9 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/window-named-properties-003.html
 
 # Intentional use of setTimeout
+SET TIMEOUT: css/css-fonts/font-display/font-display.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
+SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
@@ -371,7 +381,7 @@ SUPPORT-WRONG-DIR: css/*/LICENSE-*
 SUPPORT-WRONG-DIR: css/*/COPYING
 SUPPORT-WRONG-DIR: css/*/Makefile
 SUPPORT-WRONG-DIR: css/*/OWNERS
-SUPPORT-WRONG-DIR: css/fonts/*
+SUPPORT-WRONG-DIR: fonts/*
 
 # The selectors-3 testsuite has a weird build system
 SUPPORT-WRONG-DIR: css/selectors/*
@@ -394,19 +404,6 @@ SUPPORT-WRONG-DIR: css/filter-effects/filter-external-002-filter.svg
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/check-for-references.sh
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests-filter
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests.sh
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/aqua-yellow-32x32.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/aqua-yellow-37x37.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/border.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-bl.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-bo.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-br.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-ct.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-le.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-ri.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-tl.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-to.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule-tr.png
-SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/background/reticule.png
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/masking/blank.html
 SUPPORT-WRONG-DIR: css/WOFF2/testcaseindex.xht
 NON-EXISTENT-REF: css/css-masking/clip-path-svg-content/clip-path-clip-rule-008.svg
@@ -444,7 +441,7 @@ INDENT TABS: css/css-values/*
 INDENT TABS: css/css-variables/*
 INDENT TABS: css/css-writing-modes/*
 INDENT TABS: css/filter-effects/*
-INDENT TABS: css/fonts/*
+INDENT TABS: fonts/*
 INDENT TABS: css/mediaqueries/*
 INDENT TABS: css/selectors/*
 INDENT TABS: css/vendor-imports/*
@@ -578,8 +575,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/*/.htaccess
 CSS-COLLIDING-SUPPORT-NAME: css/*/LOCK
 
 # These are all the current "merge mismatch" errors the build system produces
-CSS-COLLIDING-SUPPORT-NAME: css/css-flexbox/support/100x100-green.png
-CSS-COLLIDING-SUPPORT-NAME: css/css-grid/grid-items/support/100x100-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-flexbox/support/200x200-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-grid/grid-items/support/200x200-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-regions/contentEditable/support/common.css
@@ -788,6 +783,8 @@ CSS-COLLIDING-REF-NAME: css/CSS2/visufx/overflow-applies-to-001-ref.xht
 CSS-COLLIDING-REF-NAME: css/CSS2/ui/overflow-applies-to-001-ref.xht
 CSS-COLLIDING-REF-NAME: css/CSS2/visuren/inline-formatting-context-001-ref.xht
 CSS-COLLIDING-REF-NAME: css/CSS2/linebox/inline-formatting-context-001-ref.xht
+CSS-COLLIDING-REF-NAME: css/css-transforms/individual-transform/individual-transform-1-ref.html
+CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/transforms/individual-transform-1-ref.html
 CSS-COLLIDING-SUPPORT-NAME: css/css-backgrounds/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/mix-blend-mode/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/background-blending/support/red.png
@@ -893,25 +890,7 @@ SUPPORT-WRONG-DIR: css/css-timing/testcommon.js
 MISSING-LINK: css/css-typed-om/CSSMatrixComponent-DOMMatrix-mutable.html
 MISSING-LINK: css/css-typed-om/declared-styleMap-accepts-inherit.html
 MISSING-LINK: css/css-typed-om/styleMap-update-function.html
-MISSING-LINK: css/cssom/CSS.html
-MISSING-LINK: css/cssom/CSSKeyframeRule.html
-MISSING-LINK: css/cssom/CSSKeyframesRule.html
-MISSING-LINK: css/cssom/CSSNamespaceRule.html
-MISSING-LINK: css/cssom/CSSRuleList.html
-MISSING-LINK: css/cssom/CSSStyleSheet.html
-MISSING-LINK: css/cssom/GetBoundingRect.html
-MISSING-LINK: css/cssom/historical.html
-MISSING-LINK: css/cssom/MediaList.html
-MISSING-LINK: css/cssom/overflow-serialization.html
-MISSING-LINK: css/cssom/selectorText-modification-restyle-001.html
-MISSING-LINK: css/cssom/serialization-CSSDeclaration-with-important.html
-MISSING-LINK: css/cssom/serialize-values.html
-MISSING-LINK: css/cssom/serialize-variable-reference.html
-MISSING-LINK: css/cssom/shorthand-serialization.html
 SUPPORT-WRONG-DIR: css/cssom/stylesheet-same-origin.css
-MISSING-LINK: css/cssom/stylesheet-same-origin.sub.html
-MISSING-LINK: css/cssom/StyleSheetList.html
-MISSING-LINK: css/cssom/variable-names.html
 MISSING-LINK: css/cssom-view/DOMRectList.html
 MISSING-LINK: css/cssom-view/elementFromPoint-002.html
 MISSING-LINK: css/cssom-view/elementFromPoint-003.html
@@ -937,6 +916,7 @@ MISSING-LINK: css/cssom-view/scrolling-quirks-vs-nonquirks.html
 MISSING-LINK: css/cssom-view/scrollingElement.html
 MISSING-LINK: css/cssom-view/scrollIntoView-shadow.html
 MISSING-LINK: css/cssom-view/scrollIntoView-smooth.html
+MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 CSS-COLLIDING-TEST-NAME: css/cssom-view/interfaces.html
 CSS-COLLIDING-TEST-NAME: css/cssom/interfaces.html
 

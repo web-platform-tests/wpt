@@ -213,6 +213,16 @@ def test_ref_absolute_url(caplog):
     assert "ref/absolute.html" in caplog.text
 
 
+def test_about_blank_as_ref(caplog):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["about_blank-ref.html"], "normal")
+            assert rv == 0
+            assert not mocked_check_path.called
+            assert not mocked_check_file_contents.called
+    assert caplog.text == ""
+
+
 def test_ref_same_file_empty(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -388,9 +398,14 @@ def test_main_with_args():
     orig_argv = sys.argv
     try:
         sys.argv = ['./lint', 'a', 'b', 'c']
-        with _mock_lint('lint', return_value=True) as m:
-            lint_mod.main(**vars(create_parser().parse_args()))
-            m.assert_called_once_with(repo_root, ['a', 'b', 'c'], "normal")
+        with mock.patch(lint_mod.__name__ + ".os.path.isfile") as mock_isfile:
+            mock_isfile.return_value = True
+            with _mock_lint('lint', return_value=True) as m:
+                lint_mod.main(**vars(create_parser().parse_args()))
+                m.assert_called_once_with(repo_root,
+                                          [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
+                                           for x in ['a', 'b', 'c']],
+                                          "normal")
     finally:
         sys.argv = orig_argv
 

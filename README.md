@@ -32,17 +32,22 @@ your `%Path%` [Environment Variable](http://www.computerhope.com/issues/ch000549
 and read the [Windows Notes](#windows-notes) section below.
 
 To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The
-following entries are required:
+[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
 
+The necessary content can be generated with `./wpt make-hosts-file`; on
+Windows, you will need to preceed the prior command with `python` or
+the path to the Python binary (`python wpt make-hosts-file`).
+
+For example, on most UNIX-like systems, you can setup the hosts file with:
+
+```bash
+./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
-127.0.0.1   web-platform.test
-127.0.0.1   www.web-platform.test
-127.0.0.1   www1.web-platform.test
-127.0.0.1   www2.web-platform.test
-127.0.0.1   xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1   xn--lve-6lad.web-platform.test
-0.0.0.0     nonexistent-origin.web-platform.test
+
+And on Windows (note this requires an Administrator privileged shell):
+
+```bash
+python wpt make-hosts-file >> %SystemRoot%\System32\drivers\etc\hosts
 ```
 
 If you are behind a proxy, you also need to make sure the domains above are
@@ -53,25 +58,41 @@ Running Tests Manually
 ======================
 
 The test server can be started using
+```
+./wpt serve
+```
 
-    ./wpt serve
+**On Windows**: You will need to preceed the prior command with
+`python` or the path to the python binary.
+```bash
+python wpt serve
+```
 
 This will start HTTP servers on two ports and a websockets server on
-one port. By default one web server starts on port 8000 and the other
+one port. By default the web servers start on ports 8000 and 8443 and the other
 ports are randomly-chosen free ports. Tests must be loaded from the
 *first* HTTP server in the output. To change the ports, copy the
 `config.default.json` file to `config.json` and edit the new file,
 replacing the part that reads:
 
 ```
-"http": [8000, "auto"]
+"http": [8000, "auto"],
+"https":[8443]
 ```
 
-to some port of your choice e.g.
+to some ports of your choice e.g.
 
 ```
-"http": [1234, "auto"]
+"http": [1234, "auto"],
+"https":[5678]
 ```
+
+After your `hosts` file is configured, the servers will be locally accessible at:
+
+http://web-platform.test:8000/<br>
+https://web-platform.test:8443/ *
+
+\**See [Trusting Root CA](#trusting-root-ca)*
 
 Running Tests Automatically
 ---------------------------
@@ -82,17 +103,20 @@ file setup documented above, but you must *not* have the
 test server already running when calling `wpt run`. The basic command
 line syntax is:
 
-```
+```bash
 ./wpt run product [tests]
 ```
 
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
+```bash
+python wpt product [tests]
+```
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
 list of paths to tests. This will attempt to automatically locate a
 browser instance and install required dependencies. The command is
-very configurable; for examaple to specify a particular binary use
+very configurable; for example to specify a particular binary use
 `wpt run --binary=path product`. The full range of options can be see
 with `wpt run --help` and `wpt run --wptrunner-help`.
 
@@ -187,8 +211,12 @@ then remove the `tools` and `resources` directories, as above.
 <span id="windows-notes">Windows Notes</span>
 =============================================
 
-On Windows `wpt` commands mut bre prefixed with `python` or the path
+On Windows `wpt` commands must be prefixed with `python` or the path
 to the python binary (if `python` is not in your `%PATH%`).
+
+```bash
+python wpt [command]
+```
 
 Alternatively, you may also use
 [Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
@@ -203,7 +231,7 @@ Certificates
 ============
 
 By default pregenerated certificates for the web-platform.test domain
-are provided in the repository. If you wish to generate new
+are provided in [`tools/certs`](tools/certs). If you wish to generate new
 certificates for any reason it's possible to use OpenSSL when starting
 the server, or starting a test run, by providing the
 `--ssl-type=openssl` argument to the `wpt serve` or `wpt run`
@@ -240,6 +268,11 @@ Then edit the JSON so that the key `ssl/openssl/base_conf_path` has a
 value that is the path to the OpenSSL config file (typically this
 will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
 
+### Trusting Root CA
+
+To prevent browser SSL warnings when running HTTPS tests locally, the
+web-platform-tests Root CA file `rootca.pem` in [tools/certs](tools/certs)
+must be added as a trusted certificate in your OS/browser.
 
 Publication
 ===========

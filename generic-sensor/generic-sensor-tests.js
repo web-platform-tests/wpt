@@ -10,8 +10,17 @@ const properties = {
   'AbsoluteOrientationSensor' : ['timestamp', 'quaternion'],
   'RelativeOrientationSensor' : ['timestamp', 'quaternion'],
   'GeolocationSensor' : ['timestamp', 'latitude', 'longitude', 'altitude',
-                         'accuracy', 'altitudeAccuracy', 'heading', 'speed']
+                         'accuracy', 'altitudeAccuracy', 'heading', 'speed'],
+  'ProximitySensor' : ['timestamp', 'max']
 };
+const spatialSensors = ['Accelerometer',
+                       'LinearAccelerationSensor',
+                       'GravitySensor',
+                       'Gyroscope',
+                       'Magnetometer',
+                       'UncalibratedMagnetometer',
+                       'AbsoluteOrientationSensor',
+                       'RelativeOrientationSensor'];
 
 function assert_reading_not_null(sensor) {
   for (let property in properties[sensor.constructor.name]) {
@@ -146,6 +155,25 @@ function runGenericSensorTests(sensorType) {
   promise_test(async t => {
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    sensor.start();
+
+    await sensorWatcher.wait_for("reading");
+    assert_true(sensor.hasReading);
+    const timestamp = sensor.timestamp;
+    sensor.stop();
+    assert_false(sensor.hasReading);
+
+    sensor.start();
+    await sensorWatcher.wait_for("reading");
+    assert_true(sensor.hasReading);
+    assert_greater_than(timestamp, 0);
+    assert_greater_than(sensor.timestamp, timestamp);
+    sensor.stop();
+  }, `${sensorType.name}: Test that fresh reading is fetched on start()`);
+
+  promise_test(async t => {
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     const visibilityChangeWatcher = new EventWatcher(t, document, "visibilitychange");
     sensor.start();
 
@@ -159,8 +187,128 @@ function runGenericSensorTests(sensorType) {
 
     win.close();
     sensor.stop();
-    assert_array_equals(cachedSensor1, cachedSensor2);
+    assert_object_equals(cachedSensor1, cachedSensor2);
   }, `${sensorType.name}: sensor readings can not be fired on the background tab`);
+
+  promise_test(async t => {
+    const fastSensor = new sensorType({frequency: 30});
+    const slowSensor = new sensorType({frequency: 5});
+    slowSensor.start();
+
+    const fastCounter = await new Promise((resolve, reject) => {
+      let fastCounter = 0;
+      let slowCounter = 0;
+
+      fastSensor.onreading = () => {
+        fastCounter++;
+      }
+      slowSensor.onreading = () => {
+        slowCounter++;
+        if (slowCounter == 1) {
+          fastSensor.start();
+        } else if (slowCounter == 3) {
+          fastSensor.stop();
+          slowSensor.stop();
+          resolve(fastCounter);
+        }
+      }
+      fastSensor.onerror = reject;
+      slowSensor.onerror = reject;
+    });
+    assert_greater_than(fastCounter, 2,
+                        "Fast sensor overtakes the slow one");
+  }, `${sensorType.name}: frequency hint works`);
+
+  promise_test(async t => {
+    // Create a focused editbox inside a cross-origin iframe,
+    // sensor notification must suspend.
+    const iframeSrc = 'data:text/html;charset=utf-8,<html><body>'
+                    + '<input type="text" autofocus></body></html>';
+    const iframe = document.createElement('iframe');
+    iframe.src = encodeURI(iframeSrc);
+
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    sensor.start();
+
+    await sensorWatcher.wait_for("reading");
+    assert_reading_not_null(sensor);
+    const cachedTimestamp = sensor.timestamp;
+    const cachedSensor1 = reading_to_array(sensor);
+
+    const iframeWatcher = new EventWatcher(t, iframe, "load");
+    document.body.appendChild(iframe);
+    await iframeWatcher.wait_for("load");
+    const cachedSensor2 = reading_to_array(sensor);
+    assert_array_equals(cachedSensor1, cachedSensor2);
+
+    iframe.remove();
+    await sensorWatcher.wait_for("reading");
+    const cachedSensor3 = reading_to_array(sensor);
+    assert_greater_than(sensor.timestamp, cachedTimestamp);
+
+    sensor.stop();
+  }, `${sensorType.name}: sensor receives suspend / resume notifications when\
+  cross-origin subframe is focused`);
+
+  test(() => {
+     assert_throws("NotSupportedError", () => { new sensorType({invalid: 1}) });
+     assert_throws("NotSupportedError", () => { new sensorType({frequency: 60, invalid: 1}) });
+     if (spatialSensors.indexOf(sensorType.name) == -1) {
+       assert_throws("NotSupportedError", () => { new sensorType({referenceFrame: "screen"}) });
+     }
+  }, `${sensorType.name}: throw 'NotSupportedError' for an unsupported sensor option`);
+
+  test(() => {
+    const invalidFreqs = [
+      "invalid",
+      NaN,
+      Infinity,
+      -Infinity,
+      {},
+      undefined
+    ];
+    invalidFreqs.map(freq => {
+      assert_throws(new TypeError(),
+                    () => { new sensorType({frequency: freq}) },
+                    `when freq is ${freq}`);
+    });
+  }, `${sensorType.name}: throw 'TypeError' if frequency is invalid`);
+
+  if (spatialSensors.indexOf(sensorType.name) == -1) {
+    // The sensorType does not represent a spatial sensor.
+    return;
+  }
+
+  promise_test(async t => {
+    const sensor = new sensorType({referenceFrame: "screen"});
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    sensor.start();
+
+    await sensorWatcher.wait_for("reading");
+    //TODO use mock data to verify sensor readings, blocked by issue:
+    // https://github.com/w3c/web-platform-tests/issues/9686
+    assert_reading_not_null(sensor);
+
+    sensor.stop();
+  }, `${sensorType.name}: sensor reading is correct when options.referenceFrame is 'screen'`);
+
+  test(() => {
+    const invalidRefFrames = [
+      "invalid",
+      null,
+      123,
+      {},
+      "",
+      true,
+      undefined
+    ];
+    invalidRefFrames.map(refFrame => {
+      assert_throws(new TypeError(),
+                    () => { new sensorType({referenceFrame: refFrame}) },
+                    `when refFrame is ${refFrame}`);
+    });
+  }, `${sensorType.name}: throw 'TypeError' if referenceFrame is not one of enumeration values`);
 }
 
 function runGenericSensorInsecureContext(sensorType) {
@@ -177,6 +325,7 @@ function runGenericSensorOnerror(sensorType) {
 
     const event = await sensorWatcher.wait_for("error");
     assert_false(sensor.activated);
-    assert_equals(event.error.name, 'NotReadableError');
+    assert_true(event.error.name == 'NotReadableError' ||
+                event.error.name == 'NotAllowedError');
   }, `${sensorType.name}: 'onerror' event is fired when sensor is not supported`);
 }

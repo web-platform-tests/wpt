@@ -22,8 +22,6 @@ function openWindowAndExpectResult(windowURL, scriptURL, type, expectation) {
 // Usage:
 // runContentSecurityPolicyTests("paint");
 function runContentSecurityPolicyTests(workletType) {
-  const worklet = get_worklet(workletType);
-
   promise_test(t => {
     const kWindowURL =
         'resources/addmodule-window.html?pipe=header(' +
@@ -84,4 +82,49 @@ function runContentSecurityPolicyTests(workletType) {
   }, 'Importing a remote-origin worklet script should not be blocked by ' +
      'the worker-src directive because worklets obey the script-src ' +
      'directive.');
+
+  promise_test(t => {
+    const kWindowURL = 'resources/addmodule-window.html';
+    const kScriptURL =
+        get_host_info().HTTP_ORIGIN +
+        '/worklets/resources/empty-worklet-script.js';
+    return openWindowAndExpectResult(
+        kWindowURL, kScriptURL, workletType, 'REJECTED');
+  }, 'Importing an insecure-origin worklet script should be blocked because ' +
+     'of mixed contents.');
+
+  promise_test(t => {
+    const kWindowURL = 'resources/addmodule-window.html?pipe=header(' +
+                       'Content-Security-Policy, upgrade-insecure-requests)';
+    // This test relies on some unintuitive cleverness due to WPT's test setup:
+    // 'Upgrade-Insecure-Requests' does not upgrade the port number, so we use
+    // URLs in the form `http://[host]:[https-port]`. If the upgrade fails, the
+    // load will fail, as we don't serve HTTP over the secure port.
+    const kHost = get_host_info().ORIGINAL_HOST;
+    const kPort = get_host_info().HTTPS_PORT;
+    const kScriptURL =
+        `http://${kHost}:${kPort}/worklets/resources/empty-worklet-script.js`;
+    return openWindowAndExpectResult(
+        kWindowURL, kScriptURL, workletType, 'RESOLVED');
+  }, 'Importing an insecure-origin worklet script should not be blocked ' +
+     'because the upgrade-insecure-requests directive translates it as the ' +
+     'secure origin.');
+
+  promise_test(t => {
+    const kWindowURL = 'resources/addmodule-window.html';
+    const kScriptURL = 'import-insecure-origin-empty-worklet-script.sub.js';
+    return openWindowAndExpectResult(
+        kWindowURL, kScriptURL, workletType, 'REJECTED');
+  }, 'Importing an insecure-origin script from a secure-origin worklet ' +
+     'script should be blocked because of mixed contents.');
+
+  promise_test(t => {
+    const kWindowURL = 'resources/addmodule-window.html?pipe=header(' +
+                       'Content-Security-Policy, upgrade-insecure-requests)';
+    const kScriptURL = 'import-insecure-origin-empty-worklet-script.sub.js';
+    return openWindowAndExpectResult(
+        kWindowURL, kScriptURL, workletType, 'RESOLVED');
+  }, 'Importing an insecure-origin script from a secure-origin worklet ' +
+     'script should not be blocked because the upgrade-insecure-requests ' +
+     'directive translates it as the secure origin.');
 }

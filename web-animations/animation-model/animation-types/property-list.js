@@ -751,19 +751,19 @@ const gCSSProperties = {
   'justify-content': {
     // https://drafts.csswg.org/css-align/#propdef-justify-content
     types: [
-      { type: 'discrete', options: [ [ 'baseline', 'last baseline' ] ] }
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
     ]
   },
   'justify-items': {
     // https://drafts.csswg.org/css-align/#propdef-justify-items
     types: [
-      { type: 'discrete', options: [ [ 'baseline', 'last baseline' ] ] }
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
     ]
   },
   'justify-self': {
     // https://drafts.csswg.org/css-align/#propdef-justify-self
     types: [
-      { type: 'discrete', options: [ [ 'baseline', 'last baseline' ] ] }
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
     ]
   },
   'left': {
@@ -1052,12 +1052,6 @@ const gCSSProperties = {
   'overflow': {
     // https://drafts.csswg.org/css-overflow/#propdef-overflow
     types: [
-    ]
-  },
-  'overflow-clip-box': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/overflow-clip-box
-    types: [
-      { type: 'discrete', options: [ [ 'padding-box', 'content-box' ] ] }
     ]
   },
   'overflow-wrap': {
@@ -1411,6 +1405,25 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'flat', 'preserve-3d' ] ] }
     ]
   },
+  'rotate': {
+    // https://drafts.csswg.org/css-transforms-2/#individual-transforms
+    types: [ 'rotateList' ]
+  },
+  'translate': {
+    // https://drafts.csswg.org/css-transforms-2/#individual-transforms
+    types: [ 'translateList' ],
+    setup: t => {
+      // We need to set a width/height for resolving percentages against.
+      const element = createElement(t);
+      element.style.width = '100px';
+      element.style.height = '100px';
+      return element;
+    }
+  },
+  'scale': {
+    // https://drafts.csswg.org/css-transforms-2/#individual-transforms
+    types: [ 'scaleList' ]
+  },
   'unicode-bidi': {
     // https://drafts.csswg.org/css-writing-modes-3/#propdef-unicode-bidi
     types: [
@@ -1525,6 +1538,18 @@ function testAnimationSampleMatrices(animation, idlName, testSamples) {
   }
 }
 
+function testAnimationSampleRotate3d(animation, idlName, testSamples) {
+  const target = animation.effect.target;
+  for (const testSample of testSamples) {
+    animation.currentTime = testSample.time;
+    const actual = getComputedStyle(target)[idlName];
+    const expected = testSample.expected;
+    assert_rotate3d_equals(actual, expected,
+                         `The value should be ${expected} at`
+                         + ` ${testSample.time}ms but got ${actual}`);
+  }
+}
+
 function createTestElement(t, setup) {
   return setup ? setup(t) : createElement(t);
 }
@@ -1554,7 +1579,7 @@ function TestKeyframe(testProp) {
 }
 
 function propertyToIDL(property) {
-  // https://w3c.github.io/web-animations/#animation-property-name-to-idl-attribute-name
+  // https://drafts.csswg.org/web-animations/#animation-property-name-to-idl-attribute-name
   if (property === 'float') {
     return 'cssFloat';
   }

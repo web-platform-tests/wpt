@@ -409,4 +409,18 @@
     }));
   }, 'track.onmute fires before setRemoteDescription resolves.');
 
+  async_test(t => {
+    const pc = new RTCPeerConnection();
+    return getUserMediaTracksAndStreams(1)
+    .then(t.step_func(([tracks, streams]) => {
+      const sender = pc.addTrack(tracks[0]);
+      assert_not_equals(sender, null);
+      pc.removeTrack(sender);
+      pc.removeTrack(sender);
+      t.done();
+    }))
+    .catch(t.step_func(reason => {
+      assert_unreached(reason);
+    }));
+  }, 'removeTrack() twice is safe.');
 </script>

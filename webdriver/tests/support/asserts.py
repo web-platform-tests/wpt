@@ -1,5 +1,6 @@
 from webdriver import Element, WebDriverException
 
+
 # WebDriver specification ID: dfn-error-response-data
 errors = {
     "element click intercepted": 400,
@@ -31,6 +32,7 @@ errors = {
     "unknown method": 405,
     "unsupported operation": 500,
 }
+
 
 # WebDriver specification ID: dfn-send-an-error
 #
@@ -98,7 +100,7 @@ def assert_dialog_handled(session, expected_text):
     except:
         assert (result.status == 200 and
                 result.body["value"] != expected_text), (
-               "Dialog with text '%s' was not handled." % expected_text)
+            "Dialog with text '%s' was not handled." % expected_text)
 
 
 def assert_same_element(session, a, b):
@@ -123,7 +125,7 @@ def assert_same_element(session, a, b):
         return
 
     message = ("Expected element references to describe the same element, " +
-        "but they did not.")
+               "but they did not.")
 
     # Attempt to provide more information, accounting for possible errors such
     # as stale element references or not visible elements.
@@ -135,3 +137,22 @@ def assert_same_element(session, a, b):
         pass
 
     raise AssertionError(message)
+
+
+def assert_element_has_focus(target_element):
+    session = target_element.session
+
+    active_element = session.execute_script("return document.activeElement")
+    active_tag = active_element.property("localName")
+    target_tag = target_element.property("localName")
+
+    assert active_element == target_element, (
+        "Focussed element is <%s>, not <%s>" % (active_tag, target_tag))
+
+
+def assert_move_to_coordinates(point, target, events):
+    for e in events:
+        if e["type"] != "mousemove":
+            assert e["pageX"] == point["x"]
+            assert e["pageY"] == point["y"]
+            assert e["target"] == target

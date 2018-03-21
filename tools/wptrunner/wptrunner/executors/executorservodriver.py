@@ -33,34 +33,21 @@ class ServoWebDriverProtocol(Protocol):
         self.port = browser.webdriver_port
         self.session = None
 
-    def setup(self, runner):
+    def connect(self):
         """Connect to browser via WebDriver."""
-        self.runner = runner
-
         url = "http://%s:%d" % (self.host, self.port)
-        session_started = False
-        try:
-            self.session = webdriver.Session(self.host, self.port,
-                extension=webdriver.servo.ServoCommandExtensions)
-            self.session.start()
-        except:
-            self.logger.warning(
-                "Connecting with WebDriver failed:\n%s" % traceback.format_exc())
-        else:
-            self.logger.debug("session started")
-            session_started = True
+        self.session = webdriver.Session(self.host, self.port,
+                                         extension=webdriver.servo.ServoCommandExtensions)
+        self.session.start()
 
-        if not session_started:
-            self.logger.warning("Failed to connect via WebDriver")
-            self.executor.runner.send_message("init_failed")
-        else:
-            self.executor.runner.send_message("init_succeeded")
+    def after_connect(self):
+        pass
 
     def teardown(self):
         self.logger.debug("Hanging up on WebDriver session")
         try:
             self.session.end()
-        except:
+        except Exception:
             pass
 
     def is_alive(self):
@@ -71,9 +58,6 @@ class ServoWebDriverProtocol(Protocol):
         except Exception:
             return False
         return True
-
-    def after_connect(self):
-        pass
 
     def wait(self):
         while True:

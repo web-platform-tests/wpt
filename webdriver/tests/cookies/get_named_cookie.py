@@ -26,8 +26,8 @@ def test_get_named_session_cookie(session, url):
     assert isinstance(cookie["secure"], bool)
     assert "httpOnly" in cookie
     assert isinstance(cookie["httpOnly"], bool)
-    assert "expiry" in cookie
-    assert cookie.get("expiry") is None
+    if "expiry" in cookie:
+        assert cookie.get("expiry") is None
 
     assert cookie["name"] == "foo"
     assert cookie["value"] == "bar"
@@ -61,14 +61,14 @@ def test_get_named_cookie(session, url):
     # convert from seconds since epoch
     assert datetime.utcfromtimestamp(cookie["expiry"]).strftime(utc_string_format) == a_year_from_now
 
-def test_duplicated_cookie(session, url):
+def test_duplicated_cookie(session, url, server_config):
     session.url = url("/common/blank.html")
     clear_all_cookies(session)
     create_cookie_request = {
         "cookie": {
             "name": "hello",
             "value": "world",
-            "domain": "web-platform.test",
+            "domain": server_config["domains"][""],
             "path": "/",
             "httpOnly": False,
             "secure": False
@@ -77,9 +77,9 @@ def test_duplicated_cookie(session, url):
     result = session.transport.send("POST", "session/%s/cookie" % session.session_id, create_cookie_request)
     assert result.status == 200
     assert "value" in result.body
-    assert isinstance(result.body["value"], dict)
+    assert result.body["value"] is None
 
-    session.url = inline("<script>document.cookie = 'hello=newworld; domain=web-platform.test; path=/';</script>")
+    session.url = inline("<script>document.cookie = 'hello=newworld; domain=%s; path=/';</script>" % server_config["domains"][""])
     result = session.transport.send("GET", "session/%s/cookie" % session.session_id)
     assert result.status == 200
     assert "value" in result.body

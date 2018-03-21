@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Document.getAnimations</title>
-<link rel="help" href="https://w3c.github.io/web-animations/#dom-document-getanimations">
+<link rel="help" href="https://drafts.csswg.org/web-animations/#dom-document-getanimations">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -42,7 +42,7 @@ test(t => {
 }, 'Test the order of document.getAnimations with script generated animations')
 
 test(t => {
-  const effect = new KeyframeEffectReadOnly(null, gKeyFrames, 100 * MS_PER_SEC);
+  const effect = new KeyframeEffect(null, gKeyFrames, 100 * MS_PER_SEC);
   const anim = new Animation(effect, document.timeline);
   anim.play();
 

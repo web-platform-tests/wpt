@@ -10,7 +10,7 @@
  * - `structuredClone(obj)`: Required function that somehow structurally clones
  *                               an object.
  */
-async function structuredCloneBatteryOfTests(runner) {
+function structuredCloneBatteryOfTests(runner) {
   const tests = [
     {
       description: "structuredClone returns a structural clone of an object",
@@ -44,10 +44,11 @@ async function structuredCloneBatteryOfTests(runner) {
   };
   runner = Object.assign({}, defaultRunner, runner);
 
-  await runner.setup();
+  let setupPromise = runner.setup();
   const allTests = tests.map((test, id) => {
     return new Promise(resolve => {
       promise_test(async _ => {
+        await setupPromise;
         await runner.preTest(test);
         await test.f(runner)
         await runner.postTest(test);
@@ -55,6 +56,5 @@ async function structuredCloneBatteryOfTests(runner) {
       }, test.description);
     }).catch(_ => {});
   });
-  await Promise.all(allTests);
-  await runner.teardown();
+  Promise.all(allTests).then(_ => runner.teardown());
 }

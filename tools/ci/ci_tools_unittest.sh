@@ -38,4 +38,4 @@ fi
 
 cd "$WPT_ROOT/tools"
 coverage combine . wptrunner/
-codecov
+codecov -p tools/

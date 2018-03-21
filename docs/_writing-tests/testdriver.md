@@ -42,7 +42,7 @@ after the keys have been send or rejects if the keys cannot be sent
 to the element.
 
 Note that if the element that's keys need to be send to does not have
-a unique ID, the document must not have any DOM mutations made 
+a unique ID, the document must not have any DOM mutations made
 between the function being called and the promise settling.
 
 

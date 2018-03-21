@@ -7,16 +7,18 @@ import urllib2
 _CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'config.test.json')
 
-with open(_CONFIG_FILE, 'r') as config_handle:
-    config = json.loads(config_handle.read())
-    host = config["host"]
-    port = config["ports"]["http"][0]
 
 class WPTServer(object):
-    base_url = 'http://%s:%s' % (host, port)
 
     def __init__(self, wpt_root):
         self.wpt_root = wpt_root
+        with open(_CONFIG_FILE, 'r') as config_handle:
+            config = json.load(config_handle)
+        self.host = config["host"]
+        self.http_port = config["ports"]["http"][0]
+        self.https_port = config["ports"]["https"][0]
+        self.base_url = 'http://%s:%s' % (self.host, self.http_port)
+        self.https_base_url = 'https://%s:%s' % (self.host, self.https_port)
 
     def start(self):
         self.devnull = open(os.devnull, 'w')
@@ -46,4 +48,4 @@ class WPTServer(object):
         self.devnull.close()
 
     def url(self, abs_path):
-        return self.base_url + '/' + os.path.relpath(abs_path, self.wpt_root)
+        return self.https_base_url + '/' + os.path.relpath(abs_path, self.wpt_root)

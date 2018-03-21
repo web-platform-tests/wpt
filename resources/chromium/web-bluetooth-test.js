@@ -45,6 +45,21 @@ const CHARACTERISTIC_PROPERTIES_WEB_TO_MOJO = {
   extended_properties: 'extended_properties',
 };
 
+// Mapping of the Mojo ChooserEventType enum to a string.
+const MOJO_CHOOSER_EVENT_TYPE_MAP = {
+  [content.mojom.ChooserEventType.CHOOSER_OPENED]: 'chooser-opened',
+  [content.mojom.ChooserEventType.CHOOSER_CLOSED]: 'chooser-closed',
+  [content.mojom.ChooserEventType.ADAPTER_REMOVED]: 'adapter-removed',
+  [content.mojom.ChooserEventType.ADAPTER_DISABLED]: 'adapter-disabled',
+  [content.mojom.ChooserEventType.ADAPTER_ENABLED]: 'adapter-enabled',
+  [content.mojom.ChooserEventType.DISCOVERY_FAILED_TO_START]:
+      'discovery-failed-to-start',
+  [content.mojom.ChooserEventType.DISCOVERING]: 'discovering',
+  [content.mojom.ChooserEventType.DISCOVERY_IDLE]: 'discovery-idle',
+  [content.mojom.ChooserEventType.ADD_OR_UPDATE_DEVICE]:
+      'add-or-update-device',
+};
+
 function ArrayToMojoCharacteristicProperties(arr) {
   let struct = new bluetooth.mojom.CharacteristicProperties();
 
@@ -454,6 +469,87 @@ class FakeChooser {
         new content.mojom.FakeBluetoothChooserPtr();
     Mojo.bindInterface(content.mojom.FakeBluetoothChooser.name,
         mojo.makeRequest(this.fake_bluetooth_chooser_ptr_).handle, 'process');
+
+    let associatedInterfacePtrInfo = new mojo.AssociatedInterfacePtrInfo();
+    let associatedRequest = mojo.makeRequest(associatedInterfacePtrInfo);
+    this.fake_bluetooth_chooser_server_client_associated_binding_ =
+        new mojo.AssociatedBinding(
+            content.mojom.FakeBluetoothChooserServerClient,
+            new FakeChooserServerClientImpl(this),
+            associatedRequest);
+
+    this.fake_bluetooth_chooser_ptr_.setServerClient(
+        associatedInterfacePtrInfo);
+
+    this.events_ = new Array();
+    this.event_listener_ = null;
+  }
+
+  async waitForEvents(num_of_events) {
+    return new Promise((resolve, reject) => {
+      if (this.events_.length > num_of_events) {
+        reject(`Asked for ${num_of_events} event, but received ` +
+            `${this.events_.length}.`);
+        return;
+      } else if (this.events_.length === num_of_events) {
+        resolve(this.events_);
+        this.clearEvents_();
+        return;
+      }
+      this.event_listener_ = () => {
+        if (this.events_.length === num_of_events) {
+          resolve(this.events_);
+          this.clearEvents_();
+          this.event_listener_ = null;
+        } else if (this.events_.length > num_of_events) {
+          reject(`Asked for ${num_of_events} event, but received ` +
+              `${this.events_.length}.`);
+          this.event_listener_ = null;
+        }
+      }
+    });
+  }
+
+  async selectPeripheral(peripheral) {
+    if (!(peripheral instanceof FakePeripheral)) {
+      throw '|peripheral| must be an instance of FakePeripheral';
+    }
+
+    await this.fake_bluetooth_chooser_ptr_.selectPeripheral(
+        peripheral.address);
+  }
+
+  async cancel() {
+    await this.fake_bluetooth_chooser_ptr_.cancel();
+  }
+
+  async rescan() {
+    await this.fake_bluetooth_chooser_ptr_.rescan();
+  }
+
+  async sendEvent(chooserEvent) {
+    chooserEvent.type = MOJO_CHOOSER_EVENT_TYPE_MAP[chooserEvent.type];
+    this.events_.push(chooserEvent);
+    if (this.event_listener_ !== null) {
+      this.event_listener_();
+    }
+  }
+
+  clearEvents_() {
+    this.events_ = [];
+  }
+}
+
+// FakeChooserServerClientImpl allows FakeBluetoothChooserEvent events to be
+// received from the chooser as they happen and stores the events in an array.
+class FakeChooserServerClientImpl {
+  constructor(fake_chooser_impl) {
+    this.fake_bluetooth_chooser_impl_ = fake_chooser_impl;
+    this.events_ = new Array();
+  }
+
+  async sendEvent(chooserEvent) {
+    await this.fake_bluetooth_chooser_impl_.sendEvent(chooserEvent);
   }
 }
 

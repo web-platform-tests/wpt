@@ -110,6 +110,7 @@ def test_sauceconnect_tunnel_domains():
             sauce_connect_binary="ddd")
 
         env_config = Config(browser_host="example.net",
+                            alternate_hosts={"alt": "example.org"},
                             subdomains={"a", "b"},
                             not_subdomains={"x", "y"})
         sauce_connect(None, env_config)

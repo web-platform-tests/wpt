@@ -173,24 +173,34 @@ class Config(Mapping):
 
     @property
     def domains(self):
-        assert self.browser_host.encode("idna") == self.browser_host
-        domains = {subdomain: (subdomain.encode("idna") + u"." + self.browser_host)
-                   for subdomain in self.subdomains}
-        domains[""] = self.browser_host
-        return domains
+        hosts = self.alternate_hosts.copy()
+        assert "main" not in hosts
+        hosts["main"] = self.browser_host
+
+        rv = {}
+        for name, host in hosts.iteritems():
+            rv.update({(name + "_" + subdomain): (subdomain.encode("idna") + u"." + host)
+                       for subdomain in self.subdomains})
+            rv[name + "_"] = host
+        return rv
 
     @property
     def not_domains(self):
-        assert self.browser_host.encode("idna") == self.browser_host
-        domains = {subdomain: (subdomain.encode("idna") + u"." + self.browser_host)
-                   for subdomain in self.not_subdomains}
-        return domains
+        hosts = self.alternate_hosts.copy()
+        assert "main" not in hosts
+        hosts["main"] = self.browser_host
+
+        rv = {}
+        for name, host in hosts.iteritems():
+            rv.update({(name + "_" + subdomain): (subdomain.encode("idna") + u"." + host)
+                       for subdomain in self.not_subdomains})
+        return rv
 
     @property
     def all_domains(self):
-        domains = self.domains.copy()
-        domains.update(self.not_domains)
-        return domains
+        rv = self.domains.copy()
+        rv.update(self.not_domains)
+        return rv
 
     @property
     def ssl_env(self):

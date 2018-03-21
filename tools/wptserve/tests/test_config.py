@@ -272,29 +272,37 @@ def test_set_server_host():
 
 def test_domains():
     c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
     domains = c.domains
     assert domains == {
-        "": "foo.bar",
-        "a": "a.foo.bar",
-        "b": "b.foo.bar",
+        "main_": "foo.bar",
+        "main_a": "a.foo.bar",
+        "main_b": "b.foo.bar",
+        "alt_": "foo2.bar",
+        "alt_a": "a.foo2.bar",
+        "alt_b": "b.foo2.bar",
     }
 
 
 def test_not_domains():
     c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
     not_domains = c.not_domains
     assert not_domains == {
-        "x": "x.foo.bar",
-        "y": "y.foo.bar",
+        "main_x": "x.foo.bar",
+        "main_y": "y.foo.bar",
+        "alt_x": "x.foo2.bar",
+        "alt_y": "y.foo2.bar",
     }
 
 
 def test_domains_not_domains_intersection():
     c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
     domains = c.domains
@@ -305,15 +313,21 @@ def test_domains_not_domains_intersection():
 
 def test_all_domains():
     c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
     all_domains = c.all_domains
     assert all_domains == {
-        "": "foo.bar",
-        "a": "a.foo.bar",
-        "b": "b.foo.bar",
-        "x": "x.foo.bar",
-        "y": "y.foo.bar",
+        "main_": "foo.bar",
+        "main_a": "a.foo.bar",
+        "main_b": "b.foo.bar",
+        "main_x": "x.foo.bar",
+        "main_y": "y.foo.bar",
+        "alt_": "foo2.bar",
+        "alt_a": "a.foo2.bar",
+        "alt_b": "b.foo2.bar",
+        "alt_x": "x.foo2.bar",
+        "alt_y": "y.foo2.bar",
     }
 
 

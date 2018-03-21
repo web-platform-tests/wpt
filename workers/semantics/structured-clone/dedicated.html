@@ -2,8 +2,33 @@
 <title>structured clone to dedicated worker</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src=/html/webappapis/structured-clone/structured-clone-battery-of-tests.js></script>
 <div id=log></div>
 <script>
 var type = 'dedicated';
 </script>
 <script src="common.js"></script>
+<script>
+  structuredCloneBatteryOfTests({
+    setup() {
+      const blob = new Blob([`
+        onmessage = ev => ev.source.postMessage(ev.data);
+      `], {type: 'text/javascript'});
+      this.blobURL = URL.createObjectURL(blob);
+      this.worker = new Worker(blobURL);
+    },
+    structuredClone(data) {
+      return new Promise(resolve => {
+        this.worker.addEventListener('message', function f(ev) {
+          this.worker.removeEventListener('message', f);
+          resolve(ev.data);
+        });
+        this.worker.postMessage(data);
+      });
+    },
+    teardown() {
+      this.worker.terminate();
+      URL.revokeObjectURL(this.blobURL);
+    }
+  });
+</script>

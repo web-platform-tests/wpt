@@ -4,50 +4,13 @@
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/html/webappapis/structured-clone/structured-clone-battery-of-tests.js></script>
 <script>
+  // REMOVE ME
   function structuredClone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
-  test(function () {
-    const obj = {
-      a: 1,
-      b: {
-        a: 1,
-        b: [2, 3, 4]
-      },
-      c: [7, 8, 9]
-    };
-    const copy = structuredClone(obj);
-    assert_equals(JSON.stringify(obj), JSON.stringify(copy));
-    assert_true(copy !== obj);
-  }, "structuredClone returns a structural clone of an object");
-
-  test(function () {
-    const obj = {
-      a: false,
-      b: {
-        a: false,
-      },
-    };
-    const copy = structuredClone(obj);
-    // Mutate copy
-    copy.a = true;
-    copy.b.a = true;
-    // Check that mutations don't happen to original
-    assert_true(obj.a === false);
-    assert_true(obj.b.a === false);
-  }, "structuredClone returns a copy of an object");
-
-  test(function () {
-    const arr = new Uint8Array([1, 2, 3]);
-    const arr2 = new Uint8Array([4, 5]);
-    // Transfer arr, but not arr2
-    const copy = structuredClone({arr, arr2}, [arr.buffer]);
-    // arr should be neutered
-    assert_true(arr.length === 0);
-    assert_true(copy.arr.length === 3);
-    // arr2 should be cloned
-    assert_true(arr2.length === 2);
-    assert_true(copy.arr2.length === 2);
-  }, "structuredClone transfers transferable objects in the transferList");
+  structuredCloneBatteryOfTests({
+    structuredClone: structuredClone
+  });
 </script>

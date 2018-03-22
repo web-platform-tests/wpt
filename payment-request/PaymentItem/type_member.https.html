@@ -36,11 +36,12 @@ test(() => {
 
 test(() => {
   // Let's make an invalid DisplayItem for the total
-  const invalidTotal = { ...validTotal, type: "this is not valid" };
-  const invalidDetails = {
-    ...validDetails,
+  const invalidTotal = Object.assign({}, validTotal, {
+    type: "this is not valid",
+  });
+  const invalidDetails = Object.assign({}, validDetails, {
     total: invalidTotal,
-  };
+  });
   assert_throws(new TypeError(), () => {
     new PaymentRequest(validMethods, invalidDetails);
   });
@@ -48,11 +49,12 @@ test(() => {
 
 test(() => {
   // Let's make an invalid DisplayItem to add to displayItems
-  const invalidDisplayItem = { ...validDisplayItem, type: "this is not valid" };
-  const invalidDetails = {
-    ...validDetails,
+  const invalidDisplayItem = Object.assign({}, validDisplayItem, {
+    type: "this is not valid",
+  });
+  const invalidDetails = Object.assign({}, validDetails, {
     displayItems: [invalidDisplayItem, validDisplayItem],
-  };
+  });
   assert_throws(new TypeError(), () => {
     new PaymentRequest(validMethods, invalidDetails);
   });
@@ -60,13 +62,12 @@ test(() => {
 
 test(() => {
   // Let's make an invalid DisplayItem to add to displayItems
-  const taxDisplayItem = { ...validDisplayItem, type: "tax" };
-  const taxTotal = { ...validTotal, type: "tax" };
-  const validDetailsWithType = {
-    ...validDetails,
+  const taxDisplayItem = Object.assign({}, validDisplayItem, { type: "tax" });
+  const taxTotal = Object.assign({}, validTotal, { type: "tax" });
+  const validDetailsWithType = Object.assign({}, validDetails, {
     total: taxTotal,
     displayItems: [taxDisplayItem],
-  };
+  });
   try {
     new PaymentRequest(validMethods, validDetailsWithType);
   } catch (err) {

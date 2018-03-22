@@ -72,6 +72,7 @@ dictionary PaymentItem {
   required DOMString label;
   required PaymentCurrencyAmount amount;
   boolean pending = false;
+  // Note: type member is "at risk" of being removed!
   PaymentItemType type;
 };
 

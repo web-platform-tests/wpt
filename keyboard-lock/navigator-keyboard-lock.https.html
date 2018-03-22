@@ -4,9 +4,10 @@
 <script>
 'use strict';
 
-test(() => {
-  assert_equals(navigator.keyboardUnlock(),
-                undefined);
-}, 'Keyboard Lock keyboardUnlock');
+promise_test(() => {
+  const p = navigator.keyboard.lock(['a', 'b']);
+  assert_true(p instanceof Promise);
+  return p;
+}, '[Keyboard Lock] keyboard.lock');
 
 </script>

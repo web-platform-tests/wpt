@@ -21,9 +21,6 @@
   }
 </style>
 <script>
-  var emToPx = 10 / 1000; // font-size: 10px, font.em = 1000
-  var epsilon = 1;
-
   function getBox(aId) {
     return document.getElementById(aId).getBoundingClientRect();
   }
@@ -42,6 +39,7 @@
     - In mmultiscripts, postscript pairs are shifted by the italic correction.
     - In mmultiscripts, prescript pairs are vertically aligned.
   */
+  var epsilon = 1;
   function runTests() {
     test(function() {
       var v = 0;
@@ -52,6 +50,7 @@
       assert_approx_equals(getBox("sup005").left - getBox("sub005").left, 0, epsilon, "mmultiscripts prescripts");
     }, "Null Italic Correction");
     test(function() {
+      var emToPx = 10 / 1000; // font-size: 10px, font.em = 1000
       var v = 3000 * emToPx;
       assert_approx_equals(getBox("base011").right - getBox("sub011").left, v, epsilon, "msub");
       assert_approx_equals(getBox("sup012").left, getBox("base012").right, epsilon, "msup");
@@ -64,6 +63,8 @@
 </script>
 </head>
 <body>
+  <div id="log"></div>
+  <h2>Null Italic Correction</h2>
   <p>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight5000;">
       <msub>
@@ -95,7 +96,7 @@
       </mmultiscripts>
     </math>
   </p>
-  <hr/>
+  <h2>NonNull Italic Correction</h2>
   <p>
     <math displaystyle="true" style="font-family: largeop-displayoperatorminheight2000-2AFF-italiccorrection3000;">
       <msub>

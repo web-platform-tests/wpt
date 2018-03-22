@@ -126,32 +126,42 @@ function testCloner(testFunction, name) {
     }, name + ' must enqueue an attributeChanged reaction when cloning an element only for observed attributes');
 }
 
-function testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name) {
+function testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, interfaceName) {
     test(function () {
-        var element = define_new_custom_element([contentAttributeName]);
-        var instance = document.createElement(element.name);
+        if(elementName === undefined) {
+            var element = define_new_custom_element([contentAttributeName]);
+            var instance = document.createElement(element.name);
+        } else {
+            var element = define_build_in_custom_element([contentAttributeName], interfaceName, elementName);
+            var instance = document.createElement(elementName, { is: element.name });
+        }
         assert_array_equals(element.takeLog().types(), ['constructed']);
         instance[jsAttributeName] = validValue1;
         var logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
 
-        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: null, newValue: contentValue1, namespace: null});
+        assert_attribute_log_entry(logEntries.last(), { name: contentAttributeName, oldValue: null, newValue: contentValue1, namespace: null });
     }, name + ' must enqueue an attributeChanged reaction when adding ' + contentAttributeName + ' content attribute');
 
     test(function () {
-        var element = define_new_custom_element([contentAttributeName]);
-        var instance = document.createElement(element.name);
+        if(elementName === undefined) {
+            var element = define_new_custom_element([contentAttributeName]);
+            var instance = document.createElement(element.name);
+        } else {
+            var element = define_build_in_custom_element([contentAttributeName], interfaceName, elementName);
+            var instance = document.createElement(elementName, { is: element.name });
+        }
         instance[jsAttributeName] = validValue1;
         assert_array_equals(element.takeLog().types(), ['constructed', 'attributeChanged']);
         instance[jsAttributeName] = validValue2;
         var logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
-        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: contentValue1, newValue: contentValue2, namespace: null});
+        assert_attribute_log_entry(logEntries.last(), { name: contentAttributeName, oldValue: contentValue1, newValue: contentValue2, namespace: null });
     }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
 }
 
-function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name) {
-    testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name);
+function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name, elementName, interfaceName) {
+    testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name, elementName, interfaceName);
 }
 
 function testReflectBooleanAttribute(jsAttributeName, contentAttributeName, name) {

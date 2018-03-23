@@ -129,7 +129,7 @@ interface mixin HTMLOrSVGElement {
   void blur();
 };
 HTMLElement includes HTMLOrSVGElement;
-SVGElement includes HTMLOrSVGElement;
+// SVGElement includes HTMLOrSVGElement;
 
 [Exposed=Window,
  OverrideBuiltins]

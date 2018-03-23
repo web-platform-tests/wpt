@@ -235,7 +235,8 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
 
     parsed_idls.forEach(function(parsed_idl)
     {
-        if (parsed_idl.type == "interface" && parsed_idl.partial)
+        if (parsed_idl.partial
+            && ["interface", "dictionary"].find(t => parsed_idl.type == t))
         {
             if (should_skip(parsed_idl.name))
             {
@@ -581,7 +582,8 @@ IdlArray.prototype.test = function()
     this.partials.forEach(function(parsed_idl)
     {
         if (!(parsed_idl.name in this.members)
-        || !(this.members[parsed_idl.name] instanceof IdlInterface))
+        || !(this.members[parsed_idl.name] instanceof IdlInterface
+             || this.members[parsed_idl.name] instanceof IdlDictionary))
         {
             throw "Partial interface " + parsed_idl.name + " with no original interface";
         }

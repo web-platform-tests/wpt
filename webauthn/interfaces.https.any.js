@@ -8,16 +8,17 @@ if (self.importScripts) {
   importScripts('/resources/WebIDLParser.js', '/resources/idlharness.js');
 }
 
-// https://w3c.github.io/payment-handler/
+// https://w3c.github.io/webauthn/
 
 promise_test(async () => {
-  const text = await fetch('/interfaces/webauthn.idl').then(response =>
-  response.text(),
-  );
+  const webauthnIdl = await fetch('/interfaces/webauthn.idl').then(r => r.text());
+  
   const idlArray = new IdlArray();
-  idlArray.add_idls(text);
+  idlArray.add_idls(webauthnIdl);
   
   // static IDL tests
+  idlArray.add_untested_idls('interface CredentialCreationOptions {};');
+  idlArray.add_untested_idls('interface CredentialRequestOptions {};');
   idlArray.add_untested_idls("interface Navigator { };");
   // TODO: change to "tested" for real browsers?
   idlArray.add_untested_idls("partial interface Navigator { readonly attribute WebAuthentication authentication; };");

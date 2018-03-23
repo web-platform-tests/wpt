@@ -1247,6 +1247,13 @@ policies and contribution forms [3].
     }
     expose(assert_readonly, "assert_readonly");
 
+    /**
+     * Assert a DOMException with the expected code is thrown.
+     *
+     * @param {number|string} code The expected exception code.
+     * @param {Function} func Function which should throw.
+     * @param {string} description Error description for the case that the error is not thrown.
+     */
     function assert_throws(code, func, description)
     {
         try {
@@ -1256,6 +1263,19 @@ policies and contribution forms [3].
         } catch (e) {
             if (e instanceof AssertionError) {
                 throw e;
+            }
+
+            if ((typeof IdlHarnessError !== 'undefined')
+                && (e instanceof IdlHarnessError)) {
+                // Assertions for behaviour of the idlharness.js engine.
+                if (code instanceof IdlHarnessError) {
+                    code = code.message;
+                }
+                assert(e.message == code,
+                       'assert_throws', description,
+                       '${func} threw ${e} with type ${type}, not IdlHarnessError',
+                       {func:func, e:e, type:typeof e});
+                return;
             }
 
             assert(typeof e === "object",

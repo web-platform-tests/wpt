@@ -123,6 +123,28 @@ var fround =
 })();
 //@}
 
+/// IdlHarnessError ///
+// Entry point
+self.IdlHarnessError = function(message)
+//@{
+{
+    /**
+     * Message to be printed as the error's toString invocation.
+     */
+    this.message = message;
+};
+
+IdlHarnessError.prototype = Object.create(Error.prototype);
+
+//@}
+IdlHarnessError.prototype.toString = function()
+//@{
+{
+    return this.message;
+};
+
+//@}
+
 /// IdlArray ///
 // Entry point
 self.IdlArray = function()
@@ -217,7 +239,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
 
     if (options && options.only && options.except)
     {
-        throw "The only and except options can't be used together."
+        throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
     function should_skip(name)
@@ -280,7 +302,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         }
         if (parsed_idl.name in this.members)
         {
-            throw "Duplicate identifier " + parsed_idl.name;
+            throw new IdlHarnessError("Duplicate identifier " + parsed_idl.name);
         }
         switch(parsed_idl.type)
         {
@@ -374,7 +396,7 @@ IdlArray.prototype.recursively_get_implements = function(interface_name)
         ret = ret.concat(this.recursively_get_implements(ret[i]));
         if (ret.indexOf(ret[i]) != ret.lastIndexOf(ret[i]))
         {
-            throw "Circular implements statements involving " + ret[i];
+            throw new IdlHarnessError("Circular implements statements involving " + ret[i]);
         }
     }
     return ret;
@@ -404,7 +426,7 @@ IdlArray.prototype.recursively_get_includes = function(interface_name)
         ret = ret.concat(this.recursively_get_includes(ret[i]));
         if (ret.indexOf(ret[i]) != ret.lastIndexOf(ret[i]))
         {
-            throw "Circular includes statements involving " + ret[i];
+            throw new IdlHarnessError("Circular includes statements involving " + ret[i]);
         }
     }
     return ret;
@@ -533,7 +555,7 @@ IdlArray.prototype.is_json_type = function(type)
 function exposure_set(object, default_set) {
     var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });
     if (exposed.length > 1 || exposed.length < 0) {
-        throw "Unexpected Exposed extended attributes on " + memberName + ": " + exposed;
+        throw new IdlHarnessError("Unexpected Exposed extended attributes on " + memberName + ": " + exposed);
     }
 
     if (exposed.length === 0) {
@@ -567,7 +589,7 @@ function exposed_in(globals) {
         return globals.indexOf("Worker") >= 0 ||
                globals.indexOf("ServiceWorker") >= 0;
     }
-    throw "Unexpected global object";
+    // throw new IdlHarnessError("Unexpected global object");
 }
 
 //@}
@@ -583,7 +605,7 @@ IdlArray.prototype.test = function()
         if (!(parsed_idl.name in this.members)
         || !(this.members[parsed_idl.name] instanceof IdlInterface))
         {
-            throw "Partial interface " + parsed_idl.name + " with no original interface";
+            throw new IdlHarnessError("Partial interface " + parsed_idl.name + " with no original interface");
         }
         if (parsed_idl.extAttrs)
         {
@@ -848,7 +870,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
 
     if (!(type in this.members))
     {
-        throw "Unrecognized type " + type;
+        throw new IdlHarnessError("Unrecognized type " + type);
     }
 
     if (this.members[type] instanceof IdlInterface)
@@ -876,7 +898,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
     }
     else
     {
-        throw "Type " + type + " isn't an interface or dictionary";
+        throw new IdlHarnessError("Type " + type + " isn't an interface or dictionary");
     }
 };
 //@}
@@ -1345,13 +1367,13 @@ IdlInterface.prototype.test_self = function()
         {
             var aliasAttrs = this.extAttrs.filter(function(o) { return o.name === "LegacyWindowAlias"; });
             if (aliasAttrs.length > 1) {
-                throw "Invalid IDL: multiple LegacyWindowAlias extended attributes on " + this.name;
+                throw new IdlHarnessError("Invalid IDL: multiple LegacyWindowAlias extended attributes on " + this.name);
             }
             if (this.is_callback()) {
-                throw "Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name;
+                throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name);
             }
             if (this.exposureSet.indexOf("Window") === -1) {
-                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window";
+                throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window");
             }
             // TODO: when testing of [NoInterfaceObject] interfaces is supported,
             // check that it's not specified together with LegacyWindowAlias.
@@ -1360,7 +1382,7 @@ IdlInterface.prototype.test_self = function()
 
             var rhs = aliasAttrs[0].rhs;
             if (!rhs) {
-                throw "Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " without identifier";
+                throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " without identifier");
             }
             var aliases;
             if (rhs.type === "identifier-list") {
@@ -1733,7 +1755,7 @@ IdlInterface.prototype.test_member_const = function(member)
 //@{
 {
     if (!this.has_constants()) {
-        throw "Internal error: test_member_const called without any constants";
+        throw new IdlHarnessError("Internal error: test_member_const called without any constants");
     }
 
     test(function()
@@ -2289,7 +2311,7 @@ IdlInterface.prototype.test_object = function(desc)
     {
         if (!(current_interface.name in this.array.members))
         {
-            throw "Interface " + current_interface.name + " not found (inherited by " + this.name + ")";
+            throw new IdlHarnessError("Interface " + current_interface.name + " not found (inherited by " + this.name + ")");
         }
         if (current_interface.prevent_multiple_testing && current_interface.already_tested)
         {

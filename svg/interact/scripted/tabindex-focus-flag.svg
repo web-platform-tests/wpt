@@ -7,6 +7,7 @@
     <g id="default-samples">
         <!-- non-default focusable renderable element -->
         <rect></rect>
+        <svg></svg>
         <!-- for compatibility with SVG Tiny 1.2 focusable attribute, user agents should treat an element with a value of true for that attribute as focusable -->
         <rect focusable="true"></rect>
         <!-- anchors need a href to be focusable -->
@@ -14,9 +15,6 @@
         <a href=""></a>
         <!-- Remove default focus behaviour with focusable="false" (SVG Tiny 1.2 compatibility) -->
         <a href="" focusable="false"></a>
-        <!-- audio/video without controls is not focusable by default -->
-        <h:audio></h:audio>
-        <h:video></h:video>
         <!-- iframe, and audio/video with controls are default focusable -->
         <h:iframe src="resources/blank.htm"></h:iframe>
         <h:audio controls="controls"></h:audio>
@@ -70,13 +68,12 @@
 
     const defaultList = [
         ['rect', false],
+        ['svg', false],
         ['rect[focusable=true]', true],
         ['a', false],
         ['a[href]', true],
         ['a[focusable=false]', false],
         ['iframe', true],
-        ['audio', false],
-        ['video', false],
         ['audio[controls]', true],
         ['video[controls]', true],
         ['canvas[tabindex]', true],

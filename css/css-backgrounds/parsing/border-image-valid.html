@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Backgrounds and Borders Module Level 3: parsing border-image with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds/#border-image">
+<meta name="assert" content="border-image supports the full grammar ' <‘border-image-source’> || <‘border-image-slice’> [ / <‘border-image-width’> | / <‘border-image-width’>? / <‘border-image-outset’> ]? || <‘border-image-repeat’>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+// Blink and WebKit fail all these tests by returning an empty string as the value of border-image.
+
+test_valid_value("border-image", 'url("http://www.example.com/") 1 2 3 4 fill');
+
+test_valid_value("border-image", "none");
+test_valid_value("border-image", 'url("http://www.example.com/")');
+
+test_valid_value("border-image", "stretch");
+test_valid_value("border-image", "repeat round");
+test_valid_value("border-image", "space space", "space");
+
+test_valid_value("border-image", "1");
+test_valid_value("border-image", "1 2% 3 4%");
+test_valid_value("border-image", "1 2% 3 4% fill");
+test_valid_value("border-image", "fill 1 2% 3 4%", "1 2% 3 4% fill");
+
+test_valid_value("border-image", "1 / 1px");
+test_valid_value("border-image", "1 2% 3 4% / 2%");
+test_valid_value("border-image", "1 2% 3 4% fill / 3");
+test_valid_value("border-image", "fill 1 2% 3 4% / auto", "1 2% 3 4% fill / auto");
+test_valid_value("border-image", "1 / 1px 2% 3 auto");
+
+test_valid_value("border-image", "1 / / 1px");
+test_valid_value("border-image", "1 2% 3 4% / / 2");
+test_valid_value("border-image", "1 2% 3 4% fill / / 1px 2 3px 4");
+
+test_valid_value("border-image", "1 / 1px / 1px");
+test_valid_value("border-image", "1 2% 3 4% / 2% / 2");
+test_valid_value("border-image", "1 2% 3 4% fill / 3 / 1px 2 3px 4");
+test_valid_value("border-image", "1 / auto / 1px");
+test_valid_value("border-image", "1 2% 3 4% / 1px 2% 3 auto / 2");
+</script>
+</body>
+</html>

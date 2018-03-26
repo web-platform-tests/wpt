@@ -5,15 +5,16 @@
     <title>CSS Border Test:border image repeat property with value repeat</title>
     <link rel="author" title="yanshasha" href="mailto:yanshasha133@gmail.com" />
     <link rel="reviewer" title="Dayang Shen" href="mailto:shendayang@baidu.com"> <!-- 2013-09-03 -->
+    <link rel="reviewer" title="Mike Bremford" href="mailto:mike@bfo.com"> <!-- 2018-03-26 -->
     <style type="text/css">
             .box {
-                width: 152px;
-                height: 152px;
+                width: 135px;
+                height: 135px;
                 position: relative;
             }
             .red {
-                width: 26px;
-                height: 26px;
+                width: 27px;
+                height: 27px;
                 position: absolute;
             }
             #red1 {
@@ -32,55 +33,50 @@
                 bottom: 0;
                 left: 0;
             }
-            .blue {
+            .orange {
                 position: absolute;
-                background-image: url(../support/blue-diamond.png);
+                background-image: url(../support/orange-diamond.png);
                 background-repeat: repeat;
                 background-position: center;
+                width: 27px;
+                height: 27px;
             }
-            #blue1 {
-                top: 0;
-                left: 26px;
-                width: 100px;
-                height: 26px;
-            }
-            #blue2 {
-                top: 26px;
-                right: 0;
-                width: 26px;
-                height: 100px;
-            }
-            #blue3 {
-                bottom: 0;
-                right: 26px;
-                width: 100px;
-                height: 26px;
-            }
-            #blue4 {
-                bottom: 26px;
-                left: 0;
-                width: 26px;
-                height: 100px;
-            }
+            #orange1 { top: 0; left: 27px; }
+            #orange2 { top: 0; left: 54px; }
+            #orange3 { top: 0; left: 81px; }
+            #orange4 { left: 0; top: 27px; }
+            #orange5 { left: 0; top: 54px; }
+            #orange6 { left: 0; top: 81px; }
+            #orange7 { right: 0; top: 27px; }
+            #orange8 { right: 0; top: 54px; }
+            #orange9 { right: 0; top: 81px; }
+            #orangea { bottom: 0; left: 27px; }
+            #orangeb { bottom: 0; left: 54px; }
+            #orangec { bottom: 0; left: 81px; }
+
     </style>
   </head>
   <body>
     <p>
-      The test passes if the blue diamond is repeating between the red diamonds.
+      The test passes if the orange diamond repeats three times between the red diamonds.
     </p>
     <div class="box">
       <img src="../support/red-diamond.png" alt="left top red diamond" class="red" id="red1"/>
       <img src="../support/red-diamond.png" alt="right top red diamond" class="red" id="red2" />
       <img src="../support/red-diamond.png" alt="right bottom red diamond" class="red" id="red3" />
       <img src="../support/red-diamond.png" alt="left bottom red diamond" class="red" id="red4" />
-      <img src="../support/blue-diamond.png" alt="top blue diamond" class="blue" id="blue1"/>
-      <img src="../support/blue-diamond.png" alt="right blue diamond" class="blue" id="blue2" />
-      <img src="../support/blue-diamond.png" alt="bottom blue diamond" class="blue" id="blue3" />
-      <img src="../support/blue-diamond.png" alt="left blue diamond" class="blue" id="blue4" />
-      <div class="blue" id="blue1"></div>
-      <div class="blue" id="blue2"></div>
-      <div class="blue" id="blue3"></div>
-      <div class="blue" id="blue4"></div>
+      <img src="../support/orange-diamond.png" alt="orange diamond 1" class="orange" id="orange1"/>
+      <img src="../support/orange-diamond.png" alt="orange diamond 2" class="orange" id="orange2" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 3" class="orange" id="orange3" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 4" class="orange" id="orange4"/>
+      <img src="../support/orange-diamond.png" alt="orange diamond 5" class="orange" id="orange5" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 6" class="orange" id="orange6" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 7" class="orange" id="orange7"/>
+      <img src="../support/orange-diamond.png" alt="orange diamond 8" class="orange" id="orange8" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 9" class="orange" id="orange9" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 10" class="orange" id="orangea" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 11" class="orange" id="orangeb" />
+      <img src="../support/orange-diamond.png" alt="orange diamond 12" class="orange" id="orangec" />
     </div>
   </body>
 </html>

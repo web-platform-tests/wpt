@@ -259,9 +259,11 @@ function doSignalingHandshake(localPc, remotePc) {
 // end points to open.
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
+  pc2=new RTCPeerConnection(),
+  channelLabel='',
+  channelOptions=undefined)
 {
-  const channel1 = pc1.createDataChannel('');
+  const channel1 = pc1.createDataChannel(channelLabel, channelOptions);
 
   exchangeIceCandidates(pc1, pc2);
 

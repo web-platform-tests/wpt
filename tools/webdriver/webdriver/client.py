@@ -390,7 +390,9 @@ class Session(object):
         if self.capabilities is not None:
             body["capabilities"] = self.capabilities
 
+        print(body)
         value = self.send_command("POST", "session", body=body)
+        print(value)
         self.session_id = value["sessionId"]
         self.capabilities = value["capabilities"]
 
@@ -474,6 +476,11 @@ class Session(object):
 
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
+    
+    def set_script_timeout(self, secs):
+        body = {"type": "script", "ms": secs * 1000}
+        timeouts = self.send_session_command("POST", "timeouts", body)
+        return None
 
     @property
     @command

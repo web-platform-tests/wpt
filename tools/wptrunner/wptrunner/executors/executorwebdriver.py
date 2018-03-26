@@ -334,7 +334,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
     def do_test(self, test):
         self.logger.info("Test requires OS-level window focus")
 
-        self.protocol.webdriver.set_window_size(600, 600)
+        self.protocol.webdriver.window.size = (600, 600)
 
         result = self.implementation.run_test(test)
 
@@ -352,11 +352,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
 
     def _screenshot(self, protocol, url, timeout):
         webdriver = protocol.webdriver
-        webdriver.get(url)
+        webdriver.url = url
 
         webdriver.execute_async_script(self.wait_script)
 
-        screenshot = webdriver.get_screenshot_as_base64()
+        screenshot = webdriver.screenshot()
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

@@ -1,0 +1,139 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel id attribute</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  Check that DCEP-negotiated data channels transmit all options correctly.
+  See: https://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-09
+
+  Note: Some of these tests may seem redundant on first sight but if you take a look at
+        the channel types defined by DCEP, they should make sense to you.
+ */
+
+promise_test(t => {
+  // DATA_CHANNEL_RELIABLE (0x00)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: true
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, true);
+    assert_equals(channel2.ordered, true);
+  });
+}, 'Ordered and reliable channel should be created via DCEP');
+
+promise_test(t => {
+  // DATA_CHANNEL_RELIABLE_UNORDERED (0x80)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: false
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, false);
+    assert_equals(channel2.ordered, false);
+  });
+}, 'Unordered and reliable channel should be created via DCEP');
+
+promise_test(t => {
+  // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT (0x01)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: true,
+    maxRetransmits: 4294967295
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, true);
+    assert_equals(channel2.ordered, true);
+    assert_equals(channel1.maxRetransmits, 4294967295);
+    assert_equals(channel2.maxRetransmits, 4294967295);
+  });
+}, 'Ordered and unreliable (maxRetransmits) channel should be created via DCEP');
+
+promise_test(t => {
+  // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT_UNORDERED (0x81)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: false,
+    maxRetransmits: 4294967295
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, false);
+    assert_equals(channel2.ordered, false);
+    assert_equals(channel1.maxRetransmits, 4294967295);
+    assert_equals(channel2.maxRetransmits, 4294967295);
+  });
+}, 'Unordered and unreliable (maxRetransmits) channel should be created via DCEP');
+
+promise_test(t => {
+  // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED (0x02)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: true,
+    maxPacketLifeTime: 4294967295
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, true);
+    assert_equals(channel2.ordered, true);
+    assert_equals(channel1.maxPacketLifeTime, 4294967295);
+    assert_equals(channel2.maxPacketLifeTime, 4294967295);
+  });
+}, 'Ordered and unreliable (maxPacketLifeTime) channel should be created via DCEP');
+
+promise_test(t => {
+  // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED_UNORDERED (0x82)
+  return createDataChannelPair(undefined, undefined, undefined, {
+    ordered: false,
+    maxPacketLifeTime: 4294967295
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.ordered, false);
+    assert_equals(channel2.ordered, false);
+    assert_equals(channel1.maxPacketLifeTime, 4294967295);
+    assert_equals(channel2.maxPacketLifeTime, 4294967295);
+  });
+}, 'Unordered and unreliable (maxPacketLifeTime) channel should be created via DCEP');
+
+promise_test(t => {
+  return createDataChannelPair(undefined, undefined, undefined, {
+    priority: 'high'
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.priority, 'high');
+    assert_equals(channel2.priority, 'high');
+  });
+}, 'Channel with priority set to high should be created via DCEP');
+
+promise_test(t => {
+  return createDataChannelPair(undefined, undefined, undefined)
+  .then(([channel1, channel2]) => {
+    assert_greater_than_equal(channel1.id, 0, 'Expect id to be >= 0');
+    assert_less_than(channel1.id, 65535, 'Expect id to be < 65535');
+    assert_equals(channel1.id, channel2.id);
+  });
+}, 'Channel IDs should be synchronized when created via DCEP');
+
+promise_test(t => {
+  const label = '';
+  const protocol = '';
+
+  return createDataChannelPair(undefined, undefined, label, {
+    protocol: protocol
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.label, label);
+    assert_equals(channel2.label, label);
+    assert_equals(channel1.protocol, protocol);
+    assert_equals(channel2.protocol, protocol);
+  });
+}, 'Zero length label and protocol option should be transmitted via DCEP');
+
+promise_test(t => {
+  const label = 'l'.repeat(65535);
+  const protocol = 'p'.repeat(65535);
+
+  return createDataChannelPair(undefined, undefined, label, {
+    protocol: protocol
+  }).then(([channel1, channel2]) => {
+    assert_equals(channel1.label, label);
+    assert_equals(channel2.label, label);
+    assert_equals(channel1.protocol, protocol);
+    assert_equals(channel2.protocol, protocol);
+  });
+}, 'Maximum length label and protocol option should be transmitted via DCEP');
+
+</script>

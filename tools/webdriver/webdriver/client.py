@@ -41,6 +41,11 @@ class Timeouts(object):
         body = {key: secs * 1000}
         timeouts = self.session.send_session_command("POST", "timeouts", body)
         return None
+    
+    def set_w3c(self, timeout, secs):
+        body = {"type": timeout, "ms": secs * 1000}
+        timeouts = self.session.send_session_command("POST", "timeouts", body)
+        return None
 
     @property
     def script(self):
@@ -475,11 +480,6 @@ class Session(object):
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
     
-    def set_script_timeout(self, secs):
-        body = {"type": "script", "ms": secs * 1000}
-        timeouts = self.send_session_command("POST", "timeouts", body)
-        return None
-
     @property
     @command
     def url(self):

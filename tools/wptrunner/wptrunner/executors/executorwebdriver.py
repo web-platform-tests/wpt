@@ -38,7 +38,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         return method(script)
 
     def set_timeout(self, timeout):
-        self.webdriver.set_script_timeout(timeout * 1000)
+        self.webdriver.timeouts.set_w3c("script", timeout * 1000)
 
     @property
     def current_window(self):
@@ -81,7 +81,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             try:
                 self.webdriver.window_handle(handle)
                 self.webdriver.close()
-            except exceptions.NoSuchWindowException:
+            except client.NoSuchWindowException:
                 pass
         self.webdriver.window_handle = exclude
         return exclude
@@ -201,7 +201,7 @@ class WebDriverRun(object):
 
         try:
             self.protocol.base.set_timeout((timeout + extra_timeout))
-        except exceptions.UnknownErrorException:
+        except client.UnknownErrorException:
             self.logger.error("Lost WebDriver connection")
             return Stop
 
@@ -220,7 +220,7 @@ class WebDriverRun(object):
             self.result = True, self.func(self.protocol, self.url, self.timeout)
         except client.TimeoutException:
             self.result = False, ("EXTERNAL-TIMEOUT", None)
-        except (socket.timeout, exceptions.UnknownErrorException):
+        except (socket.timeout, client.UnknownErrorException):
             self.result = False, ("CRASH", None)
         except Exception as e:
             message = getattr(e, "message", "")

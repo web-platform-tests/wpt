@@ -331,7 +331,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         assert viewport_size is None
         assert dpi is None
 
-        return WebdriverRun(self._screenshot,
+        return WebDriverRun(self._screenshot,
                            self.protocol,
                            self.test_url(test),
                            test.timeout).run()

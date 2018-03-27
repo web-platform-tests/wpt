@@ -479,7 +479,7 @@ class Session(object):
 
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
-    
+
     @property
     @command
     def url(self):

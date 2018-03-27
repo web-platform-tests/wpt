@@ -1,11 +1,11 @@
-<!doctype html>
+<!doctype html> <!-- foo -->
 <title>Root adjacent comment</title>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <body>
 <script>
 test(function() {
-  var result = document.evaluate("comment()", // expression
+  var result = document.evaluate("//comment()", // comment()
                                 document.documentElement, // context node
                                 null, // resolver
                                 XPathResult.ANY_TYPE, // type

@@ -254,6 +254,8 @@ RunnerManagerState = _RunnerManagerState()
 
 
 class TestRunnerManager(threading.Thread):
+    statuses_requiring_restart = ("CRASH", "ERROR", "EXTERNAL-TIMEOUT")
+
     def __init__(self, suite_name, test_queue, test_source_cls, browser_cls, browser_kwargs,
                  executor_cls, executor_kwargs, stop_flag, rerun=1, pause_after_test=False,
                  pause_on_unexpected=False, restart_on_unexpected=True, debug_info=None):
@@ -585,7 +587,7 @@ class TestRunnerManager(threading.Thread):
                              extra=file_result.extra)
 
         restart_before_next = (test.restart_after or
-                               file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
+                               file_result.status in self.statuses_requiring_restart or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
 

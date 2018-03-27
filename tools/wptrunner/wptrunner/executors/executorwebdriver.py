@@ -28,13 +28,6 @@ here = os.path.join(os.path.split(__file__)[0])
 
 webdriver = None
 exceptions = None
-RemoteConnection = None
-
-
-def do_delayed_imports():
-    global exceptions
-    global RemoteConnection
-
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):
     def setup(self):
@@ -49,19 +42,19 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
 
     @property
     def current_window(self):
-        return self.webdriver.current_window_handle
+        return self.webdriver.window_handle
 
     def set_window(self, handle):
-        self.webdriver.switch_to_window(handle)
+        self.webdriver.window_handle = handle
 
     def wait(self):
         while True:
             try:
                 self.webdriver.execute_async_script("")
-            except exceptions.TimeoutException:
+            except client.TimeoutException:
                 pass
-            except (socket.timeout, exceptions.NoSuchWindowException,
-                    exceptions.ErrorInResponseException, IOError):
+            except (socket.timeout, client.NoSuchWindowException,
+                    client.UnknownErrorException, IOError):
                 break
             except Exception as e:
                 self.logger.error(traceback.format_exc(e))
@@ -77,8 +70,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
 
-        body = {"url": url}
-        self.webdriver.send_session_command("POST", "url", body)
+        self.webdriver.url = url
         self.webdriver.execute_script("document.title = '%s'" %
                                       threading.current_thread().name.replace("'", '"'))
 
@@ -157,8 +149,6 @@ class WebDriverProtocol(Protocol):
                   WebDriverTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
-        do_delayed_imports()
-
         super(WebDriverProtocol, self).__init__(executor, browser)
         self.capabilities = capabilities
         self.url = browser.webdriver_url
@@ -189,8 +179,7 @@ class WebDriverProtocol(Protocol):
         try:
             # Get a simple property over the connection
             self.webdriver.window_handle
-        # TODO what exception?
-        except (socket.timeout, exceptions.ErrorInResponseException):
+        except (socket.timeout, client.UnknownErrorException):
             return False
         return True
 
@@ -210,13 +199,11 @@ class WebDriverRun(object):
     def run(self):
         timeout = self.timeout
 
-        # try:
-        self.protocol.base.set_timeout((timeout + extra_timeout))
-        # except exceptions.ErrorInResponseException:
-        # TODO: Do error handling
-        # except Exception:
-        #     self.logger.error("Lost WebDriver connection")
-        #     return Stop
+        try:
+            self.protocol.base.set_timeout((timeout + extra_timeout))
+        except exceptions.UnknownErrorException:
+            self.logger.error("Lost WebDriver connection")
+            return Stop
 
         executor = threading.Thread(target=self._run)
         executor.start()
@@ -229,21 +216,20 @@ class WebDriverRun(object):
         return self.result
 
     def _run(self):
-        # try:
-        self.result = True, self.func(self.protocol, self.url, self.timeout)
-        # TODO: handle errors
-        # except exceptions.TimeoutException:
-        #     self.result = False, ("EXTERNAL-TIMEOUT", None)
-        # except (socket.timeout, exceptions.ErrorInResponseException):
-        #     self.result = False, ("CRASH", None)
-        # except Exception as e:
-        #     message = getattr(e, "message", "")
-        #     if message:
-        #         message += "\n"
-        #     message += traceback.format_exc(e)
-        #     self.result = False, ("ERROR", e)
-        # finally:
-        #     self.result_flag.set()
+        try:
+            self.result = True, self.func(self.protocol, self.url, self.timeout)
+        except client.TimeoutException:
+            self.result = False, ("EXTERNAL-TIMEOUT", None)
+        except (socket.timeout, exceptions.UnknownErrorException):
+            self.result = False, ("CRASH", None)
+        except Exception as e:
+            message = getattr(e, "message", "")
+            if message:
+                message += "\n"
+            message += traceback.format_exc(e)
+            self.result = False, ("ERROR", e)
+        finally:
+            self.result_flag.set()
 
 
 class WebDriverTestharnessExecutor(TestharnessExecutor):

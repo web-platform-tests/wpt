@@ -80,19 +80,19 @@ async function checkPopulateMatrix(t, sensorType) {
   sensor.stop();
 }
 
-promise_test(t => {
+sensor_test(async t => {
   return checkQuaternion(t, AbsoluteOrientationSensor);
 }, "Test AbsoluteOrientationSensor.quaternion return a four-element FrozenArray.");
 
-promise_test(t => {
+sensor_test(async t => {
   return checkQuaternion(t, RelativeOrientationSensor);
 }, "Test RelativeOrientationSensor.quaternion return a four-element FrozenArray.");
 
-promise_test(t => {
+sensor_test(async t => {
   return checkPopulateMatrix(t, AbsoluteOrientationSensor);
 }, "Test AbsoluteOrientationSensor.populateMatrix() method works correctly.");
 
-promise_test(t => {
+sensor_test(async t => {
   return checkPopulateMatrix(t, RelativeOrientationSensor);
 }, "Test RelativeOrientationSensor.populateMatrix() method works correctly.");
 

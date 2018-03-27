@@ -1,7 +1,6 @@
 import json
 import os
 import socket
-import sys
 import threading
 import time
 import traceback
@@ -27,7 +26,6 @@ import webdriver as client
 here = os.path.join(os.path.split(__file__)[0])
 
 webdriver = None
-exceptions = None
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):
     def setup(self):

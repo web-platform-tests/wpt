@@ -59,7 +59,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["chromeOptions"]["w3c"] = True
         always_match = {"alwaysMatch": capabilities}
         executor_kwargs["capabilities"] = always_match
-        
+
+    else:
+        executor_kwargs["capabilities"] = capabilities 
     return executor_kwargs
 
 

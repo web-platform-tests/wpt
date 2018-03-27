@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<style>
+  html, body, div {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  div {background-color: gold;}
+</style>
+<div>
+</div>
+<script>
+  const element = document.querySelector('div');
+  window.scroll_to_view = false;
+
+  function setup() {
+    var href = window.location.href;
+    var query = href.substring(href.indexOf("?q=") + 3);
+      switch (query) {
+        case "touchstart":
+        case "touchmove":
+        case "wheel":
+        element.addEventListener(query, (e) => { e.preventDefault(); });
+        break;
+      case "touchaction":
+        element.style.touchAction = "pan-x";
+        break;
+      case "script":
+        element.scrollIntoView({behavior: "instant"});
+    }
+  }
+  window.addEventListener("load", setup);
+</script>

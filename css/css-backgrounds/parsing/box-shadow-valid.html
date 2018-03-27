@@ -14,9 +14,10 @@
 <script>
 test_valid_value("box-shadow", "none");
 test_valid_value("box-shadow", "1px 2px");
-test_valid_value("box-shadow", "red 1px 2px 3px -4px inset");
+test_valid_value("box-shadow", "red 1px 2px 3px -4px inset"); // Edge serializes as "inset 1px 2px 3px -4px red"
 test_valid_value("box-shadow", "inset 1px 2px red", "red 1px 2px inset");
-test_valid_value("box-shadow", "1px -2px inset, red -3px 4px");
+test_valid_value("box-shadow", "1px -2px inset, red -3px 4px"); // Edge serializes as "inset 1px -2px, -3px 4px red"
+test_valid_value("box-shadow", "inset 1px -2px, -3px 4px red", "1px -2px inset, red -3px 4px");
 </script>
 </body>
 </html>

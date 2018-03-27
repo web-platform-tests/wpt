@@ -12,10 +12,11 @@
 </head>
 <body>
 <script>
-test_valid_value("border-image-repeat", "stretch");
-test_valid_value("border-image-repeat", "repeat round");
-
+// "stretch" in Blink, Edge, WebKit; "stretch stretch" in Firefox.
+test_valid_value("border-image-repeat", "stretch", ["stretch", "stretch stretch"]);
+// "space" in Blink, Edge, WebKit; "space space" in Firefox.
 test_valid_value("border-image-repeat", "space space", ["space", "space space"]);
+test_valid_value("border-image-repeat", "repeat round");
 </script>
 </body>
 </html>

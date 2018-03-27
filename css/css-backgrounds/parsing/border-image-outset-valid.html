@@ -12,8 +12,10 @@
 </head>
 <body>
 <script>
-test_valid_value("border-image-outset", "1px");
-test_valid_value("border-image-outset", "2");
+// "1px" in Blink, Edge, WebKit; "1px 1px 1px 1px" in Firefox.
+test_valid_value("border-image-outset", "1px", ["1px", "1px 1px 1px 1px"]);
+// "2" in Blink, Edge, WebKit; "2 2 2 2" in Firefox.
+test_valid_value("border-image-outset", "2", ["2", "2 2 2 2"]);
 
 test_valid_value("border-image-outset", "1px 2 3px 4");
 </script>

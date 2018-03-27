@@ -12,7 +12,8 @@
 </head>
 <body>
 <script>
-test_valid_value("border-image-slice", "1");
+// "1" in Blink, Edge, WebKit; "1 1 1 1" in Firefox.
+test_valid_value("border-image-slice", "1", ["1", "1 1 1 1"]);
 test_valid_value("border-image-slice", "1 2% 3 4%");
 
 test_valid_value("border-image-slice", "1 2% 3 4% fill");

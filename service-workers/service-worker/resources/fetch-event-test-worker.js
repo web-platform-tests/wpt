@@ -129,6 +129,10 @@ function handleKeepalive(event) {
   event.respondWith(new Response(event.request.keepalive));
 }
 
+function handleIsReloadNavigation(event) {
+  event.respondWith(new Response(event.request.isReloadNavigation));
+}
+
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
     var handlers = [
@@ -151,6 +155,7 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?integrity', fn: handleIntegrity },
       { pattern: '?request-body', fn: handleRequestBody },
       { pattern: '?keepalive', fn: handleKeepalive },
+      { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
     ];
 
     var handler = null;

@@ -20,4 +20,15 @@ handlers.forEach(function(handler) {
     assert_equals(document.body['on' + handler], f);
   }, handler);
 });
+
+handlers.forEach(function(handler) {
+    window['on' + handler] = null;
+});
+
+handlers.forEach(function(handler) {
+  test(function() {
+    assert_equals(window['on' + handler], null);
+    assert_equals(document.body['on' + handler], null);
+  }, handler + " removal");
+});
 </script>

@@ -27,6 +27,8 @@ from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from mod_pywebsocket import standalone as pywebsocket
 
+from .config import Config
+
 def replace_end(s, old, new):
     """
     Given a string `s` that ends with `old`, replace that occurrence of `old`
@@ -280,14 +282,6 @@ def build_routes(aliases):
         else:
             builder.add_file_mount_point(url, directory)
     return builder.get_routes()
-
-
-def setup_logger(level):
-    import logging
-    global logger
-    logger = logging.getLogger("web-platform-tests")
-    logger.setLevel(getattr(logging, level.upper()))
-    set_logger(logger)
 
 
 def open_socket(port):
@@ -631,71 +625,20 @@ def start_wss_server(host, port, paths, routes, bind_address, config, ssl_config
 
 
 def get_ports(config, ssl_environment):
-    rv = defaultdict(list)
-    for scheme, ports in config["ports"].iteritems():
-        for i, port in enumerate(ports):
-            if scheme in ["wss", "https"] and not ssl_environment.ssl_enabled:
-                port = None
-            if port == "auto":
-                port = get_port()
-            else:
-                port = port
-            rv[scheme].append(port)
-    return rv
+    return config.ports
 
 
 
 def normalise_config(config, ports):
-    if "host" in config:
-        logger.warning("host in config is deprecated; use browser_host instead")
-        host = config["host"]
-    else:
-        host = config["browser_host"]
-
-    domains = get_subdomains(host)
-    not_domains = get_not_subdomains(host)
-
-    ports_ = {}
-    for scheme, ports_used in ports.iteritems():
-        ports_[scheme] = ports_used
-
-    for key, value in domains.iteritems():
-        domains[key] = ".".join(value)
-
-    for key, value in not_domains.iteritems():
-        not_domains[key] = ".".join(value)
-
-    domains[""] = host
-
-    if "bind_hostname" in config:
-        logger.warning("bind_hostname in config is deprecated; use bind_address instead")
-        bind_address = config["bind_hostname"]
-    else:
-        bind_address = config["bind_address"]
-
-    # make a (shallow) copy of the config and update that, so that the
-    # normalized config can be used in place of the original one.
-    config_ = config.copy()
-    config_["domains"] = domains
-    config_["not_domains"] = not_domains
-    config_["ports"] = ports_
-    config_["bind_address"] = bind_address
-    if config.get("server_host", None) is None:
-        config_["server_host"] = host
-    return config_
+    return config
 
 
 def get_paths(config):
-    return {"doc_root": config["doc_root"],
-            "ws_doc_root": config["ws_doc_root"]}
+    return config.paths
 
 
 def get_ssl_config(config, ssl_environment):
-    external_domains = config["domains"].values()
-    key_path, cert_path = ssl_environment.host_cert_path(external_domains)
-    return {"key_path": key_path,
-            "cert_path": cert_path,
-            "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
+    return config.ssl_config
 
 
 def start(config, ssl_environment, routes, **kwargs):
@@ -726,15 +669,7 @@ def get_value_or_default(config, key, default=None):
 
 
 def set_computed_defaults(config):
-    if not value_set(config, "doc_root"):
-        config["doc_root"] = repo_root
-
-    if not value_set(config, "ws_doc_root"):
-        root = get_value_or_default(config, "doc_root", default=repo_root)
-        config["ws_doc_root"] = os.path.join(root, "websockets", "handlers")
-
-    if not value_set(config, "aliases"):
-        config["aliases"] = []
+    pass
 
 
 def merge_json(base_obj, override_obj):
@@ -751,14 +686,7 @@ def merge_json(base_obj, override_obj):
 
 
 def get_ssl_environment(config):
-    implementation_type = config["ssl"]["type"]
-    cls = sslutils.environments[implementation_type]
-    try:
-        kwargs = config["ssl"][implementation_type].copy()
-    except KeyError:
-        raise ValueError("%s is not a vaid ssl type." % implementation_type)
-    return cls(logger, **kwargs)
-
+    return config.ssl_env
 
 def load_config(default_path, override_path=None, **kwargs):
     if os.path.exists(default_path):
@@ -767,20 +695,19 @@ def load_config(default_path, override_path=None, **kwargs):
     else:
         raise ValueError("Config path %s does not exist" % default_path)
 
+    rv = Config(**base_obj)
+
     if os.path.exists(override_path):
         with open(override_path) as f:
             override_obj = json.load(f)
-    else:
-        override_obj = {}
-    rv = merge_json(base_obj, override_obj)
+        rv.load_overrides(override_obj)
 
     if kwargs.get("config_path"):
         other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
         if os.path.exists(other_path):
-            base_obj = rv
             with open(other_path) as f:
                 override_obj = json.load(f)
-            rv = merge_json(base_obj, override_obj)
+            rv.load_overrides(override_obj)
         else:
             raise ValueError("Config path %s does not exist" % other_path)
 
@@ -793,9 +720,8 @@ def load_config(default_path, override_path=None, **kwargs):
         value = os.path.abspath(os.path.expanduser(value))
         if not os.path.exists(value):
             raise ValueError("%s path %s does not exist" % (title, value))
-        rv[key] = value
+        setattr(rv, key, value)
 
-    set_computed_defaults(rv)
     return rv
 
 
@@ -817,7 +743,8 @@ def run(**kwargs):
                          os.path.join(repo_root, "config.json"),
                          **kwargs)
 
-    setup_logger(config["log_level"])
+    global logger
+    logger = config.logger
 
     with get_ssl_environment(config) as ssl_env:
         ports = get_ports(config, ssl_env)

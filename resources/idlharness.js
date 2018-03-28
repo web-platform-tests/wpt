@@ -257,8 +257,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
 
     parsed_idls.forEach(function(parsed_idl)
     {
-        if (parsed_idl.partial
-            && ["interface", "dictionary"].find(t => parsed_idl.type == t))
+        if (parsed_idl.partial && ["interface", "dictionary"].includes(parsed_idl.type))
         {
             if (should_skip(parsed_idl.name))
             {

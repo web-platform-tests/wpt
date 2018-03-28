@@ -11,27 +11,20 @@
 
 promise_test(async t => {
   const [html, dom, mediacapture, webaudio] = await Promise.all([
-    // Needed for EventTarget, HTMLMediaElement
     '/interfaces/html.idl',
-
-    // Needed for Event, EventListener
     '/interfaces/dom.idl',
-
-    // Needed for MediaStream, MediaStreamTrack
     '/interfaces/mediacapture-main.idl',
-
-    '/interfaces/webaudio.idl'
+    '/interfaces/web-audio-api.idl'
   ].map(url => fetch(url).then(response => response.text())));
 
   const idl_array = new IdlArray();
 
   // Dependencies of HTML
+  idl_array.add_untested_idls(html, { only: ['EventTarget', 'HTMLMediaElement']});
+  idl_array.add_untested_idls(dom, { only: ['Event', 'EventListener']});
+  idl_array.add_untested_idls(mediacapture, { only: ['MediaStream', 'MediaStreamTrack']});
   idl_array.add_untested_idls('interface LinkStyle {};');
   idl_array.add_untested_idls('interface SVGElement {};');
-  idl_array.add_untested_idls(html);
-
-  idl_array.add_untested_idls(dom);
-  idl_array.add_untested_idls(mediacapture);
   idl_array.add_untested_idls('interface Worklet {};');
 
   idl_array.add_idls(webaudio);

@@ -630,10 +630,10 @@ IdlArray.prototype.test = function()
     this.partials.forEach(function(parsed_idl)
     {
         if (!(parsed_idl.name in this.members)
-        || !(this.members[parsed_idl.name] instanceof IdlInterface
-             || this.members[parsed_idl.name] instanceof IdlDictionary))
+            || !(this.members[parsed_idl.name] instanceof IdlInterface
+                 || this.members[parsed_idl.name] instanceof IdlDictionary))
         {
-            throw new IdlHarnessError("Partial interface " + parsed_idl.name + " with no original interface");
+            throw new IdlHarnessError(`Partial ${parsed_idl.type} ${parsed_idl.name} with no original ${parsed_idl.type}`);
         }
         if (parsed_idl.extAttrs)
         {

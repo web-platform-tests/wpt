@@ -35,14 +35,9 @@ test(() => {
 }, 'Partial dictionaries');
 
 test(() => {
-  try {
-    let idlArray = new IdlArray();
-    idlArray.add_idls('partial dictionary D {};');
-    idlArray.test();
-  } catch (e) {
-    return;
-  }
-  assert_unreached("Didn't throw for partial-only dictionary with no original interface");
+  let idlArray = new IdlArray();
+  idlArray.add_idls('partial dictionary D {};');
+  idlArray.assert_throws('Partial dictionary D with no original dictionary', i => i.test());
 }, 'Partial-only dictionary definition')
 </script>
 

@@ -32,27 +32,18 @@
     test(function() {
         let i = new IdlArray();
         i.add_untested_idls('partial interface A {};');
-        i.assert_throws(
-            new IdlHarnessError("Partial interface A with no original interface"),
-            i => { i.test(); }
-        );
+        i.assert_throws( new IdlHarnessError("Partial interface A with no original interface"), i.test);
     }, 'assert_throws should handle IdlHarnessError');
     test(function() {
         let i = new IdlArray();
         i.add_untested_idls('partial interface A {};');
-        i.assert_throws(
-            "Partial interface A with no original interface",
-            i => { i.test(); }
-        );
+        i.assert_throws( "Partial interface A with no original interface", i.test);
     }, 'assert_throws should handle IdlHarnessError from message');
     test(function () {
         try {
             let i = new IdlArray();
             i.add_untested_idls('interface A {};');
-            i.assert_throws(
-                "Partial interface A with no original interface",
-                i => { i.test(); }
-            );
+            i.assert_throws( "Partial interface A with no original interface", i.test);
         } catch (e) {
             assert_true(e instanceof IdlHarnessError);
         }

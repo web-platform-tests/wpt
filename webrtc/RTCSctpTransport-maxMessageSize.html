@@ -144,7 +144,7 @@ promise_test(t => {
     assert_equals(pc.sctp.maxMessageSize, remoteSize1,
       'maxMessageSize should be the value provided by the remote peer (as long as it is less than canSendSize)');
   })
-  .then(() => pc.createOffer()) // Start new O/A exchange that updates max-message-size
+  .then(() => pc.createOffer()) // Start new O/A exchange that updates max-message-size to remoteSize2
   .then((offer) => {
     offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, remoteSize2)};
     return pc.setRemoteDescription(offer)
@@ -156,8 +156,32 @@ promise_test(t => {
     assert_equals(pc.sctp.maxMessageSize, remoteSize2,
       'maxMessageSize should be the new value provided by the remote peer (as long as it is less than canSendSize)');
   })
+  .then(() => pc.createOffer()) // Start new O/A exchange that updates max-message-size to zero
+  .then((offer) => {
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, 0)};
+    return pc.setRemoteDescription(offer)
+  })
+  .then(() => pc.createAnswer())
+  .then((answer) => pc.setLocalDescription(answer))
+  .then(() => {
+    assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
+    assert_equals(pc.sctp.maxMessageSize, canSendSize,
+      'maxMessageSize should be canSendSize');
+  })
+  .then(() => pc.createOffer()) // Start new O/A exchange that updates max-message-size to remoteSize1 again
+  .then((offer) => {
+    offer = { type: 'offer', sdp: mmsAttributeHelper.sdpWithValue(offer.sdp, remoteSize1)};
+    return pc.setRemoteDescription(offer)
+  })
+  .then(() => pc.createAnswer())
+  .then((answer) => pc.setLocalDescription(answer))
+  .then(() => {
+    assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
+    assert_equals(pc.sctp.maxMessageSize, remoteSize1,
+      'maxMessageSize should be the new value provided by the remote peer (as long as it is less than canSendSize)');
+  })
   ;
-}, 'Renegotiate max-message-size with a (non-zero) value provided by the remote peer');
+}, 'Renegotiate max-message-size with various values provided by the remote peer');
 
 promise_test(t => {
   assert_not_equals(canSendSize, null, 'canSendSize needs to be determined');

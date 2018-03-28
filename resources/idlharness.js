@@ -589,7 +589,36 @@ function exposed_in(globals) {
         return globals.indexOf("Worker") >= 0 ||
                globals.indexOf("ServiceWorker") >= 0;
     }
-    // throw new IdlHarnessError("Unexpected global object");
+    throw new IdlHarnessError("Unexpected global object");
+}
+
+//@}
+/**
+ * Asserts that the given error message is thrown for the given function.
+ * @param {string|IdlHarnessError} error Expected Error message.
+ * @param {Function} idlArrayFunc Function operating on an IdlArray that should throw.
+ */
+IdlArray.prototype.assert_throws = function(error, idlArrayFunc)
+//@{
+{
+    try {
+        idlArrayFunc.call(this, this);
+        assert(false, "assert_throws", description,
+            "${func} did not throw", { func: func });
+    } catch (e) {
+        if (e instanceof AssertionError) {
+            throw e;
+        }
+        // Assertions for behaviour of the idlharness.js engine.
+        if (error instanceof IdlHarnessError) {
+            error = error.message;
+        }
+        if (e.message !== error) {
+            throw new IdlHarnessError(`${idlArrayFunc} threw ${e}, not the expected IdlHarnessError`);
+        }
+        return;
+    }
+    throw new IdlHarnessError(`${idlArrayFunc} did not throw the expected IdlHarnessError`);
 }
 
 //@}

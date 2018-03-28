@@ -241,15 +241,31 @@ function exchangeIceCandidates(pc1, pc2) {
 
 // Helper function for doing one round of offer/answer exchange
 // betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc) {
+function doSignalingHandshake(localPc, remotePc, modifiers={}) {
   return localPc.createOffer()
-  .then(offer => Promise.all([
-    localPc.setLocalDescription(offer),
-    remotePc.setRemoteDescription(offer)]))
+  .then(offer => {
+    // Modify offer if callback has been provided
+    if (modifiers.offer) {
+      offer = modifiers.offer(offer);
+    }
+
+    // Apply offer
+    return Promise.all([
+      localPc.setLocalDescription(offer),
+      remotePc.setRemoteDescription(offer)])
+  })
   .then(() => remotePc.createAnswer())
-  .then(answer => Promise.all([
-    remotePc.setLocalDescription(answer),
-    localPc.setRemoteDescription(answer)]))
+  .then(answer => {
+    // Modify answer if callback has been provided
+    if (modifiers.answer) {
+      answer = modifiers.answer(answer);
+    }
+
+    // Apply answer
+    return Promise.all([
+      remotePc.setLocalDescription(answer),
+      localPc.setRemoteDescription(answer)])
+  });
 }
 
 // Helper function to create a pair of connected data channel.
@@ -261,7 +277,8 @@ function createDataChannelPair(
   pc1=new RTCPeerConnection(),
   pc2=new RTCPeerConnection(),
   channelLabel='',
-  channelOptions=undefined)
+  channelOptions=undefined,
+  modifiers={})
 {
   const channel1 = pc1.createDataChannel(channelLabel, channelOptions);
 
@@ -305,7 +322,7 @@ function createDataChannelPair(
 
     pc2.addEventListener('datachannel', onDataChannel);
 
-    doSignalingHandshake(pc1, pc2);
+    doSignalingHandshake(pc1, pc2, modifiers);
   });
 }
 

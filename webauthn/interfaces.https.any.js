@@ -12,10 +12,10 @@ if (self.importScripts) {
 
 promise_test(async () => {
   const webauthnIdl = await fetch('/interfaces/webauthn.idl').then(r => r.text());
-  
+
   const idlArray = new IdlArray();
   idlArray.add_idls(webauthnIdl);
-  
+
   // static IDL tests
   idlArray.add_untested_idls('interface CredentialCreationOptions {};');
   idlArray.add_untested_idls('interface CredentialRequestOptions {};');

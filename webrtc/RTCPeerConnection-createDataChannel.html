@@ -539,6 +539,78 @@ promise_test(t => {
    'OperationError');
 
 /*
+  4.4.2.  RTCPeerConnection.close
+    6.    Set the [[ReadyState]] slot of each of connection's RTCDataChannels to "closed".
+
+  Note: This test assumes that the implementation can handle a minimum of 24 data channels.
+ */
+test(t => {
+  const pc = new RTCPeerConnection();
+
+  // Create 24 channels, some of them negotiated
+  const channels = [];
+  for (let i = 0; i < 24; ++i) {
+    const options = {};
+    if (i % 2 === 0) {
+      options.negotiated = true;
+      options.id = i;
+    }
+    const dc = pc.createDataChannel(`test-channel-${i}`, options);
+    assert_not_equals(dc.readyState, 'closed',
+      'Channel may not be closed before connection establishment');
+    channels.push(dc);
+  }
+
+  // Stop!
+  pc.close();
+
+  // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's sync
+  for (const dc of channels) {
+    assert_equals(dc.readyState, 'closed',
+      'Channel should be closed after closing the peer connection');
+  }
+}, 'Closing the peer connection should close all channels (before connection establishment)');
+
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  const channels = [];
+
+  return createDataChannelPair()
+  .then(([dc1, dc2]) => {
+    assert_not_equals(dc1.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    channels.push(dc1);
+    assert_not_equals(dc2.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    channels.push(dc2);
+
+    // Create 23 further channels, some of them negotiated
+    for (let i = 1; i < 24; ++i) {
+      const options = {};
+      if (i % 2 === 0) {
+        options.negotiated = true;
+        options.id = i;
+      }
+      const dc = pc1.createDataChannel(`test-channel-${i}`, options);
+      assert_not_equals(dc.readyState, 'closed',
+        'Channel may not be closed after connection establishment');
+      channels.push(dc);
+    }
+
+    // Stop!
+    pc1.close();
+    pc2.close();
+
+    // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's sync
+    for (const dc of channels) {
+      assert_equals(dc.readyState, 'closed',
+        'Channel should be closed after closing the peer connection');
+    }
+  });
+}, 'Closing the peer connection should close all channels (after connection establishment)');
+
+/*
   Untestable
     6.1.  createDataChannel
       19. If a setting, either [[MaxPacketLifeTime]] or [[MaxRetransmits]], has been set to

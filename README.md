@@ -12,6 +12,27 @@ the promise of working across browsers and devices without needing extra
 layers of abstraction to paper over the gaps left by specification
 editors and implementors.
 
+Table of Contents
+=================
+
+- [Setup](#setting-up-the-repo)
+- [Running the Tests](#running-the-tests)
+  - [Running Tests Manually](#running-tests-manually)
+  - [Running Tests Automatically](#running-tests-automatically)
+- [Command Line Tools](#command-line-tools)
+- [Submodules](#submodules)
+- [Windows Notes](#windows-notes)
+- [Certificates](#certificates)
+- [Publication](#publication)
+- [Finding Things](#finding-things)
+- [Branches](#branches)
+- [Contribute](#contributing)
+- [Test Review](#test-review)
+- [Getting Involved](#getting-involved)
+- [Documentation](#documentation)
+
+
+
 Setting Up the Repo
 ===================
 

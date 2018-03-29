@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Filter Effects spec.
+// See https://drafts.fxtf.org/filter-effects/
+
 interface SVGFilterElement : SVGElement {
   readonly attribute SVGAnimatedEnumeration filterUnits;
   readonly attribute SVGAnimatedEnumeration primitiveUnits;

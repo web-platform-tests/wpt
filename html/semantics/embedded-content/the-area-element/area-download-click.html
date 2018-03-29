@@ -6,27 +6,22 @@
 <link rel="help" href="https://github.com/whatwg/html/issues/2116">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<body>
+
+<img src="/images/threecolors.png" usemap="#x" id="img" width="300" height="300">
+<map name="x">
+  <area id="blob-url" download="foo.html" coords="0,0,300,300">
+</map>
+
 <script>
 "use strict";
-async_test(t => {
-    const frame = document.createElement("iframe");
 
-    frame.addEventListener("load", t.step_func(function () {
-        frame.contentWindow.addEventListener(
-            "beforeunload", t.unreached_func("Navigated instead of downloading"));
-        const string = "test";
-        const blob = new Blob([string], { type: "text/html" });
+const string = "test";
+const blob = new Blob([string], { type: "text/html" });
 
-        const link = frame.contentDocument.querySelector("#blob-url");
-        link.href = URL.createObjectURL(blob);
+const link = document.querySelector("#blob-url");
+link.href = URL.createObjectURL(blob);
 
-        link.click();
+link.click();
 
-        t.step_timeout(() => t.done(), 1000);
-    }));
-    frame.src = "resources/area-download-click.html";
-    document.body.appendChild(frame);
-}, "Clicking on an <area> element with a download attribute must not throw an exception");
+done();
 </script>
-</body>

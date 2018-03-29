@@ -513,29 +513,12 @@ def start_wss_server(host, port, paths, routes, bind_address, config, ssl_config
                            ssl_config)
 
 
-def get_ports(config, ssl_environment):
-    return config.ports
-
-
-
-def normalise_config(config, ports):
-    return config
-
-
-def get_paths(config):
-    return config.paths
-
-
-def get_ssl_config(config, ssl_environment):
-    return config.ssl_config
-
-
 def start(config, ssl_environment, routes, **kwargs):
     host = config["server_host"]
-    ports = get_ports(config, ssl_environment)
-    paths = get_paths(config)
+    ports = config.ports
+    paths = config.paths
     bind_address = config["bind_address"]
-    ssl_config = get_ssl_config(config, ssl_environment)
+    ssl_config = config.ssl_config
 
     servers = start_servers(host, ports, paths, routes, bind_address, config,
                             ssl_config, **kwargs)
@@ -548,34 +531,6 @@ def iter_procs(servers):
         for port, server in servers:
             yield server.proc
 
-
-def value_set(config, key):
-    return key in config and config[key] is not None
-
-
-def get_value_or_default(config, key, default=None):
-    return config[key] if value_set(config, key) else default
-
-
-def set_computed_defaults(config):
-    pass
-
-
-def merge_json(base_obj, override_obj):
-    rv = {}
-    for key, value in base_obj.iteritems():
-        if key not in override_obj:
-            rv[key] = value
-        else:
-            if isinstance(value, dict):
-                rv[key] = merge_json(value, override_obj[key])
-            else:
-                rv[key] = override_obj[key]
-    return rv
-
-
-def get_ssl_environment(config):
-    return config.ssl_env
 
 def load_config(default_path, override_path=None, **kwargs):
     if os.path.exists(default_path):
@@ -649,31 +604,26 @@ def run(**kwargs):
     global logger
     logger = config.logger
 
-    with get_ssl_environment(config) as ssl_env:
-        ports = get_ports(config, ssl_env)
-        config = normalise_config(config, ports)
-        browser_host = config["browser_host"]
-        server_host = config["server_host"]
-        bind_address = config["bind_address"]
+    bind_address = config["bind_address"]
 
-        if config["check_subdomains"]:
-            paths = get_paths(config)
-            ssl_config = get_ssl_config(config, ssl_env)
-            check_subdomains(config.domains, paths, bind_address, ssl_config, config["aliases"])
+    if config["check_subdomains"]:
+        paths = config.paths
+        ssl_config = config.ssl_config
+        check_subdomains(config.domains, paths, bind_address, ssl_config, config["aliases"])
 
-        stash_address = None
-        if bind_address:
-            stash_address = (server_host, get_port(server_host))
+    stash_address = None
+    if bind_address:
+        stash_address = (config.server_host, get_port(config.server_host))
 
-        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
+    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+        servers = start(config, config.ssl_env, build_routes(config["aliases"]), **kwargs)
 
-            try:
-                while any(item.is_alive() for item in iter_procs(servers)):
-                    for item in iter_procs(servers):
-                        item.join(1)
-            except KeyboardInterrupt:
-                logger.info("Shutting down")
+        try:
+            while any(item.is_alive() for item in iter_procs(servers)):
+                for item in iter_procs(servers):
+                    item.join(1)
+        except KeyboardInterrupt:
+            logger.info("Shutting down")
 
 
 def main():

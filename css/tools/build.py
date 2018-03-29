@@ -90,22 +90,24 @@ class Builder(object):
                         officialURL = officialURL[:-1]
                     self.specNames[officialURL.lower()] = [specName]
 
-                    shortOfficialURL = officialURL.lower().replace(specName, shortName)
-                    if (shortOfficialURL in self.specNames):
-                        self.specNames[shortOfficialURL].append(specName)
-                    else:
-                        self.specNames[shortOfficialURL] = [specName]
+                    if specName in officialURL:
+                        shortOfficialURL = officialURL.lower().replace(specName, shortName)
+                        if (shortOfficialURL in self.specNames):
+                            self.specNames[shortOfficialURL].append(specName)
+                        else:
+                            self.specNames[shortOfficialURL] = [specName]
                 draftURL = self._normalizeScheme(specData.get('draft_uri'))
                 if (draftURL):
                     if (draftURL.endswith('/')):
                         draftURL = draftURL[:-1]
                     self.specNames[draftURL.lower()] = [specName]
 
-                    shortDraftURL = draftURL.lower().replace(specName, shortName)
-                    if (shortDraftURL in self.specNames):
-                        self.specNames[shortDraftURL].append(specName)
-                    else:
-                        self.specNames[shortDraftURL] = [specName]
+                    if specName in draftURL:
+                        shortDraftURL = draftURL.lower().replace(specName, shortName)
+                        if (shortDraftURL in self.specNames):
+                            self.specNames[shortDraftURL].append(specName)
+                        else:
+                            self.specNames[shortDraftURL] = [specName]
                 self.specAnchors[specName] = set()
                 if ('anchors' in specData):
                     self._addAnchors(specData['anchors'], specName)

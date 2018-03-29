@@ -684,7 +684,7 @@ IdlArray.prototype.test = function()
     this["includes"] = {};
 
     // Assert B defined for A : B
-    for (var member of Array.from(Object.values(this.members)).filter(m => m.base)) {
+    for (var member of Object.values(this.members).filter(m => m.base)) {
         let lhs = member.name;
         let rhs = member.base;
         if (!(lhs in this.members)) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is undefined.`);

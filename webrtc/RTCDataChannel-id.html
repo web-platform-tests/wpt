@@ -25,6 +25,7 @@ const nStreams = 65535;
 promise_test(t => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('');
+  const ids = new UniqueSet();
 
   return pc.createOffer()
   .then(offer => pc.setLocalDescription(offer))
@@ -45,13 +46,17 @@ promise_test(t => {
     const another_channel = pc.createDataChannel('another');
     assert_equals(another_channel.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${channel.id})`);
-    assert_not_equals(channel.id, another_channel.id);
+
+    // Ensure IDs are unique
+    ids.add(channel.id, `Channel ID ${channel.id} should be unique`);
+    ids.add(another_channel.id, `Channel ID ${another_channel.id} should be unique`);
   })
 }, "DTLS client uses odd data channel IDs");
 
 promise_test(t => {
   const pc = new RTCPeerConnection;
   const channel = pc.createDataChannel('');
+  const ids = new UniqueSet();
 
   return pc.createOffer()
   .then(offer => pc.setLocalDescription(offer))
@@ -72,9 +77,106 @@ promise_test(t => {
     const another_channel = pc.createDataChannel('another');
     assert_equals(another_channel.id % 2, 0,
       `Channel created by the DTLS client role must be even (was ${channel.id})`);
-    assert_not_equals(channel.id, another_channel.id);
+
+    // Ensure IDs are unique
+    ids.add(channel.id, `Channel ID ${channel.id} should be unique`);
+    ids.add(another_channel.id, `Channel ID ${another_channel.id} should be unique`);
   })
 }, "DTLS server uses even data channel IDs");
+
+/*
+  Check if the implementation still follows the odd/even role correctly if we annoy it with
+  negotiated channels not following that rule.
+
+  Note: This test assumes that the implementation can handle a minimum of 40 data channels.
+ */
+promise_test(t => {
+  // Takes the DTLS server role
+  const pc1 = new RTCPeerConnection();
+  // Takes the DTLS client role
+  const pc2 = new RTCPeerConnection();
+
+  exchangeIceCandidates(pc1, pc2);
+  const channels = [];
+  const negotiatedChannels = [];
+  const ids = new UniqueSet();
+
+  // Create 10 DCEP-negotiated channels with pc1
+  // Note: These should not have any associated valid ID at this point
+  for (let i = 0; i < 10; ++i) {
+    const dc = pc1.createDataChannel('before-connection');
+    assert_equals(dc.id, null, 'Channel id must be null before DTLS role has been determined');
+    channels.push(dc);
+  }
+
+  // Create 10 negotiated channels with pc1 violating the odd/even rule
+  for (let id = 0; id < 20; id += 2) {
+    const dc = pc1.createDataChannel(`negotiated-not-odd-${id}-before-connection`, {
+      negotiated: true,
+      id: id,
+    });
+    assert_equals(dc.id, null, 'Channel id must be null before DTLS role has been determined');
+    negotiatedChannels.push([dc, id]);
+    ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
+  }
+
+  return doSignalingHandshake(pc1, pc2, {
+    offer: (offer) => {
+      // Ensure pc1 takes the server role
+      assert_true(offer.sdp.includes('actpass') || offer.sdp.includes('passive'),
+        'pc1 must take the DTLS server role');
+      return offer;
+    },
+    answer: (answer) => {
+      // Ensure pc2 takes the client role
+      // Note: It very likely will choose 'active' itself
+      answer.sdp = answer.sdp.replace('actpass', 'active');
+      assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
+      return answer;
+    },
+  }).then(() => {
+    for (const dc of channels) {
+      assert_equals(dc.id % 2, 1,
+        `Channel created by the DTLS server role must be odd (was ${dc.id})`);
+      ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
+    }
+
+    // Create 10 channels with pc1
+    for (let i = 0; i < 10; ++i) {
+      const dc = pc1.createDataChannel('after-connection');
+      assert_equals(dc.id % 2, 1,
+        `Channel created by the DTLS server role must be odd (was ${dc.id})`);
+      channels.push(dc);
+      ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
+    }
+
+    // Create 10 negotiated channels with pc1 violating the odd/even rule
+    for (let i = 0; i < 10; ++i) {
+      // Generate a valid even ID that has not been taken, yet.
+      let id = 20;
+      while (ids.has(id)) {
+        id += 2;
+      }
+      const dc = pc1.createDataChannel(`negotiated-not-odd-${i}-after-connection`, {
+        negotiated: true,
+        id: id,
+      });
+      negotiatedChannels.push([dc, id]);
+      ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
+    }
+
+    // Since we've added new channels, let's check again that the odd/even role is not violated
+    for (const dc of channels) {
+      assert_equals(dc.id % 2, 1,
+        `Channel created by the DTLS server role must be odd (was ${dc.id})`);
+    }
+
+    // Let's also make sure the negotiated channels have kept their ID
+    for (const [dc, id] of negotiatedChannels) {
+      assert_equals(dc.id, id, 'Negotiated channels should keep their assigned ID');
+    }
+  });
+}, 'Odd/even role should not be violated when mixing with negotiated channels');
 
 /*
   Create 32768 (client), 32767 (server) channels to make sure all ids are exhausted AFTER
@@ -97,7 +199,8 @@ promise_test(t => {
   const pc2 = new RTCPeerConnection();
 
   // Used to force keeping a reference to the channels
-  let channels = [];
+  const channels = [];
+  const ids = new UniqueSet();
 
   // We need the initial data channel on the DTLS server side to ensure the peer connection
   // will be established
@@ -121,6 +224,7 @@ promise_test(t => {
       `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
     assert_equals(dc2.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${dc2.id})`);
+    ids.add(dc1.id, `Channel ID ${dc1.id} should be unique`); // dc2 is the same channel on the other peer
 
     // Create 65534 further channels
     // Note: Since 65535 streams is a SHOULD, we may have less than that
@@ -151,6 +255,7 @@ promise_test(t => {
       }
 
       channels.push(dc);
+      ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
     }
 
     // Try creating one further channel on both sides. The attempt should fail.
@@ -159,7 +264,7 @@ promise_test(t => {
     assert_throws('OperationError', () =>
       pc2.createDataChannel('this is too exhausting!'));
   });
-}, 'Creating a channel after exhausting the maximum number of channels should throw' +
+}, 'Creating a channel after exhausting the maximum number of channels should throw ' +
   'OperationError (after connection establishment)');
 
 /*
@@ -173,7 +278,8 @@ promise_test(t => {
   const pc2 = new RTCPeerConnection();
 
   // Used to force keeping a reference to the channels
-  let channels = [];
+  const channels = [];
+  const ids = new UniqueSet();
 
   // We need the initial data channel on the DTLS server side to ensure the peer connection
   // will be established
@@ -197,6 +303,7 @@ promise_test(t => {
       `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
     assert_equals(dc2.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${dc2.id})`);
+    ids.add(dc1.id, `Channel ID ${dc1.id} should be unique`); // dc2 is the same channel on the other peer
 
     // Create 65534 further channels with pc1
     // Note: Since we do this on pc1 only, IDs should be exhausted after 32767 channels
@@ -210,7 +317,9 @@ promise_test(t => {
       }
       assert_equals(dc.id % 2, 1,
         `Channel #${i + 2} created by the DTLS server role must be even (was ${dc.id})`);
+
       channels.push(dc);
+      ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
     }
 
     // Try creating one further channel with pc1. The attempt should fail.
@@ -227,7 +336,7 @@ promise_test(t => {
   }).then((id) => {
     // Create a new channel, ensure the ID has been reassigned
     const dc = pc1.createDataChannel('reassigned?');
-    assert_equals(dc.id, id, `ID should be reassigned to new channel`);
+    assert_equals(dc.id, id, `ID ${id} should be reassigned to new channel`);
   });
 }, 'Channel IDs should be reassigned after exhaustion in case a channel has been closed');
 
@@ -241,7 +350,8 @@ promise_test(t => {
   const pc2 = new RTCPeerConnection();
 
   exchangeIceCandidates(pc1, pc2);
-  let channels = [];
+  const channels = [];
+  const ids = new UniqueSet();
 
   // Create 65535 channels with pc1
   //
@@ -278,8 +388,11 @@ promise_test(t => {
     },
   }).then(() => {
     for (const dc of channels) {
-      assert_equals(dc.id % 2, 1,
-        `Channel created by the DTLS server role must be odd (was ${dc.id})`);
+      if (dc.readyState !== 'closed') {
+        assert_equals(dc.id % 2, 1,
+          `Channel created by the DTLS server role must be odd (was ${dc.id})`);
+        ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
+      }
     }
 
     // Try creating one further channel on both sides. The attempt should fail since all IDs are
@@ -312,7 +425,8 @@ async_test(t => {
   const pc2 = new RTCPeerConnection();
 
   exchangeIceCandidates(pc1, pc2);
-  let channels = [];
+  const channels = [];
+  const ids = new UniqueSet();
   let nExpected = 0;
   let nActualCloses = 0;
   let nActualErrors = 0;
@@ -379,6 +493,7 @@ async_test(t => {
         assert_equals(dc.id % 2, odd ? 1 : 0,
           `Channels created by the DTLS ${odd ? 'server' : 'client'} role must be
           ${odd ? 'odd' : 'even'} (was ${dc.id})`);
+        ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
       } else {
         ++nExpected;
       }

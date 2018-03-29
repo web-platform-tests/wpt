@@ -464,3 +464,24 @@ class Resolver {
     this.reject = promiseReject;
   }
 }
+
+
+// Contains a set of values and will yell at you if you try to add a value twice.
+class UniqueSet extends Set {
+  constructor(items) {
+    super();
+    if (items !== undefined) {
+      for (const item of items) {
+        this.add(item);
+      }
+    }
+  }
+
+  add(value, message) {
+    if (message === undefined) {
+      message = `Value '${value}' needs to be unique but it is already in the set`;
+    }
+    assert_true(!this.has(value), message);
+    super.add(value);
+  }
+}

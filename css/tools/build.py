@@ -79,20 +79,35 @@ class Builder(object):
             return 'https:' + url[5:]
         return url
 
-    def getSpecName(self, url):
+    def getSpecs(self, url):
         if (not self.specNames):
             for specName in self.specificationData:
                 specData = self.specificationData[specName]
+                shortName = specData.get('short_name')
                 officialURL = self._normalizeScheme(specData.get('base_uri'))
                 if (officialURL):
                     if (officialURL.endswith('/')):
                         officialURL = officialURL[:-1]
-                    self.specNames[officialURL.lower()] = specName
+                    self.specNames[officialURL.lower()] = [specName]
+
+                    if specName in officialURL:
+                        shortOfficialURL = officialURL.lower().replace(specName, shortName)
+                        if (shortOfficialURL in self.specNames):
+                            self.specNames[shortOfficialURL].append(specName)
+                        else:
+                            self.specNames[shortOfficialURL] = [specName]
                 draftURL = self._normalizeScheme(specData.get('draft_uri'))
                 if (draftURL):
                     if (draftURL.endswith('/')):
                         draftURL = draftURL[:-1]
-                    self.specNames[draftURL.lower()] = specName
+                    self.specNames[draftURL.lower()] = [specName]
+
+                    if specName in draftURL:
+                        shortDraftURL = draftURL.lower().replace(specName, shortName)
+                        if (shortDraftURL in self.specNames):
+                            self.specNames[shortDraftURL].append(specName)
+                        else:
+                            self.specNames[shortDraftURL] = [specName]
                 self.specAnchors[specName] = set()
                 if ('anchors' in specData):
                     self._addAnchors(specData['anchors'], specName)
@@ -108,11 +123,15 @@ class Builder(object):
                 anchorURL = url[len(specURL):]
                 if (anchorURL.startswith('/')):
                     anchorURL = anchorURL[1:]
-                specName = self.specNames[specURL]
-                if (anchorURL in self.specAnchors[specName]):
-                    return (specName, anchorURL)
-                return (specName, None)
-        return (None, None)
+                specNames = self.specNames[specURL]
+                specNamesWithAnchors = []
+                for specName in specNames:
+                    if (anchorURL in self.specAnchors[specName]):
+                        specNamesWithAnchors.append((specName, anchorURL))
+                if len(specNamesWithAnchors) > 0:
+                    return specNamesWithAnchors
+                return [(specName, None) for specName in specNames]
+        return [(None, None)]
 
     def gatherTests(self, dir):
         dirName = os.path.basename(dir)
@@ -139,28 +158,30 @@ class Builder(object):
                 continue
 
             for specURL in metaData['links']:
-                specName, anchorURL = self.getSpecName(specURL)
-                if not specName:
-                    self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
-                    continue
+                specs = self.getSpecs(specURL)
+                for spec in specs:
+                    specName, anchorURL = spec
+                    if not specName:
+                        self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
+                        continue
 
-                if not specName in self.buildSpecNames:
-                    continue
+                    if not specName in self.buildSpecNames:
+                        continue
 
-                if not anchorURL:
-                    self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
-                    continue
+                    if not anchorURL:
+                        self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
+                        continue
 
-                for testSuiteName in self.buildSpecNames[specName]:
-                    formats = self.testSuiteData[testSuiteName].get('formats')
-                    if (formats):
-                        for formatName in formats:
-                            if (((formatName) in self.formatData) and
-                                (self.formatData[formatName].get('mime_type') == source.mimetype)):
-                                suiteFileNames[testSuiteName].add(fileName)
-                                break
-                        else:
-                            self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
+                    for testSuiteName in self.buildSpecNames[specName]:
+                        formats = self.testSuiteData[testSuiteName].get('formats')
+                        if (formats):
+                            for formatName in formats:
+                                if (((formatName) in self.formatData) and
+                                    (self.formatData[formatName].get('mime_type') == source.mimetype)):
+                                    suiteFileNames[testSuiteName].add(fileName)
+                                    break
+                            else:
+                                self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
 
         for testSuiteName in suiteFileNames:
             if (dirName in self.rawDirs):

@@ -218,19 +218,3 @@ interface CacheStorage {
   [NewObject] Promise<boolean> delete(DOMString cacheName);
   [NewObject] Promise<sequence<DOMString>> keys();
 };
-
-partial interface ServiceWorkerRegistration {
-  // e.g. define an API namespace
-  readonly attribute APISpaceType APISpace;
-  // e.g. define a method
-  Promise<T> methodName(/* list of arguments */);
-};
-
-// e.g. define FunctionalEvent interface
-interface FunctionalEvent : ExtendableEvent {
-  // add a functional event’s own attributes and methods
-};
-
-partial interface ServiceWorkerGlobalScope {
-  attribute EventHandler onfunctionalevent;
-};

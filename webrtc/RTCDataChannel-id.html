@@ -198,8 +198,6 @@ promise_test(t => {
   // Takes the DTLS client role
   const pc2 = new RTCPeerConnection();
 
-  // Used to force keeping a reference to the channels
-  const channels = [];
   const ids = new UniqueSet();
 
   // We need the initial data channel on the DTLS server side to ensure the peer connection
@@ -254,7 +252,6 @@ promise_test(t => {
           `Channel #${i + 2} created by the DTLS server role must be odd (was ${dc.id})`);
       }
 
-      channels.push(dc);
       ids.add(dc.id, `Channel ID ${dc.id} should be unique`);
     }
 
@@ -277,7 +274,6 @@ promise_test(t => {
   // Takes the DTLS client role
   const pc2 = new RTCPeerConnection();
 
-  // Used to force keeping a reference to the channels
   const channels = [];
   const ids = new UniqueSet();
 

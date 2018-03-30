@@ -74,11 +74,16 @@ promise_test(t => {
       pc1.close();
       pc2.close();
 
-      // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's sync
+      // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's
+      //       sync
       for (const dc of channels) {
         assert_equals(dc.readyState, 'closed',
           'Channel should be closed after closing the peer connection');
       }
     });
 }, 'Closing the peer connection should close all channels (after connection establishment)');
+
+/*
+  TODO: Cover all the other steps defined by 4.4.2.
+ */
 </script>

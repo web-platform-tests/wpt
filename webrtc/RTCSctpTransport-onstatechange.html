@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RTCSctpTransport constructor</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  4.4.2.  RTCPeerConnection.close
+    7.    Set the [[SctpTransportState]] slot of connection's [[SctpTransport]] to "closed".
+ */
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+
+  // We use the queue to hold back candidates, so no connection can be established
+  const pc1Queue = new IceCandidateQueue(pc1);
+  const pc2Queue = new IceCandidateQueue(pc2);
+
+  // Negotiate SCTP transport
+  pc1.createDataChannel('test');
+  doSignalingHandshake(pc1, pc2)
+  .then(() => {
+    for (const pc of [pc1, pc2]) {
+      assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
+      assert_equals(pc.sctp.state, 'connecting',
+        'RTCSctpTransport should be in the connecting state');
+
+      // Triggered after the peers connected
+      pc.sctp.onstatechange = t.step_func(() => {
+        assert_equals(pc.sctp.state, 'connected');
+        t.done();
+      });
+    }
+
+    // Let the peers connect
+    exchangeIceCandidates(pc1Queue, pc2Queue);
+  }).catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'RTCSctpTransport.onstatechange should fire when the state changes');
+
+</script>

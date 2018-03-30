@@ -22,5 +22,6 @@ test(function() {
 
     assert_true(evt.defaultPrevented, "after dispatch");
     assert_equals(evt.target, TARGET);
+    assert_equals(evt.srcElement, TARGET);
 });
 </script>

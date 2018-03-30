@@ -18,6 +18,9 @@
 
 <pre id='untested_idl' style='display:none'>
 
+interface EventHandler {
+};
+
 interface EventTarget {
 };
 
@@ -35,6 +38,13 @@ interface Event {
 
 interface MouseEvent : Event {
 };
+
+dictionary EventInit {
+};
+
+dictionary MouseEventInit : EventInit {
+};
+
 </pre>
 
 <pre id='idl'>

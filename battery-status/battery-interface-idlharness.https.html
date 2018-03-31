@@ -16,7 +16,7 @@ promise_test(async () => {
   const battery_idl = await fetch("/interfaces/battery.idl").then(r => r.text());
   const manager = await navigator.getBattery();
 
-  idl_array.add_untested_idls(dom_idl);
+  idl_array.add_untested_idls(dom_idl, {only: ['EventTarget']});
   idl_array.add_untested_idls('interface EventHandler {};');
   idl_array.add_untested_idls('interface Navigator {};');
   idl_array.add_idls(battery_idl);

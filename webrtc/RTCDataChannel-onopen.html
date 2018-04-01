@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.onopen</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  6.2. When the user agent is to announce an RTCDataChannel as open, the user agent MUST queue a
+       task to run the following steps:
+
+       2. Let channel be the RTCDataChannel object to be announced.
+       3. Set channel's [[ReadyState]] slot to open.
+       4. Fire a simple event named open at channel.
+ */
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+
+  // Create a channel on pc1
+  const dc = pc1.createDataChannel('onopen');
+  dc.onopen = () => {
+    assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+    t.done();
+  };
+
+  doSignalingHandshake(pc1, pc2);
+}, 'Data channel onopen event should be fired when the data channel opens');
+
+</script>

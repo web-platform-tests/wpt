@@ -42,6 +42,19 @@
             of "connecting" and assign the result to the [[SctpTransport]] slot.
  */
 
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.sctp, null, 'RTCSctpTransport must be null');
+
+  return generateOffer({ pc, audio: true })
+  .then((offer) => pc.setRemoteDescription(offer))
+  .then(() => pc.createAnswer())
+  .then((answer) => pc.setLocalDescription(answer))
+  .then(() => {
+    assert_equals(pc.sctp, null, 'RTCSctpTransport must remain null');
+  });
+}, 'setRemoteDescription() without containing data media should not initialize pc.sctp');
+
 function validateSctpTransport(sctp) {
   assert_not_equals(sctp, null, 'RTCSctpTransport must be available');
 
@@ -76,7 +89,7 @@ promise_test(t => {
 
 promise_test(t => {
   const pc = new RTCPeerConnection();
-  assert_equals(pc.sctp, null);
+  assert_equals(pc.sctp, null, 'RTCSctpTransport must be null');
 
   return generateOffer({ pc, data: true })
   .then(offer => pc.setRemoteDescription(offer))

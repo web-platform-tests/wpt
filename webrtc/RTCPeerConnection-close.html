@@ -48,40 +48,55 @@ promise_test(t => {
   const pc2 = new RTCPeerConnection();
   const channels = [];
 
-  return createDataChannelPair()
-    .then(([dc1, dc2]) => {
-      assert_not_equals(dc1.readyState, 'closed',
-        'Channel may not be closed after connection establishment');
-      channels.push(dc1);
-      assert_not_equals(dc2.readyState, 'closed',
-        'Channel may not be closed after connection establishment');
-      channels.push(dc2);
+  return createDataChannelPair(pc1, pc2)
+  .then(([dc1, dc2]) => {
+    assert_not_equals(dc1.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    channels.push(dc1);
+    assert_not_equals(dc2.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    channels.push(dc2);
 
-      // Create 23 further channels, some of them negotiated
-      for (let i = 1; i < 24; ++i) {
-        const options = {};
-        if (i % 2 === 0) {
-          options.negotiated = true;
-          options.id = i;
-        }
-        const dc = pc1.createDataChannel(`test-channel-${i}`, options);
-        assert_not_equals(dc.readyState, 'closed',
-          'Channel may not be closed after connection establishment');
-        channels.push(dc);
+    // Create 23 further channels, some of them negotiated
+    for (let i = 1; i < 24; ++i) {
+      const options = {};
+      if (i % 2 === 0) {
+        options.negotiated = true;
+        options.id = i;
       }
+      const dc = pc1.createDataChannel(`test-channel-${i}`, options);
+      assert_not_equals(dc.readyState, 'closed',
+        'Channel may not be closed after connection establishment');
+      channels.push(dc);
+    }
 
-      // Stop!
-      pc1.close();
-      pc2.close();
+    // Stop!
+    pc1.close();
+    pc2.close();
 
-      // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's
-      //       sync
-      for (const dc of channels) {
-        assert_equals(dc.readyState, 'closed',
-          'Channel should be closed after closing the peer connection');
-      }
-    });
+    // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's
+    //       sync
+    for (const dc of channels) {
+      assert_equals(dc.readyState, 'closed',
+        'Channel should be closed after closing the peer connection');
+    }
+  });
 }, 'Closing the peer connection should close all channels (after connection establishment)');
+
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+
+  return createDataChannelPair()
+  .then(() => {
+    // Stop!
+    pc1.close();
+    pc2.close();
+
+    assert_equals(pc1.sctp.state, 'closed', 'RTCSctpTransport should be in the closed state');
+    assert_equals(pc2.sctp.state, 'closed', 'RTCSctpTransport should be in the closed state');
+  });
+}, 'Closing the peer connection should set the SCTP transport to closed');
 
 /*
   TODO: Cover all the other steps defined by 4.4.2.

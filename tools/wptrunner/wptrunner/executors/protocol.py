@@ -259,6 +259,15 @@ class ClickProtocolPart(ProtocolPart):
         :param element: A protocol-specific handle to an element."""
         pass
 
+class ActionsProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "actions"
+
+    def actions(self):
+        return ActionChains(self.parent.webdriver)
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

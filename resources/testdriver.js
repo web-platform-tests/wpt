@@ -83,6 +83,9 @@
             return window.test_driver_internal.click(element,
                                                      {x: centerPoint[0],
                                                       y: centerPoint[1]});
+        },
+        actions: function(chain) {
+            return window.test_driver_internal.actions(chain)
         }
     };
 
@@ -95,6 +98,9 @@
          * @returns {Promise} fulfilled after click occurs or rejected if click fails
          */
         click: function(element, coords) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+        actions: function(chain) {
             return Promise.reject(new Error("unimplemented"));
         }
     };

@@ -36,6 +36,7 @@ def do_delayed_imports():
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
+    from selenium.webdriver.common.action_chains import ActionChains
 
 
 class SeleniumBaseProtocolPart(BaseProtocolPart):
@@ -134,13 +135,18 @@ class SeleniumClickProtocolPart(ClickProtocolPart):
     def element(self, element):
         return element.click()
 
+class SeleniumActionsProtocolPart(ActionsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+    
+    def actions(self):
+        return ActionChains(self.parent.webdriver)
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
     def send_message(self, message_type, status, message=None):
-        obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)
         }
@@ -154,6 +160,7 @@ class SeleniumProtocol(Protocol):
                   SeleniumTestharnessProtocolPart,
                   SeleniumSelectorProtocolPart,
                   SeleniumClickProtocolPart,
+                  SeleniumActionsProtocolPart,
                   SeleniumTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):

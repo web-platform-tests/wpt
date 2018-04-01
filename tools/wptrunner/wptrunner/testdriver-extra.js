@@ -60,4 +60,35 @@
         window.opener.postMessage({"type": "action", "action": "click", "selector": selector}, "*");
         return pending_promise;
     };
+
+    window.test_driver_internal.actions = function(chain) {
+        message = {};
+        message.type = "action";
+        message.action = "chain";
+        message.actions_list = [];
+        message.args_list = [];
+
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+
+        for (var i = 0; i < actions.length; i++) {
+          message.actions_list.push(actions[i].type);
+          inner_args_list = [];
+          if (actions[i].args) {
+            for (var j = 0; j < actions[i].args.length; j++) {
+              if (actions[i].args[j].type == "element") {
+                inner_args_list.push(get_selector(actions[i].args[j].arg));
+              } else {
+                inner_args_list.push(actions[i].args[j].arg);
+              }
+            }
+          }
+          message.args_list.push(inner_args_list.slice());
+        }
+
+        window.opener.postMessage(message, "*");
+        return pending_promise;
+    };
 })();

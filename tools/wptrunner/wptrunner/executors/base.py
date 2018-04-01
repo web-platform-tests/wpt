@@ -559,3 +559,213 @@ class ClickAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
         self.protocol.click.element(elements[0])
+
+class ActionsAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        actions = payload["actions_list"]
+        args = result["args_list"]
+
+        # create the initial ActionChains object
+        action_chain = self.protocol.actions()
+        for sub_action, sub_args in zip(actions, args):
+            if sub_action == "click":
+                if len(sub_args) == 0:
+                    action_chain.click()
+                elif len(sub_args) == 1:
+                    element = self.get_element_from_css(sub_args[0])
+                    action_chain.click(element)
+                else:
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("click"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("click", str(sub_args)))
+
+            elif sub_action == "click_and_hold":
+                if len(sub_args) == 0:
+                    action_chain.click_and_hold()
+                elif len(sub_args) == 1:
+                    element = self.get_element_from_css(sub_args[0])
+                    action_chain.click_and_hold(element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("click_and_hold"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("click_and_hold", str(sub_args)))
+
+            elif sub_action == "context_click":
+                if len(sub_args) == 0:
+                    action_chain.context_click()
+                elif len(sub_args) == 1:
+                    element = self.get_element_from_css(sub_args[0])
+                    action_chain.context_click(element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("context_click"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("context_click", str(sub_args)))
+
+            elif sub_action == "double_click":
+                if len(sub_args) == 0:
+                    action_chain.double_click()
+                elif len(sub_args) == 1:
+                    element = self.get_element_from_css(sub_args[0])
+                    action_chain.double_click(element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("double_click"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("double_click", str(sub_args)))
+
+            elif sub_action == "drag_and_drop":
+                if len(sub_args) != 2:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop"))
+
+                source_element = self.get_element_from_css(sub_args[0])
+                target_element = self.get_element_from_css(sub_args[1])
+                action_chain.drag_and_drop(source_element, target_element)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
+
+            elif sub_action == "drag_and_drop_by_offset":
+                if len(sub_args) != 3:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+
+                css, x_offset, y_offset = sub_args
+                element = self.get_element_from_css(css)
+                action_chain.drag_and_drop_by_offset(element, x_offset, y_offset)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
+
+            elif sub_action == "key_down":
+                if len(sub_args) == 1:
+                    value = sub_args[0]
+                    action_chain.key_down(value)
+                elif len(sub_args) == 2:
+                    value, css = sub_args
+                    element = self.get_element_from_css(css)
+                    action_chain.key_down(value, element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("key_down"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("key_down", str(sub_args)))
+
+            elif sub_action == "key_up":
+                if len(sub_args) == 1:
+                    value = sub_args[0]
+                    action_chain.key_up(value)
+                elif len(sub_args) == 2:
+                    value, css = sub_args
+                    element = self.get_element_from_css(css)
+                    action_chain.key_up(value, element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("key_up"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("key_up", str(sub_args)))
+
+            elif sub_action == "move_by_offset":
+                if len(sub_args) != 2:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("move_by_offset"))
+
+                x_offset, y_offset = sub_args
+                action_chain.move_by_offset(x_offset, y_offset)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_by_offset", str(sub_args)))
+
+            elif sub_action == "move_to_element":
+                if len(sub_args) != 1:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("move_to_element"))
+
+                element = self.get_element_from_css(sub_args[0])
+                action_chain.move_to_element(element)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_by_offset", str(sub_args)))
+
+            elif sub_action == "move_to_element_with_offset":
+                if len(sub_args) != 3:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
+
+                css, x_offset, y_offset = sub_args
+                element = self.get_element_from_css(css)
+                action_chain.move_to_element_with_offset(element, x_offset, y_offset)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_to_element_with_offset", str(sub_args)))
+
+            elif sub_action == "pause":
+                if len(sub_args) != 1:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("pause"))
+
+                seconds = sub_args[0]
+                action_chain.pause(seconds)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("pause", str(sub_args)))
+
+            elif sub_action == "perform":
+                if len(sub_args) != 0:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("perform"))
+
+                action_chain.perform()
+                self.logger.debug("Performed the current action chain")
+
+            elif sub_action == "release":
+                if len(sub_args) == 0:
+                    action_chain.release()
+                elif len(sub_args) == 1:
+                    element = get_element_from_css(sub_action[0])
+                    action_chain.release(element)
+                else:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("release"))
+
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("pause", str(sub_args)))
+
+            elif sub_action == "reset_actions":
+                if len(sub_args) != 0:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("reset_actions"))
+
+                action_chain.reset_actions()
+                self.logger.debug("Reset the current action chain")
+
+            elif sub_action == "send_keys":
+                if len(sub_args) != 1:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("send_keys"))
+
+                text = sub_args[0]
+                action_chain.send_keys(text)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("send_keys", str(sub_args)))
+
+            elif sub_action == "send_keys_to_element":
+                if len(sub_args) != 2:
+                    self._send_message("complete",
+                                        "failure")
+                    raise ValueError("Adding action failed: {}, not the right number of arguments!".format("perform"))
+
+                css, text = sub_args
+                element = self.get_element_from_css(css)
+                action_chain.send_keys_to_element(element, text)
+                self.logger.debug("Added action to the current chain: {}, with args: {}".format("send_keys_to_element", str(sub_args)))
+
+            else:
+                raise ValueError("Unknown action: {}".format(sub_action))

@@ -74,9 +74,8 @@ function validateSctpTransport(sctp) {
 promise_test(t => {
   const pc = new RTCPeerConnection();
   assert_equals(pc.sctp, null, 'RTCSctpTransport must be null');
-  pc.createDataChannel('test');
 
-  return pc.createOffer()
+  return generateOffer({ pc, data: true })
   .then(offer =>
     pc.setLocalDescription(offer)
     .then(() => generateAnswer(offer)))
@@ -100,5 +99,34 @@ promise_test(t => {
     validateSctpTransport(sctp);
   });
 }, 'setLocalDescription() with answer containing data media should initialize pc.sctp');
+
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.sctp, null, 'RTCSctpTransport must be null');
+
+  return generateOffer({ pc, audio: true })
+  .then(offer =>
+    pc.setLocalDescription(offer)
+    .then(() => generateAnswer(offer)))
+  .then(answer => pc.setRemoteDescription(answer))
+  .then(() => {
+    const { sctp } = pc;
+    validateSctpTransport(sctp);
+  });
+}, 'setRemoteDescription() with answer containing no data media should not initialize pc.sctp');
+
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  assert_equals(pc.sctp, null, 'RTCSctpTransport must be null');
+
+  return generateOffer({ pc, audio: true })
+  .then(offer => pc.setRemoteDescription(offer))
+  .then(() => pc.createAnswer())
+  .then(answer => pc.setLocalDescription(answer))
+  .then(() => {
+    const { sctp } = pc;
+    validateSctpTransport(sctp);
+  });
+}, 'setLocalDescription() with answer containing no data media should not initialize pc.sctp');
 
 </script>

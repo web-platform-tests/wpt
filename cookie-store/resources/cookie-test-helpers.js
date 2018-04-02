@@ -1,70 +1,13 @@
 'use strict';
 
-// Length of final setTimeout when observer callback has not fired.
-//
-const kExtraObserverDelay = 0;  // For builtin implementation
-
-// NOTE: A polyfill was used for pre-implementation testing. To revive
-// it uncomment these and comment out the preceding line:
-//
-// const kExtraObserverDelay = 200;  // Polyfill when not running on battery
-// // const kExtraObserverDelay = 5000;  // ... when running on battery
-// document.open();
-// document.write(`
-//   <script>delete cookieStore</script>
-//   <script src="https://wicg.github.io/cookie-store/cookies.js">
-//   </script>
-// `);
-// document.close()
-
-// See https://github.com/whatwg/html/pull/3011#issuecomment-331187136
-// and https://www.chromestatus.com/feature/6170540112871424
-const kMetaHttpEquivSetCookieIsGone = true;
+// TODO(jsbell): Once ServiceWorker is supported, add arbitrary path coverage.
+const kPath = location.pathname.replace(/[^/]+$/, '');
 
 // True when running in a document context as opposed to a worker context
 const kHasDocument = typeof document !== 'undefined';
 
-// Override for named test inclusion. Set by suite().
-let testOverride = undefined;
-
-// Determines whether the named test should be included in this run of the
-// suite. Only usable in a test runner context as this uses assert_equals.
-//
-// Parameters:
-//
-// - testName: (string) test name; must be an identifier starting with 'test'
-// - opt_excludeFromAll: (optional; boolean) if true, explicit or implicit
-//   #...&test=all (which is the default) will not activate this test.
-const includeTest = (testName, opt_excludeFromAll) => {
-  assert_equals(!!testName.match(/^test\w+/), true, 'includeTest: ' + testName);
-  assert_equals(typeof eval(testName), 'function', 'includeTest: ' + testName);
-  let testParams =
-        (location.hash || '#').substr(1).split('&').filter(
-            x => x.match(/^test=/)).map(x => decodeURIComponent(x));
-  if (!testParams.length) {
-    testParams = ['test=all'];
-    if (testOverride !== undefined) {
-      testParams = ['test=' + testOverride];
-    }
-  }
-  const filterSet =
-        testParams.map(x => x.split('=', 2)[1]).join(',').split(',').reduce(
-            (set, name) => Object.assign(set, {[name]: true}), {});
-  for (let name in filterSet) {
-    if (name === 'all' || !filterSet.hasOwnProperty(name)) continue;
-    assert_equals(!!name.match(/^test\w+/), true, '#test=' + testName);
-    assert_equals(typeof eval(name), 'function', '#test=' + testName);
-  }
-  return (filterSet.all && !opt_excludeFromAll) ||
-      filterSet.hasOwnProperty(testName) && filterSet[testName];
-}
-
 // True when running on unsecured 'http:' rather than secured 'https:'.
 const kIsUnsecured = location.protocol !== 'https:';
-
-// True when no CGI/no active wptserve handlers should be used.
-const kIsStatic = !!((location.hash || '#').match(/(^#|&)static=true(&|$)/) ||
-                     location.pathname.match(/_static\./));
 
 const kCookieHelperCgi = 'resources/cookie_helper.py';
 
@@ -79,13 +22,13 @@ const kCookieHelperCgi = 'resources/cookie_helper.py';
 // - promise: (thenable) test code
 // - message: (optional; string) message to forward to promise_rejects in
 //   unsecured context
-const promise_rejects_when_unsecured = async (
-    testCase,
-    code,
-    promise,
-    message = 'Feature unavailable from unsecured contexts'
-) => {
-  if (kIsUnsecured) await promise_rejects(testCase, code, promise, message);
+async function promise_rejects_when_unsecured(
+  testCase,
+  code,
+  promise,
+  message = 'Feature unavailable from unsecured contexts') {
+  if (kIsUnsecured)
+    await promise_rejects(testCase, code, promise, message);
   else await promise;
 };
 
@@ -97,9 +40,11 @@ const promise_rejects_when_unsecured = async (
 //
 // Returns a string serializing the records, or undefined if no records were
 // given.
-const cookieString = cookies => cookies.length ? cookies.map((
+function cookieString(cookies) {
+  return cookies.length ? cookies.map((
     {name, value}) => (name ? (name + '=') : '') + value).join('; ') :
-      undefined;
+  undefined;
+}
 
 // Approximate async equivalent to the document.cookie getter but with
 // important differences: optional additional getAll arguments are
@@ -110,7 +55,7 @@ const cookieString = cookies => cookies.length ? cookies.map((
 // assert_equals in failing cases than assert_object_equals would
 // using parsed cookie jar contents and also allows expectations to be
 // written more compactly.
-const getCookieString = async (...args) => {
+async function getCookieString(...args) {
   return cookieString(await cookieStore.getAll(...args));
 }
 
@@ -120,8 +65,7 @@ const getCookieString = async (...args) => {
 //
 // Unlike document.cookie, this returns undefined when no cookies are
 // present.
-const getCookieStringHttp = async (extraPath = null) => {
-  if (kIsStatic) throw 'CGI not available in static HTML test';
+async function getCookieStringHttp(extraPath = null) {
   const url =
         kCookieHelperCgi + ((extraPath == null) ? '' : ('/' + extraPath));
   const response = await fetch(url, { credentials: 'include' });
@@ -134,7 +78,8 @@ const getCookieStringHttp = async (extraPath = null) => {
       response.headers.get('content-type'),
       'text/plain; charset=utf-8',
       'CGI did not return UTF-8 text in getCookieStringHttp');
-  if (text === '') return undefined;
+  if (text === '')
+    return undefined;
   assert_equals(
       text.indexOf('cookie='),
       0,
@@ -148,8 +93,7 @@ const getCookieStringHttp = async (extraPath = null) => {
 //
 // Unlike document.cookie, this returns undefined when no cookies are
 // present.
-const getCookieBinaryHttp = async (extraPath = null) => {
-  if (kIsStatic) throw 'CGI not available in static HTML test';
+async function getCookieBinaryHttp(extraPath = null) {
   const url =
         kCookieHelperCgi +
         ((extraPath == null) ?
@@ -165,7 +109,8 @@ const getCookieBinaryHttp = async (extraPath = null) => {
       response.headers.get('content-type'),
       'text/plain; charset=iso-8859-1',
       'CGI did not return ISO 8859-1 text in getCookieBinaryHttp');
-  if (text === '') return undefined;
+  if (text === '')
+    return undefined;
   assert_equals(
       text.indexOf('cookie='),
       0,
@@ -175,8 +120,7 @@ const getCookieBinaryHttp = async (extraPath = null) => {
 
 // Approximate async equivalent to the document.cookie setter but from
 // the server's point of view.
-const setCookieStringHttp = async setCookie => {
-  if (kIsStatic) throw 'CGI not available in static HTML test';
+async function setCookieStringHttp(setCookie) {
   const encodedSetCookie = encodeURIComponent(setCookie);
   const url = kCookieHelperCgi;
   const headers = new Headers();
@@ -205,13 +149,12 @@ const setCookieStringHttp = async setCookie => {
       text,
       'set-cookie=' + encodedSetCookie,
       'CGI did not faithfully echo the set-cookie value');
-};
+}
 
 // Approximate async equivalent to the document.cookie setter but from
 // the server's point of view. This version sets a binary cookie rather
 // than a UTF-8 one.
-const setCookieBinaryHttp = async setCookie => {
-  if (kIsStatic) throw 'CGI not available in static HTML test';
+async function setCookieBinaryHttp(setCookie) {
   const encodedSetCookie = escape(setCookie).split('/').join('%2F');
   const url = kCookieHelperCgi + '?charset=iso-8859-1';
   const headers = new Headers();
@@ -238,49 +181,90 @@ const setCookieBinaryHttp = async setCookie => {
       text,
       'set-cookie=' + encodedSetCookie,
       'CGI did not faithfully echo the set-cookie value');
-};
-
-// Approximate async equivalent to the document.cookie setter but using
-// <meta http-equiv="set-cookie" content="..."> written into a temporary
-// IFRAME. Merely appending the node to HEAD works in some browsers (e.g.
-// Chromium) but not others (e.g. Firefox.)
-const setCookieStringMeta = async setCookie => {
-  if (document.readyState !== 'complete') {
-    await new Promise(resolve => addEventListener('load', resolve, true));
-  }
-  const meta = Object.assign(document.createElement('meta'), {
-    httpEquiv: 'set-cookie',
-    content: setCookie
-  });
-  const ifr = document.createElement('iframe');
-  await new Promise(resolve => document.body.appendChild(Object.assign(
-      ifr,
-      {
-        onload: resolve
-      })));
-  try {
-    ifr.contentWindow.document.open('text/html; charset=utf-8');
-    ifr.contentWindow.document.write([
-      '<!DOCTYPE html>',
-      '<meta charset="utf-8">',
-      meta.outerHTML
-    ].join('\r\n'));
-    ifr.contentWindow.document.close();
-  } finally {
-    if (ifr.parentNode) ifr.parentNode.removeChild(ifr);
-  }
-};
+}
 
 // Async document.cookie getter; converts '' to undefined which loses
 // information in the edge case where a single ''-valued anonymous
 // cookie is visible.
-const getCookieStringDocument = async () => {
-  if (!kHasDocument) throw 'document.cookie not available in this context';
+async function getCookieStringDocument() {
+  if (!kHasDocument)
+    throw 'document.cookie not available in this context';
   return String(document.cookie || '') || undefined;
-};
+}
 
 // Async document.cookie setter
-const setCookieStringDocument = async setCookie => {
-  if (!kHasDocument) throw 'document.cookie not available in this context';
+async function setCookieStringDocument(setCookie) {
+  if (!kHasDocument)
+    throw 'document.cookie not available in this context';
   document.cookie = setCookie;
-};
+}
+
+// Observe the next 'change' event on the cookieStore. Typical usage:
+//
+//   const eventPromise = observeNextCookieChangeEvent();
+//   await /* something that modifies cookies */
+//   await verifyCookieChangeEvent(
+//     eventPromise, {changed: [{name: 'name', value: 'value'}]});
+//
+function observeNextCookieChangeEvent() {
+  return new Promise(resolve => {
+    cookieStore.addEventListener('change', e => resolve(e), {once: true});
+  });
+}
+
+async function verifyCookieChangeEvent(eventPromise, expected, description) {
+  description = description ? description + ': ' : '';
+  expected = Object.assign({changed:[], deleted:[]}, expected);
+  const event = await eventPromise;
+  assert_equals(event.changed.length, expected.changed.length,
+               description + 'number of changed cookies');
+  for (let i = 0; i < event.changed.length; ++i) {
+    assert_equals(event.changed[i].name, expected.changed[i].name,
+                 description + 'changed cookie name');
+    assert_equals(event.changed[i].value, expected.changed[i].value,
+                 description + 'changed cookie value');
+  }
+  assert_equals(event.deleted.length, expected.deleted.length,
+               description + 'number of deleted cookies');
+  for (let i = 0; i < event.deleted.length; ++i) {
+    assert_equals(event.deleted[i].name, expected.deleted[i].name,
+                 description + 'deleted cookie name');
+    assert_equals(event.deleted[i].value, expected.deleted[i].value,
+                 description + 'deleted cookie value');
+  }
+}
+
+// Helper function for promise_test with cookies; cookies
+// named in these tests are cleared before/after the test
+// body function is executed.
+async function cookie_test(func, description) {
+
+  // Wipe cookies used by tests before and after the test.
+  async function deleteTestCookies() {
+    await cookieStore.delete('');
+    await cookieStore.delete('TEST');
+    await cookieStore.delete('META-🍪');
+    await cookieStore.delete('DOCUMENT-🍪');
+    await cookieStore.delete('HTTP-🍪');
+    await setCookieStringHttp(
+      'HTTPONLY-🍪=DELETED; path=/; max-age=0; httponly');
+    if (!kIsUnsecured) {
+      await cookieStore.delete('__Host-COOKIENAME');
+      await cookieStore.delete('__Host-1🍪');
+      await cookieStore.delete('__Host-2🌟');
+      await cookieStore.delete('__Host-3🌱');
+      await cookieStore.delete('__Host-unordered1🍪');
+      await cookieStore.delete('__Host-unordered2🌟');
+      await cookieStore.delete('__Host-unordered3🌱');
+    }
+  }
+
+  return promise_test(async t => {
+    await deleteTestCookies();
+    try {
+      return await func(t);
+    } finally {
+      await deleteTestCookies();
+    }
+  }, description);
+}

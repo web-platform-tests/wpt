@@ -1,0 +1,140 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.close</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  6.2. close()
+
+       Closes the RTCDataChannel. It may be called regardless of whether the RTCDataChannel object
+       was created by this peer or the remote peer.
+
+       When the close method is called, the user agent MUST run the following steps:
+
+       1. Let channel be the RTCDataChannel object which is about to be closed.
+       2. If channel's [[ReadyState]] slot is closing or closed, then abort these steps.
+       3. Set channel's [[ReadyState]] slot to closing.
+       4. If the closing procedure has not started yet, start it.
+ */
+test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  const dc = pc.createDataChannel('test');
+
+  // Note: Since the closing procedure requires to queue a task,
+  //       the channel should not be closed at this point.
+  dc.close();
+  assert_equals(dc.readyState, 'closing', 'dc should be closing after calling close()');
+}, 'In-band data channel closing before connection establishment');
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  createDataChannelPair(pc1, pc2, 'onclose')
+  .then(([dc1, _]) => {
+    // Note: Since the closing procedure requires to queue a task,
+    //       the channel should not be closed at this point.
+    dc1.close();
+    assert_equals(dc1.readyState, 'closing', 'dc1 should be closing after calling close()');
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+
+  t.step_timeout(t.step_func_done(), 200);
+}, 'In-band data channel closing after connection establishment');
+
+/*
+  6.2. An RTCDataChannel object's underlying data transport may be torn down in a non-abrupt
+       manner by running the closing procedure. When that happens the user agent MUST, unless the
+       procedure was initiated by the close method, queue a task that sets the object's
+       [[ReadyState]] slot to closing. This will eventually render the data transport closed.
+
+       When an RTCDataChannel object's underlying data transport has been closed, the user agent
+       MUST queue a task to run the following steps:
+
+       1. Let channel be the RTCDataChannel object whose transport was closed.
+       2. Set channel's [[ReadyState]] slot to closed.
+       4. Fire a simple event named close at channel.
+ */
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  createDataChannelPair(pc1, pc2, 'onclose')
+  .then(([dc1, dc2]) => {
+    // We're closing on dc1, so dc2 should fire
+    // TODO: It is currently not clear whether dc1 should fire or not, see
+    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+    dc2.onclose = t.step_func(() => {
+      assert_equals(dc2.readyState, 'closed', 'dc2 should be closed after onclose has been raised');
+      t.done();
+    });
+
+    dc1.close();
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+
+  t.step_timeout(t.step_func_done(), 200);
+}, 'In-band data channel closing should be synchronized across peers');
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const dc1 = pc1.createDataChannel({
+    negotiated: true,
+    id: 42
+  });
+  const dc2 = pc2.createDataChannel({
+    negotiated: true,
+    id: 42
+  });
+
+  dc1.onopen = t.step_func(() => {
+    dc1.close();
+  });
+
+  // We're closing on dc1, so dc2 should fire
+  // TODO: It is currently not clear whether dc1 should fire or not, see
+  //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+  dc2.onclose = t.step_func(() => {
+    assert_equals(dc2.readyState, 'closed', 'dc2 should be closed after onclose has been raised');
+    t.done();
+  });
+
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+
+  t.step_timeout(t.step_func_done(), 200);
+}, 'Negotiated data channel closing should be synchronized across peers');
+
+/*
+  Untestable:
+
+  6.2.
+
+       When an RTCDataChannel object's underlying data transport has been closed, the user agent
+       MUST queue a task to run the following steps:
+
+         3. If the transport was closed with an error, fire an RTCError event at channel with
+          errorDetail set to "sctp-failure".
+ */
+
+</script>

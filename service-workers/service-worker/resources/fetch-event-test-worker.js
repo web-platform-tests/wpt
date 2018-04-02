@@ -130,7 +130,11 @@ function handleKeepalive(event) {
 }
 
 function handleIsReloadNavigation(event) {
-  event.respondWith(new Response(event.request.isReloadNavigation));
+  const request = event.request;
+  const body =
+    `method = ${request.method}, ` +
+    `isReloadNavigation = ${request.isReloadNavigation}`;
+  event.respondWith(new Response(body));
 }
 
 self.addEventListener('fetch', function(event) {

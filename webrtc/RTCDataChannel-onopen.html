@@ -29,12 +29,16 @@ async_test(t => {
 
   // Create a channel on pc1
   const dc = pc1.createDataChannel('onopen');
-  dc.onopen = () => {
+  dc.onopen = t.step_func(() => {
     assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
     t.done();
-  };
+  });
 
-  doSignalingHandshake(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+
+  t.step_timeout(t.step_func_done(), 200);
 }, 'Data channel onopen event should be fired when the data channel opens');
 
 </script>

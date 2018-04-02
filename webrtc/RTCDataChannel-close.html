@@ -129,12 +129,29 @@ async_test(t => {
   Untestable:
 
   6.2.
-
        When an RTCDataChannel object's underlying data transport has been closed, the user agent
        MUST queue a task to run the following steps:
 
          3. If the transport was closed with an error, fire an RTCError event at channel with
           errorDetail set to "sctp-failure".
+
+       Note: We cannot test this since we cannot provoke an SCTP error.
+
+  6.2.
+      In some cases, the user agent may be unable to create an RTCDataChannel's underlying data
+      transport. For example, the data channel's id may be outside the range negotiated by the
+      [RTCWEB-DATA] implementations in the SCTP handshake. When the user agent determines that an
+      RTCDataChannel's underlying data transport cannot be created, the user agent MUST queue a
+      task to run the following steps:
+
+      1. Let channel be the RTCDataChannel object for which the user agent could not create an
+         underlying data transport.
+      2. Set channel's [[ReadyState]] slot to closed.
+      3. Fire an RTCError event at channel with errorDetail set to "data-channel-failure".
+      4. Fire a simple event named close at channel.
+
+      Note: We cannot test this since there is no way of knowing how many SCTP streams have
+            been negotiated.
  */
 
 </script>

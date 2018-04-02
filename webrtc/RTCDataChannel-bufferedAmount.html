@@ -7,8 +7,8 @@
 <script>
   'use strict';
 
-  // Test is based on the following editor draft:
-  // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
+  // Test is based on the following revision:
+  // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //  createDataChannelPair
@@ -35,9 +35,12 @@
         execution of the current task, regardless of whether the user agent is able
         to transmit text asynchronously with script execution.) This does not include
         framing overhead incurred by the protocol, or buffering done by the operating
-        system or network hardware. If the channel is closed, this attribute's value
-        will only increase with each call to the send() method (the attribute does not
-        reset to zero once the channel closes).
+        system or network hardware. The value of the [[BufferedAmount]] slot will only
+        increase with each call to the send() method as long as the [[ReadyState]] slot
+        is open; however, the slot does not reset to zero once the channel closes. When
+        the underlying data transport sends data from its queue, the user agent MUST
+        queue a task that reduces [[BufferedAmount]] with the number of bytes that was
+        sent.
 
 
     [WebMessaging]

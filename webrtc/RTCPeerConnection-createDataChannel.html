@@ -354,6 +354,19 @@ test(() => {
 }, 'createDataChannel with too long label should throw TypeError');
 
 /*
+  6.2.  label
+        [...] Scripts are allowed to create multiple RTCDataChannel objects with the same label.
+        [...]
+ */
+test(t => {
+  const pc = new RTCPeerConnection();
+  const label = 'test';
+
+  pc.createDataChannel(label);
+  pc.createDataChannel(label);
+}, 'createDataChannel with same label used twice should not throw');
+
+/*
   6.2.  createDataChannel
     13. If [[DataChannelProtocol]] is longer than 65535 bytes long, throw a TypeError.
  */
@@ -428,6 +441,7 @@ test(() => {
  */
 promise_test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
 
   const negotiatedChannel = pc.createDataChannel('negotiated-channel', {
     negotiated: true,
@@ -506,6 +520,7 @@ test(() => {
 // established.
 promise_test(t => {
   const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   const channel1 = pc.createDataChannel('channel-1', {
     negotiated: true,
     id: 42,

@@ -31,6 +31,3 @@
     }, "Clicking on an <a> element with a download attribute must not throw an exception");
   ]]></script>
 </svg>
-
-
-

@@ -525,6 +525,7 @@ def test_css_missing_file_manual():
     (b"""// META: timeout=long\n""", None),
     (b"""//  META: timeout=long\n""", None),
     (b"""// META: script=foo.js\n""", None),
+    (b"""// META: spec=foo.html\n""", None),
     (b"""# META:\n""", None),
     (b"""\n// META: timeout=long\n""", (2, "STRAY-METADATA")),
     (b""" // META: timeout=long\n""", (1, "INDENTED-METADATA")),

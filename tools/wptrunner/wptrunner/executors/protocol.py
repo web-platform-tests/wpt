@@ -267,7 +267,7 @@ class SendKeysProtocolPart(ProtocolPart):
 
     @abstractmethod
     def send_keys(self, element, keys):
-        """Perform a trusted click somewhere on a specific element.
+        """Send keys to a specific element.
 
         :param element: A protocol-specific handle to an element.
         :param keys: A protocol-specific handle to a string of input keys."""

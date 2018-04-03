@@ -85,9 +85,21 @@
                                                       y: centerPoint[1]});
         },
 
+        /**
+         * Send keys to an element
+         *
+         * This matches the behaviour of the {@link
+         * https://w3c.github.io/webdriver/webdriver-spec.html#element-send-keys|WebDriver
+         * Send Keys command}.
+         *
+         * @param {Element} element - element to send keys to
+         * @param {String} keys - keys to send to the element
+         * @returns {Promise} fulfilled after keys are sent, or rejected in
+         *                    the cases the WebDriver command errors
+         */
         send_keys: function(element, keys) {
             if (window.top !== window) {
-                return Promise.reject(new Error("can only click in top-level window"));
+                return Promise.reject(new Error("can only send keys in top-level window"));
             }
 
             if (!window.document.contains(element)) {
@@ -122,6 +134,13 @@
             return Promise.reject(new Error("unimplemented"));
         },
 
+        /**
+         * Triggers a user-initated click
+         *
+         * @param {Element} element - element to be clicked
+         * @param {String} keys - keys to send to the element
+         * @returns {Promise} fulfilled after keys are sent or rejected if click fails
+         */
         send_keys: function(element, keys) {
             return Promise.reject(new Error("unimplemented"));
         }

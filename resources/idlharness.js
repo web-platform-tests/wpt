@@ -684,13 +684,12 @@ IdlArray.prototype.test = function()
     this["includes"] = {};
 
     // Assert B defined for A : B
-    for (var member of Object.values(this.members).filter(m => m.base)) {
-        let lhs = member.name;
-        let rhs = member.base;
-        if (!(lhs in this.members)) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is undefined.`);
+    for (const member of Object.values(this.members).filter(m => m.base)) {
+        const lhs = member.name;
+        const rhs = member.base;
         if (!(rhs in this.members)) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is undefined.`);
-        let lhs_is_interface = this.members[lhs] instanceof IdlInterface;
-        let rhs_is_interface = this.members[rhs] instanceof IdlInterface;
+        const lhs_is_interface = this.members[lhs] instanceof IdlInterface;
+        const rhs_is_interface = this.members[rhs] instanceof IdlInterface;
         if (rhs_is_interface != lhs_is_interface) {
             if (!lhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is not an interface.`);
             if (!rhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is not an interface.`);

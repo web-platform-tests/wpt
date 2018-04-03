@@ -84,7 +84,7 @@
   },
   {
     "input": "text/html;charset=';charset=GBK",
-    "output": "text/html;charset=';charset=GBK",
+    "output": "text/html;charset='",
     "navigable": true,
     "encoding": null
   },
@@ -127,6 +127,18 @@
   },
   {
     "input": "text/html;charset=();charset=GBK",
+    "output": "text/html;charset=GBK",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset= \"\u007F;charset=GBK",
+    "output": "text/html;charset=GBK",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"\u007F;charset=foo\";charset=GBK",
     "output": "text/html;charset=GBK",
     "navigable": true,
     "encoding": "GBK"

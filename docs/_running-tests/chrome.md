@@ -13,8 +13,7 @@ run Chrome Dev on Linux:
 
 Extra arguments to Chrome can be passed with `--binary-args`.
 
-To enable all [experimental web platform features](https://www.chromium.org/blink/runtime-enabled-features)
-[Experimental Web Platform features](chrome://flags/#enable-experimental-web-platform-features):
+To enable all [experimental web platform features](https://www.chromium.org/blink/runtime-enabled-features) (chrome://flags/#enable-experimental-web-platform-features):
 
 ```
 ./wpt run --binary-arg=--enable-experimental-web-platform-features chrome fullscreen/

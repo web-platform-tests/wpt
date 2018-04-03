@@ -186,6 +186,12 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "text/html;charset=\";charset=GBK",
+    "output": "text/html;charset=\";charset=GBK\"",
+    "navigable": true,
+    "encoding": null
+  },
   "Unexpected code points",
   {
     "input": "text/html;charset={gbk}",

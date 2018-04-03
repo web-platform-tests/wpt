@@ -466,6 +466,9 @@ class SourceFile(object):
         for item in self.spec_link_nodes:
             if "href" in item.attrib:
                 rv.add(item.attrib["href"].strip(space_chars))
+        if self.script_metadata:
+            for item in filter(lambda x: x[0] == b"spec", self.script_metadata):
+                rv.add(item[1].strip(space_chars))
         return rv
 
     @cached_property

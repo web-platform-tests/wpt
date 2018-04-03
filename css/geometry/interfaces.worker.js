@@ -1,8 +1,9 @@
+// META: spec=https://drafts.fxtf.org/geometry/#DOMPoint
+// META: spec=https://drafts.fxtf.org/geometry/#DOMRect
+// META: spec=https://drafts.fxtf.org/geometry/#DOMQuad
+// META: spec=https://drafts.fxtf.org/geometry/#DOMMatrix
+
 "use strict";
-// https://drafts.fxtf.org/geometry/#DOMPoint
-// https://drafts.fxtf.org/geometry/#DOMRect
-// https://drafts.fxtf.org/geometry/#DOMQuad
-// https://drafts.fxtf.org/geometry/#DOMMatrix
 
 importScripts("/resources/testharness.js");
 importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");

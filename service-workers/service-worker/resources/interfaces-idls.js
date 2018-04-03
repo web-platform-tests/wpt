@@ -34,7 +34,6 @@ interface Client {
   readonly attribute USVString url;
   readonly attribute DOMString id;
   readonly attribute ClientType type;
-  readonly attribute boolean reserved;
   void postMessage(any message, optional sequence<object> transfer = []);
 };
 

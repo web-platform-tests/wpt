@@ -34,23 +34,19 @@ test(t => {
   assert_equals(dc.readyState, 'closing', 'dc should be closing after calling close()');
 }, 'In-band data channel closing before connection establishment');
 
-async_test(t => {
+promise_test(t => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  createDataChannelPair(pc1, pc2, 'onclose')
+  return createDataChannelPair(pc1, pc2, 'onclose')
   .then(([dc1, _]) => {
     // Note: Since the closing procedure requires to queue a task,
     //       the channel should not be closed at this point.
     dc1.close();
     assert_equals(dc1.readyState, 'closing', 'dc1 should be closing after calling close()');
-  })
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
+  });
 }, 'In-band data channel closing after connection establishment');
 
 /*
@@ -86,8 +82,6 @@ async_test(t => {
   })
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'In-band data channel closing should be synchronized across peers');
 
 async_test(t => {
@@ -96,11 +90,11 @@ async_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const dc1 = pc1.createDataChannel({
+  const dc1 = pc1.createDataChannel('onclose', {
     negotiated: true,
     id: 42
   });
-  const dc2 = pc2.createDataChannel({
+  const dc2 = pc2.createDataChannel('onclose', {
     negotiated: true,
     id: 42
   });
@@ -121,8 +115,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'Negotiated data channel closing should be synchronized across peers');
 
 /*

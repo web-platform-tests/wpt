@@ -48,6 +48,10 @@
     0xe4, 0xb8, 0x96, 0xe7, 0x95, 0x8c,
     0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd);
 
+  // Empty buffers
+  const emptyBuffer = new Uint8Array(0);
+  const emptyBlob = new Blob([emptyBuffer]);
+
   /*
       6.2.  send()
         2.  If channel's [[ReadyState]] slot is not open, throw an InvalidStateError.
@@ -247,6 +251,41 @@
       assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
     });
   }, 'Data channel should be able to send ArrayBuffer message and receive as Blob');
+
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([dc1, dc2]) => {
+      dc1.send('');
+      t.step_timeout(() => assert_unreached('Receiving empty string timed out'), 100);
+      return awaitMessage(dc2)
+    }).then(message => {
+      assert_equals(message, '', 'Data should be an empty string');
+    });
+  }, 'Data channel should be able to transmit an empty string');
+
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([dc1, dc2]) => {
+      dc2.binaryType = 'arraybuffer';
+      dc1.send(emptyBuffer);
+      t.step_timeout(() => assert_unreached('Receiving empty buffer timed out'), 100);
+      return awaitMessage(dc2)
+    }).then(messageBuffer => {
+      assert_equals(messageBuffer.byteLength, 0, 'Data should be an empty ArrayBuffer');
+    });
+  }, 'Data channel should be able to transmit an empty Uint8Array');
+
+  promise_test(t => {
+    return createDataChannelPair()
+    .then(([dc1, dc2]) => {
+      dc2.binaryType = 'blob';
+      dc1.send(emptyBlob);
+      t.step_timeout(() => assert_unreached('Receiving empty buffer timed out'), 100);
+      return awaitMessage(dc2)
+    }).then(messageBlob => {
+      assert_equals(messageBlob.size, 0, 'Data should be an empty Blob');
+    });
+  }, 'Data channel should be able to transmit an empty Blob');
 
   /*
     6.2.  RTCDataChannel

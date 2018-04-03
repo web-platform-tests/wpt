@@ -231,7 +231,7 @@ class MarionettePrefsProtocolPart(PrefsProtocolPart):
                 case prefInterface.PREF_BOOL:
                     prefInterface.setBoolPref(pref, value);
                     break;
-                case prefInterface.PREF_INT:SendKeysProtocolPart
+                case prefInterface.PREF_INT:
                     prefInterface.setIntPref(pref, value);
                     break;
             }

@@ -48,8 +48,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'bufferedamountlow event should fire once bufferedAmount <= 0 (default)');
 
 async_test(t => {
@@ -78,8 +76,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'bufferedamountlow event should fire once bufferedAmount <= 1 (custom)');
 
 async_test(t => {
@@ -108,8 +104,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'bufferedamountlow event should fire once bufferedAmount <= 20 (when sending less than that)');
 
 async_test(t => {
@@ -127,7 +121,7 @@ async_test(t => {
 
   // Done once the event has been raised (and the other channel did not fire)
   dc1.onbufferedamountlow = t.step_func(() => {
-    setTimeout(t.step_func(() => t.done()), 100);
+    t.step_timeout(() => t.step_func_done(), 100);
   });
 
   const dc2 = pc1.createDataChannel('test-2');
@@ -139,8 +133,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 500);
 }, 'bufferedamountlow event should not fire on other channels');
 
 </script>

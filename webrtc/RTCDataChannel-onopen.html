@@ -37,8 +37,6 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-
-  t.step_timeout(t.step_func_done(), 200);
 }, 'Data channel onopen event should be fired when the data channel opens');
 
 </script>

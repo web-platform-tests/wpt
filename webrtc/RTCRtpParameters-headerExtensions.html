@@ -63,6 +63,37 @@
 
     param.headerExtensions = [{
       uri: 'non-existent.example.org',
+      id: 404
+    }];
+
+    return promise_rejects(t, 'InvalidModificationError',
+      sender.setParameters(param));
+
+  }, `setParameters() with modified headerExtensions should reject with InvalidModificationError, checks that encrypted is declared false`);
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    const { sender } = pc.addTransceiver('audio');
+    const param = sender.getParameters();
+    validateSenderRtpParameters(param);
+
+    param.headerExtensions = [{
+      uri: 'non-existent.example.org',
+      encrypted: false
+    }];
+
+    return promise_rejects(t, 'InvalidModificationError',
+      sender.setParameters(param));
+
+  }, `setParameters() with modified headerExtensions should reject with InvalidModificationError, checks that id is a required field`);
+
+  promise_test(t => {
+    const pc = new RTCPeerConnection();
+    const { sender } = pc.addTransceiver('audio');
+    const param = sender.getParameters();
+    validateSenderRtpParameters(param);
+
+    param.headerExtensions = [{
       id: 404,
       encrypted: false
     }];
@@ -70,6 +101,6 @@
     return promise_rejects(t, 'InvalidModificationError',
       sender.setParameters(param));
 
-  }, `setParameters() with modified headerExtensions should reject with InvalidModificationError`);
+  }, `setParameters() with modified headerExtensions should reject with InvalidModificationError, checks that uri is a required field`);
 
 </script>

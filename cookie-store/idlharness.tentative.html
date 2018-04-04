@@ -17,7 +17,7 @@ promise_test(async t => {
   const idl_array = new IdlArray();
 
   // Dependencies of HTML
-  idl_array.add_untested_idls(dom, { only: ['Event', 'EventInit', 'EventTarget', 'HTMLCollection'] });
+  idl_array.add_untested_idls(dom, { only: ['Event', 'EventInit', 'EventTarget', 'HTMLCollection', 'NodeList'] });
   idl_array.add_untested_idls('interface Document {};');
   idl_array.add_untested_idls('interface LinkStyle {};');
   idl_array.add_untested_idls('interface SVGElement {};');

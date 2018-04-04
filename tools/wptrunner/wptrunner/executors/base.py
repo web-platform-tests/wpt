@@ -584,16 +584,16 @@ class ActionsAction(object):
 
     def __call__(self, payload):
         actions = payload["actions_list"]
-        args = result["args_list"]
+        args = payload["args_list"]
 
         # create the initial ActionChains object
-        action_chain = self.protocol.actions()
+        action_chain = self.protocol.actions.actions()
         for sub_action, sub_args in zip(actions, args):
             if sub_action == "click":
                 if len(sub_args) == 0:
                     action_chain.click()
                 elif len(sub_args) == 1:
-                    element = self.protocol.select.elements_by_selector(sub_args[0])
+                    element = self.protocol.select.elements_by_selector(sub_args[0])[0]
                     action_chain.click(element)
                 else:
                     raise ValueError("Adding action failed: {}, not the right number of arguments!".format("click"))
@@ -604,7 +604,7 @@ class ActionsAction(object):
                 if len(sub_args) == 0:
                     action_chain.click_and_hold()
                 elif len(sub_args) == 1:
-                    element = self.elements_by_selector(sub_args[0])
+                    element = self.elements_by_selector(sub_args[0])[0]
                     action_chain.click_and_hold(element)
                 else:
                     self._send_message("complete",
@@ -617,7 +617,7 @@ class ActionsAction(object):
                 if len(sub_args) == 0:
                     action_chain.context_click()
                 elif len(sub_args) == 1:
-                    element = self.elements_by_selector(sub_args[0])
+                    element = self.elements_by_selector(sub_args[0])[0]
                     action_chain.context_click(element)
                 else:
                     self._send_message("complete",
@@ -630,7 +630,7 @@ class ActionsAction(object):
                 if len(sub_args) == 0:
                     action_chain.double_click()
                 elif len(sub_args) == 1:
-                    element = self.elements_by_selector(sub_args[0])
+                    element = self.elements_by_selector(sub_args[0])[0]
                     action_chain.double_click(element)
                 else:
                     self._send_message("complete",
@@ -645,8 +645,8 @@ class ActionsAction(object):
                                         "failure")
                     raise ValueError("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop"))
 
-                source_element = self.protocol.select.elements_by_selector(sub_args[0])
-                target_element = self.protocol.select.elements_by_selector(sub_args[1])
+                source_element = self.protocol.select.elements_by_selector(sub_args[0])[0]
+                target_element = self.protocol.select.elements_by_selector(sub_args[1])[0]
                 action_chain.drag_and_drop(source_element, target_element)
                 self.logger.debug("Added action to the current chain: {}, with args: {}".format("drag_and_drop", str(sub_args)))
 
@@ -703,11 +703,9 @@ class ActionsAction(object):
 
             elif sub_action == "move_to_element":
                 if len(sub_args) != 1:
-                    self._send_message("complete",
-                                        "failure")
                     raise ValueError("Adding action failed: {}, not the right number of arguments!".format("move_to_element"))
 
-                element = self.protocol.select.elements_by_selector(sub_args[0])
+                element = self.protocol.select.elements_by_selector(sub_args[0])[0]
                 action_chain.move_to_element(element)
                 self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_by_offset", str(sub_args)))
 
@@ -718,7 +716,7 @@ class ActionsAction(object):
                     raise ValueError("Adding action failed: {}, not the right number of arguments!".format("drag_and_drop_by_offset"))
 
                 css, x_offset, y_offset = sub_args
-                element = self.protocol.select.elements_by_selector(css)
+                element = self.protocol.select.elements_by_selector(css)[0]
                 action_chain.move_to_element_with_offset(element, x_offset, y_offset)
                 self.logger.debug("Added action to the current chain: {}, with args: {}".format("move_to_element_with_offset", str(sub_args)))
 
@@ -745,7 +743,7 @@ class ActionsAction(object):
                 if len(sub_args) == 0:
                     action_chain.release()
                 elif len(sub_args) == 1:
-                    element = protocol.select.elements_by_selector(sub_action[0])
+                    element = protocol.select.elements_by_selector(sub_args[0])[0]
                     action_chain.release(element)
                 else:
                     self._send_message("complete",

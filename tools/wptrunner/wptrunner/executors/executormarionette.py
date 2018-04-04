@@ -32,12 +32,10 @@ from .protocol import (BaseProtocolPart,
                        StorageProtocolPart,
                        SelectorProtocolPart,
                        ClickProtocolPart,
-                       ActionsProtocolPart,
                        SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
-
 
 def do_delayed_imports():
     global errors, marionette
@@ -47,7 +45,7 @@ def do_delayed_imports():
     try:
         import marionette
         from marionette import errors
-        from marionette_driver.marionette import Actions
+
     except ImportError:
         from marionette_driver import marionette, errors
 
@@ -310,13 +308,6 @@ class MarionetteClickProtocolPart(ClickProtocolPart):
     def element(self, element):
         return element.click()
 
-class MarionetteActionsProtocolPart(ActionsProtocolPart):
-    def setup(self):
-        self.marionette = self.parent.marionette
-    
-    def actions(self):
-        return Actions(self.marionette)
-
 class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
@@ -345,7 +336,6 @@ class MarionetteProtocol(Protocol):
                   MarionetteStorageProtocolPart,
                   MarionetteSelectorProtocolPart,
                   MarionetteClickProtocolPart,
-                  MarionetteActionsProtocolPart,
                   MarionetteSendKeysProtocolPart,
                   MarionetteTestDriverProtocolPart]
 

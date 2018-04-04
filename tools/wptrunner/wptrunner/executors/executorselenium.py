@@ -23,6 +23,7 @@ from .protocol import (BaseProtocolPart,
                        SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
+from selenium.webdriver.common.action_chains import ActionChains
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -38,8 +39,6 @@ def do_delayed_imports():
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
-    from selenium.webdriver.common.action_chains import ActionChains
-
 
 class SeleniumBaseProtocolPart(BaseProtocolPart):
     def setup(self):

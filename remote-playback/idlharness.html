@@ -20,7 +20,8 @@ interface EventTarget {};
 <script>
 "use strict"
 var idl_array = new IdlArray();
-function doTest(idl) {
+function doTest([html, idl]) {
+  idl_array.add_untested_idls(html, { only: ['HTMLElement'] });
   idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
   idl_array.add_idls(idl);
   idl_array.add_objects({
@@ -31,8 +32,11 @@ function doTest(idl) {
 }
 
 promise_test(function() {
-  return fetch("/interfaces/remoteplayback.idl")
-      .then(response => response.text())
+  return Promise.all(
+    [
+      "/interfacse/html.idl",
+      "/interfaces/remoteplayback.idl",
+    ].map(url => fetch(url).then(r => r.text())))
       .then(doTest);
 }, "Test driver");
 </script>

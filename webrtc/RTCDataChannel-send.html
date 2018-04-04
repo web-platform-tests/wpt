@@ -412,6 +412,7 @@
           expected or that TypeError is correctly raised.
   */
   const messageLengths = [
+    1024, // 1 KiB
     16384, // 16 KiB, was the maximum message size when sending from Firefox to Chrome
     65536, // 64 KiB, is the maximum message size in Chrome
     131072, // 128 KiB, violates the message-oriented principle when received by Chrome
@@ -458,9 +459,64 @@
             'Should throw TypeError in case the message is too large');
           t.done();
         }
-      }).catch(t.step_func(err =>
+      })
+      .catch(t.step_func(err =>
         assert_unreached(`Unexpected promise rejection: ${err}`)));
     }, `Sending and receiving ${messageLength} bytes should succeed or raise TypeError`);
+
+    async_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
+
+      const message = new Uint8Array(messageLength + 1).fill(0xfe);
+
+      createDataChannelPair(pc1, pc2, '╯°□°）╯︵ ┻━┻', undefined, {
+        answer: (answer) => {
+          // Lower the remote maximum message size (if needed)
+          const mmsAttribute = answer.sdp.match(/^a=max-message-size:(\d+)/m);
+          let mms = mmsAttribute === null ? 65536 : parseInt(mmsAttribute[1], 10);
+          if (mms === 0) {
+            mms = Number.POSITIVE_INFINITY;
+          }
+          if (messageLength < mms) {
+            if (mmsAttribute === null) {
+              answer.sdp = answer.sdp.replace(
+                /^(m=application \d+ [^ ]*DTLS\/SCTP[^\r\n]*\r\n)/m,
+                `$1a=max-message-size:${messageLength}\r\n`);
+            } else {
+              answer.sdp = answer.sdp.replace(/^(a=max-message-size:)(\d+)/m, `$1${messageLength}`);
+            }
+          }
+          return answer;
+        }
+      })
+      .then(([dc1, dc2]) => {
+        // Ensure the channels are not being closed
+        for (const dc of [dc1, dc2]) {
+          dc.onclose = t.step_func(() => {
+            assert_unreached('Channel should not become closed');
+          });
+        }
+
+        // Ensure no data reaches the other peer
+        dc2.onmessage = t.step_func(event => {
+          assert_unreached('Channel should not receive any data');
+        });
+
+        // Send or fail with TypeError
+        assert_throws(new TypeError(), () => dc1.send(message),
+          'Should throw TypeError in case the message is too large');
+        dc1.send(message);
+
+        // Give the implementation a chance to misbehave and close channels
+        // Note: Tested that in Chrome and it really needs the long timeout
+        t.step_timeout(t.step_func_done(), 10000)
+      })
+      .catch(t.step_func(err =>
+        assert_unreached(`Unexpected promise rejection: ${err}`)));
+    }, `Sending and receiving ${messageLength} +1 bytes should raise TypeError`);
   }
 
   // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1413198

@@ -13,11 +13,9 @@ async_test(function(t) {
   var target = document.getElementById("checkbox");
   target.addEventListener("pointermove", t.step_func_done(function() {
   }));
-  assert_true(test_driver.apple === "10");
 
-  test_driver.actions({}).then((function() {
-//   test_driver.actions([{"type": "click", "args": [{"type": "element", "arg": target}]}, {"type": "perform"}]).then((function() {
-      return;
-  })).catch(t.unreached_func("actions failed"));
+  test_driver.actions([{"type": "click", "args": [{"type": "element", "arg": target}]}, {"type": "perform"}]).then(
+    () => t.done()
+  ).catch(t.unreached_func("actions failed"));
 });
 </script>

@@ -501,7 +501,9 @@ class CallbackHandler(object):
         }
 
         self.actions = {
-            "click": ClickAction(self.logger, self.protocol)
+            "click": ClickAction(self.logger, self.protocol),
+            "send_keys": SendKeysAction(self.logger, self.protocol),
+            "actions": ActionsAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -544,7 +546,6 @@ class CallbackHandler(object):
     def _send_message(self, message_type, status, message=None):
         self.protocol.testdriver.send_message(message_type, status, message=message)
 
-
 class ClickAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -559,6 +560,22 @@ class ClickAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
         self.protocol.click.element(elements[0])
+
+class SendKeysAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        keys = payload["keys"]
+        elements = self.protocol.select.elements_by_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+        self.logger.debug("Sending keys to element: %s" % selector)
+        self.protocol.send_keys.send_keys(elements[0], keys)
 
 class ActionsAction(object):
     def __init__(self, logger, protocol):
@@ -769,3 +786,4 @@ class ActionsAction(object):
 
             else:
                 raise ValueError("Unknown action: {}".format(sub_action))
+

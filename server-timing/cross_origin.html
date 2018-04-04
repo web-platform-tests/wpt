@@ -7,10 +7,12 @@
     <script>
       setup({explicit_done: true})
 
-      const {location: {href}} = document
+      const {location: {href, hostname}} = document
       const urls = {}
       urls['same-origin'] = `${href.substring(0, href.lastIndexOf('/'))}/resources/blue.png`
-      urls['cross-origin'] = urls['same-origin'].replace('://', '://www.')
+      urls['cross-origin'] = hostname === 'localhost'
+        ? urls['same-origin'].replace('localhost', '127.0.0.1')
+        : urls['same-origin'].replace('web-platform.test', 'www.web-platform.test')
       Object.keys(urls).forEach(function(key) {
         const img = document.createElement('img')
         img.src = urls[key]

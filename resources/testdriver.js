@@ -84,9 +84,16 @@
                                                      {x: centerPoint[0],
                                                       y: centerPoint[1]});
         },
+
         actions: function(chain) {
-            return window.test_driver_internal.actions(chain)
-        }
+            return window.test_driver_internal.actions(chain);
+        },
+
+        click2: function(ye) {
+            return "10";
+        },
+
+        apple: "10"
     };
 
     window.test_driver_internal = {
@@ -100,6 +107,7 @@
         click: function(element, coords) {
             return Promise.reject(new Error("unimplemented"));
         },
+        
         actions: function(chain) {
             return Promise.reject(new Error("unimplemented"));
         }

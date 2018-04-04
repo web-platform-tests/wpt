@@ -19,6 +19,7 @@ from .protocol import (BaseProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       ActionsProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 
@@ -147,6 +148,7 @@ class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def send_message(self, message_type, status, message=None):
+        obj = {
             "type": "testdriver-%s" % str(message_type),
             "status": str(status)
         }

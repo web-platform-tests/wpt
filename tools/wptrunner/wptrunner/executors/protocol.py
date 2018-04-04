@@ -264,9 +264,10 @@ class ActionsProtocolPart(ProtocolPart):
     __metaclass__ = ABCMeta
 
     name = "actions"
-
+    
+    @abstractmethod
     def actions(self):
-        return ActionChains(self.parent.webdriver)
+        pass
 
 
 class TestDriverProtocolPart(ProtocolPart):

@@ -87,7 +87,7 @@ promise_test(t => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
 
-  return createDataChannelPair()
+  return createDataChannelPair(pc1, pc2)
   .then(() => {
     // Stop!
     pc1.close();

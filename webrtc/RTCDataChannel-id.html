@@ -192,6 +192,45 @@ promise_test(t => {
         OperationError exception.
  */
 
+// Ensure an ID cannot be reused before the former channel with the same ID has been closed.
+// See: https://bugs.chromium.org/p/chromium/issues/detail?id=559394
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  createDataChannelPair(pc1, pc2, 'test')
+  .then(([dc1, dc2]) => {
+    dc2.binaryType = 'arraybuffer';
+    let done = false;
+    assert_not_equals(dc1.id, null, 'Expect dc1.id to be assigned after dc1 opened');
+    const id = dc1.id;
+
+    dc2.onclose = t.step_func(() => {
+      // Give pc1 a chance to create the new data channel.
+      t.step_timeout(() => {
+        assert_true(done, 'pc1 should be done by now');
+        t.done();
+      }, 100);
+    });
+
+    // Close immediately and reuse the ID
+    // Note: Be aware that this is a race but the JS should always be faster than the reset
+    //       dance on the network.
+    dc1.close();
+    assert_throws('OperationError', () => {
+      pc1.createDataChannel('id-reuse', {
+        negotiated: true,
+        id: id
+      })
+    });
+    done = true;
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'ID reuse should not be possible before the former channel with the same ID closed');
+
 promise_test(t => {
   // Takes the DTLS server role
   const pc1 = new RTCPeerConnection();

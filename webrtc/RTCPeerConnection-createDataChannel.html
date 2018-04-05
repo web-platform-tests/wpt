@@ -550,8 +550,32 @@ promise_test(t => {
         id: 42,
       }));
   });
-}, 'Reusing a data channel id that is in use (after connection established) should throw ' +
+}, 'Reusing a data channel id that is in use (after setRemoteDescription) should throw ' +
    'OperationError');
+
+promise_test(t => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  const channel1 = pc.createDataChannel('channel-1');
+
+  return pc.createOffer()
+  .then(offer => pc.setLocalDescription(offer))
+  .then(() => generateAnswer(pc.localDescription))
+  .then(answer => pc.setRemoteDescription(answer))
+  .then(() => {
+    const pc = new RTCPeerConnection();
+
+    assert_not_equals(channel1.id, null,
+      'Expect channel1.id to be assigned after remote description has been set');
+
+    assert_throws('OperationError', () =>
+      pc.createDataChannel('channel-2', {
+        negotiated: true,
+        id: channel1.id,
+      }));
+  });
+}, 'Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) ' +
+  'should throw OperationError');
 
 /*
   Untestable

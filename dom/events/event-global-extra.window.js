@@ -15,6 +15,14 @@ const otherWindow = document.body.appendChild(document.createElement("iframe")).
 // https://github.com/heycam/webidl/issues/540
 
 async_test(t => {
+  const element = document.body.appendChild(otherWindow.document.createElement("meh"));
+  element.addEventListener("yo", t.step_func_done(e => {
+    assert_equals(e, window.event);
+  }));
+  element.dispatchEvent(new Event("yo"));
+}, "window.event and element from another document");
+
+async_test(t => {
   const host = document.createElement("div"),
         shadow = host.attachShadow({ mode: "open" }),
         child = shadow.appendChild(document.createElement("trala")),

@@ -7,7 +7,7 @@
 <script src=/html/webappapis/structured-clone/structured-clone-battery-of-tests.js></script>
 <script>
   // REMOVE ME
-  function structuredClone(obj) {
+  function structuredClone(obj, transferList) {
     return JSON.parse(JSON.stringify(obj));
   }
   structuredCloneBatteryOfTests({

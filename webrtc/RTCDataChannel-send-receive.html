@@ -526,36 +526,95 @@
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
-    // Note: Since this is a race, we need a large message. 1 MiB should be sufficient.
-    const message = new Uint8Array(1048576).fill(0xfe);
+    // Note: Since this is a race, we need a large amount of data. 1 MiB should be sufficient.
+    //       We're assuming the implementation can queue at least 16 messages of size 64 KiB.
+    //       The small message size has been chosen because every implementation supports 64 KiB.
+    const message = new Uint8Array(65536).fill(0xfe);
+    const nMessages = 16;
 
     createDataChannelPair(pc1, pc2)
     .then(([dc1, dc2]) => {
-      let received = false;
+      let nMessagesReceived = 0;
       dc2.binaryType = 'arraybuffer';
 
       // Ensure dc2 has received all data once being closed
       dc2.onclose = t.step_func(() => {
-        assert_true(received, 'Channel should have received data before becoming closed');
+        assert_equals(nMessagesReceived, nMessages,
+          'Remote channel should have received all data before becoming closed');
         t.done();
       });
 
-      // Ensure the data reaches the other peer
+      // Ensure the data reaches dc2
       dc2.onmessage = t.step_func(event => {
         const {data} = event;
-        assert_equals_array_buffer(data, message.buffer, 'Send data should equal receive data');
-        received = true;
+        assert_equals_array_buffer(data, message.buffer,
+          'Received data should be equal to sent data');
+        ++nMessagesReceived;
       });
 
-      // Send and close immediately
-      dc1.send(message);
+      // Fill the send buffer as fast as possible and close immediately
+      for (let i = 0; i < nMessages; ++i) {
+        dc1.send(message);
+      }
       dc1.close();
       t.step_timeout(() => {
         assert_unreached('Channel should have been closed by now (timeout reached)');
-      }, 5000);
+      }, 15000);
     }).catch(t.step_func(err =>
       assert_unreached(`Unexpected promise rejection: ${err}`)));
-  }, 'Closing a channel with outstanding data should transfer that data before becoming closed');
+  }, 'Closing a channel (local) with outstanding data should transfer that data before becoming ' +
+    'closed');
+
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // Note: Since this is a race, we need a large amount of data. 1 MiB should be sufficient.
+    //       We're assuming the implementation can queue at least 16 messages of size 64 KiB.
+    //       The small message size has been chosen because every implementation supports 64 KiB.
+    const message = new Uint8Array(65536).fill(0xfe);
+    const nMessages = 16;
+
+    createDataChannelPair(pc1, pc2, '╯°□°）╯︵ ┻━┻')
+    .then(([dc1, dc2]) => {
+      let closed = false;
+      let nMessagesReceived = 0;
+      dc2.binaryType = 'arraybuffer';
+
+      dc1.onclose = t.step_func(() => {
+        closed = true;
+      });
+
+      // Ensure dc2 has received all data once being closed
+      dc2.onclose = t.step_func(() => {
+        assert_equals(nMessagesReceived, nMessages,
+          'Remote channel should have received all data before becoming closed');
+        t.done();
+      });
+
+      // Ensure the data reaches dc2
+      dc2.onmessage = t.step_func(event => {
+        const {data} = event;
+        assert_equals_array_buffer(data, message.buffer,
+          'Received data should be equal to sent data');
+        ++nMessagesReceived;
+      });
+
+      // Fill the send buffer as fast as possible and let the other side close
+      for (let i = 0; i < nMessages; ++i) {
+        dc1.send(message);
+      }
+      dc2.close();
+      t.step_timeout(() => {
+        assert_unreached('Channel should have been closed by now (timeout reached)');
+      }, 15000);
+    })
+    .catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, 'Closing a channel (remote) with outstanding data should transfer that data before becoming' +
+    ' closed');
 
   /*
     Untestable

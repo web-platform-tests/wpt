@@ -23,6 +23,24 @@ async_test(t => {
 }, "window.event and element from another document");
 
 async_test(t => {
+  const doc = otherWindow.document,
+        element = doc.body.appendChild(doc.createElement("meh")),
+        child = element.appendChild(doc.createElement("bleh"));
+  element.addEventListener("yoyo", t.step_func(e => {
+    document.body.appendChild(element);
+    assert_equals(element.ownerDocument, document);
+    assert_equals(window.event, undefined);
+    assert_equals(otherWindow.event, e);
+  }), true);
+  child.addEventListener("yoyo", t.step_func_done(e => {
+    assert_equals(child.ownerDocument, document);
+    assert_equals(window.event, e);
+    assert_equals(otherWindow.event, undefined);
+  }));
+  child.dispatchEvent(new Event("yoyo"));
+}, "window.event and moving an element post-dispatch");
+
+async_test(t => {
   const host = document.createElement("div"),
         shadow = host.attachShadow({ mode: "open" }),
         child = shadow.appendChild(document.createElement("trala")),

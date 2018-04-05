@@ -31,11 +31,13 @@ promise_test(async t => {
   // Dependencies of HTML
   idl_array.add_untested_idls('interface LinkStyle {};');
   idl_array.add_untested_idls('interface SVGElement {};');
+  idl_array.add_untested_idls('interface WorkletGlobalScope {};');
   idl_array.add_untested_idls(html);
   idl_array.add_untested_idls(uievents, { only: [
     'MouseEvent',
     'MouseEventInit',
     'EventModifierInit',
+    'UIEvent',
     'UIEventInit',
   ]});
 

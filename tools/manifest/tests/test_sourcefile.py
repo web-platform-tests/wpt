@@ -263,6 +263,18 @@ test()"""
         assert item.timeout == "long"
 
 
+def test_spec_meta_tag():
+    contents = b"""// META: spec=foo.html
+importScripts('/resources/testharness.js')
+test()"""
+
+    metadata = list(read_script_metadata(BytesIO(contents), js_meta_re))
+    assert metadata == [(b"spec", b"foo.html")]
+
+    s = create("html/test.any.js", contents=contents)
+    assert "foo.html" in s.spec_links
+
+
 @pytest.mark.parametrize("input,expected", [
     (b"""//META: foo=bar\n""", [(b"foo", b"bar")]),
     (b"""// META: foo=bar\n""", [(b"foo", b"bar")]),
@@ -395,7 +407,7 @@ def test_testharness_svg():
     assert not s.name_is_worker
     assert not s.name_is_reference
 
-    assert s.root
+    assert len(s.root)
     assert s.content_is_testharness
 
     assert items(s) == [("testharness", "/" + filename)]
@@ -424,7 +436,7 @@ def test_relative_testharness_svg():
     assert not s.name_is_worker
     assert not s.name_is_reference
 
-    assert s.root
+    assert len(s.root)
     assert not s.content_is_testharness
 
     assert items(s) == []

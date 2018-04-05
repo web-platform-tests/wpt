@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/geometry/#DOMMatrix
+// META: spec=https://drafts.fxtf.org/geometry/#DOMMatrix
 
 importScripts("/resources/testharness.js");
 

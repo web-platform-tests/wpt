@@ -919,8 +919,7 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 CSS-COLLIDING-TEST-NAME: css/cssom-view/interfaces.html
 CSS-COLLIDING-TEST-NAME: css/cssom/interfaces.html
 
-# TODO https://github.com/w3c/web-platform-tests/issues/5770
-MISSING-LINK: css/geometry/*.worker.js
+# TODO https://github.com/w3c/web-platform-tests/issues/10288
 MISSING-LINK: css/filter-effects/*.any.js
 
 WEBIDL2.JS: .gitmodules

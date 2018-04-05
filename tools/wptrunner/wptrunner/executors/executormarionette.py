@@ -32,6 +32,7 @@ from .protocol import (BaseProtocolPart,
                        StorageProtocolPart,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
@@ -118,7 +119,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
 
     def load_runner(self, url_protocol):
         # Check if we previously had a test window open, and if we did make sure it's closed
-        self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        self.marionette.execute_script("if (window.win) {window.win.close()}")
         url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
@@ -307,6 +308,12 @@ class MarionetteClickProtocolPart(ClickProtocolPart):
     def element(self, element):
         return element.click()
 
+class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def send_keys(self, element, keys):
+        return element.send_keys(keys)
 
 class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
@@ -329,6 +336,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteStorageProtocolPart,
                   MarionetteSelectorProtocolPart,
                   MarionetteClickProtocolPart,
+                  MarionetteSendKeysProtocolPart,
                   MarionetteTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):
@@ -519,7 +527,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(*data), [])
 
     def do_testharness(self, protocol, url, timeout):
-        protocol.base.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        protocol.base.execute_script("if (window.win) {window.win.close()}")
         parent_window = protocol.testharness.close_old_windows(protocol)
 
         if timeout is not None:

@@ -11,39 +11,48 @@ def click(session, element):
 
 # 14.1 Element Click Link Element Tests Step 7
 
-@pytest.mark.parametrize("element", ["<a href=\"/webdriver/tests/element_click/support/input.html\">123456</a>",
-                                     """<p style="background-color: rgb(255, 255, 0); width: 5em;">
-                                        <a href="/webdriver/tests/element_click/support/input.html">Helloooooooooooooooooooo Worlddddddddddddddd</a>
-                                    </p>"""])
-
-def test_click_link(session, element):
+def test_click_numbers_link(session):
     # 14.1 Step 7
-    session.url = inline(element)
+    url = "/webdriver/tests/element_click/support/input.html"
+    session.url = inline("<a href=%s>123456</a>" % url)
     element = session.find.css("a", all=False)
     response = click(session, element)
     assert_success(response)
 
-    element = session.find.css("input", all=False)
-    assert element.attribute("value") == "Hello World"
+    assert session.url == "http://web-platform.test:8000%s" % url
+
+
+def test_click_multi_line_link(session):
+    # 14.1 Step 7
+    url = "/webdriver/tests/element_click/support/input.html"
+    session.url = inline("""
+        <p style="background-color: rgb(255, 255, 0); width: 5em;">
+            <a href=%s>Helloooooooooooooooooooo Worlddddddddddddddd</a>
+        </p>""" % url)
+    element = session.find.css("a", all=False)
+    response = click(session, element)
+    assert_success(response)
+
+    assert session.url == "http://web-platform.test:8000%s" % url
 
 
 def test_click_link_unload_event(session):
     # 14.1 Step 7
+    url = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("""<body onunload="checkUnload()">
-                                <a href="/webdriver/tests/element_click/support/input.html">click here</a>
+                                <a href=%s>click here</a>
                                 <input type=checkbox>
                                 <script>
                                 function checkUnload() {
                                     document.getElementsByTagName("input")[0].checked = true;
                                 }
                                 </script>
-                            </body>""")
+                            </body>""" % url)
     element = session.find.css("a", all=False)
     response = click(session, element)
     assert_success(response)
 
-    element = session.find.css("input", all=False)
-    assert element.attribute("value") == "Hello World"
+    assert session.url == "http://web-platform.test:8000%s" % url
 
     session.back()
 
@@ -54,15 +63,15 @@ def test_click_link_unload_event(session):
 
 def test_click_link_hash(session):
     # 14.1 Step 7
-    session.url = inline("<a href=\"#\">aaaa</a>")
-    oldUrl = session.url
+    session.url = inline("""<a href="#">aaaa</a>""")
+    old_url = session.url
 
     element = session.find.css("a", all=False)
     response = click(session, element)
     assert_success(response)
 
-    newUrl = session.url
-    assert "%s%s" %(oldUrl, "#") == newUrl
+    new_url = session.url
+    assert "%s%s" % (old_url, "#") == new_url
 
 
 def test_click_link_closes_window(session, create_window):

@@ -10,7 +10,7 @@ def click(session, element):
 # 14.1 Element Click File Upload Element Tests Step 3
 
 def test_file_upload_state(session):
-    session.url = inline("<input type=file value=Federer>")
+    session.url = inline("<input type=file>")
 
     element = session.find.css("input", all=False)
     response = click(session, element)

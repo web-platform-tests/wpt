@@ -40,13 +40,11 @@ partial interface Document {
   [SameObject] readonly attribute StyleSheetList styleSheets;
 };
 
-[Exposed=Window,
- NoInterfaceObject]
-interface LinkStyle {
+interface mixin LinkStyle {
   readonly attribute StyleSheet? sheet;
 };
 
-ProcessingInstruction implements LinkStyle;
+ProcessingInstruction includes LinkStyle;
 [Exposed=Window,
  LegacyArrayClass]
 interface CSSRuleList {
@@ -123,15 +121,13 @@ interface CSSStyleDeclaration {
   [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString cssFloat;
 };
 
-[Exposed=Window,
- NoInterfaceObject]
-interface ElementCSSInlineStyle {
+interface mixin ElementCSSInlineStyle {
   [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };
 
-HTMLElement implements ElementCSSInlineStyle;
+HTMLElement includes ElementCSSInlineStyle;
 
-SVGElement implements ElementCSSInlineStyle;
+SVGElement includes ElementCSSInlineStyle;
 
 partial interface Window {
   [NewObject] CSSStyleDeclaration getComputedStyle(Element elt, optional CSSOMString? pseudoElt);

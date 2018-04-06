@@ -164,8 +164,6 @@ dictionary ConvertCoordinateOptions {
   CSSBoxType toBox = "border";
 };
 
-[Exposed=Window,
- NoInterfaceObject]
 interface GeometryUtils {
   sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options);
   DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options);
@@ -173,11 +171,11 @@ interface GeometryUtils {
   DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options); // XXX z,w turns into 0
 };
 
-Text implements GeometryUtils; // like Range
-Element implements GeometryUtils;
-/* TODO Commented out because: "CSSPseudoElement implements GeometryUtils, but CSSPseudoElement is undefined."
-CSSPseudoElement implements GeometryUtils;
+Text includes GeometryUtils; // like Range
+Element includes GeometryUtils;
+/* TODO Commented out because: "CSSPseudoElement includes GeometryUtils, but CSSPseudoElement is undefined."
+CSSPseudoElement includes GeometryUtils;
 */
-Document implements GeometryUtils;
+Document includes GeometryUtils;
 
 typedef (Text or Element or CSSPseudoElement or Document) GeometryNode;

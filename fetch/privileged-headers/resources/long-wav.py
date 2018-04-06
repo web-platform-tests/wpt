@@ -50,6 +50,10 @@ def main(request, response):
     response.headers.set("Cache-Control", "no-cache")
 
     range_header = request.headers.get('Range', '')
+    range_received_key = request.GET.first('range-received-key', '')
+
+    if range_received_key and range_header:
+        request.stash.put(range_received_key, 'range-header-received', '/fetch/privileged-headers/')
 
     sample_rate = 8000
     bit_depth = 8

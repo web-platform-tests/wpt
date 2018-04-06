@@ -1,4 +1,5 @@
 // META: script=../../../service-workers/service-worker/resources/test-helpers.sub.js
+// META: script=/common/utils.js
 
 const SCOPE = 'resources/basic.html';
 
@@ -23,12 +24,31 @@ promise_test(async t => {
   const iframe = await with_iframe(SCOPE);
   const w = iframe.contentWindow;
 
-  // Trigger a range request
+  // Trigger a range request using media
+  const url = new URL('long-wav.py?action=range-header-filter-test', w.location);
+  url.hostname = 'www.web-platform.test';
   const audio = w.document.createElement('audio');
   audio.muted = true;
-  audio.src = 'long-wav.py';
+  audio.src = url;
   audio.preload = true;
   w.document.body.appendChild(audio);
 
-  fetch_tests_from_worker(reg.active);
-}, "Defer tests to service worker");
+  await fetch_tests_from_worker(reg.active);
+}, `Defer range header filter tests to service worker`);
+
+promise_test(async t => {
+  const reg = await setupRegistration(t);
+  const iframe = await with_iframe(SCOPE);
+  const w = iframe.contentWindow;
+
+  // Trigger a range request using media
+  const url = new URL('long-wav.py?action=range-header-passthrough-test&range-received-key=' + token(), w.location);
+  url.hostname = 'www.web-platform.test';
+  const audio = w.document.createElement('audio');
+  audio.muted = true;
+  audio.src = url;
+  audio.preload = true;
+  w.document.body.appendChild(audio);
+
+  await fetch_tests_from_worker(reg.active);
+}, `Defer range header passthrough tests to service worker`);

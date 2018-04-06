@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the ResizeObserver spec.
+// Content of this file was automatically extracted from the Resize Observer spec.
 // See https://wicg.github.io/ResizeObserver/
 
 [Constructor(ResizeObserverCallback callback),

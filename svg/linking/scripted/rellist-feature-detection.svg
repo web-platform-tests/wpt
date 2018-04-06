@@ -68,7 +68,7 @@
     }
 
     test(function() {
-    test_rellist('A', link_support_table['a']);
+    test_rellist('a', link_support_table['a']);
     }, 'Make sure that relList based feature detection is working');
   ]]></script>
 </svg>

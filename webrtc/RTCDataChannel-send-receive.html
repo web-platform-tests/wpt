@@ -431,7 +431,7 @@
 
       const message = new Uint8Array(messageLength).fill(0xfe);
 
-      createDataChannelPair(pc1, pc2, '╯°□°）╯︵ ┻━┻')
+      createDataChannelPair(pc1, pc2, { channelLabel: '╯°□°）╯︵ ┻━┻' })
       .then(([dc1, dc2]) => {
         dc2.binaryType = 'arraybuffer';
 
@@ -472,8 +472,9 @@
 
       const message = new Uint8Array(messageLength + 1).fill(0xfe);
 
-      createDataChannelPair(pc1, pc2, '╯°□°）╯︵ ┻━┻', undefined, {
-        answer: (answer) => {
+      createDataChannelPair(pc1, pc2, {
+        channelLabel: '╯°□°）╯︵ ┻━┻',
+        modifyAnswer: (answer) => {
           // Lower the remote maximum message size (if needed)
           const mmsAttribute = answer.sdp.match(/^a=max-message-size:(\d+)/m);
           let mms = mmsAttribute === null ? 65536 : parseInt(mmsAttribute[1], 10);
@@ -577,7 +578,7 @@
     const message = new Uint8Array(65536).fill(0xfe);
     const nMessages = 16;
 
-    createDataChannelPair(pc1, pc2, '╯°□°）╯︵ ┻━┻')
+    createDataChannelPair(pc1, pc2, { channelLabel: '╯°□°）╯︵ ┻━┻' })
     .then(([dc1, dc2]) => {
       let closed = false;
       let nMessagesReceived = 0;

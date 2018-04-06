@@ -23,116 +23,139 @@
        The RTCDataChannel object's bufferedAmount decreases from above its
        bufferedAmountLowThreshold to less than or equal to its bufferedAmountLowThreshold.
  */
-async_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+const messages = [
+  ['meow', 4, 'DOMString of 4 bytes'],
+  [new Uint8Array(65536).fill(0xde), 65536, 'Uint8Array of 65536 bytes'],
+];
 
-  const dc = pc1.createDataChannel('test');
+for (const [message, length, description] of messages) {
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-  // Send once the channel opened
-  dc.onopen = t.step_func(() => {
-    dc.send('meow');
-  });
+    const dc = pc1.createDataChannel('test');
 
-  // Done once the event has been raised
-  assert_equals(dc.bufferedAmountLowThreshold, 0,
-    'bufferedAmountLowTreshold should be 0 by default');
-  dc.onbufferedamountlow = t.step_func(() => {
-    assert_equals(dc.bufferedAmount, 0, 'bufferedAmount should be 0 once the event has fired');
-    t.done();
-  });
+    // Send once the channel opened
+    dc.onopen = t.step_func(() => {
+      dc.send(message);
+    });
 
-  exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'bufferedamountlow event should fire once bufferedAmount <= 0 (default)');
+    // Done once the event has been raised
+    assert_equals(dc.bufferedAmountLowThreshold, 0,
+      'bufferedAmountLowThreshold should be 0 by default');
+    dc.onbufferedamountlow = t.step_func(() => {
+      assert_equals(dc.bufferedAmount, 0, 'bufferedAmount should be 0 once the event has fired');
+      t.done();
+    });
 
-async_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+    exchangeIceCandidates(pc1, pc2);
+    doSignalingHandshake(pc1, pc2)
+    .catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, `${description}: bufferedamountlow event should fire once bufferedAmount <= 0 (default)`);
 
-  const dc = pc1.createDataChannel('test');
-  dc.bufferedAmountLowThreshold = 1;
+  const thresholds = [
+    Math.floor(length / 2),
+    length,
+    length * 2,
+  ];
 
-  // Send once the channel opened
-  dc.onopen = t.step_func(() => {
-    dc.send('meow');
-  });
+  for (const threshold of thresholds) {
+    async_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
 
-  // Done once the event has been raised
-  assert_equals(dc.bufferedAmountLowThreshold, 1, 'bufferedAmountLowTreshold should be 1');
-  dc.onbufferedamountlow = t.step_func(() => {
-    assert_less_than_equal(dc.bufferedAmount, 1,
-      'bufferedAmount should be <= 1 once the event has fired');
-    t.done();
-  });
+      const dc = pc1.createDataChannel('test');
+      dc.bufferedAmountLowThreshold = threshold;
 
-  exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'bufferedamountlow event should fire once bufferedAmount <= 1 (custom)');
+      // Send once the channel opened
+      dc.onopen = t.step_func(() => {
+        dc.send(message);
+      });
 
-async_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+      // Done once the event has been raised
+      assert_equals(dc.bufferedAmountLowThreshold, threshold,
+        `bufferedAmountLowThreshold should be ${threshold}`);
+      dc.onbufferedamountlow = t.step_func(() => {
+        assert_less_than_equal(dc.bufferedAmount, threshold,
+          `bufferedAmount should be <= ${threshold} once the event has fired`);
+        t.done();
+      });
 
-  const dc = pc1.createDataChannel('test');
-  dc.bufferedAmountLowThreshold = 20;
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2)
+      .catch(t.step_func(err =>
+        assert_unreached(`Unexpected promise rejection: ${err}`)));
+    }, `${description}: bufferedamountlow event should fire once bufferedAmount <=
+    ${threshold} (custom)`);
+  }
 
-  // Send once the channel opened
-  dc.onopen = t.step_func(() => {
-    dc.send('meow');
-  });
+  for (const threshold of thresholds) {
+    async_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
 
-  // Done once the event has been raised
-  assert_equals(dc.bufferedAmountLowThreshold, 20, 'bufferedAmountLowTreshold should be 20');
-  dc.onbufferedamountlow = t.step_func(() => {
-    assert_less_than_equal(dc.bufferedAmount, 20,
-      'bufferedAmount should be <= 20 once the event has fired');
-    t.done();
-  });
+      const dc = pc1.createDataChannel('test');
+      dc.bufferedAmountLowThreshold = threshold;
 
-  exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'bufferedamountlow event should fire once bufferedAmount <= 20 (when sending less than that)');
+      // Send once the channel opened
+      dc.onopen = t.step_func(() => {
+        for (let i = 0; i < 10; ++i) {
+          dc.send(message);
+        }
+      });
 
-async_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+      // Done once the event has been raised
+      assert_equals(dc.bufferedAmountLowThreshold, threshold,
+        `bufferedAmountLowThreshold should be ${threshold}`);
+      dc.onbufferedamountlow = t.step_func(() => {
+        assert_less_than_equal(dc.bufferedAmount, threshold,
+          `bufferedAmount should be <= ${threshold} once the event has fired`);
+        t.done();
+      });
 
-  const dc1 = pc1.createDataChannel('test');
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2)
+      .catch(t.step_func(err =>
+        assert_unreached(`Unexpected promise rejection: ${err}`)));
+    }, `${description} x 10: bufferedamountlow event should fire once bufferedAmount <=
+    ${threshold} (custom)`);
+  }
 
-  // Send once the channel opened
-  dc1.onopen = t.step_func(() => {
-    dc1.send('meow');
-  });
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-  // Done once the event has been raised (and the other channel did not fire)
-  dc1.onbufferedamountlow = t.step_func(() => {
-    t.step_timeout(() => t.step_func_done(), 100);
-  });
+    const dc1 = pc1.createDataChannel('test');
 
-  const dc2 = pc1.createDataChannel('test-2');
-  dc2.onbufferedamountlow = t.step_func(() => {
-    assert_unreached('dc2 should not fire bufferedamountlow');
-  });
+    // Send once the channel opened
+    dc1.onopen = t.step_func(() => {
+      dc1.send(message);
+    });
 
-  exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'bufferedamountlow event should not fire on other channels');
+    // Done once the event has been raised (and the other channel did not fire)
+    dc1.onbufferedamountlow = t.step_func(() => {
+      t.step_timeout(() => t.step_func_done(), 1000);
+    });
 
+    const dc2 = pc1.createDataChannel('test-2');
+    dc2.onbufferedamountlow = t.step_func(() => {
+      assert_unreached('dc2 should not fire bufferedamountlow');
+    });
+
+    exchangeIceCandidates(pc1, pc2);
+    doSignalingHandshake(pc1, pc2)
+    .catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, `${description}: bufferedamountlow event should not fire on other channels`);
+
+}
 </script>

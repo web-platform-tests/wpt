@@ -183,11 +183,19 @@ self.IdlArray = function()
      *   A implements C;
      *   D implements E;
      *
-     * results in { A: ["B", "C"], D: ["E"] }.
+     * results in this["implements"] = { A: ["B", "C"], D: ["E"] }.
+     * 
+     * Similarly, 
+     * 
+     *   interface A : B {};
+     *   interface B : C {};
+     * 
+     * results in this["inheritance"] = { A: "B", B: "C" }
      */
     this.partials = [];
     this["implements"] = {};
     this["includes"] = {};
+    this["inheritance"] = {};
 };
 
 //@}
@@ -217,6 +225,79 @@ IdlArray.prototype.add_untested_idls = function(raw_idls, options)
     }
     this.internal_add_idls(parsed_idls, options);
 };
+
+//@}
+IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
+//@{
+{
+    const parsed_idls = WebIDL2.parse(raw_idls);
+    const new_options = { only: [] }
+    
+    const all_deps = new Set();
+    Object.values(this["inheritance"]).forEach(v => all_deps.add(v));
+    Object.values(this["implements"]).forEach(v => all_deps.add(v));
+    this.partials.map(p => p.name).forEach(v => all_deps.add(v));
+    
+    console.log('all deps', all_deps);
+
+    if (options && options.except && options.only) {
+        throw new IdlHarnessError("The only and except options can't be used together.");
+    }
+    const skip = name => {
+        return !name
+            || options && (
+                options.except && options.except.includes(name)
+                || options.only && !options.only.includes(name));
+    }
+
+    const skipped = new Map();
+    const process = function(parsed) {
+        // console.log("checking", parsed.name);
+        let name = parsed.name
+            || parsed.type == "implements" && parsed.target
+            || parsed.type == "includes" && parsed.target;
+        if (skip(name) || !all_deps.has(name)) {
+            // console.log(`skipped ${name}`);
+            name && skipped.set(name, parsed);
+            return;
+        }
+
+        console.log(parsed);
+        
+        new_options.only.push(name);
+        const follow_up = [];
+        for (const dep_type of ["inheritance", "implements", "includes"]) {
+            if (parsed[dep_type]) {
+                const dep = parsed[dep_type];
+                new_options.only.push(dep);
+                all_deps.add(dep);
+                follow_up.push(dep);
+                console.log(`Added ${dep_type} dep ${dep}`);
+            }
+        }
+
+        if (follow_up && skipped.has(follow_up)) {
+            console.log(`following up with ${follow_up}`);
+            const next = skipped.get(follow_up);
+            skipped.delete(follow_up);
+            process(next);
+        }
+
+        parsed.untested = true;
+        if ("members" in parsed) {
+            for (const member of parsed.members) {
+                parsed.members.untested = true;
+            }
+        }
+    }
+    for (const parsed of parsed_idls) {
+        process(parsed);
+    }
+    
+    if (new_options.only.length) {
+        this.internal_add_idls(parsed_idls, new_options);
+    }
+}
 
 //@}
 IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
@@ -307,6 +388,16 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         switch(parsed_idl.type)
         {
         case "interface":
+            if (parsed_idl["inheritance"]) {
+                console.log(parsed_idl);
+                if (parsed_idl.name in this["inheritance"]
+                    && parsed_idl["inheritance"] != this["inheritance"][parsed_idl.name])
+                {
+                    throw new IdlHarnessError(
+                        `Inheritance for ${parsed_idl.name} was already defined`);
+                }
+                this["inheritance"][parsed_idl.name] = parsed_idl["inheritance"];
+            }
             this.members[parsed_idl.name] =
                 new IdlInterface(parsed_idl, /* is_callback = */ false, /* is_mixin = */ false);
             break;

@@ -32,6 +32,11 @@ async_test(t => {
     assert_equals(window.event, undefined);
     assert_equals(otherWindow.event, e);
   }), true);
+  element.addEventListener("yoyo", t.step_func(e => {
+    assert_equals(element.ownerDocument, document);
+    assert_equals(window.event, undefined);
+    assert_equals(otherWindow.event, e);
+  }), true);
   child.addEventListener("yoyo", t.step_func_done(e => {
     assert_equals(child.ownerDocument, document);
     assert_equals(window.event, e);

@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the pointerevents spec.
+// Content of this file was automatically extracted from the Pointer Events spec.
 // See https://w3c.github.io/pointerevents/
 
 dictionary PointerEventInit : MouseEventInit {

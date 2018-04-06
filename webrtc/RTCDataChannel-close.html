@@ -10,6 +10,8 @@
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
+const nChannels = 10;
+
 /*
   6.2. close()
 
@@ -40,7 +42,7 @@ promise_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  return createDataChannelPair(pc1, pc2, 'onclose')
+  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
   .then(([dc1, _]) => {
     // Note: Since the closing procedure requires to queue a task,
     //       the channel should not be closed at this point.
@@ -68,21 +70,37 @@ async_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  createDataChannelPair(pc1, pc2, 'onclose')
-  .then(([dc1, dc2]) => {
-    // We're closing on dc1, so dc2 should fire
-    // TODO: It is currently not clear whether dc1 should fire or not, see
-    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
-    dc2.onclose = t.step_func(() => {
-      assert_equals(dc2.readyState, 'closed', 'dc2 should be closed after onclose has been raised');
-      t.done();
+  Promise.all(Array.from(new Array(nChannels), (_, i) => {
+    return createDataChannelPair(pc1, pc2, {
+      channelLabel: `onclose-${i}`,
+      doSignaling: i === nChannels - 1,
     });
+  }))
+  .then((dcPairs) => {
+    let nCloses = 0;
 
-    dc1.close();
+    for (const [_, dc2] of dcPairs) {
+      // We're closing on dc1, so dc2 should fire
+      // TODO: It is currently not clear whether dc1 should fire or not, see
+      //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+      dc2.onclose = t.step_func(() => {
+        assert_equals(dc2.readyState, 'closed',
+          'dc2 should be closed after onclose has been raised');
+        ++nCloses;
+        if (nCloses === nChannels - 1) {
+          t.done();
+        }
+      });
+    }
+
+    for (const [dc1, _] of dcPairs) {
+      dc1.close();
+    }
   })
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'In-band data channel closing should be synchronized across peers');
+}, `In-band data channels x${nChannels} closing by producer side should be synchronized across
+ peers`);
 
 async_test(t => {
   const pc1 = new RTCPeerConnection();
@@ -90,32 +108,125 @@ async_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const dc1 = pc1.createDataChannel('onclose', {
-    negotiated: true,
-    id: 42
-  });
-  const dc2 = pc2.createDataChannel('onclose', {
-    negotiated: true,
-    id: 42
-  });
+  Promise.all(Array.from(new Array(nChannels), (_, i) => {
+    return createDataChannelPair(pc1, pc2, {
+      channelLabel: `onclose-${i}`,
+      doSignaling: i === nChannels - 1,
+    });
+  }))
+  .then((dcPairs) => {
+    let nCloses = 0;
 
-  dc1.onopen = t.step_func(() => {
-    dc1.close();
-  });
+    for (const [dc1, _] of dcPairs) {
+      // We're closing on dc1, so dc2 should fire
+      // TODO: It is currently not clear whether dc1 should fire or not, see
+      //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+      dc1.onclose = t.step_func(() => {
+        assert_equals(dc1.readyState, 'closed',
+          'dc1 should be closed after onclose has been raised');
+        ++nCloses;
+        if (nCloses === nChannels - 1) {
+          t.done();
+        }
+      });
+    }
 
-  // We're closing on dc1, so dc2 should fire
-  // TODO: It is currently not clear whether dc1 should fire or not, see
-  //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
-  dc2.onclose = t.step_func(() => {
-    assert_equals(dc2.readyState, 'closed', 'dc2 should be closed after onclose has been raised');
-    t.done();
-  });
+    for (const [_, dc2] of dcPairs) {
+      dc2.close();
+    }
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, `In-band data channels x${nChannels} closing by consumer side should be synchronized across
+ peers`);
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  let nCloses = 0;
+  for (let i = 0; i < nChannels; ++i) {
+    const dc1 = pc1.createDataChannel(`onclose-${i}`, {
+      negotiated: true,
+      id: 42 + i
+    });
+    const dc2 = pc2.createDataChannel(`onclose-${i}`, {
+      negotiated: true,
+      id: 42 + i
+    });
+
+    dc1.onopen = t.step_func(() => {
+      dc1.close();
+    });
+
+    // We're closing on dc1, so dc2 should fire
+    // TODO: It is currently not clear whether dc1 should fire or not, see
+    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+    dc2.onclose = t.step_func(() => {
+      assert_equals(dc1.readyState, 'closed',
+        'dc2 should be closed after onclose has been raised');
+      ++nCloses;
+      if (nCloses === nChannels - 1) {
+        t.done();
+      }
+    });
+  }
 
   exchangeIceCandidates(pc1, pc2);
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Negotiated data channel closing should be synchronized across peers');
+}, `Negotiated data channels x${nChannels} closing should be synchronized across peers`);
+
+// Based on https://bugs.chromium.org/p/webrtc/issues/detail?id=6881
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  let nOpen = 0;
+  let nCloses = 0;
+  for (let i = 0; i < nChannels; ++i) {
+    const dc1 = pc1.createDataChannel(`onclose-${i}`, {
+      negotiated: true,
+      id: 42 + i
+    });
+    const dc2 = pc2.createDataChannel(`onclose-${i}`, {
+      negotiated: true,
+      id: 42 + i
+    });
+
+    // Wait for all channels to open, then close the peer connection
+    dc1.onopen = t.step_func(() => {
+      ++nOpen;
+      if (nOpen === nChannels - 1) {
+        // Without this short timeout, Chrome's behaviour is flaky for some reason
+        t.step_timeout(() => pc1.close(), 500);
+        t.step_timeout(() => assert_unreached('remote close events did not fire in time'), 1200);
+      }
+    });
+
+    // We're closing on dc1, so dc2 should fire
+    // TODO: It is currently not clear whether dc1 should fire or not, see
+    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+    dc2.onclose = t.step_func(() => {
+      assert_equals(dc1.readyState, 'closed',
+        'dc2 should be closed after onclose has been raised');
+      ++nCloses;
+      if (nCloses === nChannels - 1) {
+        t.done();
+      }
+    });
+  }
+
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, `Closing peer connection locally should close all ${nChannels} channels for the remote peer`);
 
 /*
   Untestable:

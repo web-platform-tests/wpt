@@ -200,7 +200,7 @@ async_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  createDataChannelPair(pc1, pc2, 'test')
+  createDataChannelPair(pc1, pc2, { channelLabel: 'test' })
   .then(([dc1, dc2]) => {
     dc2.binaryType = 'arraybuffer';
     let done = false;
@@ -241,14 +241,15 @@ promise_test(t => {
 
   // We need the initial data channel on the DTLS server side to ensure the peer connection
   // will be established
-  return createDataChannelPair(pc1, pc2, 'initial', {
-    offer: (offer) => {
+  return createDataChannelPair(pc1, pc2, {
+    channelLabel: 'initial',
+    modifyOffer: (offer) => {
       // Ensure pc1 takes the server role
       assert_true(offer.sdp.includes('actpass') || offer.sdp.includes('passive'),
         'pc1 must take the DTLS server role');
       return offer;
     },
-    answer: (answer) => {
+    modifyAnswer: (answer) => {
       // Ensure pc2 takes the client role
       // Note: It very likely will choose 'active' itself
       answer.sdp = answer.sdp.replace('actpass', 'active');
@@ -318,14 +319,15 @@ promise_test(t => {
 
   // We need the initial data channel on the DTLS server side to ensure the peer connection
   // will be established
-  return createDataChannelPair(pc1, pc2, 'initial', {
-    offer: (offer) => {
+  return createDataChannelPair(pc1, pc2, {
+    channelLabel: 'initial',
+    modifyOffer: (offer) => {
       // Ensure pc1 takes the server role
       assert_true(offer.sdp.includes('actpass') || offer.sdp.includes('passive'),
         'pc1 must take the DTLS server role');
       return offer;
     },
-    answer: (answer) => {
+    modifyAnswer: (answer) => {
       // Ensure pc2 takes the client role
       // Note: It very likely will choose 'active' itself
       answer.sdp = answer.sdp.replace('actpass', 'active');

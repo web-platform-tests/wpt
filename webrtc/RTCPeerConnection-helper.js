@@ -281,12 +281,12 @@ function exchangeIceCandidates(pc1OrQueue, pc2OrQueue) {
 
 // Helper function for doing one round of offer/answer exchange
 // betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc, modifiers={}) {
+function doSignalingHandshake(localPc, remotePc, options={}) {
   return localPc.createOffer()
   .then(offer => {
     // Modify offer if callback has been provided
-    if (modifiers.offer) {
-      offer = modifiers.offer(offer);
+    if (options.modifyOffer) {
+      offer = options.modifyOffer(offer);
     }
 
     // Apply offer
@@ -297,8 +297,8 @@ function doSignalingHandshake(localPc, remotePc, modifiers={}) {
   .then(() => remotePc.createAnswer())
   .then(answer => {
     // Modify answer if callback has been provided
-    if (modifiers.answer) {
-      answer = modifiers.answer(answer);
+    if (options.modifyAnswer) {
+      answer = options.modifyAnswer(answer);
     }
 
     // Apply answer
@@ -316,13 +316,15 @@ function doSignalingHandshake(localPc, remotePc, modifiers={}) {
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
   pc2=new RTCPeerConnection(),
-  channelLabel='',
-  channelOptions=undefined,
-  modifiers={})
+  options={})
 {
-  const channel1 = pc1.createDataChannel(channelLabel, channelOptions);
+  options = Object.assign({}, {
+    channelLabel: '',
+    channelOptions: undefined,
+    doSignaling: true,
+  }, options);
 
-  exchangeIceCandidates(pc1, pc2);
+  const channel1 = pc1.createDataChannel(options.channelLabel, options.channelOptions);
 
   return new Promise((resolve, reject) => {
     let channel2;
@@ -344,6 +346,10 @@ function createDataChannelPair(
     }
 
     function onDataChannel(event) {
+      if (event.channel.id !== channel1.id) {
+        return;
+      }
+
       channel2 = event.channel;
       channel2.addEventListener('error', reject);
       const { readyState } = channel2;
@@ -362,7 +368,10 @@ function createDataChannelPair(
 
     pc2.addEventListener('datachannel', onDataChannel);
 
-    doSignalingHandshake(pc1, pc2, modifiers);
+    if (options.doSignaling) {
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2, options);
+    }
   });
 }
 

@@ -577,6 +577,21 @@ promise_test(t => {
 }, 'Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) ' +
   'should throw OperationError');
 
+// Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1441723
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  return createDataChannelPair(pc1, pc2)
+  .then(() => {
+    const dc = pc1.createDataChannel('');
+    assert_equals(dc.readyState, 'connecting', 'Channel should be in the connecting state');
+  });
+}, 'New data channel should be in the connecting state after creation (after connection ' +
+  'establishment)');
+
 /*
   Untestable
     6.1.  createDataChannel

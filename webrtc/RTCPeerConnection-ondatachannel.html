@@ -35,8 +35,10 @@
     };
  */
 async_test(t => {
-  const localPc = new RTCPeerConnection();
-  const remotePc = new RTCPeerConnection();
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   let eventCount = 0;
 
@@ -51,22 +53,20 @@ async_test(t => {
     assert_equals(event.bubbles, false);
     assert_equals(event.cancelable, false);
 
-    assert_true(event.channel instanceof RTCDataChannel,
+    const dc = event.channel;
+    assert_true(dc instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
 
-    const { readyState } = channel;
-
-    // The spec requires readyState to be connecting at first,
-    // but it may quickly change to open before the callback
-    // is invoked, especially with local connections.
-    // TODO: Currently being discussed, see https://github.com/w3c/webrtc-pc/issues/1761
-    assert_true(readyState === 'connecting' || readyState === 'open',
-      'Expect channel ready state to be either connecting or open');
+    // As long as this event handler runs, the channel should be in the 'connecting' state.
+    // See: https://github.com/w3c/webrtc-pc/issues/1761
+    assert_equals(dc.readyState, 'connecting',
+      'Expect channel ready state to be connecting');
   });
 
-  remotePc.addEventListener('datachannel', onDataChannel);
-  exchangeIceCandidates(localPc, remotePc);
-  doSignalingHandshake(localPc, remotePc);
+  pc2.addEventListener('datachannel', onDataChannel);
+  pc1.createDataChannel('fire-me!');
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2);
 
 }, 'datachannel event should fire when new data channel is announced to the remote peer');
 
@@ -106,8 +106,10 @@ async_test(t => {
  */
 
 async_test(t => {
-  const localPc = new RTCPeerConnection();
-  const remotePc = new RTCPeerConnection();
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   const onDataChannel = t.step_func_done(event => {
     const remoteChannel = event.channel;
@@ -122,7 +124,7 @@ async_test(t => {
     assert_equals(remoteChannel.priority, 'high');
   });
 
-  const localChannel = localPc.createDataChannel('test', {
+  const localChannel = pc1.createDataChannel('test', {
     id: 8,
     ordered: false,
     maxRetransmits: 1,
@@ -137,9 +139,9 @@ async_test(t => {
   assert_equals(localChannel.protocol, 'custom');
   assert_equals(localChannel.priority, 'high');
 
-  remotePc.addEventListener('datachannel', onDataChannel);
-  exchangeIceCandidates(localPc, remotePc);
-  doSignalingHandshake(localPc, remotePc);
+  pc2.addEventListener('datachannel', onDataChannel);
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2);
 }, 'Data channel created on remote peer should match the same configuration as local peer');
 
 /*
@@ -153,18 +155,20 @@ async_test(t => {
         same id at the other peer.
  */
 async_test(t => {
-  const localPc = new RTCPeerConnection();
-  const remotePc = new RTCPeerConnection();
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   const onDataChannel = t.unreached_func('datachannel event should not be fired');
 
-  localPc.createDataChannel('test', {
+  pc1.createDataChannel('test', {
     negotiated: true
   });
 
-  remotePc.addEventListener('datachannel', onDataChannel);
-  exchangeIceCandidates(localPc, remotePc);
-  doSignalingHandshake(localPc, remotePc);
+  pc2.addEventListener('datachannel', onDataChannel);
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2);
 
   t.step_timeout(t.step_func_done(), 200);
 

@@ -349,7 +349,8 @@ test(() => {
 
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('l'.repeat(65536), {
-      negotiated: true
+      negotiated: true,
+      id: 42
     }));
 }, 'createDataChannel with too long label should throw TypeError');
 
@@ -387,7 +388,8 @@ test(() => {
   assert_throws(new TypeError(), () =>
     pc.createDataChannel('', {
       protocol: 'p'.repeat(65536),
-      negotiated: true
+      negotiated: true,
+      id: 42
     }));
 }, 'createDataChannel with too long protocol should throw TypeError');
 

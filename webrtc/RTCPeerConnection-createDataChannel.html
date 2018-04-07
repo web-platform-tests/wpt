@@ -407,6 +407,26 @@ test(() => {
 }, 'createDataChannel with maximum length label and protocol should succeed');
 
 /*
+  6.2   createDataChannel
+    15. Let channel have an [[DataChannelId]] internal slot initialized to option's id member,
+        if it is present and [[Negotiated]] is true, otherwise null.
+
+        NOTE
+        This means the id member will be ignored if the data channel is negotiated in-band; this
+        is intentional. Data channels negotiated in-band should have IDs selected based on the
+        DTLS role, as specified in [RTCWEB-DATA-PROTOCOL].
+ */
+test(() => {
+  const pc = new RTCPeerConnection;
+  const channel = pc.createDataChannel('', {
+    negotiated: false,
+    id: 42
+  });
+
+  assert_equals(channel.id, 'Expect channel.id to be ignored (null)');
+}, 'createDataChannel with negotiated false and id 42 should ignore the id');
+
+/*
   6.2.  createDataChannel
     16. If [[Negotiated]] is true and [[DataChannelId]] is null, throw a TypeError.
  */

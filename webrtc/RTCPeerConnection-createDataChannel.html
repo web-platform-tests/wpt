@@ -258,6 +258,10 @@ test(() => {
     maxPacketLifeTime: 0,
     maxRetransmits: 0
   }));
+  assert_throws(new TypeError(), () => pc.createDataChannel('', {
+    maxPacketLifeTime: 42,
+    maxRetransmits: 42
+  }));
 }, 'createDataChannel with both maxPacketLifeTime and maxRetransmits should throw TypeError');
 
 /*

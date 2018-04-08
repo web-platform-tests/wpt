@@ -50,89 +50,104 @@ promise_test(t => {
   });
 }, 'Unordered and reliable channel should be created via DCEP');
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+// Note: The value may be clamped for these parameters.
+const reliabilityParameters = [
+  [undefined, null],
+  [null, null],
+  [0, 0],
+  [65535, 65535],
+  [4294967295, 65535],
+];
 
-  // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT (0x01)
-  return createDataChannelPair(pc1, pc2, {
-    channelOptions: {
-      ordered: true,
-      maxRetransmits: 4294967295
-    }
-  })
-  .then(([channel1, channel2]) => {
-    assert_equals(channel1.ordered, true);
-    assert_equals(channel2.ordered, true);
-    assert_equals(channel1.maxRetransmits, 4294967295);
-    assert_equals(channel2.maxRetransmits, 4294967295);
-  });
-}, 'Ordered and unreliable (maxRetransmits) channel should be created via DCEP');
+for (const [reliabilityParameter, expectedReliabilityParameter] of reliabilityParameters) {
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+    // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT (0x01)
+    return createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: true,
+        maxRetransmits: reliabilityParameter
+      }
+    })
+    .then(([channel1, channel2]) => {
+      assert_equals(channel1.ordered, true);
+      assert_equals(channel2.ordered, true);
+      assert_equals(channel1.maxRetransmits, expectedReliabilityParameter);
+      assert_equals(channel2.maxRetransmits, expectedReliabilityParameter);
+    });
+  },`Ordered and unreliable (maxRetransmits=${reliabilityParameter}) channel should be created
+   via DCEP`);
 
-  // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT_UNORDERED (0x81)
-  return createDataChannelPair(pc1, pc2, {
-    channelOptions: {
-      ordered: false,
-      maxRetransmits: 4294967295
-    }
-  })
-  .then(([channel1, channel2]) => {
-    assert_equals(channel1.ordered, false);
-    assert_equals(channel2.ordered, false);
-    assert_equals(channel1.maxRetransmits, 4294967295);
-    assert_equals(channel2.maxRetransmits, 4294967295);
-  });
-}, 'Unordered and unreliable (maxRetransmits) channel should be created via DCEP');
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+    // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT_UNORDERED (0x81)
+    return createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: false,
+        maxRetransmits: reliabilityParameter
+      }
+    })
+    .then(([channel1, channel2]) => {
+      assert_equals(channel1.ordered, false);
+      assert_equals(channel2.ordered, false);
+      assert_equals(channel1.maxRetransmits, expectedReliabilityParameter);
+      assert_equals(channel2.maxRetransmits, expectedReliabilityParameter);
+    });
+  }, `Unordered and unreliable (maxRetransmits=${reliabilityParameter}) channel should be created
+  via DCEP`);
 
-  // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED (0x02)
-  return createDataChannelPair(pc1, pc2, {
-    channelOptions: {
-      ordered: true,
-      maxPacketLifeTime: 4294967295
-    }
-  })
-  .then(([channel1, channel2]) => {
-    assert_equals(channel1.ordered, true);
-    assert_equals(channel2.ordered, true);
-    assert_equals(channel1.maxPacketLifeTime, 4294967295);
-    assert_equals(channel2.maxPacketLifeTime, 4294967295);
-  });
-}, 'Ordered and unreliable (maxPacketLifeTime) channel should be created via DCEP');
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+    // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED (0x02)
+    return createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: true,
+        maxPacketLifeTime: reliabilityParameter
+      }
+    })
+    .then(([channel1, channel2]) => {
+      assert_equals(channel1.ordered, true);
+      assert_equals(channel2.ordered, true);
+      assert_equals(channel1.maxPacketLifeTime, expectedReliabilityParameter);
+      assert_equals(channel2.maxPacketLifeTime, expectedReliabilityParameter);
+    });
+  }, `Ordered and unreliable (maxPacketLifeTime=${reliabilityParameter}) channel should be
+  created via DCEP`);
 
-  // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED_UNORDERED (0x82)
-  return createDataChannelPair(pc1, pc2, {
-    channelOptions: {
-      ordered: false,
-      maxPacketLifeTime: 4294967295
-    }
-  })
-  .then(([channel1, channel2]) => {
-    assert_equals(channel1.ordered, false);
-    assert_equals(channel2.ordered, false);
-    assert_equals(channel1.maxPacketLifeTime, 4294967295);
-    assert_equals(channel2.maxPacketLifeTime, 4294967295);
-  });
-}, 'Unordered and unreliable (maxPacketLifeTime) channel should be created via DCEP');
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED_UNORDERED (0x82)
+    return createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: false,
+        maxPacketLifeTime: reliabilityParameter
+      }
+    })
+    .then(([channel1, channel2]) => {
+      assert_equals(channel1.ordered, false);
+      assert_equals(channel2.ordered, false);
+      assert_equals(channel1.maxPacketLifeTime, expectedReliabilityParameter);
+      assert_equals(channel2.maxPacketLifeTime, expectedReliabilityParameter);
+    });
+  }, `Unordered and unreliable (maxPacketLifeTime=${reliabilityParameter}) channel should be
+  created via DCEP`);
+}
 
 promise_test(t => {
   const pc1 = new RTCPeerConnection();
@@ -197,7 +212,7 @@ promise_test(t => {
   const label = 'l'.repeat(65535);
   const protocol = 'p'.repeat(65535);
 
-  t.step_timeout(() => assert_unreached('Channel did not open in time'), 5000);
+  t.step_timeout(() => assert_unreached('Channel did not open in time'), 4000);
   return createDataChannelPair(pc1, pc2, {
     channelLabel: label,
     channelOptions: {
@@ -221,19 +236,19 @@ promise_test(t => {
   const label = '\u2022'.repeat(21845);
   const protocol = '\u20AC'.repeat(21845);
 
-  t.step_timeout(() => assert_unreached('Channel did not open in time'), 5000);
+  t.step_timeout(() => assert_unreached('Channel did not open in time'), 4000);
   return createDataChannelPair(pc1, pc2, {
     channelLabel: label,
     channelOptions: {
       protocol: protocol
     }
   })
-    .then(([channel1, channel2]) => {
-      assert_equals(channel1.label, label);
-      assert_equals(channel2.label, label);
-      assert_equals(channel1.protocol, protocol);
-      assert_equals(channel2.protocol, protocol);
-    });
+  .then(([channel1, channel2]) => {
+    assert_equals(channel1.label, label);
+    assert_equals(channel2.label, label);
+    assert_equals(channel1.protocol, protocol);
+    assert_equals(channel2.protocol, protocol);
+  });
 }, 'Maximum length label and protocol option (3 byte unicode) should be transmitted via DCEP');
 
 </script>

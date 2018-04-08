@@ -111,21 +111,7 @@ async_test(t => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const onDataChannel = t.step_func_done(event => {
-    const remoteChannel = event.channel;
-    assert_true(remoteChannel instanceof RTCDataChannel,
-      'Expect channel to be instance of RTCDataChannel');
-
-    assert_equals(remoteChannel.label, 'test');
-    assert_equals(remoteChannel.id, 8);
-    assert_equals(remoteChannel.ordered, false);
-    assert_equals(remoteChannel.maxRetransmits, 1);
-    assert_equals(remoteChannel.protocol, 'custom');
-    assert_equals(remoteChannel.priority, 'high');
-  });
-
   const localChannel = pc1.createDataChannel('test', {
-    id: 8,
     ordered: false,
     maxRetransmits: 1,
     protocol: 'custom',
@@ -133,11 +119,25 @@ async_test(t => {
   });
 
   assert_equals(localChannel.label, 'test');
-  assert_equals(localChannel.id, 8);
   assert_equals(localChannel.ordered, false);
   assert_equals(localChannel.maxRetransmits, 1);
   assert_equals(localChannel.protocol, 'custom');
+  assert_equals(localChannel.negotiated, false);
   assert_equals(localChannel.priority, 'high');
+
+  const onDataChannel = t.step_func_done(event => {
+    const remoteChannel = event.channel;
+    assert_true(remoteChannel instanceof RTCDataChannel,
+      'Expect channel to be instance of RTCDataChannel');
+
+    assert_equals(remoteChannel.label, 'test');
+    assert_equals(remoteChannel.ordered, false);
+    assert_equals(remoteChannel.maxRetransmits, 1);
+    assert_equals(remoteChannel.protocol, 'custom');
+    assert_equals(localChannel.negotiated, false);
+    assert_equals(remoteChannel.id, localChannel.id);
+    assert_equals(remoteChannel.priority, 'high');
+  });
 
   pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);

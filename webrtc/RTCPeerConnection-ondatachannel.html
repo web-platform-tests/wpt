@@ -141,8 +141,49 @@ async_test(t => {
 
   pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
 }, 'Data channel created on remote peer should match the same configuration as local peer');
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const localChannel = pc1.createDataChannel('');
+
+  assert_equals(localChannel.label, '');
+  assert_equals(localChannel.ordered, true);
+  assert_equals(localChannel.maxPacketLifeTime, null);
+  assert_equals(localChannel.maxRetransmits, null);
+  assert_equals(localChannel.protocol, '');
+  assert_equals(localChannel.negotiated, false);
+  assert_equals(localChannel.priority, 'low');
+
+  const onDataChannel = t.step_func_done(event => {
+    const remoteChannel = event.channel;
+    assert_true(remoteChannel instanceof RTCDataChannel,
+      'Expect channel to be instance of RTCDataChannel');
+
+    assert_equals(remoteChannel.label, '');
+    assert_equals(remoteChannel.ordered, true);
+    assert_equals(remoteChannel.maxPacketLifeTime, null);
+    assert_equals(remoteChannel.maxRetransmits, null);
+    assert_equals(remoteChannel.protocol, '');
+    assert_equals(localChannel.negotiated, false);
+    assert_equals(remoteChannel.id, localChannel.id);
+    assert_equals(remoteChannel.priority, 'low');
+  });
+
+  pc2.addEventListener('datachannel', onDataChannel);
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'Data channel created on remote peer should match the same default configuration as local ' +
+  'peer');
 
 /*
   6.2.  RTCDataChannel

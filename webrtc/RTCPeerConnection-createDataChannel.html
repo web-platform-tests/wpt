@@ -254,6 +254,14 @@ test(() => {
  */
 test(() => {
   const pc = new RTCPeerConnection;
+  pc.createDataChannel('', {
+    maxPacketLifeTime: null,
+    maxRetransmits: null
+  });
+}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits null should succeed');
+
+test(() => {
+  const pc = new RTCPeerConnection;
   assert_throws(new TypeError(), () => pc.createDataChannel('', {
     maxPacketLifeTime: 0,
     maxRetransmits: 0

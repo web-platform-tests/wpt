@@ -212,4 +212,28 @@ promise_test(t => {
   });
 }, 'Maximum length label and protocol option should be transmitted via DCEP');
 
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const label = '\u2022'.repeat(21845);
+  const protocol = '\u20AC'.repeat(21845);
+
+  t.step_timeout(() => assert_unreached('Channel did not open in time'), 5000);
+  return createDataChannelPair(pc1, pc2, {
+    channelLabel: label,
+    channelOptions: {
+      protocol: protocol
+    }
+  })
+    .then(([channel1, channel2]) => {
+      assert_equals(channel1.label, label);
+      assert_equals(channel2.label, label);
+      assert_equals(channel1.protocol, protocol);
+      assert_equals(channel2.protocol, protocol);
+    });
+}, 'Maximum length label and protocol option (3 byte unicode) should be transmitted via DCEP');
+
 </script>

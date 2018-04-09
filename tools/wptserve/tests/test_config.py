@@ -9,11 +9,11 @@ config = pytest.importorskip("wptserve.config")
 
 
 def test_renamed_are_renamed():
-    assert len(set(config._renamed_props.viewkeys()) & set(config._default.viewkeys())) == 0
+    assert len(set(config._renamed_props.viewkeys()) & set(config.Config._default.viewkeys())) == 0
 
 
 def test_renamed_exist():
-    assert set(config._renamed_props.viewvalues()).issubset(set(config._default.viewkeys()))
+    assert set(config._renamed_props.viewvalues()).issubset(set(config.Config._default.viewkeys()))
 
 
 @pytest.mark.parametrize("base, override, expected", [

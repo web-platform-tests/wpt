@@ -337,12 +337,12 @@ function createDataChannelPair(
 
     function onOpen1() {
       opened1 = true;
-      if(opened2) onBothOpened();
+      if (opened2) onBothOpened();
     }
 
     function onOpen2() {
       opened2 = true;
-      if(opened1) onBothOpened();
+      if (opened1) onBothOpened();
     }
 
     function onDataChannel(event) {
@@ -354,9 +354,9 @@ function createDataChannelPair(
       channel2.addEventListener('error', reject);
       const { readyState } = channel2;
 
-      if(readyState === 'open') {
+      if (readyState === 'open') {
         onOpen2();
-      } else if(readyState === 'connecting') {
+      } else if (readyState === 'connecting') {
         channel2.addEventListener('open', onOpen2);
       } else {
         reject(new Error(`Unexpected ready state ${readyState}`));
@@ -366,7 +366,13 @@ function createDataChannelPair(
     channel1.addEventListener('open', onOpen1);
     channel1.addEventListener('error', reject);
 
-    pc2.addEventListener('datachannel', onDataChannel);
+    if (options.channelOptions.negotiated === true) {
+      onDataChannel({
+        channel: pc2.createDataChannel(options.channelLabel, options.channelOptions)
+      })
+    } else {
+      pc2.addEventListener('datachannel', onDataChannel);
+    }
 
     if (options.doSignaling) {
       exchangeIceCandidates(pc1, pc2);

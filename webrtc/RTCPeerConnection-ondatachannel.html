@@ -144,7 +144,8 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Data channel created on remote peer should match the same configuration as local peer');
+}, 'In-band negotiated channel created on remote peer should match the same configuration as local ' +
+  'peer');
 
 async_test(t => {
   const pc1 = new RTCPeerConnection();
@@ -182,8 +183,8 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Data channel created on remote peer should match the same default configuration as local ' +
-  'peer');
+}, 'In-band negotiated channel created on remote peer should match the same default configuration ' +
+  'as local peer');
 
 /*
   6.2.  RTCDataChannel
@@ -212,8 +213,7 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2);
 
   t.step_timeout(t.step_func_done(), 200);
-
-}, 'Data channel created with negotiated set to true should not fire datachannel event on remote peer');
+}, 'Negotiated channel should not fire datachannel event on remote peer');
 
 /*
   Non-testable

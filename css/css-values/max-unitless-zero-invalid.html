@@ -30,12 +30,12 @@
 			html { background: red; overflow: hidden; }
 			#outer { position: absolute; top: 0px; left: 0px; background: green; width: 100%; }
 
-            #outer {
+			#outer {
 				/* Assert that min() is supported */
 				height: min(100%);
-    
+
 	 			/* The min() expression (thus the declaration) should be invalid */
-    			height: min(0, 100%);
+				height: min(0, 100%);
 			}
 
 	</style>

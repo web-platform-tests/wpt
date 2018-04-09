@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Navigations consume user activation</title>
+<a href="/">Home</a>
+<button id="fullscreen">Click to fullscreen</button>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+var t = async_test("Navigations consume user activation");
+
+// First, issue a fullscreen request without a navigation to consume the
+// activation. Then when that test is complete, run another test that tries to
+// synchronously navigate before issuing the fullscreen request. That navigation
+// should consume the activation and prevent fullscreen from succeeding.
+function doTest(withNavigation, callback) {
+  function doFullscreen() {
+    if (withNavigation)
+      document.getElementsByTagName("a")[0].click();
+    document.body.webkitRequestFullscreen();
+  }
+
+  let fullscreenButton = document.getElementById("fullscreen");
+  fullscreenButton.addEventListener("click", t.step_func(doFullscreen));
+
+  let stepChange = t.step_func(fullscreenChange);
+  document.addEventListener("webkitfullscreenchange", stepChange);
+  document.addEventListener("webkitfullscreenerror", stepChange);
+
+  function fullscreenChange() {
+    // Remove event listeners so exiting fullscreen doesn't mess with the test.
+    document.removeEventListener("webkitfullscreenchange", stepChange);
+    document.removeEventListener("webkitfullscreenerror", stepChange);
+    let isFullscreen = !!document.webkitFullscreenElement;
+    if (withNavigation) {
+      assert_false(isFullscreen, "Navigation should consume the gesture, and disallow fullscreen");
+    } else {
+      assert_true(isFullscreen, "Document should be fullscreened after a gesture");
+      document.webkitExitFullscreen();
+    }
+    callback();
+  };
+  test_driver.click(fullscreenButton);
+}
+
+doTest(false, t.step_func(function() {
+  doTest(true, t.step_func_done(function() {}));
+}));
+</script>

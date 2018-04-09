@@ -315,7 +315,6 @@ async_test(t => {
 
   createDataChannelPair(pc1, pc2, { channelLabel: 'test' })
   .then(([dc1, dc2]) => {
-    dc2.binaryType = 'arraybuffer';
     let done = false;
     assert_not_equals(dc1.id, null, 'Expect dc1.id to be assigned after dc1 opened');
     const id = dc1.id;
@@ -343,6 +342,37 @@ async_test(t => {
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
 }, 'ID reuse should not be possible before the former channel with the same ID closed');
+
+/*
+  Ensure an ID can be reused once the former channel with the same ID has been closed.
+ */
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  createDataChannelPair(pc1, pc2, { channelLabel: 'test' })
+  .then(([dc1, _]) => {
+    assert_not_equals(dc1.id, null, 'Expect dc1.id to be assigned after dc1 opened');
+    const id = dc1.id;
+
+    dc1.onclose = t.step_func(() => {
+      // Immediately reuse the channel ID and wait for it to open
+      const dc = pc1.createDataChannel('id-reuse', {
+        negotiated: true,
+        id: id
+      });
+      dc.onopen = t.step_func(() => t.done());
+      assert_equals(dc.id, id, "Expect dc.id to match former channel's dc1.id");
+      t.step_timeout(() => assert_unreached('dc did not open in time'), 1000);
+    });
+
+    dc1.close();
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'ID reuse should be possible once the former channel with the same ID closed');
 
 /*
   Create channels until exhaustion, close one, open one (this should work), open another

@@ -284,10 +284,8 @@ def test_not_domains():
     c = config.Config(browser_host="foo.bar",
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
-    c = config.Config(browser_host="foo.bar")
     not_domains = c.not_domains
     assert not_domains == {
-        "": "foo.bar",
         "x": "x.foo.bar",
         "y": "y.foo.bar",
     }
@@ -307,8 +305,8 @@ def test_all_domains():
     c = config.Config(browser_host="foo.bar",
                       subdomains={"a", "b"},
                       not_subdomains={"x", "y"})
-    domains = c.domains
-    assert not_domains == {
+    all_domains = c.all_domains
+    assert all_domains == {
         "": "foo.bar",
         "a": "a.foo.bar",
         "b": "b.foo.bar",

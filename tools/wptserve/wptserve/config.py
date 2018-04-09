@@ -85,7 +85,7 @@ class Config(Mapping):
         """Load an overrides dict to override config values"""
         override = override.copy()
 
-        for k in _default:
+        for k in self._default:
             if k in override:
                 self._set_override(k, override.pop(k))
 

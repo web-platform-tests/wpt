@@ -11,10 +11,6 @@ from localpaths import repo_root
 from .utils import get_port
 
 
-with open(os.path.join(repo_root, "config.default.json"), "rb") as _fp:
-    _default = json.load(_fp)
-
-
 _renamed_props = {
     "host": "browser_host",
     "bind_hostname": "bind_address",
@@ -37,6 +33,9 @@ class Config(Mapping):
 
     Inherits from Mapping for backwards compatibility with the old dict-based config"""
 
+    with open(os.path.join(repo_root, "config.default.json"), "rb") as _fp:
+        _default = json.load(_fp)
+
     def __init__(self,
                  logger=None,
                  subdomains=set(),
@@ -49,7 +48,7 @@ class Config(Mapping):
         else:
             self.logger = logger
 
-        for k, v in _default.iteritems():
+        for k, v in self._default.iteritems():
             setattr(self, k, kwargs.pop(k, v))
 
         self.subdomains = subdomains

@@ -603,6 +603,7 @@ def run(**kwargs):
 
     global logger
     logger = config.logger
+    set_logger(logger)
 
     bind_address = config["bind_address"]
 

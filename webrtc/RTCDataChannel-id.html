@@ -412,7 +412,7 @@ promise_test(t => {
 }, 'Channel IDs should be reassigned after exhaustion in case a channel has been closed');
 
 /*
-  Create 65535 channels with the DTLS client role. Ensure the odd/even rule is not violated.
+  Create 66535 channels with the DTLS client role. Ensure the odd/even rule is not violated.
  */
 promise_test(t => {
   // Takes the DTLS server role
@@ -424,19 +424,13 @@ promise_test(t => {
   const channels = [];
   const ids = new UniqueSet();
 
-  // Create 65535 channels with pc1
+  // Create 65535+1000 channels with pc1
   //
-  // Note: Following the spec strictly would assume that this cannot fail. But in reality it will
+  // Note: Following the spec strictly would assume that this cannot fail. But in reality it may
   //       fail because the implementation knows how many streams it supports. What it doesn't
   //       know is how many streams the other peer supports (e.g. what will be negotiated).
-  for (let i = 0; i < nStreams; ++i) {
-    let dc;
-    try {
-      dc = pc1.createDataChannel('test');
-    } catch (e) {
-      assert_equals(e.name, 'OperationError', 'Fail on creation should throw OperationError');
-      break;
-    }
+  for (let i = 0; i < (nStreams + 1000); ++i) {
+    const dc = pc1.createDataChannel('test');
     assert_equals(dc.id, null, 'Channel id must be null before DTLS role has been determined');
     assert_not_equals(dc.readyState, 'closed',
       'Channel may not be closed before connection establishment');

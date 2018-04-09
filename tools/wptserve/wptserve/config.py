@@ -15,12 +15,6 @@ with open(os.path.join(repo_root, "config.default.json"), "rb") as _fp:
     _default = json.load(_fp)
 
 
-_extra_props = {
-    "subdomains": set(),
-    "not_subdomains": set(),
-}
-
-
 _renamed_props = {
     "host": "browser_host",
     "bind_hostname": "bind_address",
@@ -43,7 +37,11 @@ class Config(Mapping):
 
     Inherits from Mapping for backwards compatibility with the old dict-based config"""
 
-    def __init__(self, logger=None, **kwargs):
+    def __init__(self,
+                 logger=None,
+                 subdomains=set(),
+                 not_subdomains=set(),
+                 **kwargs):
         if logger is None:
             logger = logging.getLogger("web-platform-tests")
             logger.setLevel(getattr(logging, kwargs.get("log_level", "debug").upper()))
@@ -54,8 +52,8 @@ class Config(Mapping):
         for k, v in _default.iteritems():
             setattr(self, k, kwargs.pop(k, v))
 
-        for k, v in _extra_props.iteritems():
-            setattr(self, k, kwargs.pop(k, v))
+        self.subdomains = subdomains
+        self.not_subdomains = not_subdomains
 
         for k, new_k in _renamed_props.iteritems():
             if k in kwargs:

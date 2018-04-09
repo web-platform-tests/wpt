@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 import time
@@ -20,15 +21,19 @@ class WPTServer(object):
 
     def start(self):
         self.devnull = open(os.devnull, 'w')
+        wptserve_cmd = [os.path.join(self.wpt_root, 'wpt'), 'serve']
+        logging.info('Executing %s' % ' '.join(wptserve_cmd))
         self.proc = subprocess.Popen(
-            [os.path.join(self.wpt_root, 'wpt'), 'serve'],
+            wptserve_cmd,
             stderr=self.devnull,
             cwd=self.wpt_root)
 
         for retry in range(5):
             # Exponential backoff.
             time.sleep(2 ** retry)
-            if self.proc.poll() != None:
+            exitCode = self.proc.poll()
+            if exitCode != None:
+                logging.warn('Command "%s" exited with %s', ' '.join(wptserve_cmd), exitCode)
                 break
             try:
                 urllib2.urlopen(self.base_url, timeout=1)
@@ -36,7 +41,7 @@ class WPTServer(object):
             except urllib2.URLError:
                 pass
 
-        raise Exception('Could not start wptserve.')
+        raise Exception('Could not start wptserve on %s' % self.base_url)
 
     def stop(self):
         self.proc.terminate()

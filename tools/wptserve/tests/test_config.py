@@ -97,20 +97,20 @@ def test_assignment():
     assert c.browser_host == "foo.bar"
 
 
-def test_load_override_basic():
+def test_update_basic():
     c = config.Config()
-    c.load_overrides({"browser_host": "foo.bar"})
+    c.update({"browser_host": "foo.bar"})
     assert c.browser_host == "foo.bar"
 
 
-def test_load_override_prefixed():
+def test_update_prefixed():
     c = config.Config()
-    c.load_overrides({"doc_root": "/"})
+    c.update({"doc_root": "/"})
     assert c._doc_root == "/"
 
 
-def test_load_override_renamed_host():
-    logger = logging.getLogger("test_load_override_renamed_host")
+def test_update_renamed_host():
+    logger = logging.getLogger("test_update_renamed_host")
     logger.setLevel(logging.DEBUG)
     handler = logging.handlers.BufferingHandler(100)
     logger.addHandler(handler)
@@ -119,7 +119,7 @@ def test_load_override_renamed_host():
     assert c.logger is logger
     assert len(handler.buffer) == 0
 
-    c.load_overrides({"host": "foo.bar"})
+    c.update({"host": "foo.bar"})
 
     assert len(handler.buffer) == 1
     assert "browser_host" in handler.buffer[0].getMessage()  # check we give the new name in the message
@@ -127,10 +127,10 @@ def test_load_override_renamed_host():
     assert c.browser_host == "foo.bar"
 
 
-def test_load_override_bogus():
+def test_update_bogus():
     c = config.Config()
     with pytest.raises(KeyError):
-        c.load_overrides({"foobar": 1})
+        c.update({"foobar": 1})
 
 
 def test_ports_auto():

@@ -85,6 +85,40 @@ promise_test(t => {
 }, "DTLS server uses even data channel IDs");
 
 /*
+  Check if the implementation allows using in-band negotiated channels with a specific ID (which
+  is now a spec violation).
+ */
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const dc1 = pc1.createDataChannel('', {
+    negotiated: false,
+    id: 42
+  });
+  dc1.onopen = t.step_func(() => {
+    dc1.send(':(');
+  });
+
+  const dc2 = pc2.createDataChannel('', {
+    negotiated: false,
+    id: 42
+  });
+  dc2.onmessage = t.step_func((event) => {
+    assert_unreached('Channel established with same ID using negotiated=false');
+  });
+
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2)
+  .then(() => {
+    t.step_timeout(t.step_func_done(), 1000)
+  }).catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'In-band negotiation with a specific ID should not be allowed');
+
+/*
   Check if the implementation still follows the odd/even role correctly if we annoy it with
   negotiated channels not following that rule.
 

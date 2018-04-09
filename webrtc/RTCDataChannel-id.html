@@ -114,7 +114,8 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .then(() => {
     t.step_timeout(t.step_func_done(), 1000)
-  }).catch(t.step_func(err =>
+  })
+  .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
 }, 'In-band negotiation with a specific ID should not be allowed');
 
@@ -168,7 +169,8 @@ promise_test(t => {
       assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
       return answer;
     },
-  }).then(() => {
+  })
+  .then(() => {
     for (const dc of channels) {
       assert_equals(dc.id % 2, 1,
         `Channel created by the DTLS server role must be odd (was ${dc.id})`);
@@ -224,47 +226,9 @@ promise_test(t => {
         to the next step. If no available ID could be generated, or if the value of the
         [[DataChannelId]] slot is being used by an existing RTCDataChannel, throw an
         OperationError exception.
+
+  TODO: Needs updating in case https://github.com/w3c/webrtc-pc/issues/1829 turns out positive
  */
-
-// Ensure an ID cannot be reused before the former channel with the same ID has been closed.
-// See: https://bugs.chromium.org/p/chromium/issues/detail?id=559394
-async_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-
-  createDataChannelPair(pc1, pc2, { channelLabel: 'test' })
-  .then(([dc1, dc2]) => {
-    dc2.binaryType = 'arraybuffer';
-    let done = false;
-    assert_not_equals(dc1.id, null, 'Expect dc1.id to be assigned after dc1 opened');
-    const id = dc1.id;
-
-    dc2.onclose = t.step_func(() => {
-      // Give pc1 a chance to create the new data channel.
-      t.step_timeout(() => {
-        assert_true(done, 'pc1 should be done by now');
-        t.done();
-      }, 100);
-    });
-
-    // Close immediately and reuse the ID
-    // Note: Be aware that this is a race but the JS should always be faster than the reset
-    //       dance on the network.
-    dc1.close();
-    assert_throws('OperationError', () => {
-      pc1.createDataChannel('id-reuse', {
-        negotiated: true,
-        id: id
-      })
-    });
-    done = true;
-  })
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'ID reuse should not be possible before the former channel with the same ID closed');
-
 promise_test(t => {
   // Takes the DTLS server role
   const pc1 = new RTCPeerConnection();
@@ -290,7 +254,8 @@ promise_test(t => {
       assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
       return answer;
     },
-  }).then(([dc1, dc2]) => {
+  })
+  .then(([dc1, dc2]) => {
     // At this point, one channel id is already taken and it MUST be odd since pc1 created it
     assert_equals(dc1.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
@@ -339,8 +304,51 @@ promise_test(t => {
   'OperationError (after connection establishment)');
 
 /*
+  Ensure an ID cannot be reused before the former channel with the same ID has been closed.
+  See: https://bugs.chromium.org/p/chromium/issues/detail?id=559394
+ */
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  createDataChannelPair(pc1, pc2, { channelLabel: 'test' })
+  .then(([dc1, dc2]) => {
+    dc2.binaryType = 'arraybuffer';
+    let done = false;
+    assert_not_equals(dc1.id, null, 'Expect dc1.id to be assigned after dc1 opened');
+    const id = dc1.id;
+
+    dc2.onclose = t.step_func(() => {
+      // Give pc1 a chance to create the new data channel.
+      t.step_timeout(() => {
+        assert_true(done, 'pc1 should be done by now');
+        t.done();
+      }, 100);
+    });
+
+    // Close immediately and reuse the ID
+    // Note: Be aware that this is a race but the JS should always be faster than the reset
+    //       dance on the network.
+    dc1.close();
+    assert_throws('OperationError', () => {
+      pc1.createDataChannel('id-reuse', {
+        negotiated: true,
+        id: id
+      })
+    });
+    done = true;
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'ID reuse should not be possible before the former channel with the same ID closed');
+
+/*
   Create channels until exhaustion, close one, open one (this should work), open another
   (this should fail).
+
+  TODO: Needs updating in case https://github.com/w3c/webrtc-pc/issues/1829 turns out positive
  */
 promise_test(t => {
   // Takes the DTLS server role
@@ -368,7 +376,8 @@ promise_test(t => {
       assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
       return answer;
     },
-  }).then(([dc1, dc2]) => {
+  })
+  .then(([dc1, dc2]) => {
     // At this point, one channel id is already taken and it MUST be odd since pc1 created it
     assert_equals(dc1.id % 2, 1,
       `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
@@ -404,7 +413,8 @@ promise_test(t => {
       dc.onclose = () => resolve(id);
       dc.close();
     });
-  }).then((id) => {
+  })
+  .then((id) => {
     // Create a new channel, ensure the ID has been reassigned
     const dc = pc1.createDataChannel('reassigned?');
     assert_equals(dc.id, id, `ID ${id} should be reassigned to new channel`);
@@ -451,7 +461,8 @@ promise_test(t => {
       assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
       return answer;
     },
-  }).then(() => {
+  })
+  .then(() => {
     for (const dc of channels) {
       if (dc.readyState !== 'closed') {
         assert_equals(dc.id % 2, 1,
@@ -550,7 +561,8 @@ async_test(t => {
       assert_true(answer.sdp.includes('active'), 'pc2 must take the DTLS client role');
       return answer;
     },
-  }).then(() => {
+  })
+  .then(() => {
     // Since the spec does not define a specific order to which channels may fail if an ID could
     // not be generated, any of the channels may be affected by the steps of the description.
     for (const [dc, odd] of channels) {
@@ -570,9 +582,11 @@ async_test(t => {
       pc1.createDataChannel('this is too exhausting!'));
     assert_throws('OperationError', () =>
       pc2.createDataChannel('this is too exhausting!'));
-  }).then(() => {
+  })
+  .then(() => {
     maybeDone();
-  }).catch(t.step_func(err =>
+  })
+  .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
 }, 'Channel ID exhaustion handling (before and after connection establishment)');
 

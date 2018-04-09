@@ -331,6 +331,7 @@ def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
     domains = domains.copy()
     host = domains.pop("")
     port = get_port(host)
+    logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
     wrapper.start(start_http_server, host, port, paths, build_routes(aliases), bind_address,
@@ -520,6 +521,8 @@ def start(config, ssl_environment, routes, **kwargs):
     bind_address = config["bind_address"]
     ssl_config = config.ssl_config
 
+    logger.debug("Using ports: %r" % ports)
+
     servers = start_servers(host, ports, paths, routes, bind_address, config,
                             ssl_config, **kwargs)
 
@@ -615,6 +618,7 @@ def run(**kwargs):
     stash_address = None
     if bind_address:
         stash_address = (config.server_host, get_port(config.server_host))
+        logger.debug("Going to use port %d for stash" % port)
 
     with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
         servers = start(config, config.ssl_env, build_routes(config["aliases"]), **kwargs)

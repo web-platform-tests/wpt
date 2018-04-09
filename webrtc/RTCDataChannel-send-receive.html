@@ -49,10 +49,28 @@ const emptyBlob = new Blob([emptyBuffer]);
 
 const channelOptionsVariants = [
   ['In-band negotiated channel', {}],
-  ['Negotiated channel', {
-    negotiated: true,
-    id: 42
-  }],
+  ['Negotiated channel', [
+    {
+      negotiated: true,
+      id: 42
+    },
+    {
+      negotiated: true,
+      id: 42
+    }
+  ]],
+  ['Asymmetric negotiated channel', [
+    {
+      negotiated: true,
+      id: 42
+    },
+    {
+      negotiated: true,
+      id: 42,
+      // Since this channel only receives, the receive tests are fine to expect ordered messages
+      ordered: false,
+    }
+  ]],
 ];
 
 for (const [description, channelOptions] of channelOptionsVariants) {

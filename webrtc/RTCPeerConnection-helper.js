@@ -324,7 +324,15 @@ function createDataChannelPair(
     doSignaling: true,
   }, options);
 
-  const channel1 = pc1.createDataChannel(options.channelLabel, options.channelOptions);
+  let channel1Options;
+  let channel2Options = null;
+  if (options.channelOptions instanceof Array) {
+    [channel1Options, channel2Options] = options.channelOptions;
+  } else {
+    channel1Options = options.channelOptions;
+  }
+
+  const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
 
   return new Promise((resolve, reject) => {
     let channel2;
@@ -366,9 +374,9 @@ function createDataChannelPair(
     channel1.addEventListener('open', onOpen1);
     channel1.addEventListener('error', reject);
 
-    if (options.channelOptions.negotiated === true) {
+    if (channel2Options !== null) {
       onDataChannel({
-        channel: pc2.createDataChannel(options.channelLabel, options.channelOptions)
+        channel: pc2.createDataChannel(options.channelLabel, channel2Options)
       })
     } else {
       pc2.addEventListener('datachannel', onDataChannel);

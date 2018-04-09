@@ -68,8 +68,7 @@ class Config(Mapping):
         self.override_ssl_env = kwargs.pop("override_ssl_env", None)
 
         if kwargs:
-            k = next(iter(kwargs))
-            raise TypeError("__init__() got an unexpected keyword argument '%s'" % k)
+            raise TypeError("__init__() got unexpected keyword arguments %r" % (tuple(kwargs),))
 
     def __getitem__(self, k):
         try:

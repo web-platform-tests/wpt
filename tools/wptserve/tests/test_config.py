@@ -67,8 +67,10 @@ def test_init_renamed_host():
 
 
 def test_init_bogus():
-    with pytest.raises(TypeError):
-        config.Config(foobar=1)
+    with pytest.raises(TypeError) as e:
+        config.Config(foo=1, bar=2)
+    assert "foo" in e.value.message
+    assert "bar" in e.value.message
 
 
 def test_getitem():

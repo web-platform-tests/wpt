@@ -72,3 +72,20 @@ async_test(t => {
   assert_equals(counter, 4);
   t.done();
 }, "window.event should not be affected by nodes moving post-dispatch");
+
+async_test(t => {
+  const frame = document.body.appendChild(document.createElement("iframe"));
+  frame.src = "resources/event-global-extra-frame.html";
+  frame.onload = t.step_func_done(() => {
+    const event = new Event("hi");
+    document.addEventListener("hi", frame.contentWindow.listener);
+    document.addEventListener("hi", e => {
+      assert_equals(event, e);
+      assert_equals(window.event, e);
+    })
+    document.dispatchEvent(event);
+    assert_equals(frameState.event, event);
+    assert_equals(frameState.windowEvent, undefined);
+    assert_equals(frameState.parentEvent, event);
+  });
+}, "Listener from a different global");

@@ -78,11 +78,11 @@ async_test(t => {
   frame.src = "resources/event-global-extra-frame.html";
   frame.onload = t.step_func_done(() => {
     const event = new Event("hi");
-    document.addEventListener("hi", frame.contentWindow.listener);
-    document.addEventListener("hi", e => {
+    document.addEventListener("hi", frame.contentWindow.listener); // listener intentionally not wrapped in t.step_func
+    document.addEventListener("hi", t.step_func(e => {
       assert_equals(event, e);
       assert_equals(window.event, e);
-    })
+    }));
     document.dispatchEvent(event);
     assert_equals(frameState.event, event);
     assert_equals(frameState.windowEvent, undefined);

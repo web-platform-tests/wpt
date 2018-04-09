@@ -170,7 +170,6 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
         else:
             self.logger.debug("Using default configuration")
             Server.config = Config(browser_host=server_address[0],
-                                   server_host=server_address[0],
                                    ports={"http": [self.server_address[1]]})
 
 

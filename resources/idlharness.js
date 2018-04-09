@@ -250,14 +250,13 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
                 || options.only && !options.only.includes(name));
     }
 
+    // Record of skipped items in case we later determine they are a dependency.
     const skipped = new Map();
     const process = function(parsed) {
-        // console.log("checking", parsed.name);
         let name = parsed.name
             || parsed.type == "implements" && parsed.target
             || parsed.type == "includes" && parsed.target;
         if (skip(name) || !all_deps.has(name)) {
-            // console.log(`skipped ${name}`);
             name && skipped.set(name, parsed);
             return;
         }
@@ -277,24 +276,27 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         }
 
         if (follow_up && skipped.has(follow_up)) {
-            console.log(`following up with ${follow_up}`);
             const next = skipped.get(follow_up);
             skipped.delete(follow_up);
             process(next);
         }
+    }
+    for (let parsed of parsed_idls) {
+        process(parsed);
+    }
 
-        parsed.untested = true;
-        if ("members" in parsed) {
-            for (const member of parsed.members) {
-                parsed.members.untested = true;
+    // Mark as untested.
+    for (var i = 0; i < parsed_idls.length; i++) {
+        parsed_idls[i].untested = true;
+        if ("members" in parsed_idls[i]) {
+            for (var j = 0; j < parsed_idls[i].members.length; j++) {
+                parsed_idls[i].members[j].untested = true;
             }
         }
     }
-    for (const parsed of parsed_idls) {
-        process(parsed);
-    }
     
     if (new_options.only.length) {
+        console.log(`Adding deps ${new_options.only}`);
         this.internal_add_idls(parsed_idls, new_options);
     }
 }
@@ -385,19 +387,20 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         {
             throw new IdlHarnessError("Duplicate identifier " + parsed_idl.name);
         }
+
+        if (parsed_idl["inheritance"]) {
+            console.log(parsed_idl);
+            if (parsed_idl.name in this["inheritance"]
+                && parsed_idl["inheritance"] != this["inheritance"][parsed_idl.name]) {
+                throw new IdlHarnessError(
+                    `Inheritance for ${parsed_idl.name} was already defined`);
+            }
+            this["inheritance"][parsed_idl.name] = parsed_idl["inheritance"];
+        }
+
         switch(parsed_idl.type)
         {
         case "interface":
-            if (parsed_idl["inheritance"]) {
-                console.log(parsed_idl);
-                if (parsed_idl.name in this["inheritance"]
-                    && parsed_idl["inheritance"] != this["inheritance"][parsed_idl.name])
-                {
-                    throw new IdlHarnessError(
-                        `Inheritance for ${parsed_idl.name} was already defined`);
-                }
-                this["inheritance"][parsed_idl.name] = parsed_idl["inheritance"];
-            }
             this.members[parsed_idl.name] =
                 new IdlInterface(parsed_idl, /* is_callback = */ false, /* is_mixin = */ false);
             break;

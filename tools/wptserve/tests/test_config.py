@@ -165,6 +165,14 @@ def test_ports_auto_roundtrip():
     assert old_ports == new_ports
 
 
+def test_ports_idempotent():
+    c = config.Config(ports={"http": ["auto"]},
+                      ssl={"type": "none"})
+    ports_a = c.ports
+    ports_b = c.ports
+    assert ports_a == ports_b
+
+
 def test_ports_explicit():
     c = config.Config(ports={"http": [1001]},
                       ssl={"type": "none"})

@@ -116,17 +116,27 @@ class Config(Mapping):
 
     @property
     def ports(self):
-        rv = defaultdict(list)
+        try:
+            old_ports = self._computed_ports
+        except AttributeError:
+            old_ports = {}
+
+        self._computed_ports = defaultdict(list)
+
         for scheme, ports in self._ports.iteritems():
             for i, port in enumerate(ports):
                 if scheme in ["wss", "https"] and not self.ssl_env.ssl_enabled:
                     port = None
                 if port == "auto":
-                    port = get_port(self.server_host)
+                    try:
+                        port = old_ports[scheme][i]
+                    except KeyError, IndexError:
+                        port = get_port(self.server_host)
                 else:
                     port = port
-                rv[scheme].append(port)
-        return rv
+                self._computed_ports[scheme].append(port)
+
+        return self._computed_ports
 
     @ports.setter
     def ports(self, v):

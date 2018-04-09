@@ -126,7 +126,7 @@ class Config(Mapping):
                 if port == "auto":
                     try:
                         port = old_ports[scheme][i]
-                    except KeyError, IndexError:
+                    except (KeyError, IndexError):
                         port = get_port(self.server_host)
                 else:
                     port = port

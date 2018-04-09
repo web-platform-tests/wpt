@@ -544,14 +544,14 @@ def load_config(default_path, override_path=None, **kwargs):
     if os.path.exists(override_path):
         with open(override_path) as f:
             override_obj = json.load(f)
-        rv.load_overrides(override_obj)
+        rv.update(override_obj)
 
     if kwargs.get("config_path"):
         other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
         if os.path.exists(other_path):
             with open(other_path) as f:
                 override_obj = json.load(f)
-            rv.load_overrides(override_obj)
+            rv.update(override_obj)
         else:
             raise ValueError("Config path %s does not exist" % other_path)
 

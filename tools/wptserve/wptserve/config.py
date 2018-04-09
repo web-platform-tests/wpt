@@ -85,7 +85,7 @@ class Config(Mapping):
     def __len__(self):
         return len([x for x in dir(self) if not x.startswith("_")])
 
-    def load_overrides(self, override):
+    def update(self, override):
         """Load an overrides dict to override config values"""
         override = override.copy()
 

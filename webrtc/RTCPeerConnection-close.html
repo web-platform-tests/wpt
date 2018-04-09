@@ -43,49 +43,64 @@ test(t => {
   }
 }, 'Closing the peer connection should close all channels (before connection establishment)');
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  const channels = [];
+for (const local of [true, false]) {
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-  return createDataChannelPair(pc1, pc2)
-  .then(([dc1, dc2]) => {
-    assert_not_equals(dc1.readyState, 'closed',
-      'Channel may not be closed after connection establishment');
-    channels.push(dc1);
-    assert_not_equals(dc2.readyState, 'closed',
-      'Channel may not be closed after connection establishment');
-    channels.push(dc2);
+    const channels = [];
 
-    // Create 23 further channels, some of them negotiated
-    for (let i = 1; i < 24; ++i) {
-      const options = {};
-      if (i % 2 === 0) {
-        options.negotiated = true;
-        options.id = i;
-      }
-      const dc = pc1.createDataChannel(`test-channel-${i}`, options);
-      assert_not_equals(dc.readyState, 'closed',
+    return createDataChannelPair(pc1, pc2)
+    .then(([dc1, dc2]) => {
+      const id = dc1.id;
+      assert_not_equals(dc1.readyState, 'closed',
         'Channel may not be closed after connection establishment');
-      channels.push(dc);
-    }
+      channels.push(dc1);
+      assert_not_equals(dc2.readyState, 'closed',
+        'Channel may not be closed after connection establishment');
+      channels.push(dc2);
 
-    // Stop!
-    pc1.close();
-    pc2.close();
+      // Create 23 further channels, some of them negotiated
+      for (let i = id + 1; i < (id + 24); ++i) {
+        const createChannel = (pc, options) => {
+          const dc = pc.createDataChannel(`test-channel-${i}`, options);
+          assert_not_equals(dc.readyState, 'closed',
+            'Channel may not be closed after connection establishment');
+          channels.push(dc);
+        };
 
-    // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's
-    //       sync
-    for (const dc of channels) {
-      assert_equals(dc.readyState, 'closed',
-        'Channel should be closed after closing the peer connection');
-    }
-  });
-}, 'Closing the peer connection should close all channels (after connection establishment)');
+        const options = {};
+        if ((local && i % 2 === 0) || (!local && i %2 === 1)) {
+          options.negotiated = true;
+          options.id = i;
+        }
+
+        // Note: We explicitly don't add negotiated channels to both sides to see if the
+        //       implementation can cope with that.
+        createChannel(local ? pc1 : pc2, options);
+      }
+
+      // Stop!
+      (local ? pc1 : pc2).close();
+
+      // Note: The spec doesn't mention anything related to schedule 'close', so assuming it's
+      //       sync
+      for (const dc of channels) {
+        assert_equals(dc.readyState, 'closed',
+          'Channel should be closed after closing the peer connection');
+      }
+    });
+  }, `Closing the ${local ? 'local' : 'remote'} peer connection should close all channels (after
+  connection establishment)`);
+}
 
 promise_test(t => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   return createDataChannelPair(pc1, pc2)
   .then(() => {

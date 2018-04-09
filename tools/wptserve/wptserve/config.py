@@ -187,18 +187,6 @@ class Config(Mapping):
         return domains
 
     @property
-    def domains_set(self):
-        return set(self.domains.itervalues())
-
-    @property
-    def not_domains_set(self):
-        return set(self.not_domains.itervalues())
-
-    @property
-    def all_domains_set(self):
-        return self.domains_set ^ self.not_domains_set
-
-    @property
     def ssl_env(self):
         try:
             if self.override_ssl_env is not None:

@@ -269,25 +269,34 @@ def test_set_server_host():
 
 
 def test_domains():
-    c = config.Config(browser_host="foo.bar")
+    c = config.Config(browser_host="foo.bar",
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
     domains = c.domains
-    assert "" in domains
-    for k, v in domains.iteritems():
-        if k == "":
-            assert v == c.browser_host
-        else:
-            assert v.endswith("." + c.browser_host)
+    assert domains == {
+        "": "foo.bar",
+        "a": "a.foo.bar",
+        "b": "b.foo.bar",
+    }
 
 
 def test_not_domains():
+    c = config.Config(browser_host="foo.bar",
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
     c = config.Config(browser_host="foo.bar")
     not_domains = c.not_domains
-    for k, v in not_domains.iteritems():
-        assert v.endswith("." + c.browser_host)
+    assert not_domains == {
+        "": "foo.bar",
+        "x": "x.foo.bar",
+        "y": "y.foo.bar",
+    }
 
 
 def test_domains_not_domains_intersection():
-    c = config.Config(browser_host="foo.bar")
+    c = config.Config(browser_host="foo.bar",
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
     domains = c.domains
     not_domains = c.not_domains
     assert len(set(domains.iterkeys()) & set(not_domains.iterkeys())) == 0
@@ -295,33 +304,17 @@ def test_domains_not_domains_intersection():
 
 
 def test_all_domains():
-    c = config.Config(browser_host="foo.bar")
-    domains = c.domains
-    not_domains = c.not_domains
-    all_domains = c.all_domains
-    assert len(all_domains) == (len(domains) + len(not_domains))
-    assert all_domains[""] == "foo.bar"
-
-
-def test_domains_set():
-    c = config.Config(browser_host="foo.bar", subdomains={"www"})
-    domains_set = c.domains_set
-    assert "www.foo.bar" in domains_set
-
-
-def test_not_domains_set():
-    c = config.Config(browser_host="foo.bar", not_subdomains={"nonexistent-origin"})
-    not_domains_set = c.not_domains_set
-    assert "nonexistent-origin.foo.bar" in not_domains_set
-
-
-def test_all_domains_set():
     c = config.Config(browser_host="foo.bar",
-                      subdomains={"www"},
-                      not_subdomains={"nonexistent-origin"})
-    all_domains_set = c.all_domains_set
-    assert "www.foo.bar" in all_domains_set
-    assert "nonexistent-origin.foo.bar" in all_domains_set
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
+    domains = c.domains
+    assert not_domains == {
+        "": "foo.bar",
+        "a": "a.foo.bar",
+        "b": "b.foo.bar",
+        "x": "x.foo.bar",
+        "y": "y.foo.bar",
+    }
 
 
 def test_ssl_env_override():

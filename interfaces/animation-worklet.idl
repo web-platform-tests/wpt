@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the animation-worklet spec.
+// Content of this file was automatically extracted from the CSS Animation Worklet API spec.
 // See https://wicg.github.io/animation-worklet/
 
 partial interface Window {
@@ -8,15 +8,15 @@ partial interface Window {
 
 callback VoidFunction = void ();
 
-[Global=Worklet]
+[ Exposed=AnimationWorklet, Global=AnimationWorklet ]
 interface AnimationWorkletGlobalScope : WorkletGlobalScope {
     void registerAnimator(DOMString name, VoidFunction animatorCtor);
 };
 
 [Constructor (DOMString animatorName,
-              optional (AnimationEffectReadOnly or array)? effects = null,
-              AnimationTimeline? timeline,
-              optional WorkletAnimationOptions)]
+              optional (AnimationEffectReadOnly or sequence)? effects = null,
+              optional AnimationTimeline? timeline,
+              optional any options)]
 interface WorkletAnimation : Animation {
         readonly attribute DOMString animatorName;
 };
@@ -27,7 +27,7 @@ interface WorkletGroupEffect :  WorkletGroupEffectReadOnly {};
 WorkletGroupEffect implements AnimationEffectMutable;
 WorkletGroupEffect implements GroupEffectMutable;
 
-[Exposed=Worklet]
+[Exposed=AnimationWorklet]
 partial interface AnimationEffectReadOnly {
     // Intended for use inside Animation Worklet scope to drive the effect.
     attribute double localTime;

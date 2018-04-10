@@ -28,3 +28,13 @@ async_test(t => {
   client.overrideMimeType("text/xml");
   client.send();
 }, "If charset is not overridden by overrideMimeType() the original continues to be used");
+
+async_test(t => {
+  const client = new XMLHttpRequest();
+  client.onload = t.step_func_done(() => {
+    assert_equals(client.responseText, "\uFFFD")
+  });
+  client.open("GET", testURL);
+  client.overrideMimeType("text/plain;charset=342");
+  client.send();
+}, "Charset can be overridden by overrideMimeType() with a bogus charset");

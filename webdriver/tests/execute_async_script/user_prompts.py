@@ -29,6 +29,8 @@ def test_handle_prompt_dismiss_and_notify(new_session, add_browser_capabilites):
     assert value is None
     with pytest.raises(error.UnexpectedAlertOpenException):
         title = session.title
+    with pytest.raises(error.NoSuchAlertException):
+        session.alert.dismiss()
 
 
 def test_handle_prompt_accept_and_notify(new_session, add_browser_capabilites):
@@ -37,12 +39,16 @@ def test_handle_prompt_accept_and_notify(new_session, add_browser_capabilites):
     assert value is None
     with pytest.raises(error.UnexpectedAlertOpenException):
         title = session.title
+    with pytest.raises(error.NoSuchAlertException):
+        session.alert.accept()
 
 
 def test_handle_prompt_ignore(new_session, add_browser_capabilites):
     _, session = new_session({"capabilities": {"alwaysMatch": add_browser_capabilites({"unhandledPromptBehavior": "ignore"})}})
     value = session.execute_async_script("window.alert('Hello');")
     assert value is None
+    with pytest.raises(error.UnexpectedAlertOpenException):
+        title = session.title
     session.alert.dismiss()
 
 

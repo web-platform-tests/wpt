@@ -1,26 +1,32 @@
+// Helpers that return headers objects with a particular guard
 function headersGuardNone(fill) {
   if (fill) return new Headers(fill);
   return new Headers();
 }
 
 function headersGuardResponse(fill) {
-  if (fill) return new Response('', { headers: fill }).headers;
-  return new Response('').headers;
+  const opts = {};
+  if (fill) opts.headers = fill;
+  return new Response('', opts).headers;
 }
 
 function headersGuardRequest(fill) {
-  if (fill) return new Request('./', { headers: fill }).headers;
-  return new Request('./').headers;
+  const opts = {};
+  if (fill) opts.headers = fill;
+  return new Request('./', opts).headers;
 }
 
 function headersGuardRequestNoCors(fill) {
-  if (fill) return new Request('./', { headers: fill, mode: 'no-cors' }).headers;
-  return new Request('./', { mode: 'no-cors' }).headers;
+  const opts = { mode: 'no-cors' };
+  if (fill) opts.headers = fill;
+  return new Request('./', opts).headers;
 }
 
 test(() => {
   // Setting range should work for these guards
   for (const createHeaders of [headersGuardNone, headersGuardResponse, headersGuardRequest]) {
+    // There are three ways to set headers.
+    // Filling, appending, and setting. Test each:
     let headers = createHeaders({ Range: 'foo' });
     assert_equals(headers.get('Range'), 'foo');
 
@@ -45,3 +51,4 @@ test(() => {
   headers.set('Range', 'foo');
   assert_false(headers.has('Range'));
 }, `Privileged header is allowed unless guard is request-no-cors`);
+

@@ -6,6 +6,12 @@ function assert_range_request(request, expectedRangeHeader, name) {
   assert_equals(request.headers.get('Range'), expectedRangeHeader, name);
 }
 
+async function broadcast(msg) {
+  for (const client of await clients.matchAll()) {
+    client.postMessage(msg);
+  }
+}
+
 addEventListener('fetch', event => {
   /** @type Request */
   const request = event.request;
@@ -19,26 +25,26 @@ addEventListener('fetch', event => {
     case 'range-header-passthrough-test':
       rangeHeaderPassthroughTest(event);
       return;
+    case 'store-ranged-response':
+      storeRangedResponse(event);
+      return;
+    case 'use-stored-ranged-response':
+      useStoredRangeResponse(event);
+      return;
   }
 });
-
-let gotRangeResponse = false;
 
 /**
  * @param {Request} request
  */
 function rangeHeaderFilterTest(request) {
-  if (!request.headers.has('Range') || gotRangeResponse) return;
-  // Avoid running the test twice
-  gotRangeResponse = true;
-
   const rangeValue = request.headers.get('Range');
 
   test(() => {
     assert_range_request(new Request(request), rangeValue, `Untampered`);
     assert_range_request(new Request(request, {}), rangeValue, `Untampered (no init props set)`);
     assert_range_request(new Request(request, { __foo: 'bar' }), rangeValue, `Untampered (only invalid props set)`);
-    assert_range_request(new Request(request, { move: 'cors' }), rangeValue, `More permissive mode`);
+    assert_range_request(new Request(request, { mode: 'cors' }), rangeValue, `More permissive mode`);
     assert_range_request(request.clone(), rangeValue, `Clone`);
   }, "Range headers correctly preserved");
 
@@ -54,7 +60,7 @@ function rangeHeaderFilterTest(request) {
 
     headers = new Request(request).headers;
     headers.delete('does-not-exist');
-    assert_equals(headers.get('Range'), rangeValue, `Preserved if no header removed`);
+    assert_equals(headers.get('Range'), rangeValue, `Preserved if no header actually removed`);
 
     headers = new Request(request).headers;
     headers.append('foo', 'bar');
@@ -98,23 +104,39 @@ function rangeHeaderPassthroughTest(event) {
   const url = new URL(request.url);
   const key = url.searchParams.get('range-received-key');
 
-  if (!request.headers.has('Range') || gotRangeResponse) return;
-  // Avoid running the test twice
-  gotRangeResponse = true;
+  event.waitUntil(new Promise(resolve => {
+    promise_test(async () => {
+      await fetch(event.request);
+      const response = await fetch('stash-take.py?key=' + key);
+      assert_equals(await response.json(), 'range-header-received');
+      resolve();
+    }, `Include range header in network request`);
 
-  let waitUntilResolve;
-  const waitUntilPromise = new Promise(r => waitUntilResolve = r);
-  event.waitUntil(waitUntilPromise);
+    done();
+  }));
 
   // Just send back any response, it isn't important for the test.
   event.respondWith(new Response(''));
+}
 
-  promise_test(async () => {
-    await fetch(event.request);
-    const response = await fetch('stash-take.py?key=' + key);
-    assert_equals(await response.json(), 'range-header-received');
-    waitUntilResolve();
-  }, `Include range header in network request`);
+let storedRangeResponseP;
 
-  done();
+function storeRangedResponse(event) {
+  /** @type Request */
+  const request = event.request;
+  const id = new URL(request.url).searchParams.get('id');
+
+  storedRangeResponseP = fetch(event.request);
+  broadcast({ id });
+
+  // Just send back any response, it isn't important for the test.
+  event.respondWith(new Response(''));
+}
+
+function useStoredRangeResponse(event) {
+  event.respondWith(async function() {
+    const response = await storedRangeResponseP;
+    if (!response) throw Error("Expected stored range response");
+    return response.clone();
+  }());
 }

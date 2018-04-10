@@ -53,15 +53,17 @@ def main(request, response):
     range_received_key = request.GET.first('range-received-key', '')
 
     if range_received_key and range_header:
+        # This is later collected using stash-take.py
         request.stash.put(range_received_key, 'range-header-received', '/fetch/privileged-headers/')
 
+    # Audio details
     sample_rate = 8000
     bit_depth = 8
     channels = 1
     duration = 60 * 5
 
     total_length = (sample_rate * bit_depth * channels * duration) / 8
-    bytes_to_send = total_length
+    bytes_remaining_to_send = total_length
     initial_write = ''
 
     if range_header:
@@ -72,17 +74,17 @@ def main(request, response):
         end = int(end) if end else 0
 
         if end:
-            bytes_to_send = (end + 1) - start
+            bytes_remaining_to_send = (end + 1) - start
         else:
-            bytes_to_send = total_length - start
+            bytes_remaining_to_send = total_length - start
 
         wav_header = create_wav_header(sample_rate, bit_depth, channels, duration)
 
         if start < len(wav_header):
             initial_write = wav_header[start:]
 
-            if bytes_to_send < len(initial_write):
-                initial_write = initial_write[0:bytes_to_send]
+            if bytes_remaining_to_send < len(initial_write):
+                initial_write = initial_write[0:bytes_remaining_to_send]
 
         content_range = "bytes {}-{}/{}".format(start, end or total_length - 1, total_length)
 
@@ -90,19 +92,20 @@ def main(request, response):
     else:
         initial_write = create_wav_header(sample_rate, bit_depth, channels, duration)
 
-    response.headers.set("Content-Length", bytes_to_send)
+    response.headers.set("Content-Length", bytes_remaining_to_send)
 
     response.write_status_headers()
     response.writer.write(initial_write)
 
-    bytes_to_send -= len(initial_write)
+    bytes_remaining_to_send -= len(initial_write)
 
-    while bytes_to_send > 0:
+    while bytes_remaining_to_send > 0:
         if not response.writer.flush():
             break
 
-        to_send = b'\x00' * min(bytes_to_send, sample_rate)
-        bytes_to_send -= len(to_send)
+        to_send = b'\x00' * min(bytes_remaining_to_send, sample_rate)
+        bytes_remaining_to_send -= len(to_send)
 
         response.writer.write(to_send)
+        # Throttle the stream
         time.sleep(0.5)

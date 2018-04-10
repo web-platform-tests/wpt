@@ -259,6 +259,17 @@ class ClickProtocolPart(ProtocolPart):
         :param element: A protocol-specific handle to an element."""
         pass
 
+class ActionsProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "actions"
+    
+    @abstractmethod
+    def actions(self):
+        pass
+
+
 class SendKeysProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta

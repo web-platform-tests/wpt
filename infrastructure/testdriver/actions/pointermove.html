@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver actions method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input id="checkbox" type="checkbox">
+
+<script>
+async_test(function(t) {
+  var target = document.getElementById("checkbox");
+
+  target.addEventListener("pointermove", t.step_func_done(function() {
+    t.done();
+  }));
+
+  test_driver.actions([{"type": "move_to_element", "args": [{"type": "element", "arg": target}]}, {"type": "perform"}])
+  .catch(t.unreached_func("actions failed"));
+});
+</script>

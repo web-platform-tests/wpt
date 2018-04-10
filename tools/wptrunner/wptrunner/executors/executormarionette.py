@@ -37,7 +37,6 @@ from .protocol import (BaseProtocolPart,
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
 
-
 def do_delayed_imports():
     global errors, marionette
 
@@ -46,6 +45,7 @@ def do_delayed_imports():
     try:
         import marionette
         from marionette import errors
+
     except ImportError:
         from marionette_driver import marionette, errors
 

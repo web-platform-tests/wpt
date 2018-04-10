@@ -61,6 +61,7 @@
         return pending_promise;
     };
 
+
     window.test_driver_internal.send_keys = function(element, keys) {
         const selector = get_selector(element);
         const pending_promise = new Promise(function(resolve, reject) {
@@ -68,6 +69,38 @@
             pending_reject = reject;
         });
         window.opener.postMessage({"type": "action", "action": "send_keys", "selector": selector, "keys": keys}, "*");
+        return pending_promise;
+    };
+    
+
+    window.test_driver_internal.actions = function(chain) {
+        message = {};
+        message.type = "action";
+        message.action = "actions";
+        message.actions_list = [];
+        message.args_list = [];
+        
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+
+        for (var i = 0; i < chain.length; i++) {
+          message.actions_list.push(chain[i].type);
+          inner_args_list = [];
+          if (chain[i].args) {
+            for (var j = 0; j < chain[i].args.length; j++) {
+              if (chain[i].args[j].type == "element") {
+                inner_args_list.push(get_selector(chain[i].args[j].arg));
+              } else {
+                inner_args_list.push(chain[i].args[j].arg);
+              }
+            }
+          }
+          message.args_list.push(inner_args_list.slice());
+        }
+
+        window.opener.postMessage(message, "*");
         return pending_promise;
     };
 })();

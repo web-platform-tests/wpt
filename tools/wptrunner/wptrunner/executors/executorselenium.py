@@ -19,9 +19,11 @@ from .protocol import (BaseProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       ActionsProtocolPart,
                        SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
+from selenium.webdriver.common.action_chains import ActionChains
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -37,7 +39,6 @@ def do_delayed_imports():
     from selenium import webdriver
     from selenium.common import exceptions
     from selenium.webdriver.remote.remote_connection import RemoteConnection
-
 
 class SeleniumBaseProtocolPart(BaseProtocolPart):
     def setup(self):
@@ -135,6 +136,13 @@ class SeleniumClickProtocolPart(ClickProtocolPart):
     def element(self, element):
         return element.click()
 
+class SeleniumActionsProtocolPart(ActionsProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+    
+    def actions(self):
+        return ActionChains(self.webdriver)
+
 class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
@@ -162,6 +170,7 @@ class SeleniumProtocol(Protocol):
                   SeleniumTestharnessProtocolPart,
                   SeleniumSelectorProtocolPart,
                   SeleniumClickProtocolPart,
+                  SeleniumActionsProtocolPart,
                   SeleniumSendKeysProtocolPart,
                   SeleniumTestDriverProtocolPart]
 

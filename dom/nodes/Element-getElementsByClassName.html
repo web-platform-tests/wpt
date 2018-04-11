@@ -23,7 +23,8 @@ test(function() {
   var b = document.createElement("b");
   var c = document.createElement("c");
   b.className = "foo";
-  this.add_cleanup(function() {document.body.removeChild(a);});
+  document.body.appendChild(a);
+  this.add_cleanup(function() {document.body.removeChild(a)});
   a.appendChild(b);
 
   var l = a.getElementsByClassName("foo");

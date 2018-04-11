@@ -15,7 +15,7 @@
 //  createDataChannelPair
 //  awaitMessage
 //  blobToArrayBuffer
-//  assert_equals_array_buffer
+//  assert_equals_typed_array
 
 // Note: bufferedAmount after send is covered in RTCDataChannel-bufferedAmount
 
@@ -42,6 +42,20 @@ const helloBuffer = Uint8Array.of(0x68, 0x65, 0x6c, 0x6c, 0x6f);
 const helloBlob = new Blob([helloBuffer]);
 // Unicode string with multiple code units
 const unicodeString = '世界你好';
+
+// Array buffer types to test
+const arrayBuffers = [
+  ['Int8Array', Int8Array.of(127, 126, 0, -128)],
+  ['Uint8Array', Uint8Array.of(255, 254, 253, 0)],
+  ['Uint8ClampedArray', Uint8ClampedArray.of(257, 256, -1, -2)],
+  ['Int16Array', Int16Array.of(32767, 32766, 0, -32768)],
+  ['Uint16Array', Uint16Array.of(65535, 65534, 65533, 0)],
+  ['In32Array', Int32Array.of(2147483647, 2147483646, 0, -2147483648)],
+  ['Uint32Array', Uint32Array.of(4294967295, 4294967294, 4294967293, 0)],
+  ['Flaot32Array', Float32Array.of(1.0, 0.75, 0.5, 0.25)],
+  ['Float64Array', Float64Array.of(1.0, 0.75, 0.5, 0.25)],
+  ['DataView', new DataView(helloBuffer.buffer)],
+];
 
 // Empty buffers
 const emptyBuffer = new Uint8Array(0);
@@ -110,7 +124,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     .then(([dc1, dc2]) => {
       dc1.send(helloString);
       return awaitMessage(dc2)
-    }).then(message => {
+    })
+    .then(message => {
       assert_equals(typeof message, 'string', 'Expect message to be a string');
       assert_equals(message, helloString);
     });
@@ -127,7 +142,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     .then(([dc1, dc2]) => {
       dc2.send(helloString);
       return awaitMessage(dc1)
-    }).then(message => {
+    })
+    .then(message => {
       assert_equals(typeof message, 'string', 'Expect message to be a string');
       assert_equals(message, helloString);
     });
@@ -144,7 +160,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     .then(([dc1, dc2]) => {
       dc1.send(unicodeString);
       return awaitMessage(dc2)
-    }).then(message => {
+    })
+    .then(message => {
       assert_equals(typeof message, 'string', 'Expect message to be a string');
       assert_equals(message, unicodeString);
     });
@@ -161,7 +178,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc2.binaryType = 'arraybuffer';
       dc1.send(helloString);
       return awaitMessage(dc2);
-    }).then(message => {
+    })
+    .then(message => {
       assert_equals(typeof message, 'string', 'Expect message to be a string');
       assert_equals(message, helloString);
     });
@@ -194,23 +212,48 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         Uint8Array or Uint16Array or Uint32Array or Uint8ClampedArray or
         Float32Array or Float64Array or DataView) ArrayBufferView;
    */
+  for (const [name, arrayBuffer] of arrayBuffers) {
+    promise_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
+
+      return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+      .then(([dc1, dc2]) => {
+        dc2.binaryType = 'arraybuffer';
+        dc1.send(arrayBuffer);
+        return awaitMessage(dc2)
+      })
+      .then(messageBuffer => {
+        assert_true(messageBuffer instanceof ArrayBuffer,
+          'Expect messageBuffer to be an ArrayBuffer');
+        assert_equals_typed_array(messageBuffer, arrayBuffer);
+      });
+    }, `${description}: Should be able to send ${name} message and receive as ArrayBuffer`);
+  }
+
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
+    const helloBufferWithOffset = new Uint8Array(helloBuffer.buffer, 2);
+
     return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
     .then(([dc1, dc2]) => {
       dc2.binaryType = 'arraybuffer';
-      dc1.send(helloBuffer);
+      dc1.send(helloBufferWithOffset);
       return awaitMessage(dc2)
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBufferWithOffset);
     });
-  }, `${description}: Should be able to send Uint8Array message and receive as ArrayBuffer`);
+  }, `${description}: Should be able to send Uint8Array (with offset) message and receive as
+  ArrayBuffer`);
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
@@ -218,17 +261,21 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     t.add_cleanup(() => pc1.close());
     t.add_cleanup(() => pc2.close());
 
+    const helloView = new DataView(helloBuffer.buffer, 2);
+
     return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
     .then(([dc1, dc2]) => {
       dc2.binaryType = 'arraybuffer';
-      dc1.send(new DataView(helloBuffer.buffer));
+      dc1.send(helloView);
       return awaitMessage(dc2)
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloView);
     });
-  }, `${description}: Should be able to send DataView message and receive as ArrayBuffer`);
+  }, `${description}: Should be able to send DataView (with offset) message and receive as
+  ArrayBuffer`);
 
   /*
     6.2. send()
@@ -250,10 +297,11 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc2.binaryType = 'arraybuffer';
       dc1.send(helloBuffer.buffer);
       return awaitMessage(dc2)
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer);
     });
   }, `${description}: Should be able to send ArrayBuffer message and receive as ArrayBuffer`);
 
@@ -276,12 +324,35 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc2.binaryType = 'arraybuffer';
       dc1.send(helloBlob);
       return awaitMessage(dc2);
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer);
     });
   }, `${description}: Should be able to send Blob message and receive as ArrayBuffer`);
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const slicedHelloBlob = helloBlob.slice(2);
+    const helloBufferWithOffset = new Uint8Array(helloBuffer.buffer, 2);
+
+    return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, dc2]) => {
+      dc2.binaryType = 'arraybuffer';
+      dc1.send(slicedHelloBlob);
+      return awaitMessage(dc2);
+    })
+    .then(messageBuffer => {
+      assert_true(messageBuffer instanceof ArrayBuffer,
+        'Expect messageBuffer to be an ArrayBuffer');
+      assert_equals_typed_array(messageBuffer, helloBufferWithOffset);
+    });
+  }, `${description}: Should be able to send Blob (with offset) message and receive as ArrayBuffer`);
 
   /*
     TODO: Update this once https://github.com/w3c/webrtc-pc/issues/1825 is resolved
@@ -311,10 +382,11 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_true(messageBlob instanceof Blob,
         'Expect received messageBlob to be a Blob');
       return blobToArrayBuffer(messageBlob);
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer);
     });
   }, `${description}: Should be able to send ArrayBuffer message and receive as Blob`);
 
@@ -329,7 +401,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc1.send('');
       t.step_timeout(() => assert_unreached('Receiving empty string timed out'), 100);
       return awaitMessage(dc2)
-    }).then(message => {
+    })
+    .then(message => {
       assert_equals(message, '', 'Data should be an empty string');
     });
   }, `${description}: Should be able to transmit an empty string`);
@@ -346,7 +419,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc1.send(emptyBuffer);
       t.step_timeout(() => assert_unreached('Receiving empty buffer timed out'), 100);
       return awaitMessage(dc2)
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_equals(messageBuffer.byteLength, 0, 'Data should be an empty ArrayBuffer');
     });
   }, `${description}: Should be able to transmit an empty Uint8Array`);
@@ -363,7 +437,8 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc1.send(emptyBlob);
       t.step_timeout(() => assert_unreached('Receiving empty buffer timed out'), 100);
       return awaitMessage(dc2)
-    }).then(messageBlob => {
+    })
+    .then(messageBlob => {
       assert_equals(messageBlob.size, 0, 'Data should be an empty Blob');
     });
   }, `${description}: Should be able to transmit an empty Blob`);
@@ -400,10 +475,11 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     .then(messageBlob => {
       assert_true(messageBlob instanceof Blob, 'Expect received messageBlob to be a Blob');
       return blobToArrayBuffer(messageBlob);
-    }).then(messageBuffer => {
+    })
+    .then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
         'Expect messageBuffer to be an ArrayBuffer');
-      assert_equals_array_buffer(messageBuffer, helloBuffer.buffer);
+      assert_equals_typed_array(messageBuffer, helloBuffer);
     });
   }, `${description}: Setting binaryType should receive message as Blob by default`);
 
@@ -422,9 +498,9 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       receivedMessages.push(data);
 
       if(receivedMessages.length === 3) {
-        assert_equals_array_buffer(receivedMessages[0], helloBuffer.buffer);
+        assert_equals_typed_array(receivedMessages[0], helloBuffer);
         assert_equals(receivedMessages[1], unicodeString);
-        assert_equals_array_buffer(receivedMessages[2], helloBuffer.buffer);
+        assert_equals_typed_array(receivedMessages[2], helloBuffer);
 
         t.done();
       }
@@ -469,10 +545,10 @@ for (const [description, channelOptions] of channelOptionsVariants) {
             receivedMessages[0] = blobMessages[0];
             receivedMessages[3] = blobMessages[1];
 
-            assert_equals_array_buffer(receivedMessages[0], helloBuffer.buffer);
+            assert_equals_typed_array(receivedMessages[0], helloBuffer);
             assert_equals(receivedMessages[1], unicodeString);
-            assert_equals_array_buffer(receivedMessages[2], helloBuffer.buffer);
-            assert_equals_array_buffer(receivedMessages[3], helloBuffer.buffer);
+            assert_equals_typed_array(receivedMessages[2], helloBuffer);
+            assert_equals_typed_array(receivedMessages[3], helloBuffer);
 
             t.done();
           });
@@ -535,7 +611,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         // violated)
         dc2.onmessage = t.step_func(event => {
           const { data } = event;
-          assert_equals_array_buffer(data, message.buffer,
+          assert_equals_typed_array(data, message,
             'Send data should equal receive data');
           t.done();
         });
@@ -629,7 +705,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       // Ensure the data reaches dc2
       dc2.onmessage = t.step_func(event => {
         const {data} = event;
-        assert_equals_array_buffer(data, message.buffer,
+        assert_equals_typed_array(data, message,
           'Received data should be equal to sent data');
         if (++nMessagesReceived === nMessages) {
           t.done();
@@ -665,17 +741,17 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       let nMessagesReceived = 0;
       dc2.binaryType = 'arraybuffer';
 
-      // Ensure dc2 has received all data once being closed
+      // Ensure dc2 has received all messages once being closed
       dc2.onclose = t.step_func(() => {
         assert_equals(nMessagesReceived, nMessages,
-          'Remote channel should have received all data before becoming closed');
+          'Remote channel should have received all messages before becoming closed');
         t.done();
       });
 
       // Ensure the data reaches dc2
       dc2.onmessage = t.step_func(event => {
         const {data} = event;
-        assert_equals_array_buffer(data, message.buffer,
+        assert_equals_typed_array(data, message,
           'Received data should be equal to sent data');
         ++nMessagesReceived;
       });
@@ -719,17 +795,17 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         closed = true;
       });
 
-      // Ensure dc2 has received all data once being closed
+      // Ensure dc2 has received all messages once being closed
       dc2.onclose = t.step_func(() => {
         assert_equals(nMessagesReceived, nMessages,
-          'Remote channel should have received all data before becoming closed');
+          'Remote channel should have received all messages before becoming closed');
         t.done();
       });
 
       // Ensure the data reaches dc2
       dc2.onmessage = t.step_func(event => {
         const {data} = event;
-        assert_equals_array_buffer(data, message.buffer,
+        assert_equals_typed_array(data, message,
           'Received data should be equal to sent data');
         ++nMessagesReceived;
       });
@@ -747,34 +823,34 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached(`Unexpected promise rejection: ${err}`)));
   }, `${description}: Closing a channel (remote) with outstanding data should transfer that data
   before becoming closed`);
-}
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
-  .then(([dc1, _]) => {
-    dc1.close();
-    assert_throws('InvalidStateError', () => dc1.send(helloString));
-  });
-}, `${description}: Sending after the channel has been closed should raise InvalidStateError`);
+    return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, _]) => {
+      dc1.close();
+      assert_throws('InvalidStateError', () => dc1.send(helloString));
+    });
+  }, `${description}: Sending after the channel has been closed should raise InvalidStateError`);
 
-promise_test(t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
 
-  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
-  .then(([dc1, _]) => {
-    pc1.close();
-    assert_throws('InvalidStateError', () => dc1.send(helloString));
-  });
-}, `${description}: Sending after the peer connection has been closed should raise
+    return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, _]) => {
+      pc1.close();
+      assert_throws('InvalidStateError', () => dc1.send(helloString));
+    });
+  }, `${description}: Sending after the peer connection has been closed should raise
 InvalidStateError`);
+}
 
 /*
   Untestable

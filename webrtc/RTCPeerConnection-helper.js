@@ -417,23 +417,25 @@ function blobToArrayBuffer(blob) {
   });
 }
 
-// Assert that two ArrayBuffer objects have the same byte values
-function assert_equals_array_buffer(buffer1, buffer2) {
-  assert_true(buffer1 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+// Assert that two TypedArray or ArrayBuffer objects have the same byte values
+function assert_equals_typed_array(array1, array2) {
+  const [view1, view2] = [array1, array2].map((array) => {
+    if (array instanceof ArrayBuffer) {
+      return new DataView(array);
+    } else {
+      assert_true(array.buffer instanceof ArrayBuffer,
+        'Expect buffer to be instance of ArrayBuffer');
+      return new DataView(array.buffer, array.byteOffset, array.byteLength);
+    }
+  });
 
-  assert_true(buffer2 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+  assert_equals(view1.byteLength, view2.byteLength,
+    'Expect both arrays to be of the same byte length');
 
-  assert_equals(buffer1.byteLength, buffer2.byteLength,
-    'Expect both array buffers to be of the same byte length');
+  const byteLength = view1.byteLength;
 
-  const byteLength = buffer1.byteLength;
-  const byteArray1 = new Uint8Array(buffer1);
-  const byteArray2 = new Uint8Array(buffer2);
-
-  for(let i=0; i<byteLength; i++) {
-    assert_equals(byteArray1[i], byteArray2[i],
+  for (let i = 0; i < byteLength; ++i) {
+    assert_equals(view1.getUint8(i), view2.getUint8(i),
       `Expect byte at buffer position ${i} to be equal`);
   }
 }

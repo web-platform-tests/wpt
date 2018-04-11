@@ -116,7 +116,25 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_equals(typeof message, 'string', 'Expect message to be a string');
       assert_equals(message, helloString);
     });
-  }, `${description}: Should be able to send simple string and receive as string`);
+  }, `${description}: Should be able to send (local) simple string and receive (remote) as
+  string`);
+
+  promise_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, dc2]) => {
+      dc2.send(helloString);
+      return awaitMessage(dc1)
+    }).then(message => {
+      assert_equals(typeof message, 'string', 'Expect message to be a string');
+      assert_equals(message, helloString);
+    });
+  }, `${description}: Should be able to send (remote) simple string and receive (local) as
+  string`);
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
@@ -641,6 +659,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   }, `${description}: Closing a channel (local) with outstanding data should transfer that data
   before becoming closed`);
 
+  // TODO: May need updating once https://github.com/w3c/webrtc-pc/issues/1825 has been resolved
   async_test(t => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();

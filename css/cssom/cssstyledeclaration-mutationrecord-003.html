@@ -12,5 +12,5 @@
   m.observe(document.documentElement,  { attributes: true });
 
   document.documentElement.style.width = "";
-  setTimeout(() => test.done(), 0);
+  requestAnimationFrame(() => test.done());
 </script>

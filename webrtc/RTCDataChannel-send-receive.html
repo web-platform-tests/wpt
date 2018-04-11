@@ -53,8 +53,7 @@ const channelOptionsVariants = [
     {
       negotiated: true,
       id: 42
-    },
-    {
+    }, {
       negotiated: true,
       id: 42
     }
@@ -63,8 +62,7 @@ const channelOptionsVariants = [
     {
       negotiated: true,
       id: 42
-    },
-    {
+    }, {
       negotiated: true,
       id: 42,
       // Since this channel only receives, the receive tests are fine to expect ordered messages
@@ -612,6 +610,42 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         assert_unreached(`Unexpected promise rejection: ${err}`)));
     }, `${description}: Sending and receiving ${messageLength} +1 bytes should raise TypeError`);
   }
+
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // 16 KiB * 64 -> 1 MiB
+    const message = new Uint8Array(16384).fill(0xfe);
+    const nMessages = 64;
+
+    createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, dc2]) => {
+      let nMessagesReceived = 0;
+      dc2.binaryType = 'arraybuffer';
+
+      // Ensure the data reaches dc2
+      dc2.onmessage = t.step_func(event => {
+        const {data} = event;
+        assert_equals_array_buffer(data, message.buffer,
+          'Received data should be equal to sent data');
+        if (++nMessagesReceived === nMessages) {
+          t.done();
+        }
+      });
+
+      // Send messages
+      for (let i = 0; i < nMessages; ++i) {
+        dc1.send(message);
+      }
+      t.step_timeout(() => {
+        assert_unreached('Data should have been received by now (timeout reached)');
+      }, 15000);
+    }).catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, `${description}: Sending and receiving 16 KiB x64 should succeed`);
 
   // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1413198
   async_test(t => {

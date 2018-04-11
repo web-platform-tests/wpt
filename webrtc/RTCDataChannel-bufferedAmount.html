@@ -64,6 +64,17 @@
     0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd);
 
   /*
+    Ensure .bufferedAmount is 0 initially for both sides.
+   */
+  promise_test(t => {
+    return createDataChannelPair()
+      .then(([channel1, channel2]) => {
+      assert_equals(channel1.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
+      assert_equals(channel2.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
+    });
+  }, 'bufferedAmount initial value should be 0 for both peers');
+
+  /*
     6.2.  send()
       3.  Execute the sub step that corresponds to the type of the methods argument:
 

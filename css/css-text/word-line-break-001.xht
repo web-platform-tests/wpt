@@ -1,0 +1,326 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta charset="utf-8"/>
+  <link rel="author" title="Mike Bremford" href="http://bfo.com" />
+  <link rel="help" href="https://www.w3.org/TR/css-text-3/#line-breaking" />
+  <meta name="flags" content="" />
+  <meta name="assert" content="Testing various combinations of line-break, word-break and locale "/>
+  <style>
+   section {
+       margin-bottom: 1em;
+   }
+   .test {
+       font: 20px/1 sans-serif;
+   }
+   .test > div, .test > p {
+       display: inline-block;
+       vertical-align: top;
+       border: 1px solid #AAA;
+       height: 2em;
+       overflow: hidden;
+       width: 1em;
+       width: 1ic;
+   }
+   .test > p {
+       margin: 0 1em 0 0;
+       color: blue;
+   }
+   .wb-n        { word-break: normal; }
+   .wb-ka       { word-break: keep-all; }
+   .wb-ba       { word-break: break-all; }
+   .wb-bw       { word-break: break-word; }
+   .lb-l        { line-break: loose; }
+   .lb-n        { line-break: normal; }
+   .lb-s        { line-break: strict; }
+   .lb-any      { line-break: anywhere; }
+  </style>
+ </head>
+ <body>
+
+  <!-- 
+  Test Notes
+
+  Each section tests a different combination of line-break, word-break and locale.
+
+  "word-break" determines the break-rules between ID, AL, SA, AI an NU, and will
+  govern the results for tests 1 and 2 (ID,ID and AL,AL). It should not govern
+  break rules between any of those classes and another class, ie punctuation or
+  spacing
+
+  "line-break" determines the remaining break rules.
+
+  Character classes are as defined in UAX#14 v10. The default rules in that
+  specification correspond to line-break:strict, word-break:normal, i.e.
+  they allow breaks between ID and never allow a line to start with NS or CJ.
+
+  Variations on those rules that come from the line-break and word-break properties
+  will either vary a character class (ie. word-break:break-all converting AL to ID)
+  or will vary the rules for a few explicit code points (ie. line-break:loose
+  allowing a line-break before U+3005)
+  
+  &#x2060; is "word joiner", class GL, which is explicitly relaxed by line-break:anywhere
+  -->
+
+
+  <section>
+   line-break: normal; word-break: normal; lang: en
+   <div class="test lb-n wb-n" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: normal; word-break: normal; lang: ja
+   <div class="test lb-n wb-n" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>〜</p>           <!-- ID x NS, overridden by lb:normal in ja for U+301c -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: normal; word-break: break-all; lang: en
+   <div class="test lb-n wb-ba" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: normal; word-break: break-all; lang: ja
+   <div class="test lb-n wb-ba" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>〜</p>           <!-- ID x NS, overridden by lb:normal in ja for U+301c -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: normal; word-break: keep-all; lang: en
+   <div class="test lb-n wb-ka" lang="en">
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: normal; word-break: keep-all; lang: ja
+   <div class="test lb-n wb-ka" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: normal; lang: en
+   <div class="test lb-l wb-n" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>々</p>           <!-- ID x NS, overridden by lb:loose -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: normal; lang: ja
+   <div class="test lb-l wb-n" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>・</p>           <!-- ID x NS, overridden by lb:loose in ja -->
+    <div>人々の</div><p>人<br/>々</p>           <!-- ID x NS, overridden by lb:loose -->
+    <div>巨〜人</div><p>巨<br/>〜</p>           <!-- ID x NS, overridden by lb:normal in ja for U+301c -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: break-all; lang: en
+   <div class="test lb-l wb-ba" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>々</p>           <!-- ID x NS, overridden by lb:loose -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: break-all; lang: ja
+   <div class="test lb-l wb-ba" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>・</p>           <!-- ID x NS, overridden by lb:loose in ja -->
+    <div>人々の</div><p>人<br/>々</p>           <!-- ID x NS, overridden by lb:loose -->
+    <div>巨〜人</div><p>巨<br/>〜</p>           <!-- ID x NS, overridden by lb:normal in ja for U+301c -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: keep-all; lang: en
+   <div class="test lb-l wb-ka" lang="en">
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: loose; word-break: keep-all; lang: ja
+   <div class="test lb-l wb-ka" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: normal; lang: en
+   <div class="test lb-s wb-n" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>と</p>         <!-- ID x CJ -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: normal; lang: ja
+   <div class="test lb-s wb-n" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W</p>                       <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>と</p>         <!-- ID x CJ -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: break-all; lang: en
+   <div class="test lb-s wb-ba" lang="en">
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>と</p>         <!-- ID x CJ -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: break-all; lang: ja
+   <div class="test lb-s wb-ba" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>と</p>         <!-- ID x CJ -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: keep-all; lang: en
+   <div class="test lb-s wb-ka" lang="en">
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/></p>          <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: strict; word-break: keep-all; lang: ja
+   <div class="test lb-s wb-ka" lang="ja">  
+    <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/></p>           <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/>W</p>         <!-- AL x GL -->
+   </div>
+  </section>
+
+  <section>
+   line-break: anywhere; word-break: normal;
+   <div class="test lb-a wb-ka" lang="en">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
+    <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>人々の</div><p>人<br/>の</p>           <!-- ID x NS -->
+    <div>巨〜人</div><p>巨<br/>人</p>           <!-- ID x NS -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to ID + ID by lb:normal -->
+    <div>W&#x2060;W</div><p>W<br/>W</p>         <!-- AL x GL, overridden by lb:anywhere -->
+   </div>
+  </section>
+
+  <section>
+   line-break: anywhere; word-break: keep-all;
+   <div class="test lb-a wb-ka" lang="en">  
+    <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
+    <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
+    <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>人々の</div><p>人<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>巨〜人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
+    <div>ちょっと</div><p>ち<br/>ょ</p>         <!-- ID x CJ, changed to AL x AL by wb:keep-all -->
+    <div>W&#x2060;W</div><p>W<br/>W</p>         <!-- AL x GL, overridden by lb:anywhere -->
+   </div>
+  </section>
+
+ </body>
+</html>

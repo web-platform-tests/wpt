@@ -37,7 +37,7 @@
  </head>
  <body>
 
-  <!-- 
+  <!--
   Test Notes
 
   Each section tests a different combination of line-break, word-break and locale.
@@ -57,7 +57,7 @@
   will either vary a character class (ie. word-break:break-all converting AL to ID)
   or will vary the rules for a few explicit code points (ie. line-break:loose
   allowing a line-break before U+3005)
-  
+
   &#x2060; is "word joiner", class GL, which is explicitly relaxed by line-break:anywhere
   -->
 
@@ -77,7 +77,7 @@
 
   <section>
    line-break: normal; word-break: normal; lang: ja
-   <div class="test lb-n wb-n" lang="ja">  
+   <div class="test lb-n wb-n" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W</p>                       <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
@@ -103,7 +103,7 @@
 
   <section>
    line-break: normal; word-break: break-all; lang: ja
-   <div class="test lb-n wb-ba" lang="ja">  
+   <div class="test lb-n wb-ba" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
     <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
@@ -129,7 +129,7 @@
 
   <section>
    line-break: normal; word-break: keep-all; lang: ja
-   <div class="test lb-n wb-ka" lang="ja">  
+   <div class="test lb-n wb-ka" lang="ja">
     <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
     <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
@@ -155,7 +155,7 @@
 
   <section>
    line-break: loose; word-break: normal; lang: ja
-   <div class="test lb-l wb-n" lang="ja">  
+   <div class="test lb-l wb-n" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W</p>                       <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/>・</p>           <!-- ID x NS, overridden by lb:loose in ja -->
@@ -181,7 +181,7 @@
 
   <section>
    line-break: loose; word-break: break-all; lang: ja
-   <div class="test lb-l wb-ba" lang="ja">  
+   <div class="test lb-l wb-ba" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
     <div>巨・人</div><p>巨<br/>・</p>           <!-- ID x NS, overridden by lb:loose in ja -->
@@ -207,7 +207,7 @@
 
   <section>
    line-break: loose; word-break: keep-all; lang: ja
-   <div class="test lb-l wb-ka" lang="ja">  
+   <div class="test lb-l wb-ka" lang="ja">
     <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
     <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
@@ -233,7 +233,7 @@
 
   <section>
    line-break: strict; word-break: normal; lang: ja
-   <div class="test lb-s wb-n" lang="ja">  
+   <div class="test lb-s wb-n" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W</p>                       <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
@@ -259,7 +259,7 @@
 
   <section>
    line-break: strict; word-break: break-all; lang: ja
-   <div class="test lb-s wb-ba" lang="ja">  
+   <div class="test lb-s wb-ba" lang="ja">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL, changed to ID + ID by wb:break-all -->
     <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
@@ -285,7 +285,7 @@
 
   <section>
    line-break: strict; word-break: keep-all; lang: ja
-   <div class="test lb-s wb-ka" lang="ja">  
+   <div class="test lb-s wb-ka" lang="ja">
     <div>テス ト</div><p>テ<br/>ト</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
     <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->
@@ -298,7 +298,7 @@
 
   <section>
    line-break: anywhere; word-break: normal;
-   <div class="test lb-a wb-ka" lang="en">  
+   <div class="test lb-a wb-ka" lang="en">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID -->
     <div>WW</div><p>W<br/>W</p>                 <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/>人</p>           <!-- ID x NS -->
@@ -311,7 +311,7 @@
 
   <section>
    line-break: anywhere; word-break: keep-all;
-   <div class="test lb-a wb-ka" lang="en">  
+   <div class="test lb-a wb-ka" lang="en">
     <div>テス ト</div><p>テ<br/>ス</p>          <!-- ID + ID, changed to AL x AL by wb:keep-all -->
     <div>WW</div><p>W<br/></p>                  <!-- AL x AL -->
     <div>巨・人</div><p>巨<br/></p>             <!-- ID x NS, changed to AL x AL by wb:keep-all -->

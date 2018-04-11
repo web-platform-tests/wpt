@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSSOM: getComputedStyle mustn't support other pseudo-elements</title>
+<link rel="help" href="https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+  #test { color: orange; }
+
+  #test p { color: rgb(0, 0, 10); }
+  #test p::first-line { color: rgb(0, 0, 100); }
+  #test p::first-letter { color: rgb(0, 200, 200); }
+
+  #test ol { color: rgb(1, 0, 10); }
+  #test li { color: rgb(1, 0, 100); }
+  #test li::marker { color: rgb(1, 200, 200); }
+
+  #test input { color: rgb(2, 0, 10); }
+  #test input::placeholder { color: rgb(2, 200, 200); }
+</style>
+<div id="test">
+  <p>Filler Text</p>
+  <ol>
+    <li>Filler Text</li>
+  </ol>
+  <input placeholder="Filler Text">
+</div>
+<script>
+["::first-line", ":first-line"].forEach(function(pseudo) {
+  test(function() {
+    var p = document.querySelector('#test p');
+    assert_equals(getComputedStyle(p, pseudo).color, "rgb(0, 0, 10)");
+  }, "Right element color is returned for " + pseudo);
+});
+["::first-letter", ":first-letter"].forEach(function(pseudo) {
+  test(function() {
+    var p = document.querySelector('#test p');
+    assert_equals(getComputedStyle(p, pseudo).color, "rgb(0, 0, 10)");
+  }, "Right element color is returned for " + pseudo);
+});
+test(function() {
+  var li = document.querySelector('#test li');
+  assert_equals(getComputedStyle(li, "::marker").color, "rgb(1, 0, 100)");
+}, "Right element color is returned for ::marker");
+test(function() {
+  var input = document.querySelector('#test input');
+  assert_equals(getComputedStyle(input, "::placeholder").color, "rgb(2, 0, 10)");
+}, "Right element color is returned for ::placeholder");
+</script>

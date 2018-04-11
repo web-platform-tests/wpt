@@ -749,6 +749,33 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   before becoming closed`);
 }
 
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
+  .then(([dc1, _]) => {
+    dc1.close();
+    assert_throws('InvalidStateError', () => dc1.send(helloString));
+  });
+}, `${description}: Sending after the channel has been closed should raise InvalidStateError`);
+
+promise_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
+  .then(([dc1, _]) => {
+    pc1.close();
+    assert_throws('InvalidStateError', () => dc1.send(helloString));
+  });
+}, `${description}: Sending after the peer connection has been closed should raise
+InvalidStateError`);
+
 /*
   Untestable
 

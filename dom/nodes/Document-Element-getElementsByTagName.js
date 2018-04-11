@@ -204,5 +204,5 @@ function test_getElementsByTagName(context, element) {
 
     element.removeChild(t2);
     assert_equals(l.length, 1);
-  }, "getElementsByTagName() return an HTMLCollection is liveness");
+  }, "getElementsByTagName() should be a live collection");
 }

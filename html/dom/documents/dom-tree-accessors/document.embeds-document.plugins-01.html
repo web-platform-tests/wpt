@@ -67,7 +67,7 @@ test(function() {
 
   document.body.removeChild(embed2);
   assert_equals(embeds.length, 1);
-}, "Document.embeds return an HTMLCollection is liveness");
+}, "Document.embeds should be a live collection");
 
 test(function() {
   var embed1 = document.createElement("embed"),
@@ -83,5 +83,5 @@ test(function() {
 
   document.body.removeChild(embed2);
   assert_equals(pls.length, 1);
-}, "Document.plugins return an HTMLCollection is liveness");
+}, "Document.plugins should be a live collection");
 </script>

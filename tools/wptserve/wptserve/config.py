@@ -232,7 +232,7 @@ class Config(Mapping):
         logger = logging.getLogger(self._logger_name)
         logger.setLevel(self.log_level)
         return logger
-    
+
     def as_dict(self):
         rv = {
             "domains": list(self.domains),

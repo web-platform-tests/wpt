@@ -168,7 +168,8 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
             Server.config = config
         else:
             self.logger.debug("Using default configuration")
-            Server.config = {"host": server_address[0],
+            Server.config = {"browser_host": server_address[0],
+                             "server_host": server_address[0],
                              "domains": {"": server_address[0]},
                              "ports": {"http": [self.server_address[1]]}}
 
@@ -399,9 +400,10 @@ class WebTestHttpd(object):
             server_cls = WebTestServer
 
         if use_ssl:
-            if key_file is not None:
-                assert os.path.exists(key_file)
-            assert certificate is not None and os.path.exists(certificate)
+            if not os.path.exists(key_file):
+                raise ValueError("SSL certificate not found: {}".format(key_file))
+            if not os.path.exists(certificate):
+                raise ValueError("SSL key not found: {}".format(certificate))
 
         try:
             self.httpd = server_cls((host, port),

@@ -8,7 +8,7 @@ import urlparse
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
-from protocol import Protocol
+from protocol import Protocol, BaseProtocolPart
 
 here = os.path.split(__file__)[0]
 
@@ -172,7 +172,7 @@ class TestExecutor(object):
 
     def server_url(self, protocol):
         return "%s://%s:%s" % (protocol,
-                               self.server_config["host"],
+                               self.server_config["browser_host"],
                                self.server_config["ports"][protocol][0])
 
     def test_url(self, test):
@@ -411,7 +411,23 @@ class WdspecRun(object):
             self.result_flag.set()
 
 
+class ConnectionlessBaseProtocolPart(BaseProtocolPart):
+    def execute_script(self, script, async=False):
+        pass
+
+    def set_timeout(self, timeout):
+        pass
+
+    def wait(self):
+        pass
+
+    def set_window(self, handle):
+        pass
+
+
 class ConnectionlessProtocol(Protocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
     def connect(self):
         pass
 
@@ -485,7 +501,8 @@ class CallbackHandler(object):
         }
 
         self.actions = {
-            "click": ClickAction(self.logger, self.protocol)
+            "click": ClickAction(self.logger, self.protocol),
+            "send_keys": SendKeysAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -528,7 +545,6 @@ class CallbackHandler(object):
     def _send_message(self, message_type, status, message=None):
         self.protocol.testdriver.send_message(message_type, status, message=message)
 
-
 class ClickAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -543,3 +559,19 @@ class ClickAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
         self.protocol.click.element(elements[0])
+
+class SendKeysAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        keys = payload["keys"]
+        elements = self.protocol.select.elements_by_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+        self.logger.debug("Sending keys to element: %s" % selector)
+        self.protocol.send_keys.send_keys(elements[0], keys)

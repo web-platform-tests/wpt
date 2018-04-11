@@ -1247,6 +1247,13 @@ policies and contribution forms [3].
     }
     expose(assert_readonly, "assert_readonly");
 
+    /**
+     * Assert an Exception with the expected code is thrown.
+     *
+     * @param {object|number|string} code The expected exception code.
+     * @param {Function} func Function which should throw.
+     * @param {string} description Error description for the case that the error is not thrown.
+     */
     function assert_throws(code, func, description)
     {
         try {
@@ -2270,10 +2277,14 @@ policies and contribution forms [3].
             if (output_document.body) {
                 output_document.body.appendChild(node);
             } else {
+                var is_html = false;
                 var is_svg = false;
                 var output_window = output_document.defaultView;
                 if (output_window && "SVGSVGElement" in output_window) {
                     is_svg = output_document.documentElement instanceof output_window.SVGSVGElement;
+                } else if (output_window) {
+                    is_html = (output_document.namespaceURI == "http://www.w3.org/1999/xhtml" &&
+                               output_document.localName == "html");
                 }
                 if (is_svg) {
                     var foreignObject = output_document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
@@ -2281,6 +2292,10 @@ policies and contribution forms [3].
                     foreignObject.setAttribute("height", "100%");
                     output_document.documentElement.appendChild(foreignObject);
                     foreignObject.appendChild(node);
+                } else if (is_html) {
+                    var body = output_document.createElementNS("http://www.w3.org/1999/xhtml", "body");
+                    output_document.documentElement.appendChild(body);
+                    body.appendChild(node);
                 } else {
                     output_document.documentElement.appendChild(node);
                 }

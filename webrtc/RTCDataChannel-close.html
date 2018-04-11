@@ -99,7 +99,7 @@ async_test(t => {
   })
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, `In-band data channels x${nChannels} closing by producer side should be synchronized across
+}, `In-band data channels x${nChannels} closing on local side should be synchronized across
  peers`);
 
 async_test(t => {
@@ -137,7 +137,7 @@ async_test(t => {
   })
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, `In-band data channels x${nChannels} closing by consumer side should be synchronized across
+}, `In-band data channels x${nChannels} closing on remote side should be synchronized across
  peers`);
 
 async_test(t => {

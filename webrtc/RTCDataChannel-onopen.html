@@ -37,6 +37,63 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Data channel onopen event should be fired when the data channel opens');
+}, 'In-band channel: Open event should be fired (local) when the data channel opens');
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+
+  // Create a channel on pc1
+  pc1.createDataChannel('onopen');
+
+  // Wait for it to open on pc2
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc = event.channel;
+    dc.onopen = t.step_func(() => {
+      assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+      t.done();
+    });
+  });
+
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'In-band channel: Open event should be fired (remote) when the data channel opens');
+
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+  let nOpen = 0;
+
+  // Create a negotiated channel on both pcs
+  const dc1 = pc1.createDataChannel('onopen', {
+    negotiated: true,
+    id: 42
+  });
+  const dc2 = pc2.createDataChannel('onopen', {
+    negotiated: true,
+    id: 42
+  });
+  for (const dc of [dc1, dc2]) {
+    dc.onopen = t.step_func(() => {
+      assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+      if (++nOpen === 2) {
+        t.done();
+      }
+    });
+  }
+
+  doSignalingHandshake(pc1, pc2)
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'Negotiated channel: Open event should be fired when the channels open');
 
 </script>

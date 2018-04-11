@@ -232,3 +232,12 @@ class Config(Mapping):
         logger = logging.getLogger(self._logger_name)
         logger.setLevel(self.log_level)
         return logger
+    
+    def as_dict(self):
+        rv = {
+            "domains": list(self.domains),
+            "sundomains": list(self.subdomains),
+        }
+        for item in self._default.iterkeys():
+            rv[item] = getattr(self, item)
+        return rv

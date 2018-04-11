@@ -835,7 +835,26 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       dc1.close();
       assert_throws('InvalidStateError', () => dc1.send(helloString));
     });
-  }, `${description}: Sending after the channel has been closed should raise InvalidStateError`);
+  }, `${description}: Sending after the channel has been closed (local) should raise
+  InvalidStateError`);
+
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, dc2]) => {
+      dc1.onclose = t.step_func(() => {
+        assert_throws('InvalidStateError', () => dc1.send(helloString));
+        t.done();
+      });
+
+      dc2.close();
+    });
+  }, `${description}: Sending after the channel has been closed (remote) should raise
+  InvalidStateError`);
 
   promise_test(t => {
     const pc1 = new RTCPeerConnection();
@@ -848,8 +867,26 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       pc1.close();
       assert_throws('InvalidStateError', () => dc1.send(helloString));
     });
-  }, `${description}: Sending after the peer connection has been closed should raise
-InvalidStateError`);
+  }, `${description}: Sending after the peer connection has been closed (local) should raise
+  InvalidStateError`);
+
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    return createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, _]) => {
+      dc1.onclose = t.step_func(() => {
+        assert_throws('InvalidStateError', () => dc1.send(helloString));
+        t.done();
+      });
+
+      pc2.close();
+    });
+  }, `${description}: Sending after the peer connection has been closed (remote) should raise
+  InvalidStateError`);
 }
 
 /*

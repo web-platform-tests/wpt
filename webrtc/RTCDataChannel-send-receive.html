@@ -50,9 +50,9 @@ const arrayBuffers = [
   ['Uint8ClampedArray', Uint8ClampedArray.of(257, 256, -1, -2)],
   ['Int16Array', Int16Array.of(32767, 32766, 0, -32768)],
   ['Uint16Array', Uint16Array.of(65535, 65534, 65533, 0)],
-  ['In32Array', Int32Array.of(2147483647, 2147483646, 0, -2147483648)],
+  ['Int32Array', Int32Array.of(2147483647, 2147483646, 0, -2147483648)],
   ['Uint32Array', Uint32Array.of(4294967295, 4294967294, 4294967293, 0)],
-  ['Flaot32Array', Float32Array.of(1.0, 0.75, 0.5, 0.25)],
+  ['Float32Array', Float32Array.of(1.0, 0.75, 0.5, 0.25)],
   ['Float64Array', Float64Array.of(1.0, 0.75, 0.5, 0.25)],
   ['DataView', new DataView(helloBuffer.buffer)],
 ];
@@ -481,7 +481,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         'Expect messageBuffer to be an ArrayBuffer');
       assert_equals_typed_array(messageBuffer, helloBuffer);
     });
-  }, `${description}: Setting binaryType should receive message as Blob by default`);
+  }, `${description}: Should receive messages as Blob by default`);
 
   // Test sending 3 messages with different types on one channel:
   // helloBuffer, unicodeString, helloBlob

@@ -113,7 +113,7 @@ promise_test(t => {
     const { sctp } = pc;
     validateSctpTransport(sctp);
   });
-}, 'setRemoteDescription() with answer containing no data media should not initialize pc.sctp');
+}, 'setRemoteDescription() with answer not containing data media should not initialize pc.sctp');
 
 promise_test(t => {
   const pc = new RTCPeerConnection();
@@ -127,6 +127,6 @@ promise_test(t => {
     const { sctp } = pc;
     validateSctpTransport(sctp);
   });
-}, 'setLocalDescription() with answer containing no data media should not initialize pc.sctp');
+}, 'setLocalDescription() with answer not containing data media should not initialize pc.sctp');
 
 </script>

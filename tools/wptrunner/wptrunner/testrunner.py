@@ -563,10 +563,12 @@ class TestRunnerManager(threading.Thread):
         # TODO: consider changing result if there is a crash dump file
 
         # Write the result of the test harness
+        result_subns = {"INTERNAL-ERROR": "ERROR",
+                        "EXTERNAL-TIMEOUT": "TIMEOUT"}
         expected = test.expected()
-        status = file_result.status if file_result.status != "EXTERNAL-TIMEOUT" else "TIMEOUT"
+        status = result_subns.get(file_result.status, file_result.status)
 
-        if file_result.status in ("TIMEOUT", "EXTERNAL-TIMEOUT"):
+        if file_result.status in ("TIMEOUT", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR"):
             if self.browser.check_for_crashes():
                 status = "CRASH"
 
@@ -585,7 +587,7 @@ class TestRunnerManager(threading.Thread):
                              extra=file_result.extra)
 
         restart_before_next = (test.restart_after or
-                               file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
+                               file_result.status in ("CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR") or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
 

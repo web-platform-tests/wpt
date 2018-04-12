@@ -79,7 +79,7 @@ const channelOptionsVariants = [
     }, {
       negotiated: true,
       id: 42,
-      // Since this channel only receives, the receive tests are fine to expect ordered messages
+      // Note: Make sure that your tests can cope with unordered messages on the local side!
       ordered: false,
     }
   ]],
@@ -722,6 +722,58 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     }).catch(t.step_func(err =>
       assert_unreached(`Unexpected promise rejection: ${err}`)));
   }, `${description}: Sending and receiving 16 KiB x64 should succeed`);
+
+  async_test(t => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // 16 KiB * 256 -> 4 MiB
+    const message = new Uint8Array(16384).fill(0xfe);
+    const nMessages = 256;
+
+    createDataChannelPair(pc1, pc2, { channelOptions: channelOptions })
+    .then(([dc1, dc2]) => {
+      let nMessagesReceived1 = 0;
+      let nMessagesReceived2 = 0;
+      dc1.binaryType = 'arraybuffer';
+      dc2.binaryType = 'arraybuffer';
+
+      const maybeDone = () => {
+        if (nMessagesReceived1 === nMessages && nMessagesReceived2 === nMessages) {
+          t.done();
+        }
+      };
+
+      // Ensure the data reaches both peers
+      dc1.onmessage = t.step_func(event => {
+        const {data} = event;
+        assert_equals_typed_array(data, message,
+          'Received data should be equal to sent data');
+        ++nMessagesReceived1;
+        maybeDone();
+      });
+      dc2.onmessage = t.step_func(event => {
+        const {data} = event;
+        assert_equals_typed_array(data, message,
+          'Received data should be equal to sent data');
+        ++nMessagesReceived2;
+        maybeDone();
+      });
+
+      // Send messages
+      for (let i = 0; i < nMessages; ++i) {
+        dc1.send(message);
+        dc2.send(message);
+      }
+      t.step_timeout(() => {
+        assert_unreached('Data should have been received by now (timeout reached)');
+      }, 45000);
+    }).catch(t.step_func(err =>
+      assert_unreached(`Unexpected promise rejection: ${err}`)));
+  }, `${description}: Sending and receiving 16 KiB x256 on both peer simultaneously should
+  succeed`);
 
   // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1413198
   async_test(t => {

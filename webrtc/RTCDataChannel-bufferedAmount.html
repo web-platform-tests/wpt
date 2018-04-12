@@ -196,7 +196,8 @@ async_test(t => {
       helloString.length*2 + unicodeBuffer.byteLength,
       'Expect bufferedAmount to be the total length of all messages queued to send');
 
-  }).catch(t.step_func(err =>
+  })
+  .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
 }, 'bufferedAmount should increase by byte length for each message sent');
 

@@ -68,7 +68,7 @@ async_test(t => {
   exchangeIceCandidates(pc1, pc2);
   doSignalingHandshake(pc1, pc2);
 
-}, 'datachannel event should fire when new data channel is announced to the remote peer');
+}, 'Data channel event should fire when new data channel is announced to the remote peer');
 
 /*
   6.2.  RTCDataChannel
@@ -183,8 +183,8 @@ async_test(t => {
   doSignalingHandshake(pc1, pc2)
   .catch(t.step_func(err =>
     assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'In-band negotiated channel created on remote peer should match the same default configuration ' +
-  'as local peer');
+}, 'In-band negotiated channel created on remote peer should match the same (default) ' +
+  'configuration as local peer');
 
 /*
   6.2.  RTCDataChannel

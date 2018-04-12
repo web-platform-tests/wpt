@@ -12,11 +12,10 @@
 </head>
 <body>
 <script>
-// "1px" in Blink, Edge, WebKit; "1px 1px 1px 1px" in Firefox.
-test_valid_value("border-image-width", "1px", ["1px", "1px 1px 1px 1px"]);
-test_valid_value("border-image-width", "2%", ["2%", "2% 2% 2% 2%"]);
-test_valid_value("border-image-width", "3", ["3", "3 3 3 3"]);
-test_valid_value("border-image-width", "auto", ["auto", "auto auto auto auto"]);
+test_valid_value("border-image-width", "1px");
+test_valid_value("border-image-width", "2%");
+test_valid_value("border-image-width", "3");
+test_valid_value("border-image-width", "auto");
 
 test_valid_value("border-image-width", "1px 2% 3 auto");
 </script>

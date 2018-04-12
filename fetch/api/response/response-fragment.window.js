@@ -1,13 +1,25 @@
-promise_test(() => {
-  return fetch("./#test").then(res => {
-    assert_equals(res.url, new URL("./", location).href);
-    return fetch("../resources/redirect.py?location=/#test").then(res2 => {
-      // redirect.py changes the URL a bit; the important bit here is that the fragment is dropped
-      assert_equals(res2.url, new URL("/?location=%2F&count=1", location).href);
-      // redirect.py ends up appending some stuff to the fragment, but that does not affect this
-      return fetch("../resources/redirect.py?location=/%23test").then(res3 => {
-        assert_equals(res3.url, new URL("/", location).href);
-      });
+const expectedURL = new URL("/common/blank.html#test", location).href;
+function fragment_test(url, desc) {
+  promise_test(() => {
+    return fetch(url).then(res => {
+      assert_equals(res.url, expectedURL);
     });
-  });
-}, "Fragments don't end up in responses");
+  }, "Fetch: " + desc);
+  async_test(t => {
+    const client = new XMLHttpRequest();
+    client.open("GET", url);
+    client.send();
+    client.onload = t.step_func_done(() => {
+      assert_equals(client.responseURL, expectedURL);
+    })
+  }, "XMLHttpRequest: " + desc);
+}
+
+fragment_test("/common/blank.html#test",
+              "fragment in request copied over to response");
+fragment_test("../resources/redirect.py?omit_parameters&location=/common/blank.html#test",
+              "fragment in request copied over during redirect to response");
+fragment_test("../resources/redirect.py?omit_parameters&location=/%23test",
+              "fragment in redirect copied over to response");
+fragment_test("../resources/redirect.py?omit_parameters&location=/%23test#notit",
+              "fragment in request overridden by fragment in redirect for response");

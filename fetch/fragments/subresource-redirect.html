@@ -4,6 +4,17 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
+<!--
+  The source image is 50h x 100w lime green. However, if the viewBox 25,25,50,50 is correctly
+  applied it becomes 25h x 100w. (All images are expected to have this applied per HTTP fragment
+  rules.)
+
+  This image is then drawn on a 50h x 100w transparent black canvas.
+
+  We then test if the top half of the canvas is lime green and the bottom half is transparent black.
+-->
+<img data-desc="Control"
+     src="/images/green.svg#svgView(viewBox(25,25,50,50))">
 <img data-desc="Redirect with the original URL containing a fragment"
      src=../api/resources/redirect.py?location=/images/green.svg#svgView(viewBox(25,25,50,50))>
 <img data-desc="Redirect with the response Location header containing a fragment"

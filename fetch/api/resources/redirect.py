@@ -39,7 +39,7 @@ def main(request, response):
     if "location" in request.GET:
         url = request.GET['location']
         scheme = urlparse(url).scheme
-        if (scheme == "" or scheme == "http" or scheme == "https") and "#" not in url:
+        if (scheme == "" or scheme == "http" or scheme == "https") and "omit_parameters" not in request.GET:
             url += "&" if '?' in url else "?"
             #keep url parameters in location
             url_parameters = {}

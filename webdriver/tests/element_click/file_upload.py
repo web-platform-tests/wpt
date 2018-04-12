@@ -7,7 +7,7 @@ def click(session, element):
                                           element_id=element.id))
 
 
-# 14.1 Element Click File Upload Element Tests Step 3
+# 14.1 Element Click File Upload Element Tests
 
 def test_file_upload_state(session):
     session.url = inline("<input type=file>")

@@ -13,7 +13,7 @@ video {
   width: 500px;
 }
 </style>
-<video controls onloadeddata="this.onloadeddata = null; takeScreenshot();">
+<video controls oncanplaythrough="this.oncanplaythrough = null; takeScreenshotAfterLoadingPanelDisappears();">
   <source src="/media/white.webm" type="video/webm">
   <source src="/media/white.mp4" type="video/mp4">
 </video>
@@ -27,5 +27,14 @@ var cue = new VTTCue(0, 1, "text");
 cue.line = -2;
 track.addCue(cue);
 track.mode = "showing";
+
+function takeScreenshotAfterLoadingPanelDisappears() {
+  // This is terrible, but the main way to deal with the loading panel in layout
+  // tests is to use internals.setMediaControlsTestMode, and internals is not
+  // available in these tests. This is defined in
+  // third_party/blink/renderer/modules/media_controls/resources/modernMediaControls_loading.css.
+  const LOADING_PANEL_ANIMATION_TIME_MS = 1568;
+  takeScreenshotDelayed(LOADING_PANEL_ANIMATION_TIME_MS);
+}
 </script>
 </html>

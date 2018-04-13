@@ -275,7 +275,6 @@ promise_test(t => {
         try {
           dc = pc2.createDataChannel('this is going to be fun');
         } catch (e) {
-          console.warn(`Only ${i} streams are supported (spec says 'SHOULD' support ${nStreams})`);
           assert_equals(e.name, 'OperationError', 'Fail on creation should throw OperationError');
           break;
         }
@@ -285,7 +284,6 @@ promise_test(t => {
         try {
           dc = pc1.createDataChannel('this is going to be fun, too');
         } catch (e) {
-          console.warn(`Only ${i} streams are supported (spec says 'SHOULD' support ${nStreams})`);
           assert_equals(e.name, 'OperationError', 'Fail on creation should throw OperationError');
           break;
         }
@@ -567,9 +565,6 @@ async_test(t => {
         maybeDone();
       });
     } catch (e) {
-      if (i < nStreams) {
-        console.warn(`Only ${i} streams are supported (spec says 'SHOULD' support ${nStreams})`);
-      }
       assert_equals(e.name, 'OperationError', 'Fail on creation should throw OperationError');
       break;
     }

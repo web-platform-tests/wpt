@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<title>RTCDataChannel send/receive stress test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+// The following helper functions are called from RTCPeerConnection-helper.js:
+//  createDataChannelPair
+//  assert_equals_typed_array
+
+const channelOptionsVariants = [
+  ['In-band negotiated channel', {}],
+  ['Negotiated channel', [
+    {
+      negotiated: true,
+      id: 42
+    }, {
+      negotiated: true,
+      id: 42
+    }
+  ]],
+  ['Asymmetric negotiated channel', [
+    {
+      negotiated: true,
+      id: 42
+    }, {
+      negotiated: true,
+      id: 42,
+      // Note: Make sure that your tests can cope with unordered messages on the local side!
+      ordered: false,
+    }
+  ]],
+];
+
+/*
+  Relatively short stress-test.
+
+  Channels:
+  - 30 in-band negotiated channels
+  - 30 negotiated channels
+  - 30 asymmetric negotiated channels
+
+  Messages:
+  - String of varying size 30 times per channel
+  - Uint8Array of varying size 30 times per channel
+  - Blob of varying size 30 times per channel
+
+  Will transmit ~242 MiB on each peer.
+ */
+async_test(t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  // Delay between data channels starting to send
+  const delay = 20; // 20 ms
+
+  // Create messages
+  // Note: We could have used random sizes but wanted to make the test somewhat reproducable.
+  //       I have verified that there is space for adding the index to the message. We need to add
+  //       the index since the channel may be unordered.
+  const messages = Array.from(new Array(90), (_, index) => {
+    const messageSize = ((index + 1) * 2307) % 65536;
+    let message;
+
+    // String: Prepend index, can be split by a semicolon
+    if (index % 3 === 0) {
+      message = 'a'.repeat(messageSize);
+      message = `${index};${message}`;
+      return [message, message];
+    }
+
+    // Bytes: Prepend index as a u16
+    message = new Uint8Array(messageSize + 2).fill(0xf4);
+    const view = new DataView(message.buffer);
+    view.setUint16(0, index);
+    if (index % 3 === 1) {
+      return [message, message];
+    } else {
+      // TODO: Reactivate this once Chrome has Blob support :|
+      // return [new Blob([message]), message];
+      return [message, message];
+    }
+  });
+
+  // Create channel pairs
+  const nChannelPairs = channelOptionsVariants.length * 30;
+  Promise.all(Array.from(new Array(nChannelPairs), (_, i) => {
+    let [labelFragment, channelOptions] = channelOptionsVariants[i % channelOptionsVariants.length];
+
+    // Modify ID (if negotiated)
+    if (channelOptions instanceof Array) {
+      channelOptions = channelOptions.map((options) => {
+        // Note: Adding '100' here to avoid clashes with in-band negotiated channels
+        options.id = i + 100;
+        return options;
+      });
+    }
+
+    // Create pair
+    return createDataChannelPair(pc1, pc2, {
+      channelLabel: `${labelFragment}, index=${i}`,
+      doSignaling: i === nChannelPairs - 1,
+      channelOptions: channelOptions
+    });
+  }))
+  .then((dcPairs) => {
+    // Received message indexes per channel per peer
+    const indexesArray = [];
+
+    for (let i = 0; i < dcPairs.length; ++i) {
+      for (const dc of dcPairs[i]) {
+        const indexes = new UniqueSet();
+        indexesArray.push(indexes);
+        dc.binaryType = 'arraybuffer';
+
+        // Verify the data on receive
+        dc.onmessage = t.step_func(event => {
+          const {data} = event;
+
+          // String: Split by semicolon and compare string
+          let index;
+          if (!(data instanceof ArrayBuffer)) {
+            index = data.split(';')[0];
+            index = parseInt(index, 10);
+            const [_, expected] = messages[index];
+            assert_equals(data, expected,
+              'Received data should be equal to sent data');
+          } else {
+            const view = new DataView(data);
+            index = view.getUint16(0);
+            const [_, expected] = messages[index];
+            assert_equals_typed_array(data, expected,
+              'Received data should be equal to sent data');
+          }
+
+          // Add received message index (will check the index is unique)
+          indexes.add(index);
+
+          // Done if all messages on all channels on both peers have been received
+          if (index === messages.length - 1
+              && indexesArray.every((indexes) => indexes.size === messages.length)) {
+            t.done();
+          }
+        });
+      }
+    }
+
+    for (let i = 0; i < dcPairs.length; ++i) {
+      for (const dc of dcPairs[i]) {
+        // Delay sending
+        t.step_timeout(() => {
+          // Start transmitting messages
+          for (const [message, _] of messages) {
+            dc.send(message);
+          }
+        }, delay * (i + 1));
+      }
+    }
+  })
+  .catch(t.step_func(err =>
+    assert_unreached(`Unexpected promise rejection: ${err}`)));
+}, 'Stress-test with multiple channels sending and receiving using various data sources');
+</script>

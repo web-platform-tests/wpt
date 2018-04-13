@@ -1,16 +1,3 @@
- <!DOCTYPE html>
-<meta charset="utf-8">
-<title>OrientationSensor Test</title>
-<link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/orientation-sensor/">
-<link rel="help" href="https://w3c.github.io/sensors/">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/generic-sensor/generic-sensor-tests.js"></script>
-<div id="log"></div>
-
-<script>
-
 //IEEE 754: single precision retricts to 7 decimal digits
 const float_precision = 1e-7;
 
@@ -80,23 +67,17 @@ async function checkPopulateMatrix(t, sensorType) {
   sensor.stop();
 }
 
-promise_test(t => {
-  return checkQuaternion(t, AbsoluteOrientationSensor);
-}, "Test AbsoluteOrientationSensor.quaternion return a four-element FrozenArray.");
+function runOrienationSensorTests(sensorName) {
+  const sensorType = self[sensorName];
 
-promise_test(t => {
-  return checkQuaternion(t, RelativeOrientationSensor);
-}, "Test RelativeOrientationSensor.quaternion return a four-element FrozenArray.");
+  sensor_test(async t => {
+    assert_true(sensorName in self);
+    return checkQuaternion(t, sensorType);
+  }, `${sensorName}.quaternion return a four-element FrozenArray.`);
 
-promise_test(t => {
-  return checkPopulateMatrix(t, AbsoluteOrientationSensor);
-}, "Test AbsoluteOrientationSensor.populateMatrix() method works correctly.");
+  sensor_test(async t => {
+    assert_true(sensorName in self);
+    return checkPopulateMatrix(t, sensorType);
+  }, `${sensorName}.populateMatrix() method works correctly.`);
+}
 
-promise_test(t => {
-  return checkPopulateMatrix(t, RelativeOrientationSensor);
-}, "Test RelativeOrientationSensor.populateMatrix() method works correctly.");
-
-runGenericSensorTests(AbsoluteOrientationSensor);
-runGenericSensorTests(RelativeOrientationSensor);
-
-</script>

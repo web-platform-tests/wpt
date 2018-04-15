@@ -22,7 +22,7 @@
 
         test(function() {
             assert_equals(cs.getPropertyValue("background-image"),
-                "url(support/60x60-green.png)", "background specified value for background-image");
+                'url("' + new URL("support/60x60-green.png", window.location.href).href + '")', "background specified value for background-image");
         }, "background_specified_image");
 
         test(function() {

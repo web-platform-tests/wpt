@@ -21,10 +21,12 @@ def test_scroll_into_view(session):
 
     # Check if element clicked is scrolled into view
     assert session.execute_script("""
-        rect = document.getElementsByTagName("input")[0].getBoundingClientRect();
+        let [input] = arguments;
+        rect = input.getBoundingClientRect();
         return rect["top"] >= 0 && rect["left"] >= 0 &&
             (rect["top"] + rect["height"]) <= window.innerHeight &&
-            (rect["left"] + rect["width"]) <= window.innerWidth;""") is True
+            (rect["left"] + rect["width"]) <= window.innerWidth;
+            """, args=(element,)) is True
 
 
 @pytest.mark.parametrize("transform", ["translate(-100px, -100px)", "rotate(50deg)"])

@@ -55,12 +55,19 @@ def test_link_unload_event(session):
     session.back()
 
     element = session.find.css("input", all=False)
-    response = session.execute_script("""return document.getElementsByTagName("input")[0].checked;""")
+    response = session.execute_script("""
+        let [input] = arguments;
+        return input.checked;
+        """, args=(element,))
     assert response is True
 
 
 def test_link_hash(session):
-    session.url = inline("""<a href="#">aaaa</a>""")
+    id = "anchor"
+    session.url = inline("""
+        <a href="#%s">aaaa</a>
+        <p id=%s style="margin-top: 5000vh">scroll here</p>
+        """ % (id, id))
     old_url = session.url
 
     element = session.find.css("a", all=False)
@@ -68,7 +75,16 @@ def test_link_hash(session):
     assert_success(response)
 
     new_url = session.url
-    assert "%s%s" % (old_url, "#") == new_url
+    assert "%s#%s" % (old_url, id) == new_url
+
+    element = session.find.css("p", all=False)
+    assert session.execute_script("""
+        let [input] = arguments;
+        rect = input.getBoundingClientRect();
+        return rect["top"] >= 0 && rect["left"] >= 0 &&
+            (rect["top"] + rect["height"]) <= window.innerHeight &&
+            (rect["left"] + rect["width"]) <= window.innerWidth;
+            """, args=(element,)) is True
 
 
 def test_link_closes_window(session, create_window):

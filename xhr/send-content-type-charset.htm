@@ -15,7 +15,7 @@
         test(function() {
         var client = new XMLHttpRequest()
         client.open("POST", "resources/content.py", false)
-        if(input)
+        if(input !== null)
           client.setRequestHeader("Content-Type", input)
         client.send("TEST")
         assert_equals(client.responseText, "TEST")
@@ -27,6 +27,11 @@
         "text; charset=ascii",
         "text; charset=ascii",
         "header with invalid MIME type is not changed"
+      )
+      request(
+        "",
+        "",
+        "header with invalid MIME type (empty string) is not changed"
       )
       request(
         "charset=ascii",
@@ -99,6 +104,10 @@
         "text/plain;charset=\"u\\t\\f-8\"",
         "text/plain;charset=UTF-8",
         "charset in double quotes with backslashes")
+      request(
+        "YO/yo;charset=x;yo=YO; X=y",
+        "yo/yo;charset=UTF-8;yo=YO;x=y",
+        "unknown parameters need to be preserved")
     </script>
   </body>
 </html>

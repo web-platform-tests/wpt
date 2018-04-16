@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Most Typed OM values are mutable</title>
+<meta name="author" title="Tab Atkins-Bittner" href="https://www.xanthir.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+let tests = [
+    ["CSSKeywordValue.keywordValue", ["foo"], "bar"],
+    ["CSSNumberValue.value", [1], 2],
+    ["CSSSimpleLength.value", [1, "px"], 2],
+    ["CSSSimpleLength.type", [1, "px"], "em"],
+    ["CSSCalcLength.px", [{px:1}], 2],
+    ["CSSAngleValue.degrees", [1, "deg"], 2],
+    ["CSSRotation.x", [1, 0, 0, new CSSAngleValue(5, "deg")], .5],
+    ["CSSScale.x", [1, 1, 1], 2],
+
+];
+for(let t of tests) {
+    let [con, member] = t[0].split(".");
+    let args = t[1];
+    let newVal = t[2];
+    test(function() {
+        let x = new window[con](...args);
+        let oldValue = format_value(x[member]);
+        x[member] = newVal;
+        let newValue = format_value(x[member]);
+        assert_not_equals(oldValue, newValue, t[0] + " should be mutable.");
+    }, t[0] + " should be mutable.");
+}
+// Some manual ones that require more complication than my structure above can handle.
+test(function(){
+    let x = new CSSTranslation(new CSSSimpleLength(1, "px"), new CSSSimpleLength(1, "px"));
+    let oldValue = x.x.value;
+    x.x = new CSSSimpleLength(2, "px");
+    let newValue = x.x.value;
+    assert_not_equals(oldValue, newValue, "CSSTranslation.x should be mutable.");
+}, "CSSTranslation.x should be mutable.");
+test(function(){
+    let x = new CSSSkew(new CSSAngleValue(1, "deg"), new CSSAngleValue(1, "deg"));
+    let oldValue = x.ax.deg;
+    x.ax = new CSSAngleValue(2, "deg");
+    let newValue = x.ax.deg;
+    assert_not_equals(oldValue, newValue, "CSSSkew.ax should be mutable.");
+}, "CSSSkew.ax should be mutable.");
+test(function(){
+    let x = new CSSPerspective(new CSSSimpleLength(1, "px"));
+    let oldValue = x.length.value;
+    x.length = new CSSSimpleLength(2, "px");
+    let newValue = x.length.value;
+    assert_not_equals(oldValue, newValue, "CSSPerspective.length should be mutable.");
+}, "CSSPerspective.length should be mutable.");
+test(function(){
+    let x = new CSSMatrixComponent(new DOMMatrix(1, 2, 3, 4, 5, 6));
+    let oldValue = x.matrix.a;
+    x.matrix = new DOMMatrix(7, 2, 3, 4, 5, 6);
+    let newValue = x.matrix.a;
+    assert_not_equals(oldValue, newValue, "CSSMatrixComponent.matrix should be mutable.");
+}, "CSSMatrixComponent.matrix should be mutable.");
+test(function(){
+    let x = new CSSPositionValue(new CSSSimpleLength(1, "px"), new CSSSimpleLength(1, "px"));
+    let oldValue = x.x.value;
+    x.x = new CSSSimpleLength(2, "px");
+    let newValue = x.x.value;
+    assert_not_equals(oldValue, newValue, "CSSPositionValue.x should be mutable.");
+}, "CSSPositionValue.x should be mutable.");
+</script>

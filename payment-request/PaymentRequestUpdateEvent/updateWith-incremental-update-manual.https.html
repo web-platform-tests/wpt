@@ -1,8 +1,8 @@
 <!doctype html>
 <meta charset="utf8">
-<link rel="help" href="https://w3c.github.io/payment-request/#algorithms">
+<link rel="help" href="https://w3c.github.io/payment-request/#updatewith-method">
 <title>
-  Payment Request algorithms
+  Incremental updates via updateWith()
 </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -16,6 +16,10 @@ const methods = [{
   supportedMethods: "basic-card",
 }];
 
+const options = {
+  requestShipping: true,
+};
+
 const initialDetails = {
   total: {
     label: "Initial total",
@@ -28,16 +32,13 @@ const initialDetails = {
     {
       id: "neutral",
       label: "NEUTRAL SHIPPING OPTION",
+      selected: true,
       amount: {
         currency: "USD",
         value: "0.00",
       },
     },
   ],
-};
-
-const options = {
-  requestShipping: true,
 };
 
 function testFireEvent(button, updateDetails) {
@@ -175,7 +176,7 @@ function testFireEvent(button, updateDetails) {
       </button>
     </li>
     <li>
-      <button onclick="done()">DONE</button>
+      <button onclick="done()">DONE - see results</button>
     </li>
   </ol>
 </section>

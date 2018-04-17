@@ -49,42 +49,80 @@ def read_script_metadata(f, regexp):
         yield (m.groups()[0], m.groups()[1])
 
 
-any_variants = {"window": {"suffix": ".any.html"},
-                "serviceworker": {},
-                "worker": {"globals": {"worker", "sharedworker", "serviceworker"}}}
-skip_variants = {"!serviceworker"}
-force_https = {"serviceworker"}
+_any_variants = {
+    b"window": {"default": True, "suffix": ".any.html"},
+    b"serviceworker": {"force_https": True},
+    b"sharedworker": {},
+    b"dedicatedworker": {"default": True, "suffix": ".any.worker.html"},
+    b"worker": {"longhand": {b"dedicatedworker", b"sharedworker", b"serviceworker"}}
+}
 
+
+def get_any_variants(item):
+    """
+    Returns a set of variants (bytestrings) defined by the given keyword.
+    """
+    assert isinstance(item, binary_type), item
+    assert not item.startswith(b"!"), item
+
+    variant = _any_variants.get(item, None)
+    if variant is None:
+        return set()
+
+    return variant.get("longhand", {item})
+
+
+def get_default_any_variants():
+    """
+    Returns a set of variants (bytestrings) that will be used by default.
+    """
+    return set(k for k, v in _any_variants.items() if v.get("default", False))
+
+def parse_variants(value):
+    """
+    Returns a set of variants (bytestrings) defined by a comma-separated value.
+    """
+    assert isinstance(value, binary_type), value
+
+    globals = get_default_any_variants()
+    global_values = set(item.strip() for item in value.split(b","))
+
+    for item in global_values:
+        if item.startswith(b"!"):
+            globals -= get_any_variants(item[1:])
+        else:
+            globals |= get_any_variants(item)
+
+    return globals
 
 def global_variants(value):
+    """
+    Returns a dict mapping variants (bytestrings) to the relevant filename
+    suffix (a string), as defined by a comma-separated value.
+    """
     rv = {}
-    global_values = set(item.strip() for item in value.split(","))
-    for item in global_values:
-        if item in any_variants:
-            variant = any_variants[item]
-            global_types = variant.get("globals", {item})
-            for global_type in global_types:
-                suffix = variant.get("suffix", ".any.%s.html" % global_type)
-                if global_type in force_https:
-                    suffix = ".https" + suffix
-                rv[global_type] = suffix
-    for item in skip_variants:
-        variant = item[1:]
-        if item in global_values and variant in rv:
-            del rv[variant]
+
+    global_types = parse_variants(value)
+    for global_type in global_types:
+        variant = _any_variants[global_type]
+        suffix = variant.get("suffix", ".any.%s.html" % global_type.decode("utf-8"))
+        if variant.get("force_https", False):
+            suffix = ".https" + suffix
+        rv[global_type] = suffix
+
     return rv
 
 
 def global_variant_url(url, suffix):
-    # Ensure that .any. is the last flag
-    if not url.endswith(".any.js"):
-        url = url.replace(".any.", ".")
-        replace_end(url, ".js", ".any.js")
+    """
+    Returns a url created from the given url and suffix (all strings).
+    """
+    url = url.replace(".any.", ".")
     # If the url must be loaded over https, ensure that it will have
     # the form .https.any.js
     if ".https." in url and suffix.startswith(".https."):
         url = url.replace(".https.", ".")
-    return replace_end(url, ".any.js", suffix)
+    return replace_end(url, ".js", suffix)
 
 
 class SourceFile(object):
@@ -239,7 +277,7 @@ class SourceFile(object):
         return self.type_flag == "visual"
 
     @property
-    def name_is_any(self):
+    def name_is_multi_global(self):
         """Check if the file name matches the conditions for the file to
         be a multi-global js test file"""
         return "any" in self.meta_flags and self.ext == ".js"
@@ -322,7 +360,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_worker or self.name_is_any or self.name_is_window:
+        if self.name_is_worker or self.name_is_multi_global or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
@@ -546,17 +584,18 @@ class SourceFile(object):
         elif self.name_is_visual:
             rv = VisualTest.item_type, [VisualTest(self, self.url)]
 
-        elif self.name_is_any:
-            rv = TestharnessTest.item_type, []
+        elif self.name_is_multi_global:
+            globals = b""
             for (key, value) in self.script_metadata:
                 if key == b"global":
-                    for suffix in itervalues(global_variants(value)):
-                        url = global_variant_url(self.url, suffix)
-                        rv[1].append(TestharnessTest(self, url,
-                                                     timeout=self.timeout))
+                    globals = value
                     break
-            # XXX
-            print rv
+
+            tests = [
+                TestharnessTest(self, global_variant_url(self.url, suffix), timeout=self.timeout)
+                for suffix in sorted(itervalues(global_variants(globals)))
+            ]
+            rv = TestharnessTest.item_type, tests
 
         elif self.name_is_worker:
             rv = (TestharnessTest.item_type,

@@ -86,9 +86,6 @@ class WrapperHandler(object):
                 path = replace_end(path, src, dest)
         return path
 
-    def _validate_meta(self, key, value):
-        pass
-
     def _get_meta(self, request):
         """Get an iterator over strings to inject into the wrapper document
         based on //META comments in the associated js file.
@@ -98,7 +95,6 @@ class WrapperHandler(object):
         path = self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
         with open(path, "rb") as f:
             for key, value in read_script_metadata(f, js_meta_re):
-                self._validate_meta(key, value)
                 replacement = self._meta_replacement(key, value)
                 if replacement:
                     yield replacement
@@ -127,13 +123,11 @@ class WrapperHandler(object):
 class HtmlWrapperHandler(WrapperHandler):
     global_type = None
 
-    def _validate_meta(self, key, value):
+    def _meta_replacement(self, key, value):
         if key == b"global":
             if self.global_type not in global_variants(value):
                 raise HTTPException(404, "This test cannot be loaded in %s mode" %
                                     self.global_type)
-
-    def _meta_replacement(self, key, value):
         if key == b"timeout":
             if value == b"long":
                 return '<meta name="timeout" content="long">'

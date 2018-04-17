@@ -263,6 +263,36 @@ test()"""
         assert item.timeout == "long"
 
 
+def test_multi_global_with_custom_globals():
+    contents = b"""// META: global=!window,worker
+test()"""
+
+    s = create("html/test.any.js", contents=contents)
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    item_type, items = s.manifest_items()
+    assert item_type == "testharness"
+
+    # XXX: check if correct
+    expected_urls = [
+        "/html/test.any.sharedworker.html",
+        "/html/test.any.worker.html",
+        "/html/test.https.any.serviceworker.html",
+    ]
+    assert len(items) == len(expected_urls)
+
+    for item, url in zip(items, expected_urls):
+        assert item.url == url
+        assert item.timeout is None
+
+
 @pytest.mark.parametrize("input,expected", [
     (b"""//META: foo=bar\n""", [(b"foo", b"bar")]),
     (b"""// META: foo=bar\n""", [(b"foo", b"bar")]),

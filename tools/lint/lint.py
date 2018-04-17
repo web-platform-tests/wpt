@@ -18,7 +18,7 @@ from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
 
-from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, any_variants, skip_variants
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants, get_default_any_variants, parse_variants
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -635,35 +635,32 @@ def check_script_metadata(repo_root, path, f):
         if m:
             key, value = m.groups()
             if key == b"global":
-                global_values = {item.strip() for item in value.split(",")}
+                global_values = {item.strip() for item in value.split(b",")}
                 for global_value in global_values:
-                    if global_value not in any_variants and global_value not in skip_variants:
-                        errors.append(("UNKNOWN-GLOBAL-METADATA",
-                                       "Unexpected value for global metadata",
-                                       path, idx + 1))
-                    if global_value in skip_variants:
-                        if global_value[1:] in global_values:
-                            errors.append(("BROKEN-GLOBAL-METADATA",
-                                           "Cannot specify both %s and %s" % (global_value, global_value[1:]),
+                    if global_value.startswith(b"!"):
+                        excluded_value = global_value[1:]
+                        if not get_any_variants(excluded_value):
+                            errors.append(("UNKNOWN-GLOBAL-METADATA",
+                                           "Unexpected value for global metadata",
                                            path, idx + 1))
-                        else:
-                            # Check for a !value actually corresponds to something in an expansion
-                            valid_keys = {key for key, values in iteritems(any_variants)
-                                          if global_value[1:] in values.get("globals", {})}
-                            if not valid_keys & global_values:
-                                errors.append(("BROKEN-GLOBAL-METADATA",
-                                               "Cannot specify %s without %s" % (global_value,
-                                                                                 "or ".join(valid_keys)),
-                                               path, idx + 1))
-                    else:
-                        # Check we don't have a value as a top-level key and an expansion
-                        invalid_keys = {key for key, values in iteritems(any_variants)
-                                        if global_value in values.get("globals", {}) and
-                                        key != global_value}
-                        if invalid_keys:
+
+                        elif excluded_value in global_values:
                             errors.append(("BROKEN-GLOBAL-METADATA",
-                                           "Cannot specify both %s and %s" % (global_value,
-                                                                              "or ".join(invalid_keys)),
+                                           "Cannot specify both %s and %s" % (global_value, excluded_value),
+                                           path, idx + 1))
+
+                        else:
+                            included_variants = set.union(get_default_any_variants(), *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
+                            print(included_variants)
+                            if excluded_value not in included_variants:
+                                errors.append(("BROKEN-GLOBAL-METADATA",
+                                               "Cannot exclude %s if it is not included" % (excluded_value,),
+                                               path, idx + 1))
+
+                    else:
+                        if not get_any_variants(global_value):
+                            errors.append(("UNKNOWN-GLOBAL-METADATA",
+                                           "Unexpected value for global metadata",
                                            path, idx + 1))
             elif key == b"timeout":
                 if value != b"long":

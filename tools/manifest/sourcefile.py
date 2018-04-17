@@ -245,6 +245,12 @@ class SourceFile(object):
         return "any" in self.meta_flags and self.ext == ".js"
 
     @property
+    def name_is_worker(self):
+        """Check if the file name matches the conditions for the file to
+        be a worker js test file"""
+        return "worker" in self.meta_flags and self.ext == ".js"
+
+    @property
     def name_is_window(self):
         """Check if the file name matches the conditions for the file to
         be a window js test file"""
@@ -316,7 +322,7 @@ class SourceFile(object):
 
     @cached_property
     def script_metadata(self):
-        if self.name_is_any or self.name_is_window:
+        if self.name_is_worker or self.name_is_any or self.name_is_window:
             regexp = js_meta_re
         elif self.name_is_webdriver:
             regexp = python_meta_re
@@ -549,11 +555,18 @@ class SourceFile(object):
                         rv[1].append(TestharnessTest(self, url,
                                                      timeout=self.timeout))
                     break
+            # XXX
             print rv
+
+        elif self.name_is_worker:
+            rv = (TestharnessTest.item_type,
+                  [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"),
+                                   timeout=self.timeout)])
+
         elif self.name_is_window:
-            rv = TestharnessTest.item_type, [
-                TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
-                                timeout=self.timeout)]
+            rv = (TestharnessTest.item_type,
+                  [TestharnessTest(self, replace_end(self.url, ".window.js", ".window.html"),
+                                   timeout=self.timeout)])
 
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,

@@ -12,8 +12,7 @@ from wptserve.config import Config
 
 
 def test_sauceconnect_success():
-    with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+    with mock.patch.object(sauce.subprocess, "Popen") as Popen,\
             mock.patch.object(sauce.os.path, "exists") as exists:
         # Act as if it's still running
         Popen.return_value.poll.return_value = None
@@ -42,8 +41,7 @@ def test_sauceconnect_success():
     (False, 2),
 ])
 def test_sauceconnect_failure_exit(readyfile, returncode):
-    with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+    with mock.patch.object(sauce.subprocess, "Popen") as Popen,\
             mock.patch.object(sauce.os.path, "exists") as exists,\
             mock.patch.object(sauce.time, "sleep") as sleep:
         Popen.return_value.poll.return_value = returncode
@@ -67,8 +65,7 @@ def test_sauceconnect_failure_exit(readyfile, returncode):
 
 
 def test_sauceconnect_failure_never_ready():
-    with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+    with mock.patch.object(sauce.subprocess, "Popen") as Popen,\
             mock.patch.object(sauce.os.path, "exists") as exists,\
             mock.patch.object(sauce.time, "sleep") as sleep:
         Popen.return_value.poll.return_value = None
@@ -96,8 +93,7 @@ def test_sauceconnect_failure_never_ready():
 
 
 def test_sauceconnect_tunnel_domains():
-    with mock.patch.object(sauce.SauceConnect, "upload_prerun_exec"),\
-            mock.patch.object(sauce.subprocess, "Popen") as Popen,\
+    with mock.patch.object(sauce.subprocess, "Popen") as Popen,\
             mock.patch.object(sauce.os.path, "exists") as exists:
         Popen.return_value.poll.return_value = None
         Popen.return_value.returncode = None

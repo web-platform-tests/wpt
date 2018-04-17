@@ -203,7 +203,8 @@ class RoutesBuilder(object):
     def __init__(self):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
-                                    handlers.python_script_handler)]
+                                    handlers.python_script_handler),
+                                   ("GET", "/tools/wptrunner/wptrunner/browsers/sauce_setup/*", handlers.file_handler)]
 
         self.forbidden = [("*", "/_certs/*", handlers.ErrorHandler(404)),
                           ("*", "/tools/*", handlers.ErrorHandler(404)),

@@ -403,7 +403,7 @@ class MarionetteProtocol(Protocol):
                 self.prefs.set(name, value)
 
         for name, value in new_environment.get("prefs", {}).iteritems():
-            self.executor.original_pref_values[name] = self.get_pref(name)
+            self.executor.original_pref_values[name] = self.prefs.get(name)
             self.prefs.set(name, value)
 
 
@@ -454,7 +454,7 @@ class ExecuteAsyncScriptRun(object):
             # We didn't get any data back from the test, so check if the
             # browser is still responsive
             if self.protocol.is_alive:
-                self.result = False, ("ERROR", None)
+                self.result = False, ("INTERNAL-ERROR", None)
             else:
                 self.result = False, ("CRASH", None)
         return self.result
@@ -475,8 +475,9 @@ class ExecuteAsyncScriptRun(object):
             if message:
                 message += "\n"
             message += traceback.format_exc(e)
-            self.logger.warning(traceback.format_exc())
-            self.result = False, ("ERROR", e)
+            self.logger.warning(message)
+            self.result = False, ("INTERNAL-ERROR", None)
+
         finally:
             self.result_flag.set()
 

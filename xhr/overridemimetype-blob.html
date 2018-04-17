@@ -33,10 +33,12 @@ promise_test(() => {
 }, "Loading data…");
 
 function runTests(tests) {
-  tests.forEach((val, index) => {
+  let index = 0;
+  tests.forEach((val) => {
     if(typeof val === "string") {
       return;
     }
+    index++;
     async_test(t => {
       const client = new XMLHttpRequest(),
             expectedOutput = val.output !== null ? val.output : "application/octet-stream";
@@ -48,7 +50,7 @@ function runTests(tests) {
       client.responseType = "blob";
       client.overrideMimeType(val.input);
       client.send();
-    }, "MIME types need to be parsed and serialized, " + (index + 1) + ", input: " + val.input);
+    }, index + ") MIME types need to be parsed and serialized: " + val.input);
   });
 }
 </script>

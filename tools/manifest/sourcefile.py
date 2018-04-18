@@ -1,7 +1,7 @@
 import hashlib
 import re
 import os
-from six import binary_type, itervalues
+from six import binary_type
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 try:

@@ -104,7 +104,7 @@ def global_suffixes(value):
     """
     assert isinstance(value, binary_type), value
 
-    rv = {}
+    rv = set()
 
     global_types = parse_variants(value)
     for global_type in global_types:
@@ -112,7 +112,7 @@ def global_suffixes(value):
         suffix = variant.get("suffix", ".any.%s.html" % global_type.decode("utf-8"))
         if variant.get("force_https", False):
             suffix = ".https" + suffix
-        rv[global_type] = suffix
+        rv.add(suffix)
 
     return rv
 

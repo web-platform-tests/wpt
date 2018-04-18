@@ -88,7 +88,7 @@ class WrapperHandler(object):
         return path
 
     def _get_metadata(self, request):
-        """Get an iterator script metadata based on //META comments in the
+        """Get an iterator over script metadata based on //META comments in the
         associated js file.
 
         :param request: The Request being processed.

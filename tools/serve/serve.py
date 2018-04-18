@@ -20,7 +20,7 @@ from multiprocessing import Process, Event
 from localpaths import repo_root
 
 import sslutils
-from manifest.sourcefile import read_script_metadata, js_meta_re, global_variants
+from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve import config
@@ -28,7 +28,6 @@ from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.utils import get_port, HTTPException
 from mod_pywebsocket import standalone as pywebsocket
-
 
 def replace_end(s, old, new):
     """
@@ -56,6 +55,8 @@ class WrapperHandler(object):
     def handle_request(self, request, response):
         for header_name, header_value in self.headers:
             response.headers.set(header_name, header_value)
+
+        self.check_exposure(request)
 
         path = self._get_path(request.url_parts.path, True)
         meta = "\n".join(self._get_meta(request))
@@ -86,18 +87,27 @@ class WrapperHandler(object):
                 path = replace_end(path, src, dest)
         return path
 
-    def _get_meta(self, request):
-        """Get an iterator over strings to inject into the wrapper document
-        based on //META comments in the associated js file.
+    def _get_metadata(self, request):
+        """Get an iterator script metadata based on //META comments in the
+        associated js file.
 
         :param request: The Request being processed.
         """
         path = self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
         with open(path, "rb") as f:
             for key, value in read_script_metadata(f, js_meta_re):
-                replacement = self._meta_replacement(key, value)
-                if replacement:
-                    yield replacement
+                yield key, value
+
+    def _get_meta(self, request):
+        """Get an iterator over strings to inject into the wrapper document
+        based on //META comments in the associated js file.
+
+        :param request: The Request being processed.
+        """
+        for key, value in self._get_metadata(request):
+            replacement = self._meta_replacement(key, value)
+            if replacement:
+                yield replacement
 
     @abc.abstractproperty
     def path_replace(self):
@@ -119,15 +129,28 @@ class WrapperHandler(object):
         # a specific metadata key: value pair.
         pass
 
+    @abc.abstractmethod
+    def check_exposure(self, request):
+        # Raise an exception if this handler shouldn't be exposed after all.
+        pass
+
 
 class HtmlWrapperHandler(WrapperHandler):
     global_type = None
 
-    def _meta_replacement(self, key, value):
-        if key == b"global":
-            if self.global_type not in global_variants(value):
+    def check_exposure(self, request):
+        if self.global_type:
+            globals = b""
+            for (key, value) in self._get_metadata(request):
+                if key == b"global":
+                    globals = value
+                    break
+
+            if self.global_type not in parse_variants(globals):
                 raise HTTPException(404, "This test cannot be loaded in %s mode" %
                                     self.global_type)
+
+    def _meta_replacement(self, key, value):
         if key == b"timeout":
             if value == b"long":
                 return '<meta name="timeout" content="long">'
@@ -138,7 +161,7 @@ class HtmlWrapperHandler(WrapperHandler):
 
 
 class WorkersHandler(HtmlWrapperHandler):
-    global_type = "worker"
+    global_type = b"dedicatedworker"
     path_replace = [(".any.worker.html", ".any.js", ".any.worker.js"),
                     (".worker.html", ".worker.js")]
     wrapper = """<!doctype html>
@@ -154,9 +177,20 @@ fetch_tests_from_worker(new Worker("%(path)s"));
 
 
 class WindowHandler(HtmlWrapperHandler):
-    global_type = "window"
-    path_replace = [(".any.html", ".any.js"),
-                    (".window.html", ".window.js")]
+    path_replace = [(".window.html", ".window.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script src="%(path)s"></script>
+"""
+
+
+class AnyHtmlHandler(HtmlWrapperHandler):
+    global_type = b"window"
+    path_replace = [(".any.html", ".any.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -174,7 +208,7 @@ self.GLOBAL = {
 
 
 class SharedWorkersHandler(HtmlWrapperHandler):
-    global_type = "sharedworker"
+    global_type = b"sharedworker"
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -189,7 +223,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s"));
 
 
 class ServiceWorkersHandler(HtmlWrapperHandler):
-    global_type = "serviceworker"
+    global_type = b"serviceworker"
     path_replace = [(".https.any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
@@ -273,9 +307,8 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
-            ("GET", "*.any.html", WindowHandler),
             ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.any.worker.html", WorkersHandler),
+            ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
             ("GET", "*.https.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),

@@ -280,7 +280,6 @@ test()"""
     item_type, items = s.manifest_items()
     assert item_type == "testharness"
 
-    # XXX: check if correct
     expected_urls = [
         "/html/test.any.sharedworker.html",
         "/html/test.any.worker.html",

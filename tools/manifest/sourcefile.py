@@ -78,6 +78,7 @@ def get_default_any_variants():
     """
     return set(k for k, v in _any_variants.items() if v.get("default", False))
 
+
 def parse_variants(value):
     """
     Returns a set of variants (bytestrings) defined by a comma-separated value.
@@ -95,11 +96,14 @@ def parse_variants(value):
 
     return globals
 
-def global_variants(value):
+
+def global_suffixes(value):
     """
-    Returns a dict mapping variants (bytestrings) to the relevant filename
-    suffix (a string), as defined by a comma-separated value.
+    Yields the relevant filename suffixes (strings) for the variants defined by
+    the given comma-separated value.
     """
+    assert isinstance(value, binary_type), value
+
     rv = {}
 
     global_types = parse_variants(value)
@@ -593,7 +597,7 @@ class SourceFile(object):
 
             tests = [
                 TestharnessTest(self, global_variant_url(self.url, suffix), timeout=self.timeout)
-                for suffix in sorted(itervalues(global_variants(globals)))
+                for suffix in sorted(global_suffixes(globals))
             ]
             rv = TestharnessTest.item_type, tests
 

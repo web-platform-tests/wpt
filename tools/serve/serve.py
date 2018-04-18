@@ -137,6 +137,21 @@ class HtmlWrapperHandler(WrapperHandler):
         return None
 
 
+class WorkersHandler(HtmlWrapperHandler):
+    global_type = "worker"
+    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new Worker("%(path)s"));
+</script>
+"""
+
+
 class WindowHandler(HtmlWrapperHandler):
     global_type = "window"
     path_replace = [(".any.html", ".any.js"),
@@ -157,22 +172,7 @@ self.GLOBAL = {
 """
 
 
-class WorkerHandler(HtmlWrapperHandler):
-    global_type = "worker"
-    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js")]
-    wrapper = """<!doctype html>
-<meta charset=utf-8>
-%(meta)s
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
-fetch_tests_from_worker(new Worker("%(path)s"));
-</script>
-"""
-
-
-class SharedWorkerHandler(WorkerHandler):
+class SharedWorkersHandler(WorkersHandler):
     global_type = "sharedworker"
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
@@ -187,7 +187,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s"));
 """
 
 
-class ServiceWorkerHandler(HtmlWrapperHandler):
+class ServiceWorkersHandler(HtmlWrapperHandler):
     global_type = "serviceworker"
     path_replace = [(".https.any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
@@ -208,7 +208,7 @@ class ServiceWorkerHandler(HtmlWrapperHandler):
 """
 
 
-class WorkerJavaScriptHandler(WrapperHandler):
+class AnyWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
     wrapper = """%(meta)s
@@ -273,10 +273,10 @@ class RoutesBuilder(object):
         routes = [
             ("GET", "*.any.html", WindowHandler),
             ("GET", "*.window.html", WindowHandler),
-            ("GET", "*.any.worker.html", WorkerHandler),
-            ("GET", "*.any.sharedworker.html", SharedWorkerHandler),
-            ("GET", "*.https.any.serviceworker.html", ServiceWorkerHandler),
-            ("GET", "*.any.worker.js", WorkerJavaScriptHandler),
+            ("GET", "*.any.worker.html", WorkersHandler),
+            ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
+            ("GET", "*.https.any.serviceworker.html", ServiceWorkersHandler),
+            ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)

@@ -18,7 +18,7 @@ from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
 
-from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants, get_default_any_variants, parse_variants
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants, get_default_any_variants
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 from six.moves.urllib.parse import urlsplit, urljoin
@@ -650,8 +650,8 @@ def check_script_metadata(repo_root, path, f):
                                            path, idx + 1))
 
                         else:
-                            included_variants = set.union(get_default_any_variants(), *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
-                            print(included_variants)
+                            included_variants = set.union(get_default_any_variants(),
+                                                          *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
                             if excluded_value not in included_variants:
                                 errors.append(("BROKEN-GLOBAL-METADATA",
                                                "Cannot exclude %s if it is not included" % (excluded_value,),

@@ -245,6 +245,8 @@ def run_tests(config, test_paths, product, **kwargs):
                             if test.testdriver and not executor_cls.supports_testdriver:
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
+                            elif test.jsshell and not executor_cls.supports_jsshell:
+                                pass
                             else:
                                 run_tests["testharness"].append(test)
                     else:

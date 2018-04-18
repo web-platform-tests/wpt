@@ -139,7 +139,8 @@ class HtmlWrapperHandler(WrapperHandler):
 
 class WorkersHandler(HtmlWrapperHandler):
     global_type = "worker"
-    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js")]
+    path_replace = [(".any.worker.html", ".any.js", ".any.worker.js"),
+                    (".worker.html", ".worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -172,7 +173,7 @@ self.GLOBAL = {
 """
 
 
-class SharedWorkersHandler(WorkersHandler):
+class SharedWorkersHandler(HtmlWrapperHandler):
     global_type = "sharedworker"
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
@@ -271,6 +272,7 @@ class RoutesBuilder(object):
         self.mountpoint_routes[url_base] = []
 
         routes = [
+            ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.any.html", WindowHandler),
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.worker.html", WorkersHandler),

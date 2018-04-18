@@ -17,6 +17,7 @@ test(function() {
 }, "navigator.mozGetUserMedia should not exist");
 
 test(() => {
-  assert_throws(new TypeError(), () => URL.createObjectURL(new MediaStream()));
+  const mediaStream = new MediaStream();
+  assert_throws(new TypeError(), () => URL.createObjectURL(mediaStream));
 }, "Passing MediaStream to URL.createObjectURL() should throw");
 </script>

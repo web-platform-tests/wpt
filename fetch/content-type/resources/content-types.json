@@ -1,0 +1,22 @@
+[
+  {
+    "input": ["text/html", "text/plain"],
+    "encoding": null,
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/plain;charset=gbk", "text/html"],
+    "encoding": null,
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/plain;charset=gbk", "text/plain"],
+    "encoding": null,
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/html;charset=gbk", "text/html;x=\",text/plain"],
+    "encoding": null,
+    "documentContentType": "text/html"
+  }
+]

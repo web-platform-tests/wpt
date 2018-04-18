@@ -1,3 +1,5 @@
 promise_test(t => {
-  return promise_rejects(t, new TypeError(), fetch(URL.createObjectURL(new MediaSource())));
+  const mediaSource = new MediaSource(),
+        mediaSourceURL = URL.createObjectURL(mediaSource);
+  return promise_rejects(t, new TypeError(), fetch(mediaSourceURL));
 }, "Cannot fetch blob: URL from a MediaSource");

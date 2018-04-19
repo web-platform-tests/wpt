@@ -2,46 +2,67 @@
   {
     "input": ["text/html", "text/plain"],
     "encoding": null,
+    "mimeType": "text/plain",
     "documentContentType": "text/plain"
   },
   {
     "input": ["text/plain;charset=gbk", "text/html"],
     "encoding": null,
+    "mimeType": "text/html",
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/plain;charset=gbk", "text/html;charset=windows-1254"],
+    "encoding": "windows-1254",
+    "mimeType": "text/html;charset=windows-1254",
     "documentContentType": "text/html"
   },
   {
     "input": ["text/plain;charset=gbk", "text/plain"],
-    "encoding": null,
+    "encoding": "GBK",
+    "mimeType": "text/plain;charset=gbk",
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/plain;charset=gbk", "text/plain;charset=windows-1252"],
+    "encoding": "windows-1252",
+    "mimeType": "text/plain;charset=windows-1252",
     "documentContentType": "text/plain"
   },
   {
     "input": ["text/html;charset=gbk", "text/html;x=\",text/plain"],
-    "encoding": null,
+    "encoding": "GBK",
+    "mimeType": "text/html;x=\",text/plain\";charset=gbk",
     "documentContentType": "text/html"
   },
   {
     "input": ["text/html;charset=gbk", "text/plain", "text/html"],
     "encoding": null,
+    "mimeType": "text/html",
     "documentContentType": "text/html"
   },
   {
     "input": ["text/plain", "*/*"],
     "encoding": null,
+    "mimeType": "text/plain",
     "documentContentType": "text/plain"
   },
   {
     "input": ["text/html", "*/*"],
     "encoding": null,
+    "mimeType": "text/html",
     "documentContentType": "text/html"
   },
   {
     "input": ["text/plain", "*/*;charset=gbk"],
     "encoding": null,
+    "mimeType": "text/plain",
     "documentContentType": "text/plain"
   },
   {
     "input": ["text/html", "*/*;charset=gbk"],
     "encoding": null,
+    "mimeType": "text/html",
     "documentContentType": "text/html"
   }
 ]

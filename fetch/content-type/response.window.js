@@ -4,31 +4,69 @@ promise_test(() => {
 
 function runTests(tests) {
   tests.forEach(testUnit => {
-    runTest(testUnit, false);
-    runTest(testUnit, true);
+    runFrameTest(testUnit, false);
+    runFrameTest(testUnit, true);
+    runFetchTest(testUnit, false);
+    runFetchTest(testUnit, true);
+    runRequestResponseTest(testUnit, "Request");
+    runRequestResponseTest(testUnit, "Response");
   });
 }
 
-function runTest(testUnit, singleHeader) {
+function runFrameTest(testUnit, singleHeader) {
   // Note: window.js is always UTF-8
-  const encoding = testUnit.encoding !== null ? testUnit.encoding : "UTF-8",
-        desc = "Response Content-Type header: " + testUnit.input.join(" ") + " (" + (singleHeader ? "combined value" : "separate headers") + ")";
+  const encoding = testUnit.encoding !== null ? testUnit.encoding : "UTF-8";
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
     t.add_cleanup(() => frame.remove());
-    // Edge does not support URLSearchParams
-    let url = "resources/content-type.py?"
-    if (singleHeader) {
-      url += "single_header&"
-    }
-    testUnit.input.forEach(val => {
-      url += "value=" + encodeURIComponent(val) + "&";
-    });
-    frame.src = url;
+    frame.src = getURL(testUnit.input, singleHeader);
     frame.onload = t.step_func_done(() => {
       // Edge requires toUpperCase()
-      assert_equals(frame.contentDocument.characterSet.toUpperCase(), encoding);
-      assert_equals(frame.contentDocument.contentType, testUnit.documentContentType);
+      const doc = frame.contentDocument;
+      assert_equals(doc.characterSet.toUpperCase(), encoding.toUpperCase());
+      if (testUnit.documentContentType === "text/plain") {
+        assert_equals(doc.body.textContent, "<b>hi</b>\n");
+      } else if (testUnit.documentContentType === "text/html") {
+        assert_equals(doc.body.firstChild.localName, "b");
+        assert_equals(doc.body.firstChild.textContent, "hi");
+      }
+      assert_equals(doc.contentType, testUnit.documentContentType);
     });
-  }, desc);
+  }, getDesc("<iframe>", testUnit.input, singleHeader));
+}
+
+function getDesc(type, input, singleHeader) {
+  return type + ": " + (singleHeader ? "combined" : "separate") + " response Content-Type: " + input.join(" ");
+}
+
+function getURL(input, singleHeader) {
+  // Edge does not support URLSearchParams
+  let url = "resources/content-type.py?"
+  if (singleHeader) {
+    url += "single_header&"
+  }
+  input.forEach(val => {
+    url += "value=" + encodeURIComponent(val) + "&";
+  });
+  return url;
+}
+
+function runFetchTest(testUnit, singleHeader) {
+  promise_test(async t => {
+    const blob = await (await fetch(getURL(testUnit.input, singleHeader))).blob();
+    assert_equals(blob.type, testUnit.mimeType);
+  }, getDesc("fetch()", testUnit.input, singleHeader));
+}
+
+function runRequestResponseTest(testUnit, stringConstructor) {
+  promise_test(async t => {
+    // about:blank works for both Request and Response
+    const constructorArgument = stringConstructor === "Request" ? "about:blank" : undefined;
+    const r = new self[stringConstructor](constructorArgument);
+    testUnit.input.forEach(val => {
+      r.headers.append("Content-Type", val);
+    });
+    const blob = await r.blob();
+    assert_equals(blob.type, testUnit.mimeType);
+  }, getDesc(stringConstructor, testUnit.input, true));
 }

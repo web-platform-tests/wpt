@@ -22,7 +22,7 @@ function runTest(testUnit, singleHeader) {
       url += "single_header&"
     }
     testUnit.input.forEach(val => {
-      url += "value=" + val + "&";
+      url += "value=" + encodeURIComponent(val) + "&";
     });
     frame.src = url;
     frame.onload = t.step_func_done(() => {

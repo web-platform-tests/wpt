@@ -18,5 +18,30 @@
     "input": ["text/html;charset=gbk", "text/html;x=\",text/plain"],
     "encoding": null,
     "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/html;charset=gbk", "text/plain", "text/html"],
+    "encoding": null,
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/plain", "*/*"],
+    "encoding": null,
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/html", "*/*"],
+    "encoding": null,
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/plain", "*/*;charset=gbk"],
+    "encoding": null,
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/html", "*/*;charset=gbk"],
+    "encoding": null,
+    "documentContentType": "text/html"
   }
 ]

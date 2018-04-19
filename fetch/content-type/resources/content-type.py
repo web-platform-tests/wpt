@@ -4,6 +4,9 @@ def main(request, response):
     output += "X-Content-Type-Options: nosniff\r\n"
     if "single_header" in request.GET:
         output += "Content-Type: " + ",".join(values) + "\r\n"
+    else:
+        for value in values:
+            output += "Content-Type: " + value + "\r\n"
     output += "Content-Length: 5\r\n"
     output += "\r\n"
     output += "whoa\n"

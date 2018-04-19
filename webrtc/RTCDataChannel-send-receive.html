@@ -87,14 +87,38 @@ const channelOptionsVariants = [
 
 for (const [description, channelOptions] of channelOptionsVariants) {
   /*
-      6.2.  send()
-        2.  If channel's [[ReadyState]] slot is not open, throw an InvalidStateError.
+     6.2.  send()
+      2.  If channel's [[ReadyState]] slot is not open, throw an InvalidStateError.
    */
   test(t => {
     const pc = new RTCPeerConnection();
     const channel = pc.createDataChannel('test', channelOptions);
     assert_throws('InvalidStateError', () => channel.send(helloString));
   }, `${description}: Calling send() when not open should throw InvalidStateError`);
+
+  /*
+    6.2.  The send() method is overloaded to handle different data argument types.
+
+          Acceptable: string, Blob, ArrayBuffer, ArrayBufferView
+  */
+  const invalidMessageTypes = [
+    null,
+    undefined,
+  ];
+
+  for (const messageType of invalidMessageTypes) {
+    promise_test(t => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
+
+      return createDataChannelPair(pc1, pc2, {channelOptions: channelOptions})
+      .then(([dc1, _]) => {
+        assert_throws(TypeError, () => dc1.send(messageType));
+      });
+    }, `${description}: Calling send() with ${messageType} should throw TypeError`);
+  }
 
   /*
     6.2.  send()

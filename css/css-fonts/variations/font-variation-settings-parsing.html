@@ -35,6 +35,8 @@
         valueParserTests.forEach(function (testCase) {
             test(() => {
                 var element = document.getElementById("value-parser-test");
+                // Reset to empty in order for testing to continue in case the next test would not parse as valid
+                element.style.fontVariationSettings = "";
                 element.style.fontVariationSettings = testCase.value;
                 var computed = window.getComputedStyle(element).fontVariationSettings;
                 if (testCase.isValid) {

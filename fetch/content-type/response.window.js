@@ -60,7 +60,7 @@ function runFetchTest(testUnit, singleHeader) {
 
 function runRequestResponseTest(testUnit, stringConstructor) {
   promise_test(async t => {
-    // about:blank works for both Request and Response
+    // Cannot give Response a body as that will set Content-Type, but Request needs a URL
     const constructorArgument = stringConstructor === "Request" ? "about:blank" : undefined;
     const r = new self[stringConstructor](constructorArgument);
     testUnit.input.forEach(val => {

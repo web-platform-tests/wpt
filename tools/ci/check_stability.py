@@ -77,7 +77,8 @@ class FilteredIO(object):
         self.write = lambda msg: None
 
     def write(self, msg):
-        encoded = msg.encode("utf8", "backslashreplace").decode("utf8")
+        if isinstance(msg, unicode):
+            encoded = msg.encode("utf8", "backslashreplace")
         if self.on_write(self.original, encoded) is True:
             self.original.write(encoded)
 

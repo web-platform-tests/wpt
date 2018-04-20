@@ -54,6 +54,12 @@
     "documentContentType": "text/html"
   },
   {
+    "input": ["*/*", "text/html"],
+    "encoding": null,
+    "mimeType": "text/html",
+    "documentContentType": "text/html"
+  },
+  {
     "input": ["text/plain", "*/*;charset=gbk"],
     "encoding": null,
     "mimeType": "text/plain",

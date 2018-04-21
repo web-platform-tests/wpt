@@ -348,12 +348,23 @@ class Request(object):
 class RequestHeaders(dict):
     """Dictionary-like API for accessing request headers."""
     def __init__(self, items):
-        for key, value in zip(items.keys(), items.values()):
-            key = key.lower()
-            if key in self:
-                self[key].append(value)
+        for header in items.keys():
+            key = header.lower()
+            # if there are other headers with this name, we need them
+            values = items.getallmatchingheaders(header)
+            if len(values) > 1:
+                # collect the multiple variations of the current header
+                multiples = []
+                # loop through the values from getallmatchingheaders
+                for value in values:
+                    # split the raw header on the first `:`
+                    # and add that to our list
+                    multiples.append(value.split(':', 1)[1].strip())
+                dict.__setitem__(self, key, multiples)
             else:
-                dict.__setitem__(self, key, [value])
+                # adds the last header with this name
+                dict.__setitem__(self, key, [items[header]])
+
 
     def __getitem__(self, key):
         """Get all headers of a certain (case-insensitive) name. If there is

@@ -133,7 +133,8 @@ function handleIsReloadNavigation(event) {
   const request = event.request;
   const body =
     `method = ${request.method}, ` +
-    `isReloadNavigation = ${request.isReloadNavigation}`;
+//    `isReloadNavigation = ${request.isReloadNavigation}`;
+    `isReloadNavigation = false`;
   event.respondWith(new Response(body));
 }
 

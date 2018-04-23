@@ -612,9 +612,9 @@ promise_test(async (t) => {
 promise_test(async (t) => {
     const scope = 'resources/simple.html?isReloadNavigation';
     let frame;
-
+    let reg;
     try {
-      const reg = await service_worker_unregister_and_register(t, worker, scope);
+      reg = await service_worker_unregister_and_register(t, worker, scope);
       await wait_for_state(t, reg.installing, 'activated');
       frame = await with_iframe(scope);
       assert_equals(frame.contentDocument.body.textContent,
@@ -629,7 +629,9 @@ promise_test(async (t) => {
       if (frame) {
         frame.remove();
       }
-      await service_worker_unregister(t, scope);
+      if (reg) {
+        await reg.unregister();
+      }
     }
   }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (location.reload())');
 
@@ -654,7 +656,7 @@ promise_test(async (t) => {
       }
       await service_worker_unregister(t, scope);
     }
-  }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (historg.go(0))');
+  }, 'FetchEvent#request.isReloadNavigation is true (history.go(0))');
 
 promise_test(async (t) => {
     const scope = 'resources/simple.html?isReloadNavigation';
@@ -689,7 +691,7 @@ promise_test(async (t) => {
       }
       await service_worker_unregister(t, scope);
     }
-  }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (POST + location.reload())');
+  }, 'FetchEvent#request.isReloadNavigation is true (POST + location.reload())');
 
 promise_test(async (t) => {
     const scope = 'resources/simple.html?isReloadNavigation';
@@ -732,7 +734,7 @@ promise_test(async (t) => {
       }
       await service_worker_unregister(t, scope);
     }
-  }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (with history traversal)');
+  }, 'FetchEvent#request.isReloadNavigation is true (with history traversal)');
 
 </script>
 </body>

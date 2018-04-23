@@ -23,10 +23,9 @@ promise_test(async (t) => {
   assert_equals(frame.contentDocument.body.textContent,
       'method = GET, isReloadNavigation = true');
   frame.remove();
-  await service_worker_unregister_and_done(t, scope);
+  await reg.unregister();
 }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (manual reload)');
 
 </script>
 </body>
 </html>
-

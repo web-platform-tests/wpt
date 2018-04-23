@@ -142,11 +142,10 @@ class TestEnvironment(object):
 
         config = serve.Config(override_ssl_env=self.ssl_env, **default_config)
 
-        config.ports = {
-            "http": [8000, 8001],
-            "https": [8443],
-            "ws": [8888]
-        }
+        config.server_host = self.options.get("server_host", None)
+        config.ports["http"] = [8000, 8001]
+        config.ports["https"] = [8443]
+        config.ports["ws"] = [8888]
 
         if os.path.exists(override_path):
             with open(override_path) as f:
@@ -162,7 +161,6 @@ class TestEnvironment(object):
         if "bind_address" in self.options:
             config.bind_address = self.options["bind_address"]
 
-        config.server_host = self.options.get("server_host", None)
         config.ssl["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
         config.doc_root = serve_path(self.test_paths)
 

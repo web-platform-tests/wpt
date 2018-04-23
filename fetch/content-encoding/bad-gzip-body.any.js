@@ -1,5 +1,7 @@
 promise_test((test) => {
-    return fetch("../resources/bad-content-encoding.py");
+    return fetch("resources/bad-gzip-body.py").then(res => {
+      assert_equals(res.status, 200);
+    });
 }, "Fetching a resource with bad gzip content should still resolve");
 
 [
@@ -10,8 +12,9 @@ promise_test((test) => {
   "text"
 ].forEach(method => {
   promise_test(t => {
-    return promise_rejects(t,
-                           new TypeError(),
-                           fetch("resources/bad-gzip-body.py").then(res => res[method]()));
+    return fetch("resources/bad-gzip-body.py").then(res => {
+      assert_equals(res.status, 200);
+      return promise_rejects(t, new TypeError(), res[method]());
+    });
   }, "Consuming the body of a resource with bad gzip content with " + method + "() should reject");
-})
+});

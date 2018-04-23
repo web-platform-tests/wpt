@@ -70,7 +70,7 @@
     }, `selectionEnd on an input[type=${type}] returns a value`);
 
     test(() => {
-      assert_equals(el.selectionDirection, "none");
+      assert_any(assert_equals, el.selectionDirection, ["forward", "backward", "none"]);
     }, `selectionDirection on an input[type=${type}] returns a value`);
 
     test(() => {

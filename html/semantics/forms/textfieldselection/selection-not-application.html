@@ -14,6 +14,11 @@
     var el = document.createElement("input");
     el.type = type;
 
+    if (el.type != type) {
+      // Type is not supported - don't bother with the following checks.
+      return;
+    }
+
     test(() => {
       assert_equals(el.selectionStart, null);
     }, `selectionStart on an input[type=${type}] returns null`);

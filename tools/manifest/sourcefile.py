@@ -50,10 +50,11 @@ def read_script_metadata(f, regexp):
 
 
 _any_variants = {
-    b"window": {"default": True, "suffix": ".any.html"},
+    b"default": {"longhand": {b"window", b"dedicatedworker"}},
+    b"window": {"suffix": ".any.html"},
     b"serviceworker": {"force_https": True},
     b"sharedworker": {},
-    b"dedicatedworker": {"default": True, "suffix": ".any.worker.html"},
+    b"dedicatedworker": {"suffix": ".any.worker.html"},
     b"worker": {"longhand": {b"dedicatedworker", b"sharedworker", b"serviceworker"}}
 }
 
@@ -76,7 +77,7 @@ def get_default_any_variants():
     """
     Returns a set of variants (bytestrings) that will be used by default.
     """
-    return set(k for k, v in _any_variants.items() if v.get("default", False))
+    return set(_any_variants[b"default"]["longhand"])
 
 
 def parse_variants(value):
@@ -85,16 +86,16 @@ def parse_variants(value):
     """
     assert isinstance(value, binary_type), value
 
-    globals = get_default_any_variants()
-    global_values = set(item.strip() for item in value.split(b","))
-
-    for item in global_values:
+    included = set()
+    excluded = set()
+    for item in value.split(b","):
+        item = item.strip()
         if item.startswith(b"!"):
-            globals -= get_any_variants(item[1:])
+            excluded |= get_any_variants(item[1:])
         else:
-            globals |= get_any_variants(item)
+            included |= get_any_variants(item)
 
-    return globals
+    return (get_default_any_variants() | included) - excluded
 
 
 def global_suffixes(value):

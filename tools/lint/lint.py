@@ -616,6 +616,31 @@ broken_js_metadata = re.compile(b"//\s*META:")
 broken_python_metadata = re.compile(b"#\s*META:")
 
 
+def check_global_metadata(value):
+    global_values = {item.strip() for item in value.split(b",") if item.strip()}
+
+    included_variants = set.union(get_default_any_variants(),
+                                  *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
+
+    for global_value in global_values:
+        if global_value.startswith(b"!"):
+            excluded_value = global_value[1:]
+            if not get_any_variants(excluded_value):
+                yield ("UNKNOWN-GLOBAL-METADATA", "Unexpected value for global metadata")
+
+            elif excluded_value in global_values:
+                yield ("BROKEN-GLOBAL-METADATA", "Cannot specify both %s and %s" % (global_value, excluded_value))
+
+            else:
+                excluded_variants = get_any_variants(excluded_value)
+                if not (excluded_variants & included_variants):
+                    yield ("BROKEN-GLOBAL-METADATA", "Cannot exclude %s if it is not included" % (excluded_value,))
+
+        else:
+            if not get_any_variants(global_value):
+                yield ("UNKNOWN-GLOBAL-METADATA", "Unexpected value for global metadata")
+
+
 def check_script_metadata(repo_root, path, f):
     if path.endswith((".worker.js", ".any.js")):
         meta_re = js_meta_re
@@ -635,33 +660,7 @@ def check_script_metadata(repo_root, path, f):
         if m:
             key, value = m.groups()
             if key == b"global":
-                global_values = {item.strip() for item in value.split(b",")}
-                for global_value in global_values:
-                    if global_value.startswith(b"!"):
-                        excluded_value = global_value[1:]
-                        if not get_any_variants(excluded_value):
-                            errors.append(("UNKNOWN-GLOBAL-METADATA",
-                                           "Unexpected value for global metadata",
-                                           path, idx + 1))
-
-                        elif excluded_value in global_values:
-                            errors.append(("BROKEN-GLOBAL-METADATA",
-                                           "Cannot specify both %s and %s" % (global_value, excluded_value),
-                                           path, idx + 1))
-
-                        else:
-                            included_variants = set.union(get_default_any_variants(),
-                                                          *(get_any_variants(v) for v in global_values if not v.startswith(b"!")))
-                            if excluded_value not in included_variants:
-                                errors.append(("BROKEN-GLOBAL-METADATA",
-                                               "Cannot exclude %s if it is not included" % (excluded_value,),
-                                               path, idx + 1))
-
-                    else:
-                        if not get_any_variants(global_value):
-                            errors.append(("UNKNOWN-GLOBAL-METADATA",
-                                           "Unexpected value for global metadata",
-                                           path, idx + 1))
+                errors.extend((kind, message, path, idx + 1) for (kind, message) in check_global_metadata(value))
             elif key == b"timeout":
                 if value != b"long":
                     errors.append(("UNKNOWN-TIMEOUT-METADATA", "Unexpected value for timeout metadata", path, idx + 1))

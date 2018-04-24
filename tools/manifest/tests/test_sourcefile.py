@@ -3,6 +3,7 @@ import os
 import pytest
 
 from six import BytesIO
+from ...lint.lint import check_global_metadata
 from ..sourcefile import SourceFile, read_script_metadata, js_meta_re, python_meta_re
 
 def create(filename, contents=b""):
@@ -263,9 +264,29 @@ test()"""
         assert item.timeout == "long"
 
 
-def test_multi_global_with_custom_globals():
-    contents = b"""// META: global=!window,worker
-test()"""
+@pytest.mark.parametrize("input,expected", [
+    (b"", {"dedicatedworker", "window"}),
+    (b"!default", {}),
+    (b"!default,window", {"window"}),
+    (b"window,!default", {"window"}),
+    (b"!default,dedicatedworker", {"dedicatedworker"}),
+    (b"dedicatedworker,!default", {"dedicatedworker"}),
+    (b"!default,worker", {"dedicatedworker"}),
+    (b"worker,!default", {"dedicatedworker"}),
+    (b"!dedicatedworker", {"window"}),
+    (b"!worker", {"window"}),
+    (b"!window", {"dedicatedworker"}),
+    (b"!window,worker", {"dedicatedworker", "serviceworker", "sharedworker"}),
+    (b"worker,!dedicatedworker", {"serviceworker", "sharedworker", "window"}),
+    (b"!dedicatedworker,worker", {"serviceworker", "sharedworker", "window"}),
+    (b"worker,!sharedworker", {"dedicatedworker", "serviceworker", "window"}),
+    (b"!sharedworker,worker", {"dedicatedworker", "serviceworker", "window"}),
+])
+def test_multi_global_with_custom_globals(input, expected):
+    contents = b"""// META: global=%s
+test()""" % input
+
+    assert list(check_global_metadata(input)) == []
 
     s = create("html/test.any.js", contents=contents)
     assert not s.name_is_non_test
@@ -280,11 +301,14 @@ test()"""
     item_type, items = s.manifest_items()
     assert item_type == "testharness"
 
-    expected_urls = [
-        "/html/test.any.sharedworker.html",
-        "/html/test.any.worker.html",
-        "/html/test.https.any.serviceworker.html",
-    ]
+    urls = {
+        "dedicatedworker": "/html/test.any.worker.html",
+        "serviceworker": "/html/test.https.any.serviceworker.html",
+        "sharedworker": "/html/test.any.sharedworker.html",
+        "window": "/html/test.any.html",
+    }
+
+    expected_urls = sorted(urls[ty] for ty in expected)
     assert len(items) == len(expected_urls)
 
     for item, url in zip(items, expected_urls):

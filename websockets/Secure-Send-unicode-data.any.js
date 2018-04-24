@@ -4,7 +4,7 @@
         var testMessage = async_test("W3C WebSocket API - Send unicode data on a Secure WebSocket - Message should be received");
         var testClose = async_test("W3C WebSocket API - Send unicode data on a Secure WebSocket - Connection should be closed");
 
-        var data = "Â¥Â¥Â¥Â¥Â¥Â¥";
+        var data = "¥¥¥¥¥¥";
         var wsocket = CreateWebSocket(true, false, false);
         var isOpenCalled = false;
 

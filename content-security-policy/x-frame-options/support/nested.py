@@ -28,4 +28,3 @@ def main(request, response):
   document.body.appendChild(i);
 </script>
             """ % (origin, value))
-

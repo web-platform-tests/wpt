@@ -16,5 +16,3 @@ def main(request, response):
         </html>
     """
     return (headers, body)
-
-

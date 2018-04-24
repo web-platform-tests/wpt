@@ -633,7 +633,7 @@ promise_test(async (t) => {
         await reg.unregister();
       }
     }
-  }, 'Service Worker responds to fetch event with the correct isReloadNavigation value (location.reload())');
+  }, 'FetchEvent#request.isReloadNavigation is true (location.reload())');
 
 promise_test(async (t) => {
     const scope = 'resources/simple.html?isReloadNavigation';
@@ -711,14 +711,14 @@ promise_test(async (t) => {
       frame = await with_iframe(scope);
       assert_equals(frame.contentDocument.body.textContent,
                     'method = GET, isReloadNavigation = false');
-      // Blink and WebKit doesn't create a history entry for a navigation requested here, so
-      // we need to use setTimeout to avoid that. See https://bugs.webkit.org/show_bug.cgi?id=42861.
+      // Use setTimeout(0) to ensure the history entry is created for Blink
+      // and WebKit. See https://bugs.webkit.org/show_bug.cgi?id=42861.
       await wait(0);
       await new Promise((resolve) => {
         frame.addEventListener('load', resolve);
         frame.src = anotherUrl;
       });
-      assert_equals(frame.contentDocument.body.textContent, "Here\'s a simple html file.\n");
+      assert_equals(frame.contentDocument.body.textContent, "Here's a simple html file.\n");
       await new Promise((resolve) => {
         frame.addEventListener('load', resolve);
         frame.contentWindow.history.go(-1);
@@ -735,7 +735,7 @@ promise_test(async (t) => {
         frame.addEventListener('load', resolve);
         frame.contentWindow.history.go(1);
       });
-      assert_equals(frame.contentDocument.body.textContent, "Here\'s a simple html file.\n");
+      assert_equals(frame.contentDocument.body.textContent, "Here's a simple html file.\n");
     } finally {
       if (frame) {
         frame.remove();

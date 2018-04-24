@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>flexbox | first-letter</title>
+
+<link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#placement">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="flags" content="dom">
+<meta rel=”author” title=”Benny Ogidan” href=”benny.ogidan@andela.com”>
+<style>
+  ul{
+    background: #3366cc;
+    padding: 0;
+    width: 900px;
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  li:first-letter {
+    font-size: 200%;
+    background: #ffcc00;
+    border: 1px solid black;
+    margin: 20px;
+    justify-self: flex-start;
+  }
+
+</style>
+<ul id="container-list">
+  <li>This</li>
+  <li>is</li>
+  <li>Andela</li>
+</ul>
+
+<div id="log"></div>
+<script>
+  test(function () {
+    const listItemWrapper = getComputedStyle(document.getElementById("container-list"));
+    const testListItem = getComputedStyle(document.getElementsByTagName('li')[0],':first-letter');
+
+    assert_equals((listItemWrapper).getPropertyValue("display"),
+      "flex");
+    assert_equals((listItemWrapper).getPropertyValue("justify-content"),
+      "space-around");
+    assert_equals((testListItem).getPropertyValue("margin"),
+      "20px");
+    assert_not_equals((testListItem).getPropertyValue("justify-self"),
+      "flex-start");
+  });
+</script>

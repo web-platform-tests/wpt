@@ -560,6 +560,9 @@ def test_script_metadata(filename, input, error):
 
 
 @pytest.mark.parametrize("globals,error", [
+    (b"", None),
+    (b"default", None),
+    (b"!default", None),
     (b"window", None),
     (b"!window", None),
     (b"!dedicatedworker", None),
@@ -568,7 +571,9 @@ def test_script_metadata(filename, input, error):
     (b"serviceworker, !serviceworker", "BROKEN-GLOBAL-METADATA"),
     (b"worker, !dedicatedworker", None),
     (b"worker, !serviceworker", None),
-    (b"!worker", "BROKEN-GLOBAL-METADATA"),
+    (b"!worker", None),
+    (b"foo", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!foo", "UNKNOWN-GLOBAL-METADATA"),
 ])
 def test_script_globals_metadata(globals, error):
     filename = "foo.any.js"

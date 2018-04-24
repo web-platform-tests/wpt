@@ -86,16 +86,16 @@ def parse_variants(value):
     """
     assert isinstance(value, binary_type), value
 
-    included = set()
-    excluded = set()
+    globals = get_default_any_variants()
+
     for item in value.split(b","):
         item = item.strip()
         if item.startswith(b"!"):
-            excluded |= get_any_variants(item[1:])
+            globals -= get_any_variants(item[1:])
         else:
-            included |= get_any_variants(item)
+            globals |= get_any_variants(item)
 
-    return (get_default_any_variants() | included) - excluded
+    return globals
 
 
 def global_suffixes(value):

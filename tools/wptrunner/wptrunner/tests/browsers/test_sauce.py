@@ -126,4 +126,7 @@ def test_sauceconnect_tunnel_domains():
                 assert rest[1].startswith("-"), "--tunnel-domains takes a comma separated list (not a space separated list)"
             assert set(rest[0].split(",")) == {'example.net',
                                                'a.example.net',
-                                               'b.example.net'}
+                                               'b.example.net',
+                                               'example.org',
+                                               'a.example.org',
+                                               'b.example.org'}

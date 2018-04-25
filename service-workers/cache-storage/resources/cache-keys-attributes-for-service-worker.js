@@ -16,7 +16,6 @@ self.addEventListener('fetch', function(event) {
         await cache.put(event.request, new Response('hello'));
         const keys = await cache.keys();
 
-        console.log(keys);
         const original = event.request[name];
         const stored = keys[0][name];
         return new Response(`original: ${original}, stored: ${stored}`);

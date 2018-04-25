@@ -98,7 +98,7 @@ def check_environ(product):
     if product not in ("firefox", "servo"):
         config = serve.load_config(os.path.join(wpt_root, "config.default.json"),
                                    os.path.join(wpt_root, "config.json"))
-        expected_hosts = set(config.all_domains_set)
+        expected_hosts = set(config.all_domains.itervalues())
         missing_hosts = set(expected_hosts)
         if platform.uname()[0] != "Windows":
             hosts_path = "/etc/hosts"

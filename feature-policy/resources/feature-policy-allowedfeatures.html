@@ -2,6 +2,14 @@
 'use strict';
 
 window.onload = function() {
-  parent.postMessage(document.policy.allowedFeatures(), '*');
+  var value;
+
+  try {
+    value = document.policy.allowedFeatures();
+  } catch (error) {
+    value = [error && error.message];
+  }
+
+  parent.postMessage(value, '*');
 }
 </script>

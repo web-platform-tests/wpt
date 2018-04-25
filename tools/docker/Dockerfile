@@ -10,6 +10,7 @@ RUN apt-get -qqy update \
     bzip2 \
     ca-certificates \
     dbus-x11 \
+    gdebi \
     git \
     locales \
     pulseaudio \
@@ -27,7 +28,6 @@ RUN apt-get -qqy update \
 
 RUN apt-get -qqy install \
     firefox \
-    chromium-browser \
     libnss3-tools \
     fonts-liberation \
     indicator-application \

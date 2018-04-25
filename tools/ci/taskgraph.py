@@ -21,7 +21,7 @@ task_template = {
     },
     "payload": {
         "maxRunTime": 5400,
-        "image": "harjgam/web-platform-tests:0.5",
+        "image": "harjgam/web-platform-tests:0.6",
         "command":[
             "/bin/bash",
             "--login",

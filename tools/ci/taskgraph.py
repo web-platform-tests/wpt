@@ -117,4 +117,7 @@ def run(venv, *args, **kwargs):
                 task_config["tasks"].append(task_data)
 
     with open(os.path.join(kwargs["dest"], ".taskcluster.yml"), "w") as f:
+        f.write("""# GENERATED FILE DO NOT EDIT
+# To regenerate this file run ./wpt make-tasks
+""")
         yaml.dump(task_config, f)

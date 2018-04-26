@@ -1,15 +1,14 @@
-self.addEventListener('fetch', function(event) {
-    const url = event.request.url;
-    if (url.endsWith('?ignore')) {
+self.addEventListener('fetch', (event) => {
+    const params = new URL(event.request.url).searchParams;
+    if (params.has('ignore')) {
       return;
     }
-    const match = url.match(/\?name=(\w*)/)
-    if (!match) {
+    if (!params.has('name')) {
       event.respondWith(Promise.reject(TypeError('No name is provided.')));
       return;
     }
 
-    const name = match[1];
+    const name = params.get('name');
     const old_attribute = event.request[name];
     // If any of |init|'s member is present...
     const init = {cache: 'no-store'}

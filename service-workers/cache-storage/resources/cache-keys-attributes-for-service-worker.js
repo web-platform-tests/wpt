@@ -1,16 +1,15 @@
-self.addEventListener('fetch', function(event) {
-    const url = event.request.url;
-    if (url.endsWith('?ignore')) {
+self.addEventListener('fetch', (event) => {
+    const params = new URL(event.request.url).searchParams;
+    if (params.has('ignore')) {
       return;
     }
-    const match = url.match(/\?name=(\w*)/)
-    if (!match) {
+    if (!params.has('name')) {
       event.respondWith(Promise.reject(TypeError('No name is provided.')));
       return;
     }
 
     event.respondWith(Promise.resolve().then(async () => {
-        const name = match[1];
+        const name = params.get('name');
         await caches.delete('foo');
         const cache = await caches.open('foo');
         await cache.put(event.request, new Response('hello'));

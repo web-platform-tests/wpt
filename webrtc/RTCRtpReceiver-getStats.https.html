@@ -58,7 +58,7 @@
   promise_test(async () => {
     const caller = new RTCPeerConnection();
     const callee = new RTCPeerConnection();
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const stream = await getNoiseStream({audio:true});
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
 

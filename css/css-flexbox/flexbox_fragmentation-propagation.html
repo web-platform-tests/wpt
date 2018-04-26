@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <title>Flexbox | Fragmentation propagation</title>
+  <meta name="assert" content="Fragmentation propagation">
+  <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#pagination">
+  <link rel="author" title="Clayton Salem" href="claytonjsalem@gmail.com">
+  <style>
+    .item {
+      background-color: brown;
+      width: 96px;
+      height: 96px;
+      border: solid black 2px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      height: 300px;
+    }
+    #container-break-before .item:first-child {
+      break-before: avoid;
+    }
+    #container-break-after .item:last-child {
+      break-before: always;
+    }
+    #conatiner-forced-break .item:nth-child(2) {
+      break-after: page;
+    }
+  </style>
+</head>
+<body>
+  <div id="container-break-before" class="container">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+  <div id="container-break-after" class="container">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+  <div id="conatiner-forced-break" class="container">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    test(function() {
+      const containerStyles = getComputedStyle(document.querySelector("#container-break-before"));
+      assert_equals(containerStyles.breakBefore, 'avoid');
+    }, "Check if break-before propagated to container.")
+
+    test(function() {
+      const containerStyles = getComputedStyle(document.querySelector("#container-break-after"));
+      assert_equals(containerStyles.breakBefore, 'always');
+    }, "Check if break-after propagated to container.")
+
+    test(function() {
+      const containerStyles = getComputedStyle(document.querySelector("#conatiner-forced-break .item:nth-child(2)"));
+      assert_equals(containerStyles.breakAfter, 'page')
+    }, "Check if forced breaks on items other than first and last are applied to themselves.")
+  </script>
+</body>
+</html>

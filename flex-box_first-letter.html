@@ -15,7 +15,6 @@
     height: 500px;
     background: lightblue;
   }
-  
   li::first-letter {
     color: pink;
     background: black;
@@ -27,8 +26,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <meta rel="author" title="Christina Gorton" href="chmagorton@gmail.com">
-
-
   <ul>
     <li>Hello</li>
     <li>World</li>
@@ -36,12 +33,10 @@
     <li>First</li>
     <li>Letter</li>
   </ul>
-
   <script>
     test(function() {
       let firstLetterTest = getComputedStyle(document.querySelector('li'), '::first-letter').alignSelf;
       assert_not_equals(firstLetterTest, 'flex-start');
     });
-  
   </script>
 </html>

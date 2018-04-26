@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <title>flexbox | first-letter</title>
+<meta name="assert" content="This test is ensures that flexbox placement does not apply to ::first-letter psuedo-content">
+<link rel="author" title="Christina Gorton" href="chmagorton@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#placement">
+
+<style>
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 800px;
+    height: 500px;
+    background: lightblue;
+  }
+  
+  li::first-letter {
+    color: pink;
+    background: black;
+    font-size: 25px;
+    padding: 5px;
+    align-self: flex-start;
+  }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta rel="author" title="Christina Gorton" href="chmagorton@gmail.com">
+
+
+  <ul>
+    <li>Hello</li>
+    <li>World</li>
+    <li>Test</li>
+    <li>First</li>
+    <li>Letter</li>
+  </ul>
+
+  <script>
+    test(function() {
+      let firstLetterTest = getComputedStyle(document.querySelector('li'), '::first-letter').alignSelf;
+      assert_not_equals(firstLetterTest, 'flex-start');
+    });
+  
+  </script>
+</html>

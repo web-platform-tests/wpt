@@ -565,6 +565,9 @@ class WebSocketDaemon(object):
 
 def start_ws_server(host, port, paths, routes, bind_address, config, ssl_config,
                     **kwargs):
+    if paths.get("ws_doc_root") is None:
+        logger.info("Error! Unable to execute WebSocketDaemon")
+        return
     return WebSocketDaemon(host,
                            str(port),
                            repo_root,

@@ -13,56 +13,55 @@
       height: 96px;
       border: solid black 2px;
     }
-    .container {
+    #container {
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
-      height: 300px;
+      height: 299px;
+      padding: 5px;
+      border: solid 7px #334488;
     }
-    #container-break-before .item:first-child {
-      break-before: avoid;
-    }
-    #container-break-after .item:last-child {
+    #container-break-before .item {
       break-before: always;
     }
-    #conatiner-forced-break .item:nth-child(2) {
-      break-after: page;
-    }
+
   </style>
 </head>
 <body>
-  <div id="container-break-before" class="container">
+  <div id="container-break-before">
     <div class="item">1</div>
     <div class="item">2</div>
     <div class="item">3</div>
   </div>
-  <div id="container-break-after" class="container">
-    <div class="item">1</div>
-    <div class="item">2</div>
-    <div class="item">3</div>
-  </div>
-  <div id="conatiner-forced-break" class="container">
-    <div class="item">1</div>
-    <div class="item">2</div>
-    <div class="item">3</div>
-  </div>
+
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script>
+    // These tests are all assuming the left to right writing mode.
     test(function() {
-      const containerStyles = getComputedStyle(document.querySelector("#container-break-before"));
-      assert_equals(containerStyles.breakBefore, 'avoid');
-    }, "Check if break-before propagated to container.")
+      const container = document.querySelector("#container-break-before");
+      const containerStyles = window.getComputedStyle(container);
+      const containerRect = container.getBoundingClientRect();
+      const firstItemRect = document.querySelector("#container-break-before .item:first-child").getBoundingClientRect();
 
-    test(function() {
-      const containerStyles = getComputedStyle(document.querySelector("#container-break-after"));
-      assert_equals(containerStyles.breakBefore, 'always');
-    }, "Check if break-after propagated to container.")
+      assert_equals(
+        pxRemove(containerStyles.paddingTop) + pxRemove(containerStyles.borderTopWidth),
+        diff(containerRect.top,firstItemRect.top)
+      )
+      assert_equals(
+        pxRemove(containerStyles.paddingLeft) + pxRemove(containerStyles.borderLeftWidth),
+        diff(containerRect.left,firstItemRect.left)
+      )
 
-    test(function() {
-      const containerStyles = getComputedStyle(document.querySelector("#conatiner-forced-break .item:nth-child(2)"));
-      assert_equals(containerStyles.breakAfter, 'page')
-    }, "Check if forced breaks on items other than first and last are applied to themselves.")
+    }, "The sum of the padding and border-width of the container are equal to \
+    the difference between the top and left side of the conatiner and first rectangles.")
+
+    function pxRemove(pxString) {
+      return parseInt(pxString, 10);
+    }
+    function diff(a,b){
+      return Math.abs(a-b);
+    }
   </script>
 </body>
 </html>

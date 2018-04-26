@@ -42,7 +42,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return getNoiseStream({ audio: true })
     .then(mediaStream => {
       const tracks = mediaStream.getTracks();
       assert_greater_than(tracks.length, 0,
@@ -71,7 +71,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return getNoiseStream({ audio: true })
     .then(mediaStream => {
       const tracks = mediaStream.getTracks();
       assert_greater_than(tracks.length, 0,
@@ -108,7 +108,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return getNoiseStream({ audio: true })
     .then(mediaStream => {
       const tracks = mediaStream.getTracks();
       assert_greater_than(tracks.length, 0,
@@ -130,7 +130,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return getNoiseStream({ audio: true })
     .then(mediaStream => {
       const tracks = mediaStream.getTracks();
       assert_greater_than(tracks.length, 0,
@@ -159,7 +159,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return getNoiseStream({ audio: true })
     .then(mediaStream => {
       const tracks = mediaStream.getTracks();
       assert_greater_than(tracks.length, 0,

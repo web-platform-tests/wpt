@@ -63,12 +63,14 @@ def tag(repo, owner, sha, tag):
         resp = opener.open(req)
     except Exception as e:
         logger.error("Tag creation failed:\n%s" % e)
-        return
+        return False
 
     if resp.code != 201:
         logger.error("Got HTTP status %s" % resp.code)
-    else:
-        logger.info("Tagged master as %s" % tag)
+        return False
+
+    logger.info("Tagged master as %s" % tag)
+    return True
 
 
 def main():
@@ -84,8 +86,11 @@ def main():
     head_rev = git("rev-parse", "HEAD")
 
     pr = get_pr(owner, repo, head_rev)
-    if pr is not None:
-        tag(owner, repo, head_rev, "merge_pr_%s" % pr)
+    if pr is None:
+        sys.exit(1)
+    tagged = tag(owner, repo, head_rev, "merge_pr_%s" % pr)
+    if not tagged:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

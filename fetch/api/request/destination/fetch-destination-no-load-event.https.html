@@ -38,7 +38,7 @@ var waitOnMessageFromSW = async t => {
                 reject();
             }
         });
-    }).catch(() => {;
+    }, () => {;
         assert_unreached("Wrong destination.");
     });
     t.add_cleanup(() => { frame.contentWindow.navigator.serviceWorker.onmessage = null; });

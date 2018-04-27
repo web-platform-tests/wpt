@@ -41,7 +41,7 @@ promise_test(async t => {
       node.onload = resolve;
       node.onerror = reject;
       node.src = "dummy.png?dest=image";
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLImageElement fetches with an "image" Request.destination');
@@ -53,7 +53,7 @@ promise_test(async t => {
       node.onload = resolve;
       node.onerror = reject;
       node.srcset = "dummy.png?t=srcset&dest=image";
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLImageElement with srcset attribute fetches with an "image" Request.destination');
@@ -69,7 +69,7 @@ promise_test(async t => {
       img.onload = resolve;
       img.onerror = reject;
       source.srcset = "dummy.png?t=picture&dest=image";
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLImageElement with a HTMLPictureElement parent attribute fetches with an "image" Request.destination');
@@ -85,7 +85,7 @@ promise_test(async t => {
       svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href','dummy.png?t=svg&dest=image');
       svg.appendChild(svgimg);
       frame.contentWindow.document.documentElement.appendChild(svg);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'SVGImageElement fetches with an "image" Request.destination');
@@ -108,7 +108,7 @@ promise_test(async t => {
       xhr.onerror = reject;
       xhr.open("GET", "dummy?t=xhr&dest=");
       xhr.send();
-    }).catch(() => {
+    }, () => {
       assert_unreached("Fetch errored.");
     });
   assert_equals(xhr.status, 200);
@@ -121,7 +121,7 @@ promise_test(async t => {
       eventSource = new frame.contentWindow.EventSource("dummy.es?t=eventsource&dest=");
       eventSource.onopen = resolve;
       eventSource.onerror = reject;
-    }).catch(() => {
+    }, () => {
       assert_unreached("Fetch errored.");
     });
 }, 'EventSource() fetches with an empty string Request.destination');
@@ -135,7 +135,7 @@ promise_test(async t => {
       node.onloadeddata = resolve;
       node.onerror = reject;
       node.src = audioURL + "?dest=audio";
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLAudioElement fetches with an "audio" Request.destination');
@@ -149,7 +149,7 @@ promise_test(async t => {
       node.onloadeddata = resolve;
       node.onerror = reject;
       node.src = videoURL + "?dest=video";
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLVideoElement fetches with a "video" Request.destination');
@@ -165,7 +165,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.src = "dummy?dest=script";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLScriptElement fetches with a "script" Request.destination');
@@ -182,7 +182,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=style";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=stylesheet fetches with a "style" Request.destination');
@@ -202,7 +202,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?t=2&dest=";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=fetch fetches with an empty string Request.destination');
@@ -220,7 +220,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?t=2&dest=style";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=style fetches with a "style" Request.destination');
@@ -238,7 +238,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?t=2&dest=script";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=script fetches with a "script" Request.destination');
@@ -256,7 +256,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?t=2&dest=font";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=font fetches with a "font" Request.destination');
@@ -274,7 +274,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy.png?t=2&dest=image";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=image fetches with a "image" Request.destination');
@@ -293,7 +293,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = audioURL + "?dest=audio";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=audio fetches with a "audio" Request.destination');
@@ -312,7 +312,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = videoURL + "?dest=video";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=video fetches with a "video" Request.destination');
@@ -330,7 +330,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=track";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=track fetches with a "track" Request.destination');
@@ -348,7 +348,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=document";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=document fetches with a "document" Request.destination');
@@ -366,7 +366,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=worker";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=worker fetches with a "worker" Request.destination');
@@ -384,7 +384,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=sharedworker";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=sharedworker fetches with a "sharedworker" Request.destination');
@@ -402,7 +402,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=xslt";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=xslt fetches with a "xslt" Request.destination');
@@ -420,7 +420,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=manifest";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=preload and as=manifest fetches with a "manifest" Request.destination');
@@ -434,7 +434,7 @@ promise_test(async t => {
       node.onerror = reject;
       node.href = "dummy?dest=";
       frame.contentWindow.document.body.appendChild(node);
-  }).catch(() => {
+  }, () => {
       assert_unreached("Fetch errored.");
   });
 }, 'HTMLLinkElement with rel=prefetch fetches with an empty string Request.destination');

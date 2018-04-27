@@ -6,4 +6,4 @@ def main(request, response):
     output += "\r\n"
     output += "Fact: this is really forty-two bytes long."
     response.writer.write(output)
-    response.write()
+    response.close_connection = True

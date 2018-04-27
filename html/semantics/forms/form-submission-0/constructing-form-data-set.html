@@ -2,14 +2,15 @@
 <head>
 <meta charset="utf-8">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constructing-the-form-data-set">
-<link rel="help" href="https://fetch.spec.whatwg.org/#ref-for-utf-8">
+<link ref="help" href="https://xhr.spec.whatwg.org/#dom-formdata">
+<link rel="help" href="https://fetch.spec.whatwg.org/#concept-bodyinit-extract">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
 
 <iframe name="frame1"></iframe>
-<form accept-charset="windows-1252" target="frame1" action="/common/blank.html">
+<form accept-charset="iso-8859-1" target="frame1" action="/common/blank.html">
 <input type="hidden" name="_charset_">
 </form>
 

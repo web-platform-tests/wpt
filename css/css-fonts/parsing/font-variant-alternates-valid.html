@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-variant-alternates with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-variant-alternates-prop">
+<meta name="assert" content="font-variant-alternates supports the full grammar.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("font-variant-alternates", "normal");
+
+test_valid_value("font-variant-alternates", "stylistic(name)");
+test_valid_value("font-variant-alternates", "historical-forms");
+test_valid_value("font-variant-alternates", "styleset(name1)");
+test_valid_value("font-variant-alternates", "styleset(name1, name2)");
+test_valid_value("font-variant-alternates", "character-variant(name1)");
+test_valid_value("font-variant-alternates", "character-variant(name1, name2)");
+test_valid_value("font-variant-alternates", "swash(name)");
+test_valid_value("font-variant-alternates", "ornaments(name)");
+test_valid_value("font-variant-alternates", "annotation(name)");
+
+test_valid_value("font-variant-alternates", "stylistic(name) historical-forms styleset(name) character-variant(name) swash(name) ornaments(name) annotation(name)");
+</script>
+</body>
+</html>

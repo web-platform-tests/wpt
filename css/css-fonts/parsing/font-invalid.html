@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-prop">
+<meta name="assert" content="font supports only the specified grammar.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("font", "serif xx-small");
+test_invalid_value("font", "Helvetica larger");
+test_invalid_value("font", "cursive 12pt / 120%");
+
+test_invalid_value("font", "xx-small serif oblique");
+test_invalid_value("font", "12pt/120% cursive lighter");
+test_invalid_value("font", "xx-small serif condensed");
+test_invalid_value("font", "xx-small serif small-caps");
+</script>
+</body>
+</html>

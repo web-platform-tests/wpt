@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-prop">
+<meta name="assert" content="font supports the full grammar.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+// These fail in Blink and WebKit.
+test_valid_value("font", "caption");
+test_valid_value("font", "icon");
+test_valid_value("font", "menu");
+test_valid_value("font", "message-box");
+test_valid_value("font", "small-caption");
+test_valid_value("font", "status-bar");
+
+test_valid_value("font", "xx-small serif");
+test_valid_value("font", "larger Helvetica");
+
+test_valid_value("font", "oblique xx-small serif");
+test_valid_value("font", "small-caps larger Helvetica");
+test_valid_value("font", "condensed xx-small serif");
+test_valid_value("font", "oblique small-caps lighter condensed larger Helvetica");
+
+test_valid_value("font", "12pt/120% cursive");
+test_valid_value("font", "lighter 12pt/120% cursive");
+
+test_valid_value("font", "condensed lighter small-caps oblique 12pt/120% cursive", "oblique small-caps lighter condensed 12pt/120% cursive");
+</script>
+</body>
+</html>

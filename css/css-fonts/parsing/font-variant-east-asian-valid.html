@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-variant-east-asian with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-variant-east-asian-prop">
+<meta name="assert" content="font-variant-east-asian supports the full grammar 'normal | [ <east-asian-variant-values> || <east-asian-width-values> || ruby ]'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("font-variant-east-asian", "normal");
+
+test_valid_value("font-variant-east-asian", "jis78");
+test_valid_value("font-variant-east-asian", "jis83");
+test_valid_value("font-variant-east-asian", "jis90");
+test_valid_value("font-variant-east-asian", "jis04");
+test_valid_value("font-variant-east-asian", "simplified");
+test_valid_value("font-variant-east-asian", "traditional");
+
+test_valid_value("font-variant-east-asian", "full-width");
+test_valid_value("font-variant-east-asian", "proportional-width");
+
+test_valid_value("font-variant-east-asian", "ruby");
+
+test_valid_value("font-variant-east-asian", "traditional proportional-width ruby");
+test_valid_value("font-variant-east-asian", "proportional-width ruby simplified", "simplified proportional-width ruby");
+test_valid_value("font-variant-east-asian", "ruby full-width jis78", "jis78 full-width ruby");
+</script>
+</body>
+</html>

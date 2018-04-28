@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-variant with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-variant-prop">
+<meta name="assert" content="font-variant supports the full grammar.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("font-variant", "normal");
+test_valid_value("font-variant", "none");
+
+test_valid_value("font-variant", "common-ligatures");
+test_valid_value("font-variant", "no-common-ligatures");
+
+test_valid_value("font-variant", "discretionary-ligatures");
+test_valid_value("font-variant", "no-discretionary-ligatures");
+
+test_valid_value("font-variant", "historical-ligatures");
+test_valid_value("font-variant", "no-historical-ligatures");
+
+test_valid_value("font-variant", "contextual");
+test_valid_value("font-variant", "no-contextual");
+
+test_valid_value("font-variant", "stylistic(name)");
+
+test_valid_value("font-variant", "historical-forms");
+
+test_valid_value("font-variant", "styleset(name)");
+
+test_valid_value("font-variant", "character-variant(name)");
+
+test_valid_value("font-variant", "swash(name)");
+
+test_valid_value("font-variant", "ornaments(name)");
+
+test_valid_value("font-variant", "annotation(name)");
+
+test_valid_value("font-variant", "small-caps");
+test_valid_value("font-variant", "all-small-caps");
+test_valid_value("font-variant", "petite-caps");
+test_valid_value("font-variant", "all-petite-caps");
+test_valid_value("font-variant", "unicase");
+test_valid_value("font-variant", "titling-caps");
+
+test_valid_value("font-variant", "lining-nums");
+test_valid_value("font-variant", "oldstyle-nums");
+
+test_valid_value("font-variant", "proportional-nums");
+test_valid_value("font-variant", "tabular-nums");
+
+test_valid_value("font-variant", "diagonal-fractions");
+test_valid_value("font-variant", "stacked-fractions");
+
+test_valid_value("font-variant", "ordinal");
+
+test_valid_value("font-variant", "slashed-zero");
+
+test_valid_value("font-variant", "jis78");
+test_valid_value("font-variant", "jis83");
+test_valid_value("font-variant", "jis90");
+test_valid_value("font-variant", "jis04");
+test_valid_value("font-variant", "simplified");
+test_valid_value("font-variant", "traditional");
+
+test_valid_value("font-variant", "full-width");
+test_valid_value("font-variant", "proportional-width");
+
+test_valid_value("font-variant", "ruby");
+
+test_valid_value("font-variant", "sub");
+test_valid_value("font-variant", "super");
+</script>
+</body>
+</html>

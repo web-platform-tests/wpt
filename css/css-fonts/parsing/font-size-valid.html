@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-size with valid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-size-prop">
+<meta name="assert" content="font-size supports the full grammar '<absolute-size> | <relative-size> | <length-percentage>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("font-size", "xx-small");
+test_valid_value("font-size", "x-small");
+test_valid_value("font-size", "small");
+test_valid_value("font-size", "medium");
+test_valid_value("font-size", "large");
+test_valid_value("font-size", "x-large");
+test_valid_value("font-size", "xx-large");
+
+test_valid_value("font-size", "larger");
+test_valid_value("font-size", "smaller");
+
+test_valid_value("font-size", "10px");
+test_valid_value("font-size", "20%");
+test_valid_value("font-size", "calc(3rem + 4vw)");
+</script>
+</body>
+</html>

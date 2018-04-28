@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-size-adjust with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-size-adjust-prop">
+<meta name="assert" content="font-size-adjust supports only the grammar 'none | <number>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("font-size-adjust", "auto");
+test_invalid_value("font-size-adjust", "10px");
+test_invalid_value("font-size-adjust", "2 none");
+</script>
+</body>
+</html>

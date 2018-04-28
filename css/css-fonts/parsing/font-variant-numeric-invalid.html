@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Level 3: parsing font-variant-numeric with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-variant-numeric-prop">
+<meta name="assert" content="font-variant-numeric supports only the grammar 'normal | [ <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero ]'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("font-variant-numeric", "auto");
+test_invalid_value("font-variant-numeric", "normal lining-nums");
+test_invalid_value("font-variant-numeric", "lining-nums oldstyle-nums");
+</script>
+</body>
+</html>

@@ -205,6 +205,22 @@ class Config(Mapping):
         return rv
 
     @property
+    def domains_set(self):
+        return {domain
+                for per_host_domains in self.domains.itervalues()
+                for domain in per_host_domains.itervalues()}
+
+    @property
+    def not_domains_set(self):
+        return {domain
+                for per_host_domains in self.not_domains.itervalues()
+                for domain in per_host_domains.itervalues()}
+
+    @property
+    def all_domains_set(self):
+        return self.domains_set | self.not_domains_set
+
+    @property
     def ssl_env(self):
         try:
             if self.override_ssl_env is not None:

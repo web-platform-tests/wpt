@@ -347,6 +347,56 @@ def test_all_domains():
     }
 
 
+def test_domains_set():
+    c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
+    domains_set = c.domains_set
+    assert domains_set == {
+        "foo.bar",
+        "a.foo.bar",
+        "b.foo.bar",
+        "foo2.bar",
+        "a.foo2.bar",
+        "b.foo2.bar",
+    }
+
+
+def test_not_domains_set():
+    c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
+    not_domains_set = c.not_domains_set
+    assert not_domains_set == {
+        "x.foo.bar",
+        "y.foo.bar",
+        "x.foo2.bar",
+        "y.foo2.bar",
+    }
+
+
+def test_all_domains_set():
+    c = config.Config(browser_host="foo.bar",
+                      alternate_hosts={"alt": "foo2.bar"},
+                      subdomains={"a", "b"},
+                      not_subdomains={"x", "y"})
+    all_domains_set = c.all_domains_set
+    assert all_domains_set == {
+        "foo.bar",
+        "a.foo.bar",
+        "b.foo.bar",
+        "x.foo.bar",
+        "y.foo.bar",
+        "foo2.bar",
+        "a.foo2.bar",
+        "b.foo2.bar",
+        "x.foo2.bar",
+        "y.foo2.bar",
+    }
+
+
 def test_ssl_env_override():
     c = config.Config(override_ssl_env="foobar")
     assert c.ssl_env == "foobar"

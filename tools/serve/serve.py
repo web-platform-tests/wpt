@@ -423,7 +423,10 @@ def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
                         "You may need to edit /etc/hosts or similar, see README.md." % (host, port))
         sys.exit(1)
 
-    for domain in domains.itervalues():
+    for domain in domains_set.itervalues():
+        if domain == host:
+            continue
+
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:

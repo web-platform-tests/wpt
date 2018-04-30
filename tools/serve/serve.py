@@ -20,13 +20,13 @@ from multiprocessing import Process, Event
 from localpaths import repo_root
 from six.moves import reload_module
 
+import sslutils
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants
 from wptserve import server as wptserve, handlers
 from wptserve import stash
-from wptserve import config
 from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
-from wptserve.utils import get_port, HTTPException
+from wptserve.utils import HTTPException
 from mod_pywebsocket import standalone as pywebsocket
 
 
@@ -269,6 +269,14 @@ done();
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
+subdomains = [u"www",
+              u"www1",
+              u"www2",
+              u"天気の良い日",
+              u"élève"]
+
+not_subdomains = [u"nonexistent-origin"]
+
 class RoutesBuilder(object):
     def __init__(self):
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
@@ -348,6 +356,105 @@ def build_routes(aliases):
     return builder.get_routes()
 
 
+def setup_logger(level):
+    import logging
+    global logger
+    logger = logging.getLogger("web-platform-tests")
+    logger.setLevel(getattr(logging, level.upper()))
+    set_logger(logger)
+
+
+def open_socket(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if port != 0:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(('127.0.0.1', port))
+    sock.listen(5)
+    return sock
+
+def bad_port(port):
+    """
+    Bad port as per https://fetch.spec.whatwg.org/#port-blocking
+    """
+    return port in [
+        1,     # tcpmux
+        7,     # echo
+        9,     # discard
+        11,    # systat
+        13,    # daytime
+        15,    # netstat
+        17,    # qotd
+        19,    # chargen
+        20,    # ftp-data
+        21,    # ftp
+        22,    # ssh
+        23,    # telnet
+        25,    # smtp
+        37,    # time
+        42,    # name
+        43,    # nicname
+        53,    # domain
+        77,    # priv-rjs
+        79,    # finger
+        87,    # ttylink
+        95,    # supdup
+        101,   # hostriame
+        102,   # iso-tsap
+        103,   # gppitnp
+        104,   # acr-nema
+        109,   # pop2
+        110,   # pop3
+        111,   # sunrpc
+        113,   # auth
+        115,   # sftp
+        117,   # uucp-path
+        119,   # nntp
+        123,   # ntp
+        135,   # loc-srv / epmap
+        139,   # netbios
+        143,   # imap2
+        179,   # bgp
+        389,   # ldap
+        465,   # smtp+ssl
+        512,   # print / exec
+        513,   # login
+        514,   # shell
+        515,   # printer
+        526,   # tempo
+        530,   # courier
+        531,   # chat
+        532,   # netnews
+        540,   # uucp
+        556,   # remotefs
+        563,   # nntp+ssl
+        587,   # smtp
+        601,   # syslog-conn
+        636,   # ldap+ssl
+        993,   # imap+ssl
+        995,   # pop3+ssl
+        2049,  # nfs
+        3659,  # apple-sasl
+        4045,  # lockd
+        6000,  # x11
+        6665,  # irc (alternate)
+        6666,  # irc (alternate)
+        6667,  # irc (default)
+        6668,  # irc (alternate)
+        6669,  # irc (alternate)
+    ]
+
+def get_port():
+    port = 0
+    while True:
+        free_socket = open_socket(0)
+        port = free_socket.getsockname()[1]
+        free_socket.close()
+        if not bad_port(port):
+            break
+    logger.debug("Going to use port %s" % port)
+    return port
+
+
 class ServerProc(object):
     def __init__(self):
         self.proc = None
@@ -399,11 +506,9 @@ class ServerProc(object):
         return self.proc.is_alive()
 
 
-def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
-    domains = domains.copy()
-    host = domains.pop("")
-    port = get_port(host)
-    logger.debug("Going to use port %d to check subdomains" % port)
+def check_subdomains(host, paths, bind_address, ssl_config, aliases):
+    port = get_port()
+    subdomains = get_subdomains(host)
 
     wrapper = ServerProc()
     wrapper.start(start_http_server, host, port, paths, build_routes(aliases), bind_address,
@@ -423,7 +528,8 @@ def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
                         "You may need to edit /etc/hosts or similar, see README.md." % (host, port))
         sys.exit(1)
 
-    for domain in domains.itervalues():
+    for subdomain, (punycode, host) in subdomains.iteritems():
+        domain = "%s.%s" % (punycode, host)
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:
@@ -432,6 +538,18 @@ def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
             sys.exit(1)
 
     wrapper.wait()
+
+
+def get_subdomains(host):
+    #This assumes that the tld is ascii-only or already in punycode
+    return {subdomain: (subdomain.encode("idna"), host)
+            for subdomain in subdomains}
+
+
+def get_not_subdomains(host):
+    #This assumes that the tld is ascii-only or already in punycode
+    return {subdomain: (subdomain.encode("idna"), host)
+            for subdomain in not_subdomains}
 
 
 def make_hosts_file(config, host):
@@ -592,14 +710,80 @@ def start_wss_server(host, port, paths, routes, bind_address, config, ssl_config
                            ssl_config)
 
 
+def get_ports(config, ssl_environment):
+    rv = defaultdict(list)
+    for scheme, ports in config["ports"].iteritems():
+        for i, port in enumerate(ports):
+            if scheme in ["wss", "https"] and not ssl_environment.ssl_enabled:
+                port = None
+            if port == "auto":
+                port = get_port()
+            else:
+                port = port
+            rv[scheme].append(port)
+    return rv
+
+
+
+def normalise_config(config, ports):
+    if "host" in config:
+        logger.warning("host in config is deprecated; use browser_host instead")
+        host = config["host"]
+    else:
+        host = config["browser_host"]
+
+    domains = get_subdomains(host)
+    not_domains = get_not_subdomains(host)
+
+    ports_ = {}
+    for scheme, ports_used in ports.iteritems():
+        ports_[scheme] = ports_used
+
+    for key, value in domains.iteritems():
+        domains[key] = ".".join(value)
+
+    for key, value in not_domains.iteritems():
+        not_domains[key] = ".".join(value)
+
+    domains[""] = host
+
+    if "bind_hostname" in config:
+        logger.warning("bind_hostname in config is deprecated; use bind_address instead")
+        bind_address = config["bind_hostname"]
+    else:
+        bind_address = config["bind_address"]
+
+    # make a (shallow) copy of the config and update that, so that the
+    # normalized config can be used in place of the original one.
+    config_ = config.copy()
+    config_["domains"] = domains
+    config_["not_domains"] = not_domains
+    config_["ports"] = ports_
+    config_["bind_address"] = bind_address
+    if config.get("server_host", None) is None:
+        config_["server_host"] = host
+    return config_
+
+
+def get_paths(config):
+    return {"doc_root": config["doc_root"],
+            "ws_doc_root": config["ws_doc_root"]}
+
+
+def get_ssl_config(config, ssl_environment):
+    external_domains = config["domains"].values()
+    key_path, cert_path = ssl_environment.host_cert_path(external_domains)
+    return {"key_path": key_path,
+            "cert_path": cert_path,
+            "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
+
+
 def start(config, ssl_environment, routes, **kwargs):
     host = config["server_host"]
-    ports = config.ports
-    paths = config.paths
+    ports = get_ports(config, ssl_environment)
+    paths = get_paths(config)
     bind_address = config["bind_address"]
-    ssl_config = config.ssl_config
-
-    logger.debug("Using ports: %r" % ports)
+    ssl_config = get_ssl_config(config, ssl_environment)
 
     servers = start_servers(host, ports, paths, routes, bind_address, config,
                             ssl_config, **kwargs)
@@ -613,6 +797,49 @@ def iter_procs(servers):
             yield server.proc
 
 
+def value_set(config, key):
+    return key in config and config[key] is not None
+
+
+def get_value_or_default(config, key, default=None):
+    return config[key] if value_set(config, key) else default
+
+
+def set_computed_defaults(config):
+    if not value_set(config, "doc_root"):
+        config["doc_root"] = repo_root
+
+    if not value_set(config, "ws_doc_root"):
+        root = get_value_or_default(config, "doc_root", default=repo_root)
+        config["ws_doc_root"] = os.path.join(root, "websockets", "handlers")
+
+    if not value_set(config, "aliases"):
+        config["aliases"] = []
+
+
+def merge_json(base_obj, override_obj):
+    rv = {}
+    for key, value in base_obj.iteritems():
+        if key not in override_obj:
+            rv[key] = value
+        else:
+            if isinstance(value, dict):
+                rv[key] = merge_json(value, override_obj[key])
+            else:
+                rv[key] = override_obj[key]
+    return rv
+
+
+def get_ssl_environment(config):
+    implementation_type = config["ssl"]["type"]
+    cls = sslutils.environments[implementation_type]
+    try:
+        kwargs = config["ssl"][implementation_type].copy()
+    except KeyError:
+        raise ValueError("%s is not a vaid ssl type." % implementation_type)
+    return cls(logger, **kwargs)
+
+
 def load_config(default_path, override_path=None, **kwargs):
     if os.path.exists(default_path):
         with open(default_path) as f:
@@ -620,19 +847,20 @@ def load_config(default_path, override_path=None, **kwargs):
     else:
         raise ValueError("Config path %s does not exist" % default_path)
 
-    rv = Config(**base_obj)
-
     if os.path.exists(override_path):
         with open(override_path) as f:
             override_obj = json.load(f)
-        rv.update(override_obj)
+    else:
+        override_obj = {}
+    rv = merge_json(base_obj, override_obj)
 
     if kwargs.get("config_path"):
         other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
         if os.path.exists(other_path):
+            base_obj = rv
             with open(other_path) as f:
                 override_obj = json.load(f)
-            rv.update(override_obj)
+            rv = merge_json(base_obj, override_obj)
         else:
             raise ValueError("Config path %s does not exist" % other_path)
 
@@ -645,29 +873,10 @@ def load_config(default_path, override_path=None, **kwargs):
         value = os.path.abspath(os.path.expanduser(value))
         if not os.path.exists(value):
             raise ValueError("%s path %s does not exist" % (title, value))
-        setattr(rv, key, value)
+        rv[key] = value
 
+    set_computed_defaults(rv)
     return rv
-
-_subdomains = {u"www",
-               u"www1",
-               u"www2",
-               u"天気の良い日",
-               u"élève"}
-
-_not_subdomains = {u"nonexistent-origin"}
-
-class Config(config.Config):
-    """serve config
-
-    this subclasses wptserve.config.Config to add serve config options"""
-    def __init__(self, *args, **kwargs):
-        super(Config, self).__init__(
-            subdomains=_subdomains,
-            not_subdomains=_not_subdomains,
-            *args,
-            **kwargs
-        )
 
 
 def get_parser():
@@ -688,31 +897,33 @@ def run(**kwargs):
                          os.path.join(repo_root, "config.json"),
                          **kwargs)
 
-    global logger
-    logger = config.logger
-    set_logger(logger)
+    setup_logger(config["log_level"])
 
-    bind_address = config["bind_address"]
+    with get_ssl_environment(config) as ssl_env:
+        ports = get_ports(config, ssl_env)
+        config = normalise_config(config, ports)
+        browser_host = config["browser_host"]
+        server_host = config["server_host"]
+        bind_address = config["bind_address"]
 
-    if config["check_subdomains"]:
-        paths = config.paths
-        ssl_config = config.ssl_config
-        check_subdomains(config.domains, paths, bind_address, ssl_config, config["aliases"])
+        if config["check_subdomains"]:
+            paths = get_paths(config)
+            ssl_config = get_ssl_config(config, ssl_env)
+            check_subdomains(browser_host, paths, bind_address, ssl_config, config["aliases"])
 
-    stash_address = None
-    if bind_address:
-        stash_address = (config.server_host, get_port(config.server_host))
-        logger.debug("Going to use port %d for stash" % stash_address[1])
+        stash_address = None
+        if bind_address:
+            stash_address = (server_host, get_port())
 
-    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-        servers = start(config, config.ssl_env, build_routes(config["aliases"]), **kwargs)
+        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+            servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
 
-        try:
-            while any(item.is_alive() for item in iter_procs(servers)):
-                for item in iter_procs(servers):
-                    item.join(1)
-        except KeyboardInterrupt:
-            logger.info("Shutting down")
+            try:
+                while any(item.is_alive() for item in iter_procs(servers)):
+                    for item in iter_procs(servers):
+                        item.join(1)
+            except KeyboardInterrupt:
+                logger.info("Shutting down")
 
 
 def main():

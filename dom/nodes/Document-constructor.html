@@ -48,8 +48,6 @@ test(function() {
 test(function() {
   var doc = new Document();
   var a = doc.createElement("a");
-  // In UTF-8: 0xC3 0xA4
-  a.href = "http://example.org/?\u00E4";
-  assert_equals(a.href, "http://example.org/?%C3%A4");
-}, "new Document(): URL parsing")
+  assert_equals(a.constructor, Element);
+}, "new Document(): createElement interfaces")
 </script>

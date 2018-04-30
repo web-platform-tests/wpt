@@ -277,12 +277,16 @@ def test_domains():
                       not_subdomains={"x", "y"})
     domains = c.domains
     assert domains == {
-        "main_": "foo.bar",
-        "main_a": "a.foo.bar",
-        "main_b": "b.foo.bar",
-        "alt_": "foo2.bar",
-        "alt_a": "a.foo2.bar",
-        "alt_b": "b.foo2.bar",
+        "": {
+            "": "foo.bar",
+            "a": "a.foo.bar",
+            "b": "b.foo.bar",
+        },
+        "alt": {
+            "": "foo2.bar",
+            "a": "a.foo2.bar",
+            "b": "b.foo2.bar",
+        },
     }
 
 
@@ -293,10 +297,14 @@ def test_not_domains():
                       not_subdomains={"x", "y"})
     not_domains = c.not_domains
     assert not_domains == {
-        "main_x": "x.foo.bar",
-        "main_y": "y.foo.bar",
-        "alt_x": "x.foo2.bar",
-        "alt_y": "y.foo2.bar",
+        "": {
+            "x": "x.foo.bar",
+            "y": "y.foo.bar",
+        },
+        "alt": {
+            "x": "x.foo2.bar",
+            "y": "y.foo2.bar",
+        },
     }
 
 
@@ -307,8 +315,12 @@ def test_domains_not_domains_intersection():
                       not_subdomains={"x", "y"})
     domains = c.domains
     not_domains = c.not_domains
-    assert len(set(domains.iterkeys()) & set(not_domains.iterkeys())) == 0
-    assert len(set(domains.itervalues()) & set(not_domains.itervalues())) == 0
+    assert len(set(domains.iterkeys()) ^ set(not_domains.iterkeys())) == 0
+    for host in domains.iterkeys():
+        host_domains = domains[host]
+        host_not_domains = not_domains[host]
+        assert len(set(host_domains.iterkeys()) & set(host_not_domains.iterkeys())) == 0
+        assert len(set(host_domains.itervalues()) & set(host_not_domains.itervalues())) == 0
 
 
 def test_all_domains():
@@ -318,16 +330,20 @@ def test_all_domains():
                       not_subdomains={"x", "y"})
     all_domains = c.all_domains
     assert all_domains == {
-        "main_": "foo.bar",
-        "main_a": "a.foo.bar",
-        "main_b": "b.foo.bar",
-        "main_x": "x.foo.bar",
-        "main_y": "y.foo.bar",
-        "alt_": "foo2.bar",
-        "alt_a": "a.foo2.bar",
-        "alt_b": "b.foo2.bar",
-        "alt_x": "x.foo2.bar",
-        "alt_y": "y.foo2.bar",
+        "": {
+            "": "foo.bar",
+            "a": "a.foo.bar",
+            "b": "b.foo.bar",
+            "x": "x.foo.bar",
+            "y": "y.foo.bar",
+        },
+        "alt": {
+            "": "foo2.bar",
+            "a": "a.foo2.bar",
+            "b": "b.foo2.bar",
+            "x": "x.foo2.bar",
+            "y": "y.foo2.bar",
+        },
     }
 
 

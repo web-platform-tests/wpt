@@ -437,11 +437,13 @@ def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
 def make_hosts_file(config, host):
     rv = []
 
-    for domain in config["domains"].values():
-        rv.append("%s\t%s\n" % (host, domain))
+    for per_host_domains in config["domains"].values():
+        for domain in per_host_domains.values():
+            rv.append("%s\t%s\n" % (host, domain))
 
-    for not_domain in config.get("not_domains", {}).values():
-        rv.append("0.0.0.0\t%s\n" % not_domain)
+    for per_host_domains in config["not_domains"].values():
+        for not_domain in per_host_domains.values():
+            rv.append("0.0.0.0\t%s\n" % not_domain)
 
     return "".join(rv)
 

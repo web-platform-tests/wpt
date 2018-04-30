@@ -442,17 +442,10 @@ def template(request, content, escape_type="html"):
             value = request.headers
         elif field == "GET":
             value = FirstWrapper(request.GET)
-        elif field == "domains":
+        elif field == "hosts":
             value = request.server.config.all_domains
-            ttype, field = tokens.popleft()
-            if ttype != "index":
-                raise Exception(
-                    "unexpected token type %s (token '%r'), expected ident" % (ttype, field)
-                )
-            if field in value:
-                value = value[field]
-            else:
-                value = value["main_" + field]
+        elif field == "domains":
+            value = request.server.config.all_domains[""]
         elif field == "host":
             value = request.server.config["browser_host"]
         elif field in request.server.config:

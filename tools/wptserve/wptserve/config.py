@@ -174,32 +174,34 @@ class Config(Mapping):
     @property
     def domains(self):
         hosts = self.alternate_hosts.copy()
-        assert "main" not in hosts
-        hosts["main"] = self.browser_host
+        assert "" not in hosts
+        hosts[""] = self.browser_host
 
         rv = {}
         for name, host in hosts.iteritems():
-            rv.update({(name + "_" + subdomain): (subdomain.encode("idna") + u"." + host)
-                       for subdomain in self.subdomains})
-            rv[name + "_"] = host
+            rv[name] = {subdomain: (subdomain.encode("idna") + u"." + host)
+                        for subdomain in self.subdomains}
+            rv[name][""] = host
         return rv
 
     @property
     def not_domains(self):
         hosts = self.alternate_hosts.copy()
-        assert "main" not in hosts
-        hosts["main"] = self.browser_host
+        assert "" not in hosts
+        hosts[""] = self.browser_host
 
         rv = {}
         for name, host in hosts.iteritems():
-            rv.update({(name + "_" + subdomain): (subdomain.encode("idna") + u"." + host)
-                       for subdomain in self.not_subdomains})
+            rv[name] = {subdomain: (subdomain.encode("idna") + u"." + host)
+                        for subdomain in self.not_subdomains}
         return rv
 
     @property
     def all_domains(self):
         rv = self.domains.copy()
-        rv.update(self.not_domains)
+        nd = self.not_domains
+        for host in rv:
+            rv[host].update(nd[host])
         return rv
 
     @property

@@ -24,13 +24,16 @@ def main(request, response):
     noted_headers = {}
     for header in config.get('response_headers', []):
         if header[0].lower() in ["location", "content-location"]: # magic!
-            header[1] = "%s&target=%s" % (request.url, header[1])
+            if (len(header[1]) > 0):
+                header[1] = "%s&target=%s" % (request.url, header[1])
+            else:
+                header[1] = request.url
         response.headers.set(header[0], header[1])
         if header[0].lower() in note_headers:
             noted_headers[header[0].lower()] = header[1]
 
     if "access-control-allow-origin" not in noted_headers:
-        response.headers.set("Access-Control-Allow-Origin", "*");
+        response.headers.set("Access-Control-Allow-Origin", "*")
     if "content-type" not in noted_headers:
         response.headers.set("Content-Type", "text/plain")
     response.headers.set("Server-Request-Count", len(server_state))

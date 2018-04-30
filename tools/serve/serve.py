@@ -401,7 +401,7 @@ class ServerProc(object):
 
 def check_subdomains(domains, paths, bind_address, ssl_config, aliases):
     domains = domains.copy()
-    host = domains.pop("main_")
+    host = domains[""][""]
     port = get_port(host)
     logger.debug("Going to use port %d to check subdomains" % port)
 

@@ -166,7 +166,9 @@ class SauceConnect():
             "--metrics-address=0.0.0.0:9876",
             "--readyfile=./sauce_is_ready",
             "--tunnel-domains",
-            ",".join(self.env_config.domains.itervalues())
+            ",".join(domain
+                     for per_host_domains in self.env_config.domains.itervalues()
+                     for domain in per_host_domains.itervalues())
         ])
 
         # Timeout config vars

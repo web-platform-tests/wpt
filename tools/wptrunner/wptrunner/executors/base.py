@@ -504,7 +504,8 @@ class CallbackHandler(object):
 
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
-            "send_keys": SendKeysAction(self.logger, self.protocol)
+            "send_keys": SendKeysAction(self.logger, self.protocol),
+            "get_window_handles": GetWindowHandlesAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -579,3 +580,13 @@ class SendKeysAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Sending keys to element: %s" % selector)
         self.protocol.send_keys.send_keys(elements[0], keys)
+
+
+class GetWindowHandlesAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting a list of available window handles")
+        self.protocol.get_window_handles.get_window_handles()

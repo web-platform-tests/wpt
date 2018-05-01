@@ -273,6 +273,17 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
+class GetWindowHandlesProtocolPart(ProtocolPart):
+    """Protocol part for getting a list of available window handles"""
+    __metaclass__ = ABCMeta
+
+    name = "get_window_handles"
+
+    @abstractmethod
+    def get_window_handles(self):
+        """Get a list of available window handles."""
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

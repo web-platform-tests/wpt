@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RFC6265bis Tests</title>
+  <style>
+    html {
+      background: #CCC;
+    }
+
+    body {
+      margin: 15px auto;
+      max-width: 600px;
+      background: #EEE;
+      border: #DDD;
+      padding: 15px 15px 0;
+    }
+
+    h1 {
+      background: #333;
+      margin: -15px -15px 0;
+      padding: 15px;
+      color: #FFF;
+    }
+
+    table tbody td {
+      padding: 5px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    tbody th {
+      vertical-align: top;
+    }
+
+    .complete {
+      background: #4A4;
+      color: #FFF;
+    }
+
+    .partial {
+      background: #DD3;
+    }
+
+    .nada {
+      background: #E11;
+    }
+
+    footer {
+      background: #333;
+      margin: 15px -15px 0;
+      padding: 15px;
+      color: #FFF;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    footer a {
+      color: #FFF;
+    }
+  </style>
+</head>
+<body>
+  <h1>RFC6265bis Tests</h1>
+
+  <h2><code>SameSite</code> Cookies</h2>
+  <p><a href="https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site">draft-ietf-httpbis-cookie-same-site</a>
+  defines a <code>SameSite</code> attribute which allows servers to mitigate
+  the risk of cross-site request forgery attacks, and some kinds of cross-origin
+  information leakage.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2" colspan="2">Test Suite</th>
+        <th colspan="4">Chrome</th>
+        <th rowspan="2">Firefox<br>(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=795346">#795346</a>)</th>
+        <th rowspan="2">Safari<br>(<a href="https://bugs.webkit.org/show_bug.cgi?id=159464">#159464</a>)</th>
+        <th rowspan="2">Edge<br>(<a href="https://github.com/MicrosoftEdge/Status/issues/201">#201</a>)</th>
+      </tr>
+      <tr>
+        <th>51</th><th>52</th><th>53</th><th>54</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th rowspan="6">Basics</th>
+        <td><a href="samesite/fetch.html"><code>fetch()</code></a></td>
+        <!-- Chrome -->
+        <td class="partial">7/12</td>
+        <td class="partial">7/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/form-get-blank.html"><code>&lt;form method="GET" target="_blank"&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/form-post-blank.html"><code>&lt;form method="POST" target="_blank"&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/iframe.html"><code>&lt;iframe&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/img.html"><code>&lt;img&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/window-open.html"><code>window.open()</code></a></td>
+        <!-- Chrome -->
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <td class="complete">12/12</td>
+        <!-- Firefox -->
+        <td class="nada">0/12</td>
+        <!-- Safari -->
+        <td class="nada">0/12</td>
+        <!-- Edge -->
+        <td class="nada">0/12</td>
+      </tr>
+      <tr>
+        <th rowspan="4"><code>reload()</code></th>
+        <td><a href="samesite/form-get-blank-reload.html"><code>&lt;form method="GET" target="_blank"&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <!-- Firefox -->
+        <td class="nada">0/3</td>
+        <!-- Safari -->
+        <td class="nada">0/3</td>
+        <!-- Edge -->
+        <td class="nada">0/3</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/form-post-blank-reload.html"><code>&lt;form method="POST" target="_blank"&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <!-- Firefox -->
+        <td class="nada">0/3</td>
+        <!-- Safari -->
+        <td class="nada">0/3</td>
+        <!-- Edge -->
+        <td class="nada">0/3</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/iframe.html"><code>&lt;iframe&gt;</code></a></td>
+        <!-- Chrome -->
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <!-- Firefox -->
+        <td class="nada">0/3</td>
+        <!-- Safari -->
+        <td class="nada">0/3</td>
+        <!-- Edge -->
+        <td class="nada">0/3</td>
+      </tr>
+      <tr>
+        <td><a href="samesite/window-open-reload.html"><code>window.open()</code></a></td>
+        <!-- Chrome -->
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <td class="partial">2/3</td>
+        <!-- Firefox -->
+        <td class="nada">0/3</td>
+        <!-- Safari -->
+        <td class="nada">0/3</td>
+        <!-- Edge -->
+        <td class="nada">0/3</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>"Leave Secure Cookies Alone!"</h2>
+  <p><a href="https://tools.ietf.org/html/draft-ietf-httpbis-cookie-alone">draft-ietf-httpbis-cookie-alone</a>
+  updates <a href="https://tools.ietf.org/html/rfc6265">RFC6265</a> by removing
+  a non-secure origin's ability to set cookies with a <code>secure</code> flag,
+  and to overwrite cookies whose <code>secure</code> flag is set. This
+  deprecation improves the isolation between HTTP and HTTPS origins, and
+  reduces the risk of malicious interference.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Test Suite</th>
+        <th colspan="4">Chrome</th>
+        <th rowspan="2">Firefox<br>(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=976073">#976073</a>)</th>
+        <th rowspan="2">Safari<br></th>
+        <th rowspan="2">Edge<br></th>
+      </tr>
+      <tr>
+        <th>51</th><th>52</th><th>53</th><th>54</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="secure/create-cookie-http.html">set/read<br/>secure cookie<br/>from HTTP</a></td>
+        <!-- Chrome -->
+        <td class="nada">0/1</td>
+        <td class="complete">1/1</td>
+        <td class="complete">1/1</td>
+        <td class="complete">1/1</td>
+        <!-- Firefox -->
+        <td class="complete">1/1</td>
+        <!-- Safari -->
+        <td class="nada">?/1</td>
+        <!-- Edge -->
+        <td class="nada">?/1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Cookie Prefixes</h2>
+  <p><a href="https://tools.ietf.org/html/draft-ietf-httpbis-cookie-prefixes">draft-ietf-httpbis-cookie-prefixes</a>
+  updates <a href="https://tools.ietf.org/html/rfc6265">RFC6265</a> by
+  by adding a set of restrictions upon the names which may be used for
+  cookies with specific properties. These restrictions enable user agents
+  to smuggle cookie state to the server within the confines of the existing
+  <code>Cookie</code> request header syntax, and limits the ways in which
+  cookies may be abused in a conforming user agent.
+ 
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2" colspan="2">Test Suite</th>
+        <th colspan="4">Chrome</th>
+        <th rowspan="2">Firefox<br>(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=976073">#976073</a>)</th>
+        <th rowspan="2">Safari<br>(<a href="#">#TBD</a>)</th>
+        <th rowspan="2">Edge<br>(<a href="#">#TBD</a>)</th>
+      </tr>
+      <tr>
+        <th>51</th><th>52</th><th>53</th><th>54</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- __Secure- -->
+      <tr>
+        <th rowspan="2"><code>__Secure-</code></th>
+        <td><a href="prefix/__secure.document-cookie.non-secure.html"><code>document.cookie</code><br>non-secure origin</td>
+        <!-- Chrome -->
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <!-- Firefox -->
+        <td class="partial">5/8</td>
+        <!-- Safari -->
+        <td class="partial">5/8</td>
+        <!-- Edge -->
+        <td class="partial">5/8</td>
+      </tr>
+      <tr>
+        <td><a href="prefix/__secure.http.non-secure.html"><code>Set-Cookie</code><br>non-secure origin</td>
+        <!-- Chrome -->
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <td class="complete">8/8</td>
+        <!-- Firefox -->
+        <td class="partial">1/8</td>
+        <!-- Safari -->
+        <td class="partial">1/8</td>
+        <!-- Edge -->
+        <td class="partial">1/8</td>
+      </tr>
+      <!-- __Host -->
+      <tr>
+        <th rowspan="2"><code>__Host-</code></th>
+        <td><a href="prefix/__host.document-cookie.non-secure.html"><code>document.cookie</code><br>non-secure origin</td>
+        <!-- Chrome -->
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <!-- Firefox -->
+        <td class="partial">6/9</td>
+        <!-- Safari -->
+        <td class="partial">6/9</td>
+        <!-- Edge -->
+        <td class="partial">6/9</td>
+      </tr>
+      <tr>
+        <td><a href="prefix/__host.http.non-secure.html"><code>Set-Cookie</code><br>non-secure origin</td>
+        <!-- Chrome -->
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <td class="complete">9/9</td>
+        <!-- Firefox -->
+        <td class="partial">1/9</td>
+        <!-- Safari -->
+        <td class="partial">1/9</td>
+        <!-- Edge -->
+        <td class="partial">1/9</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <p>Source at <a href="https://github.com/mikewest/rfc6265-biz">https://github.com/mikewest/rfc6265-biz</a>.</p>
+  </footer>
+</body>
+</html>

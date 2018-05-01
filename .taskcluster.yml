@@ -16,7 +16,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 1 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -34,7 +34,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 2 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -52,7 +52,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 3 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -70,7 +70,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 4 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -88,7 +88,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 5 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -106,7 +106,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 6 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -124,7 +124,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 7 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -142,7 +142,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 8 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -160,7 +160,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 9 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -178,7 +178,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome reftest 10 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -196,7 +196,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome wdspec 1 1"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -214,7 +214,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 1 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -232,7 +232,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 2 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -250,7 +250,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 3 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -268,7 +268,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 4 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -286,7 +286,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 5 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -304,7 +304,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 6 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -322,7 +322,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 7 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -340,7 +340,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 8 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -358,7 +358,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 9 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -376,7 +376,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 10 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -394,7 +394,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 11 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -412,7 +412,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 12 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -430,7 +430,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 13 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -448,7 +448,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 14 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -466,7 +466,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ chrome testharness 15 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -484,7 +484,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 1 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -502,7 +502,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 2 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -520,7 +520,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 3 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -538,7 +538,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 4 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -556,7 +556,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 5 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -574,7 +574,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 6 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -592,7 +592,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 7 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -610,7 +610,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 8 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -628,7 +628,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 9 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -646,7 +646,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox reftest 10 10"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -664,7 +664,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox wdspec 1 1"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -682,7 +682,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 1 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -700,7 +700,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 2 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -718,7 +718,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 3 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -736,7 +736,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 4 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -754,7 +754,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 5 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -772,7 +772,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 6 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -790,7 +790,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 7 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -808,7 +808,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 8 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -826,7 +826,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 9 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -844,7 +844,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 10 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -862,7 +862,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 11 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -880,7 +880,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 12 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -898,7 +898,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 13 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -916,7 +916,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 14 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'
@@ -934,7 +934,7 @@ tasks:
         \ &&\n            git config advice.detachedHead false &&\n            git\
         \ checkout {{event.head.sha}} &&\n            ./tools/ci/ci_taskcluster.sh\
         \ firefox testharness 15 15"]
-    image: harjgam/web-platform-tests:0.6
+    image: harjgam/web-platform-tests:0.7
     maxRunTime: 7200
   provisionerId: '{{ taskcluster.docker.provisionerId }}'
   workerType: '{{ taskcluster.docker.workerType }}'

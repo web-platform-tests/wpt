@@ -1,7 +1,9 @@
 #!/bin/bash
+set -ex
 
 cd web-platform-tests
-git pull --depth=50
+git fetch origin -n -q --depth=50
+git checkout -b master origin/master
 
 sudo sh -c './wpt make-hosts-file >> /etc/hosts'
 

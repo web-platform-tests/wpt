@@ -8,7 +8,12 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-	.test { border: thick solid; width: calc(50px); animation: bounce 2s infinite linear;}
+	.test { 
+		border: thick solid; 
+		width: calc(50px); 
+		animation: bounce 2s infinite linear;
+		animation-delay: -500ms;
+	}
 	@keyframes bounce {
 	  0% { width: calc(-50px); }
 	}
@@ -20,16 +25,11 @@
 </html>
 <script>
 	function checkWidth() {
-		return (window.getComputedStyle(testDiv)["width"]);
+		clampedWidth = window.getComputedStyle(testDiv)["width"];
+		assert_equals ( clampedWidth, "0px" );
+		done();
 	}
 
-	async_test(function(t) {
-		testDiv.setAttribute("class", "test");
-		setTimeout('clampedWidth = checkWidth();', 500);
-		t.step_timeout(function() { 
-			assert_equals ( clampedWidth, "0px" );
-			t.done();
-		}, 1000);
-	})
+	testDiv.setAttribute("class", "test");
+	window.requestAnimationFrame(checkWidth());
 </script>
-<!DOCTYPE html>

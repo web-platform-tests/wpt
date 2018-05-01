@@ -48,4 +48,6 @@ between the function being called and the promise settling.
 To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a list for code points to special keys in the spec (here)[https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions].
 For example, to send the tab key you would send "\uE004".
 
+### `test_driver.switch_to_window()`
+
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}

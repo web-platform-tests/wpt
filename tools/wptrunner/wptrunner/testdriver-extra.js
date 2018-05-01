@@ -70,4 +70,13 @@
         window.opener.postMessage({"type": "action", "action": "send_keys", "selector": selector, "keys": keys}, "*");
         return pending_promise;
     };
+
+    window.test_driver_internal.switch_to_window = function(window_handle) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.opener.postMessage({"type": "action", "action": "switch_to_window", "window_handle": window_handle}, "*");
+        return pending_promise;
+    };
 })();

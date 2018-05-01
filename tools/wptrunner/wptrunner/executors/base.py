@@ -532,14 +532,19 @@ class CallbackHandler(object):
             except KeyError:
                 raise ValueError("Unknown action %s" % action)
             try:
-                action_handler(payload)
+                val = action_handler(payload)
+                self.logger.debug("Recieved value: %s" % val)
             except Exception as e:
                 self.logger.warning("Action %s failed" % action)
                 self.logger.warning(traceback.format_exc())
                 self._send_message("complete", "failure")
             else:
                 self.logger.debug("Action %s completed" % action)
-                self._send_message("complete", "success")
+
+                # if val is not None:
+                    # the payload must be a string
+                    # self._send_message("complete", "payload", str(val))
+                self._send_message("complete", "success", str(val))
         finally:
             self.protocol.base.set_window(parent)
 
@@ -589,4 +594,4 @@ class GetWindowHandlesAction(object):
 
     def __call__(self, payload):
         self.logger.debug("Getting a list of available window handles")
-        self.protocol.get_window_handles.get_window_handles()
+        return self.protocol.get_window_handles.get_window_handles()

@@ -148,7 +148,7 @@ class SeleniumGetWindowHandlesProtocolPart(GetWindowHandlesProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def get_window_handles(self):
-        return self.webdriver.get_window_handles()
+        return self.webdriver.window_handles
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):

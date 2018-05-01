@@ -3,6 +3,7 @@
 (function(){
     let pending_resolve = null;
     let pending_reject = null;
+    let payload = null
     window.addEventListener("message", function(event) {
         const data = event.data;
 
@@ -10,12 +11,17 @@
             return;
         }
 
+        // if (data.payload == "payload") {
+        //     console.log(data.message)
+        //     payload = data.message;
+        // }
+
         if (data.type !== "testdriver-complete") {
             return;
         }
 
         if (data.status === "success") {
-            pending_resolve();
+            pending_resolve(data.message);
         } else {
             pending_reject();
         }

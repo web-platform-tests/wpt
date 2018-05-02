@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Flexbox | First Letter</title>
+  <meta name="assert" content="Flexbox align-items does not affect the pseudo element ::first-letter">
+  <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#placement">
+  <link rel="author" title="Clayton Salem" href="claytonjsalem@gmail.com">
+  <style>
+    #first-letter-test::first-letter {
+      align-items: baseline;
+    }
+  </style>
+</head>
+<body>
+  <div id="first-letter-test">Lorem ipsum dolor sit amet.</div>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    test(function() {
+      const firstLetterStyle = getComputedStyle(document.querySelector('#first-letter-test'), ':first-letter')
+      // Check we're not setting the flexbox align-items value.
+      assert_not_equals(firstLetterStyle.alignItems, 'baseline');
+    }, "CSS style align-items does not affect :first-letter pseudo element.")
+  </script>
+</body>
+</html>

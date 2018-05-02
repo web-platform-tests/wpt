@@ -119,7 +119,7 @@
             }
 
             return window.test_driver_internal.send_keys(element, keys);
-        }
+        },
     };
 
     window.test_driver_internal = {
@@ -143,6 +143,6 @@
          */
         send_keys: function(element, keys) {
             return Promise.reject(new Error("unimplemented"));
-        }
+        },
     };
 })();

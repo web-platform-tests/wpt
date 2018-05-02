@@ -5,6 +5,7 @@ import threading
 import traceback
 import socket
 import urlparse
+import json
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
@@ -504,7 +505,8 @@ class CallbackHandler(object):
 
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
-            "send_keys": SendKeysAction(self.logger, self.protocol)
+            "send_keys": SendKeysAction(self.logger, self.protocol),
+            "get_window_handles": GetWindowHandlesAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -531,14 +533,18 @@ class CallbackHandler(object):
             except KeyError:
                 raise ValueError("Unknown action %s" % action)
             try:
-                action_handler(payload)
+                value = action_handler(payload)
+                self.logger.debug("Recieved value: %s" % value)
             except Exception as e:
                 self.logger.warning("Action %s failed" % action)
                 self.logger.warning(traceback.format_exc())
                 self._send_message("complete", "failure")
             else:
                 self.logger.debug("Action %s completed" % action)
-                self._send_message("complete", "success")
+
+                message = {}
+                message['value'] = value
+                self._send_message("complete", "success", json.dumps(message))
         finally:
             self.protocol.base.set_window(parent)
 
@@ -579,3 +585,13 @@ class SendKeysAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Sending keys to element: %s" % selector)
         self.protocol.send_keys.send_keys(elements[0], keys)
+
+
+class GetWindowHandlesAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting a list of available window handles")
+        return self.protocol.get_window_handles.get_window_handles()

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver get_window_handles method</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+async_test(t => {
+  test_driver
+    .get_window_handles()
+    .then((handles) =>  {
+        assert_true(handles.length == 2)
+        t.done();
+    })
+    .catch(t.unreached_func("get_window_handles failed"));
+});
+</script>

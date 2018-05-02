@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>flexbox | first-letter</title>
+<link rel="author" title="Anneke Sinnema" href="mail@annekesinnema.nl">
+<link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#placement">
+<link rel="match" href="flexbox_first-letter-ref.html">
+<meta name="assert" content="This test is ensuring that the flexbox properties do not work on the :first-letter pseudo element" />
+<style>
+ul {
+	padding: 0;
+	list-style: none;
+}
+
+li {
+	background: #ffcc00;
+	display: flex;
+	flex-wrap: wrap;
+	padding: 2em;
+	border: 1px solid black;
+	flex-shrink: 0;
+}
+
+li::first-letter {
+	background-color: blue;
+	align-self: flex-end;
+}
+</style>
+
+<ul>
+	<li>Apples</li>
+	<li>Pears</li>
+	<li>Pineapple</li>
+	<li>Bananas</li>
+	<li>Orange</li>
+</ul>

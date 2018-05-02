@@ -2,12 +2,12 @@ test(t => {
   const frame = document.body.appendChild(document.createElement("iframe")),
         body = frame.contentDocument.body;
   t.add_cleanup(() => frame.remove());
-  frame.contentDocument.addEventListener("x", t.unreached_func());
-  body.addEventListener("x", t.unreached_func());
+  frame.contentDocument.addEventListener("x", t.unreached_func("document event listener not removed"));
+  body.addEventListener("x", t.unreached_func("body event listener not removed"));
   frame.contentDocument.open();
-  frame.contentDocument.close();
   frame.contentDocument.dispatchEvent(new Event("x"));
   body.dispatchEvent(new Event("x"));
+  frame.contentDocument.close();
 }, "Event listeners are to be removed");
 
 test(t => {
@@ -16,12 +16,12 @@ test(t => {
   let once = false;
   frame.contentDocument.addEventListener("x", () => {
     frame.contentDocument.open();
-    frame.contentDocument.close();
     once = true;
   });
-  frame.contentDocument.addEventListener("x", t.unreached_func());
+  frame.contentDocument.addEventListener("x", t.unreached_func("second event listener not removed"));
   frame.contentDocument.dispatchEvent(new Event("x"));
   assert_true(once);
+  frame.contentDocument.close();
 }, "Event listeners are to be removed with immediate effect");
 
 test(t => {
@@ -32,11 +32,11 @@ test(t => {
         nodes = [shadow, shadowChild, shadowShadow];
   t.add_cleanup(() => frame.remove());
   nodes.forEach(node => {
-    node.addEventListener("x", t.unreached_func());
+    node.addEventListener("x", t.unreached_func(node + "'s event listener not removed"));
   });
   frame.contentDocument.open();
-  frame.contentDocument.close();
   nodes.forEach(node => {
     node.dispatchEvent(new Event("x"));
   });
+  frame.contentDocument.close();
 }, "Event listeners are to be removed from shadow trees as well");

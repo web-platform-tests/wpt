@@ -20,7 +20,7 @@ from .protocol import (BaseProtocolPart,
                        SelectorProtocolPart,
                        ClickProtocolPart,
                        SendKeysProtocolPart,
-                       MaximizeProtocolPart,
+                       MinimizeProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 
@@ -143,12 +143,12 @@ class SeleniumSendKeysProtocolPart(SendKeysProtocolPart):
     def send_keys(self, element, keys):
         return element.send_keys(keys)
 
-class SeleniumMaximizeProtocolPart(MaximizeProtocolPart):
+class SeleniumMinimizeProtocolPart(MinimizeProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
     def send_keys(self, element, keys):
-        return self.webdriver.maximize_window()
+        return self.webdriver.minimize_window()
 
 class SeleniumTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
@@ -170,7 +170,7 @@ class SeleniumProtocol(Protocol):
                   SeleniumSelectorProtocolPart,
                   SeleniumClickProtocolPart,
                   SeleniumSendKeysProtocolPart,
-                  SeleniumMaximizeProtocolPart,
+                  SeleniumMinimizeProtocolPart,
                   SeleniumTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):

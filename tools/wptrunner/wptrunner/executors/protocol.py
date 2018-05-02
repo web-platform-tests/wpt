@@ -273,15 +273,15 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
-class MaximizeProtocolPart(ProtocolPart):
+class MinimizeProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""
     __metaclass__ = ABCMeta
 
-    name = "maximize"
+    name = "minimize"
 
     @abstractmethod
-    def maximize(self):
-        """Maximize the window."""
+    def minimize(self):
+        """Minimize the window."""
 
         pass
 

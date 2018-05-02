@@ -122,17 +122,17 @@
         },
 
         /**
-         * Maximize the current window
+         * Minimize the current window
          *
          * This matches the behaviour of the {@link
-         * https://w3c.github.io/webdriver/#dfn-maximize-windowl|WebDriver
-         * Maximize command}.
+         * https://w3c.github.io/webdriver/#dfn-minimize-windowl|WebDriver
+         * Minimize command}.
          *
-         * @returns {Promise} fulfilled after window is maximized, or rejected in
+         * @returns {Promise} fulfilled after window is minimized, or rejected in
          *                    the cases the WebDriver command errors
          */
-        maximize: function() {
-            return window.test_driver_internal.maximize();
+        minimize: function() {
+            return window.test_driver_internal.minimize();
         }
     };
 
@@ -160,12 +160,12 @@
         },
 
         /**
-         * Maximize the current window
+         * Minimize the current window
          *
-         * @returns {Promise} fulfilled after window is maximized, or rejected in
+         * @returns {Promise} fulfilled after window is minimized, or rejected in
          *                    the cases the WebDriver command errors
          */
-        maximize: function() {
+        minimize: function() {
             return Promise.reject(new Error("unimplemented"));
         }
     };

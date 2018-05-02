@@ -577,11 +577,11 @@ class SendKeysAction(object):
         self.logger.debug("Sending keys to element: %s" % selector)
         self.protocol.send_keys.send_keys(elements[0], keys)
 
-class MaximizeAction(object):
+class MinimizeAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
 
     def __call__(self, payload):
         self.logger.debug("Maximizing window)
-        self.protocol.maximize.maximize()
+        self.protocol.minimize.minimize()

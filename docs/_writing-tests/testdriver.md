@@ -49,3 +49,5 @@ To send special keys, one must send the respective key's codepoint. Since this u
 For example, to send the tab key you would send "\uE004".
 
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}
+
+### `test_driver.current_window_handle()`

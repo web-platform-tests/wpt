@@ -27,7 +27,6 @@ job_path_map = {
     "wptrunner_unittest": ["tools/wptrunner/*"],
     "build_css": ["css/"],
     "update_built": ["2dcontext/",
-                     "assumptions/",
                      "html/",
                      "offscreen-canvas/"],
     "wpt_integration": ["tools/"],

@@ -11,18 +11,12 @@
             return;
         }
 
-        // if (data.payload == "payload") {
-        //     console.log(data.message)
-        //     payload = data.message;
-        // }
-
         if (data.type !== "testdriver-complete") {
             return;
         }
 
         if (data.status === "success") {
-            payload = JSON.parse(data.message).value
-            pending_resolve(payload);
+            pending_resolve();
         } else {
             pending_reject();
         }

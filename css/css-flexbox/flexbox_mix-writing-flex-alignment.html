@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <title>Flexbox | Flex alignment and writing modes</title>
+  <meta charset="utf-8">
+  <meta name="assert" content="Flex alignment and writing modes">
+  <link rel="help" href="https://drafts.csswg.org/css-flexbox-1/#pagination">
+  <link rel="author" title="Clayton Salem" href="claytonjsalem@gmail.com">
+  <style>
+    /* Writing mode utility classes. */
+    .horizontal-tb { writing-mode: horizontal-tb; }
+    .vertical-rl { writing-mode: vertical-rl; }
+    .vertical-lr { writing-mode: vertical-lr; }
+    .sideways-rl { writing-mode: sideways-rl; }
+    .sideways-lr { writing-mode: sideways-lr; }
+    /* Positioning utility classes. */
+    .start { justify-content: start; }
+    .flex-start { justify-content: flex-start; }
+    .flex-end { justify-content: flex-end; }
+    .space-between { justify-content: space-between; }
+    .space-around { justify-content: space-around; }
+    .space-evenly { justify-content: space-evenly; }
+    .flex-end { align-items: flex-end; }
+    .flex-start { align-items: flex-start; }
+    .baseline { align-items: baseline; }
+    .stretch { align-items: stretch; }
+    .center { align-items: center; }
+    .row { flex-direction: row; }
+    .row-reverse { flex-direction: row-reverse; }
+    .column { flex-direction: column; }
+    .column-reverse { flex-direction: column-reverse; }
+    /* A splash of color. */
+    .container {
+      background-color: #4fbe99;
+      height: 100px;
+      width: 200px;
+    }
+    .inner {
+      background-color: #3d5d67;
+      color: white;  
+      height: 100px;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Justify Content -->
+  <div id="wrap">
+  </div>
+
+  <!-- <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script> -->
+  <script>
+    // Create the cominations of attributes.
+    const writingModes = [
+      'horizontal-tb',
+      'vertical-rl',
+      'vertical-lr',
+      'sideways-rl',
+      'sideways-lr'
+    ];
+    const alignmentProps = [
+      'start',
+      'center',
+      'space-around',
+      'space-between',
+      'space-evenly',
+      'stretch',
+      'center',
+      'start',
+      'end',
+    ];
+    for (let index in writingModes) {
+      const writingMode = writingModes[index];
+      const thisWriteMode = document.querySelector('#wrap').appendChild(makeContainer(writingMode));
+      for (let index2 in alignmentProps) {
+        const alignmentProp = alignmentProps[index2];
+        // warning, type massage!
+        if (index2 != (alignmentProps.length - 1)) {
+          // Clone the first node of writing mode
+          const dup = thisWriteMode.cloneNode()
+          dup.className = dup.className + ' ' + alignmentProp;
+          dup.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
+          document.querySelector('#wrap').appendChild(dup)
+        }
+        else {
+          // If this is the last alignmentProp we'll use the original container.
+          thisWriteMode.className = thisWriteMode.className + ' ' + alignmentProp;
+          thisWriteMode.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
+        }
+
+      }
+
+    }
+    function makeInner() {
+      const inner = document.createElement('div')
+      inner.className = 'inner'
+      return inner
+    }
+
+    function makeContainer(writingMode) {
+      const container = document.createElement('div')
+      container.className = `container ${writingMode}`;
+      return container;
+    }
+
+  </script>
+  <!-- <script>
+    test(function() {})
+
+  </script> -->
+</body>
+</html>

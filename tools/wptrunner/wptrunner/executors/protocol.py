@@ -273,6 +273,18 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
+class MaximizeProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "maximize"
+
+    @abstractmethod
+    def maximize(self):
+        """Maximize the window."""
+
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

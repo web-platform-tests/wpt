@@ -542,12 +542,9 @@ class CallbackHandler(object):
             else:
                 self.logger.debug("Action %s completed" % action)
 
-                # if val is not None:
-                    # the payload must be a string
-                    # self._send_message("complete", "payload", str(val))
-                val = {}
-                val['value'] = value
-                self._send_message("complete", "success", json.dumps(val))
+                message = {}
+                message['value'] = value
+                self._send_message("complete", "success", json.dumps(message))
         finally:
             self.protocol.base.set_window(parent)
 

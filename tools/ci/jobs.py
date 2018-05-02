@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import re
 from ..wpt.testfiles import branch_point, files_changed, affected_testfiles
@@ -7,6 +8,7 @@ from tools import localpaths
 from six import iteritems
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+logger = logging.getLogger(__name__)
 
 # Rules are just regex on the path, with a leading ! indicating a regex that must not
 # match for the job
@@ -75,9 +77,18 @@ def get_paths(**kwargs):
     else:
         revish = kwargs["revish"]
 
+    logger.info(
+      'Considering modifications in the following commit range: $%s' % revish
+    )
+
     changed, _ = files_changed(revish)
     all_changed = set(os.path.relpath(item, wpt_root)
                       for item in set(changed))
+
+    logger.info('Identified the following files:')
+    for name in all_changed:
+        logger.info('- %s' % name)
+
     return all_changed
 
 

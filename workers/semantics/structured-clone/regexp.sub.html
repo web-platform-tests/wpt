@@ -1,0 +1,12 @@
+<!doctype html>
+<title>RegExp: structured clone to {{GET[type]}} worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="variant" content="?type=dedicated">
+<meta name="variant" content="?type=shared">
+<div id=log></div>
+<script>
+var type = '{{GET[type]}}';
+</script>
+<script src="support/common.js"></script>
+<script src="support/check-regexp.js"></script>

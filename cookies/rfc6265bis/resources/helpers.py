@@ -29,7 +29,6 @@ def makeCookieHeader(name, value, otherAttrs):
     return ("Set-Cookie", "; ".join(attrs))
 
 def makeDropCookie(name, secure):
-    # TODO: MDG - check cookie AV case details
     attrs = {"MaxAge": 0, "path": "/"}
     if secure:
         attrs["secure"] = ""
@@ -50,7 +49,7 @@ def readCookies(request):
     print request.cookies
     for key in request.cookies:
         for cookie in request.cookies.get_list(key):
-            # TODO: MDG - do we care we'll clobber cookies here? If so, do we
+            # do we care we'll clobber cookies here? If so, do we
             # need to modify the test to take cookie names and value lists?
             cookies[key] = cookie.value
     print cookies

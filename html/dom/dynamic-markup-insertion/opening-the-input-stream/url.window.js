@@ -8,3 +8,16 @@ test(() => {
   // Ensure the load event fires and testharness doesn't timeout
   frame.contentDocument.close();
 }, "document.open() and document's URL");
+
+async_test(t => {
+  const frame = document.body.appendChild(document.createElement("iframe")),
+        urlSansHash = document.URL;
+  assert_equals(frame.contentDocument.URL, "about:blank");
+  assert_equals(frame.contentWindow.location.href, "about:blank");
+  self.onhashchange = t.step_func_done(() => {
+    frame.contentDocument.open();
+    assert_equals(frame.contentDocument.URL, urlSansHash);
+    assert_equals(frame.contentWindow.location.href, urlSansHash);
+  });
+  self.location.hash = "heya";
+}, "document.open() and document's URL containing a fragment");

@@ -68,9 +68,9 @@ function get_canvas_1x1_transparent_black() {
   canvas.height = 1;
   return canvas;
 }
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_transparent_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, image, compare_ImageBitmap, test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, image, compare_ImageBitmap, test_obj); });
 }, 'ImageBitmap 1x1 transparent black');
 function get_canvas_1x1_non_transparent_non_black() {
   var canvas = document.createElement('canvas');
@@ -84,25 +84,25 @@ function get_canvas_1x1_non_transparent_non_black() {
   imagedata.data[3] = 103;
   return canvas;
 }
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_non_transparent_non_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, image, compare_ImageBitmap, test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, image, compare_ImageBitmap, test_obj); });
 }, 'ImageBitmap 1x1 non-transparent non-black');
 
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_transparent_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, [image], compare_Array(enumerate_props(compare_ImageBitmap)), test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, [image], compare_Array(enumerate_props(compare_ImageBitmap)), test_obj); });
 }, 'Array ImageBitmap object, ImageBitmap 1x1 transparent black');
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_non_transparent_non_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, [image], compare_Array(enumerate_props(compare_ImageBitmap)), test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, [image], compare_Array(enumerate_props(compare_ImageBitmap)), test_obj); });
 }, 'Array ImageBitmap object, ImageBitmap 1x1 non-transparent non-black');
 
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_transparent_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, {'x':image}, compare_Object(enumerate_props(compare_ImageBitmap)), test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, {'x':image}, compare_Object(enumerate_props(compare_ImageBitmap)), test_obj); });
 }, 'Object ImageBitmap object, ImageBitmap 1x1 transparent black');
-async_test(function(test_obj) {
+promise_test(function(test_obj) {
   var canvas = get_canvas_1x1_non_transparent_non_black();
-  createImageBitmap(canvas, function(image) { check(test_obj.name, {'x':image}, compare_Object(enumerate_props(compare_ImageBitmap)), test_obj); });
+  return createImageBitmap(canvas).then(function(image) { check(test_obj.name, {'x':image}, compare_Object(enumerate_props(compare_ImageBitmap)), test_obj); });
 }, 'Object ImageBitmap object, ImageBitmap 1x1 non-transparent non-black');

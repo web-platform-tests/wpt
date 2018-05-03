@@ -11,6 +11,7 @@ const videoURL = getVideoURI("/images/pattern"),
 ].forEach(val => {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
+    t.add_cleanup(() => frame.remove());
     frame.src = val[0];
     frame.onload = t.step_func_done(() => {
       assert_equals(frame.contentDocument.contentType, val[1]);
@@ -22,5 +23,5 @@ const videoURL = getVideoURI("/images/pattern"),
       // Make sure a load event is fired across browsers
       frame.contentDocument.close();
     });
-  }, "document.write() in a " + val[1] + " document");
+  }, "document.write(): " + val[1] + " document");
 });

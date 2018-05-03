@@ -3,8 +3,8 @@
   var HOST = "{{host}}";
   var SECURE_PORT = ":{{ports[https][0]}}";
   var PORT = ":{{ports[http][0]}}";
-  var CROSS_ORIGIN_HOST = "{{domains[alt_]}}";
-  var SECURE_CROSS_ORIGIN_HOST = "{{domains[alt_]}";
+  var CROSS_ORIGIN_HOST = "{{hosts[alt][]}}";
+  var SECURE_CROSS_ORIGIN_HOST = "{{hosts[alt][]}}";
 
   //For secure cookie verification
   window.SECURE_ORIGIN = "https://" + HOST + SECURE_PORT;

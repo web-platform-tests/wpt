@@ -18,13 +18,14 @@
             // If |target| contains a `redir` parameter, extract it, and add it
             // to the form so it doesn't get dropped in the submission.
             var url = new URL(f.action);
-            if (url.pathname = "/redir") {
+            if (url.pathname = "/cookies/rfc6265/resources/redirectWithCORSHeaders.py") {
               var i = document.createElement("input");
-              i.name = "to";
-              i.value = url.searchParams.get("to");
+              i.name = "location";
+              i.value = url.searchParams.get("location");
+              i.type = "hidden";
               f.appendChild(i);
             }
-            var reloaded = false; 
+            var reloaded = false;
             var msgHandler = e => {
               try {
                 verifySameSiteCookieState(expectedStatus, value, e.data);

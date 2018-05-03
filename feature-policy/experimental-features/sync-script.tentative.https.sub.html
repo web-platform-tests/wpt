@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta http-equiv="Feature-Policy" content="sync-script 'none'"/>
+<body>
+<script defer src="/resources/testharness.js"></script>
+<script defer src="/resources/testharnessreport.js"></script>
+<script>
+window.didExecuteInlineParsingBlockingScript = true;
+</script>
+<script src="/feature-policy/experimental-features/resources/parser-blocking-script.js"></script>
+<script async src="/feature-policy/experimental-features/resources/async-script.js"></script>
+<script defer src="/feature-policy/experimental-features/resources/defer-script.js"></script>
+<script defer src="/feature-policy/experimental-features/resources/sync-script-test.js"></script>
+</body>

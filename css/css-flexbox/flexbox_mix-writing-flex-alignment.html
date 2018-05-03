@@ -38,77 +38,76 @@
     }
     .inner {
       background-color: #3d5d67;
-      color: white;  
+      color: white;
       height: 100px;
       width: 100px;
     }
   </style>
 </head>
 <body>
-  <!-- Justify Content -->
   <div id="wrap">
-  </div>
+  <div class="container horizontal-tb end"><div class="inner">horizontal-tb<br>end</div></div><div class="container horizontal-tb start"><div class="inner">horizontal-tb<br>start</div></div><div class="container horizontal-tb center"><div class="inner">horizontal-tb<br>center</div></div><div class="container horizontal-tb space-around"><div class="inner">horizontal-tb<br>space-around</div></div><div class="container horizontal-tb space-between"><div class="inner">horizontal-tb<br>space-between</div></div><div class="container horizontal-tb space-evenly"><div class="inner">horizontal-tb<br>space-evenly</div></div><div class="container horizontal-tb stretch"><div class="inner">horizontal-tb<br>stretch</div></div><div class="container horizontal-tb center"><div class="inner">horizontal-tb<br>center</div></div><div class="container horizontal-tb start"><div class="inner">horizontal-tb<br>start</div></div><div class="container vertical-rl end"><div class="inner">vertical-rl<br>end</div></div><div class="container vertical-rl start"><div class="inner">vertical-rl<br>start</div></div><div class="container vertical-rl center"><div class="inner">vertical-rl<br>center</div></div><div class="container vertical-rl space-around"><div class="inner">vertical-rl<br>space-around</div></div><div class="container vertical-rl space-between"><div class="inner">vertical-rl<br>space-between</div></div><div class="container vertical-rl space-evenly"><div class="inner">vertical-rl<br>space-evenly</div></div><div class="container vertical-rl stretch"><div class="inner">vertical-rl<br>stretch</div></div><div class="container vertical-rl center"><div class="inner">vertical-rl<br>center</div></div><div class="container vertical-rl start"><div class="inner">vertical-rl<br>start</div></div><div class="container vertical-lr end"><div class="inner">vertical-lr<br>end</div></div><div class="container vertical-lr start"><div class="inner">vertical-lr<br>start</div></div><div class="container vertical-lr center"><div class="inner">vertical-lr<br>center</div></div><div class="container vertical-lr space-around"><div class="inner">vertical-lr<br>space-around</div></div><div class="container vertical-lr space-between"><div class="inner">vertical-lr<br>space-between</div></div><div class="container vertical-lr space-evenly"><div class="inner">vertical-lr<br>space-evenly</div></div><div class="container vertical-lr stretch"><div class="inner">vertical-lr<br>stretch</div></div><div class="container vertical-lr center"><div class="inner">vertical-lr<br>center</div></div><div class="container vertical-lr start"><div class="inner">vertical-lr<br>start</div></div><div class="container sideways-rl end"><div class="inner">sideways-rl<br>end</div></div><div class="container sideways-rl start"><div class="inner">sideways-rl<br>start</div></div><div class="container sideways-rl center"><div class="inner">sideways-rl<br>center</div></div><div class="container sideways-rl space-around"><div class="inner">sideways-rl<br>space-around</div></div><div class="container sideways-rl space-between"><div class="inner">sideways-rl<br>space-between</div></div><div class="container sideways-rl space-evenly"><div class="inner">sideways-rl<br>space-evenly</div></div><div class="container sideways-rl stretch"><div class="inner">sideways-rl<br>stretch</div></div><div class="container sideways-rl center"><div class="inner">sideways-rl<br>center</div></div><div class="container sideways-rl start"><div class="inner">sideways-rl<br>start</div></div><div class="container sideways-lr end"><div class="inner">sideways-lr<br>end</div></div><div class="container sideways-lr start"><div class="inner">sideways-lr<br>start</div></div><div class="container sideways-lr center"><div class="inner">sideways-lr<br>center</div></div><div class="container sideways-lr space-around"><div class="inner">sideways-lr<br>space-around</div></div><div class="container sideways-lr space-between"><div class="inner">sideways-lr<br>space-between</div></div><div class="container sideways-lr space-evenly"><div class="inner">sideways-lr<br>space-evenly</div></div><div class="container sideways-lr stretch"><div class="inner">sideways-lr<br>stretch</div></div><div class="container sideways-lr center"><div class="inner">sideways-lr<br>center</div></div><div class="container sideways-lr start"><div class="inner">sideways-lr<br>start</div></div></div>
 
-  <!-- <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script> -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
   <script>
-    // Create the cominations of attributes.
-    const writingModes = [
-      'horizontal-tb',
-      'vertical-rl',
-      'vertical-lr',
-      'sideways-rl',
-      'sideways-lr'
-    ];
-    const alignmentProps = [
-      'start',
-      'center',
-      'space-around',
-      'space-between',
-      'space-evenly',
-      'stretch',
-      'center',
-      'start',
-      'end',
-    ];
-    for (let index in writingModes) {
-      const writingMode = writingModes[index];
-      const thisWriteMode = document.querySelector('#wrap').appendChild(makeContainer(writingMode));
-      for (let index2 in alignmentProps) {
-        const alignmentProp = alignmentProps[index2];
-        // warning, type massage!
-        if (index2 != (alignmentProps.length - 1)) {
-          // Clone the first node of writing mode
-          const dup = thisWriteMode.cloneNode()
-          dup.className = dup.className + ' ' + alignmentProp;
-          dup.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
-          document.querySelector('#wrap').appendChild(dup)
-        }
-        else {
-          // If this is the last alignmentProp we'll use the original container.
-          thisWriteMode.className = thisWriteMode.className + ' ' + alignmentProp;
-          thisWriteMode.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
-        }
-
-      }
-
-    }
-    function makeInner() {
-      const inner = document.createElement('div')
-      inner.className = 'inner'
-      return inner
-    }
-
-    function makeContainer(writingMode) {
-      const container = document.createElement('div')
-      container.className = `container ${writingMode}`;
-      return container;
-    }
+    // Generating script.
+    // const writingModes = [
+    //   'horizontal-tb',
+    //   'vertical-rl',
+    //   'vertical-lr',
+    //   'sideways-rl',
+    //   'sideways-lr'
+    // ];
+    // const alignmentProps = [
+    //   'start',
+    //   'center',
+    //   'space-around',
+    //   'space-between',
+    //   'space-evenly',
+    //   'stretch',
+    //   'center',
+    //   'start',
+    //   'end',
+    // ];
+    // for (let index in writingModes) {
+    //   const writingMode = writingModes[index];
+    //   const thisWriteMode = document.querySelector('#wrap').appendChild(makeContainer(writingMode));
+    //   for (let index2 in alignmentProps) {
+    //     const alignmentProp = alignmentProps[index2];
+    //     // warning, type massage!
+    //     if (index2 != (alignmentProps.length - 1)) {
+    //       // Clone the first node of writing mode
+    //       const dup = thisWriteMode.cloneNode()
+    //       dup.className = dup.className + ' ' + alignmentProp;
+    //       dup.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
+    //       document.querySelector('#wrap').appendChild(dup)
+    //     }
+    //     else {
+    //       // If this is the last alignmentProp we'll use the original container.
+    //       thisWriteMode.className = thisWriteMode.className + ' ' + alignmentProp;
+    //       thisWriteMode.appendChild(makeInner()).innerHTML = writingMode + '<br/>' + alignmentProp
+    //     }
+    //
+    //   }
+    //
+    // }
+    // function makeInner() {
+    //   const inner = document.createElement('div')
+    //   inner.className = 'inner'
+    //   return inner
+    // }
+    //
+    // function makeContainer(writingMode) {
+    //   const container = document.createElement('div')
+    //   container.className = `container ${writingMode}`;
+    //   return container;
+    // }
 
   </script>
-  <!-- <script>
+  <script>
     test(function() {})
 
-  </script> -->
+  </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="utf-8"/>
 <script src="/cookies/rfc6265bis/resources/testharness.js"></script>
 <script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
 <script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
@@ -38,7 +39,6 @@
         .then(_ => {
           return Promise.all([
             assert_cookie_present(target, "samesite_none", value),
-            //assert_cookie_absent(target, "samesite_invalid", value),
             expectedStatus == SameSiteStatus.STRICT ?
               assert_cookie_present(target, "samesite_strict", value) :
               assert_cookie_absent(target, "samesite_strict", value),

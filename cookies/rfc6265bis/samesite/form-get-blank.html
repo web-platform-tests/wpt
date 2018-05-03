@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="utf-8"/>
 <script src="/cookies/rfc6265bis/resources/testharness.js"></script>
 <script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
 <script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
@@ -17,10 +18,11 @@
             // If |target| contains a `redir` parameter, extract it, and add it
             // to the form so it doesn't get dropped in the submission.
             var url = new URL(f.action);
-            if (url.pathname = "/redir") {
+            if (url.pathname == "/cookies/rfc6265bis/resources/redirectWithCORSHeaders.py") {
               var i = document.createElement("input");
-              i.name = "to";
-              i.value = url.searchParams.get("to");
+              i.name = "location";
+              i.type="hidden";
+              i.value = url.searchParams.get("location");
               f.appendChild(i);
             }
 
@@ -35,6 +37,7 @@
               }
             };
             window.addEventListener("message", msgHandler);
+            document.body.appendChild(f);
             f.submit();
           });
         });

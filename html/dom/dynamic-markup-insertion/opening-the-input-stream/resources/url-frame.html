@@ -1,0 +1,11 @@
+<script>
+beforeURL = document.URL;
+afterURL = undefined;
+happened = false;
+onload = () => {
+  document.open();
+  afterURL = document.URL;
+  document.close();
+  happened = true;
+}
+</script>

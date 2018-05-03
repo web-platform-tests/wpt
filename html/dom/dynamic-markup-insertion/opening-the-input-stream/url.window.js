@@ -21,3 +21,14 @@ async_test(t => {
   });
   self.location.hash = "heya";
 }, "document.open() and document's URL containing a fragment");
+
+async_test(t => {
+  const frame = document.body.appendChild(document.createElement("iframe"))
+  frame.src = "resources/url-frame.html#heya";
+  frame.onload = t.step_func_done(() => {
+    assert_equals(frame.contentWindow.beforeURL, frame.src);
+    assert_equals(frame.contentWindow.afterURL, frame.src);
+    assert_equals(frame.contentDocument.URL, frame.src);
+    assert_true(frame.contentWindow.happened);
+  });
+}, "document.open() and document's URL containing a fragment (entry is current)");

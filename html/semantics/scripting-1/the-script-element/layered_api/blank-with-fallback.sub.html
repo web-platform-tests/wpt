@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js"></script>
+
+<script>
+    var t = async_test("Supported LAPI + valid fallback URL");
+</script>
+
+<script type="module"
+    onload="expect_no_fallback(t)"
+    onerror="t.unreached_func('Unexpected error')()"
+    src="std:blank|{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>

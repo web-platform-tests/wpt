@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+    var t = async_test("Non-supported LAPI + invalid URL");
+</script>
+
+<script type="module"
+    onload="t.unreached_func('Unexpected load')()"
+    onerror="t.step_func_done()()"
+    src="std:none|http://:invalid-url"></script>

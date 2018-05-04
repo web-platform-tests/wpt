@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js"></script>
+
+<script>
+    // A URL that resolved to a fallback URL and the same fallback URL
+    // (without LAPI) are merged.
+    var test1 = async_test("First script with non-supported LAPI w/ fallback");
+    var test2 = async_test("Second script with the same URL");
+</script>
+
+<script type="module"
+    onload="expect_fallback(test1)"
+    onerror="test1.unreached_func('Unexpected error')()"
+    src="std:none|{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>
+
+<script type="module"
+    onload="expect_no_fallback(test2)"
+    onerror="test2.unreached_func('Unexpected error')()"
+    src="{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>

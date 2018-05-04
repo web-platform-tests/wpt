@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js"></script>
+
+<script>
+    var t = async_test("Non-supported LAPI + relative URL/specifier");
+</script>
+
+<script type="module"
+    onload="expect_fallback(t)"
+    onerror="t.unreached_func('Unexpected error')()"
+    src="std:none|./fallback.js"></script>

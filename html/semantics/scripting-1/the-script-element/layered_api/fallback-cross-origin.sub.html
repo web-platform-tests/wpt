@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js"></script>
+
+<script>
+    var t = async_test("Non-supported LAPI + valid cross-origin fallback URL w/ CORS header");
+</script>
+
+<script type="module"
+    onload="expect_fallback(t)"
+    onerror="t.unreached_func('Unexpected error')()"
+    src="std:none|https://{{domains[www1]}}:{{ports[https][0]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback_cors.js"></script>

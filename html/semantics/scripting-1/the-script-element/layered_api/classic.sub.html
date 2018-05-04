@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+    var test1 = async_test("Layered API URL w/ fallback as a classic script should fail");
+    var test2 = async_test("Supported Layered API as a classic script should fail");
+</script>
+
+<script type="text/javascript"
+    onload="test1.unreached_func('Unexpected load')()"
+    onerror="test1.step_func_done()()"
+    src="std:none|{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>
+
+<script type="text/javascript"
+    onload="test2.unreached_func('Unexpected load')()"
+    onerror="test2.step_func_done()()"
+    src="std:blank"></script>

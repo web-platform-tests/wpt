@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js"></script>
+
+<script>
+    // The key of module maps is the URL after fallback resolution and thus
+    // if two URLs are resolved to the same fallback URL, then they are
+    // merged into a single entry in the module map, and thus loaded and
+    // evaluated only once. The second <script>'s evaluation is therefore
+    // no-op, except for event firing.
+    var test1 = async_test("First script with non-supported LAPI w/ fallback");
+    var test2 = async_test("Fallback to the same URL");
+    var test3 = async_test("Fallback to the same URL (relative URL)");
+    var test4 = async_test("Fallback to the same URL (relative specifier)");
+    var test5 = async_test("Fallback to the same URL (absolute URL without host)");
+</script>
+
+<script type="module"
+    onload="expect_fallback(test1)"
+    onerror="test1.unreached_func('Unexpected error')()"
+    src="std:none|{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>
+
+<script type="module"
+    onload="expect_no_fallback(test2)"
+    onerror="test2.unreached_func('Unexpected error')()"
+    src="std:none2|{{location[server]}}/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>
+
+<script type="module"
+    onload="expect_no_fallback(test3)"
+    onerror="test3.unreached_func('Unexpected error')()"
+    src="std:none3|fallback.js"></script>
+
+<script type="module"
+    onload="expect_no_fallback(test4)"
+    onerror="test4.unreached_func('Unexpected error')()"
+    src="std:none4|./fallback.js"></script>
+
+<script type="module"
+    onload="expect_no_fallback(test5)"
+    onerror="test5.unreached_func('Unexpected error')()"
+    src="std:none5|/html/semantics/scripting-1/the-script-element/layered_api/fallback.js"></script>

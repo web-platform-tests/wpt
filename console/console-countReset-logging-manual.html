@@ -12,24 +12,36 @@
 <p><code>default: 1</code></p>
 <p><code>default: 1</code></p>
 <p><code>default: 1</code></p>
-<p><code>a: 1</code></p>
-<p><code>a: 1</code></p>
-<p style="color:grey;">&lt;some warning message indicating that a count for label "b" does not exist></p>
+<p><code>default: 1</code></p>
+<p><code>default: 1</code></p>
+<p><code>default: 1</code></p>
+<p><code>default: 1</code></p>
+<p><code>a label: 1</code></p>
+<p><code>a label: 1</code></p>
+<p style="color:grey;">[some warning message indicating that a count for label "b" does not exist]</p>
 
 <script>
 console.count();
 console.countReset();
+console.count();
+
 console.count(undefined);
-console.countReset();
+console.countReset(undefined);
+console.count(undefined);
+
 console.count("default");
-console.countReset();
+console.countReset("default");
+console.count("default");
+
+console.count({toString() {return "default"}});
+console.countReset({toString() {return "default"}});
 console.count({toString() {return "default"}});
 
-console.count("a");
+console.count("a label");
 console.countReset();
-console.count("a");
+console.count("a label");
 
-console.countReset("b");
+console.countReset("b"); // should produce a warning
 </script>
 </body>
 </html>

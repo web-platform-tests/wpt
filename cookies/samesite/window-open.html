@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   function create_test(origin, target, expectedStatus, title) {
     promise_test(t => {
@@ -10,7 +10,7 @@
       return resetSameSiteCookies(origin, value)
         .then(_ => {
           return new Promise((resolve, reject) => {
-            var w = window.open(origin + "/cookies/rfc6265bis/resources/postToParent.py");
+            var w = window.open(origin + "/cookies/resources/postToParent.py");
 
             var msgHandler = e => {
               window.removeEventListener("message", msgHandler);

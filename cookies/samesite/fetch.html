@@ -1,38 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
-<!-- We're appending an <iframe> to the document's body, so execute tests after we have a body -->
-<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   function create_test(origin, target, expectedStatus, title) {
     promise_test(t => {
       var value = "" + Math.random();
       return resetSameSiteCookies(origin, value)
         .then(_ => {
-          return new Promise((resolve, reject) => {
-            var iframe = document.createElement("iframe");
-            iframe.onerror = _ => reject("IFrame could not be loaded.");
+          return credFetch(target + "/cookies/resources/list.py")
 
-            var msgHandler = e => {
-              if (e.source == iframe.contentWindow) {
-                // Cleanup, then verify cookie state:
-                document.body.removeChild(iframe);
-                window.removeEventListener("message", msgHandler);
-                try {
-                  verifySameSiteCookieState(expectedStatus, value, e.data);
-                  resolve();
-                } catch(e) {
-                  reject(e);
-                }
-              }
-            };
-            window.addEventListener("message", msgHandler);
-
-            iframe.src = target + "/cookies/rfc6265bis/resources/postToParent.py";
-            document.body.appendChild(iframe);
-          });
+            .then(r => r.json())
+            .then(cookies => verifySameSiteCookieState(expectedStatus, value, cookies));
         });
     }, title);
   }

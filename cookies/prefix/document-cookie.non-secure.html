@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   function create_test(prefix, params, shouldExistInDOM, shouldExistViaHTTP, title) {
     promise_test(t => {
@@ -33,5 +33,5 @@
     create_test("__Secure-", "Path=/;" + params, false, false, "__Host: Non-secure origin: 'Path=/; " + params + "'");
     create_test("__Secure-", "Secure; Path=/;" + params, false, false, "__Host: Non-secure origin: 'Secure; Path=/; " + params + "'");
   });
-  create_test("__Secure-", "Path=/cookies/rfc6265bis/resources/list.py;Secure", false, false, "__Host: Non-secure origin: 'Path=/cookies/rfc6265bis/resources/list.py;Secure'");
+  create_test("__Secure-", "Path=/cookies/resources/list.py;Secure", false, false, "__Host: Non-secure origin: 'Path=/cookies/resources/list.py;Secure'");
 </script>

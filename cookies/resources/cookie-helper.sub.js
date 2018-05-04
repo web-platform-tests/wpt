@@ -33,7 +33,7 @@ function credFetch(url) {
 
 // Returns a URL on |origin| which redirects to a given absolute URL.
 function redirectTo(origin, url) {
-  return origin + "/cookies/rfc6265bis/resources/redirectWithCORSHeaders.py?status=307&location=" + encodeURIComponent(url);
+  return origin + "/cookies/resources/redirectWithCORSHeaders.py?status=307&location=" + encodeURIComponent(url);
 }
 
 // Asserts that `document.cookie` contains or does not contain (according to
@@ -51,14 +51,14 @@ function assert_cookie(origin, obj, name, value, present) {
 // If |origin| matches `document.origin`, also assert (via `document.cookie`) that
 // the cookie was correctly removed and reset.
 function create_cookie(origin, name, value, extras) {
-  alert("Create_cookie: " + origin + "/cookies/rfc6265bis/resources/drop.py?name=" + name);	
-  return credFetch(origin + "/cookies/rfc6265bis/resources/drop.py?name=" + name)
+  alert("Create_cookie: " + origin + "/cookies/resources/drop.py?name=" + name);	
+  return credFetch(origin + "/cookies/resources/drop.py?name=" + name)
     .then(_ => {
       if (origin == document.origin)
         assert_dom_cookie(name, value, false);
     })
     .then(_ => {
-      return credFetch(origin + "/cookies/rfc6265bis/resources/set.py?" + name + "=" + value + ";path=/;" + extras)
+      return credFetch(origin + "/cookies/resources/set.py?" + name + "=" + value + ";path=/;" + extras)
         .then(_ => {
           if (origin == document.origin)
             assert_dom_cookie(name, value, true);
@@ -78,7 +78,7 @@ function set_prefixed_cookie_via_dom_test(options) {
   
     assert_dom_cookie(name, value, options.shouldExistInDOM);
 
-    return credFetch("/cookies/rfc6265bis/resources/list.py")
+    return credFetch("/cookies/resources/list.py")
       .then(r => r.json())
       .then(cookies => assert_equals(cookies[name], options.shouldExistViaHTTP ? value : undefined));
   }, options.title);
@@ -88,8 +88,8 @@ function set_prefixed_cookie_via_http_test(options) {
   promise_test(t => {
     var postDelete = _ => {
       var value = "" + Math.random();
-      return credFetch(options.origin + "/cookies/rfc6265bis/resources/set.py?" + name + "=" + value + ";" + options.params)
-        .then(_ => credFetch(options.origin + "/cookies/rfc6265bis/resources/list.py"))
+      return credFetch(options.origin + "/cookies/resources/set.py?" + name + "=" + value + ";" + options.params)
+        .then(_ => credFetch(options.origin + "/cookies/resources/list.py"))
         .then(r => r.json())
         .then(cookies => assert_equals(cookies[name], options.shouldExistViaHTTP ? value : undefined));
     };
@@ -100,7 +100,7 @@ function set_prefixed_cookie_via_http_test(options) {
       erase_cookie_from_js(name);
       return postDelete;
     } else {
-      return credFetch(options.origin + "/cookies/rfc6265bis/resources/drop.py?name=" + name)
+      return credFetch(options.origin + "/cookies/resources/drop.py?name=" + name)
         .then(_ => postDelete());
     }
   }, options.title);
@@ -119,7 +119,7 @@ window.SameSiteStatus = {
 // Reset SameSite test cookies on |origin|. If |origin| matches `document.origin`, assert
 // (via `document.cookie`) that they were properly removed and reset.
 function resetSameSiteCookies(origin, value) {
-  return credFetch(origin + "/cookies/rfc6265bis/resources/dropSameSite.py")
+  return credFetch(origin + "/cookies/resources/dropSameSite.py")
     .then(_ => {
       if (origin == document.origin) {
         assert_dom_cookie("samesite_strict", value, false);
@@ -128,7 +128,7 @@ function resetSameSiteCookies(origin, value) {
       }
     })
     .then(_ => {
-      return credFetch(origin + "/cookies/rfc6265bis/resources/setSameSite.py?" + value)
+      return credFetch(origin + "/cookies/resources/setSameSite.py?" + value)
         .then(_ => {
           if (origin == document.origin) {
             assert_dom_cookie("samesite_strict", value, true);
@@ -167,7 +167,7 @@ window.SecureStatus = {
 //Reset SameSite test cookies on |origin|. If |origin| matches `document.origin`, assert
 //(via `document.cookie`) that they were properly removed and reset.
 function resetSecureCookies(origin, value) {
-return credFetch(origin + "/cookies/rfc6265bis/resources/dropSecure.py")
+return credFetch(origin + "/cookies/resources/dropSecure.py")
  .then(_ => {
    if (origin == document.origin) {
      assert_dom_cookie("alone_secure", value, false);
@@ -175,7 +175,7 @@ return credFetch(origin + "/cookies/rfc6265bis/resources/dropSecure.py")
    }
  })
  .then(_ => {
-     return credFetch(origin + "/cookie/rfc6265bis/resources/setSecure.py?" + value)
+     return credFetch(origin + "/cookie/resources/setSecure.py?" + value)
  })
 }
 

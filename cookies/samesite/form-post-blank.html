@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   function create_test(origin, target, expectedStatus, title) {
     promise_test(t => {
@@ -11,7 +11,7 @@
         .then(_ => {
           return new Promise((resolve, reject) => {
             var f = document.createElement('form');
-            f.action = target + "/cookies/rfc6265bis/resources/postToParent.py";
+            f.action = target + "/cookies/resources/postToParent.py";
             f.target = "_blank";
             f.method = "POST";
 

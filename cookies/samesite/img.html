@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   function assert_cookie_present(origin, name, value) {
     return new Promise((resolve, reject) => {
@@ -12,9 +12,9 @@
 
       // We need to URL encode the destination path/query if we're redirecting:
       if (origin.match(/\/redir/))
-        img.src = origin + encodeURIComponent("/cookies/rfc6265bis/resources/imgIfMatch.py?name=" + name + "&value=" + value);
+        img.src = origin + encodeURIComponent("/cookies/resources/imgIfMatch.py?name=" + name + "&value=" + value);
       else
-        img.src = origin + "/cookies/rfc6265bis/resources/imgIfMatch.py?name=" + name + "&value=" + value;
+        img.src = origin + "/cookies/resources/imgIfMatch.py?name=" + name + "&value=" + value;
     });
   }
 
@@ -26,9 +26,9 @@
 
       // We need to URL encode the destination path/query if we're redirecting:
       if (origin.match(/\/redir/))
-        img.src = origin + encodeURIComponent("/cookies/rfc6265bis/resources/imgIfMatch.py?name=" + name + "&value=" + value);
+        img.src = origin + encodeURIComponent("/cookies/resources/imgIfMatch.py?name=" + name + "&value=" + value);
       else
-        img.src = origin + "/cookies/rfc6265bis/resources/imgIfMatch.py?name=" + name + "&value=" + value;
+        img.src = origin + "/cookies/resources/imgIfMatch.py?name=" + name + "&value=" + value;
     });
   }
 

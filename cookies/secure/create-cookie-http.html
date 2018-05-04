@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<script src="/cookies/rfc6265bis/resources/testharness.js"></script>
-<script src="/cookies/rfc6265bis/resources/testharnessreport.js"></script>
-<script src="/cookies/rfc6265bis/resources/cookie-helper.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
 <script>
   //origin is who sets the cookie
   //target is who tries to send cookie
@@ -10,7 +10,7 @@
       var value = "" + Math.random();
       return resetSecureCookies(origin, value)
         .then(_ => {
-          return credFetch(target + "/cookies/rfc6265bis/resources/list.py")
+          return credFetch(target + "/cookies/resources/list.py")
             .then(r => r.json())
             .then(cookies => verifySecureCookieState(expectedStatus, value, cookies));
         });

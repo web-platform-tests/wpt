@@ -20,7 +20,7 @@
 
       // Set new cookies until marker is gone
       try {
-        for (i = 0; i < brakes; i++) { 
+        for (i = 0; i < brakes; i++) {
           create_cookie_from_js(markerCookieName + counter++, markerCookieValue, 10, secure_cookie);
           assert_dom_cookie(markerCookieName, markerCookieValue, true);
         }

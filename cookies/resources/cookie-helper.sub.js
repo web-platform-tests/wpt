@@ -9,7 +9,7 @@
   //For secure cookie verification
   window.SECURE_ORIGIN = "https://" + HOST + SECURE_PORT;
   window.INSECURE_ORIGIN = "http://" + HOST + PORT;
-  
+
   //standard references
   window.ORIGIN = "http://" + HOST + PORT;
   window.WWW_ORIGIN = "http://{{domains[www]}}" + PORT;
@@ -51,7 +51,7 @@ function assert_cookie(origin, obj, name, value, present) {
 // If |origin| matches `document.origin`, also assert (via `document.cookie`) that
 // the cookie was correctly removed and reset.
 function create_cookie(origin, name, value, extras) {
-  alert("Create_cookie: " + origin + "/cookies/resources/drop.py?name=" + name);	
+  alert("Create_cookie: " + origin + "/cookies/resources/drop.py?name=" + name);
   return credFetch(origin + "/cookies/resources/drop.py?name=" + name)
     .then(_ => {
       if (origin == document.origin)
@@ -75,7 +75,7 @@ function set_prefixed_cookie_via_dom_test(options) {
     erase_cookie_from_js(name);
     var value = "" + Math.random();
     document.cookie = name + "=" + value + ";" + options.params;
-  
+
     assert_dom_cookie(name, value, options.shouldExistInDOM);
 
     return credFetch("/cookies/resources/list.py")
@@ -160,8 +160,8 @@ function verifySameSiteCookieState(expectedStatus, expectedValue, cookies) {
 //
 
 window.SecureStatus = {
-	INSECURE_COOKIE_ONLY: "1",
-	BOTH_COOKIES: "2",
+  INSECURE_COOKIE_ONLY: "1",
+  BOTH_COOKIES: "2",
 };
 
 //Reset SameSite test cookies on |origin|. If |origin| matches `document.origin`, assert
@@ -191,7 +191,7 @@ function create_cookie_from_js(name, value, days, secure_flag) {
     var expires = "; expires="+date.toGMTString();
   }
   else var expires = "";
-  
+
   var secure = "";
   if (secure_flag == true) {
     secure = "secure; ";

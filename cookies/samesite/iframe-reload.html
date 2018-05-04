@@ -15,7 +15,7 @@
             var iframe = document.createElement("iframe");
             iframe.onerror = _ => reject("IFrame could not be loaded.");
 
-            var reloaded = false; 
+            var reloaded = false;
             var msgHandler = e => {
               try {
                 verifySameSiteCookieState(expectedStatus, value, e.data);

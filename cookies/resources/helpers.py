@@ -46,12 +46,10 @@ def readParameter(request, paramName, requireValue):
 def readCookies(request):
     """Read the cookies from the client present in the request."""
     cookies = {}
-    print request.cookies
     for key in request.cookies:
         for cookie in request.cookies.get_list(key):
             # do we care we'll clobber cookies here? If so, do we
             # need to modify the test to take cookie names and value lists?
             cookies[key] = cookie.value
-    print cookies
     return cookies
 

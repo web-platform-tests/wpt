@@ -336,21 +336,21 @@ function check(input, port) {
               check_true(input['null'] === null, "input['null'] === null") &&
               check_true(input['true'] === true, "input['true'] === true") &&
               check_true(input['false'] === false, "input['false'] === false") &&
-              check_true(input['empty'] === '', "input['empty'] === ''") &&
-              check_true(input['high surrogate'] === '\uD800', "input['high surrogate'] === '\uD800'") &&
-              check_true(input['low surrogate'] === '\uDC00', "input['low surrogate'] === '\uDC00'") &&
-              check_true(input['nul'] === '\u0000', "input['nul'] === '\u0000'") &&
-              check_true(input['astral'] === '\uDBFF\uDFFD', "input['astral'] === '\uDBFF\uDFFD'") &&
-              check_true(input['0.2'] === 0.2, "input['0.2'] === 0.2") &&
-              check_true(1/input['0'] === Infinity, "1/input['0'] === Infinity") &&
-              check_true(1/input['-0'] === -Infinity, "1/input['-0'] === -Infinity") &&
-              check_true(input['NaN'] !== input['NaN'], "input['NaN'] !== input['NaN']") &&
-              check_true(input['Infinity'] === Infinity, "input['Infinity'] === Infinity") &&
-              check_true(input['-Infinity'] === -Infinity, "input['-Infinity'] === -Infinity") &&
-              check_true(input['9007199254740992'] === 9007199254740992, "input['9007199254740992'] === 9007199254740992") &&
-              check_true(input['-9007199254740992'] === -9007199254740992, "input['-9007199254740992'] === -9007199254740992") &&
-              check_true(input['9007199254740994'] === 9007199254740994, "input['9007199254740994'] === 9007199254740994") &&
-              check_true(input['-9007199254740994'] === -9007199254740994, "input['9007199254740994'] === -9007199254740994")) {
+              check_true(input['string, empty string'] === '', "input['string, empty string'] === ''") &&
+              check_true(input['string, lone high surrogate'] === '\uD800', "input['string, lone high surrogate'] === '\uD800'") &&
+              check_true(input['string, lone low surrogate'] === '\uDC00', "input['string, lone low surrogate'] === '\uDC00'") &&
+              check_true(input['string, NUL'] === '\u0000', "input['string, NUL'] === '\u0000'") &&
+              check_true(input['string, astral character'] === '\uDBFF\uDFFD', "input['string, astral character'] === '\uDBFF\uDFFD'") &&
+              check_true(input['number, 0.2'] === 0.2, "input['number, 0.2'] === 0.2") &&
+              check_true(1/input['number, 0'] === Infinity, "1/input['number, 0'] === Infinity") &&
+              check_true(1/input['number, -0'] === -Infinity, "1/input['number, -0'] === -Infinity") &&
+              check_true(input['number, NaN'] !== input['NaN'], "input['number, NaN'] !== input['NaN']") &&
+              check_true(input['number, Infinity'] === Infinity, "input['number, Infinity'] === Infinity") &&
+              check_true(input['number, -Infinity'] === -Infinity, "input['number, -Infinity'] === -Infinity") &&
+              check_true(input['number, 9007199254740992'] === 9007199254740992, "input['number, 9007199254740992'] === 9007199254740992") &&
+              check_true(input['number, -9007199254740992'] === -9007199254740992, "input['number, -9007199254740992'] === -9007199254740992") &&
+              check_true(input['number, 9007199254740994'] === 9007199254740994, "input['number, 9007199254740994'] === 9007199254740994") &&
+              check_true(input['number, -9007199254740994'] === -9007199254740994, "input['number, 9007199254740994'] === -9007199254740994")) {
             var i = 0;
             for (var x in input) {
               i++;

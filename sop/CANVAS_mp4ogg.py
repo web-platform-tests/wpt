@@ -2,7 +2,7 @@
 
 import re
 
-# definition of test cases. 
+# definition of test cases.
 # We will use the names to parse the options for the code
 # Additionally we already define if we expect the test to fail (assert_throws)
 # or to pass (assert_true)
@@ -178,7 +178,5 @@ def parse_testname(name):
     parsed_data = re.match(r'^(?P<from>[EH]D)_(?P<from_domain>[AB])_(?P<ee>\w+?)_with_(?P<additional_info_ee>\w+)_(?P<to>[EH]D)_(?P<to_domain>[AB])_(?P<privilege>[rwx])_cross_origin_(?P<cross_origin>\w+)_origin_(?P<origin>\w+)_credentials_(?P<credentials>\w+)$', name)
     if(not parsed_data):
         return "ERROR: supplied test name is invalid"
-    
-    return parsed_data.groupdict()
 
-print parse_testname(tests[3][0])["origin"]
+    return parsed_data.groupdict()

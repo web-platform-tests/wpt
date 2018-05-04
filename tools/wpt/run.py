@@ -456,8 +456,7 @@ def run(venv, **kwargs):
 
 def run_single(venv, **kwargs):
     from wptrunner import wptrunner
-    wptrunner.start(**kwargs)
-    return
+    return wptrunner.start(**kwargs)
 
 
 def main():

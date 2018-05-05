@@ -18,43 +18,40 @@
     <div style="background: green; padding-top: 100px; padding-left: 100px; width: 100px; height: 100px;"></div>
 </div>
 <script>
-    setup({ explicit_done: true });
-    window.onload = function () {
-        test(function () {
-            var scroller1 = document.getElementById("scroller1");
+    test(function () {
+        var scroller1 = document.getElementById("scroller1");
 
-            scroller1.scrollTop = 100;
-            scroller1.scrollLeft = 100;
-            assert_equals(scroller1.scrollTop, 100, "changed scrollTop should be 100");
-            assert_equals(scroller1.scrollLeft, 100, "changed scrollLeft should be 100");
+        scroller1.scrollTop = 100;
+        scroller1.scrollLeft = 100;
+        assert_equals(scroller1.scrollTop, 100, "changed scrollTop should be 100");
+        assert_equals(scroller1.scrollLeft, 100, "changed scrollLeft should be 100");
 
-        }, "simple scroll with style: 'margin' and 'overflow: scroll'");
-        test(function () {
-            var scroller2 = document.getElementById("scroller2");
+    }, "simple scroll with style: 'margin' and 'overflow: scroll'");
+    test(function () {
+        var scroller2 = document.getElementById("scroller2");
 
-            scroller2.scrollTop = 100;
-            scroller2.scrollLeft = 100;
-            assert_equals(scroller2.scrollTop, 100, "changed scrollTop should be 100");
-            assert_equals(scroller2.scrollLeft, 100, "changed scrollLeft should be 100");
+        scroller2.scrollTop = 100;
+        scroller2.scrollLeft = 100;
+        assert_equals(scroller2.scrollTop, 100, "changed scrollTop should be 100");
+        assert_equals(scroller2.scrollLeft, 100, "changed scrollLeft should be 100");
 
-        }, "simple scroll with style: 'margin' and 'overflow: hidden'");
-        test(function () {
-            var scroller3 = document.getElementById("scroller3");
+    }, "simple scroll with style: 'margin' and 'overflow: hidden'");
+    test(function () {
+        var scroller3 = document.getElementById("scroller3");
 
-            scroller3.scrollTop = 100;
-            scroller3.scrollLeft = 100;
-            assert_equals(scroller3.scrollTop, 100, "changed scrollTop should be 100");
-            assert_equals(scroller3.scrollLeft, 100, "changed scrollLeft should be 100");
+        scroller3.scrollTop = 100;
+        scroller3.scrollLeft = 100;
+        assert_equals(scroller3.scrollTop, 100, "changed scrollTop should be 100");
+        assert_equals(scroller3.scrollLeft, 100, "changed scrollLeft should be 100");
 
-        }, "simple scroll with style: 'padding' and 'overflow: scroll'");
-        test(function () {
-            var scroller4 = document.getElementById("scroller4");
+    }, "simple scroll with style: 'padding' and 'overflow: scroll'");
+    test(function () {
+        var scroller4 = document.getElementById("scroller4");
 
-            scroller4.scrollTop = 100;
-            scroller4.scrollLeft = 100;
-            assert_equals(scroller4.scrollTop, 100, "changed scrollTop should be 100");
-            assert_equals(scroller4.scrollLeft, 100, "changed scrollLeft should be 100");
+        scroller4.scrollTop = 100;
+        scroller4.scrollLeft = 100;
+        assert_equals(scroller4.scrollTop, 100, "changed scrollTop should be 100");
+        assert_equals(scroller4.scrollLeft, 100, "changed scrollLeft should be 100");
 
-        }, "simple scroll with style: 'padding' and 'overflow: hidden'");
-    }
+    }, "simple scroll with style: 'padding' and 'overflow: hidden'");
 </script>

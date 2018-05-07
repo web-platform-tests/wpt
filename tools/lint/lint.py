@@ -456,7 +456,7 @@ def check_parsed(repo_root, path, f):
         return [("CONTENT-MANUAL", "Manual test whose filename doesn't end in '-manual'", path, None)]
 
     if source_file.type == "visual" and not source_file.name_is_visual:
-        return [("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None)]
+        errors.append(("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None))
 
     for reftest_node in source_file.reftest_nodes:
         href = reftest_node.attrib.get("href", "").strip(space_chars)

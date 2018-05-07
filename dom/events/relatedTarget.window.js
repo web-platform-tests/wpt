@@ -39,18 +39,15 @@ async_test(t => {
   t.done();
 }, "Reset if target pointed to a shadow tree pre-dispatch");
 
-async_test(t => {
+test(t => {
   const shadowChild = shadow.appendChild(document.createElement("div"));
-  const shadowChild2 = shadow.appendChild(document.createElement("div"));
-  shadowChild2.addEventListener("demo", t.step_func(() => document.body.appendChild(shadowChild)));
+  document.body.addEventListener("demo", t.step_func(() => document.body.appendChild(shadowChild)));
   const event = new FocusEvent("demo", { relatedTarget: shadowChild });
-  shadowChild2.dispatchEvent(event);
+  document.body.dispatchEvent(event);
   assert_equals(shadowChild.parentNode, document.body);
   assert_equals(event.target, null);
   assert_equals(event.relatedTarget, null);
   shadowChild.remove();
-  shadowChild2.remove();
-  t.done();
 }, "Reset if relatedTarget pointed to a shadow tree pre-dispatch");
 
 async_test(t => {

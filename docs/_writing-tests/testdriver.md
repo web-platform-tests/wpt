@@ -49,3 +49,9 @@ To send special keys, one must send the respective key's codepoint. Since this u
 For example, to send the tab key you would send "\uE004".
 
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}
+
+### `test_driver.minimize()`
+
+This function causes the current browser window to be minimized.
+It returns a `Promise` that resolves after the window has been
+minimized, or rejects if the window cannot be minimized.

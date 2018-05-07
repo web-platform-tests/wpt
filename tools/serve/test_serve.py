@@ -1,22 +1,28 @@
+from six import text_type
+
 from . import serve
 
 def test_make_hosts_file():
-    c = serve.Config(browser_host="foo.bar", alternate_hosts={"alt": "foo2.bar"})
+    c = serve.Config(
+        browser_host=u"foo.bar",
+        alternate_hosts={u"alt": u"foo2.bar"}
+    )
+    c.subdomains = {u"a", u"b", u"\u00E9"}
+    c.not_subdomains = {u"x", u"y"}
     hosts = serve.make_hosts_file(c, "192.168.42.42")
-    lines = hosts.split("\n")
-    assert set(lines) == {"",
-                          "0.0.0.0\tnonexistent-origin.foo.bar",
-                          "0.0.0.0\tnonexistent-origin.foo2.bar",
-                          "192.168.42.42\tfoo.bar",
-                          "192.168.42.42\tfoo2.bar",
-                          "192.168.42.42\twww.foo.bar",
-                          "192.168.42.42\twww.foo2.bar",
-                          "192.168.42.42\twww1.foo.bar",
-                          "192.168.42.42\twww1.foo2.bar",
-                          "192.168.42.42\twww2.foo.bar",
-                          "192.168.42.42\twww2.foo2.bar",
-                          "192.168.42.42\txn--lve-6lad.foo.bar",
-                          "192.168.42.42\txn--lve-6lad.foo2.bar",
-                          "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo.bar",
-                          "192.168.42.42\txn--n8j6ds53lwwkrqhv28a.foo2.bar"}
-    assert lines[-1] == ""
+    assert isinstance(hosts, text_type), type(hosts)
+    lines = hosts.split(u"\n")
+    assert set(lines) == {u"",
+                          u"0.0.0.0\tx.foo.bar",
+                          u"0.0.0.0\tx.foo2.bar",
+                          u"0.0.0.0\ty.foo.bar",
+                          u"0.0.0.0\ty.foo2.bar",
+                          u"192.168.42.42\tfoo.bar",
+                          u"192.168.42.42\tfoo2.bar",
+                          u"192.168.42.42\ta.foo.bar",
+                          u"192.168.42.42\ta.foo2.bar",
+                          u"192.168.42.42\tb.foo.bar",
+                          u"192.168.42.42\tb.foo2.bar",
+                          u"192.168.42.42\txn--9ca.foo.bar",
+                          u"192.168.42.42\txn--9ca.foo2.bar"}
+    assert lines[-1] == u""

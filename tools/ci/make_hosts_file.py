@@ -1,9 +1,13 @@
 import argparse
 import os
+import sys
+
+from six import text_type
 
 from ..localpaths import repo_root
 
 from ..serve.serve import load_config, make_hosts_file
+
 
 def create_parser():
     parser = argparse.ArgumentParser()

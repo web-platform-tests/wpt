@@ -182,7 +182,8 @@ class Config(Mapping):
 
         rv = {}
         for name, host in hosts.iteritems():
-            rv[name] = {subdomain: (subdomain.encode("idna") + u"." + host)
+            host = host.encode("idna")
+            rv[name] = {subdomain: (subdomain.encode("idna") + b"." + host).decode("ascii")
                         for subdomain in self.subdomains}
             rv[name][""] = host
         return rv
@@ -195,7 +196,8 @@ class Config(Mapping):
 
         rv = {}
         for name, host in hosts.iteritems():
-            rv[name] = {subdomain: (subdomain.encode("idna") + u"." + host)
+            host = host.encode("idna")
+            rv[name] = {subdomain: (subdomain.encode("idna") + b"." + host).decode("ascii")
                         for subdomain in self.not_subdomains}
         return rv
 

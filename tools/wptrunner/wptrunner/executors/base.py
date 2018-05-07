@@ -584,5 +584,5 @@ class SwitchToWindowAction(object):
 
     def __call__(self, payload):
         window_handle = payload["window_handle"]
-        self.logger.debug("Switching to window with handle: %s" % handle)
-        self.protocol.switch_to_window.switch_to_window(handle)
+        self.logger.debug("Switching to window with handle: %s" % window_handle)
+        self.protocol.switch_to_window.switch_to_window(window_handle)

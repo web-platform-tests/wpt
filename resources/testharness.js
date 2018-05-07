@@ -2343,7 +2343,6 @@ policies and contribution forms [3].
         if (harness_url !== undefined) {
             var stylesheet = output_document.createElementNS(xhtml_ns, "link");
             stylesheet.setAttribute("rel", "stylesheet");
-            stylesheet.setAttribute("href", harness_url + "testharness.css");
             var heads = output_document.getElementsByTagName("head");
             if (heads.length) {
                 heads[0].appendChild(stylesheet);

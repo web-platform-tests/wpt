@@ -245,10 +245,25 @@ def test_ref_same_file_path(caplog):
     assert "same_file_path.html" in caplog.text
 
 
+def test_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["tests/relative-testharness-manual.html"], "normal")
+    assert rv == 2
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
 def test_css_visual_path_testharness(caplog):
     rv = lint(_dummy_repo, ["css/css-unique/relative-testharness.html"], "normal")
     assert rv == 3
     assert "CONTENT-VISUAL" in caplog.text
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
+def test_css_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["css/css-unique/relative-testharness-interact.html"], "normal")
+    assert rv == 3
+    assert "CONTENT-MANUAL" in caplog.text
     assert "TESTHARNESS-PATH" in caplog.text
     assert "TESTHARNESSREPORT-PATH" in caplog.text
 

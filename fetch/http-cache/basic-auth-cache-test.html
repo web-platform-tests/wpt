@@ -9,12 +9,12 @@
 
   <script type="text/javascript">
     function loadAuth() {
-        var authUrl = 'http://testuser:testpass@' + window.location.host + '/http/resources/securedimage.py';
+        var authUrl = 'http://testuser:testpass@' + window.location.host + '/fetch/http-cache/resources/securedimage.py';
         document.getElementById('auth').src = authUrl;
     }
 
     function loadNoAuth() {
-        var noAuthUrl = 'http://' + window.location.host + '/http/resources/securedimage.py';
+        var noAuthUrl = 'http://' + window.location.host + '/fetch/http-cache/resources/securedimage.py';
         document.getElementById('noauth').src = noAuthUrl;
     }
 

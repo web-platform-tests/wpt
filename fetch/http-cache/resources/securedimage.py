@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -
 
 def main(request, response):
-    image_url = str.replace(request.url, "http/resources/securedimage.py", "images/green.png")
+    image_url = str.replace(request.url, "fetch/http-cache/resources/securedimage.py", "images/green.png")
 
     if "authorization" not in request.headers:
         response.status = 401

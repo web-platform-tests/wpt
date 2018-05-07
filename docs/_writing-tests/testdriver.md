@@ -51,3 +51,7 @@ For example, to send the tab key you would send "\uE004".
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}
 
 ### `test_driver.current_window_handle()`
+
+This function grabs the associated window handle `string` that identifies
+the current open window. It returns a `Promise` that contains the `string`
+window handle or it rejects if it cannot get the handle.

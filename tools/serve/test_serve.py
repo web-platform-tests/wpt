@@ -37,8 +37,8 @@ def test_make_hosts_file_windows():
     hosts = serve.make_hosts_file(c, "192.168.42.42")
     lines = hosts.split("\n")
     assert set(lines) == {"",
-                          "0.0.0.0\tnonexistent-origin.foo.bar",
-                          "0.0.0.0\tnonexistent-origin.foo2.bar",
+                          "0.0.0.0\tnonexistent.foo.bar",
+                          "0.0.0.0\tnonexistent.foo2.bar",
                           "192.168.42.42\tfoo.bar",
                           "192.168.42.42\tfoo2.bar",
                           "192.168.42.42\twww.foo.bar",

@@ -121,7 +121,7 @@ async_test(function(t) {
 }, 'HTTP protocol, punycode subdomain #2, port #2');
 
 async_test(function(t) {
-  check('http', 'nonexistent-origin.{{domains[]}}', {{ports[http][0]}}, t.step_func(function(result) {
+  check('http', 'nonexistent.{{domains[]}}', {{ports[http][0]}}, t.step_func(function(result) {
     assert_false(result);
 
     t.done();
@@ -129,7 +129,7 @@ async_test(function(t) {
 }, 'HTTP protocol, non-existent domain, port #1');
 
 async_test(function(t) {
-  check('http', 'nonexistent-origin.{{domains[]}}', {{ports[http][1]}}, t.step_func(function(result) {
+  check('http', 'nonexistent.{{domains[]}}', {{ports[http][1]}}, t.step_func(function(result) {
     assert_false(result);
 
     t.done();
@@ -185,7 +185,7 @@ async_test(function(t) {
 }, 'HTTPS protocol, punycode subdomain #2');
 
 async_test(function(t) {
-  check('https', 'nonexistent-origin.{{domains[]}}', {{ports[http][0]}}, t.step_func(function(result) {
+  check('https', 'nonexistent.{{domains[]}}', {{ports[http][0]}}, t.step_func(function(result) {
     assert_false(result);
 
     t.done();
@@ -193,7 +193,7 @@ async_test(function(t) {
 }, 'HTTPS protocol, non-existent domain, port #1');
 
 async_test(function(t) {
-  check('https', 'nonexistent-origin.{{domains[]}}', {{ports[http][1]}}, t.step_func(function(result) {
+  check('https', 'nonexistent.{{domains[]}}', {{ports[http][1]}}, t.step_func(function(result) {
     assert_false(result);
 
     t.done();

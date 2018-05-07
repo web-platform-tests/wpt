@@ -666,7 +666,7 @@ _subdomains = {u"www",
                u"天気の良い日",
                u"élève"}
 
-_not_subdomains = {u"nonexistent-origin"}
+_not_subdomains = {u"nonexistent"}
 
 
 class Config(config.Config):

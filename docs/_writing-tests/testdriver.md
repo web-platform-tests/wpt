@@ -52,5 +52,10 @@ For example, to send the tab key you would send "\uE004".
 
 ###  `test_driver.get_window_handles()`
 
+This is a function that gets a list of window handles associated 
+with all windows available to the browser. It returns a `Promise`
+with a payload that is an `array` of `strings` representing window 
+handles or it rejects if it cannot get the window handles.
+
 
 https://w3c.github.io/webdriver/#dfn-get-window-handles

@@ -4,11 +4,11 @@ promise_test(() => {
   input.type = "file";
   input.name = "hi";
   const fd = new FormData(form),
-        entry = fd.get(input.name);
-  assert_true(entry instanceof File, "entry is a File");
-  assert_equals(entry.name, "", "name");
-  assert_equals(entry.type, "application/octet-stream", "type");
-  return new Response(entry).text().then(body => {
+        value = fd.get(input.name);
+  assert_true(value instanceof File, "value is a File");
+  assert_equals(value.name, "", "name");
+  assert_equals(value.type, "application/octet-stream", "type");
+  return new Response(value).text().then(body => {
     assert_equals(body, "", "body");
   });
 }, "Empty <input type=file> is still serialized");

@@ -9,7 +9,7 @@ var worker = 'resources/fetch-event-test-worker.js';
 function wait(ms) {
     return new Promise(resolve => step_timeout(resolve, ms));
 }
-/*
+
 async_test(function(t) {
     const scope = 'resources/simple.html?headers';
     service_worker_unregister_and_register(t, worker, scope)
@@ -769,7 +769,6 @@ promise_test(async (t) => {
       }
     }
   }, 'FetchEvent#request.isReloadNavigation is true (with history traversal)');
-*/
 
 promise_test(async (t) => {
     const scope = 'resources/simple.html?isHistoryNavigation';

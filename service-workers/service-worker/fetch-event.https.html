@@ -1010,11 +1010,11 @@ promise_test(async (t) => {
                     'method = GET, isHistoryNavigation = false');
       await new Promise((resolve) => {
         frame.addEventListener('load', resolve);
-        frame.contentWindow.history.go(-1);
+        frame.contentWindow.history.go(-2);
       });
       await new Promise((resolve) => {
         frame.addEventListener('load', resolve);
-        frame.contentWindow.history.go(1);
+        frame.contentWindow.history.go(2);
       });
       assert_equals(frame.contentDocument.body.textContent,
                     'method = GET, isHistoryNavigation = true');

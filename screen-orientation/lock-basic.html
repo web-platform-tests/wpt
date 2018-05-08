@@ -11,13 +11,12 @@ test(() => {
   assert_equals(value, undefined);
 }, "Test that screen.orientation.unlock() returns a void value");
 
-promise_test(t => {
-  return screen.orientation.lock('any').then(value => {
-    assert_equals(value, undefined);
-  });
+promise_test(async t => {
+  const value = await screen.orientation.lock('any');
+  assert_equals(value, undefined);
 }, "Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.");
 
-promise_test(t => {
+promise_test(async t => {
   const orientations = [
     'any',
     'portrait',
@@ -27,17 +26,27 @@ promise_test(t => {
     'landscape-secondary',
     'portrait-primary',
   ];
-  const promises = orientations.map(type => {
-    const returnType = screen.orientation.lock(type);
+  for (const orientation of orientations) {
+    const returnType = screen.orientation.lock(orientation);
     assert_true(returnType instanceof Promise);
-  });
-  return Promise.all(promises).finally(() => {
-    screen.orientation.unlock();
-  });
+    await returnType;
+  }
+  screen.orientation.unlock();
 }, "Test that screen.orientation.lock returns a pending promise.");
 
-test(() => {
-  const previousOrientation = screen.orientation;
-  assert_equals(screen.orientation, previousOrientation);
+promise_test(async t => {
+  const preType = screen.orientation.type;
+  let newType = "";
+
+  if (preType.indexOf("portrait") != -1) {
+    newType = "landscape-primary";
+  } else {
+    newType = "portrait-primary";
+  }
+
+  const p = screen.orientation.lock(newType);
+  assert_equals(screen.orientation.type, preType);
+  await p;
+  assert_equals(screen.orientation.type, newType);
 }, "Test that screen.orientation.lock() is actually async");
 </script>

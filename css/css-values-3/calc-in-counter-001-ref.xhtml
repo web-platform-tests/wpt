@@ -3,22 +3,10 @@
  <head>
   <title>CSS Test: counter-* properties with a calc() expression</title>
   <link rel="author" title="Ondřej Žára" href="https://ondras.zarovi.cz/"/>
-  <link rel="help" href="https://www.w3.org/TR/css-values-3/#calc-notation"/>
-  <link rel="help" href="https://www.w3.org/TR/css-lists-3/#counter-properties"/>
-  <link rel="match" href="content-counter-017-ref.xht"/>
-  <meta name="flags" content="dom"/>
   <style type="text/css">
-
   body {
    white-space: nowrap;
   }
-
-  #a { counter-reset: a calc(3 + 5); }
-  #a::before { content: counter(a); }
-
-  #b { counter-reset: b 0; counter-increment: b calc(4 + 6); }
-  #b::before { content: counter(b); }
-
   </style>
  </head>
  <body>
@@ -26,8 +14,8 @@
  <p>The following two lines should be the same:</p>
 
  <div id="test">
-  <span id="a"></span>
-  <span id="b"></span>
+  <span id="a">8</span>
+  <span id="b">10</span>
  </div>
 
  <div id="reference">

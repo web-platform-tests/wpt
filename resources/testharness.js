@@ -451,6 +451,50 @@ policies and contribution forms [3].
         }
     };
 
+    /*
+     * JavaScript shells.
+     *
+     * This class is used as the test_environment when testharness is running
+     * inside a JavaScript shell.
+     */
+    function ShellTestEnvironment() {
+        this.name_counter = 0;
+        this.all_loaded = false;
+        this.on_loaded_callback = null;
+        Promise.resolve().then(function() {
+            this.all_loaded = true
+            if (this.on_loaded_callback) {
+                this.on_loaded_callback();
+            }
+        }.bind(this));
+        this.message_list = [];
+        this.message_ports = [];
+    }
+
+    ShellTestEnvironment.prototype.next_default_test_name = function() {
+        var suffix = this.name_counter > 0 ? " " + this.name_counter : "";
+        this.name_counter++;
+        return "Untitled" + suffix;
+    };
+
+    ShellTestEnvironment.prototype.on_new_harness_properties = function() {};
+
+    ShellTestEnvironment.prototype.on_tests_ready = function() {};
+
+    ShellTestEnvironment.prototype.add_on_loaded_callback = function(callback) {
+        if (this.all_loaded) {
+            callback();
+        } else {
+            this.on_loaded_callback = callback;
+        }
+    };
+
+    ShellTestEnvironment.prototype.test_timeout = function() {
+        // Tests running in a shell don't have a default timeout, so behave as
+        // if settings.explicit_timeout is true.
+        return null;
+    };
+
     function create_test_environment() {
         if ('document' in global_scope) {
             return new WindowTestEnvironment();
@@ -470,6 +514,10 @@ policies and contribution forms [3].
         if ('WorkerGlobalScope' in global_scope &&
             global_scope instanceof WorkerGlobalScope) {
             return new DedicatedWorkerTestEnvironment();
+        }
+
+        if (!('self' in global_scope)) {
+            return new ShellTestEnvironment();
         }
 
         throw new Error("Unsupported test environment");

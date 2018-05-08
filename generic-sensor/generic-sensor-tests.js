@@ -400,3 +400,4 @@ function runGenericSensorOnerror(sensorName) {
                 event.error.name == 'NotAllowedError');
   }, `${sensorName}: 'onerror' event is fired when sensor is not supported`);
 }
+

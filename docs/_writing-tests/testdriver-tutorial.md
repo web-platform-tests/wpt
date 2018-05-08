@@ -4,13 +4,13 @@
 We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
  - You know what WebDriver or Selenium is
- - Familiarity with javascript and python
+ - Familiarity with JavaScript and Python
 
 ## Code!
 
-Lets implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect) command in WebDriver.
+Let's implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect) command in WebDriver.
 
-First, we need to think of what the API will look like a little. We will be using selenium and marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
+First, we need to think of what the API will look like a little. We will be using Selenium and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
 
 The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).
 
@@ -93,7 +93,7 @@ The main thing here is the postMessage argument. The first argument is a json ob
 
  The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
 
- Next, this is passed to the executor and protocol in wptrunner. Time to switch to python!
+ Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 
 ```tools/wptrunner/wptrunner/executors/protocol.py```
 
@@ -207,9 +207,9 @@ class SeleniumProtocol(Protocol):
 
 
 ### Firefox
-We use the [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) marionette command.
+We use the [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) Marionette command.
 
-We will use executormarionette and use the Marionette python API.
+We will use executormarionette and use the Marionette Python API.
 
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
 

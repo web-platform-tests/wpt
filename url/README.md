@@ -1,3 +1,5 @@
+## urltestdata.json
+
 These tests are for browsers, but the data for
 `a-element.html`, `url-constructor.html`, and `a-element-xhtml.xhtml`
 is in `urltestdata.json` and can be re-used by non-browser implementations.
@@ -18,6 +20,11 @@ The keys for each test case are:
 
     The `origin` key may be missing.
     In that case, the API’s `origin` attribute is not tested.
+
+## URL parser's encoding argument
+
+Tests in `/encoding` and `/html/infrastructure/urls/resolving-urls/query-encoding/` cover the
+encoding argument to the URL parser.
 
 [parsing]: https://url.spec.whatwg.org/#concept-basic-url-parser
 [API]: https://url.spec.whatwg.org/#api

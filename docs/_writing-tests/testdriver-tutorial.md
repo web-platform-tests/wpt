@@ -236,7 +236,7 @@ from .protocol import (BaseProtocolPart,
                        TestDriverProtocolPart)
 ```
 
-Here we have the setup method which just redefines the webdriver object at this level. The important part is the set_window_rect function (and it's important it is named that since we called it that earlier). This will be call the Marionette API for [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) (self.marionette is a marionette instance here).
+Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will be call the Marionette API for [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) (self.marionette is a marionette instance here).
 
 Finally, we just need to tell the SeleniumProtocol to implement this part.
 

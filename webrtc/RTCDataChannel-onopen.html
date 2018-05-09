@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -19,7 +23,7 @@
        4. Fire a simple event named open at channel.
  */
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -34,12 +38,13 @@ async_test(t => {
     t.done();
   });
 
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'In-band channel: Open event should be fired (local) when the data channel opens');
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'In-band channel: Open event should be fired (local) when the data channel opens', {
+  timeout: 5000
+});
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -59,12 +64,13 @@ async_test(t => {
     });
   });
 
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'In-band channel: Open event should be fired (remote) when the data channel opens');
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'In-band channel: Open event should be fired (remote) when the data channel opens', {
+  timeout: 5000
+});
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -91,9 +97,10 @@ async_test(t => {
     });
   }
 
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Negotiated channel: Open event should be fired when the channels open');
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'Negotiated channel: Open event should be fired when the channels open', {
+  timeout: 5000
+});
 
 </script>

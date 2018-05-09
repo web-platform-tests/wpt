@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -29,7 +33,7 @@ const messages = [
 ];
 
 for (const [message, length, description] of messages) {
-  async_test(t => {
+  promise_test(async (t) => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -51,13 +55,14 @@ for (const [message, length, description] of messages) {
     });
 
     exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2)
-    .then(() => {
-      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 1000);
-    })
-    .catch(t.step_func(err =>
-      assert_unreached(`Unexpected promise rejection: ${err}`)));
-  }, `${description}: bufferedamountlow event should fire once bufferedAmount <= 0 (default)`);
+    await doSignalingHandshake(pc1, pc2);
+
+    t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+    await t.done_promise;
+  }, `${description}: bufferedamountlow event should fire once bufferedAmount <= 0 (default)`, {
+    timeout: 5000
+  });
 
   const thresholds = [
     Math.floor(length / 2),
@@ -66,7 +71,7 @@ for (const [message, length, description] of messages) {
   ];
 
   for (const threshold of thresholds) {
-    async_test(t => {
+    promise_test(async (t) => {
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -90,18 +95,19 @@ for (const [message, length, description] of messages) {
       });
 
       exchangeIceCandidates(pc1, pc2);
-      doSignalingHandshake(pc1, pc2)
-      .then(() => {
-        t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 1000);
-      })
-      .catch(t.step_func(err =>
-        assert_unreached(`Unexpected promise rejection: ${err}`)));
+      await doSignalingHandshake(pc1, pc2);
+
+      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+      await t.done_promise;
     }, `${description}: bufferedamountlow event should fire once bufferedAmount <=
-    ${threshold} (custom)`);
+  ${threshold} (custom)`, {
+      timeout: 5000
+    });
   }
 
   for (const threshold of thresholds) {
-    async_test(t => {
+    promise_test(async (t) => {
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -127,17 +133,18 @@ for (const [message, length, description] of messages) {
       });
 
       exchangeIceCandidates(pc1, pc2);
-      doSignalingHandshake(pc1, pc2)
-      .then(() => {
-        t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 1000);
-      })
-      .catch(t.step_func(err =>
-        assert_unreached(`Unexpected promise rejection: ${err}`)));
+      await doSignalingHandshake(pc1, pc2);
+
+      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+      await t.done_promise;
     }, `${description} x 10: bufferedamountlow event should fire once bufferedAmount <=
-    ${threshold} (custom)`);
+  ${threshold} (custom)`, {
+      timeout: 5000
+    });
   }
 
-  async_test(t => {
+  promise_test(async (t) => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -161,13 +168,14 @@ for (const [message, length, description] of messages) {
     });
 
     exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2)
-    .then(() => {
-      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
-    })
-    .catch(t.step_func(err =>
-      assert_unreached(`Unexpected promise rejection: ${err}`)));
-  }, `${description}: bufferedamountlow event should not fire on other channels`);
+    await doSignalingHandshake(pc1, pc2);
+
+    t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+    await t.done_promise;
+  }, `${description}: bufferedamountlow event should not fire on other channels`, {
+    timeout: 5000
+  });
 
 }
 </script>

@@ -1,12 +1,15 @@
 <!doctype html>
 <meta charset=utf-8>
-<meta name=timeout content=long>
 <title>RTCDataChannel send/receive stress test</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
 <script>
 'use strict';
+
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
 
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
@@ -54,7 +57,7 @@ const channelOptionsVariants = [
 
   Will transmit ~242 MiB on each peer.
  */
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -93,7 +96,7 @@ async_test(t => {
 
   // Create channel pairs
   const nChannelPairs = channelOptionsVariants.length * 30;
-  Promise.all(Array.from(new Array(nChannelPairs), (_, i) => {
+  const dcPairs = await Promise.all(Array.from(new Array(nChannelPairs), (_, i) => {
     let [labelFragment, channelOptions] = channelOptionsVariants[i % channelOptionsVariants.length];
 
     // Modify ID (if negotiated)
@@ -111,62 +114,63 @@ async_test(t => {
       doSignaling: i === nChannelPairs - 1,
       channelOptions: channelOptions
     });
-  }))
-  .then((dcPairs) => {
-    // Received message indexes per channel per peer
-    const indexesArray = [];
+  }));
 
-    for (let i = 0; i < dcPairs.length; ++i) {
-      for (const dc of dcPairs[i]) {
-        const indexes = new UniqueSet();
-        indexesArray.push(indexes);
-        dc.binaryType = 'arraybuffer';
+  // Received message indexes per channel per peer
+  const indexesArray = [];
 
-        // Verify the data on receive
-        dc.onmessage = t.step_func(event => {
-          const {data} = event;
+  for (let i = 0; i < dcPairs.length; ++i) {
+    for (const dc of dcPairs[i]) {
+      const indexes = new UniqueSet();
+      indexesArray.push(indexes);
+      dc.binaryType = 'arraybuffer';
 
-          // String: Split by semicolon and compare string
-          let index;
-          if (!(data instanceof ArrayBuffer)) {
-            index = data.split(';')[0];
-            index = parseInt(index, 10);
-            const [_, expected] = messages[index];
-            assert_equals(data, expected,
-              'Received data should be equal to sent data');
-          } else {
-            const view = new DataView(data);
-            index = view.getUint16(0);
-            const [_, expected] = messages[index];
-            assert_equals_typed_array(data, expected,
-              'Received data should be equal to sent data');
-          }
+      // Verify the data on receive
+      dc.onmessage = t.step_func(event => {
+        const {data} = event;
 
-          // Add received message index (will check the index is unique)
-          indexes.add(index);
+        // String: Split by semicolon and compare string
+        let index;
+        if (!(data instanceof ArrayBuffer)) {
+          index = data.split(';')[0];
+          index = parseInt(index, 10);
+          const [, expected] = messages[index];
+          assert_equals(data, expected,
+            'Received data should be equal to sent data');
+        } else {
+          const view = new DataView(data);
+          index = view.getUint16(0);
+          const [, expected] = messages[index];
+          assert_equals_typed_array(data, expected,
+            'Received data should be equal to sent data');
+        }
 
-          // Done if all messages on all channels on both peers have been received
-          if (index === messages.length - 1
-              && indexesArray.every((indexes) => indexes.size === messages.length)) {
-            t.done();
-          }
-        });
-      }
+        // Add received message index (will check the index is unique)
+        indexes.add(index);
+
+        // Done if all messages on all channels on both peers have been received
+        if (index === messages.length - 1
+            && indexesArray.every((indexes) => indexes.size === messages.length)) {
+          t.done();
+        }
+      });
     }
+  }
 
-    for (let i = 0; i < dcPairs.length; ++i) {
-      for (const dc of dcPairs[i]) {
-        // Delay sending
-        t.step_timeout(() => {
-          // Start transmitting messages
-          for (const [message, _] of messages) {
-            dc.send(message);
-          }
-        }, delay * (i + 1));
-      }
+  for (let i = 0; i < dcPairs.length; ++i) {
+    for (const dc of dcPairs[i]) {
+      // Delay sending
+      t.step_timeout(() => {
+        // Start transmitting messages
+        for (const [message] of messages) {
+          dc.send(message);
+        }
+      }, delay * (i + 1));
     }
-  })
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'Stress-test with multiple channels sending and receiving using various data sources');
+  }
+
+  await t.done_promise;
+}, 'Stress-test with multiple channels sending and receiving using various data sources', {
+  timeout: 420000 // yep, 7m to be safe
+});
 </script>

@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -34,7 +38,7 @@
       readonly attribute RTCDataChannel channel;
     };
  */
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -42,7 +46,7 @@ async_test(t => {
 
   let eventCount = 0;
 
-  const onDataChannel = t.step_func_done(event => {
+  const onDataChannel = t.step_func(event => {
     eventCount++;
     assert_equals(eventCount, 1,
       'Expect data channel event to fire exactly once');
@@ -61,14 +65,19 @@ async_test(t => {
     // See: https://github.com/w3c/webrtc-pc/issues/1761
     assert_equals(dc.readyState, 'connecting',
       'Expect channel ready state to be connecting');
+
+    t.done();
   });
 
   pc2.addEventListener('datachannel', onDataChannel);
   pc1.createDataChannel('fire-me!');
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
 
-}, 'Data channel event should fire when new data channel is announced to the remote peer');
+  await t.done_promise;
+}, 'Data channel event should fire when new data channel is announced to the remote peer', {
+  timeout: 5000
+});
 
 /*
   6.2.  RTCDataChannel
@@ -105,7 +114,7 @@ async_test(t => {
     Note: More exhaustive tests are defined in RTCDataChannel-dcep
  */
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -125,7 +134,7 @@ async_test(t => {
   assert_equals(localChannel.negotiated, false);
   assert_equals(localChannel.priority, 'high');
 
-  const onDataChannel = t.step_func_done(event => {
+  const onDataChannel = t.step_func(event => {
     const remoteChannel = event.channel;
     assert_true(remoteChannel instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
@@ -137,17 +146,21 @@ async_test(t => {
     assert_equals(localChannel.negotiated, false);
     assert_equals(remoteChannel.id, localChannel.id);
     assert_equals(remoteChannel.priority, 'high');
+
+    t.done();
   });
 
   pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'In-band negotiated channel created on remote peer should match the same configuration as local ' +
-  'peer');
+  await doSignalingHandshake(pc1, pc2);
 
-async_test(t => {
+  await t.done_promise;
+}, 'In-band negotiated channel created on remote peer should match the same configuration as local ' +
+  'peer', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -163,7 +176,7 @@ async_test(t => {
   assert_equals(localChannel.negotiated, false);
   assert_equals(localChannel.priority, 'low');
 
-  const onDataChannel = t.step_func_done(event => {
+  const onDataChannel = t.step_func(event => {
     const remoteChannel = event.channel;
     assert_true(remoteChannel instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
@@ -176,15 +189,19 @@ async_test(t => {
     assert_equals(localChannel.negotiated, false);
     assert_equals(remoteChannel.id, localChannel.id);
     assert_equals(remoteChannel.priority, 'low');
+
+    t.done();
   });
 
   pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
+  await doSignalingHandshake(pc1, pc2);
+
+  await t.done_promise;
 }, 'In-band negotiated channel created on remote peer should match the same (default) ' +
-  'configuration as local peer');
+  'configuration as local peer', {
+  timeout: 5000
+});
 
 /*
   6.2.  RTCDataChannel
@@ -196,7 +213,7 @@ async_test(t => {
         to negotiate the channel and create a RTCDataChannel object with the
         same id at the other peer.
  */
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -210,10 +227,13 @@ async_test(t => {
 
   pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
 
-  t.step_timeout(t.step_func_done(), 200);
-}, 'Negotiated channel should not fire datachannel event on remote peer');
+  t.step_timeout(t.step_func_done(), 2000);
+  await t.done_promise;
+}, 'Negotiated channel should not fire datachannel event on remote peer', {
+  timeout: 5000
+});
 
 /*
   Non-testable

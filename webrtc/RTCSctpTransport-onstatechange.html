@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -15,9 +19,11 @@
     7.    Set the [[SctpTransportState]] slot of connection's [[SctpTransport]] to "closed".
  */
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   // We use the queue to hold back candidates, so no connection can be established
   const pc1Queue = new IceCandidateQueue(pc1);
@@ -25,24 +31,25 @@ async_test(t => {
 
   // Negotiate SCTP transport
   pc1.createDataChannel('test');
-  doSignalingHandshake(pc1, pc2)
-  .then(() => {
-    for (const pc of [pc1, pc2]) {
-      assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
-      assert_equals(pc.sctp.state, 'connecting',
-        'RTCSctpTransport should be in the connecting state');
+  await doSignalingHandshake(pc1, pc2);
 
-      // Triggered after the peers connected
-      pc.sctp.onstatechange = t.step_func(() => {
-        assert_equals(pc.sctp.state, 'connected');
-        t.done();
-      });
-    }
+  for (const pc of [pc1, pc2]) {
+    assert_equals(pc.sctp.state, 'connecting',
+      'RTCSctpTransport should be in the connecting state');
 
-    // Let the peers connect
-    exchangeIceCandidates(pc1Queue, pc2Queue);
-  }).catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, 'RTCSctpTransport.onstatechange should fire when the state changes');
+    // Triggered after the peers connected
+    pc.sctp.onstatechange = t.step_func(() => {
+      assert_equals(pc.sctp.state, 'connected');
+      t.done();
+    });
+  }
+
+  // Let the peers connect
+  exchangeIceCandidates(pc1Queue, pc2Queue);
+
+  await t.done_promise;
+}, 'RTCSctpTransport.onstatechange should fire when the state changes', {
+  timeout: 5000
+});
 
 </script>

@@ -4,9 +4,8 @@ title: Project Administration
 order: -1
 ---
 
-The web-platform-tests project is more than just tests! This section documents
-all the information necessary to administer the infrastructure which makes the
-project possible.
+This section documents all the information necessary to administer the
+infrastructure which makes the project possible.
 
 ## Secrets
 
@@ -24,8 +23,8 @@ Project                   | Secret                   | Owners
 [pull-requests-dashboard] | Password for app secrets | boaz@bocoup.com, geoffers@gmail.com, jgraham@hoppipolla.co.uk, lukebjerring@google.com, mike@w3.org
 [web-platform-tests]      | TravisCI authorization   | ???
 
-Note that SSL certificates for all HTTPS-enabled domains are retrieved via
-[Let's Encrypt](https://letsencrypt.org/), so that data does not represent an
+SSL certificates for all HTTPS-enabled domains are retrieved via [Let's
+Encrypt](https://letsencrypt.org/), so that data does not represent an
 explicitly-managed secret.
 
 ## Third-party account owners

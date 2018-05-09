@@ -7,6 +7,10 @@
 <script>
 'use strict';
 
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -25,7 +29,7 @@ const nChannels = 10;
        3. Set channel's [[ReadyState]] slot to closing.
        4. If the closing procedure has not started yet, start it.
  */
-test(t => {
+test((t) => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   const dc = pc.createDataChannel('test');
@@ -34,22 +38,25 @@ test(t => {
   //       the channel should not be closed at this point.
   dc.close();
   assert_equals(dc.readyState, 'closing', 'dc should be closing after calling close()');
-}, 'In-band data channel closing before connection establishment');
+}, 'In-band data channel closing before connection establishment', {
+  timeout: 5000
+});
 
-promise_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  return createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' })
-  .then(([dc1, _]) => {
-    // Note: Since the closing procedure requires to queue a task,
-    //       the channel should not be closed at this point.
-    dc1.close();
-    assert_equals(dc1.readyState, 'closing', 'dc1 should be closing after calling close()');
-  });
-}, 'In-band data channel closing after connection establishment');
+  const [dc1] = await createDataChannelPair(pc1, pc2, { channelLabel: 'onclose' });
+
+  // Note: Since the closing procedure requires to queue a task,
+  //       the channel should not be closed at this point.
+  dc1.close();
+  assert_equals(dc1.readyState, 'closing', 'dc1 should be closing after calling close()');
+}, 'In-band data channel closing after connection establishment', {
+  timeout: 5000
+});
 
 /*
   6.2. An RTCDataChannel object's underlying data transport may be torn down in a non-abrupt
@@ -64,83 +71,83 @@ promise_test(t => {
        2. Set channel's [[ReadyState]] slot to closed.
        4. Fire a simple event named close at channel.
  */
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  Promise.all(Array.from(new Array(nChannels), (_, i) => {
+  const dcPairs = await Promise.all(Array.from(new Array(nChannels), (_, i) => {
     return createDataChannelPair(pc1, pc2, {
       channelLabel: `onclose-${i}`,
       doSignaling: i === nChannels - 1,
     });
-  }))
-  .then((dcPairs) => {
-    let nCloses = 0;
+  }));
 
-    for (const [_, dc2] of dcPairs) {
-      // We're closing on dc1, so dc2 should fire
-      // TODO: It is currently not clear whether dc1 should fire or not, see
-      //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
-      dc2.onclose = t.step_func(() => {
-        assert_equals(dc2.readyState, 'closed',
-          'dc2 should be closed after onclose has been raised');
-        ++nCloses;
-        if (nCloses === nChannels - 1) {
-          t.done();
-        }
-      });
-    }
+  let nCloses = 0;
 
-    for (const [dc1, _] of dcPairs) {
-      dc1.close();
-    }
-  })
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
+  for (const [, dc2] of dcPairs) {
+    // We're closing on dc1, so dc2 should fire. However, dc1 should not fire.
+    // See: https://github.com/w3c/webrtc-pc/issues/1821
+    dc2.onclose = t.step_func(() => {
+      assert_equals(dc2.readyState, 'closed',
+        'dc2 should be closed after onclose has been raised');
+      ++nCloses;
+      if (nCloses === nChannels - 1) {
+        t.done();
+      }
+    });
+  }
+
+  for (const [dc1] of dcPairs) {
+    dc1.close();
+  }
+
+  await t.done_promise;
 }, `In-band data channels x${nChannels} closing on local side should be synchronized across
- peers`);
+ peers`, {
+  timeout: 5000
+});
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  Promise.all(Array.from(new Array(nChannels), (_, i) => {
+  const dcPairs = await Promise.all(Array.from(new Array(nChannels), (_, i) => {
     return createDataChannelPair(pc1, pc2, {
       channelLabel: `onclose-${i}`,
       doSignaling: i === nChannels - 1,
     });
-  }))
-  .then((dcPairs) => {
-    let nCloses = 0;
+  }));
 
-    for (const [dc1, _] of dcPairs) {
-      // We're closing on dc1, so dc2 should fire
-      // TODO: It is currently not clear whether dc1 should fire or not, see
-      //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
-      dc1.onclose = t.step_func(() => {
-        assert_equals(dc1.readyState, 'closed',
-          'dc1 should be closed after onclose has been raised');
-        ++nCloses;
-        if (nCloses === nChannels - 1) {
-          t.done();
-        }
-      });
-    }
+  let nCloses = 0;
 
-    for (const [_, dc2] of dcPairs) {
-      dc2.close();
-    }
-  })
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
+  for (const [dc1] of dcPairs) {
+    // We're closing on dc2, so dc1 should fire. However, dc2 should not fire.
+    // See: https://github.com/w3c/webrtc-pc/issues/1821
+    dc1.onclose = t.step_func(() => {
+      assert_equals(dc1.readyState, 'closed',
+        'dc1 should be closed after onclose has been raised');
+      ++nCloses;
+      if (nCloses === nChannels - 1) {
+        t.done();
+      }
+    });
+  }
+
+  for (const [, dc2] of dcPairs) {
+    dc2.close();
+  }
+
+  await t.done_promise;
 }, `In-band data channels x${nChannels} closing on remote side should be synchronized across
- peers`);
+ peers`, {
+  timeout: 5000
+});
 
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -161,9 +168,8 @@ async_test(t => {
       dc1.close();
     });
 
-    // We're closing on dc1, so dc2 should fire
-    // TODO: It is currently not clear whether dc1 should fire or not, see
-    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+    // We're closing on dc1, so dc2 should fire. However, dc1 should not fire.
+    // See: https://github.com/w3c/webrtc-pc/issues/1821
     dc2.onclose = t.step_func(() => {
       assert_equals(dc1.readyState, 'closed',
         'dc2 should be closed after onclose has been raised');
@@ -175,13 +181,14 @@ async_test(t => {
   }
 
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, `Negotiated data channels x${nChannels} closing should be synchronized across peers`);
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, `Negotiated data channels x${nChannels} closing should be synchronized across peers`, {
+  timeout: 5000
+});
 
 // Based on https://bugs.chromium.org/p/webrtc/issues/detail?id=6881
-async_test(t => {
+promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -204,14 +211,13 @@ async_test(t => {
       ++nOpen;
       if (nOpen === nChannels - 1) {
         // Without this short timeout, Chrome's behaviour is flaky for some reason
-        t.step_timeout(() => pc1.close(), 500);
-        t.step_timeout(() => assert_unreached('remote close events did not fire in time'), 1200);
+        t.step_timeout(() => pc1.close(), 1000);
+        t.step_timeout(() => assert_unreached('remote close events did not fire in time'), 2000);
       }
     });
 
-    // We're closing on dc1, so dc2 should fire
-    // TODO: It is currently not clear whether dc1 should fire or not, see
-    //       https://github.com/w3c/webrtc-pc/issues/1799#issuecomment-373394934
+    // We're closing on dc1, so dc2 should fire. However, dc1 should not fire.
+    // See: https://github.com/w3c/webrtc-pc/issues/1821
     dc2.onclose = t.step_func(() => {
       assert_equals(dc1.readyState, 'closed',
         'dc2 should be closed after onclose has been raised');
@@ -223,10 +229,11 @@ async_test(t => {
   }
 
   exchangeIceCandidates(pc1, pc2);
-  doSignalingHandshake(pc1, pc2)
-  .catch(t.step_func(err =>
-    assert_unreached(`Unexpected promise rejection: ${err}`)));
-}, `Closing peer connection locally should close all ${nChannels} channels for the remote peer`);
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, `Closing peer connection locally should close all ${nChannels} channels for the remote peer`, {
+  timeout: 5000
+});
 
 /*
   Untestable:

@@ -21,7 +21,6 @@ Project                   | Secret                   | Owners
 [results-collection]      | Password for app secrets | boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
 [pull-requests-dashboard] | root SSH keys            | ???
 [pull-requests-dashboard] | Password for app secrets | boaz@bocoup.com, geoffers@gmail.com, jgraham@hoppipolla.co.uk, lukebjerring@google.com, mike@w3.org
-[web-platform-tests]      | TravisCI authorization   | ???
 
 SSL certificates for all HTTPS-enabled domains are retrieved via [Let's
 Encrypt](https://letsencrypt.org/), so that data does not represent an
@@ -30,10 +29,11 @@ explicitly-managed secret.
 ## Third-party account owners
 
 - (unknown registrar): https://web-platform-tests.org
-  - ???
+  - jgraham@hoppipolla.co.uk
 - (unknown registrar): https://w3c-test.org
   - ???
 - (unknown registrar): http://testthewebforward.org
+  - web-human@w3.org
 - [Google Domains](https://domains.google/): https://wpt.fyi
   - foolip@google.com
   - jeffcarp@google.com

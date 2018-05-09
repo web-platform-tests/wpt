@@ -86,14 +86,14 @@ window.test_driver_internal.set_element_rect = function(x, y, width, height) {
     return pending_promise;
 };
 ```
-The main thing here is the postMessage argument. The first argument is a json object with properties
- - ```type```: this always has to be the string ```"action"```
- - ```action```: the name of the testdriver command this defines (in this case, set_window_rect)
+The main thing here is the `postMessage` argument. The first argument is an object with properties
+ - `type`: this always has to be the string `"action"`
+ - `action`: the name of the testdriver command this defines (in this case, `set_window_rect`)
  - any other things you want to pass to the next point of execution (in this case, the x, y coordinates and the width and height)
 
- The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
+The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
 
- Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
+Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 
 ```tools/wptrunner/wptrunner/executors/protocol.py```
 

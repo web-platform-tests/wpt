@@ -18,7 +18,7 @@ The first part of this will be browser agnostic, but later we will need to imple
 
 ### ```resources/testdriver.js```
 
-This is the main entry point the tests get. Here we need to add a function to the test_driver object that will call the test_driver_internal object.
+This is the main entry point the tests get. Here we need to add a function to the `test_driver` object that will call the `test_driver_internal` object.
 
 ```javascript
 window.test_driver = {

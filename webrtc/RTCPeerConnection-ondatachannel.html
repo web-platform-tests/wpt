@@ -25,8 +25,8 @@ setup({ explicit_timeout: true });
     negotiated unset or set to false), the user agent of the peer that did not initiate the
     creation process MUST queue a task to run the following steps:
       2. Let channel be a newly created RTCDataChannel object.
-      7. Set channel's [[ReadyState]] slot to connecting.
-      7. Fire a datachannel event named datachannel with channel at the RTCPeerConnection object.
+      7. Set channel's [[ReadyState]] to open (but do not fire the open event, yet).
+      8. Fire a datachannel event named datachannel with channel at the RTCPeerConnection object.
 
   6.3.  RTCDataChannelEvent
     Firing a datachannel event named e with an RTCDataChannel channel means that an event with the
@@ -46,7 +46,7 @@ promise_test(async (t) => {
 
   let eventCount = 0;
 
-  const onDataChannel = t.step_func(event => {
+  pc2.ondatachannel = t.step_func((event) => {
     eventCount++;
     assert_equals(eventCount, 1,
       'Expect data channel event to fire exactly once');
@@ -61,21 +61,140 @@ promise_test(async (t) => {
     assert_true(dc instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
 
-    // As long as this event handler runs, the channel should be in the 'connecting' state.
-    // See: https://github.com/w3c/webrtc-pc/issues/1761
-    assert_equals(dc.readyState, 'connecting',
-      'Expect channel ready state to be connecting');
+    // The channel should be in the 'open' state already.
+    // See: https://github.com/w3c/webrtc-pc/pull/1851
+    assert_equals(dc.readyState, 'open',
+      'Expect channel ready state to be open');
 
     t.done();
   });
 
-  pc2.addEventListener('datachannel', onDataChannel);
   pc1.createDataChannel('fire-me!');
+
+  exchangeIceCandidates(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
+  t.step_timeout(() => {
+    assert_unreached('datachannel event should have been raised by now (timeout reached)');
+  }, 3000);
+
+  await t.done_promise;
+}, 'Data channel event should fire when new data channel is announced to the remote peer', {
+  timeout: 5000
+});
+
+/*
+  Since the channel should be in the 'open' state when dispatching via the 'datachannel' event,
+  we should be able to send data in the event handler.
+ */
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const message = 'meow meow!';
+
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc2 = event.channel;
+    dc2.send(message);
+  });
+
+  const dc1 = pc1.createDataChannel('fire-me!');
+  dc1.onmessage = t.step_func((event) => {
+    assert_equals(event.data, message,
+      'Received data should be equal to sent data');
+
+    t.done();
+  });
+
+  exchangeIceCandidates(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
+  t.step_timeout(() => {
+    assert_unreached('Data should have been received by now (timeout reached)');
+  }, 3000);
+
+  await t.done_promise;
+}, 'Should be able to send data in a datachannel event handler', {
+  timeout: 5000
+});
+
+/*
+  6.2.  RTCDataChannel
+    When an underlying data transport is to be announced (the other peer created a channel with
+    negotiated unset or set to false), the user agent of the peer that did not initiate the
+    creation process MUST queue a task to run the following steps:
+      8. Fire a datachannel event named datachannel with channel at the RTCPeerConnection object.
+      9. If the channel's [[ReadyState]] is still open, announce the data channel as open.
+ */
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc = event.channel;
+    dc.onopen = t.step_func(() => {
+      assert_unreached('Channel has been closed prior to the open event being fired');
+    });
+
+    // This should prevent triggering the 'open' event
+    dc.close();
+
+    t.step_timeout(t.step_func_done(), 2000);
+  });
+
+  pc1.createDataChannel('fire-me!');
+
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
   await t.done_promise;
-}, 'Data channel event should fire when new data channel is announced to the remote peer', {
+}, 'Open event should not be raised when closing the channel in the datachannel event', {
+  timeout: 5000
+});
+
+/*
+  Combination of the two tests above (send and close).
+ */
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const message = 'meow meow!';
+
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc2 = event.channel;
+    dc2.onopen = t.step_func(() => {
+      assert_unreached('Channel has been closed prior to the open event being fired');
+    });
+
+    // This should send but still prevent triggering the 'open' event
+    dc2.send(message);
+    dc2.close();
+
+    t.step_timeout(t.step_func_done(), 2000);
+  });
+
+  const dc1 = pc1.createDataChannel('fire-me!');
+  dc1.onmessage = t.step_func((event) => {
+    assert_equals(event.data, message,
+      'Received data should be equal to sent data');
+
+    t.done();
+  });
+
+  exchangeIceCandidates(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
+  t.step_timeout(() => {
+    assert_unreached('Data should have been received by now (timeout reached)');
+  }, 3000);
+
+  await t.done_promise;
+}, 'Open event should not be raised when sending and immediately closing the channel in the ' +
+  'datachannel event', {
   timeout: 5000
 });
 
@@ -120,37 +239,36 @@ promise_test(async (t) => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const localChannel = pc1.createDataChannel('test', {
+  const dc1 = pc1.createDataChannel('test', {
     ordered: false,
     maxRetransmits: 1,
     protocol: 'custom',
     priority: 'high'
   });
 
-  assert_equals(localChannel.label, 'test');
-  assert_equals(localChannel.ordered, false);
-  assert_equals(localChannel.maxRetransmits, 1);
-  assert_equals(localChannel.protocol, 'custom');
-  assert_equals(localChannel.negotiated, false);
-  assert_equals(localChannel.priority, 'high');
+  assert_equals(dc1.label, 'test');
+  assert_equals(dc1.ordered, false);
+  assert_equals(dc1.maxRetransmits, 1);
+  assert_equals(dc1.protocol, 'custom');
+  assert_equals(dc1.negotiated, false);
+  assert_equals(dc1.priority, 'high');
 
-  const onDataChannel = t.step_func(event => {
-    const remoteChannel = event.channel;
-    assert_true(remoteChannel instanceof RTCDataChannel,
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc2 = event.channel;
+    assert_true(dc2 instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
 
-    assert_equals(remoteChannel.label, 'test');
-    assert_equals(remoteChannel.ordered, false);
-    assert_equals(remoteChannel.maxRetransmits, 1);
-    assert_equals(remoteChannel.protocol, 'custom');
-    assert_equals(localChannel.negotiated, false);
-    assert_equals(remoteChannel.id, localChannel.id);
-    assert_equals(remoteChannel.priority, 'high');
+    assert_equals(dc2.label, 'test');
+    assert_equals(dc2.ordered, false);
+    assert_equals(dc2.maxRetransmits, 1);
+    assert_equals(dc2.protocol, 'custom');
+    assert_equals(dc1.negotiated, false);
+    assert_equals(dc2.id, dc1.id);
+    assert_equals(dc2.priority, 'high');
 
     t.done();
   });
 
-  pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
@@ -166,34 +284,33 @@ promise_test(async (t) => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const localChannel = pc1.createDataChannel('');
+  const dc1 = pc1.createDataChannel('');
 
-  assert_equals(localChannel.label, '');
-  assert_equals(localChannel.ordered, true);
-  assert_equals(localChannel.maxPacketLifeTime, null);
-  assert_equals(localChannel.maxRetransmits, null);
-  assert_equals(localChannel.protocol, '');
-  assert_equals(localChannel.negotiated, false);
-  assert_equals(localChannel.priority, 'low');
+  assert_equals(dc1.label, '');
+  assert_equals(dc1.ordered, true);
+  assert_equals(dc1.maxPacketLifeTime, null);
+  assert_equals(dc1.maxRetransmits, null);
+  assert_equals(dc1.protocol, '');
+  assert_equals(dc1.negotiated, false);
+  assert_equals(dc1.priority, 'low');
 
-  const onDataChannel = t.step_func(event => {
-    const remoteChannel = event.channel;
-    assert_true(remoteChannel instanceof RTCDataChannel,
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc2 = event.channel;
+    assert_true(dc2 instanceof RTCDataChannel,
       'Expect channel to be instance of RTCDataChannel');
 
-    assert_equals(remoteChannel.label, '');
-    assert_equals(remoteChannel.ordered, true);
-    assert_equals(remoteChannel.maxPacketLifeTime, null);
-    assert_equals(remoteChannel.maxRetransmits, null);
-    assert_equals(remoteChannel.protocol, '');
-    assert_equals(localChannel.negotiated, false);
-    assert_equals(remoteChannel.id, localChannel.id);
-    assert_equals(remoteChannel.priority, 'low');
+    assert_equals(dc2.label, '');
+    assert_equals(dc2.ordered, true);
+    assert_equals(dc2.maxPacketLifeTime, null);
+    assert_equals(dc2.maxRetransmits, null);
+    assert_equals(dc2.protocol, '');
+    assert_equals(dc1.negotiated, false);
+    assert_equals(dc2.id, dc1.id);
+    assert_equals(dc2.priority, 'low');
 
     t.done();
   });
 
-  pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
@@ -219,13 +336,12 @@ promise_test(async (t) => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  const onDataChannel = t.unreached_func('datachannel event should not be fired');
+  pc2.ondatachannel = t.unreached_func('datachannel event should not be fired');
 
   pc1.createDataChannel('test', {
     negotiated: true
   });
 
-  pc2.addEventListener('datachannel', onDataChannel);
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test for methodDetails attribute</title>
+<link rel="help" href="https://w3c.github.io/browser-payment-api/#methoddetails-attribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+"use strict";
+const basicCard = Object.freeze({ supportedMethods: "basic-card" });
+const applePay = Object.freeze({ supportedMethods: "https://apple.com/apple-pay" });
+const defaultMethods = Object.freeze([basicCard, applePay]);
+const defaultDetails = Object.freeze({
+  total: {
+    label: "Total",
+    amount: {
+      currency: "USD",
+      value: "1.00",
+    },
+  },
+});
+
+test(() => {
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
+  assert_idl_attribute(request, "methodDetails");
+  assert_equals(request.methodDetails, null);
+}, "Must have a methodDetails IDL attribute, which is initialized with null");

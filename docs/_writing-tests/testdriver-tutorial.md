@@ -157,8 +157,8 @@ class SetWindowRectAction(object):
         self.protocol.set_window_rect.set_window_rect(x, y, width, height)
 ```
 
-Don't forget to write docs in ```testdriver.md```
-Now we write the browser specific implementations
+Don't forget to write docs in ```testdriver.md```.
+Now we write the browser specific implementations.
 
 ### Chrome
 

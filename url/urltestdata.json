@@ -6521,27 +6521,18 @@
     "search": "?a",
     "hash": "#%GH"
   },
-  "Bad bases",
-  {
-    "input": "test-a.html",
-    "base": "a",
-    "failure": true
-  },
-  {
-    "input": "test-a-slash.html",
-    "base": "a/",
-    "failure": true
-  },
-  {
-    "input": "test-a-slash-slash.html",
-    "base": "a//",
-    "failure": true
-  },
+  "Non-special bases with cannot-be-a-base-URL flag set",
   {
     "input": "test-a-colon.html",
     "base": "a:",
     "failure": true
   },
+  {
+    "input": "test-a-colon-b.html",
+    "base": "a:b",
+    "failure": true
+  },
+  "Non-special bases with cannot-be-a-base-URL flag unset",
   {
     "input": "test-a-colon-slash.html",
     "base": "a:/",
@@ -6569,11 +6560,6 @@
     "pathname": "/test-a-colon-slash-slash.html",
     "search": "",
     "hash": ""
-  },
-  {
-    "input": "test-a-colon-b.html",
-    "base": "a:b",
-    "failure": true
   },
   {
     "input": "test-a-colon-slash-b.html",

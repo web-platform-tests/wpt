@@ -11,11 +11,6 @@
             return;
         }
 
-        // if (data.payload == "payload") {
-        //     console.log(data.message)
-        //     payload = data.message;
-        // }
-
         if (data.type !== "testdriver-complete") {
             return;
         }

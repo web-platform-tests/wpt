@@ -23,7 +23,7 @@ This is the main entry point the tests get. Here we need to add a function to th
 ```javascript
 window.test_driver = {
 
-    {... other commands},
+    // other commands...
 
     /**
     * Triggers browser window to be resized and relocated
@@ -49,7 +49,7 @@ In the same file, lets add to the internal object. ( do we need to do this?) (ma
 ```javascript
 window.test_driver_internal = {
 
-    {... other commands},
+    // other commands...
 
     /**
      * Triggers browser window to be resized and relocated

@@ -1,22 +1,16 @@
-import json
 import os
 import subprocess
 import time
 import sys
 import urllib2
 
-# Some tests may emit errors that the URL of the originating document. The
-# server is configured with the following explicit values so that the test
-# expectations can be defined statically.
-configuration_file = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'wpt-server-config.json'
-)
 
 class WPTServer(object):
     def __init__(self, wpt_root):
         self.wpt_root = wpt_root
-        with open(configuration_file, 'r') as handle:
-            config = json.load(handle)
+        sys.path.insert(0, os.path.join(wpt_root, "tools"))
+        from serve.serve import Config
+        config = Config()
         self.host = config["browser_host"]
         self.http_port = config["ports"]["http"][0]
         self.https_port = config["ports"]["https"][0]
@@ -25,12 +19,8 @@ class WPTServer(object):
 
     def start(self):
         self.devnull = open(os.devnull, 'w')
-        self.proc = subprocess.Popen([
-                os.path.join(self.wpt_root, 'wpt'),
-                'serve',
-                '--config',
-                configuration_file
-            ],
+        self.proc = subprocess.Popen(
+            [os.path.join(self.wpt_root, 'wpt'), 'serve'],
             stderr=self.devnull,
             cwd=self.wpt_root)
 

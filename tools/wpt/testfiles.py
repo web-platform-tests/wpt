@@ -96,10 +96,8 @@ def compile_ignore_rule(rule):
 
 def repo_files_changed(revish, include_uncommitted=False, include_new=False):
     git = get_git_cmd(wpt_root)
-    files = git("diff", "--name-only", "-z", revish).split("\0")
-    assert not files[-1]
-    files = set(files[:-1])
-
+    files = set(git("log", "--first-parent", "-z", "--format=", "--name-only", revish)
+                .split("\0")[:-1])
     if include_uncommitted:
         entries = git("status", "-z").split("\0")
         assert not entries[-1]

@@ -1,0 +1,7 @@
+{
+    "browser_host": "localhost",
+    "ports": {
+        "http": [8004, 9004],
+        "https": [8005]
+    }
+}

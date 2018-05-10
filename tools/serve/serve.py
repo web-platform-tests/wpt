@@ -663,7 +663,17 @@ _subdomains = {u"www",
                u"www1",
                u"www2",
                u"天気の良い日",
-               u"élève"}
+               u"élève",
+               u"deeper",
+               u"go.deeper",
+               u"to.go.deeper",
+               u"need.to.go.deeper",
+               u"we.need.to.go.deeper",
+               u"other.deeper",
+               u"other.go.deeper",
+               u"other.to.go.deeper",
+               u"other.need.to.go.deeper",
+               u"other.we.need.to.go.deeper"}
 
 _not_subdomains = {u"nonexistent"}
 

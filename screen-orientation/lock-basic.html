@@ -55,7 +55,7 @@ promise_test(async t => {
 promise_test(async t => {
   const preType = screen.orientation.type;
   const isPortrait = preType.includes("portrait");
-  const newType = `${ isPortrait ? "portrait" : "landscape" }-primary`;
+  const newType = `${ isPortrait ? "landscape" : "portrait" }-primary`;
   const p = screen.orientation.lock(newType);
   assert_equals(screen.orientation.type, preType, "Must not change orientation until next spin of event loop");
   await p;

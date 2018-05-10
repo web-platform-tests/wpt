@@ -41,7 +41,7 @@ promise_test(async t => {
   const orientationAngle = screen.orientation.angle;
   const orientationWatcher = new EventWatcher(t, orientation, "change");
 
-  if (orientationType.indexOf("portrait") != -1) {
+  if (orientationType.includes("portrait")) {
     orientation.lock("landscape-primary");
   } else {
     orientation.lock("portrait-primary");

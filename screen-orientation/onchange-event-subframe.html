@@ -8,23 +8,21 @@
 
 <script>
 promise_test(async t => {
-  const orientations = [
+  let orientations = [
     'portrait-primary',
     'portrait-secondary',
     'landscape-primary',
     'landscape-secondary'
   ];
+  if (screen.orientation.type.includes('portrait')) {
+    orientations = orientations.reverse();
+  }
   const messageWatcher = new EventWatcher(t, window, "message");
 
-  let currentIndex = orientations.indexOf(screen.orientation.type);
-  let nextIndex;
-  let message;
-  for (let i = 0; i < orientations.length; i++) {
-    nextIndex = (currentIndex + 1) % orientations.length;
-    screen.orientation.lock(orientations[nextIndex]);
-    currentIndex = nextIndex;
-    message = await messageWatcher.wait_for("message");
-    assert_equals(message.data, orientations[currentIndex], "subframe receives orientation change event");
+  for (const orientation of orientations) {
+    screen.orientation.lock(orientation);
+    const message = await messageWatcher.wait_for("message");
+    assert_equals(message.data, orientation, "subframe receives orientation change event");
   }
   screen.orientation.unlock();
 }, "Test subframes receive orientation change events");

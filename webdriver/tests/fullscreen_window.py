@@ -16,6 +16,12 @@ def fullscreen(session):
     return session.transport.send("POST", "session/%s/window/fullscreen" % session.session_id)
 
 
+def is_fullscreen(session):
+    # At the time of writing, WebKit does not conform to the Fullscreen API specification.
+    # Remove the prefixed fallback when https://bugs.webkit.org/show_bug.cgi?id=158125 is fixed.
+    return session.execute_script("return !!(window.fullScreen || document.webkitIsFullScreen)")
+
+
 # 10.7.5 Fullscreen Window
 
 
@@ -67,10 +73,8 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
     session.url = inline("<title>WD doc title</title>")
     create_dialog(session)("alert", text="accept #1", result_var="accept1")
 
-    expected_title = read_global(session, "document.title")
     response = fullscreen(session)
 
-    assert_success(response, expected_title)
     assert_dialog_handled(session, "accept #1")
     assert read_global(session, "accept1") == None
 
@@ -79,18 +83,15 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
 
     response = fullscreen(session)
 
-    assert_success(response, expected_title)
     assert_dialog_handled(session, "accept #2")
     assert read_global(session, "accept2"), True
 
-    expected_title = read_global(session, "document.title")
     create_dialog(session)("prompt", text="accept #3", result_var="accept3")
 
     response = fullscreen(session)
 
-    assert_success(response, expected_title)
     assert_dialog_handled(session, "accept #3")
-    assert read_global(session, "accept3") == ""
+    assert read_global(session, "accept3") == "" or read_global(session, "accept3") == "undefined"
 
 
 def test_handle_prompt_missing_value(session, create_dialog):
@@ -121,7 +122,7 @@ def test_handle_prompt_missing_value(session, create_dialog):
 
     assert_error(response, "unexpected alert open")
     assert_dialog_handled(session, "dismiss #1")
-    assert read_global(session, "accept1") == None
+    assert read_global(session, "dismiss1") == None
 
     create_dialog("confirm", text="dismiss #2", result_var="dismiss2")
 
@@ -148,7 +149,8 @@ def test_fullscreen(session):
     """
     response = fullscreen(session)
     assert_success(response)
-    assert session.execute_script("return window.fullScreen") is True
+
+    assert is_fullscreen(session) is True
 
 
 def test_payload(session):
@@ -197,12 +199,12 @@ def test_payload(session):
 
 
 def test_fullscreen_twice_is_idempotent(session):
-    assert session.execute_script("return window.fullScreen") is False
+    assert is_fullscreen(session) is False
 
     first_response = fullscreen(session)
     assert_success(first_response)
-    assert session.execute_script("return window.fullScreen") is True
+    assert is_fullscreen(session) is True
 
     second_response = fullscreen(session)
     assert_success(second_response)
-    assert session.execute_script("return window.fullScreen") is True
+    assert is_fullscreen(session) is True

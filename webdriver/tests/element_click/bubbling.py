@@ -28,9 +28,10 @@ def test_click_event_bubbles_to_parents(session):
         <script>
         window.clicks = [];
 
-        for (let level of document.querySelectorAll("div")) {
-          level.addEventListener("click", ({currentTarget}) => {
-            window.clicks.push(currentTarget);
+        var elements = document.querySelectorAll("div");
+        for (var level = 0; level < elements.length; level++) {
+          elements[level].addEventListener("click", function(clickEvent) {
+            window.clicks.push(clickEvent.currentTarget);
           });
         }
         </script>
@@ -67,9 +68,11 @@ def test_spin_event_loop(session):
         <script>
         window.delayedClicks = [];
 
-        for (let level of document.querySelectorAll("div")) {
-          level.addEventListener("click", ({currentTarget}) => {
-            setTimeout(() => window.delayedClicks.push(currentTarget), 100);
+        var elements = document.querySelectorAll("div");
+        for (var level = 0; level < elements.length; level++) {
+          elements[level].addEventListener("click", function(clickEvent) {
+            var target = clickEvent.currentTarget;
+            setTimeout(function() { window.delayedClicks.push(target); }, 100);
           });
         }
         </script>
@@ -133,7 +136,8 @@ def test_element_disappears_during_click(session):
 
         function logEvent({type, target, currentTarget}) {
           log.innerHTML += "<p></p>";
-          log.lastElementChild.textContent = `${type} in ${target.id} (handled by ${currentTarget.id})`;
+          log.lastElementChild.textContent =
+              `${type} in ${target.id} (handled by ${currentTarget.id})`;
         }
 
         for (let ev of ["click", "mousedown", "mouseup"]) {
@@ -142,7 +146,9 @@ def test_element_disappears_during_click(session):
           body.addEventListener(ev, logEvent);
         }
 
-        over.addEventListener("mousedown", () => over.style.display = "none");
+        over.addEventListener("mousedown", function(mousedownEvent) {
+          over.style.display = "none";
+        });
         </script>
         """)
     over = session.find.css("#over", all=False)

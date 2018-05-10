@@ -16,7 +16,7 @@ The first part of this will be browser agnostic, but later we will need to imple
  
 ## Code!
 
-### ```resources/testdriver.js```
+[resources/testdriver.js](https://github.com/w3c/web-platform-tests/blob/master/resources/testdriver.js)
  
 This is the main entry point the tests get. Here we need to add a function to the test_driver object that will call the test_driver_internal object.
  
@@ -71,7 +71,7 @@ window.test_driver_internal = {
 ```
 We will leave this unimplemented and override it in another file. Lets do that now!
  
-### ```tools/wptrunner/wptrunner/testdriver-extra.js```
+### [wptrunner/wptrunner/testdriver-extra.js](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
  
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).
  
@@ -95,7 +95,7 @@ The main thing here is the postMessage argument. The first argument is a json ob
 
  Next, this is passed to the executor and protocol in wptrunner. Time to switch to python!
  
-```tools/wptrunner/wptrunner/executors/protocol.py```
+[tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/executors/protocol.py)
  
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):

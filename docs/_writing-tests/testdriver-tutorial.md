@@ -44,7 +44,7 @@ window.test_driver = {
     }
 ```
  
-In the same file, lets add to the internal object. ( do we need to do this?) (make sure to do this if the internal call has different arguments than the external call, especially if it calls multiple internal calls)
+In the same file, lets add to the internal object. One reason the internal object exists is to allow for the possibility of different top level arguments at the API surface, but this won't be the case here.
  
 ```javascript
 window.test_driver_internal = {

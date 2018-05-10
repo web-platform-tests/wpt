@@ -5,8 +5,6 @@ We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
  - You know what WebDriver or Selenium is
  - Familiarity with javascript and python
-
-
  
 ## Introduction!
  
@@ -289,4 +287,9 @@ async_test(t => {
 });
 </script>
 ```
+
+
+### What if I need to return a value from my testdriver API?
+
+We currently don't have this capability, but it is coming soon and will be documented. The bug is [here](https://github.com/w3c/web-platform-tests/issues/10716)
 

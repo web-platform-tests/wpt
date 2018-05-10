@@ -5,8 +5,10 @@ We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
  - You know what WebDriver or Selenium is
  - Familiarity with javascript and python
+
+
  
-## Code!
+## Introduction!
  
 Lets implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect) command in WebDriver.
  

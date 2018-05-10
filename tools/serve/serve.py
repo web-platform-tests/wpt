@@ -448,7 +448,7 @@ def make_hosts_file(config, host):
     for domain in config.domains_set:
         rv.append("%s\t%s\n" % (host, domain))
 
-    # Windows interpets the IP address 0.0.0.0 as "non-existent, making it an
+    # Windows interpets the IP address 0.0.0.0 as "non-existent", making it an
     # appropriate alias for non-existent hosts. However, UNIX-like systems
     # interpret the same address to mean "any IP address," which is
     # inappropraite for this context. These syystems do not reserve any value

@@ -31,6 +31,7 @@ class WPTServer(object):
                 '--config',
                 configuration_file
             ],
+            stderr=self.devnull,
             cwd=self.wpt_root)
 
         for retry in range(5):

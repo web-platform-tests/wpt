@@ -6,9 +6,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
-const basicCard = Object.freeze({ supportedMethods: "basic-card" });
+const testMethod = Object.freeze({ supportedMethods: "not-a-real-method" });
 const applePay = Object.freeze({ supportedMethods: "https://apple.com/apple-pay" });
-const defaultMethods = Object.freeze([basicCard, applePay]);
+const defaultMethods = Object.freeze([testMethod, applePay]);
 const defaultDetails = Object.freeze({
   total: {
     label: "Total",

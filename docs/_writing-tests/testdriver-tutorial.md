@@ -1,30 +1,30 @@
 # Adding new commands to testdriver.js
- 
+
 ## Assumptions
 We assume the following in this writeup:
  - You know what web-platform-tests is and you have a working checkout and can run tests
  - You know what WebDriver or Selenium is
- - Familiarity with javascript and python
- 
+ - Familiarity with JavaScript and Python
+
 ## Introduction!
- 
-Lets implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect) command in WebDriver.
- 
-First, we need to think of what the API will look like a little. We will be using selenium and marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
- 
+
+Let's implement window resizing. We can do this via the [Set Window Rect](https://w3c.github.io/webdriver/webdriver-spec.html#dfn-set-window-rect) command in WebDriver.
+
+First, we need to think of what the API will look like a little. We will be using Selenium and Marionette for this, so we can look and see that they take in x, y coordinates, width and height integers.
+
 The first part of this will be browser agnostic, but later we will need to implement a specific layer for each browser (here we will do Firefox and Chrome).
- 
+
 ## Code!
 
-[resources/testdriver.js](https://github.com/w3c/web-platform-tests/blob/master/resources/testdriver.js)
- 
-This is the main entry point the tests get. Here we need to add a function to the test_driver object that will call the test_driver_internal object.
- 
+### [resources/testdriver.js](https://github.com/w3c/web-platform-tests/blob/master/resources/testdriver.js)
+
+This is the main entry point the tests get. Here we need to add a function to the `test_driver` object that will call the `test_driver_internal` object.
+
 ```javascript
 window.test_driver = {
- 
-    {... other commands},
- 
+
+    // other commands...
+
     /**
     * Triggers browser window to be resized and relocated
     *
@@ -43,14 +43,14 @@ window.test_driver = {
         return window.test_driver_internal.set_element_rect(x, y, width, height);
     }
 ```
- 
-In the same file, lets add to the internal object. One reason the internal object exists is to allow for the possibility of different top level arguments at the API surface, but this won't be the case here.
- 
+
+In the same file, lets add to the internal object. ( do we need to do this?) (make sure to do this if the internal call has different arguments than the external call, especially if it calls multiple internal calls)
+
 ```javascript
 window.test_driver_internal = {
- 
-    {... other commands},
- 
+
+    // other commands...
+
     /**
      * Triggers browser window to be resized and relocated
      *
@@ -74,7 +74,7 @@ We will leave this unimplemented and override it in another file. Lets do that n
 ### [wptrunner/wptrunner/testdriver-extra.js](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
  
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).
- 
+
 ```javascript
 window.test_driver_internal.set_element_rect = function(x, y, width, height) {
     const pending_promise = new Promise(function(resolve, reject) {
@@ -86,14 +86,14 @@ window.test_driver_internal.set_element_rect = function(x, y, width, height) {
     return pending_promise;
 };
 ```
-The main thing here is the postMessage argument. The first argument is a json object with properties
- - ```type```: this always has to be the string ```"action"```
- - ```action```: the name of the testdriver command this defines (in this case, set_window_rect)
+The main thing here is the `postMessage` argument. The first argument is an object with properties
+ - `type`: this always has to be the string `"action"`
+ - `action`: the name of the testdriver command this defines (in this case, `set_window_rect`)
  - any other things you want to pass to the next point of execution (in this case, the x, y coordinates and the width and height)
 
- The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
+The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
 
- Next, this is passed to the executor and protocol in wptrunner. Time to switch to python!
+Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
  
 [tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/executors/protocol.py)
  
@@ -101,32 +101,32 @@ The main thing here is the postMessage argument. The first argument is a json ob
 class SetWindowRectProtocolPart(ProtocolPart):
     """Protocol part for resizing and changing location of window"""
     __metaclass__ = ABCMeta
- 
+
     name = "set_window_rect"
- 
+
     @abstractmethod
     def set_window_rect(self, x, y, width, height):
         """Change the window rect
- 
+
         :param x: The x coordinate of the top left of the window.
         :param y: The y coordinate of the top left of the window.
         :param width: The width of the window.
         :param height: The height of the window."""
         pass
 ```
- 
+
 Next we change the base executor.
- 
+
 ```tools/wptrunner/wptrunner/executors/base.py```
- 
+
 ```python
 class CallbackHandler(object):
     """Handle callbacks from testdriver-using tests.
- 
+
     The default implementation here makes sense for things that are roughly like
     WebDriver. Things that are more different to WebDriver may need to create a
     fully custom implementation."""
- 
+
     def __init__(self, logger, protocol, test_window):
         self.protocol = protocol
         self.test_window = test_window
@@ -135,7 +135,7 @@ class CallbackHandler(object):
             "action": self.process_action,
             "complete": self.process_complete
         }
- 
+
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
             "send_keys": SendKeysAction(self.logger, self.protocol),
@@ -143,40 +143,40 @@ class CallbackHandler(object):
             "set_window_rect": SetWindowRectAction(self.logger, self.protocol) # add this!
         }
 ```
- 
+
 ```python
 class SetWindowRectAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
- 
+
     def __call__(self, payload):
         x, y, width, height = payload["x"], payload["y"], payload["width"], payload["height"]
         self.logger.debug("Setting window rect to be: x=%s, y=%s, width=%s, height=%s"
                           .format(x, y, width, height))
         self.protocol.set_window_rect.set_window_rect(x, y, width, height)
 ```
- 
-Don't forget to write docs in ```testdriver.md```
-Now we write the browser specific implementations
- 
+
+Don't forget to write docs in ```testdriver.md```.
+Now we write the browser specific implementations.
+
 ### Chrome
- 
+
 We will use executorselenium and use the Selenium API (in the future there are plans to use the WebDriver API directly).
- 
+
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
- 
+
 ```python
 class SeleniumSetWindowRectProtocolPart(SetWindowRectProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
- 
+
     def set_window_rect(self, x, y, width, height):
         return self.webdriver.set_window_rect(x, y, width, height)
 ```
- 
+
 Make sure to import the protocol part too!
- 
+
 ```python
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
@@ -188,11 +188,11 @@ from .protocol import (BaseProtocolPart,
                        SetWindowRectProtocolPart, # add this!
                        TestDriverProtocolPart)
 ```
- 
-Here we have the setup method which just redefines the webdriver object at this level. The important part is the set_window_rect function (and it's important it is named that since we called it that earlier). This will be call the Selenium API for [set window rect](http://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.set_window_rect) (self.webdriver is a Selenium WebDriver instance here).
- 
+
+Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will be call the Selenium API for [set window rect](http://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.set_window_rect) (`self.webdriver` is a Selenium WebDriver instance here).
+
 Finally, we just need to tell the SeleniumProtocol to implement this part.
- 
+
 ```python
 class SeleniumProtocol(Protocol):
     implements = [SeleniumBaseProtocolPart,
@@ -204,26 +204,26 @@ class SeleniumProtocol(Protocol):
                   SeleniumSetWindowRectProtocolPart,
                   SeleniumTestDriverProtocolPart]
 ```
- 
- 
-### Firefox
-We use the [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) marionette command.
 
-We will use executormarionette and use the Marionette python API.
- 
+
+### Firefox
+We use the [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) Marionette command.
+
+We will use executormarionette and use the Marionette Python API.
+
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
- 
+
 ```python
 class MarionetteSetWindowRectProtocolPart(SetWindowRectProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
- 
+
     def set_window_rect(self, x, y, width, height):
         return self.marionette.set_window_rect(x, y, width, height)
 ```
- 
+
 Make sure to import the protocol part too!
- 
+
 ```python
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
@@ -235,11 +235,11 @@ from .protocol import (BaseProtocolPart,
                        SetWindowRectProtocolPart, # add this!
                        TestDriverProtocolPart)
 ```
- 
-Here we have the setup method which just redefines the webdriver object at this level. The important part is the set_window_rect function (and it's important it is named that since we called it that earlier). This will be call the Marionette API for [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) (self.marionette is a marionette instance here).
- 
+
+Here we have the setup method which just redefines the webdriver object at this level. The important part is the `set_window_rect` function (and it's important it is named that since we called it that earlier). This will be call the Marionette API for [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) (`self.marionette` is a marionette instance here).
+
 Finally, we just need to tell the SeleniumProtocol to implement this part.
- 
+
 ```python
 class MarionetteProtocol(Protocol):
     implements = [MarionetteBaseProtocolPart,
@@ -253,13 +253,13 @@ class MarionetteProtocol(Protocol):
                   MarionetteSetWindowRectProtocolPart # add this
                   MarionetteTestDriverProtocolPart]
 ```
- 
- 
- 
+
+
+
 ### Other Browsers
 
 Other browsers may also use executorselenium (such as safari), or a completely new executor (such as servo). For these, you must change the executor in the same way as we did with chrome and firefox.
-  
+
 ### Write an infra test
 
 Make sure to add a test to `infrastructure/testdriver` :)
@@ -287,9 +287,12 @@ async_test(t => {
 });
 </script>
 ```
+<<<<<<< HEAD
 
 
 ### What if I need to return a value from my testdriver API?
 
 We currently don't have this capability, but it is coming soon and will be documented. The bug is [here](https://github.com/w3c/web-platform-tests/issues/10716)
 
+=======
+>>>>>>> b774bae9b4072e11e1c11a73bf42178105193188

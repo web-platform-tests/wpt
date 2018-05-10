@@ -371,7 +371,7 @@ class ChromeAndroid(Browser):
         return chrome.install_webdriver(dest)
 
     def version(self, binary):
-        raise NotImplementedError
+        return None
 
 
 class Opera(Browser):
@@ -455,7 +455,7 @@ class Edge(Browser):
         raise NotImplementedError
 
     def version(self, binary):
-        raise NotImplementedError
+        return None
 
 
 class InternetExplorer(Browser):
@@ -477,7 +477,7 @@ class InternetExplorer(Browser):
         raise NotImplementedError
 
     def version(self, binary):
-        raise NotImplementedError
+        return None
 
 
 class Safari(Browser):
@@ -502,7 +502,7 @@ class Safari(Browser):
         raise NotImplementedError
 
     def version(self, binary):
-        raise NotImplementedError
+        return None
 
 
 class Servo(Browser):
@@ -578,6 +578,7 @@ class Sauce(Browser):
 
     def version(self, binary):
         return None
+
 
 class WebKit(Browser):
     """WebKit-specific interface."""

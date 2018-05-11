@@ -32,6 +32,9 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
     create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
     response = close(session)
     assert response.status == 200
+
+    # Asserting that the dialog was handled requires valid top-level browsing
+    # context, so we must switch to the original window.
     session.window_handle = original_handle
     assert_dialog_handled(session, "dismiss #1")
 
@@ -41,6 +44,9 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
     create_dialog(session)("confirm", text="dismiss #2", result_var="dismiss2")
     response = close(session)
     assert response.status == 200
+
+    # Asserting that the dialog was handled requires valid top-level browsing
+    # context, so we must switch to the original window.
     session.window_handle = original_handle
     assert_dialog_handled(session, "dismiss #2")
 
@@ -50,6 +56,9 @@ def test_handle_prompt_accept(new_session, add_browser_capabilites):
     create_dialog(session)("prompt", text="dismiss #3", result_var="dismiss3")
     response = close(session)
     assert response.status == 200
+
+    # Asserting that the dialog was handled requires valid top-level browsing
+    # context, so we must switch to the original window.
     session.window_handle = original_handle
     assert_dialog_handled(session, "dismiss #3")
 

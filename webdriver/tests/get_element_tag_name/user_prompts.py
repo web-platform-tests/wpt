@@ -7,9 +7,9 @@ def read_global(session, name):
     return session.execute_script("return %s;" % name)
 
 
-def get_tag_name(session, element_id):
+def get_tag_name(session, webdriver_element_id):
     return session.transport.send("GET", "session/{session_id}/element/{element_id}/name".format(
-        session_id=session.session_id, element_id="foo"))
+        session_id=session.session_id, element_id=webdriver_element_id))
 
 
 def test_handle_prompt_dismiss(new_session, add_browser_capabilites):

@@ -19,7 +19,6 @@
     <html:link rel="help"
           href="https://www.w3.org/TR/SVG2/painting.html#OrientAttribute"/>
     <html:link rel="match"  href="markers-orient-001-ref.svg" />
-    <html:link rel="mismatch" href="RELATIVE_PATH_TO_REFERENCE_FILE" />
     <metadata class="flags">TOKENS</metadata>
     <desc class="assert">TEST ASSERTION</desc>
   </g>

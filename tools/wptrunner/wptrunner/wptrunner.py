@@ -325,20 +325,26 @@ def start(**kwargs):
 
 def main():
     """Main entry point when calling from the command line"""
-    kwargs = wptcommandline.parse_args()
-
+    from pyannotate_runtime import collect_types
+    collect_types.init_types_collection()
     try:
-        if kwargs["prefs_root"] is None:
-            kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
+        with collect_types.collect():
+            kwargs = wptcommandline.parse_args()
 
-        setup_logging(kwargs, {"raw": sys.stdout})
+            try:
+                if kwargs["prefs_root"] is None:
+                    kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
 
-        return start(**kwargs)
-    except Exception:
-        if kwargs["pdb"]:
-            import pdb
-            import traceback
-            print traceback.format_exc()
-            pdb.post_mortem()
-        else:
-            raise
+                setup_logging(kwargs, {"raw": sys.stdout})
+
+                return start(**kwargs)
+            except Exception:
+                if kwargs["pdb"]:
+                    import pdb
+                    import traceback
+                    print traceback.format_exc()
+                    pdb.post_mortem()
+                else:
+                    raise
+    finally:
+        collect_types.dump_stats(os.path.join(here, "foo.bar"))

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg id="svg-root"
   width="100%" height="100%" viewBox="0 0 480 360"
-  xmlns="http://www.w3.org/2000/svg" 
+  xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
@@ -42,34 +42,34 @@
     <g transform="translate(0,0)">
       <use xlink:href="#TestRect" style="fill:none;stroke:lightblue"/>
       <text>
-	<tspan x="90" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
-	<tspan x="90" y="134.8">adipisicing elit,</tspan>
+        <tspan x="90" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
+        <tspan x="90" y="134.8">adipisicing elit,</tspan>
       </text>
     </g>
     <g transform="translate(0,60)">
       <use xlink:href="#TestRect" style="fill:none;stroke:lightblue"/>
       <text style="text-anchor:middle">
-	<tspan x="240" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
-	<tspan x="240" y="134.8">adipisicing elit,</tspan>
+        <tspan x="240" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
+        <tspan x="240" y="134.8">adipisicing elit,</tspan>
       </text>
     </g>
     <g transform="translate(0,120)">
       <use xlink:href="#TestRect" style="fill:none;stroke:lightblue"/>
       <text style="text-anchor:end">
-	<tspan x="390" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
-	<tspan x="390" y="134.8">adipisicing elit,</tspan>
+        <tspan x="390" y="114.8">Lorem ipsum dolor sit amet, consectetur</tspan>
+        <tspan x="390" y="134.8">adipisicing elit,</tspan>
       </text>
     </g>
     <g transform="translate(0,180)">
       <use xlink:href="#TestRect" style="fill:none;stroke:lightblue"/>
       <text>
-	<tspan x="90" y="114.8">Lorem</tspan>
-	<tspan x="142.9">ipsum</tspan>
-	<tspan x="193.4">dolor</tspan>
-	<tspan x="236.8">sit</tspan>
-	<tspan x="261.2">amet,</tspan>
-	<tspan x="308.9">consectetur</tspan>
-	<tspan x="90" y="134.8">adipisicing elit,</tspan>
+        <tspan x="90" y="114.8">Lorem</tspan>
+        <tspan x="142.9">ipsum</tspan>
+        <tspan x="193.4">dolor</tspan>
+        <tspan x="236.8">sit</tspan>
+        <tspan x="261.2">amet,</tspan>
+        <tspan x="308.9">consectetur</tspan>
+        <tspan x="90" y="134.8">adipisicing elit,</tspan>
       </text>
     </g>
   </g>

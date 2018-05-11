@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg id="svg-root"
   width="100%" height="100%" viewBox="0 0 480 360"
-  xmlns="http://www.w3.org/2000/svg" 
+  xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
@@ -15,8 +15,7 @@
           <!-- YYYY-MM-DD -->
     <html:link rel="help"
           href="https://svgwg.org/svg2-draft/text.html#TextShapeInside"/>
-    <html:link rel="match"  href="RELATIVE_PATH_TO_REFERENCE_FILE" />
-    <html:link rel="mismatch" href="RELATIVE_PATH_TO_REFERENCE_FILE" />
+    <html:link rel="match"  href="text-shape-inside-002-ref.svg" />
     <metadata class="flags">TOKENS</metadata>
     <desc class="assert">TEST ASSERTION</desc>
   </g>

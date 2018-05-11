@@ -789,6 +789,8 @@ IdlArray.prototype.test = function()
             if (!lhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is not an interface.`);
             if (!rhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is not an interface.`);
         }
+        // Check for circular dependencies.
+        member.get_inheritance_stack();
     }
 
     Object.getOwnPropertyNames(this.members).forEach(function(memberName) {
@@ -1219,6 +1221,10 @@ IdlInterface.prototype.get_inheritance_stack = function() {
         var base = this.array.members[idl_interface.base];
         if (!base) {
             throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
+        } else if (stack.indexOf(base) > -1) {
+            stack.push(base);
+            let dep_chain = stack.map(i => i.name).join(',');
+            throw new IdlHarnessError(`${this.name} has a circular dependency: ${dep_chain}`);
         }
         idl_interface = base;
         stack.push(idl_interface);
@@ -1601,8 +1607,6 @@ IdlInterface.prototype.test_self = function()
         // object.
         // "Otherwise, if A is declared to inherit from another interface, then
         // return the interface prototype object for the inherited interface.
-        // "Otherwise, if A is declared with the [LegacyArrayClass] extended
-        // attribute, then return %ArrayPrototype%.
         // "Otherwise, return %ObjectPrototype%.
         //
         // "In the ECMAScript binding, the DOMException type has some additional
@@ -1625,9 +1629,6 @@ IdlInterface.prototype.test_self = function()
                     !this.array
                          .members[inherit_interface]
                          .has_extended_attribute("NoInterfaceObject");
-            } else if (this.has_extended_attribute('LegacyArrayClass')) {
-                inherit_interface = 'Array';
-                inherit_interface_has_interface_object = true;
             } else if (this.name === "DOMException") {
                 inherit_interface = 'Error';
                 inherit_interface_has_interface_object = true;
@@ -1779,7 +1780,6 @@ IdlInterface.prototype.test_self = function()
                           this.name + '.prototype should not have @@unscopables');
         }
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s @@unscopables property');
-
 };
 
 //@}
@@ -2255,7 +2255,7 @@ IdlInterface.prototype.test_member_iterable = function(member)
 //@{
 {
     var interfaceName = this.name;
-    var isPairIterator = member.idlType instanceof Array;
+    var isPairIterator = member.idlType.length === 2;
     test(function()
     {
         var descriptor = Object.getOwnPropertyDescriptor(self[interfaceName].prototype, Symbol.iterator);

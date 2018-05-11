@@ -104,6 +104,7 @@ class TestExecutor(object):
     test_type = None
     convert_result = None
     supports_testdriver = False
+    supports_jsshell = False
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
@@ -153,10 +154,10 @@ class TestExecutor(object):
         :param test: The test to run"""
         if test.environment != self.last_environment:
             self.on_environment_change(test.environment)
-
         try:
             result = self.do_test(test)
         except Exception as e:
+            self.logger.warning(traceback.format_exc(e))
             result = self.result_from_exception(test, e)
 
         if result is Stop:
@@ -193,7 +194,7 @@ class TestExecutor(object):
         if hasattr(e, "status") and e.status in test.result_cls.statuses:
             status = e.status
         else:
-            status = "ERROR"
+            status = "INTERNAL-ERROR"
         message = unicode(getattr(e, "message", ""))
         if message:
             message += "\n"
@@ -406,7 +407,7 @@ class WdspecRun(object):
             if message:
                 message += "\n"
             message += traceback.format_exc(e)
-            self.result = False, ("ERROR", message)
+            self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()
 
@@ -437,6 +438,8 @@ class ConnectionlessProtocol(Protocol):
 
 class WebDriverProtocol(Protocol):
     server_cls = None
+
+    implements = [ConnectionlessBaseProtocolPart]
 
     def __init__(self, executor, browser):
         Protocol.__init__(self, executor, browser)
@@ -545,6 +548,7 @@ class CallbackHandler(object):
     def _send_message(self, message_type, status, message=None):
         self.protocol.testdriver.send_message(message_type, status, message=message)
 
+
 class ClickAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
@@ -559,6 +563,7 @@ class ClickAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
         self.protocol.click.element(elements[0])
+
 
 class SendKeysAction(object):
     def __init__(self, logger, protocol):

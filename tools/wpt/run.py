@@ -96,11 +96,8 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 def check_environ(product):
     if product not in ("firefox", "servo"):
-        config = serve.load_config(os.path.join(wpt_root, "config.default.json"),
-                                   os.path.join(wpt_root, "config.json"))
-        config = serve.normalise_config(config, {})
-        expected_hosts = (set(config["domains"].itervalues()) ^
-                          set(config["not_domains"].itervalues()))
+        config = serve.load_config(os.path.join(wpt_root, "config.json"))
+        expected_hosts = set(config.all_domains_set)
         missing_hosts = set(expected_hosts)
         if platform.uname()[0] != "Windows":
             hosts_path = "/etc/hosts"
@@ -121,9 +118,9 @@ def check_environ(product):
                 else:
                     message = """Missing hosts file configuration. Run
 
-python wpt make-hosts-file >> %s
+python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 
-from a shell with Administrator privileges.""" % hosts_path
+in PowerShell with Administrator privileges.""" % hosts_path
                 raise WptrunError(message)
 
 
@@ -202,8 +199,7 @@ Consider installing certutil via your OS package manager or directly.""")
                 kwargs["test_types"].remove("wdspec")
 
         if kwargs["prefs_root"] is None:
-            print("Downloading gecko prefs")
-            prefs_root = self.browser.install_prefs(self.venv.path)
+            prefs_root = self.browser.install_prefs(kwargs["binary"], self.venv.path)
             kwargs["prefs_root"] = prefs_root
 
 
@@ -425,6 +421,7 @@ def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
 
     venv.install_requirements(os.path.join(wptrunner_path, "requirements.txt"))
 
+    kwargs['browser_version'] = setup_cls.browser.version(kwargs.get("binary"))
     return kwargs
 
 

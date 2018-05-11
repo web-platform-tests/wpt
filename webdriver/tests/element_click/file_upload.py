@@ -1,17 +1,16 @@
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
-def click(session, element):
-    return session.transport.send("POST", "session/{session_id}/element/{element_id}/click"
-                                  .format(session_id=session.session_id,
-                                          element_id=element.id))
+def element_click(session, element):
+    return session.transport.send(
+        "POST", "session/{session_id}/element/{element_id}/click".format(
+            session_id=session.session_id,
+            element_id=element.id))
 
-
-# 14.1 Element Click File Upload Element Tests
 
 def test_file_upload_state(session):
     session.url = inline("<input type=file>")
 
     element = session.find.css("input", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_error(response, "invalid argument")

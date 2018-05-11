@@ -3,54 +3,53 @@ import pytest
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
-def click(session, element):
-    return session.transport.send("POST", "session/{session_id}/element/{element_id}/click"
-                                  .format(session_id=session.session_id,
-                                          element_id=element.id))
+def element_click(session, element):
+    return session.transport.send(
+        "POST", "session/{session_id}/element/{element_id}/click".format(
+            session_id=session.session_id,
+            element_id=element.id))
 
-
-# 14.1 Element Click Link Element Tests
 
 def test_numbers_link(session):
     url = "/webdriver/tests/element_click/support/input.html"
-    session.url = inline("<a href=%s>123456</a>" % url)
+    session.url = inline("<a href={url}>123456</a>".format(url))
     element = session.find.css("a", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
 
-    assert session.url == "http://web-platform.test:8000%s" % url
+    assert session.url == "http://web-platform.test:8000{url}".format(url)
 
 
 def test_multi_line_link(session):
     url = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("""
         <p style="background-color: yellow; width: 50px;">
-            <a href=%s>Helloooooooooooooooooooo Worlddddddddddddddd</a>
-        </p>""" % url)
+            <a href={url}>Helloooooooooooooooooooo Worlddddddddddddddd</a>
+        </p>""".format(url))
     element = session.find.css("a", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
 
-    assert session.url == "http://web-platform.test:8000%s" % url
+    assert session.url == "http://web-platform.test:8000{url}".format(url)
 
 
 def test_link_unload_event(session):
     url = "/webdriver/tests/element_click/support/input.html"
     session.url = inline("""
         <body onunload="checkUnload()">
-            <a href=%s>click here</a>
+            <a href={url}>click here</a>
             <input type=checkbox>
             <script>
             function checkUnload() {
                 document.getElementsByTagName("input")[0].checked = true;
             }
             </script>
-        </body>""" % url)
+        </body>""".format(url))
     element = session.find.css("a", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
 
-    assert session.url == "http://web-platform.test:8000%s" % url
+    assert session.url == "http://web-platform.test:8000{url}".format(url)
 
     session.back()
 
@@ -65,17 +64,17 @@ def test_link_unload_event(session):
 def test_link_hash(session):
     id = "anchor"
     session.url = inline("""
-        <a href="#%s">aaaa</a>
-        <p id=%s style="margin-top: 5000vh">scroll here</p>
-        """ % (id, id))
+        <a href="#{url}">aaaa</a>
+        <p id={id} style="margin-top: 5000vh">scroll here</p>
+        """.format(id, id))
     old_url = session.url
 
     element = session.find.css("a", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
 
     new_url = session.url
-    assert "%s#%s" % (old_url, id) == new_url
+    assert "{url}#{id}".format(old_url, id) == new_url
 
     element = session.find.css("p", all=False)
     assert session.execute_script("""
@@ -88,10 +87,11 @@ def test_link_hash(session):
 
 
 def test_link_closes_window(session, create_window):
-    session.window_handle = create_window()
+    new_handle = create_window()
+    session.window_handle = new_handle
 
     session.url = inline("""<a href="/webdriver/tests/element_click/support/close_window.html">asdf</a>""")
     element = session.find.css("a", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
-    assert len(session.handles) == 1
+    assert new_handle not in session.handles

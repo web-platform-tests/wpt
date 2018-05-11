@@ -3,20 +3,20 @@ import pytest
 from tests.support.asserts import assert_error, assert_success
 from tests.support.inline import inline
 
-def click(session, element):
-    return session.transport.send("POST", "session/{session_id}/element/{element_id}/click"
-                                  .format(session_id=session.session_id,
-                                          element_id=element.id))
+def element_click(session, element):
+    return session.transport.send(
+        "POST", "session/{session_id}/element/{element_id}/click".format(
+            session_id=session.session_id,
+            element_id=element.id))
 
 
-# 14.1 Element Click
 def test_scroll_into_view(session):
     session.url = inline("""
         <input type=text value=Federer
         style="position: absolute; left: 0vh; top: 500vh">""")
 
     element = session.find.css("input", all=False)
-    response = click(session, element)
+    response = element_click(session, element)
     assert_success(response)
 
     # Check if element clicked is scrolled into view

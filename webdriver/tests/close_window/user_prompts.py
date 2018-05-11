@@ -3,7 +3,7 @@
 from tests.support.asserts import assert_error, assert_dialog_handled
 from tests.support.fixtures import create_dialog, create_window
 from tests.support.inline import inline
-from time import sleep
+
 
 def close(session):
     return session.transport.send("DELETE", "session/%s/window" % session.session_id)

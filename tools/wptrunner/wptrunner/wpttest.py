@@ -67,9 +67,15 @@ def get_run_info(metadata_root, product, **kwargs):
 class RunInfo(dict):
     def __init__(self, metadata_root, product, debug, browser_version=None, extras=None):
         import mozinfo
-
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
+
+        from update.tree import GitTree
+        self._gittree = GitTree()
+        rev = self._gittree.rev
+        if rev:
+            self["revision"] = rev
+
         self["product"] = product
         if debug is not None:
             self["debug"] = debug

@@ -164,7 +164,7 @@ Now we write the browser specific implementations.
 
 We will use executorselenium and use the Selenium API (in the future there are plans to use the WebDriver API directly).
 
-We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
+There isn't too much work to do here, we just need to define a subclass of the protocol part we defined earlier.
 
 ```python
 class SeleniumSetWindowRectProtocolPart(SetWindowRectProtocolPart):

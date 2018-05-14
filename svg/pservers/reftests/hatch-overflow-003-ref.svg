@@ -1,0 +1,93 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Hatch: Basic hatch.</title>
+    <html:link rel="copyright"
+          href="http://www.w3.org/Graphics/SVG/Test/Copyright"/>
+    <html:link rel="license"
+          href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html"/>
+    <html:link rel="author"
+          title="Tavmjong Bah"
+          href="http://tavmjong.free.fr"/>
+    <html:link rel="reviewer"
+          title="NAME_OF_REVIEWER"
+          href="mailto:EMAIL OR http://CONTACT_PAGE" />
+          <!-- YYYY-MM-DD -->
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/pservers.html#Hatches"/>
+  </g>
+
+  <style id="test-font" type="text/css">
+    /* Standard Font (if needed). */
+    @font-face {
+      font-family: FreeSans;
+      src: url("../fonts/FreeSans.woff") format("woff");
+    }
+    text {
+      font-family: FreeSans, sans-serif;
+      text-anchor: middle;
+      fill: black;
+    }
+    #title {
+      font-size: 24px;
+    }
+    .label {
+      font-size: 18px;
+    }
+  </style>
+
+  <defs>
+    <rect id="outline" x="20" y="140" width="200" height="200"/>
+    <clipPath id="clip" clipPathUnits="userSpaceOnUse">
+      <use xlink:href="#outline"/>
+    </clipPath>
+    <clipPath id="clip-overflow" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="-200" width="10" height="600"/>
+    </clipPath>
+  </defs>
+
+
+  <g id="test-body-reference">
+
+    <g clip-path="url(#clip)">
+      <g id="paths" style="fill:none;stroke:black;stroke-width:1" clip-path="url(#clip)">
+        <path id="path" d="m  5,120 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20 20,20 -20,20" clip-path="url(#clip-overflow)"/>
+        <use xlink:href="#path" x="10"/>
+        <use xlink:href="#path" x="20"/>
+        <use xlink:href="#path" x="30"/>
+        <use xlink:href="#path" x="40"/>
+        <use xlink:href="#path" x="50"/>
+        <use xlink:href="#path" x="60"/>
+        <use xlink:href="#path" x="70"/>
+        <use xlink:href="#path" x="80"/>
+        <use xlink:href="#path" x="90"/>
+        <use xlink:href="#path" x="100"/>
+        <use xlink:href="#path" x="110"/>
+        <use xlink:href="#path" x="120"/>
+        <use xlink:href="#path" x="130"/>
+        <use xlink:href="#path" x="140"/>
+        <use xlink:href="#path" x="150"/>
+        <use xlink:href="#path" x="160"/>
+        <use xlink:href="#path" x="170"/>
+        <use xlink:href="#path" x="180"/>
+        <use xlink:href="#path" x="190"/>
+        <use xlink:href="#path" x="200"/>
+        <use xlink:href="#path" x="210"/>
+        <use xlink:href="#path" x="220"/>
+      </g>
+    </g>
+    <g clip-path="url(#clip)" transform="translate(240,0)">
+      <use xlink:href="#paths" transform="translate(0,-20)"/>
+    </g>
+
+    <g style="fill:none;stroke:lightblue">
+      <use xlink:href="#outline"/>
+      <use xlink:href="#outline" x="240"/>
+    </g>
+
+  </g>
+
+</svg>

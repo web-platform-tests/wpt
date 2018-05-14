@@ -259,7 +259,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
-    const skip = function(name) {
+    const skip = name => {
       return this.is_excluded_by_options(name, options);
     }
     // Record of skipped items in case we later determine they are a dependency.
@@ -327,7 +327,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
-    var should_skip = function(name) {
+    var should_skip = name => {
         return this.is_excluded_by_options(name, options);
     }
 
@@ -382,6 +382,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         }
 
         if (parsed_idl["inheritance"]) {
+            // NOTE: Clash should be impossible (would require redefinition of parsed_idl.name).
             if (parsed_idl.name in this["inheritance"]
                 && parsed_idl["inheritance"] != this["inheritance"][parsed_idl.name]) {
                 throw new IdlHarnessError(

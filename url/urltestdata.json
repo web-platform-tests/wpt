@@ -6521,7 +6521,7 @@
     "search": "?a",
     "hash": "#%GH"
   },
-  "URLs that require a non-about:blank base. (Also serve as invalid base tests.)"
+  "URLs that require a non-about:blank base. (Also serve as invalid base tests.)",
   {
     "input": "a",
     "base": "about:blank",
@@ -6548,7 +6548,7 @@
     "base": "a:b",
     "failure": true
   },
-  "Other base URL tests, that must succeed"
+  "Other base URL tests, that must succeed",
   {
     "input": "test-a-colon-slash.html",
     "base": "a:/",

@@ -302,15 +302,10 @@ Here is some template code!
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-async_test(t => {
-  test_driver
-    .set_window_rect(100, 100, 100, 100) // watch the window resize!
-    .then(() => {
-        // do something!
-        t.done());
-    }
-    .catch(t.unreached_func("set window rect failed"));
-});
+promise_test(async t => {
+  await test_driver.set_window_rect(100, 100, 100, 100);
+  // do something
+}
 </script>
 ```
 ### What about testdriver-vendor.js?

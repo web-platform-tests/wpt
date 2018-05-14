@@ -73,7 +73,7 @@ def test_list_tests(manifest_dir):
 
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
-                       "chrome", "/dom/nodes/Element-tagName.html"])
+                       "--yes", "chrome", "/dom/nodes/Element-tagName.html"])
     assert excinfo.value.code == 0
 
 
@@ -94,6 +94,7 @@ def test_list_tests_missing_manifest(manifest_dir):
                        "--tests", here,
                        "--metadata", manifest_dir,
                        "--list-tests",
+                       "--yes",
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0
@@ -121,6 +122,7 @@ def test_list_tests_invalid_manifest(manifest_dir):
                        "--tests", here,
                        "--metadata", manifest_dir,
                        "--list-tests",
+                       "--yes",
                        "firefox", "/dom/nodes/Element-tagName.html"])
 
     assert excinfo.value.code == 0

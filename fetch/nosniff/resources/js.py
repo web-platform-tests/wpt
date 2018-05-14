@@ -1,4 +1,5 @@
 def main(request, response):
+
     outcome = request.GET.first("outcome", "f")
     type = request.GET.first("type", "Content-Type missing")
 

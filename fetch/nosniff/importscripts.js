@@ -14,6 +14,7 @@ const get_url = (mime, outcome) => {
   return url
 }
 
+
 [null, "", "x", "x/x", "text/html", "text/json"].forEach(function(mime) {
   try {
     importScripts(get_url(mime))

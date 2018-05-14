@@ -4,10 +4,10 @@ const videoURL = getVideoURI("/images/pattern"),
       videoMIMEType = getMediaContentType(videoURL);
 
 [
-  [videoURL, videoMIMEType],
-  ["/images/red.png", "image/png"],
-  ["/common/text-plain.txt", "text/plain"],
-  ["/common/blank.html", "text/html"]
+  [videoURL, videoMIMEType, "video"],
+  ["/images/red.png", "image/png", "image"],
+  ["/common/text-plain.txt", "text/plain", "text"],
+  ["/common/blank.html", "text/html", "HTML"]
 ].forEach(val => {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
@@ -21,7 +21,8 @@ const videoURL = getVideoURI("/images/pattern"),
       assert_equals(frame.contentDocument.contentType, val[1]);
 
       // Make sure a load event is fired across browsers
+      // https://github.com/w3c/web-platform-tests/pull/10239
       frame.contentDocument.close();
     });
-  }, "document.write(): " + val[1] + " document");
+  }, "document.write(): " + val[2] + " document");
 });

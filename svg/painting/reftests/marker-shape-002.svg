@@ -1,0 +1,62 @@
+<svg id="svg-root"
+  width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <g id="testmeta">
+    <title>Hatch: Basic hatch.</title>
+    <html:link rel="copyright"
+          href="http://www.w3.org/Graphics/SVG/Test/Copyright"/>
+    <html:link rel="license"
+          href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html"/>
+    <html:link rel="author"
+          title="Tavmjong Bah"
+          href="http://tavmjong.free.fr"/>
+    <html:link rel="reviewer"
+          title="NAME_OF_REVIEWER"
+          href="mailto:EMAIL OR http://CONTACT_PAGE" />
+          <!-- YYYY-MM-DD -->
+    <html:link rel="help"
+          href="https://www.w3.org/TR/SVG2/painting.html#Markers"/>
+    <html:link rel="match"  href="marker-shape-001-ref.svg" />
+    <metadata class="flags">TOKENS</metadata>
+    <desc class="assert">TEST ASSERTION</desc>
+  </g>
+
+  <style id="test-font" type="text/css">
+    /* Standard Font (if needed). */
+    @font-face {
+      font-family: FreeSans;
+      src: url("../fonts/FreeSans.woff") format("woff");
+    }
+    text {
+      font-family: FreeSans, sans-serif;
+      text-anchor: middle;
+      fill: black;
+    }
+    #title {
+      font-size: 24px;
+    }
+    .label {
+      font-size: 18px;
+    }
+  </style>
+
+  <defs>
+    <marker id="Mid"
+            viewBox="0 0 10 10" refX="0" refY="5"
+            markerUnits="strokeWidth"
+            markerWidth="12"
+            markerHeight="9"
+            orient="auto"
+            fill="orange">
+      <path d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+  </defs>
+
+  <g id="test-body-content" style="fill:none;stroke:black;stroke-width:2;marker-mid:url(#Mid)">
+    <rect  x="40" y="140" width="160" height="160"/>
+    <rect x="280" y="140" width="160" height="160" rx="40"/>
+  </g>
+
+</svg>

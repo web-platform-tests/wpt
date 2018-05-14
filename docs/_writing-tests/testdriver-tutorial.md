@@ -287,12 +287,12 @@ async_test(t => {
 });
 </script>
 ```
-<<<<<<< HEAD
+### What about testdriver-vendor.js?
 
+The file [testdriver-vendor.js](/Users/kereliuk/web-platform-tests/resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except is
+run instead of testdriver-extra.js in browser specific test environments. For example, in [Chromium LayoutTests](https://cs.chromium.org/chromium/src/third_party/WebKit/LayoutTests/?q=LayoutTests&sq=package:chromium&dr).
 
 ### What if I need to return a value from my testdriver API?
 
 We currently don't have this capability, but it is coming soon and will be documented. The bug is [here](https://github.com/w3c/web-platform-tests/issues/10716)
 
-=======
->>>>>>> b774bae9b4072e11e1c11a73bf42178105193188

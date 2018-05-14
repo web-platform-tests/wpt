@@ -75,9 +75,11 @@ function run_test(algorithmNames, slowTest) {
     var subTestEnd = Infinity;
     var match;
     if (location.search) {
-        match = /^\?(\d+)-(\d+)$/.exec(location.search);
+        match = /^\?(\d+)-(\d+|last)$/.exec(location.search);
         subTestStart = match[1];
-        subTestEnd = match[2];
+        if (match[2] !== "last") {
+            subTestEnd = match[2];
+        }
     }
     var currentSubTest = 0;
 

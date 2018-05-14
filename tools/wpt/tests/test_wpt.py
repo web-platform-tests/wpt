@@ -100,6 +100,33 @@ def test_list_tests_missing_manifest(manifest_dir):
 
 
 @pytest.mark.slow
+def test_list_tests_invalid_manifest(manifest_dir):
+    """The `--list-tests` option should not produce an error in the presence of
+    a malformed test manifest file."""
+
+    manifest_filename = os.path.join(manifest_dir, "MANIFEST.json")
+
+    assert os.path.isfile(manifest_filename)
+
+    with open(manifest_filename, "a+") as handle:
+        handle.write("extra text which invalidates the file")
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run",
+                       # This test triggers the creation of a new manifest
+                       # file which is not necessary to ensure successful
+                       # process completion. Specifying the current directory
+                       # as the tests source via the --tests` option
+                       # drastically reduces the time to execute the test.
+                       "--tests", here,
+                       "--metadata", manifest_dir,
+                       "--list-tests",
+                       "firefox", "/dom/nodes/Element-tagName.html"])
+
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")

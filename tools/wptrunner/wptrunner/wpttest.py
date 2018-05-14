@@ -71,8 +71,7 @@ class RunInfo(dict):
         self.update(mozinfo.info)
 
         from update.tree import GitTree
-        self._gittree = GitTree()
-        rev = self._gittree.rev
+        rev = GitTree().rev
         if rev:
             self["revision"] = rev
 

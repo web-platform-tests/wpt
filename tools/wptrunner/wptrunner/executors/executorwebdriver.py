@@ -316,8 +316,6 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
-        self.logger.info("Test requires OS-level window focus")
-
         self.protocol.webdriver.window.size = (600, 600)
 
         result = self.implementation.run_test(test)

@@ -4,7 +4,7 @@ from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,
                                           SeleniumRefTestExecutor)
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,
-                                          WebDriverRefTestExecutor)
+                                           WebDriverRefTestExecutor)
 from ..executors.executorchrome import ChromeDriverWdspecExecutor
 
 
@@ -54,12 +54,11 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     if test_type == "wdspec":
         capabilities["chromeOptions"]["w3c"] = True
 
-    if __wptrunner__["executor"]["testharness"] == "WebDriverTestharnessExecutor" \
-        or __wptrunner__["executor"]["reftest"] == "WebDriverRefTestExecutor":
+    if __wptrunner__["executor"]["testharness"] == ("WebDriverTestharnessExecutor" 
+        or __wptrunner__["executor"]["reftest"] == "WebDriverRefTestExecutor"):
         capabilities["chromeOptions"]["w3c"] = True
         always_match = {"alwaysMatch": capabilities}
         executor_kwargs["capabilities"] = always_match
-
     else:
         executor_kwargs["capabilities"] = capabilities 
     return executor_kwargs

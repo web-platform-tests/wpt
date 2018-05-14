@@ -91,7 +91,33 @@ The main thing here is the `postMessage` argument. The first argument is an obje
  - `action`: the name of the testdriver command this defines (in this case, `set_window_rect`)
  - any other things you want to pass to the next point of execution (in this case, the x, y coordinates and the width and height)
 
-The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor.
+<!-- The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor. -->
+The pending promise is out of scope of this function and is resolved when the window recieves a completion message from the executor.
+This happens here in the same file:
+
+```javascript
+    let pending_resolve = null;
+    let pending_reject = null;
+    window.addEventListener("message", function(event) {
+        const data = event.data;
+
+        if (typeof data !== "object" && data !== null) {
+            return;
+        }
+
+        if (data.type !== "testdriver-complete") {
+            return;
+        }
+
+        if (data.status === "success") {
+            pending_resolve();
+        } else {
+            pending_reject();
+        }
+    });
+```
+
+One limitation this introduces is that only one testdriver call can be made at one time since the `pending_resolve` and `pending_reject` variables are in abn outer scope.
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
  

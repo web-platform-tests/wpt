@@ -302,6 +302,7 @@ class Chrome(Browser):
         if uname[0] == "Darwin":
             return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
         # TODO Windows?
+        logger.warn("Unable to find the browser binary.")
         return None
 
     def install(self, dest=None):
@@ -350,9 +351,11 @@ class Chrome(Browser):
         try:
             version_string = call(binary, "--version").strip()
         except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s", binary)
             return None
         m = re.match(r"Google Chrome (.*)", version_string)
         if not m:
+            logger.warn("Failed to extract version from: s%", version_string)
             return None
         return m.group(1)
 
@@ -397,6 +400,7 @@ class Opera(Browser):
         if uname[0] == "Linux":
             return "/usr/bin/opera"
         # TODO Windows, Mac?
+        logger.warn("Unable to find the browser binary.")
         return None
 
     def install(self, dest=None):
@@ -450,6 +454,7 @@ class Opera(Browser):
         try:
             output = call(binary, "--version")
         except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s", binary)
             return None
         return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
 

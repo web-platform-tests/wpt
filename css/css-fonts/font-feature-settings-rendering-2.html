@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-rend-desc">
+<link rel="match" href="font-feature-settings-rendering-2-ref.html">
 <style>
 @font-face {
     font-family: "FontFeaturesTest";
-    src: url("resources/FontWithFeatures.otf") format("opentype");
+    src: url("support/fonts/FontWithFeatures.otf") format("opentype");
 }
 </style>
 </head>
@@ -20,7 +22,7 @@ function addElement(feature, c) {
         var element = document.createElement("span");
         element.textContent = c;
         element.style.fontFamily = "FontFeaturesTest";
-        element.style.webkitFontFeatureSettings = '"' + feature + '" ' + state;
+        element.style.fontFeatureSettings = '"' + feature + '" ' + state;
         insertionpoint.appendChild(element);
     });
     insertionpoint.appendChild(document.createTextNode(" "));

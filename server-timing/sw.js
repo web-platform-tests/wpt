@@ -3,7 +3,7 @@ importScripts('/resources/testharness.js')
 promise_test((test) => {
   return fetch('./sw.js').then((response) => {
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
+      step_timeout(() => {
         const entry = performance.getEntriesByName(response.url)[0]
         if (!entry) {
           reject('no entry: ' + response.url)

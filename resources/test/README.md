@@ -62,7 +62,7 @@ Functional tests allow for these details to be verified. Every functional test
 must include a summary of the expected results as a JSON string within a
 `<script>` tag with an `id` of `"expected"`, e.g.:
 
-     <script type="text/json" id="expected">
+    <script type="text/json" id="expected">
     {
       "summarized_status": {
         "message": null,

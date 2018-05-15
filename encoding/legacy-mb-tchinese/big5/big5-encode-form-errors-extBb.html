@@ -6,6 +6,7 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/subset-tests.js"></script>
 <script src="big5_index.js"></script>
 <script src="big5-encoder.js"></script>
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
@@ -65,17 +66,18 @@ setup(function() {
         item.cp = codepoints[i].cp;
         item.expected = codepoints[i].expected;
         item.desc = codepoints[i].desc;
-        currentTests.push(
-            async_test(
-                item.desc +
-                    "U+" +
-                    item.cp.toString(16).toUpperCase() +
-                    " " +
-                    String.fromCodePoint(item.cp) +
-                    " " +
-                    item.expected
-            )
+        var test = subsetTest(async_test,
+                              item.desc +
+                              "U+" +
+                              item.cp.toString(16).toUpperCase() +
+                              " " +
+                              String.fromCodePoint(item.cp) +
+                              " " +
+                              item.expected
         );
+        if (test) {
+            currentTests.push(test);
+        }
     }
 
     numChunks = cplist.length;

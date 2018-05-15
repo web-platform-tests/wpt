@@ -722,7 +722,7 @@ policies and contribution forms [3].
     }
 
     function done() {
-        if (tests.tests.length === 0) {
+        if (tests.tests.length === 0 && tests.status.status === tests.status.OK) {
             tests.set_file_is_test();
         }
         if (tests.file_is_test) {
@@ -2976,10 +2976,6 @@ policies and contribution forms [3].
 
     if (global_scope.addEventListener) {
         var error_handler = function(e) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
-            }
-
             var stack;
             if (e.error && e.error.stack) {
                 stack = e.error.stack;
@@ -2999,6 +2995,9 @@ policies and contribution forms [3].
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = e.message;
                 tests.status.stack = stack;
+                if (!tests.length) {
+                    tests.phase = tests.phases.ABORTED;
+                }
             }
             done();
         };

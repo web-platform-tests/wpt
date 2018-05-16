@@ -4,12 +4,14 @@
 <script>
 promise_test(t => {
   const type = screen.orientation.type;
-  //wrap onchange listener in new promise to catch unreached assertion
+  // wrap onchange listener in new promise to catch unreached assertion
   return new Promise(async (resolve, reject) => {
-    screen.orientation.onchange = () => { reject("change event should not be fired"); }
+    screen.orientation.onchange = () => { 
+      reject(new Error("change event should not be fired"));
+    }
     await screen.orientation.lock(type);
     assert_equals(screen.orientation.type, type);
-    setTimeout(() => { resolve(); }, 1000);
+    setTimeout(resolve, 1000);
   });
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 

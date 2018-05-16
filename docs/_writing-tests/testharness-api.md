@@ -318,14 +318,14 @@ the test result is known. For example:
   }, "Calling document.getElementById with a null argument.");
 ```
 
-## Timeouts in Tests ##
+## DEPRECATED Timeouts in Tests ##
 
 In general the use of timeouts in tests is discouraged because this is
 an observed source of instability in real tests when run on CI
 infrastructure. In particular if a test should fail when something
 doesn't happen, it is good practice to simply let the test run to the
 full timeout rather than trying to guess an appropriate shorter
-timeout to use.
+timeout to use. Please use harness timeout instead.
 
 In other cases it may be necessary to use a timeout (e.g., for a test
 that only passes if some event is *not* fired). In this case it is

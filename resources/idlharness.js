@@ -235,10 +235,9 @@ IdlArray.prototype.mark_as_untested = function (parsed_idls)
 IdlArray.prototype.is_excluded_by_options = function (name, options)
 //@{
 {
-    return !name ||
-        options && (
-            options.except && options.except.includes(name) ||
-            options.only && !options.only.includes(name));
+    return options &&
+        (options.except && options.except.includes(name)
+         || options.only && !options.only.includes(name));
 };
 //@}
 
@@ -259,7 +258,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
-    const skip = name => {
+    const should_skip = name => {
       return this.is_excluded_by_options(name, options);
     }
     // Record of skipped items in case we later determine they are a dependency.
@@ -268,7 +267,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         let name = parsed.name
             || parsed.type == "implements" && parsed.target
             || parsed.type == "includes" && parsed.target;
-        if (skip(name) || !all_deps.has(name)) {
+        if (!name || should_skip(name) || !all_deps.has(name)) {
             name && skipped.set(name, parsed);
             return;
         }

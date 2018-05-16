@@ -1,5 +1,5 @@
 import os
-import subproccess
+import subprocess
 from collections import defaultdict
 
 from wptmanifest.parser import atoms

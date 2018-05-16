@@ -13,11 +13,13 @@
 promise_test(async () => {
   const idl = await fetch('/interfaces/web-animations.idl').then(r => r.text());
   const dom = await fetch('/interfaces/dom.idl').then(r => r.text());
+  const html = await fetch('/interfaces/html.idl').then(r => r.text());
 
   const idlArray = new IdlArray();
-  idlArray.add_idls(idl, { only: ['Animation', 'AnimationPlayState'] });
+  idlArray.add_idls(idl);
   idlArray.add_dependency_idls(dom);
-  idlArray.add_untested_idls('interface AnimationTimeline {};');
+  idlArray.add_dependency_idls(html);
+  idlArray.add_untested_idls('interface CSSPseudoElement {};');
   idlArray.add_objects( { Animation: ['new Animation()'] } );
   idlArray.test();
   done();

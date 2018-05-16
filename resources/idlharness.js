@@ -251,7 +251,11 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
     const all_deps = new Set();
     Object.values(this.inheritance).forEach(v => all_deps.add(v));
     Object.values(this.implements).forEach(v => all_deps.add(v));
-    Object.values(this.includes).forEach(v => all_deps.add(v));
+    // NOTE: If 'A includes B' for B that we care about, then A is also a dep.
+    Object.keys(this.includes).forEach(k => {
+        all_deps.add(k);
+        this.includes[k].forEach(v => all_deps.add(v));
+    });
     this.partials.map(p => p.name).forEach(v => all_deps.add(v));
 
     if (options && options.except && options.only) {
@@ -261,14 +265,18 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
     const should_skip = name => {
       return this.is_excluded_by_options(name, options);
     }
-    // Record of skipped items in case we later determine they are a dependency.
+    // Record of skipped items, in case we later determine they are a dependency.
+    // Maps name -> [parsed_idl, ...]
     const skipped = new Map();
     const process = function(parsed) {
         let name = parsed.name
             || parsed.type == "implements" && parsed.target
             || parsed.type == "includes" && parsed.target;
         if (!name || should_skip(name) || !all_deps.has(name)) {
-            name && skipped.set(name, parsed);
+            name &&
+                skipped.has(name)
+                    ? skipped.get(name).push(parsed)
+                    : skipped.set(name, [parsed]);
             return;
         }
 
@@ -287,7 +295,7 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
             if (skipped.has(deferred)) {
                 const next = skipped.get(deferred);
                 skipped.delete(deferred);
-                process(next);
+                next.forEach(process);
             }
         }
     }

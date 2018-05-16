@@ -1,4 +1,5 @@
 import os
+import subproccess
 from collections import defaultdict
 
 from wptmanifest.parser import atoms
@@ -71,7 +72,11 @@ class RunInfo(dict):
         self.update(mozinfo.info)
 
         from update.tree import GitTree
-        rev = GitTree().rev
+        try:
+            # GitTree.__init__ throws if we are not in a git tree.
+            rev = GitTree().rev
+        except subprocess.CalledProcessError:
+            rev = None
         if rev:
             self["revision"] = rev
 

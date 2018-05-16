@@ -20,12 +20,7 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
     if kwargs["timeout_multiplier"] is not None:
         return kwargs["timeout_multiplier"]
     if test_type == "wdspec":
-        if run_info_data["debug"]:
-            return 20
-        else:
-            return 10
-    elif run_info_data["debug"]:
-        return 4
+        return 10
     return 1
 
 def check_args(**kwargs):

@@ -269,7 +269,13 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
     }
 
     const should_skip = name => {
-      return this.is_excluded_by_options(name, options) || name in this.members;
+        // NOTE: Deps are untested, so we're lenient, and skip re-encountered definitions.
+        // e.g. for 'idl' containing A:B, B:C, C:D
+        //      array.add_idls(idl, {only: ['A','B']}).
+        //      array.add_dependency_idls(idl);
+        // B would be encountered as tested, and encountered as a dep, so we ignore.
+        return name in this.members
+            || this.is_excluded_by_options(name, options);
     }
     // Record of skipped items, in case we later determine they are a dependency.
     // Maps name -> [parsed_idl, ...]

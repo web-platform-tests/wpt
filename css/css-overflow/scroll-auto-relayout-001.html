@@ -1,0 +1,58 @@
+<!doctype HTML>
+<meta charset="utf-8">
+<title>CSS Overflow: Child reflow inside overflow:auto container</title>
+<link rel="author" title="Aleks Totic <atotic@chromium.org>">
+<link rel="help" href="https://www.w3.org/TR/css-overflow-3/#scrollbar-layout">
+<link link rel="match" href="reference/scroll-auto-relayout-001-ref.html">
+<!--
+  When overflow:auto container gets scrollbars after reflow, children
+should reflow inside content box that does not include scrollbars.
+-->
+<style>
+.container {
+  overflow:auto;
+  width:100px;
+  height:100px;
+}
+.rtl {
+  direction: rtl;
+}
+.htb {
+  writing-mode: horizontal-tb;
+}
+.vrl {
+  writing-mode: vertical-rl;
+}
+.vlr {
+  writing-mode: vertical-lr;
+}
+.htb > .target {
+  border-left: 10px solid green;
+  border-right:10px solid blue;
+  height:200px;
+}
+.vrl > .target, .vlr > .target {
+  border-top: 10px solid green;
+  border-bottom: 10px solid blue;
+  width: 200px;
+}
+</style>
+<div class="container htb">
+  <div class="target""></div>
+</div>
+<div class="container htb rtl">
+  <div class="target""></div>
+</div>
+<div class="container vrl">
+  <div class="target""></div>
+</div>
+<div class="container vrl rtl">
+  <div class="target""></div>
+</div>
+<div class="container vlr">
+  <div class="target""></div>
+</div>
+<div class="container vlr rtl">
+  <div class="target""></div>
+</div>
+

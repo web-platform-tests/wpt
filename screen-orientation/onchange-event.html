@@ -11,7 +11,7 @@ promise_test(t => {
     }
     await screen.orientation.lock(type);
     assert_equals(screen.orientation.type, type);
-    setTimeout(resolve);
+    setTimeout(resolve, 100);
   });
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 

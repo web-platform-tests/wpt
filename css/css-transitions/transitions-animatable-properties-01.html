@@ -2,8 +2,56 @@
 <html>
 <!-- Submitted from TestTWF Paris -->
   <head>
-    <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+    <meta charset="utf-8">
     <title> CSS Transitions: Animatable CSS properties </title>
+    <meta name="timeout" content="long">
+    <meta name="variant" content="?background-color">
+    <meta name="variant" content="?background-position">
+    <meta name="variant" content="?border-color">
+    <meta name="variant" content="?border-bottom-color">
+    <meta name="variant" content="?border-bottom-width">
+    <meta name="variant" content="?border-left-color">
+    <meta name="variant" content="?border-left-width">
+    <meta name="variant" content="?border-right-color">
+    <meta name="variant" content="?border-right-width">
+    <meta name="variant" content="?border-spacing">
+    <meta name="variant" content="?border-top-color">
+    <meta name="variant" content="?border-top-width">
+    <meta name="variant" content="?bottom">
+    <meta name="variant" content="?clip">
+    <meta name="variant" content="?color">
+    <meta name="variant" content="?crop">
+    <meta name="variant" content="?font-size">
+    <meta name="variant" content="?font-weight">
+    <meta name="variant" content="?height">
+    <meta name="variant" content="?left">
+    <meta name="variant" content="?letter-spacing">
+    <meta name="variant" content="?line-height">
+    <meta name="variant" content="?margin-bottom">
+    <meta name="variant" content="?margin-left">
+    <meta name="variant" content="?margin-right">
+    <meta name="variant" content="?margin-top">
+    <meta name="variant" content="?max-height">
+    <meta name="variant" content="?max-width">
+    <meta name="variant" content="?min-height">
+    <meta name="variant" content="?min-width">
+    <meta name="variant" content="?opacity">
+    <meta name="variant" content="?outline-color">
+    <meta name="variant" content="?outline-offset">
+    <meta name="variant" content="?outline-width">
+    <meta name="variant" content="?padding-bottom">
+    <meta name="variant" content="?padding-left">
+    <meta name="variant" content="?padding-right">
+    <meta name="variant" content="?padding-top">
+    <meta name="variant" content="?right">
+    <meta name="variant" content="?text-indent">
+    <meta name="variant" content="?text-shadow">
+    <meta name="variant" content="?top">
+    <meta name="variant" content="?vertical-align">
+    <meta name="variant" content="?visibility">
+    <meta name="variant" content="?width">
+    <meta name="variant" content="?word-spacing">
+    <meta name="variant" content="?z-index">
     <meta name="assert" content="Check that all animatable CSS properties are animatable and then accepted by the 'transition-property' property">
     <link rel="author" title="Daniel Glazman" href="mailto:daniel.glazman@disruptive-innovations.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transitions/#transitions">
@@ -86,19 +134,19 @@
           ["z-index",             "1",                           "10",                          "", false]
       ];
 
-      // page timeout
-      var kTIMEOUT = 3000000;
-
       var p = document.getElementById("testP");
       var style = document.getElementById("newStyles");
 
       var testsIntermediate = [];
       var testsEnd = [];
 
-      setup({timeout: kTIMEOUT});
+      subsetTest = location.search ? location.search.substr(1) : null;
 
       // create all the tests we need
       for (var i = 0; i < kANIMATABLE_CSS_PROPERTIES.length; i++) {
+        if (subsetTest && kANIMATABLE_CSS_PROPERTIES[i][0] != subsetTest) {
+          continue;
+        }
         testsIntermediate.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " intermediate",
                                           { timeout: 2000, assert: "property " + kANIMATABLE_CSS_PROPERTIES[i][0] + " is animatable" }));
         testsEnd.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " end",

@@ -3,6 +3,7 @@
 <head>
     <title>Testing @font-face font matching logic introduced in CSS Fonts level 4</title>
     <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-matching-algorithm" />
+    <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
@@ -79,19 +80,39 @@
         ];
 
         descriptorPriorityCases.forEach(function (testCase) {
-            promise_test(
-                assert => once_fonts_are_ready.then(assert => {
-                    verifyFont("descriptorPriorityTest", testCase.weight, testCase.style, testCase.stretch, testCase.expectedFamily);
-                }),
+            promise_test(() => {
+                return once_fonts_are_ready
+                    .then(() => verifyFont("descriptorPriorityTest", testCase.weight, testCase.style, testCase.stretch, testCase.expectedFamily));
+                },
                 "Descriptor mathcing priority: " + testCase.description
             );
         });
 
         function createFontFaceRules(fontFaceFamily, descriptorName, expectedMatch, unexpectedMatch) {
+            const el = document.createElement("span");
+            el.innerText = "A";
+            document.body.appendChild(el);
+            const initialWidth = el.offsetWidth;
+
             dynamicStyles.innerHTML =
                 "@font-face { font-family: " + fontFaceFamily + "; src: url('./resources/csstest-weights-100-kerned.ttf'); "+ descriptorName + ": " + expectedMatch   + "; }" +
                 "@font-face { font-family: " + fontFaceFamily + "; src: url('./resources/csstest-weights-200-kerned.ttf'); " + descriptorName + ": " + unexpectedMatch + "; }";
+
+            return new Promise((resolve) => {
+                el.style.fontFamily = fontFaceFamily;
+
+                (function check() {
+                    if (el.offsetWidth !== initialWidth) {
+                        el.remove();
+                        resolve();
+                    } else {
+                        requestAnimationFrame(check);
+                    }
+                }());
+            });
         }
+
+        let familyId = 0;
 
         function testDescriptor(descriptorName, testCases) {
             testCases.forEach(function (testCase) {
@@ -99,16 +120,20 @@
                     for(let i = 0; i < testCase.testDescriptors.length - 1; i++) {
                         let expectedMatch   = testCase.testDescriptors[i];
                         let unexpectedMatch = testCase.testDescriptors[i + 1];
+                        familyId += 1;
+                        const family = "MatchTestFamily" + familyId;
+
                         promise_test(
-                            assert => once_fonts_are_ready.then(assert => {
-                                createFontFaceRules("MatchTestFamily", descriptorName, expectedMatch, unexpectedMatch);
+                            () => {
+                                return createFontFaceRules(family, descriptorName, expectedMatch, unexpectedMatch)
+                                    .then(() => {
+                                        let testWeight  = (descriptorName == "font-weight")  ? testCase.value : "normal";
+                                        let testStyle   = (descriptorName == "font-style")   ? testCase.value : "normal";
+                                        let testStretch = (descriptorName == "font-stretch") ? testCase.value : "normal";
 
-                                let testWeight  = (descriptorName == "font-weight")  ? testCase.value : "normal";
-                                let testStyle   = (descriptorName == "font-style")   ? testCase.value : "normal";
-                                let testStretch = (descriptorName == "font-stretch") ? testCase.value : "normal";
-
-                                verifyFont("MatchTestFamily", testWeight, testStyle, testStretch, "'W100'");
-                            }),
+                                        verifyFont(family, testWeight, testStyle, testStretch, "'W100'");
+                                    });
+                            },
                             "Matching " + descriptorName + ": '" + testCase.value + "' should prefer '" + expectedMatch + "' over '" + unexpectedMatch + "'");
                     }
             });

@@ -16,7 +16,8 @@ promise_test(async () => {
   const html = await fetch('/interfaces/html.idl').then(r => r.text());
 
   const idlArray = new IdlArray();
-  idlArray.add_idls(idl);
+  idlArray.add_idls(idl, {only: ['Animation', 'AnimationPlayState']});
+  idlArray.add_dependency_idls(idl);
   idlArray.add_dependency_idls(dom);
   idlArray.add_dependency_idls(html);
   idlArray.add_untested_idls('interface CSSPseudoElement {};');

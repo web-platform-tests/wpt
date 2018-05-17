@@ -257,13 +257,19 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
         this.includes[k].forEach(v => all_deps.add(v));
     });
     this.partials.map(p => p.name).forEach(v => all_deps.add(v));
+    // Add the attribute idlTypes of all the nested members of all tested idls.
+    Object.values(this.members).filter(m => !m.untested && m.members).forEach(parsed => {
+        Object.values(parsed.members).filter(m => m.type === 'attribute').forEach(m => {
+            all_deps.add(m.idlType.idlType);
+        });
+    });
 
     if (options && options.except && options.only) {
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
     const should_skip = name => {
-      return this.is_excluded_by_options(name, options);
+      return this.is_excluded_by_options(name, options) || name in this.members;
     }
     // Record of skipped items, in case we later determine they are a dependency.
     // Maps name -> [parsed_idl, ...]

@@ -82,9 +82,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "double"
+                    "idlType": "double",
+                    "extAttrs": []
                 },
                 "name": "r",
+                "escapedName": "r",
                 "extAttrs": []
             },
             {
@@ -99,9 +101,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "double"
+                    "idlType": "double",
+                    "extAttrs": []
                 },
                 "name": "cx",
+                "escapedName": "cx",
                 "extAttrs": []
             },
             {
@@ -116,9 +120,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "double"
+                    "idlType": "double",
+                    "extAttrs": []
                 },
                 "name": "cy",
+                "escapedName": "cy",
                 "extAttrs": []
             },
             {
@@ -133,9 +139,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "double"
+                    "idlType": "double",
+                    "extAttrs": []
                 },
                 "name": "circumference",
+                "escapedName": "circumference",
                 "extAttrs": []
             }
         ],
@@ -160,9 +168,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "double"
+                            "idlType": "double",
+                            "extAttrs": []
                         },
-                        "name": "radius"
+                        "name": "radius",
+                        "escapedName": "radius"
                     }
                 ],
                 "type": "extended-attribute",
@@ -194,7 +204,8 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "long"
+                            "idlType": "long",
+                            "extAttrs": []
                         },
                         {
                             "type": null,
@@ -202,7 +213,8 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Node"
+                            "idlType": "Node",
+                            "extAttrs": []
                         }
                     ],
                     "extAttrs": [
@@ -215,6 +227,7 @@
                     ]
                 },
                 "name": "attrib",
+                "escapedName": "attrib",
                 "extAttrs": []
             }
         ],

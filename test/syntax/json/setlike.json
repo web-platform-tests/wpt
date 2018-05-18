@@ -13,7 +13,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": false,
@@ -37,7 +38,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": true,

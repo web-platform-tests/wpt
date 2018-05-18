@@ -24,9 +24,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "cx",
+                "escapedName": "cx",
                 "extAttrs": []
             },
             {
@@ -41,9 +43,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "cy",
+                "escapedName": "cy",
                 "extAttrs": []
             },
             {
@@ -58,9 +62,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "radius",
+                "escapedName": "radius",
                 "extAttrs": []
             },
             {
@@ -75,9 +81,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
                 "name": "triangulationCount",
+                "escapedName": "triangulationCount",
                 "extAttrs": []
             },
             {
@@ -93,9 +101,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
                 "name": "triangulate",
+                "escapedName": "triangulate",
                 "arguments": [
                     {
                         "optional": false,
@@ -107,9 +117,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Circle"
+                            "idlType": "Circle",
+                            "extAttrs": []
                         },
-                        "name": "c1"
+                        "name": "c1",
+                        "escapedName": "c1"
                     },
                     {
                         "optional": false,
@@ -121,9 +133,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Circle"
+                            "idlType": "Circle",
+                            "extAttrs": []
                         },
-                        "name": "c2"
+                        "name": "c2",
+                        "escapedName": "c2"
                     },
                     {
                         "optional": false,
@@ -135,9 +149,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Circle"
+                            "idlType": "Circle",
+                            "extAttrs": []
                         },
-                        "name": "c3"
+                        "name": "c3",
+                        "escapedName": "c3"
                     }
                 ],
                 "extAttrs": []

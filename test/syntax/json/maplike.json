@@ -13,7 +13,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     },
                     {
                         "type": null,
@@ -21,7 +22,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "float"
+                        "idlType": "float",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": false,
@@ -45,7 +47,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     },
                     {
                         "type": null,
@@ -53,7 +56,8 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "float"
+                        "idlType": "float",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": true,

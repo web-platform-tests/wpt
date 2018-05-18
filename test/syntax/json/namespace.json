@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Vector"
+                    "idlType": "Vector",
+                    "extAttrs": []
                 },
                 "name": "unit",
+                "escapedName": "unit",
                 "extAttrs": []
             },
             {
@@ -34,9 +36,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "double"
+                    "idlType": "double",
+                    "extAttrs": []
                 },
                 "name": "dotProduct",
+                "escapedName": "dotProduct",
                 "arguments": [
                     {
                         "optional": false,
@@ -48,9 +52,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Vector"
+                            "idlType": "Vector",
+                            "extAttrs": []
                         },
-                        "name": "x"
+                        "name": "x",
+                        "escapedName": "x"
                     },
                     {
                         "optional": false,
@@ -62,9 +68,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Vector"
+                            "idlType": "Vector",
+                            "extAttrs": []
                         },
-                        "name": "y"
+                        "name": "y",
+                        "escapedName": "y"
                     }
                 ],
                 "extAttrs": []
@@ -82,9 +90,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Vector"
+                    "idlType": "Vector",
+                    "extAttrs": []
                 },
                 "name": "crossProduct",
+                "escapedName": "crossProduct",
                 "arguments": [
                     {
                         "optional": false,
@@ -96,9 +106,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Vector"
+                            "idlType": "Vector",
+                            "extAttrs": []
                         },
-                        "name": "x"
+                        "name": "x",
+                        "escapedName": "x"
                     },
                     {
                         "optional": false,
@@ -110,9 +122,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Vector"
+                            "idlType": "Vector",
+                            "extAttrs": []
                         },
-                        "name": "y"
+                        "name": "y",
+                        "escapedName": "y"
                     }
                 ],
                 "extAttrs": []

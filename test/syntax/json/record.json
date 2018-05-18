@@ -17,9 +17,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "foo",
+                "escapedName": "foo",
                 "arguments": [
                     {
                         "optional": false,
@@ -44,7 +46,8 @@
                                         "generic": null,
                                         "nullable": false,
                                         "union": false,
-                                        "idlType": "ByteString"
+                                        "idlType": "ByteString",
+                                        "extAttrs": []
                                     },
                                     {
                                         "type": "argument-type",
@@ -52,12 +55,16 @@
                                         "generic": null,
                                         "nullable": false,
                                         "union": false,
-                                        "idlType": "any"
+                                        "idlType": "any",
+                                        "extAttrs": []
                                     }
-                                ]
-                            }
+                                ],
+                                "extAttrs": []
+                            },
+                            "extAttrs": []
                         },
-                        "name": "param"
+                        "name": "param",
+                        "escapedName": "param"
                     }
                 ],
                 "extAttrs": []
@@ -82,7 +89,8 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
                         {
                             "type": "return-type",
@@ -97,7 +105,8 @@
                                     "generic": null,
                                     "nullable": false,
                                     "union": false,
-                                    "idlType": "float"
+                                    "idlType": "float",
+                                    "extAttrs": []
                                 },
                                 {
                                     "type": null,
@@ -105,13 +114,17 @@
                                     "generic": null,
                                     "nullable": false,
                                     "union": false,
-                                    "idlType": "DOMString"
+                                    "idlType": "DOMString",
+                                    "extAttrs": []
                                 }
-                            ]
+                            ],
+                            "extAttrs": []
                         }
-                    ]
+                    ],
+                    "extAttrs": []
                 },
                 "name": "bar",
+                "escapedName": "bar",
                 "arguments": [],
                 "extAttrs": []
             },
@@ -128,9 +141,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "record"
+                    "idlType": "record",
+                    "extAttrs": []
                 },
                 "name": "baz",
+                "escapedName": "baz",
                 "arguments": [],
                 "extAttrs": []
             }
@@ -157,7 +172,8 @@
                                     "generic": null,
                                     "nullable": false,
                                     "union": false,
-                                    "idlType": "USVString"
+                                    "idlType": "USVString",
+                                    "extAttrs": []
                                 },
                                 {
                                     "type": "argument-type",
@@ -165,11 +181,14 @@
                                     "generic": null,
                                     "nullable": false,
                                     "union": false,
-                                    "idlType": "USVString"
+                                    "idlType": "USVString",
+                                    "extAttrs": []
                                 }
-                            ]
+                            ],
+                            "extAttrs": []
                         },
-                        "name": "init"
+                        "name": "init",
+                        "escapedName": "init"
                     }
                 ],
                 "type": "extended-attribute",
@@ -202,7 +221,8 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
                         {
                             "type": "return-type",
@@ -220,9 +240,11 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "extAttrs": []
                 },
                 "name": "bar",
+                "escapedName": "bar",
                 "arguments": [],
                 "extAttrs": []
             }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <meta charset='utf-8' />
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <script src='resources/test-helpers.sub.js'></script>
+    <script>
+      (async () => {
+        let registration = await navigator.serviceWorker.getRegistration()
+        if (registration) {
+            await registration.unregister()
+        }
+
+        registration = await navigator.serviceWorker.register('iframe-srcdoc-sw.js')
+
+        await fetch_tests_from_worker(registration.installing || registration.active)
+
+        // inject an iframe with a linked reference in the `srcdoc`
+        const iframe = document.createElement('iframe')
+        iframe.srcdoc = '<img src=\'./resources/square.png\'/>'
+        document.body.appendChild(iframe)
+      })()
+    </script>
+</head>

@@ -120,7 +120,7 @@
         tok += tokens[numTokens].value;
         numTokens++;
       }
-      
+
       let message;
       if (current) {
         message = `Got an error during or right after parsing \`${current.partial ? "partial " : ""}${current.type} ${current.name}\`: ${str}`

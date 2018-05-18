@@ -16,7 +16,7 @@ The first part of this will be browser agnostic, but later we will need to imple
 
 ## Code!
 
-### [resources/testdriver.js](https://github.com/w3c/web-platform-tests/blob/master/resources/testdriver.js)
+### [resources/testdriver.js](resources/testdriver.js)
 
 This is the main entry point the tests get. Here we need to add a function to the `test_driver` object that will call the `test_driver_internal` object.
 
@@ -71,7 +71,7 @@ window.test_driver_internal = {
 ```
 We will leave this unimplemented and override it in another file. Lets do that now!
  
-### [wptrunner/wptrunner/testdriver-extra.js](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/testdriver-extra.js)
+### [wptrunner/wptrunner/testdriver-extra.js](tools/wptrunner/wptrunner/testdriver-extra.js)
  
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).
 
@@ -279,8 +279,6 @@ class MarionetteProtocol(Protocol):
                   MarionetteSetWindowRectProtocolPart # add this
                   MarionetteTestDriverProtocolPart]
 ```
-
-
 
 ### Other Browsers
 

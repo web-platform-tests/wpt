@@ -11,7 +11,7 @@ async_test(t => {
   test_driver
     .get_window_handles()
     .then((handles) =>  {
-        console.log(handles);
+        assert_true(handles.length == 2)
         t.done();
     })
     .catch(t.unreached_func("get_window_handles failed"));

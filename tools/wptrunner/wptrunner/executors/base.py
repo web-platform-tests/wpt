@@ -5,6 +5,7 @@ import threading
 import traceback
 import socket
 import urlparse
+import json
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
@@ -532,8 +533,8 @@ class CallbackHandler(object):
             except KeyError:
                 raise ValueError("Unknown action %s" % action)
             try:
-                val = action_handler(payload)
-                self.logger.debug("Recieved value: %s" % val)
+                value = action_handler(payload)
+                self.logger.debug("Recieved value: %s" % value)
             except Exception as e:
                 self.logger.warning("Action %s failed" % action)
                 self.logger.warning(traceback.format_exc())
@@ -541,10 +542,9 @@ class CallbackHandler(object):
             else:
                 self.logger.debug("Action %s completed" % action)
 
-                # if val is not None:
-                    # the payload must be a string
-                    # self._send_message("complete", "payload", str(val))
-                self._send_message("complete", "success", str(val))
+                message = {}
+                message['value'] = value
+                self._send_message("complete", "success", json.dumps(message))
         finally:
             self.protocol.base.set_window(parent)
 

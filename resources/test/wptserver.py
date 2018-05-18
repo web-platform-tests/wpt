@@ -31,9 +31,9 @@ class WPTServer(object):
         for retry in range(5):
             # Exponential backoff.
             time.sleep(2 ** retry)
-            exitCode = self.proc.poll()
-            if exitCode != None:
-                logging.warn('Command "%s" exited with %s', ' '.join(wptserve_cmd), exitCode)
+            exit_code = self.proc.poll()
+            if exit_code != None:
+                logging.warn('Command "%s" exited with %s', ' '.join(wptserve_cmd), exit_code)
                 break
             try:
                 urllib2.urlopen(self.base_url, timeout=1)

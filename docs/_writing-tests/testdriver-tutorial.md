@@ -117,11 +117,11 @@ This happens here in the same file:
     });
 ```
 
-One limitation this introduces is that only one testdriver call can be made at one time since the `pending_resolve` and `pending_reject` variables are in abn outer scope.
+One limitation this introduces is that only one testdriver call can be made at one time since the `pending_resolve` and `pending_reject` variables are in an outer scope.
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
  
-[tools/wptrunner/wptrunner/executors/protocol.py](https://github.com/w3c/web-platform-tests/blob/master/tools/wptrunner/wptrunner/executors/protocol.py)
+[tools/wptrunner/wptrunner/executors/protocol.py](tools/wptrunner/wptrunner/executors/protocol.py)
  
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):
@@ -142,8 +142,8 @@ class SetWindowRectProtocolPart(ProtocolPart):
 ```
 
 Next we change the base executor.
-
-```tools/wptrunner/wptrunner/executors/base.py```
+ 
+[tools/wptrunner/wptrunner/executors/base.py](tools/wptrunner/wptrunner/executors/base.py)
 
 ```python
 class CallbackHandler(object):
@@ -188,7 +188,7 @@ Now we write the browser specific implementations.
 
 ### Chrome
 
-We will use executorselenium and use the Selenium API (in the future there are plans to use the WebDriver API directly).
+We will use [executorselenium](tools/wptrunner/wptrunner/executors/executorselenium.py) and use the Selenium API (in the future there are plans to use the WebDriver API directly).
 
 There isn't too much work to do here, we just need to define a subclass of the protocol part we defined earlier.
 
@@ -235,7 +235,7 @@ class SeleniumProtocol(Protocol):
 ### Firefox
 We use the [set window rect](http://marionette-client.readthedocs.io/en/master/reference.html#marionette_driver.marionette.Marionette.set_window_rect) Marionette command.
 
-We will use executormarionette and use the Marionette Python API.
+We will use [executormarionette](tools/wptrunner/wptrunner/executors/executormarionette.py) and use the Marionette Python API.
 
 We have little actual work to do here! We just need to define a subclass of the protocol part we defined earlier.
 
@@ -310,7 +310,7 @@ promise_test(async t => {
 ```
 ### What about testdriver-vendor.js?
 
-The file [testdriver-vendor.js](/Users/kereliuk/web-platform-tests/resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except is
+The file [testdriver-vendor.js](resources/testdriver-vendor.js) is the equivalent to testdriver-extra.js above, except is
 run instead of testdriver-extra.js in browser specific test environments. For example, in [Chromium LayoutTests](https://cs.chromium.org/chromium/src/third_party/WebKit/LayoutTests/?q=LayoutTests&sq=package:chromium&dr).
 
 ### What if I need to return a value from my testdriver API?

@@ -70,9 +70,9 @@ window.test_driver_internal = {
     }
 ```
 We will leave this unimplemented and override it in another file. Lets do that now!
- 
+
 ### [wptrunner/wptrunner/testdriver-extra.js](tools/wptrunner/wptrunner/testdriver-extra.js)
- 
+
 This will be the default function called when invoking the test driver commands (sometimes it is overridden by testdriver-vendor.js, but this is outside the scope of this writeup).
 
 ```javascript
@@ -120,9 +120,9 @@ This happens here in the same file:
 One limitation this introduces is that only one testdriver call can be made at one time since the `pending_resolve` and `pending_reject` variables are in an outer scope.
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
- 
+
 [tools/wptrunner/wptrunner/executors/protocol.py](tools/wptrunner/wptrunner/executors/protocol.py)
- 
+
 ```python
 class SetWindowRectProtocolPart(ProtocolPart):
     """Protocol part for resizing and changing location of window"""
@@ -142,7 +142,7 @@ class SetWindowRectProtocolPart(ProtocolPart):
 ```
 
 Next we change the base executor.
- 
+
 [tools/wptrunner/wptrunner/executors/base.py](tools/wptrunner/wptrunner/executors/base.py)
 
 ```python

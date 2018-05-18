@@ -7,7 +7,8 @@
             "generic": null,
             "nullable": false,
             "union": false,
-            "idlType": "float"
+            "idlType": "float",
+            "extAttrs": []
         },
         "name": "number",
         "extAttrs": []
@@ -30,9 +31,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "object"
+                    "idlType": "object",
+                    "extAttrs": []
                 },
                 "name": "createObject",
+                "escapedName": "createObject",
                 "arguments": [
                     {
                         "optional": false,
@@ -44,9 +47,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "interface"
+                        "name": "interface",
+                        "escapedName": "_interface"
                     }
                 ],
                 "extAttrs": []
@@ -64,9 +69,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": null,
+                "escapedName": null,
                 "arguments": [
                     {
                         "optional": false,
@@ -78,9 +85,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "keyName"
+                        "name": "keyName",
+                        "escapedName": "keyName"
                     }
                 ],
                 "extAttrs": []
@@ -106,9 +115,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "boolean"
+                    "idlType": "boolean",
+                    "extAttrs": []
                 },
                 "name": "const",
+                "escapedName": "_const",
                 "extAttrs": []
             },
             {
@@ -123,52 +134,11 @@
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "value",
-                "extAttrs": []
-            }
-        ],
-        "inheritance": null,
-        "extAttrs": []
-    },
-    {
-        "type": "interface",
-        "name": "Foo",
-        "partial": false,
-        "members": [
-            {
-                "type": "operation",
-                "getter": false,
-                "setter": false,
-                "deleter": false,
-                "static": false,
-                "stringifier": false,
-                "idlType": {
-                    "type": "return-type",
-                    "sequence": false,
-                    "generic": null,
-                    "nullable": false,
-                    "union": false,
-                    "idlType": "void"
-                },
-                "name": "op",
-                "arguments": [
-                    {
-                        "optional": false,
-                        "variadic": false,
-                        "extAttrs": [],
-                        "idlType": {
-                            "type": "argument-type",
-                            "sequence": false,
-                            "generic": null,
-                            "nullable": false,
-                            "union": false,
-                            "idlType": "object"
-                        },
-                        "name": "interface"
-                    }
-                ],
+                "escapedName": "_value",
                 "extAttrs": []
             }
         ],

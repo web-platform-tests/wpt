@@ -9,7 +9,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "boolean"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "boolean",
+                    "extAttrs": []
                 },
                 "name": "DEBUG",
                 "value": {
@@ -23,7 +28,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "short"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "short",
+                    "extAttrs": []
                 },
                 "name": "negative",
                 "value": {
@@ -37,7 +47,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "octet"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "octet",
+                    "extAttrs": []
                 },
                 "name": "LF",
                 "value": {
@@ -51,7 +66,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "unsigned long"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long",
+                    "extAttrs": []
                 },
                 "name": "BIT_MASK",
                 "value": {
@@ -65,7 +85,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "float"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "AVOGADRO",
                 "value": {
@@ -79,7 +104,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "unrestricted float"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unrestricted float",
+                    "extAttrs": []
                 },
                 "name": "sobig",
                 "value": {
@@ -93,7 +123,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "unrestricted double"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unrestricted double",
+                    "extAttrs": []
                 },
                 "name": "minusonedividedbyzero",
                 "value": {
@@ -107,7 +142,12 @@
                 "nullable": false,
                 "idlType": {
                     "type": "const-type",
-                    "idlType": "short"
+                    "sequence": false,
+                    "generic": null,
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "short",
+                    "extAttrs": []
                 },
                 "name": "notanumber",
                 "value": {

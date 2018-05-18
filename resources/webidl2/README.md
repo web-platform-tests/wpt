@@ -45,23 +45,6 @@ In the browser:
 </script>
 ```
 
-### Advanced Parsing
-
-`parse()` can optionally accept a second parameter, an options object, which can be used to
-modify parsing behavior.
-
-The following options are recognized:
-```JS
-{
-  allowNestedTypedefs: false
-}
-```
-
-And their meanings are as follows:
-
-* `allowNestedTypedefs`: Boolean indicating whether the parser should accept `typedef`s as valid members of `interface`s.
-This is non-standard syntax and therefore the default is `false`.
-
 ### Errors
 
 When there is a syntax error in the WebIDL, it throws an exception object with the following
@@ -93,16 +76,19 @@ attached to a field called `idlType`:
 
 ```JS
 {
+  "type": "attribute-type",
   "sequence": false,
   "generic": null,
-  "idlType": "void",
+  "idlType": "unsigned short",
   "nullable": false,
   "union": false,
+  "extAttrs": [...]
 }
 ```
 
 Where the fields are as follows:
 
+* `type`: String indicating where this type is used. Can be `null` if not applicable.
 * `sequence`: Boolean indicating if it is a sequence. Same as `generic === "sequence"`.
 * `generic`: String indicating the generic type (e.g. "Promise", "sequence"). `null`
   otherwise.
@@ -113,6 +99,7 @@ Where the fields are as follows:
   description for the type in the sequence, the eventual value of the promise, etc.
 * `nullable`: Boolean indicating whether this is nullable or not.
 * `union`: Boolean indicating whether this is a union type or not.
+* `extAttrs`: A list of [extended attributes](#extended-attributes).
 
 ### Interface
 
@@ -211,11 +198,13 @@ A callback looks like this:
   "type": "callback",
   "name": "AsyncOperationCallback",
   "idlType": {
+    "type": "return-type",
     "sequence": false,
     "generic": null,
     "nullable": false,
     "union": false,
-    "idlType": "void"
+    "idlType": "void",
+    "extAttrs": []
   },
   "arguments": [...],
   "extAttrs": []
@@ -244,11 +233,13 @@ A dictionary looks like this:
     "name": "fillPattern",
     "required": false,
     "idlType": {
+      "type": "dictionary-type",
       "sequence": false,
       "generic": null,
       "nullable": true,
       "union": false,
-      "idlType": "DOMString"
+      "idlType": "DOMString",
+      "extAttrs": [...]
     },
     "extAttrs": [],
     "default": {
@@ -311,17 +302,21 @@ A typedef looks like this:
 {
   "type": "typedef",
   "idlType": {
+    "type": "typedef-type",
     "sequence": true,
     "generic": "sequence",
     "nullable": false,
     "union": false,
     "idlType": {
+      "type": "typedef-type",
       "sequence": false,
       "generic": null,
       "nullable": false,
       "union": false,
-      "idlType": "Point"
-    }
+      "idlType": "Point",
+      "extAttrs": [...]
+    },
+    "extAttrs": [...]
   },
   "name": "PointSequence",
   "extAttrs": []
@@ -388,11 +383,13 @@ An operation looks like this:
   "static": false,
   "stringifier": false,
   "idlType": {
+    "type": "return-type",
     "sequence": false,
     "generic": null,
     "nullable": false,
     "union": false,
-    "idlType": "void"
+    "idlType": "void",
+    "extAttrs": []
   },
   "name": "intersection",
   "arguments": [{
@@ -400,11 +397,13 @@ An operation looks like this:
     "variadic": true,
     "extAttrs": [],
     "idlType": {
+      "type": "argument-type",
       "sequence": false,
       "generic": null,
       "nullable": false,
       "union": false,
-      "idlType": "long"
+      "idlType": "long",
+      "extAttrs": [...]
     },
     "name": "ints"
   }],
@@ -437,11 +436,13 @@ An attribute member looks like this:
   "inherit": false,
   "readonly": false,
   "idlType": {
+    "type": "attribute-type",
     "sequence": false,
     "generic": null,
     "nullable": false,
     "union": false,
-    "idlType": "RegExp"
+    "idlType": "RegExp",
+    "extAttrs": [...]
   },
   "name": "regexp",
   "extAttrs": []
@@ -467,7 +468,15 @@ A constant member looks like this:
 {
   "type": "const",
   "nullable": false,
-  "idlType": "boolean",
+  "idlType": {
+    "type": "const-type",
+    "sequence": false,
+    "generic": null,
+    "nullable": false,
+    "union": false,
+    "idlType": "boolean"
+    "extAttrs": []
+  },
   "name": "DEBUG",
   "value": {
     "type": "boolean",
@@ -481,7 +490,7 @@ The fields are as follows:
 
 * `type`: Always "const".
 * `nullable`: Whether its type is nullable.
-* `idlType`: The type of the constant (a simple type, the type name).
+* `idlType`: An [IDL Type](#idl-type) of the constant that represents a simple type, the type name.
 * `name`: The name of the constant.
 * `value`: The constant value as described by [Const Values](#default-and-const-values)
 * `extAttrs`: A list of [extended attributes](#extended-attributes).
@@ -497,11 +506,13 @@ The arguments (e.g. for an operation) look like this:
     "variadic": true,
     "extAttrs": [],
     "idlType": {
+      "type": "argument-type",
       "sequence": false,
       "generic": null,
       "nullable": false,
       "union": false,
-      "idlType": "long"
+      "idlType": "long",
+      "extAttrs": [...]
     },
     "name": "ints"
   }]
@@ -546,8 +557,6 @@ The fields are as follows:
 * `type`: Always `"extended-attribute"`.
 * `rhs`: If there is a right-hand side, this will capture its `type` (which can be
   "identifier" or "identifier-list") and its `value`.
-* `typePair`: If the extended attribute is a `MapClass` this will capture the
-  map's key type and value type respectively.
 
 ### Default and Const Values
 
@@ -586,14 +595,6 @@ The fields are as follows:
 
 
 ## Testing
-
-In order to run the tests you need to ensure that the widlproc submodule inside `test` is
-initialized and up to date:
-
-```Bash
-git submodule init
-git submodule update
-```
 
 ### Running
 

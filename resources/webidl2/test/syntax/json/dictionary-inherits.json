@@ -7,6 +7,7 @@
             {
                 "type": "field",
                 "name": "fillPattern",
+                "escapedName": "fillPattern",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -14,7 +15,8 @@
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -25,6 +27,7 @@
             {
                 "type": "field",
                 "name": "strokePattern",
+                "escapedName": "strokePattern",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -32,7 +35,8 @@
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -42,6 +46,7 @@
             {
                 "type": "field",
                 "name": "position",
+                "escapedName": "position",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -49,7 +54,8 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             }
@@ -65,6 +71,7 @@
             {
                 "type": "field",
                 "name": "hydrometry",
+                "escapedName": "hydrometry",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -72,7 +79,8 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             }

@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "unsigned long"
+                    "idlType": "unsigned long",
+                    "extAttrs": []
                 },
                 "name": "propertyCount",
+                "escapedName": "propertyCount",
                 "extAttrs": []
             },
             {
@@ -34,9 +36,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": null,
+                "escapedName": null,
                 "arguments": [
                     {
                         "optional": false,
@@ -48,9 +52,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "propertyName"
+                        "name": "propertyName",
+                        "escapedName": "propertyName"
                     }
                 ],
                 "extAttrs": []
@@ -68,9 +74,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": null,
+                "escapedName": null,
                 "arguments": [
                     {
                         "optional": false,
@@ -82,9 +90,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "propertyName"
+                        "name": "propertyName",
+                        "escapedName": "propertyName"
                     },
                     {
                         "optional": false,
@@ -96,9 +106,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "float"
+                            "idlType": "float",
+                            "extAttrs": []
                         },
-                        "name": "propertyValue"
+                        "name": "propertyValue",
+                        "escapedName": "propertyValue"
                     }
                 ],
                 "extAttrs": []

@@ -341,23 +341,6 @@ for (const [description, protocol, expected] of protocols) {
 /*
   6.2.  RTCDataChannel
     createDataChannel
-      14. Let channel have a [[Negotiated]] internal slot initialized to option's negotiated
-          member.
- */
-test((t) => {
-  const pc = new RTCPeerConnection;
-  t.add_cleanup(() => pc.close());
-
-  const dc = pc.createDataChannel('', { negotiated: true });
-  assert_equals(dc.negotiated, true);
-}, 'createDataChannel with negotiated true should succeed', {
-  timeout: 1000
-});
-
-
-/*
-  6.2.  RTCDataChannel
-    createDataChannel
       20. If [[DataChannelId]] is equal to 65535, which is greater than the maximum allowed
           ID of 65534 but still qualifies as an unsigned short, throw a TypeError.
  */
@@ -538,9 +521,22 @@ test((t) => {
 
   const dc = pc.createDataChannel('', {
     negotiated: false,
+  });
+  assert_equals(dc.negotiated, false, 'Expect dc.negotiated to be false');
+}, 'createDataChannel with negotiated false should succeed', {
+  timeout: 1000
+});
+ 
+test((t) => {
+  const pc = new RTCPeerConnection;
+  t.add_cleanup(() => pc.close());
+
+  const dc = pc.createDataChannel('', {
+    negotiated: false,
     id: 42
   });
-  assert_equals(dc.id, 'Expect dc.id to be ignored (null)');
+  assert_equals(dc.negotiated, false, 'Expect dc.negotiated to be false');
+  assert_equals(dc.id, null, 'Expect dc.id to be ignored (null)');
 }, 'createDataChannel with negotiated false and id 42 should ignore the id', {
   timeout: 1000
 });
@@ -549,6 +545,18 @@ test((t) => {
   6.2.  createDataChannel
     16. If [[Negotiated]] is true and [[DataChannelId]] is null, throw a TypeError.
  */
+test((t) => {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+
+  assert_throws(new TypeError(), () =>
+    pc.createDataChannel('test', {
+      negotiated: true
+    }));
+}, 'createDataChannel with negotiated true and id not defined should throw TypeError', {
+  timeout: 1000
+});
+ 
 test((t) => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());

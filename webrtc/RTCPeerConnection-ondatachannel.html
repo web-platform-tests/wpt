@@ -154,6 +154,40 @@ promise_test(async (t) => {
   timeout: 5000
 });
 
+// Added this test as a result of the discussion in
+// https://github.com/w3c/webrtc-pc/pull/1851#discussion_r185976747
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  pc2.ondatachannel = t.step_func(async (event) => {
+    const dc = event.channel;
+    dc.onopen = t.step_func((event) => {
+      t.done();
+    });
+    
+    // This should NOT prevent triggering the 'open' event since it enqueues a task
+    await 0;
+    dc.close();
+  });
+
+  pc1.createDataChannel('fire-me!');
+
+  exchangeIceCandidates(pc1, pc2);
+  await doSignalingHandshake(pc1, pc2);
+  t.step_timeout(() => {
+    assert_unreached('datachannel event should have been raised by now (timeout reached)');
+  }, 3000);
+
+  await t.done_promise;
+}, 'Open event should be raised when closing the channel in the datachannel event after ' +
+  'enqueuing a task', {
+  timeout: 5000
+});
+
+
 /*
   Combination of the two tests above (send and close).
  */

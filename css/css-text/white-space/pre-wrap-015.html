@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text Test: overflow-wrap - break-spaces</title>
+<link rel="author" title="Javier Fernandez" href="mailto:jfernandez@igalia.com" />
+<link rel="help" title="3. White Space and Wrapping: the white-space property" href="https://www.w3.org/TR/css-text-3/#white-space-property">
+<link rel="help" title="6.2. Overflow Wrapping: the 'word-wrap'/'overflow-wrap' property" href="https://www.w3.org/TR/css-text-3/#overflow-wrap-property">
+<link rel="match" href="reference/pre-wrap-015-ref.html">
+<meta name="flags" content="ahem">
+<meta name="assert" content="If overflow-wrap is set to break-spaces, collapsing preserved white-spaces' advance width is not allowed, so that they can be wrapped honoring the white-space: pre-wrap.">
+<style>
+.test {
+  position: relative;
+  width: 100px;
+  font-family: Ahem;
+  font-size: 10px;
+  background: green;
+  color: green;
+  line-height: 1;
+
+  white-space: pre-wrap;
+  overflow-wrap: break-spaces;
+}
+
+.fail {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100px;
+  background: red;
+  z-index: -1;
+}
+</style>
+<body>
+  <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
+  <div style="position: relative">
+      <div class="test">XXXX                                                                                        XXXX</div>
+      <div class="fail"></div>
+  </div>
+</body>

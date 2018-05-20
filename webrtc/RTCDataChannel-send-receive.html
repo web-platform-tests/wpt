@@ -882,62 +882,6 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     timeout: 7000
   });
 
-  // TODO: Is likely going to be removed once https://github.com/w3c/webrtc-pc/issues/1825 has
-  //       been resolved
-  promise_test(async (t) => {
-    const pc1 = new RTCPeerConnection();
-    const pc2 = new RTCPeerConnection();
-    t.add_cleanup(() => pc1.close());
-    t.add_cleanup(() => pc2.close());
-
-    // Note: Since this is a race, we need a large amount of data. 1 MiB should be sufficient.
-    //       We're assuming the implementation can queue at least 16 messages of size 64 KiB.
-    //       The small message size has been chosen because every implementation supports 64 KiB.
-    const message = new Uint8Array(65536).fill(0xfe);
-    const nMessages = 16;
-
-    const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
-      channelLabel: '╯°□°）╯︵ ┻━┻',
-      channelOptions: channelOptions
-    });
-    let closed = false;
-    let nMessagesReceived = 0;
-    dc2.binaryType = 'arraybuffer';
-
-    dc1.onclose = t.step_func(() => {
-      closed = true;
-    });
-
-    // Ensure dc2 has received all messages once being closed
-    dc2.onclose = t.step_func(() => {
-      assert_equals(nMessagesReceived, nMessages,
-        'Remote channel should have received all messages before becoming closed');
-      t.done();
-    });
-
-    // Ensure the data reaches dc2
-    dc2.onmessage = t.step_func(event => {
-      const {data} = event;
-      assert_equals_typed_array(data, message,
-        'Received data should be equal to sent data');
-      ++nMessagesReceived;
-    });
-
-    // Fill the send buffer as fast as possible and let the other side close
-    for (let i = 0; i < nMessages; ++i) {
-      dc1.send(message);
-    }
-    dc2.close();
-    t.step_timeout(() => {
-      assert_unreached('Channel should have been closed by now (timeout reached)');
-    }, 4000);
-
-    await t.done_promise;
-  }, `${description}: Closing a channel (remote) with pending data should transfer that data
-  before becoming closed`, {
-    timeout: 7000
-  });
-
   promise_test(async (t) => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();

@@ -471,25 +471,6 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     timeout: 5000
   });
 
-  /*
-    6.2.  RTCDataChannel
-      binaryType
-        The binaryType attribute MUST, on getting, return the value to which it was last
-        set. On setting, if the new value is either the string "blob" or the string
-        "arraybuffer", then set the IDL attribute to this new value. Otherwise, throw a
-        SyntaxError. When an RTCDataChannel object is created, the binaryType attribute
-        MUST be initialized to the string "blob".
-   */
-  test((t) => {
-    const pc = new RTCPeerConnection();
-    const dc = pc.createDataChannel('test-binary-type', channelOptions);
-    assert_throws('SyntaxError', () => {
-      dc.binaryType = 'jellyfish';
-    });
-  }, `${description}: Setting binaryType should throw SyntaxError on unsupported type`, {
-    timeout: 3000
-  });
-
   promise_test(async (t) => {
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();

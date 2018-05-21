@@ -9,18 +9,12 @@ infrastructure which makes the project possible.
 
 ## Secrets
 
-Some aspects of the infrastructure are only accessible to administrators. These
-include access credentials for third-party services (e.g. continuous
-integration providers), data used to prove identity (e.g. SSL certificates),
-and deployment information for the project's running systems (e.g.
-[w3c-test.org](https://w3c-test.org)).
+Some aspects of the infrastructure are only accessible to administrators.
 
 Project                   | Secret                   | Owners
 --------------------------|--------------------------|-------------
 [results-collection]      | root SSH keys            | boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
 [results-collection]      | Password for app secrets | boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
-[pull-requests-dashboard] | root SSH keys            | ???
-[pull-requests-dashboard] | Password for app secrets | boaz@bocoup.com, geoffers@gmail.com, jgraham@hoppipolla.co.uk, lukebjerring@google.com, mike@w3.org
 
 SSL certificates for all HTTPS-enabled domains are retrieved via [Let's
 Encrypt](https://letsencrypt.org/), so that data does not represent an
@@ -64,7 +58,6 @@ explicitly-managed secret.
   - mike@bocoup.com
   - rick@bocoup.com
 
-[pull-requests-dashboard]: https://github.com/web-platform-tests/pulls.web-platform-tests.org
 [results-collection]: https://github.com/web-platform-tests/results-collection
 [web-platform-tests]: https://github.com/e3c/web-platform-tests
 [wpt.fyi]: https://github.com/web-platform-tests/wpt.fyi

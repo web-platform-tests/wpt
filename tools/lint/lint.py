@@ -264,6 +264,55 @@ def check_css_globally_unique(repo_root, paths):
     return errors
 
 
+def check_owners(repo_root, paths):
+    """
+    Checks that all top-level directories have OWNERS files.
+
+    :param repo_root: the repository root
+    :param paths: list of all paths
+    :returns: a list of errors found in ``paths``
+
+    """
+    dirs = {}
+    errors = []
+    owner_in_subdirs = [
+        ".well-known",
+        "css",
+        "css/vendor-imports",
+    ]
+
+    for path in paths:
+        if os.name == "nt":
+            path = path.replace("\\", "/")
+
+        source_file = SourceFile(repo_root, path, "/")
+        if source_file.name_is_non_test:
+            continue
+
+        parts = source_file.dir_path.split(os.path.sep)
+        if (parts[0] in source_file.root_dir_non_test or
+            any(item in source_file.dir_non_test for item in parts) or
+            any(parts[:len(non_test_path)] == list(non_test_path) for non_test_path in source_file.dir_path_non_test)):
+            continue
+        level = 0
+        for dir in owner_in_subdirs:
+            if path.find(dir) == 0:
+                level = len(dir.split("/"))
+        if len(parts) <= level or len(parts) > level + 1:
+            continue
+        if not (parts[level]) in dirs:
+            dirs[parts[level]] = False
+        offset = path.find("/OWNERS")
+        if offset != -1:
+            dirs[parts[level]] = True
+
+    for dir in dirs:
+        if dirs[dir] == False:
+            errors.append(("MISSING-OWNERS", "Directory is missing OWNERS file.", dir, None))
+
+    return errors
+
+
 def parse_whitelist(f):
     """
     Parse the whitelist file given by `f`, and return the parsed structure.
@@ -901,7 +950,7 @@ def lint(repo_root, paths, output_format):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
-all_paths_lints = [check_css_globally_unique]
+all_paths_lints = [check_css_globally_unique, check_owners]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 # Don't break users of the lint that don't have git installed.

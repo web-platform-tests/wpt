@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the IndexedDB spec.
+// Content of this file was automatically extracted from the Indexed Database API spec.
 // See https://w3c.github.io/IndexedDB/
 
 [Exposed=(Window,Worker)]
@@ -45,9 +45,9 @@ partial interface WindowOrWorkerGlobalScope {
 
 [Exposed=(Window,Worker)]
 interface IDBFactory {
-  IDBOpenDBRequest open(DOMString name,
-                        optional [EnforceRange] unsigned long long version);
-  IDBOpenDBRequest deleteDatabase(DOMString name);
+  [NewObject] IDBOpenDBRequest open(DOMString name,
+                                    optional [EnforceRange] unsigned long long version);
+  [NewObject] IDBOpenDBRequest deleteDatabase(DOMString name);
 
   short cmp(any first, any second);
 };

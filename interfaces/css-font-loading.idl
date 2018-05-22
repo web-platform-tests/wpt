@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the CSS Font Loading spec.
+// See https://drafts.csswg.org/css-font-loading/
+
 typedef (ArrayBuffer or ArrayBufferView) BinaryData;
 
 dictionary FontFaceDescriptors {

@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test for methodName attribute</title>
-<link rel="help" href="https://w3c.github.io/browser-payment-api/#methodname-attribute">
-<script src="/resources/testharness.js"></script>
+<title>Test for PaymentMethodChangeEvent.methodName attribute</title>
+<link rel="help" href="https://w3c.github.io/browser-payment-api/#dom-paymentmethodchangeevent-src">
+<script="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 "use strict";
-const testMethod = Object.freeze({ supportedMethods: "not-a-real-method" });
-const applePay = Object.freeze({ supportedMethods: "https://apple.com/apple-pay" });
-const defaultMethods = Object.freeze([testMethod, applePay]);
-const defaultDetails = Object.freeze({
-  total: {
-    label: "Total",
-    amount: {
-      currency: "USD",
-      value: "1.00",
-    },
-  },
-});
-
 test(() => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  assert_idl_attribute(request, "methodName");
-  assert_equals(request.methodName, null);
-}, "Must have a methodName IDL attribute, which is initialized with null");
+  const event = new PaymentMethodChangeEvent("test", {
+    methodName: "wpt-test",
+  });
+  assert_idl_attribute(event, "methodName");
+  const { methodName } = event;
+  assert_equals(methodName, "wpt-test");
+}, "Must have a methodName IDL attribute, which is initialized with to the methodName dictionary value");

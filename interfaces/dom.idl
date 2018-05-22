@@ -1,9 +1,12 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the DOM spec.
+// See https://dom.spec.whatwg.org/
+
 [Constructor(DOMString type, optional EventInit eventInitDict),
  Exposed=(Window,Worker,AudioWorklet)]
 interface Event {
   readonly attribute DOMString type;
   readonly attribute EventTarget? target;
-  readonly attribute EventTarget? srcElement;
   readonly attribute EventTarget? currentTarget;
   sequence<EventTarget> composedPath();
 
@@ -19,7 +22,6 @@ interface Event {
 
   readonly attribute boolean bubbles;
   readonly attribute boolean cancelable;
-           attribute boolean returnValue;
   void preventDefault();
   readonly attribute boolean defaultPrevented;
   readonly attribute boolean composed;
@@ -427,7 +429,6 @@ interface ProcessingInstruction : CharacterData {
  Exposed=Window]
 interface Comment : CharacterData {
 };
-
 
 [Exposed=Window]
 interface AbstractRange {

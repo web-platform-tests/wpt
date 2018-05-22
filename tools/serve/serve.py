@@ -709,9 +709,11 @@ class Config(config.Config):
     }
 
     def __init__(self, *args, **kwargs):
+        if "subdomains" not in kwargs:
+            kwargs["subdomains"] = _subdomains
+        if "not_subdomains" not in kwargs:
+            kwargs["not_subdomains"] = _not_subdomains
         super(Config, self).__init__(
-            subdomains=_subdomains,
-            not_subdomains=_not_subdomains,
             *args,
             **kwargs
         )

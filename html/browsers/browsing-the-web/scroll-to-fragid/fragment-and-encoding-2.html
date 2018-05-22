@@ -12,17 +12,17 @@ test(() => {
 
   location.hash = "%C2";
   assert_equals(location.hash, "#%C2");
-  assert_greater_than(self.scrollY, 1000);
+  assert_greater_than(self.scrollY, 1000, "#%C2"); // UTF-8 decoded this'll match U+FFFD
 
   location.hash = "top";
-  assert_equals(self.scrollY, 0);
+  assert_equals(self.scrollY, 0, "#top");
 
   location.hash = "%EF%BB%BF%C2";
   assert_equals(location.hash, "#%EF%BB%BF%C2");
-  assert_equals(self.scrollY, 0);
+  assert_equals(self.scrollY, 0, "#%EF%BB%BF%C2");
 
   location.hash = "%EF%BF%BD";
   assert_equals(location.hash, "#%EF%BF%BD");
-  assert_greater_than(self.scrollY, 1000);
+  assert_greater_than(self.scrollY, 1000, "#%EF%BF%BD");
 });
 </script>

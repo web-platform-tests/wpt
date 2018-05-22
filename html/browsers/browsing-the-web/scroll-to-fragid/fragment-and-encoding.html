@@ -13,15 +13,15 @@ test(() => {
 
   location.hash = "\u00FF";
   assert_equals(location.hash, "#%C3%BF");
-  assert_greater_than(self.scrollY, 1000);
+  assert_greater_than(self.scrollY, 1000, "#%C3%BF");
 
   location.hash = "top";
-  assert_equals(self.scrollY, 0);
+  assert_equals(self.scrollY, 0, "#top");
 
   location.hash = "%EF%BB%BF";
-  assert_greater_than(self.scrollY, 1000);
+  assert_greater_than(self.scrollY, 1000, "#%EF%BB%BF");
 
   location.hash = "%FF";
-  assert_equals(self.scrollY, 0);
+  assert_equals(self.scrollY, 0, "#%FF");
 });
 </script>

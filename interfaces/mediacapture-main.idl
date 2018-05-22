@@ -183,8 +183,9 @@ enum MediaDeviceKind {
     "videoinput"
 };
 
-        [Exposed=Window] interface InputDeviceInfo : MediaDeviceInfo {
-    MediaTrackCapabilities getCapabilities ();
+[Exposed=Window]
+interface InputDeviceInfo : MediaDeviceInfo {
+    MediaTrackCapabilities getCapabilities();
 };
 
 partial interface NavigatorUserMedia {

@@ -45,9 +45,9 @@ partial interface WindowOrWorkerGlobalScope {
 
 [Exposed=(Window,Worker)]
 interface IDBFactory {
-  [NewObject] IDBOpenDBRequest open(DOMString name,
-                                    optional [EnforceRange] unsigned long long version);
-  [NewObject] IDBOpenDBRequest deleteDatabase(DOMString name);
+  IDBOpenDBRequest open(DOMString name,
+                        optional [EnforceRange] unsigned long long version);
+  IDBOpenDBRequest deleteDatabase(DOMString name);
 
   short cmp(any first, any second);
 };

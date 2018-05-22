@@ -66,6 +66,10 @@ scheme host and port.""")
 
     parser.add_argument("--no-capture-stdio", action="store_true", default=False,
                         help="Don't capture stdio and write to logging")
+    parser.add_argument("--no-fail-on-unexpected", action="store_false",
+                        default=True,
+                        dest="fail_on_unexpected",
+                        help="Exit with status code 0 when test expectations are violated")
 
     mode_group = parser.add_argument_group("Mode")
     mode_group.add_argument("--list-test-groups", action="store_true",
@@ -334,13 +338,15 @@ def set_from_config(kwargs):
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
 
-    if kwargs["manifest_path"]:
+    if kwargs.get("manifest_path"):
         if "/" not in kwargs["test_paths"]:
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["manifest_path"] = kwargs["manifest_path"]
 
     kwargs["suite_name"] = kwargs["config"].get("web-platform-tests", {}).get("name", "web-platform-tests")
 
+
+    check_paths(kwargs)
 
 def get_test_paths(config):
     # Set up test_paths
@@ -399,8 +405,6 @@ def check_paths(kwargs):
 
 def check_args(kwargs):
     set_from_config(kwargs)
-
-    check_paths(kwargs)
 
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
@@ -492,8 +496,6 @@ def check_args(kwargs):
 
 def check_args_update(kwargs):
     set_from_config(kwargs)
-
-    check_paths(kwargs)
 
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"

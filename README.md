@@ -44,10 +44,10 @@ For example, on most UNIX-like systems, you can setup the hosts file with:
 ./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
 
-And on Windows (note this requires an Administrator privileged shell):
+And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
 ```bash
-python wpt make-hosts-file >> %SystemRoot%\System32\drivers\etc\hosts
+python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
 If you are behind a proxy, you also need to make sure the domains above are
@@ -69,22 +69,19 @@ python wpt serve
 ```
 
 This will start HTTP servers on two ports and a websockets server on
-one port. By default the web servers start on ports 8000 and 8443 and the other
-ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, copy the
-`config.default.json` file to `config.json` and edit the new file,
-replacing the part that reads:
+one port. By default the web servers start on ports 8000 and 8443 and
+the other ports are randomly-chosen free ports. Tests must be loaded
+from the *first* HTTP server in the output. To change the ports,
+create a `config.json` file in the wpt root directory, and add
+port definitions of your choice e.g.:
 
 ```
-"http": [8000, "auto"],
-"https":[8443]
-```
-
-to some ports of your choice e.g.
-
-```
-"http": [1234, "auto"],
-"https":[5678]
+{
+  "ports": {
+    "http": [1234, "auto"],
+    "https":[5678]
+  }
+}
 ```
 
 After your `hosts` file is configured, the servers will be locally accessible at:
@@ -110,7 +107,7 @@ line syntax is:
 **On Windows**: You will need to preceed the prior command with
 `python` or the path to the python binary.
 ```bash
-python wpt product [tests]
+python wpt run product [tests]
 ```
 
 where `product` is currently `firefox` or `chrome` and `[tests]` is a
@@ -262,16 +259,31 @@ If you forget to do this part, you will most likely see a 'File Not Found'
 error when you start wptserve.
 
 Finally, set the path value in the server configuration file to the
-default OpenSSL configuration file location. To do this,
-copy `config.default.json` in the web-platform-tests root to `config.json`.
-Then edit the JSON so that the key `ssl/openssl/base_conf_path` has a
-value that is the path to the OpenSSL config file (typically this
-will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
+default OpenSSL configuration file location. To do this create a file
+called `config.json`.  Then add the OpenSSL configuration below,
+ensuring that the key `ssl/openssl/base_conf_path` has a value that is
+the path to the OpenSSL config file (typically this will be
+`C:\\OpenSSL-Win32\\bin\\openssl.cfg`):
+
+```
+{
+  "ssl": {
+    "type": "openssl",
+    "encrypt_after_connect": false,
+    "openssl": {
+      "openssl_binary": "openssl",
+      "base_path: "_certs",
+      "force_regenerate": false,
+      "base_conf_path": "C:\\OpenSSL-Win32\\bin\\openssl.cfg"
+    },
+  },
+}
+```
 
 ### Trusting Root CA
 
 To prevent browser SSL warnings when running HTTPS tests locally, the
-web-platform-tests Root CA file `rootca.pem` in [tools/certs](tools/certs)
+web-platform-tests Root CA file `cacert.pem` in [tools/certs](tools/certs)
 must be added as a trusted certificate in your OS/browser.
 
 Publication
@@ -361,7 +373,7 @@ web-platform-tests root directory to suppress the error reports.
 
 For more details, see the [lint-tool documentation][lint-tool].
 
-[lint-tool]: http://web-platform-tests.org/writing-tests/lint-tool.html
+[lint-tool]: https://web-platform-tests.org/writing-tests/lint-tool.html
 
 Adding command-line scripts ("tools" subdirs)
 ---------------------------------------------
@@ -410,6 +422,14 @@ been adequately reviewed "upstream" in another repository, it can be
 pushed here without any further review by supplying a link to the
 upstream review.
 
+Search filters to find things to review:
+
+* [Open PRs (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+* [Reviewed but still open PRs (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?q=is%3Apr+is%3Aopen+-label%3Amozilla%3Agecko-sync+-label%3Achromium-export+-label%3Awebkit-export+-label%3Aservo-export+review%3Aapproved) (Merge? Something left to fix? Ping other reviewer?)
+* [Open PRs without owners](https://github.com/w3c/web-platform-tests/pulls?q=is%3Apr+is%3Aopen+label%3Astatus%3Aneeds-owners)
+* [Open PRs with label `infra` (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Ainfra+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+* [Open PRs with label `docs` (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Adocs+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+
 Getting Involved
 ================
 
@@ -423,11 +443,11 @@ is [archived][ircarchive].
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
 [ircw3org]: https://www.w3.org/wiki/IRC
-[ircarchive]: http://logs.glob.uno/?c=w3%23testing
+[ircarchive]: https://w3.logbot.info/testing
 [mailarchive]: https://lists.w3.org/Archives/Public/public-test-infra/
 
 Documentation
 =============
 
-* [How to write and review tests](http://web-platform-tests.org/)
+* [How to write and review tests](https://web-platform-tests.org/)
 * [Documentation for the wptserve server](http://wptserve.readthedocs.org/en/latest/)

@@ -32,6 +32,7 @@ from .protocol import (BaseProtocolPart,
                        StorageProtocolPart,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
@@ -59,7 +60,7 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
 
     def execute_script(self, script, async=False):
         method = self.marionette.execute_async_script if async else self.marionette.execute_script
-        return method(script, new_sandbox=False)
+        return method(script, new_sandbox=False, sandbox=None)
 
     def set_timeout(self, timeout):
         """Set the Marionette script timeout.
@@ -118,7 +119,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
 
     def load_runner(self, url_protocol):
         # Check if we previously had a test window open, and if we did make sure it's closed
-        self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        self.parent.base.execute_script("if (window.win) {window.win.close()}")
         url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
@@ -132,7 +133,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
                 "that your firewall rules or network setup does not "
                 "prevent access.\e%s" % (url, traceback.format_exc(e)))
             raise
-        self.marionette.execute_script(
+        self.parent.base.execute_script(
             "document.title = '%s'" % threading.current_thread().name.replace("'", '"'))
 
     def close_old_windows(self, url_protocol):
@@ -182,7 +183,7 @@ class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
         if window_id:
             try:
                 # Try this, it's in Level 1 but nothing supports it yet
-                win_s = self.marionette.execute_script("return window['%s'];" % self.window_id)
+                win_s = self.parent.base.execute_script("return window['%s'];" % self.window_id)
                 win_obj = json.loads(win_s)
                 test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
             except Exception:
@@ -307,6 +308,12 @@ class MarionetteClickProtocolPart(ClickProtocolPart):
     def element(self, element):
         return element.click()
 
+class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def send_keys(self, element, keys):
+        return element.send_keys(keys)
 
 class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
@@ -319,7 +326,7 @@ class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
         }
         if message:
             obj["message"] = str(message)
-        self.marionette.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+        self.parent.base.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
 
 class MarionetteProtocol(Protocol):
@@ -329,6 +336,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteStorageProtocolPart,
                   MarionetteSelectorProtocolPart,
                   MarionetteClickProtocolPart,
+                  MarionetteSendKeysProtocolPart,
                   MarionetteTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):
@@ -395,7 +403,7 @@ class MarionetteProtocol(Protocol):
                 self.prefs.set(name, value)
 
         for name, value in new_environment.get("prefs", {}).iteritems():
-            self.executor.original_pref_values[name] = self.get_pref(name)
+            self.executor.original_pref_values[name] = self.prefs.get(name)
             self.prefs.set(name, value)
 
 
@@ -446,7 +454,7 @@ class ExecuteAsyncScriptRun(object):
             # We didn't get any data back from the test, so check if the
             # browser is still responsive
             if self.protocol.is_alive:
-                self.result = False, ("ERROR", None)
+                self.result = False, ("INTERNAL-ERROR", None)
             else:
                 self.result = False, ("CRASH", None)
         return self.result
@@ -467,7 +475,8 @@ class ExecuteAsyncScriptRun(object):
             if message:
                 message += "\n"
             message += traceback.format_exc(e)
-            self.result = False, ("ERROR", e)
+            self.logger.warning(message)
+            self.result = False, ("INTERNAL-ERROR", None)
 
         finally:
             self.result_flag.set()
@@ -485,8 +494,8 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
                                      debug_info=debug_info)
 
         self.protocol = MarionetteProtocol(self, browser, capabilities, timeout_multiplier)
-        self.script = open(os.path.join(here, "testharness_marionette.js")).read()
-        self.script_resume = open(os.path.join(here, "testharness_marionette_resume.js")).read()
+        self.script = open(os.path.join(here, "testharness_webdriver.js")).read()
+        self.script_resume = open(os.path.join(here, "testharness_webdriver_resume.js")).read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
 
@@ -519,7 +528,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         return (test.result_cls(*data), [])
 
     def do_testharness(self, protocol, url, timeout):
-        protocol.base.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+        protocol.base.execute_script("if (window.win) {window.win.close()}")
         parent_window = protocol.testharness.close_old_windows(protocol)
 
         if timeout is not None:
@@ -543,6 +552,9 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         while True:
             result = protocol.base.execute_script(
                 self.script_resume % format_map, async=True)
+            if result is None:
+                # This can happen if we get an content process crash
+                return None
             done, rv = handler(result)
             if done:
                 break
@@ -631,12 +643,12 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                                      test_url,
                                      timeout).run()
 
-    def _screenshot(self, marionette, url, timeout):
-        marionette.navigate(url)
+    def _screenshot(self, protocol, url, timeout):
+        protocol.marionette.navigate(url)
 
-        marionette.execute_async_script(self.wait_script)
+        protocol.base.execute_script(self.wait_script, async=True)
 
-        screenshot = marionette.screenshot(full=False)
+        screenshot = protocol.marionette.screenshot(full=False)
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):
             screenshot = screenshot.split(",", 1)[1]

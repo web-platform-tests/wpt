@@ -8,7 +8,7 @@ import urlparse
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
-from protocol import Protocol
+from protocol import Protocol, BaseProtocolPart
 
 here = os.path.split(__file__)[0]
 
@@ -104,6 +104,7 @@ class TestExecutor(object):
     test_type = None
     convert_result = None
     supports_testdriver = False
+    supports_jsshell = False
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
                  debug_info=None, **kwargs):
@@ -153,10 +154,10 @@ class TestExecutor(object):
         :param test: The test to run"""
         if test.environment != self.last_environment:
             self.on_environment_change(test.environment)
-
         try:
             result = self.do_test(test)
         except Exception as e:
+            self.logger.warning(traceback.format_exc(e))
             result = self.result_from_exception(test, e)
 
         if result is Stop:
@@ -193,7 +194,7 @@ class TestExecutor(object):
         if hasattr(e, "status") and e.status in test.result_cls.statuses:
             status = e.status
         else:
-            status = "ERROR"
+            status = "INTERNAL-ERROR"
         message = unicode(getattr(e, "message", ""))
         if message:
             message += "\n"
@@ -406,12 +407,28 @@ class WdspecRun(object):
             if message:
                 message += "\n"
             message += traceback.format_exc(e)
-            self.result = False, ("ERROR", message)
+            self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()
 
 
+class ConnectionlessBaseProtocolPart(BaseProtocolPart):
+    def execute_script(self, script, async=False):
+        pass
+
+    def set_timeout(self, timeout):
+        pass
+
+    def wait(self):
+        pass
+
+    def set_window(self, handle):
+        pass
+
+
 class ConnectionlessProtocol(Protocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
     def connect(self):
         pass
 
@@ -421,6 +438,8 @@ class ConnectionlessProtocol(Protocol):
 
 class WebDriverProtocol(Protocol):
     server_cls = None
+
+    implements = [ConnectionlessBaseProtocolPart]
 
     def __init__(self, executor, browser):
         Protocol.__init__(self, executor, browser)
@@ -485,7 +504,8 @@ class CallbackHandler(object):
         }
 
         self.actions = {
-            "click": ClickAction(self.logger, self.protocol)
+            "click": ClickAction(self.logger, self.protocol),
+            "send_keys": SendKeysAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -543,3 +563,20 @@ class ClickAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Clicking element: %s" % selector)
         self.protocol.click.element(elements[0])
+
+
+class SendKeysAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        selector = payload["selector"]
+        keys = payload["keys"]
+        elements = self.protocol.select.elements_by_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+        self.logger.debug("Sending keys to element: %s" % selector)
+        self.protocol.send_keys.send_keys(elements[0], keys)

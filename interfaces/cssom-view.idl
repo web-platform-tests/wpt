@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the CSSOM View spec.
+// See https://drafts.csswg.org/cssom-view/
+
 enum ScrollBehavior { "auto", "instant", "smooth" };
 
 dictionary ScrollOptions {
@@ -162,18 +166,16 @@ dictionary ConvertCoordinateOptions {
   CSSBoxType toBox = "border";
 };
 
-[Exposed=Window,
- NoInterfaceObject]
-interface GeometryUtils {
+interface mixin GeometryUtils {
   sequence<DOMQuad> getBoxQuads(optional BoxQuadOptions options);
   DOMQuad convertQuadFromNode(DOMQuadInit quad, GeometryNode from, optional ConvertCoordinateOptions options);
   DOMQuad convertRectFromNode(DOMRectReadOnly rect, GeometryNode from, optional ConvertCoordinateOptions options);
   DOMPoint convertPointFromNode(DOMPointInit point, GeometryNode from, optional ConvertCoordinateOptions options); // XXX z,w turns into 0
 };
 
-Text implements GeometryUtils; // like Range
-Element implements GeometryUtils;
-CSSPseudoElement implements GeometryUtils;
-Document implements GeometryUtils;
+Text includes GeometryUtils; // like Range
+Element includes GeometryUtils;
+CSSPseudoElement includes GeometryUtils;
+Document includes GeometryUtils;
 
 typedef (Text or Element or CSSPseudoElement or Document) GeometryNode;

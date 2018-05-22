@@ -45,7 +45,7 @@ promise_test(async t => {
   const iframe = await with_iframe(SCOPE);
   const w = iframe.contentWindow;
 
-  // Trigger a range request using media
+  // Trigger a cross-origin range request using media
   const url = new URL('long-wav.py?action=range-header-filter-test', w.location);
   url.hostname = REMOTE_HOST;
   appendAudio(w.document, url);
@@ -59,7 +59,7 @@ promise_test(async t => {
   const iframe = await with_iframe(SCOPE);
   const w = iframe.contentWindow;
 
-  // Trigger a range request using media
+  // Trigger a cross-origin range request using media
   const url = new URL('long-wav.py', w.location);
   url.searchParams.set('action', 'range-header-passthrough-test');
   url.searchParams.set('range-received-key', token());
@@ -71,13 +71,13 @@ promise_test(async t => {
 }, `Defer range header passthrough tests to service worker`);
 
 promise_test(async t => {
-  const reg = await setupRegistration(t);
+  await setupRegistration(t);
   const iframe = await with_iframe(SCOPE);
   const w = iframe.contentWindow;
   const id = Math.random() + '';
   const storedRangeResponse = awaitMessage(w.navigator.serviceWorker, id);
 
-  // Trigger a range request using media
+  // Trigger a cross-origin range request using media
   const url = new URL('partial-script.py', w.location);
   url.searchParams.set('require-range', '1');
   url.searchParams.set('action', 'store-ranged-response');
@@ -98,7 +98,7 @@ promise_test(async t => {
 }, `Ranged response not executed following no-cors ranged request`);
 
 promise_test(async t => {
-  const reg = await setupRegistration(t);
+  await setupRegistration(t);
   const iframe = await with_iframe(SCOPE);
   const w = iframe.contentWindow;
   const id = Math.random() + '';

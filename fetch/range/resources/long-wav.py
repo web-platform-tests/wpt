@@ -54,7 +54,7 @@ def main(request, response):
 
     if range_received_key and range_header:
         # This is later collected using stash-take.py
-        request.stash.put(range_received_key, 'range-header-received', '/fetch/privileged-headers/')
+        request.stash.put(range_received_key, 'range-header-received', '/fetch/range/')
 
     # Audio details
     sample_rate = 8000

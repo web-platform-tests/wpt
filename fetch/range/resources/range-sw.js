@@ -108,7 +108,7 @@ function rangeHeaderPassthroughTest(event) {
     promise_test(async () => {
       await fetch(event.request);
       const response = await fetch('stash-take.py?key=' + key);
-      assert_equals(await response.json(), 'range-header-received');
+      assert_equals(await response.json(), '"range-header-received"');
       resolve();
     }, `Include range header in network request`);
 

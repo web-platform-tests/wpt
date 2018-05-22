@@ -76,7 +76,7 @@ interface FontFaceSet : EventTarget {
   readonly attribute FontFaceSetLoadStatus status;
 };
 
-[Exposed=(Window,Worker)
+[Exposed=(Window,Worker),
  NoInterfaceObject]
 interface FontFaceSource {
   readonly attribute FontFaceSet fonts;

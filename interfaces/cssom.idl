@@ -4,8 +4,7 @@
 
 typedef USVString CSSOMString;
 
-[Exposed=Window,
- LegacyArrayClass]
+[Exposed=Window]
 interface MediaList {
   stringifier attribute [TreatNullAs=EmptyString] CSSOMString mediaText;
   readonly attribute unsigned long length;
@@ -33,8 +32,7 @@ interface CSSStyleSheet : StyleSheet {
   void deleteRule(unsigned long index);
 };
 
-[Exposed=Window,
- LegacyArrayClass]
+[Exposed=Window]
 interface StyleSheetList {
   getter StyleSheet? item(unsigned long index);
   readonly attribute unsigned long length;
@@ -52,8 +50,7 @@ interface LinkStyle {
 
 ProcessingInstruction implements LinkStyle;
 
-[Exposed=Window,
- LegacyArrayClass]
+[Exposed=Window]
 interface CSSRuleList {
   getter CSSRule? item(unsigned long index);
   readonly attribute unsigned long length;
@@ -121,8 +118,6 @@ interface CSSStyleDeclaration {
   CSSOMString getPropertyValue(CSSOMString property);
   CSSOMString getPropertyPriority(CSSOMString property);
   [CEReactions] void setProperty(CSSOMString property, [TreatNullAs=EmptyString] CSSOMString value, [TreatNullAs=EmptyString] optional CSSOMString priority = "");
-  [CEReactions] void setPropertyValue(CSSOMString property, [TreatNullAs=EmptyString] CSSOMString value);
-  [CEReactions] void setPropertyPriority(CSSOMString property, [TreatNullAs=EmptyString] CSSOMString priority);
   [CEReactions] CSSOMString removeProperty(CSSOMString property);
   readonly attribute CSSRule? parentRule;
   [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString cssFloat;

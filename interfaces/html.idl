@@ -116,6 +116,7 @@ dictionary FocusOptions {
 HTMLElement includes GlobalEventHandlers;
 HTMLElement includes DocumentAndElementEventHandlers;
 HTMLElement includes ElementContentEditable;
+HTMLElement includes HTMLOrSVGElement;
 
 // Note: intentionally not [HTMLConstructor]
 interface HTMLUnknownElement : HTMLElement { };
@@ -128,8 +129,6 @@ interface mixin HTMLOrSVGElement {
   void focus(optional FocusOptions options);
   void blur();
 };
-HTMLElement includes HTMLOrSVGElement;
-SVGElement includes HTMLOrSVGElement;
 
 [Exposed=Window,
  OverrideBuiltins]
@@ -1437,6 +1436,7 @@ interface CustomElementRegistry {
   [CEReactions] void define(DOMString name, Function constructor, optional ElementDefinitionOptions options);
   any get(DOMString name);
   Promise<void> whenDefined(DOMString name);
+  [CEReactions] void upgrade(Node root);
 };
 
 dictionary ElementDefinitionOptions {

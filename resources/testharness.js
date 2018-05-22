@@ -1678,7 +1678,8 @@ policies and contribution forms [3].
     Test.prototype._done_async = function(callback)
     {
         if (this.phase === this.phases.COMPLETE) {
-            setTimeout(callback, 0);
+            var queue_name = this._is_promise_test ? "microtask" : "task";
+            queue_async(queue_name, callback);
             return;
         }
 
@@ -1752,6 +1753,7 @@ policies and contribution forms [3].
                               done();
                           }
                       },
+                      "microtask",
                       function() {
                           cleanup_done(this_obj, error_count, bad_value_count);
                       });
@@ -2285,6 +2287,10 @@ policies and contribution forms [3].
                       // function is invoked asynchronously in all cases.
                       test._done_async(testDone);
                   },
+                  // The microtask queue cannot be used because Promises are
+                  // not necessarily available to the context executing this
+                  // statement.
+                  "task",
                   all_complete);
     };
 
@@ -3072,6 +3078,25 @@ policies and contribution forms [3].
     }
 
     /**
+     * Schedule a function to be invoked asynchronously by creating a task in
+     * the specified queue.
+     *
+     * @param {string} queue_name The task queue on which invocation of the
+     *                            provided function should be placed. Either
+     *                            "task" or "microtask"
+     * @param {function} fn The function to be invoked
+     */
+    function queue_async(queue_name, fn) {
+        if (queue_name === "task") {
+            setTimeout(fn, 0);
+        } else if (queue_name === "microtask") {
+            Promise.resolve().then(fn);
+        } else {
+            throw new Error("Unrecognized queue name: \"" + queue_name + "\"");
+        }
+    }
+
+    /**
      * Immediately invoke a "iteratee" function with a series of values in
      * parallel and invoke a final "done" function when all of the "iteratee"
      * invocations have signaled completion.
@@ -3084,17 +3109,20 @@ policies and contribution forms [3].
      *                                 invocation: the value from `values` and
      *                                 a function that must be invoked to
      *                                 signal completion
+     * @param {string} queue_name The task queue on which invocation of the
+     *                            provided `done_callback` should be placed.
+     *                            Either "task" or "microtask"
      * @param {function} done_callback A function that will be invoked after
      *                                 all operations initiated by the
      *                                 `iter_callback` function have signaled
      *                                 completion
      */
-    function all_async(values, iter_callback, done_callback)
+    function all_async(values, iter_callback, queue_name, done_callback)
     {
         var remaining = values.length;
 
         if (remaining === 0) {
-            setTimeout(done_callback, 0);
+            queue_async(queue_name, done_callback);
         }
 
         forEach(values,
@@ -3109,7 +3137,7 @@ policies and contribution forms [3].
                         remaining -= 1;
 
                         if (remaining === 0) {
-                            setTimeout(done_callback, 0);
+                            queue_async(queue_name, done_callback);
                         }
                     };
 

@@ -88,14 +88,18 @@ promise_test(async t => {
 
   await storedRangeResponse;
 
-  // This should not throw
-  await w.fetch('?action=use-stored-ranged-response', { mode: 'no-cors' });
+  // Fetching should reject
+  const fetchPromise = w.fetch('?action=use-stored-ranged-response', { mode: 'no-cors' });
+  promise_rejects(t, new TypeError(), fetchPromise);
 
-  // This shouldn't throw either
-  await loadScript('?action=use-stored-ranged-response', { doc: w.document });
+  // Script loading should error too
+  const loadScriptPromise = loadScript('?action=use-stored-ranged-response', { doc: w.document });
+  promise_rejects(t, new Error(), loadScriptPromise);
+
+  await loadScriptPromise.catch(() => {});
 
   assert_false(!!w.scriptExecuted, `Partial response shouldn't be executed`);
-}, `Ranged response not executed following no-cors ranged request`);
+}, `Ranged response not allowed following no-cors ranged request`);
 
 promise_test(async t => {
   await setupRegistration(t);

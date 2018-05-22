@@ -288,10 +288,10 @@ must be added as a trusted certificate in your OS/browser.
 
 **NOTE**: The CA should not be installed in any browser profile used
 outside of tests, since it may be used to generate fake
-certificates. For browsers that use the OS certificate store tests
+certificates. For browsers that use the OS certificate store, tests
 should therefore not be run manually outside a dedicated OS instance
 (e.g. a VM). To avoid this problem use `wpt run`, which disables
-certifcate checks and therefore doesn't require the root CA to be
+certificate checks and therefore doesn't require the root CA to be
 trusted.
 
 Publication

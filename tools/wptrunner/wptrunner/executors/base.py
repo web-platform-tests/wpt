@@ -243,7 +243,6 @@ class RefTestImplementation(object):
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi):
-        test.timeout * self.timeout_multiplier
         key = (test.url, viewport_size, dpi)
 
         if key not in self.screenshot_cache:

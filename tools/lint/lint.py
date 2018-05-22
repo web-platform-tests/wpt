@@ -272,6 +272,7 @@ def check_owners(repo_root, paths):
     :returns: a list of errors found in ``paths``
 
     """
+    # dirs represents whether there's an OWNERS file, value is a boolean.
     dirs = {}
     errors = []
     owner_in_subdirs = [
@@ -285,25 +286,18 @@ def check_owners(repo_root, paths):
             path = path.replace("\\", "/")
 
         source_file = SourceFile(repo_root, path, "/")
-        if source_file.name_is_non_test:
-            continue
-
         parts = source_file.dir_path.split(os.path.sep)
-        if (parts[0] in source_file.root_dir_non_test or
-            any(item in source_file.dir_non_test for item in parts) or
-            any(parts[:len(non_test_path)] == list(non_test_path) for non_test_path in source_file.dir_path_non_test)):
-            continue
         level = 0
         for dir in owner_in_subdirs:
-            if path.find(dir) == 0:
-                level = len(dir.split("/"))
-        if len(parts) <= level or len(parts) > level + 1:
+            if path.startswith(dir):
+                level = dir.count("/") + 1
+        if len(parts) <= level:
             continue
-        if not (parts[level]) in dirs:
-            dirs[parts[level]] = False
-        offset = path.find("/OWNERS")
-        if offset != -1:
-            dirs[parts[level]] = True
+        key = "/".join(parts[:level + 1])
+        if not key in dirs:
+            dirs[key] = False
+        if path.endswith("/OWNERS") and len(parts) == level + 1:
+            dirs[key] = True
 
     for dir in dirs:
         if dirs[dir] == False:

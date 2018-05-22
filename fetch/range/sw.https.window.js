@@ -1,7 +1,9 @@
 // META: script=../../../service-workers/service-worker/resources/test-helpers.sub.js
 // META: script=/common/utils.js
+// META: script=/common/get-host-info.sub.js
 // META: script=resources/utils.js
 
+const { REMOTE_HOST } = get_host_info();
 const SCOPE = 'resources/basic.html';
 
 function appendAudio(document, url) {
@@ -45,7 +47,7 @@ promise_test(async t => {
 
   // Trigger a range request using media
   const url = new URL('long-wav.py?action=range-header-filter-test', w.location);
-  url.hostname = 'www.web-platform.test';
+  url.hostname = REMOTE_HOST;
   appendAudio(w.document, url);
 
   // See rangeHeaderFilterTest in resources/range-sw.js
@@ -61,7 +63,7 @@ promise_test(async t => {
   const url = new URL('long-wav.py', w.location);
   url.searchParams.set('action', 'range-header-passthrough-test');
   url.searchParams.set('range-received-key', token());
-  url.hostname = 'www.web-platform.test';
+  url.hostname = REMOTE_HOST;
   appendAudio(w.document, url);
 
   // See rangeHeaderPassthroughTest in resources/range-sw.js
@@ -80,7 +82,7 @@ promise_test(async t => {
   url.searchParams.set('require-range', '1');
   url.searchParams.set('action', 'store-ranged-response');
   url.searchParams.set('id', id);
-  url.hostname = 'www.web-platform.test';
+  url.hostname = REMOTE_HOST;
 
   appendAudio(w.document, url);
 

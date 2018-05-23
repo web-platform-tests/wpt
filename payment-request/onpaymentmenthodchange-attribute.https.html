@@ -38,7 +38,7 @@ test(() => {
 
 test(() => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const ev = new PaymentRequestUpdateEvent("paymentmethodchange");
+  const ev = new PaymentMethodChangeEvent("paymentmethodchange");
   let didHandle = false;
   request.onpaymentmethodchange = evt => {
     assert_equals(ev, evt, "must be same event");
@@ -46,11 +46,13 @@ test(() => {
   };
   request.dispatchEvent(ev);
   assert_true(didHandle, "event did not fire");
-}, `onpaymentmethodchange attribute is a handler for PaymentRequestUpdateEvent`);
+}, `onpaymentmethodchange attribute is a handler for PaymentMethodChangeEvent`);
 
 test(() => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
-  const ev = new PaymentRequestUpdateEvent("paymentmethodchange");
+  const ev = new PaymentMethodChangeEvent("paymentmethodchange", {
+    methodName: "test"
+  });
   let didHandle = false;
   let didListen = false;
   request.onpaymentmethodchange = evt => {

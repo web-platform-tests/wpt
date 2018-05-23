@@ -13,6 +13,9 @@ import pytest
 from tools.wpt import wpt
 
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+
 def is_port_8000_in_use():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -64,9 +67,69 @@ def test_help():
 
 
 @pytest.mark.slow
+def test_list_tests(manifest_dir):
+    """The `--list-tests` option should not produce an error under normal
+    conditions."""
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--metadata", manifest_dir, "--list-tests",
+                       "--yes", "chrome", "/dom/nodes/Element-tagName.html"])
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
+def test_list_tests_missing_manifest(manifest_dir):
+    """The `--list-tests` option should not produce an error in the absence of
+    a test manifest file."""
+
+    os.remove(os.path.join(manifest_dir, "MANIFEST.json"))
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run",
+                       # This test triggers the creation of a new manifest
+                       # file which is not necessary to ensure successful
+                       # process completion. Specifying the current directory
+                       # as the tests source via the --tests` option
+                       # drastically reduces the time to execute the test.
+                       "--tests", here,
+                       "--metadata", manifest_dir,
+                       "--list-tests",
+                       "--yes",
+                       "firefox", "/dom/nodes/Element-tagName.html"])
+
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
+def test_list_tests_invalid_manifest(manifest_dir):
+    """The `--list-tests` option should not produce an error in the presence of
+    a malformed test manifest file."""
+
+    manifest_filename = os.path.join(manifest_dir, "MANIFEST.json")
+
+    assert os.path.isfile(manifest_filename)
+
+    with open(manifest_filename, "a+") as handle:
+        handle.write("extra text which invalidates the file")
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run",
+                       # This test triggers the creation of a new manifest
+                       # file which is not necessary to ensure successful
+                       # process completion. Specifying the current directory
+                       # as the tests source via the --tests` option
+                       # drastically reduces the time to execute the test.
+                       "--tests", here,
+                       "--metadata", manifest_dir,
+                       "--list-tests",
+                       "--yes",
+                       "firefox", "/dom/nodes/Element-tagName.html"])
+
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "darwin",
-                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
 def test_run_firefox(manifest_dir):
@@ -77,7 +140,10 @@ def test_run_firefox(manifest_dir):
 
     os.environ["MOZ_HEADLESS"] = "1"
     try:
-        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
+        if sys.platform == "darwin":
+            fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "Firefox Nightly.app")
+        else:
+            fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "firefox")
         if os.path.exists(fx_path):
             shutil.rmtree(fx_path)
         with pytest.raises(SystemExit) as excinfo:
@@ -109,6 +175,52 @@ def test_run_chrome(manifest_dir):
 @pytest.mark.remote_network
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
+def test_run_zero_tests():
+    """A test execution describing zero tests should be reported as an error
+    even in the presence of the `--no-fail-on-unexpected` option."""
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
+                       "chrome", "/non-existent-dir/non-existent-file.html"])
+    assert excinfo.value.code != 0
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
+                       "--no-fail-on-unexpected",
+                       "chrome", "/non-existent-dir/non-existent-file.html"])
+    assert excinfo.value.code != 0
+
+@pytest.mark.slow
+@pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
+def test_run_failing_test():
+    """Failing tests should be reported with a non-zero exit status unless the
+    `--no-fail-on-unexpected` option has been specified."""
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
+    failing_test = "/infrastructure/expected-fail/failing-test.html"
+
+    assert os.path.isfile("../../%s" % failing_test)
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
+                       "chrome", failing_test])
+    assert excinfo.value.code != 0
+
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--yes", "--no-pause", "--binary-arg", "headless",
+                       "--no-fail-on-unexpected",
+                       "chrome", failing_test])
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
+@pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
 def test_install_chromedriver():
     chromedriver_path = os.path.join(wpt.localpaths.repo_root, "_venv", "bin", "chromedriver")
     if os.path.exists(chromedriver_path):
@@ -122,12 +234,14 @@ def test_install_chromedriver():
 
 @pytest.mark.slow
 @pytest.mark.remote_network
-@pytest.mark.xfail(sys.platform == "darwin",
-                   reason="https://github.com/w3c/web-platform-tests/issues/9090")
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
 def test_install_firefox():
-    fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "firefox")
+
+    if sys.platform == "darwin":
+        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "Firefox Nightly.app")
+    else:
+        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "firefox")
     if os.path.exists(fx_path):
         shutil.rmtree(fx_path)
     with pytest.raises(SystemExit) as excinfo:
@@ -180,13 +294,14 @@ def test_files_changed_ignore_rules():
 def test_tests_affected(capsys, manifest_dir):
     # This doesn't really work properly for random commits because we test the files in
     # the current working directory for references to the changed files, not the ones at
-    # that specific commit. But we can at least test it returns something sensible
-    commit = "9047ac1d9f51b1e9faa4f9fad9c47d109609ab09"
+    # that specific commit. But we can at least test it returns something sensible.
+    # The test will fail if the file we assert is renamed, so we choose a stable one.
+    commit = "3a055e818218f548db240c316654f3cc1aeeb733"
     with pytest.raises(SystemExit) as excinfo:
         wpt.main(argv=["tests-affected", "--metadata", manifest_dir, "%s~..%s" % (commit, commit)])
     assert excinfo.value.code == 0
     out, err = capsys.readouterr()
-    assert "html/browsers/offline/appcache/workers/appcache-worker.html" in out
+    assert "infrastructure/reftest-wait.html" in out
 
 
 @pytest.mark.slow

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Elements: connectedCallback not called during HTML fragment parsing</title>
+<meta name="author" title="Rob Buis" href="mailto:rbuis@igalia.com">
+<meta name="assert" content="connectedCallback must not be called during HTML fragment parsing">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/custom-elements-helpers.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+var calls = 0;
+class Parenter extends HTMLElement {
+    connectedCallback() {
+        const child = this.firstChild;
+        this.removeChild(child);
+        this.appendChild(child);
+    }
+}
+customElements.define('x-parenter', Parenter);
+class Child extends HTMLElement {
+    connectedCallback() { calls++; }
+}
+customElements.define('x-child', Child);
+
+document_types().forEach(function (entry) {
+    var documentName = entry.name;
+    var getDocument = entry.create;
+
+    promise_test(function () {
+        return getDocument().then(function (doc) {
+            calls = 0;
+            document.body.innerHTML = '<x-parenter><x-child></x-child></x-parenter>';
+            assert_equals(calls, 1);
+        });
+    }, 'Inserting a custom element into ' + documentName + ' using HTML fragment parsing must not call connectedCallback.');
+});
+
+</script>
+</body>
+</html>

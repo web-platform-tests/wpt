@@ -27,12 +27,14 @@ customising the test run, see `./wpt run --help`.
 
 Additional browser-specific documentation:
 
+  * [Chrome][chrome]
+
   * [Chrome for Android][chrome android]
 
   * [Safari][safari]
 
 ## From Inside a Browser
-Tests that have been merged on GitHub are mirrored at [http://w3c-test.org/].
+Tests that have been merged on GitHub are mirrored at [http://w3c-test.org/][w3c-test].
 
 For running multiple tests inside a browser, there is a test runner
 located at `/tools/runner/index.html`.
@@ -69,8 +71,10 @@ channel `#testing`). It's possible edge-case behavior isn't properly
 documented!
 
 
+[chrome]: {{ site.baseurl }}{% link _running-tests/chrome.md %}
 [chrome android]: {{ site.baseurl }}{% link _running-tests/chrome_android.md %}
 [safari]: {{ site.baseurl }}{% link _running-tests/safari.md %}
 [public-test-infra]: https://lists.w3.org/Archives/Public/public-test-infra/
 [IRC]: irc://irc.w3.org:6667/testing
 [web irc]: http://irc.w3.org
+[w3c-test]: http://w3c-test.org

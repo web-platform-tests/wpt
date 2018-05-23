@@ -1,10 +1,13 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Page Visibility spec.
+// See https://w3c.github.io/page-visibility/
 
-      enum VisibilityState {
-        "hidden", "visible", "prerender"
-      };
+enum VisibilityState {
+  "hidden", "visible", "prerender"
+};
 
-      partial interface Document {
-        readonly attribute boolean hidden;
-        readonly attribute VisibilityState visibilityState;
-        attribute EventHandler onvisibilitychange;
-      };
+partial interface Document {
+  readonly attribute boolean hidden;
+  readonly attribute VisibilityState visibilityState;
+  attribute EventHandler onvisibilitychange;
+};

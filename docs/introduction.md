@@ -114,10 +114,10 @@ For example, on most UNIX-like systems, you can setup the hosts file with:
 ./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
 
-And on Windows (note this requires an Administrator privileged shell):
+And on Windows (this must be run in a PowerShell session with Administrator privileges):
 
 ```bash
-python wpt make-hosts-file >> %SystemRoot%\System32\drivers\etc\hosts
+python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
 If you are behind a proxy, you also need to make sure the domains above are
@@ -128,21 +128,27 @@ The test environment can then be started using
     ./wpt serve
 
 This will start HTTP servers on two ports and a websockets server on
-one port. By default one web server starts on port 8000 and the other
+one port. By default the web servers start on ports 8000 and 8443 and the other
 ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, copy the
-`config.default.json` file to `config.json` and edit the new file,
-replacing the part that reads:
+*first* HTTP server in the output. To change the ports,
+create a `config.json` file in the wpt root directory, and add
+port definitions of your choice e.g.:
 
 ```
-"http": [8000, "auto"]
+{
+  "ports": {
+    "http": [1234, "auto"],
+    "https":[5678]
+  }
+}
 ```
 
-to some port of your choice e.g.
+After your `hosts` file is configured, the servers will be locally accessible at:
 
-```
-"http": [1234, "auto"]
-```
+http://web-platform.test:8000/<br>
+https://web-platform.test:8443/ *
+
+\**See [Trusting Root CA](https://github.com/w3c/web-platform-tests/blob/master/README.md#trusting-root-ca)*
 
 ## Running tests automatically
 

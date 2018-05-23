@@ -287,6 +287,11 @@ function doSignalingHandshake(localPc, remotePc, options={}) {
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
 // end points to open.
+//
+// IMPORTANT: Due to a bug in Safari which leads to 'id' being 'null', we send
+//            the remote channel a message that requests the ID to be sent back
+//            to the local channel in order to identify the pair.
+const remoteChannels = {};
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
   pc2=new RTCPeerConnection(),
@@ -296,6 +301,7 @@ function createDataChannelPair(
     channelLabel: '',
     channelOptions: undefined,
     doSignaling: true,
+    idRequestMessage: 'plz-send-me-id',
   }, options);
 
   let channel1Options;
@@ -313,45 +319,106 @@ function createDataChannelPair(
     let opened1 = false;
     let opened2 = false;
 
+    function cleanup() {
+      channel1.removeEventListener('open', onOpen1);
+      channel2.removeEventListener('open', onOpen2);
+      channel1.removeEventListener('error', onError);
+      channel2.removeEventListener('error', onError);
+    }
+
     function onBothOpened() {
+      cleanup();
       resolve([channel1, channel2]);
+    }
+
+    function onError(...args) {
+      cleanup();
+      reject(...args);
     }
 
     function onOpen1() {
       opened1 = true;
-      if (opened2) onBothOpened();
+
+      // Workaround for an annoying bug in Safari
+      if (channel1.id === null) {
+        channel1.addEventListener('message', onMessage1, { once: true });
+        channel1.send(options.idRequestMessage);
+        return;
+      }
+
+      if (opened2) {
+        onBothOpened();
+      }
     }
 
     function onOpen2() {
       opened2 = true;
-      if (opened1) onBothOpened();
+      if (opened1) {
+        onBothOpened();
+      }
     }
 
-    function onDataChannel(event) {
-      if (event.channel.id !== channel1.id) {
-        return;
-      }
+    function onMessage1(event) {
+      const id = parseInt(event.data, 10);
+      channel2 = remoteChannels[id];
+      delete remoteChannels[id];
+      onDataChannelPairFound();
+    }
 
-      channel2 = event.channel;
-      channel2.addEventListener('error', reject);
+    function onMessage2(event) {
+      if (event.data === options.idRequestMessage) {
+        this.send(this.id.toString());
+      }
+    }
+
+    function onDataChannelPairFound() {
+      channel2.addEventListener('error', onError, { once: true });
       const { readyState } = channel2;
 
       if (readyState === 'open') {
         onOpen2();
       } else if (readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2);
+        channel2.addEventListener('open', onOpen2, { once: true });
       } else {
-        reject(new Error(`Unexpected ready state ${readyState}`));
+        onError(new Error(`Unexpected ready state ${readyState}`));
       }
     }
 
-    channel1.addEventListener('open', onOpen1);
-    channel1.addEventListener('error', reject);
+    function onDataChannel(event) {
+      const channel = event.channel;
+
+      // Ignore remote channels that already have an ID request handler
+      if (remoteChannels[channel.id]) {
+        return;
+      }
+
+      // Keep this check. Will prevent finding pairs where both local and remote
+      // id are not an integer (e.g. null).
+      if (!Number.isInteger(channel.id)) {
+        return;
+      }
+
+      // Workaround for an annoying bug in Safari
+      if (channel1.id === null) {
+        remoteChannels[channel.id] = channel;
+        channel.addEventListener('message', onMessage2, { once: true });
+        return;
+      }
+
+      if (channel.id !== channel1.id) {
+        return;
+      }
+
+      channel2 = channel;
+      onDataChannelPairFound();
+    }
+
+    channel1.addEventListener('open', onOpen1, { once: true });
+    channel1.addEventListener('error', onError, { once: true });
 
     if (channel2Options !== null) {
-      onDataChannel({
-        channel: pc2.createDataChannel(options.channelLabel, channel2Options)
-      })
+      channel2 = pc2.createDataChannel(options.channelLabel, channel2Options);
+      onDataChannelPairFound();
     } else {
       pc2.addEventListener('datachannel', onDataChannel);
     }

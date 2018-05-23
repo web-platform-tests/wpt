@@ -245,6 +245,29 @@ def test_ref_same_file_path(caplog):
     assert "same_file_path.html" in caplog.text
 
 
+def test_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["tests/relative-testharness-manual.html"], "normal")
+    assert rv == 2
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
+def test_css_visual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["css/css-unique/relative-testharness.html"], "normal")
+    assert rv == 3
+    assert "CONTENT-VISUAL" in caplog.text
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
+def test_css_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["css/css-unique/relative-testharness-interact.html"], "normal")
+    assert rv == 3
+    assert "CONTENT-MANUAL" in caplog.text
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
 def test_lint_passing_and_failing(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -398,12 +421,14 @@ def test_main_with_args():
     orig_argv = sys.argv
     try:
         sys.argv = ['./lint', 'a', 'b', 'c']
-        with _mock_lint('lint', return_value=True) as m:
-            lint_mod.main(**vars(create_parser().parse_args()))
-            m.assert_called_once_with(repo_root,
-                                      [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
-                                       for x in ['a', 'b', 'c']],
-                                      "normal")
+        with mock.patch(lint_mod.__name__ + ".os.path.isfile") as mock_isfile:
+            mock_isfile.return_value = True
+            with _mock_lint('lint', return_value=True) as m:
+                lint_mod.main(**vars(create_parser().parse_args()))
+                m.assert_called_once_with(repo_root,
+                                          [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
+                                           for x in ['a', 'b', 'c']],
+                                          "normal")
     finally:
         sys.argv = orig_argv
 

@@ -96,15 +96,19 @@ otherwise install OpenSSL and ensure that it's on your $PATH.""")
 
 def check_environ(product):
     if product not in ("firefox", "servo"):
-        expected_hosts = {".".join(x)
-                          for x in serve.get_subdomains("web-platform.test").values()}
-        expected_hosts |= {".".join(x)
-                           for x in serve.get_not_subdomains("web-platform.test").values()}
+        config = serve.load_config(os.path.join(wpt_root, "config.json"))
+        expected_hosts = set(config.domains_set)
+        is_windows = platform.uname()[0] == "Windows"
+
+        if is_windows:
+            expected_hosts.update(config.not_domains_set)
+
         missing_hosts = set(expected_hosts)
-        if platform.uname()[0] != "Windows":
-            hosts_path = "/etc/hosts"
-        else:
+        if is_windows:
             hosts_path = "C:\Windows\System32\drivers\etc\hosts"
+        else:
+            hosts_path = "/etc/hosts"
+
         with open(hosts_path, "r") as f:
             for line in f:
                 line = line.split("#", 1)[0].strip()
@@ -113,12 +117,12 @@ def check_environ(product):
                 for host in hosts:
                     missing_hosts.discard(host)
             if missing_hosts:
-                if platform.uname()[0] != "Windows":
+                if is_windows:
                     message = """Missing hosts file configuration. Run
 
-python wpt make-hosts-file >> %s
+python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 
-from a shell with Administrator privileges.""" % hosts_path
+in PowerShell with Administrator privileges.""" % hosts_path
                 else:
                     message = """Missing hosts file configuration. Run
 
@@ -163,7 +167,7 @@ class Firefox(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
-            binary = self.browser.find_binary()
+            binary = self.browser.find_binary(self.venv.path)
             if binary is None:
                 raise WptrunError("""Firefox binary not found on $PATH.
 
@@ -201,8 +205,7 @@ Consider installing certutil via your OS package manager or directly.""")
                 kwargs["test_types"].remove("wdspec")
 
         if kwargs["prefs_root"] is None:
-            print("Downloading gecko prefs")
-            prefs_root = self.browser.install_prefs(self.venv.path)
+            prefs_root = self.browser.install_prefs(kwargs["binary"], self.venv.path)
             kwargs["prefs_root"] = prefs_root
 
 
@@ -352,7 +355,8 @@ class Servo(BrowserSetup):
     browser_cls = browser.Servo
 
     def install(self, venv):
-        raise NotImplementedError
+        if self.prompt_install(self.name):
+            return self.browser.install(venv.path)
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
@@ -423,6 +427,7 @@ def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
 
     venv.install_requirements(os.path.join(wptrunner_path, "requirements.txt"))
 
+    kwargs['browser_version'] = setup_cls.browser.version(kwargs.get("binary"))
     return kwargs
 
 

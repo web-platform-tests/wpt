@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the CSS Animations spec.
+// See https://drafts.csswg.org/css-animations/
+
 [Exposed=Window,
  Constructor(CSSOMString type, optional AnimationEventInit animationEventInitDict)]
 interface AnimationEvent : Event {

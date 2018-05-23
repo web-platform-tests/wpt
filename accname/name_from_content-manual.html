@@ -3,7 +3,6 @@
   <head>
     <title>Name from content</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <link rel="stylesheet" href="/resources/testharness.css">
     <link rel="stylesheet" href="/wai-aria/scripts/manual.css">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +21,7 @@
                   "property",
                   "name",
                   "is",
-                  "My name is Garaventa the weird. (QED) Where are my marbles?"
+                  "My name is Eli the weird. (QED) Where are my marbles?"
                ]
             ],
             "AXAPI" : [
@@ -30,7 +29,7 @@
                   "property",
                   "AXDescription",
                   "is",
-                  "My name is Garaventa the weird. (QED) Where are my marbles?"
+                  "My name is Eli the weird. (QED) Where are my marbles?"
                ]
             ],
             "IAccessible2" : [
@@ -38,7 +37,7 @@
                   "property",
                   "accName",
                   "is",
-                  "My name is Garaventa the weird. (QED) Where are my marbles?"
+                  "My name is Eli the weird. (QED) Where are my marbles?"
                ]
             ],
             "UIA" : [
@@ -46,7 +45,7 @@
                   "property",
                   "Name",
                   "is",
-                  "My name is Garaventa the weird. (QED) Where are my marbles?"
+                  "My name is Eli the weird. (QED) Where are my marbles?"
                ]
             ]
          },
@@ -62,7 +61,10 @@
   </head>
   <body>
   <p>This test examines the ARIA properties for Name from content.</p>
-    <div id="test" role="link" tabindex="0">
+    <style>
+    .hidden { display: none; }
+  </style>
+  <div id="test" role="link" tabindex="0">
     <span aria-hidden="true"><i> Hello, </i></span>
     <span>My</span> name is
     <div><img src="file.jpg" title="Bryan" alt="" role="presentation" /></div>
@@ -70,7 +72,7 @@
       <span aria-label="Garaventa">Zambino</span>
     </span>
     <span>the weird.</span>
-    (<span>Q</span><span>E</span><span>D</span>)
+    (QED)
     <span class="hidden"><i><b>and don't you forget it.</b></i></span>
     <table>
       <tr>

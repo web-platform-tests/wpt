@@ -309,7 +309,7 @@ promise_test(async (t) => {
     pc2.createDataChannel('this is too exhausting!'));
 }, 'Creating a channel after exhausting the maximum number of channels should throw ' +
   'OperationError (after connection establishment)', {
-  timeout: 5000
+  timeout: 20000
 });
 
 /*
@@ -461,7 +461,7 @@ promise_test(async (t) => {
   const dc = pc1.createDataChannel('reassigned?');
   assert_equals(dc.id, id, `ID ${id} should be reassigned to new channel`);
 }, 'Channel IDs should be reassigned after exhaustion in case a channel has been closed', {
-  timeout: 5000
+  timeout: 20000
 });
 
 /*
@@ -521,7 +521,7 @@ promise_test(async (t) => {
   assert_throws('OperationError', () =>
     pc1.createDataChannel('this is too exhausting!'));
 }, 'Exhausting channels with one peer should not violate the odd/even rule', {
-  timeout: 5000
+  timeout: 20000
 });
 
 /*
@@ -631,7 +631,7 @@ promise_test(async (t) => {
   maybeDone();
   await t.done_promise;
 }, 'Channel ID exhaustion handling (before and after connection establishment)', {
-  timeout: 5000
+  timeout: 20000
 });
 
 </script>

@@ -1,5 +1,5 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the css-fonts spec.
+// Content of this file was automatically extracted from the CSS Fonts spec.
 // See https://drafts.csswg.org/css-fonts/
 
 interface CSSFontFaceRule : CSSRule {

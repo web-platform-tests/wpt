@@ -132,7 +132,9 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to byte length of buffer sent');
+}, 'bufferedAmount should increase to byte length of buffer sent'), {
+  timeout: 5000
+});
 
 /*
   6.2. send()

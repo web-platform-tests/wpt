@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Media Source Extensions™ spec.
+// See https://w3c.github.io/media-source/
+
 enum ReadyState {
     "closed",
     "open",

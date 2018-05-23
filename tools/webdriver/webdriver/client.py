@@ -6,10 +6,6 @@ import transport
 
 from six import string_types
 
-from mozlog import get_default_logger
-
-logger = get_default_logger()
-
 
 def command(func):
     def inner(self, *args, **kwargs):
@@ -371,6 +367,9 @@ class Session(object):
         self.alert = UserPrompt(self)
         self.actions = Actions(self)
 
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.session_id or "(disconnected)")
+
     def __eq__(self, other):
         return (self.session_id is not None and isinstance(other, Session) and
                 self.session_id == other.session_id)
@@ -537,7 +536,12 @@ class Session(object):
 
     @command
     def close(self):
-        return self.send_session_command("DELETE", "window")
+        handles = self.send_session_command("DELETE", "window")
+        if len(handles) == 0:
+            # With no more open top-level browsing contexts, the session is closed.
+            self.session_id = None
+
+        return handles
 
     @property
     @command
@@ -558,17 +562,23 @@ class Session(object):
         return self.send_session_command("GET", url, {})
 
     @command
-    def set_cookie(self, name, value, path=None, domain=None, secure=None, expiry=None):
-        body = {"name": name,
-                "value": value}
-        if path is not None:
-            body["path"] = path
+    def set_cookie(self, name, value, path=None, domain=None,
+            secure=None, expiry=None, http_only=None):
+        body = {
+            "name": name,
+            "value": value,
+        }
+
         if domain is not None:
             body["domain"] = domain
-        if secure is not None:
-            body["secure"] = secure
         if expiry is not None:
             body["expiry"] = expiry
+        if http_only is not None:
+            body["httpOnly"] = http_only
+        if path is not None:
+            body["path"] = path
+        if secure is not None:
+            body["secure"] = secure
         self.send_session_command("POST", "cookie", {"cookie": body})
 
     def delete_cookie(self, name=None):
@@ -631,6 +641,9 @@ class Element(object):
 
         assert id not in self.session._element_cache
         self.session._element_cache[self.id] = self
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.id)
 
     def __eq__(self, other):
         return (isinstance(other, Element) and self.id == other.id and

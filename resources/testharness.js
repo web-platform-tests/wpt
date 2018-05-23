@@ -601,7 +601,8 @@ policies and contribution forms [3].
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))
                     .then(function() {
-                        test._done_async(resolve);
+                        add_test_done_callback(test, resolve);
+                        test.done();
                     });
                 });
         });
@@ -1667,22 +1668,7 @@ policies and contribution forms [3].
      */
     Test.prototype.done = function()
     {
-        this._done_async(function() {});
-    };
-
-    /**
-     * This method is intended for internal use only.
-     */
-    Test.prototype._done_async = function(callback)
-    {
-        if (this.phase === this.phases.COMPLETE) {
-            callback();
-            return;
-        }
-
-        this._done_callbacks.push(callback);
-
-        if (this.phase === this.phases.CLEANING) {
+        if (this.phase >= this.phases.CLEANING) {
             return;
         }
 
@@ -1696,6 +1682,16 @@ policies and contribution forms [3].
 
         this.cleanup();
     };
+
+    function add_test_done_callback(test, callback)
+    {
+        if (test.phase === test.phases.COMPLETE) {
+            callback();
+            return;
+        }
+
+        test._done_callbacks.push(callback);
+    }
 
     /*
      * Invoke all specified cleanup functions. If one or more produce an error,
@@ -1873,10 +1869,6 @@ policies and contribution forms [3].
         if (this.phase === this.phases.INITIAL) {
             this.phase = this.phases.STARTED;
         }
-    };
-    RemoteTest.prototype._done_async = function(callback) {
-        this._done_callbacks.push(callback);
-        this.done();
     };
     RemoteTest.prototype.done = function() {
         this.phase = this.phases.COMPLETE;
@@ -2275,11 +2267,8 @@ policies and contribution forms [3].
         all_async(incomplete,
                   function(test, testDone)
                   {
-                      // The asynchronous version of `Test#done` is used even
-                      // for tests that are fully synchronous, so the
-                      // `testDone` callback function may be invoked
-                      // synchronously.
-                      test._done_async(testDone);
+                      add_test_done_callback(test, testDone);
+                      test.done();
                   },
                   all_complete);
     };

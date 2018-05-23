@@ -369,7 +369,6 @@ function createDataChannelPair(
 
       // Workaround for an annoying bug in Safari
       if (channel1.id === null) {
-        setTimeout(() => { console.log(channel1.id); }, 1000); // TODO: REMOVE ME!
         channel1.addEventListener('message', onMessage1, { once: true });
         channel1.send(options.idRequestMessage);
         return;

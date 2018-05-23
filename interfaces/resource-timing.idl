@@ -1,3 +1,6 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Resource Timing spec.
+// See https://w3c.github.io/resource-timing/
 
 [Exposed=(Window,Worker)]
 interface PerformanceResourceTiming : PerformanceEntry {

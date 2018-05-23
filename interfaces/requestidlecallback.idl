@@ -1,3 +1,6 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the Cooperative Scheduling of Background Tasks spec.
+// See https://w3c.github.io/requestidlecallback/
 
 partial interface Window {
   unsigned long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options);

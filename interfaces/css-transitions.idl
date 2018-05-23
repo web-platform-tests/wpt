@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the CSS Transitions spec.
+// See https://drafts.csswg.org/css-transitions/
+
 [Exposed=Window,
  Constructor(CSSOMString type, optional TransitionEventInit transitionEventInitDict)]
 interface TransitionEvent : Event {

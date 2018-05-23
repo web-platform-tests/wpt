@@ -1,3 +1,7 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the CSS Masking spec.
+// See https://drafts.fxtf.org/css-masking/
+
 interface SVGClipPathElement : SVGElement {
   readonly attribute SVGAnimatedEnumeration clipPathUnits;
   readonly attribute SVGAnimatedTransformList transform;

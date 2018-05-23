@@ -155,7 +155,7 @@ class ManifestItem(object):
             node = node.parent
         return node
 
-    def has_key(self, key):
+    def __contains__(self, key):
         for node in [self, self.root]:
             if key in node._data:
                 return True

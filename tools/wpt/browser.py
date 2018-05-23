@@ -6,6 +6,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tempfile
 from abc import ABCMeta, abstractmethod
 from ConfigParser import RawConfigParser
 from datetime import datetime, timedelta
@@ -48,7 +49,7 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def version(self, root):
+    def version(self, binary=None):
         """Retrieve the release version of the installed browser."""
         return NotImplemented
 
@@ -65,28 +66,9 @@ class Firefox(Browser):
     """
 
     product = "firefox"
-    binary = "firefox/firefox"
-    platform_ini = "firefox/platform.ini"
+    binary = "browsers/firefox/firefox"
+    platform_ini = "browsers/firefox/platform.ini"
     requirements = "requirements_firefox.txt"
-
-    def platform_string(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
-
-        if platform is None:
-            raise ValueError("Unable to construct a valid Firefox package name for current platform")
-
-        if platform == "linux":
-            bits = "-%s" % uname[4]
-        elif platform == "win":
-            bits = "64" if uname[4] == "x86_64" else "32"
-        else:
-            bits = ""
-
-        return "%s%s" % (platform, bits)
 
     def platform_string_geckodriver(self):
         platform = {
@@ -111,30 +93,81 @@ class Firefox(Browser):
         from mozdownload import FactoryScraper
         import mozinstall
 
-        if dest is None:
-            dest = os.getcwd()
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
 
-        filename = FactoryScraper('daily', branch='mozilla-central', destination=dest).download()
+        if platform is None:
+            raise ValueError("Unable to construct a valid Firefox package name for current platform")
+
+        if dest is None:
+            # os.getcwd() doesn't include the venv path
+            dest = os.path.join(os.getcwd(), "_venv")
+
+        dest = os.path.join(dest, "browsers")
+
+        filename = FactoryScraper("daily", branch="mozilla-central", destination=dest).download()
 
         try:
             mozinstall.install(filename, dest)
         except mozinstall.mozinstall.InstallError as e:
-            if uname[0] == "Darwin":
-                # mozinstall will fail here if nightly is already installed in the venv
-                # This only occurs on macOS because shutil.copy_tree() is called in
-                # mozinstall._install_dmg and will fail if the file already exists.
-                # copytree isn't used while installing on Windows/linux, so the same error
-                # won't be thrown if we try to rewrite there.
-                mozinstall.uninstall(dest+'/Firefox Nightly.app')
+            if platform == "mac" and os.path.exists(os.path.join(dest, "Firefox Nightly.app")):
+                # mozinstall will fail if nightly is already installed in the venv because
+                # mac installation uses shutil.copy_tree
+                mozinstall.uninstall(os.path.join(dest, "Firefox Nightly.app"))
                 mozinstall.install(filename, dest)
             else:
                 raise
 
         os.remove(filename)
-        return find_executable("firefox", os.path.join(dest, "firefox"))
+        return self.find_binary_path(dest)
 
-    def find_binary(self):
-        return find_executable("firefox")
+    def find_binary_path(self, path=None):
+        """Looks for the firefox binary in the virtual environment"""
+
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
+
+        if path is None:
+            #os.getcwd() doesn't include the venv path
+            path = os.path.join(os.getcwd(), "_venv", "browsers")
+
+        binary = None
+
+        if platform == "linux":
+            binary = find_executable("firefox", os.path.join(path, "firefox"))
+        elif platform == "win":
+            import mozinstall
+            binary = mozinstall.get_binary(path, "firefox")
+        elif platform == "mac":
+            binary = find_executable("firefox", os.path.join(path, "Firefox Nightly.app", "Contents", "MacOS"))
+
+        return binary
+
+    def find_binary(self, venv_path=None):
+        if venv_path is None:
+            venv_path = os.path.join(os.getcwd(), "_venv")
+
+        binary = self.find_binary_path(os.path.join(venv_path, "browsers"))
+
+        if not binary and uname[0] == "Darwin":
+            macpaths = ["/Applications/FirefoxNightly.app/Contents/MacOS",
+                        os.path.expanduser("~/Applications/FirefoxNightly.app/Contents/MacOS"),
+                        "/Applications/Firefox Developer Edition.app/Contents/MacOS",
+                        os.path.expanduser("~/Applications/Firefox Developer Edition.app/Contents/MacOS"),
+                        "/Applications/Firefox.app/Contents/MacOS",
+                        os.path.expanduser("~/Applications/Firefox.app/Contents/MacOS")]
+            return find_executable("firefox", os.pathsep.join(macpaths))
+
+        if binary is None:
+            return find_executable("firefox")
+
+        return binary
 
     def find_certutil(self):
         path = find_executable("certutil")
@@ -147,22 +180,67 @@ class Firefox(Browser):
     def find_webdriver(self):
         return find_executable("geckodriver")
 
-    def install_prefs(self, dest=None):
+    def get_version_and_channel(self, binary):
+        version_string = call(binary, "--version").strip()
+        m = re.match(r"Mozilla Firefox (\d+\.\d+(?:\.\d+)?)(a|b)?", version_string)
+        if not m:
+            return None, "nightly"
+        version, status = m.groups()
+        channel = {"a": "nightly", "b": "beta"}
+        return version, channel.get(status, "stable")
+
+    def get_profile_bundle_url(self, version, channel):
+        if channel == "stable":
+            repo = "https://hg.mozilla.org/releases/mozilla-release"
+            tag = "FIREFOX_%s_RELEASE" % version.replace(".", "_")
+        else:
+            repo = "https://hg.mozilla.org/mozilla-central"
+            if channel == "beta":
+                tag = "FIREFOX_%s_BETA" % version.split(".", 1)[0]
+            else:
+                # Always use tip as the tag for nightly; this isn't quite right
+                # but to do better we need the actual build revision, which we
+                # can get if we have an application.ini file
+                tag = "tip"
+
+        return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
+
+    def install_prefs(self, binary, dest=None):
+        version, channel = self.get_version_and_channel(binary)
         if dest is None:
             dest = os.pwd
 
-        dest = os.path.join(dest, "profiles")
-        if not os.path.exists(dest):
-            os.makedirs(dest)
-        prefs_path = os.path.join(dest, "prefs_general.js")
+        dest = os.path.join(dest, "profiles", channel, version)
+        have_cache = False
+        if os.path.exists(dest):
+            if channel != "nightly":
+                have_cache = True
+            else:
+                now = datetime.now()
+                have_cache = (datetime.fromtimestamp(os.stat(dest).st_mtime) >
+                              now - timedelta(days=1))
 
-        now = datetime.now()
-        if (not os.path.exists(prefs_path) or
-            (datetime.fromtimestamp(os.stat(prefs_path).st_mtime) <
-             now - timedelta(days=2))):
-            with open(prefs_path, "wb") as f:
-                resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
-                f.write(resp.content)
+        # If we don't have a recent download, grab and extract the latest one
+        if not have_cache:
+            if os.path.exists(dest):
+                shutil.rmtree(dest)
+            os.makedirs(dest)
+
+            url = self.get_profile_bundle_url(version, channel)
+
+            print("Installing test prefs from %s" % url)
+            try:
+                extract_dir = tempfile.mkdtemp()
+                unzip(get(url).raw, dest=extract_dir)
+
+                profiles = os.path.join(extract_dir, os.listdir(extract_dir)[0], 'testing', 'profiles')
+                for name in os.listdir(profiles):
+                    path = os.path.join(profiles, name)
+                    shutil.move(path, dest)
+            finally:
+                shutil.rmtree(extract_dir)
+        else:
+            print("Using cached test prefs from %s" % dest)
 
         return dest
 
@@ -198,15 +276,14 @@ class Firefox(Browser):
             untar(get(url).raw, dest=dest)
         return find_executable(os.path.join(dest, "geckodriver"))
 
-    def version(self, root):
+    def version(self, binary=None):
         """Retrieve the release version of the installed browser."""
-        platform_info = RawConfigParser()
-
-        with open(os.path.join(root, self.platform_ini), "r") as fp:
-            platform_info.readfp(BytesIO(fp.read()))
-            return "BuildID %s; SourceStamp %s" % (
-                platform_info.get("Build", "BuildID"),
-                platform_info.get("Build", "SourceStamp"))
+        binary = binary or self.find_binary()
+        version_string = call(binary, "--version").strip()
+        m = re.match(r"Mozilla Firefox (.*)", version_string)
+        if not m:
+            return None
+        return m.group(1)
 
 
 class Chrome(Browser):
@@ -216,8 +293,17 @@ class Chrome(Browser):
     """
 
     product = "chrome"
-    binary = "/usr/bin/google-chrome"
     requirements = "requirements_chrome.txt"
+
+    @property
+    def binary(self):
+        if uname[0] == "Linux":
+            return "/usr/bin/google-chrome"
+        if uname[0] == "Darwin":
+            return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        # TODO Windows?
+        logger.warn("Unable to find the browser binary.")
+        return None
 
     def install(self, dest=None):
         raise NotImplementedError
@@ -260,9 +346,18 @@ class Chrome(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, root):
-        output = call(self.binary, "--version")
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+    def version(self, binary=None):
+        binary = binary or self.binary
+        try:
+            version_string = call(binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s", binary)
+            return None
+        m = re.match(r"Google Chrome (.*)", version_string)
+        if not m:
+            logger.warn("Failed to extract version from: s%", version_string)
+            return None
+        return m.group(1)
 
 
 class ChromeAndroid(Browser):
@@ -287,8 +382,8 @@ class ChromeAndroid(Browser):
         chrome = Chrome()
         return chrome.install_webdriver(dest)
 
-    def version(self, root):
-        raise NotImplementedError
+    def version(self, binary):
+        return None
 
 
 class Opera(Browser):
@@ -298,8 +393,15 @@ class Opera(Browser):
     """
 
     product = "opera"
-    binary = "/usr/bin/opera"
     requirements = "requirements_opera.txt"
+
+    @property
+    def binary(self):
+        if uname[0] == "Linux":
+            return "/usr/bin/opera"
+        # TODO Windows, Mac?
+        logger.warn("Unable to find the browser binary.")
+        return None
 
     def install(self, dest=None):
         raise NotImplementedError
@@ -346,9 +448,14 @@ class Opera(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, root):
+    def version(self, binary):
         """Retrieve the release version of the installed browser."""
-        output = call(self.binary, "--version")
+        binary = binary or self.binary
+        try:
+            output = call(binary, "--version")
+        except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s", binary)
+            return None
         return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
 
 
@@ -370,8 +477,8 @@ class Edge(Browser):
     def install_webdriver(self, dest=None):
         raise NotImplementedError
 
-    def version(self, root):
-        raise NotImplementedError
+    def version(self, binary):
+        return None
 
 
 class InternetExplorer(Browser):
@@ -392,8 +499,8 @@ class InternetExplorer(Browser):
     def install_webdriver(self, dest=None):
         raise NotImplementedError
 
-    def version(self, root):
-        raise NotImplementedError
+    def version(self, binary):
+        return None
 
 
 class Safari(Browser):
@@ -417,8 +524,8 @@ class Safari(Browser):
     def install_webdriver(self):
         raise NotImplementedError
 
-    def version(self, root):
-        raise NotImplementedError
+    def version(self, binary):
+        return None
 
 
 class Servo(Browser):
@@ -427,8 +534,37 @@ class Servo(Browser):
     product = "servo"
     requirements = "requirements_servo.txt"
 
+    def platform_components(self):
+        platform = {
+            "Linux": "linux",
+            "Windows": "win",
+            "Darwin": "mac"
+        }.get(uname[0])
+
+        if platform is None:
+            raise ValueError("Unable to construct a valid Servo package for current platform")
+
+        if platform == "linux":
+            extension = ".tar.gz"
+            decompress = untar
+        elif platform == "win" or platform == "mac":
+            raise ValueError("Unable to construct a valid Servo package for current platform")
+
+        return (platform, extension, decompress)
+
     def install(self, dest=None):
-        raise NotImplementedError
+        """Install latest Browser Engine."""
+        if dest is None:
+            dest = os.pwd
+
+        platform, extension, decompress = self.platform_components()
+        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
+
+        decompress(get(url).raw, dest=dest)
+        path = find_executable("servo", os.path.join(dest, "servo"))
+        st = os.stat(path)
+        os.chmod(path, st.st_mode | stat.S_IEXEC)
+        return path
 
     def find_binary(self):
         return find_executable("servo")
@@ -439,8 +575,10 @@ class Servo(Browser):
     def install_webdriver(self, dest=None):
         raise NotImplementedError
 
-    def version(self, root):
-        return None
+    def version(self, binary):
+        """Retrieve the release version of the installed browser."""
+        output = call(binary, "--version")
+        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
 
 
 class Sauce(Browser):
@@ -461,8 +599,9 @@ class Sauce(Browser):
     def install_webdriver(self, dest=None):
         raise NotImplementedError
 
-    def version(self, root):
+    def version(self, binary):
         return None
+
 
 class WebKit(Browser):
     """WebKit-specific interface."""
@@ -482,5 +621,5 @@ class WebKit(Browser):
     def install_webdriver(self):
         raise NotImplementedError
 
-    def version(self, root):
+    def version(self, binary):
         return None

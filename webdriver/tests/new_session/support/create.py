@@ -11,5 +11,4 @@ valid_data = [
                   {"script": 500},
                   {}]),
     ("unhandledPromptBehavior", ["dismiss", "accept", None]),
-    ("test:extension", [True, "abc", 123, [], {"key": "value"}, None]),
 ]

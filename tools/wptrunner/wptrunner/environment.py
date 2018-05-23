@@ -10,12 +10,12 @@ from mozlog import get_default_logger, handlers, proxy
 
 from wptlogging import LogLevelRewriter
 from wptserve.handlers import StringHandler
+from wptserve import sslutils
 
 here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
 
 serve = None
-sslutils = None
 
 
 def do_delayed_imports(logger, test_paths):
@@ -30,11 +30,6 @@ def do_delayed_imports(logger, test_paths):
         from tools.serve import serve
     except ImportError:
         failed.append("serve")
-
-    try:
-        import sslutils
-    except ImportError:
-        failed.append("sslutils")
 
     if failed:
         logger.critical(
@@ -94,8 +89,6 @@ class TestEnvironment(object):
 
         self.config = self.load_config()
         self.setup_server_logging()
-        ports = serve.get_ports(self.config, self.ssl_env)
-        self.config = serve.normalise_config(self.config, ports)
 
         assert self.env_extras_cms is None, (
             "A TestEnvironment object cannot be nested")
@@ -136,44 +129,34 @@ class TestEnvironment(object):
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     def load_config(self):
-        default_config_path = os.path.join(serve_path(self.test_paths), "config.default.json")
-        local_config = {
-            "ports": {
-                "http": [8000, 8001],
-                "https": [8443],
-                "ws": [8888]
-            },
-            "check_subdomains": False,
-            "ssl": {}
+        override_path = os.path.join(serve_path(self.test_paths), "config.json")
+
+        config = serve.Config(override_ssl_env=self.ssl_env)
+
+        config.ports = {
+            "http": [8000, 8001],
+            "https": [8443],
+            "ws": [8888],
+            "wss": [8889],
         }
 
+        if os.path.exists(override_path):
+            with open(override_path) as f:
+                override_obj = json.load(f)
+            config.update(override_obj)
+
+        config.check_subdomains = False
+        config.ssl = {}
+
         if "browser_host" in self.options:
-            local_config["browser_host"] = self.options["browser_host"]
+            config.browser_host = self.options["browser_host"]
 
         if "bind_address" in self.options:
-            local_config["bind_address"] = self.options["bind_address"]
+            config.bind_address = self.options["bind_address"]
 
-        with open(default_config_path) as f:
-            default_config = json.load(f)
-
-        local_config["server_host"] = self.options.get("server_host", None)
-        local_config["ssl"]["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
-
-        config = serve.merge_json(default_config, local_config)
-        config["doc_root"] = serve_path(self.test_paths)
-
-        if not self.ssl_env.ssl_enabled:
-            config["ports"]["https"] = [None]
-
-        host = config["browser_host"]
-        hosts = [host]
-        hosts.extend("%s.%s" % (item[0], host) for item in serve.get_subdomains(host).values())
-        key_file, certificate = self.ssl_env.host_cert_path(hosts)
-
-        config["key_file"] = key_file
-        config["certificate"] = certificate
-
-        serve.set_computed_defaults(config)
+        config.server_host = self.options.get("server_host", None)
+        config.ssl["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
+        config.doc_root = serve_path(self.test_paths)
 
         return config
 
@@ -230,7 +213,7 @@ class TestEnvironment(object):
 
     def ensure_started(self):
         # Pause for a while to ensure that the server has a chance to start
-        for _ in xrange(20):
+        for _ in xrange(60):
             failed = self.test_servers()
             if not failed:
                 return

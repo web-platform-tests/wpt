@@ -69,11 +69,11 @@ promise_test(function() {
   return Promise.resolve();
 }, 'sub-test with some cleanup functions executes in distinct microtask from a failing sub-test');
 
-promise_test(function() {
+promise_test(function(t) {
   return Promise.resolve()
     .then(function() {
         sameTask = true;
-        setTimeout(() => sameTask = false, 0);
+        t.step_timeout(() => sameTask = false, 0);
       });
 }, 'promise test without cleanup #2');
 
@@ -83,11 +83,11 @@ promise_test(function() {
   return Promise.resolve();
 }, 'sub-test with 0 cleanup functions executes in the same task as a passing sub-test');
 
-promise_test(function() {
+promise_test(function(t) {
   return Promise.resolve()
     .then(function() {
         sameTask = true;
-        setTimeout(() => sameTask = false, 0);
+        t.step_timeout(() => sameTask = false, 0);
         throw expectedError;
       });
 }, 'failing promise test without cleanup #2');
@@ -104,7 +104,7 @@ promise_test(function(t) {
   return Promise.resolve()
     .then(function() {
         sameTask = true;
-        setTimeout(() => sameTask = false, 0);
+        t.step_timeout(() => sameTask = false, 0);
       });
 }, 'promise test with cleanup #2');
 
@@ -120,7 +120,7 @@ promise_test(function(t) {
   return Promise.resolve()
     .then(function() {
         sameTask = true;
-        setTimeout(() => sameTask = false, 0);
+        t.step_timeout(() => sameTask = false, 0);
         throw expectedError;
       });
 }, 'failing promise test with cleanup #2');

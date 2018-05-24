@@ -21,7 +21,7 @@ function microTask(callback) {
 async_test(function(t) {
   var microtask_ran = false;
 
-  setTimeout(t.step_func(function() {
+  t.step_timeout(t.step_func(function() {
     assert_true(microtask_ran, 'function registered as a microtask was executed before task');
     t.done();
   }), 0);
@@ -72,11 +72,6 @@ test(function(t) {
 test(function() {
   assert_true(sameMicrotask);
 }, 'sub-test with some cleanup functions executes in the same microtask as a failing sub-test');
-
-add_completion_callback(function(t, d) {
-	console.log(d);
-  console.log(JSON.stringify(t, null, 2));
-});
 </script>
 
 <script type="text/json" id="expected">

@@ -213,7 +213,7 @@ class ManifestItem(object):
     def name(self):
         return self.node.data
 
-    def __contains__(self, key):
+    def has_key(self, key):
         for node in [self, self.root]:
             if key in node._data:
                 return True

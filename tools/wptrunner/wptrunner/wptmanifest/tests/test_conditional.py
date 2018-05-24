@@ -137,7 +137,7 @@ key_1: other_value
 
         self.assertFalse(manifest.is_empty)
         self.assertEquals(manifest.root, manifest)
-        self.assertTrue("key_1" in manifest)
-        self.assertFalse("key_2" in manifest)
+        self.assertTrue(manifest.has_key("key_1"))
+        self.assertFalse(manifest.has_key("key_2"))
 
         self.assertEquals(set(manifest.iterkeys()), set(["key", "key_1"]))

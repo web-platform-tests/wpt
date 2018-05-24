@@ -30,7 +30,7 @@ class IncludeManifest(ManifestItem):
         return cls(node)
 
     def set_defaults(self):
-        if "skip" not in self:
+        if not self.has_key("skip"):
             self.set("skip", "False")
 
     def append(self, child):

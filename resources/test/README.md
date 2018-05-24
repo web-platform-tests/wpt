@@ -81,3 +81,17 @@ must include a summary of the expected results as a JSON string within a
       "type": "complete"
     }
     </script>
+
+`testharness.js` is expected to function consistently in a number of
+distinct environments. In order to verify this expectation, each functional
+test may be executed under a number of distinct conditions. Within this test
+suite, these alternate configurations are referred to as "variants," and
+defined by the `variants.js` file. This file must be included in all functional
+tests and executed before `testharness.js`.
+
+However, not all features are available in all environments, and it is not
+appropriate to execute the corresponding feature tests in the unsupported
+environments. Test files may optionally specify a list of variants under which
+they should *not* be executed via the `wpt-test-skip-variant` meta tag, e.g.:
+
+    <meta name="wpt-test-skip-variant" content="no-promise">

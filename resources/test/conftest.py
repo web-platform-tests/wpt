@@ -17,10 +17,13 @@ def pytest_addoption(parser):
     parser.addoption("--binary", action="store", default=None, help="path to browser binary")
 
 def pytest_collect_file(path, parent):
+    if path.ext.lower() != '.html':
+        return
+
+    # Tests are organized in directories by type
     test_type = os.path.relpath(str(path), HERE).split(os.path.sep)[1]
 
-    if path.ext.lower() == '.html':
-        return HTMLItem(str(path), test_type, parent)
+    return HTMLItem(str(path), test_type, parent)
 
 def pytest_configure(config):
     config.driver = webdriver.Firefox(firefox_binary=config.getoption("--binary"))
@@ -73,6 +76,8 @@ class HTMLItem(pytest.Item, pytest.Collector):
             self._run_unit_test()
         elif self.type == 'functional':
             self._run_functional_test()
+        else:
+            raise NotImplementedError
 
     def _run_unit_test(self):
         driver = self.session.config.driver

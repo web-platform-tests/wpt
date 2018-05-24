@@ -9,6 +9,8 @@ function parseNumber(value) {
 registerLayout('test', class {
   static get childInputProperties() {
     return [
+      '--available-inline-size',
+      '--available-block-size',
       '--fixed-inline-size',
       '--fixed-block-size',
       '--inline-size-expected',
@@ -20,9 +22,16 @@ registerLayout('test', class {
   *layout(children, edges, constraints, styleMap) {
     const childFragments = yield children.map((child) => {
       const childConstraints = {};
+      const availableInlineSize = parseNumber(child.styleMap.get('--available-inline-size'));
+      const availableBlockSize = parseNumber(child.styleMap.get('--available-block-size'));
       const fixedInlineSize = parseNumber(child.styleMap.get('--fixed-inline-size'));
       const fixedBlockSize = parseNumber(child.styleMap.get('--fixed-block-size'));
-      return child.layoutNextFragment({fixedInlineSize, fixedBlockSize});
+      return child.layoutNextFragment({
+        availableInlineSize,
+        availableBlockSize,
+        fixedInlineSize,
+        fixedBlockSize
+      });
     });
 
     const actual = childFragments.map((childFragment) => {

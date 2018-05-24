@@ -13,28 +13,31 @@
 <div id="log"></div>
 <script>
 
-var calls = 0;
-class Parenter extends HTMLElement {
-    connectedCallback() {
-        const child = this.firstChild;
-        this.removeChild(child);
-        this.appendChild(child);
-    }
-}
-customElements.define('x-parenter', Parenter);
-class Child extends HTMLElement {
-    connectedCallback() { calls++; }
-}
-customElements.define('x-child', Child);
+var iteration = 0;
 
 document_types().forEach(function (entry) {
-    var documentName = entry.name;
-    var getDocument = entry.create;
+    let documentName = entry.name;
+    let getDocument = entry.create;
+    let calls = 0;
 
     promise_test(function () {
+        class Parenter extends HTMLElement {
+            connectedCallback() {
+                const child = this.firstChild;
+                this.removeChild(child);
+                this.appendChild(child);
+            }
+        }
+        class Child extends HTMLElement {
+            connectedCallback() { calls++; }
+        }
+        let parenter = 'x-parenter' + iteration;
+        let child = 'x-child' + iteration++;
+        customElements.define(parenter, Parenter);
+        customElements.define(child, Child);
         return getDocument().then(function (doc) {
-            calls = 0;
-            document.body.innerHTML = '<x-parenter><x-child></x-child></x-parenter>';
+            document.documentElement.innerHTML = '<' + parenter + '><' + child + '></' + child + '></' + parenter + '>';
+            doc.documentElement.appendChild(document.documentElement.firstChild);
             assert_equals(calls, 1);
         });
     }, 'Inserting a custom element into ' + documentName + ' using HTML fragment parsing must not call connectedCallback.');

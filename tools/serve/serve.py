@@ -88,9 +88,18 @@ class WrapperHandler(object):
                 assert len(item) == 3
                 src = item[0]
                 dest = item[2 if resource_path else 1]
+            new_path = path
             if path.endswith(src):
-                path = replace_end(path, src, dest)
-        return path
+                new_path = replace_end(path, src, dest)
+                # Hack: for serviceworker tests generated from a .any.js file we remove
+                # the .https prefix when looking for the js file. That's correct for
+                # foo.any.js but incorrcet for foo.https.any.js. So if the first doesn't
+                # exist we try the second. This relies on not having both the https and
+                # non https variant exist, otherwise we use the non-https variant for
+                # serviceworker tests.
+                if not resource_path and src.startswith(".https.") and not os.path.exists(new_path):
+                    new_path = replace_end(path, src, ".https" + dest)
+        return new_path
 
     def _get_metadata(self, request):
         """Get an iterator over script metadata based on //META comments in the

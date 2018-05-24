@@ -317,6 +317,7 @@ function doSignalingHandshake(localPc, remotePc, options={}) {
 // IMPORTANT: Due to a bug in Safari which leads to 'id' being 'null', we send
 //            the remote channel a message that requests the ID to be sent back
 //            to the local channel in order to identify the pair.
+const remoteChannels = {};
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
   pc2=new RTCPeerConnection(),
@@ -340,7 +341,6 @@ function createDataChannelPair(
   const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
 
   return new Promise((resolve, reject) => {
-    const remoteChannels = {};
     let channel2;
     let opened1 = false;
     let opened2 = false;
@@ -350,8 +350,6 @@ function createDataChannelPair(
       channel2.removeEventListener('open', onOpen2);
       channel1.removeEventListener('error', onError);
       channel2.removeEventListener('error', onError);
-      channel1.removeEventListener('message', onMessage1);
-      channel2.removeEventListener('message', onMessage2);
     }
 
     function onBothOpened() {
@@ -389,6 +387,7 @@ function createDataChannelPair(
     function onMessage1(event) {
       const id = parseInt(event.data, 10);
       channel2 = remoteChannels[id];
+      delete remoteChannels[id];
       onDataChannelPairFound();
     }
 
@@ -413,6 +412,11 @@ function createDataChannelPair(
 
     function onDataChannel(event) {
       const channel = event.channel;
+
+      // Ignore remote channels that already have an ID request handler
+      if (remoteChannels[channel.id]) {
+        return;
+      }
 
       // Keep this check. Will prevent finding pairs where both local and remote
       // id are not an integer (e.g. null).

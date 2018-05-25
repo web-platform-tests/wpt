@@ -288,7 +288,7 @@ def check_owners(repo_root, paths):
         source_file = SourceFile(repo_root, path, "/")
         parts = source_file.dir_path.split(os.path.sep)
 
-        if len(parts) == 1:
+        if not parts:
             continue # Skip top-level files
         level = 0
         for dir in owner_in_subdirs:

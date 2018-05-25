@@ -54,6 +54,8 @@ class WptreportFormatter(BaseFormatter):
     def test_status(self, data):
         subtest = self.create_subtest(data)
         subtest["status"] = data["status"]
+        if "expected" in data:
+            subtest["expected"] = data["expected"]
         if "message" in data:
             subtest["message"] = data["message"]
 
@@ -62,6 +64,8 @@ class WptreportFormatter(BaseFormatter):
         start_time = test.pop("start_time")
         test["duration"] = data["time"] - start_time
         test["status"] = data["status"]
+        if "expected" in data:
+            test["expected"] = data["expected"]
         if "message" in data:
             test["message"] = data["message"]
 

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <title>-frame detaches on attribute change</title>
+  <link rel="author" title="Ehsan Karamad" href="ekaramad@chromium.org">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <style onload="styleLoad()"></style>
+  <br id="br_el" clear="none">
+  <embed id="embed_el" src="don't-care"></embed>
+  <canvas id="canvas_el">
+  <p id="p_el"> Text </p>
+  <script>
+    "use strict";
+    let done = false;
+    let done_observer = null;
+
+    function styleLoad() {
+      canvas_el.addEventListener("DOMSubtreeModified", domSubtreeModified);
+      p_el.before(br_el);
+    }
+
+    function domSubtreeModified() {
+      embed_el.align = "Right";
+      done = true;
+      if (done_observer)
+        done_observer();
+    }
+
+    function waitForDone() {
+      return new Promise((resolve) => {
+        if (done)
+          resolve();
+        done_observer = resolve;
+      });
+    }
+
+    // Do not crash during load.
+    promise_test(async() => {
+        await waitForDone();
+    }, "Synchronous layout changes should not crash the renderer.");
+  </script>
+</body>
+</html>

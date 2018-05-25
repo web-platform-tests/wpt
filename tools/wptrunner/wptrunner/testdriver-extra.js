@@ -16,7 +16,7 @@
         }
 
         if (data.status === "success") {
-            payload = JSON.parse(data.message).value
+            payload = JSON.parse(data.message).value;
             pending_resolve(payload);
         } else {
             pending_reject();

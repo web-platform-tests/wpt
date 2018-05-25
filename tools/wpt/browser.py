@@ -322,6 +322,31 @@ class ChromeAndroid(Browser):
     def version(self, root):
         raise NotImplementedError
 
+class ChromeWebdriver(Browser):
+    """Chrome-specific interface for chrome without using selenium.
+
+    Includes webdriver installation.
+    """
+
+    product = "chrome_webdriver"
+    requirements = "requirements_chrome.txt"
+
+    def install(self, dest=None):
+        raise NotImplementedError
+
+    def find_binary(self):
+        raise NotImplementedError
+
+    def find_webdriver(self):
+        return find_executable("chromedriver")
+
+    def install_webdriver(self, dest=None):
+        chrome = Chrome()
+        return chrome.install_webdriver(dest)
+
+    def version(self, root):
+        raise NotImplementedError
+
 
 class Opera(Browser):
     """Opera-specific interface.

@@ -124,25 +124,46 @@
 
     window.test_driver_internal = {
         /**
-         * Triggers a user-initated click
+         * Waits for a user-initated click
          *
          * @param {Element} element - element to be clicked
          * @param {{x: number, y: number} coords - viewport coordinates to click at
-         * @returns {Promise} fulfilled after click occurs or rejected if click fails
+         * @returns {Promise} fulfilled after click occurs
          */
         click: function(element, coords) {
-            return Promise.reject(new Error("unimplemented"));
+            return new Promise(function(resolve) {
+                element.addEventListener("click", resolve);
+            });
         },
 
         /**
-         * Triggers a user-initated click
+         * Waits for an element to receive a series of key presses
          *
-         * @param {Element} element - element to be clicked
-         * @param {String} keys - keys to send to the element
-         * @returns {Promise} fulfilled after keys are sent or rejected if click fails
+         * @param {Element} element - element which should receve key presses
+         * @param {String} keys - keys to expect
+         * @returns {Promise} fulfilled after keys are received or rejected if
+         *                    an incorrect key sequence is received
          */
         send_keys: function(element, keys) {
-            return Promise.reject(new Error("unimplemented"));
+            return new Promise(function(resolve, reject) {
+                var seen = "";
+
+                function onKeyDown(event) {
+                    if (event.key.length > 1) {
+                        return;
+                    }
+
+                    seen += event.key;
+
+                    if (keys.indexOf(seen) !== 0) {
+                        reject(new Error("Unexpected key sequence: " + seen));
+                    } else if (seen === keys) {
+                        resolve();
+                    }
+                }
+
+                element.addEventListener("keydown", onKeyDown);
+            });
         }
     };
 })();

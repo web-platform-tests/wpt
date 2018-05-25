@@ -36,8 +36,8 @@
 
   var variantNode = document.createElement('div');
   variantNode.innerHTML = '<p>This testharness.js test was executed with ' +
-	'the variant named, "' + variantName + '". ' + variant.description +
-	'</p><p>Refer to the test harness README file for more information.</p>';
+    'the variant named, "' + variantName + '". ' + variant.description +
+    '</p><p>Refer to the test harness README file for more information.</p>';
   function onReady() {
     if (document.readyState !== 'complete') {
       return;

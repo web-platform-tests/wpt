@@ -1,25 +1,52 @@
 "use strict";
 
 (function(){
-    let pending_resolve = null;
-    let pending_reject = null;
-    window.addEventListener("message", function(event) {
-        const data = event.data;
+    let previous = Promise.resolve();
+    /**
+     * Schedule an asynchronous operation (described by a Promise-returning
+     * function) to be executed following completion of every asynchronous
+     * operation that has previously been scheduled in this way.
+     *
+     * @param {Function} async_op - Promise-returning function
+     * @returns {Promise} resolved with the result of invoking the provided
+     *                    function
+     */
+    function enqueue(async_op) {
+        const next = previous.then(async_op);
+        previous = next.catch(function() {});
+        return next;
+    }
+    /**
+     * Send a message to the opening browsing context.
+     *
+     * @param {any} value to be serialize and transmitted
+     * @returns {Promise} settled when the opening browsing context has replied
+     */
+    function send(requestData) {
+        window.opener.postMessage(requestData, "*");
 
-        if (typeof data !== "object" || data === null) {
-            return;
-        }
+        return new Promise(function(resolve, reject) {
+            window.addEventListener("message", function handle(event) {
+                const data = event.data;
 
-        if (data.type !== "testdriver-complete") {
-            return;
-        }
+                if (typeof data !== "object" || data === null) {
+                    return;
+                }
 
-        if (data.status === "success") {
-            pending_resolve();
-        } else {
-            pending_reject();
-        }
-    });
+                if (data.type !== "testdriver-complete") {
+                    return;
+                }
+
+                window.removeEventListener("message", handle);
+
+                if (data.status === "success") {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
+        });
+    }
 
     const get_selector = function(element) {
         let selector;
@@ -52,22 +79,16 @@
     };
 
     window.test_driver_internal.click = function(element) {
-        const selector = get_selector(element);
-        const pending_promise = new Promise(function(resolve, reject) {
-            pending_resolve = resolve;
-            pending_reject = reject;
-        });
-        window.opener.postMessage({"type": "action", "action": "click", "selector": selector}, "*");
-        return pending_promise;
+        return enqueue(function() {
+                const selector = get_selector(element);
+                return send({"type": "action", "action": "click", "selector": selector});
+            });
     };
 
     window.test_driver_internal.send_keys = function(element, keys) {
-        const selector = get_selector(element);
-        const pending_promise = new Promise(function(resolve, reject) {
-            pending_resolve = resolve;
-            pending_reject = reject;
-        });
-        window.opener.postMessage({"type": "action", "action": "send_keys", "selector": selector, "keys": keys}, "*");
-        return pending_promise;
+         return enqueue(function() {
+                const selector = get_selector(element);
+                return send({"type": "action", "action": "send_keys", "selector": selector, "keys": keys});
+            });
     };
 })();

@@ -6,7 +6,7 @@
     window.addEventListener("message", function(event) {
         const data = event.data;
 
-        if (typeof data !== "object" && data !== null) {
+        if (typeof data !== "object" || data === null) {
             return;
         }
 

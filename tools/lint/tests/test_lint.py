@@ -217,8 +217,8 @@ def test_about_blank_as_ref(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/about_blank-ref.html", "ref/OWNERS"], "normal")
             assert rv == 0
-            assert not mocked_check_path.called
-            assert not mocked_check_file_contents.called
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
 

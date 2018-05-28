@@ -10,6 +10,7 @@
 <script>
 async_test(function(t)
 {
+    t.add_cleanup(() => document.exitFullscreen());
     var first = document.getElementById("first");
     trusted_request(t, first);
     document.onfullscreenchange = t.step_func(function(event)
@@ -23,8 +24,14 @@ async_test(function(t)
             assert_equals(document.fullscreenElement, last);
             assert_equals(event.target, last);
             last.remove();
+            // Because /last/ was removed from the top layer, only /first/
+            // remains and it becomes the new fullscreen element synchronously.
+            assert_equals(document.fullscreenElement, first);
             document.onfullscreenchange = t.step_func_done(function(event)
             {
+                // When the asynchronous steps of "exit fullscreen" ran, /last/
+                // was no longer connected to the document, and so the event
+                // has the document as its target.
                 assert_equals(document.fullscreenElement, first);
                 assert_equals(event.target, document);
             });

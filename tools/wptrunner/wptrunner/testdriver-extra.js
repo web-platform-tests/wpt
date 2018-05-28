@@ -3,6 +3,7 @@
 (function(){
     let pending_resolve = null;
     let pending_reject = null;
+    let payload = null
     window.addEventListener("message", function(event) {
         const data = event.data;
 
@@ -68,6 +69,15 @@
             pending_reject = reject;
         });
         window.opener.postMessage({"type": "action", "action": "send_keys", "selector": selector, "keys": keys}, "*");
+        return pending_promise;
+    };
+
+    window.test_driver_internal.get_window_handles = function() {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.opener.postMessage({"type": "action", "action": "get_window_handles"}, "*");
         return pending_promise;
     };
 })();

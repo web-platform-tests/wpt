@@ -119,6 +119,16 @@
             }
 
             return window.test_driver_internal.send_keys(element, keys);
+        },
+
+
+        /**
+         * Get a list of window handles currently available
+         *
+         * @returns {Promise} fulfilled after retrieving a list of window handles or rejected if the retrieval fails
+         */
+        get_window_handles: function() {
+            return window.test_driver_internal.get_window_handles();
         }
     };
 
@@ -142,6 +152,15 @@
          * @returns {Promise} fulfilled after keys are sent or rejected if click fails
          */
         send_keys: function(element, keys) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Get a list of window handles currently available
+         *
+         * @returns {Promise} fulfilled after retrieving a list of window handles or rejected if the retrieval fails
+         */
+        get_window_handles: function() {
             return Promise.reject(new Error("unimplemented"));
         }
     };

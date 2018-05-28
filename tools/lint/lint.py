@@ -303,6 +303,8 @@ def check_owners(repo_root, paths):
             dirs[key] = True
 
     for dir in dirs:
+        if dir == "":
+            continue # FIXME Should not happen?
         if dirs[dir] == False:
             errors.append(("MISSING-OWNERS", "Directory is missing OWNERS file.", dir, None))
 

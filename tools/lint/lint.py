@@ -286,10 +286,10 @@ def check_owners(repo_root, paths):
             path = path.replace("\\", "/")
 
         source_file = SourceFile(repo_root, path, "/")
+        if not source_file.dir_path:
+            continue  # Skip top-level files
         parts = source_file.dir_path.split(os.path.sep)
 
-        if not parts:
-            continue  # Skip top-level files
         level = 0
         for dir in owner_in_subdirs:
             if path.startswith(dir):
@@ -303,8 +303,6 @@ def check_owners(repo_root, paths):
             dirs[key] = True
 
     for dir in dirs:
-        if dir == "":
-            continue  # FIXME Should not happen?
         if dirs[dir] is False:
             errors.append(("MISSING-OWNERS", "Directory is missing OWNERS file.", dir, None))
 

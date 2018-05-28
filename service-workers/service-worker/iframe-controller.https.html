@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<title>Service worker inheritance</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+
+let active_workers;
+let parent_controller;
+
+promise_test(t => {
+    const script = 'iframe-controller-worker.https.js';
+    const scope1 = 'iframe-controller.https.html';
+    const scope2 = 'resources/blank.html';
+    const script1 = script + '?for_scope1';
+    const script2 = script + '?for_scope2';
+
+    active_workers = service_worker_unregister_and_register(t, script1, scope1)
+      .then(r => {
+          add_completion_callback(_ => r.unregister());
+          return wait_for_state(t, r.installing, 'activated');
+        })
+      .then(_ => {
+          return service_worker_unregister_and_register(t, script2, scope2);
+        })
+      .then(r => {
+          add_completion_callback(_ => r.unregister());
+          return wait_for_state(t, r.installing, 'activated');
+        });
+
+    return active_workers.then(_ => {
+        // This client's active service worker is set to scope1's registration's
+        // active worker by clients.claim() during the activation.
+        parent_controller = navigator.serviceWorker.controller;
+        return with_iframe('', {auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
+        assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
+                      'about:blank Document should inherit parent\'s SW.');
+      });
+  }, 'Service worker inheritance for about:blank Document.');
+
+promise_test(t => {
+    return active_workers.then(_ => {
+        return with_iframe('', {sandbox: '', auto_remove: true});
+      })
+    .then(f => {
+        assert_throws('SecurityError', _ => f.contentWindow.navigator,
+                      'Accessing sandboxed iframe should throw.');
+        return with_iframe('', {sandbox: 'allow-same-origin',
+                                auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
+        assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
+                      'Sandboxed iframe with allow-same-origin should ' +
+                      'inherit parent\'s SW.');
+      });
+  }, 'Service worker inheritance for sandboxed iframe.');
+
+promise_test(t => {
+    return active_workers.then(_ => {
+        return with_iframe('', {srcdoc: '<p>Some HTML</p>', auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
+        assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
+                      'iframe srcdoc should inherit parent\'s SW.');
+        return with_iframe('', {srcdoc: '<p>Some HTML</p>',
+                                sandbox: '',
+                                auto_remove: true});
+      })
+    .then(f => {
+        assert_throws('SecurityError', _ => f.contentWindow.navigator,
+                      'Accessing sandboxed iframe srcdoc should throw.');
+        return with_iframe('', {srcdoc: '<p>Some HTML</p>',
+                                sandbox: 'allow-same-origin',
+                                auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
+        assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
+                      'Sandboxed iframe srcdoc with allow-same-origin should ' +
+                      'inherit parent\'s SW.');
+      });
+  }, 'Service worker inheritance for iframe srcdoc.');
+
+promise_test(t => {
+    return active_workers.then(_ => {
+        return with_iframe('resources/blank.html', {auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller.scriptURL,
+                          parent_controller.scriptURL,
+                          'Navigating iframe through http fetch should ' +
+                          'replace the inherited SW with the matched SW.');
+        return with_iframe('resources/other.html', {auto_remove: true});
+      })
+    .then(f => {
+        const child_controller
+            = f.contentWindow.navigator.serviceWorker.controller;
+        assert_equals(child_controller, null,
+                      'Navigating iframe through http fetch that has no ' +
+                      'matched SW should set the controller to null.');
+      });
+  }, 'Service worker inheritance for navigate match.');
+
+</script>

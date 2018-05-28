@@ -47,15 +47,31 @@ function unreached_rejection(test, prefix) {
 }
 
 // Adds an iframe to the document and returns a promise that resolves to the
-// iframe when it finishes loading. The caller is responsible for removing the
-// iframe later if needed.
-function with_iframe(url) {
+// iframe when it finishes loading. The caller can provide options as:
+// - options.sandbox sets the iframe's sandbox attribute to the given value.
+// - options.srcdoc sets the iframe's srcdoc attribute to the given value.
+// - options.auto_remove set to true removes the iframe when test is done
+//   (otherwise, the caller is responsible for removing it, if necessary.)
+function with_iframe(url, options) {
+  if (typeof options === 'undefined')
+    options = {};
+
   return new Promise(function(resolve) {
       var frame = document.createElement('iframe');
       frame.className = 'test-iframe';
       frame.src = url;
+      if (options.sandbox !== undefined)
+        frame.sandbox = options.sandbox;
+      if (options.srcdoc !== undefined)
+        frame.srcdoc = options.srcdoc;
+      // Make sure the iframe stays in the viewport even if the test creates
+      // many of them. Otherwise some iframes may end up being throttled.
+      frame.style.position = 'absolute';
       frame.onload = function() { resolve(frame); };
       document.body.appendChild(frame);
+
+      if (options.auto_remove)
+        add_completion_callback(function() { frame.remove(); });
     });
 }
 

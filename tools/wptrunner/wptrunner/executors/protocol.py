@@ -273,6 +273,19 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
+class SwitchToWindowProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "switch_to_window"
+
+    @abstractmethod
+    def switch_to_window(self, handle):
+        """Send keys to a specific element.
+
+        :param handle: A protocol-specific handle to a window."""
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

@@ -119,6 +119,20 @@
             }
 
             return window.test_driver_internal.send_keys(element, keys);
+        },
+
+        /**
+         * Switch to a window
+         *
+         * This matches the behaviour of the {@link
+         * https://w3c.github.io/webdriver/#switch-to-window|WebDriver
+         * Switch to Window command}.
+         *
+         * @returns {Promise} fulfilled window is switched, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        switch_to_window: function(window_handle) {
+            return window.test_driver_internal.switch_to_window(window_handle);
         }
     };
 
@@ -143,6 +157,20 @@
          */
         send_keys: function(element, keys) {
             return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Switch to a window
+         *
+         * This matches the behaviour of the {@link
+         * https://w3c.github.io/webdriver/#switch-to-window|WebDriver
+         * Switch to Window command}.
+         *
+         * @returns {Promise} fulfilled window is switched, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        switch_to_window: function(window_handle) {
+            return window.test_driver_internal.switch_to_window(window_handle);
         }
     };
 })();

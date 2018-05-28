@@ -526,7 +526,7 @@ def check_parsed(repo_root, path, f):
         reference_file = os.path.join(repo_root, ref_parts.path[1:])
         reference_rel = reftest_node.attrib.get("rel", "")
 
-        if not os.path.isfile(reference_file):
+        if not (reference_file == "about:blank" or os.path.isfile(reference_file)):
             errors.append(("NON-EXISTENT-REF",
                      "Reference test with a non-existent '%s' relationship reference: '%s'" % (reference_rel, href), path, None))
 

@@ -8,17 +8,16 @@ from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,
 from ..executors.executorchrome import ChromeDriverWdspecExecutor
 
 
-__wptrunner__ = {"product": "chrome",
+__wptrunner__ = {"product": "chrome_webdriver",
                  "check_args": "check_args",
-                 "browser": "ChromeBrowser",
-                 "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor",
+                 "browser": "ChromeWebdriverBrowser",
+                 "executor": {"testharness": "WebDriverTestharnessExecutor",
+                              "reftest": "WebDriverRefTestExecutor",
                               "wdspec": "ChromeDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
                  "env_options": "env_options"}
-
 
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
@@ -53,14 +52,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["chromeOptions"]["excludeSwitches"] = ["enable-automation"]
     if test_type == "wdspec":
         capabilities["chromeOptions"]["w3c"] = True
-
-    if __wptrunner__["executor"]["testharness"] == ("WebDriverTestharnessExecutor" 
-        or __wptrunner__["executor"]["reftest"] == "WebDriverRefTestExecutor"):
-        capabilities["chromeOptions"]["w3c"] = True
-        always_match = {"alwaysMatch": capabilities}
-        executor_kwargs["capabilities"] = always_match
-    else:
-        executor_kwargs["capabilities"] = capabilities 
+        
+    capabilities["chromeOptions"]["w3c"] = True
+    always_match = {"alwaysMatch": capabilities}
+    executor_kwargs["capabilities"] = always_match
     return executor_kwargs
 
 
@@ -72,7 +67,7 @@ def env_options():
     return {}
 
 
-class ChromeBrowser(Browser):
+class ChromeWebdriverBrowser(Browser):
     """Chrome is backed by chromedriver, which is supplied through
     ``wptrunner.webdriver.ChromeDriverServer``.
     """

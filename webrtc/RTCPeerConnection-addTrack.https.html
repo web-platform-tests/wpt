@@ -64,6 +64,62 @@
               transceiver be the result.
           4.  Add transceiver to connection's set of transceivers.
    */
+  function addTrackFromGetUserMedia(t) {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
+    return navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(mediaStream => {
+      const track = mediaStream.getTracks()[0];
+      t.add_cleanup(() => track.stop());
+      const sender = pc.addTrack(track, mediaStream);
+      return {pc, track, sender};
+    });
+  }
+
+  promise_test(t => {
+    return addTrackFromGetUserMedia(t)
+      .then(({sender}) => {
+        assert_true(sender instanceof RTCRtpSender,
+         'Expect sender to be instance of RTCRtpSender');
+      });
+  }, 'addTrack returns an RTCRtpSender');
+
+  promise_test(t => {
+    return addTrackFromGetUserMedia(t)
+      .then(({track, sender}) => {
+        assert_equals(sender.track, track,
+          `Expect sender's track to be the added track`);
+      });
+  }, 'addTrack returns an RTCRtpSender whose track is set to the MediaStreamTrack');
+
+  promise_test(t => {
+    return addTrackFromGetUserMedia(t)
+      .then(({pc, sender}) => {
+        assert_array_equals([sender], pc.getSenders(),
+          'Expect only one sender with given track added');
+      });
+  }, 'addTrack creates an RTCRtpSender that is returned by RTCPeerConnection.getSenders');
+
+  promise_test(t => {
+    return addTrackFromGetUserMedia(t)
+      .then(({pc, sender}) => {
+        const receivers = pc.getReceivers();
+        assert_equals(receivers.length, 1, 'Expect one receiver');
+      });
+  }, 'addTrack creates an RTCRtpReceiver');
+
+  promise_test(t => {
+    return addTrackFromGetUserMedia(t)
+      .then(({pc, sender}) => {
+        const transceivers = pc.getTransceivers();
+        assert_equals(transceivers.length, 1,
+          'Expect only one transceiver');
+        const [transceiver] = transceivers;
+        assert_equals(transceiver.sender, sender, 'transceivers sender equals sender');
+      });
+  }, 'addTrack adds an RTCRtpTransceiver whose sender is set to the sender returned by addTrack');
+
   promise_test(t => {
     const pc = new RTCPeerConnection();
 
@@ -81,21 +137,6 @@
 
       assert_equals(sender.track, track,
         `Expect sender's track to be the added track`);
-
-      const transceivers = pc.getTransceivers();
-      assert_equals(transceivers.length, 1,
-        'Expect only one transceiver with sender added');
-
-      const [transceiver] = transceivers;
-      assert_equals(transceiver.sender, sender);
-
-      assert_array_equals([sender], pc.getSenders(),
-        'Expect only one sender with given track added');
-
-      const { receiver } = transceiver;
-      assert_equals(receiver.track.kind, 'audio');
-      assert_array_equals([transceiver.receiver], pc.getReceivers(),
-        'Expect only one receiver associated with transceiver added');
     });
   }, 'addTrack with single track argument and no mediaStream should succeed');
 

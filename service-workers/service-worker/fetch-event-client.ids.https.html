@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<title>Service Worker: Fetch event client IDs</title>
+<p>
+  Note: It's more important that the values for the various client IDs represent what the browser does
+  than passing these tests.
+</p>
+<script src="/resources/testharness.js"></script>
+<script src="resources/testharness-helpers.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+  const SCRIPT_URL = 'resources/fetch-clients.worker.js';
+  const SCOPE = 'resources/blank.html';
+
+  async function cleanup() {
+    for (const iframe of document.querySelectorAll('.test-iframe')) {
+      iframe.parentNode.removeChild(iframe);
+    }
+    const reg = await navigator.serviceWorker.getRegistration(SCOPE);
+    if (!reg) return;
+    if (reg.scope == new URL(SCOPE, location).href) {
+      return reg.unregister();
+    };
+  }
+
+  function iframeLoad(iframe) {
+    return new Promise(resolve => {
+      iframe.addEventListener('load', function load() {
+        iframe.removeEventListener('load', load);
+        resolve();
+      });
+    });
+  }
+
+  async function registerAndActivate(t) {
+    const reg = await navigator.serviceWorker.register(SCRIPT_URL, { scope: SCOPE });
+    const sw = reg.installing || reg.waiting || reg.active;
+    await wait_for_state(t, sw, 'activated');
+    return reg;
+  }
+
+  function swMessageResponse(id) {
+    return new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', function listener(event) {
+        if (event.data.id != id) return;
+        navigator.serviceWorker.removeEventListener('message', listener);
+        resolve(event.data.value);
+      });
+    });
+  }
+
+  // Sends a message to the service worker and waits for a response
+  function swPostAction(sw, action, ...args) {
+    const id = Math.random();
+    sw.postMessage({ id, action, args });
+    return swMessageResponse(id);
+  }
+
+  promise_test(async t => {
+    const testId = 'fetch';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const iframe = await with_iframe(SCOPE);
+    const clients = await swPostAction(reg.active, 'clients.matchAll');
+
+    assert_equals(clients.length, 1, 'One controlled client');
+
+    const iframeClient = clients[0];
+
+    // The service worker broadcasts client details for any request with
+    // 'test' as one of the search params.
+    iframe.contentWindow.fetch('?test=' + testId);
+
+    const results = await swMessageResponse(testId);
+
+    assert_equals(results.clientId, iframeClient.id, 'Fetch comes from iframe');
+    assert_equals(results.resultingClientId, '', 'No resulting client id');
+    assert_equals(results.replacesClientId, '', 'No client replaced');
+
+    await cleanup();
+  }, 'Correct client IDs for subresource loads');
+
+  promise_test(async t => {
+    const testId = 'iframe-nav';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const iframe = await with_iframe(SCOPE);
+    const clients = await swPostAction(reg.active, 'clients.matchAll');
+
+    assert_equals(clients.length, 1, 'One controlled client');
+
+    const iframeClient = clients[0];
+    const iframeLoaded = iframeLoad(iframe);
+
+    // The service worker broadcasts client details for any request with
+    // 'test' as one of the search params.
+    // TODO: I'm assuming that the source of this request will be the iframe's window,
+    // but I'm not totally sure.
+    iframe.contentWindow.location.href = SCOPE + '?test=' + testId;
+
+    const results = await swMessageResponse(testId);;
+
+    assert_equals(results.clientId, iframeClient.id, 'Fetch comes from iframe');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframeClient.id, 'Replaces iframe client');
+
+    await iframeLoaded;
+
+    iframe.contentWindow.fetch('?test=' + testId);
+    const subresourceResults = await swMessageResponse(testId);
+
+    assert_equals(
+      results.resultingClientId,
+      subresourceResults.clientId,
+      'Resulting client id has become the client id for subresource fetches'
+    );
+
+    await cleanup();
+  }, 'Correct client IDs for iframe navigation');
+
+  promise_test(async t => {
+    const testId = 'iframe-src-nav';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const iframe = await with_iframe(SCOPE);
+    const thisClientId = await swPostAction(reg.active, 'this-client-id');
+    const clients = await swPostAction(reg.active, 'clients.matchAll');
+
+    assert_equals(clients.length, 1, 'One controlled client');
+
+    const iframeClient = clients[0];
+
+    // The service worker broadcasts client details for any request with
+    // 'test' as one of the search params.
+    iframe.src = SCOPE + '?test=' + testId;
+
+    const results = await swMessageResponse(testId);
+
+    assert_equals(results.clientId, thisClientId, 'Fetch comes from this page');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframeClient.id, 'Replaces iframe client');
+
+    await cleanup();
+  }, 'Correct client IDs for iframe src navigation');
+
+  promise_test(async t => {
+    const testId = 'iframe-link-target-nav';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    const [iframe1, iframe2] = await Promise.all([
+      with_iframe(SCOPE + '?1'),
+      with_iframe(SCOPE + '?2', {name: 'iframe2'})
+    ]);
+    
+    const clients = await swPostAction(reg.active, 'clients.matchAll');
+
+    assert_equals(clients.length, 2, 'Two controlled clients');
+
+    const iframe1Client = clients.find(c => c.url.endsWith('?1'));
+    const iframe2Client = clients.find(c => c.url.endsWith('?2'));
+    
+    assert_not_equals(iframe1Client.id, iframe2Client.id, 'Clients have different IDs');
+
+    // The service worker broadcasts client details for any request with
+    // 'test' as one of the search params.
+    iframe1.contentDocument.body.innerHTML = `<a href="?test=${testId}" target="iframe2">link</a>`;
+    
+    // Click a link in iframe1 that navigates iframe2.
+    const iframe2Loaded = iframeLoad(iframe2);
+    iframe1.contentDocument.querySelector('a').click();
+
+    const results = await swMessageResponse(testId);
+
+    assert_equals(results.clientId, iframe1Client.id, 'Fetch comes from iframe1');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, iframe2Client.id, 'Replaces iframe2 client');
+
+    await iframe2Loaded;
+
+    iframe2.contentWindow.fetch('?test=' + testId);
+    const fetchResults = await swMessageResponse(testId);
+
+    assert_equals(results.resultingClientId, fetchResults.clientId, 'iframe2 now uses resulting client ID for subresource fetches');
+
+    await cleanup();
+  }, 'Correct client IDs for clicking a link in one iframe which navigates another');
+
+  promise_test(async t => {
+    const testId = 'iframe-xorigin-nav';
+    await cleanup();
+    const reg = await registerAndActivate(t);
+    
+    const iframeUrl = new URL(SCOPE, location);
+    iframeUrl.host = 'www1.' + iframeUrl.host;
+
+    const iframe = await with_iframe(iframeUrl);
+
+    // The service worker broadcasts client details for any request with
+    // 'test' as one of the search params.
+    // TODO: I'm assuming that the source of this request will be the iframe's window,
+    // but I'm not totally sure.
+    iframe.contentWindow.location.href = new URL(SCOPE, location) + '?test=' + testId;
+
+    const results = await swMessageResponse(testId);;
+
+    assert_equals(results.clientId, '', 'No client id as fetch is from another origin');
+    assert_not_equals(results.resultingClientId, '', 'Non-empty resulting client id');
+    assert_not_equals(results.resultingClientId, undefined, 'Non-empty resulting client id');
+    assert_equals(results.replacesClientId, '', 'No replaces client id as target is from another origin');
+
+    await cleanup();
+  }, 'Correct client IDs for cross-origin iframe navigation');
+</script>

@@ -135,7 +135,7 @@ promise_test(async (t) => {
   pc2.ondatachannel = t.step_func((event) => {
     const dc = event.channel;
     dc.onopen = t.step_func(() => {
-      assert_unreached('Channel has been closed prior to the open event being fired');
+      assert_unreached('Open event should not fire');
     });
 
     // This should prevent triggering the 'open' event
@@ -202,7 +202,7 @@ promise_test(async (t) => {
   pc2.ondatachannel = t.step_func((event) => {
     const dc2 = event.channel;
     dc2.onopen = t.step_func(() => {
-      assert_unreached('Channel has been closed prior to the open event being fired');
+      assert_unreached('Open event should not fire');
     });
 
     // This should send but still prevent triggering the 'open' event

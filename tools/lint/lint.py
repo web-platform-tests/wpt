@@ -506,7 +506,9 @@ def check_parsed(repo_root, path, f):
     for reftest_node in source_file.reftest_nodes:
         href = reftest_node.attrib.get("href", "").strip(space_chars)
         parts = urlsplit(href)
-        if (parts.scheme or parts.netloc) and parts != urlsplit("about:blank"):
+        if parts == urlsplit("about:blank"):
+            continue
+        if parts.scheme or parts.netloc:
             errors.append(("ABSOLUTE-URL-REF",
                      "Reference test with a reference file specified via an absolute URL: '%s'" % href, path, None))
             continue
@@ -526,7 +528,7 @@ def check_parsed(repo_root, path, f):
         reference_file = os.path.join(repo_root, ref_parts.path[1:])
         reference_rel = reftest_node.attrib.get("rel", "")
 
-        if not (reference_file == "about:blank" or os.path.isfile(reference_file)):
+        if not os.path.isfile(reference_file):
             errors.append(("NON-EXISTENT-REF",
                      "Reference test with a non-existent '%s' relationship reference: '%s'" % (reference_rel, href), path, None))
 

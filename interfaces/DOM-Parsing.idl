@@ -29,7 +29,3 @@ partial interface Element {
 partial interface Range {
   [CEReactions, NewObject] DocumentFragment createContextualFragment(DOMString fragment);
 };
-
-partial interface Text {
-  attribute boolean serializeAsCDATA;
-};

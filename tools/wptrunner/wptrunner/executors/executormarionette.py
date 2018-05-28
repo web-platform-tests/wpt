@@ -33,6 +33,7 @@ from .protocol import (BaseProtocolPart,
                        SelectorProtocolPart,
                        ClickProtocolPart,
                        SendKeysProtocolPart,
+                       MaximizeProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 from ..webdriver_server import GeckoDriverServer
@@ -315,6 +316,13 @@ class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
     def send_keys(self, element, keys):
         return element.send_keys(keys)
 
+class MarionetteMaximizeProtocolPart(MaximizeProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def send_keys(self, element, keys):
+        return self.marionette.maximize_window()
+
 class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
@@ -337,6 +345,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteSelectorProtocolPart,
                   MarionetteClickProtocolPart,
                   MarionetteSendKeysProtocolPart,
+                  MarionetteMaximizeProtocolPart,
                   MarionetteTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1):

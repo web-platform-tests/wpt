@@ -119,6 +119,20 @@
             }
 
             return window.test_driver_internal.send_keys(element, keys);
+        },
+
+        /**
+         * Maximize the current window
+         *
+         * This matches the behaviour of the {@link
+         * https://w3c.github.io/webdriver/#dfn-maximize-windowl|WebDriver
+         * Maximize command}.
+         *
+         * @returns {Promise} fulfilled after window is maximized, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        maximize: function() {
+            return window.test_driver_internal.maximize();
         }
     };
 
@@ -142,6 +156,16 @@
          * @returns {Promise} fulfilled after keys are sent or rejected if click fails
          */
         send_keys: function(element, keys) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Maximize the current window
+         *
+         * @returns {Promise} fulfilled after window is maximized, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        maximize: function() {
             return Promise.reject(new Error("unimplemented"));
         }
     };

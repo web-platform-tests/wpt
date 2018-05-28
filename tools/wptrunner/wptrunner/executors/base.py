@@ -505,6 +505,7 @@ class CallbackHandler(object):
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
             "send_keys": SendKeysAction(self.logger, self.protocol)
+            "send_keys": MaximizeAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -579,3 +580,12 @@ class SendKeysAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Sending keys to element: %s" % selector)
         self.protocol.send_keys.send_keys(elements[0], keys)
+
+class MaximizeAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Maximizing window)
+        self.protocol.maximize.maximize()

@@ -119,6 +119,15 @@
             }
 
             return window.test_driver_internal.send_keys(element, keys);
+        },
+
+        /**
+         * Gets the handle for the current window
+         *
+         * @returns {Promise} fulfilled after getting window handle or rejected if that fails
+         */
+        current_window_handle: function() {
+            return Promise.reject(new Error("unimplemented"));
         }
     };
 
@@ -142,6 +151,15 @@
          * @returns {Promise} fulfilled after keys are sent or rejected if click fails
          */
         send_keys: function(element, keys) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Gets the handle for the current window
+         *
+         * @returns {Promise} fulfilled after getting window handle or rejected if that fails
+         */
+        current_window_handle: function() {
             return Promise.reject(new Error("unimplemented"));
         }
     };

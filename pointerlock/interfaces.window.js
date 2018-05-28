@@ -20,7 +20,7 @@ promise_test(async () => {
   idl_array.add_objects({
     Document: ["window.document"],
     Element: ["window.document.documentElement"],
-    MouseEvent: ["new MouseEvent('mousemove')", "new MouseEvent('pointerlockchange')"]
+    MouseEvent: ["new MouseEvent('foo')"]
   });
   idl_array.test();
 }, 'pointerlock interfaces.');

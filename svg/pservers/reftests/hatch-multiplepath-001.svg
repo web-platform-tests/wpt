@@ -5,22 +5,12 @@
   xmlns:html="http://www.w3.org/1999/xhtml">
   <g id="testmeta">
     <title>Hatch: Basic hatch.</title>
-    <html:link rel="copyright"
-          href="http://www.w3.org/Graphics/SVG/Test/Copyright"/>
-    <html:link rel="license"
-          href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html"/>
     <html:link rel="author"
           title="Tavmjong Bah"
           href="http://tavmjong.free.fr"/>
-    <html:link rel="reviewer"
-          title="NAME_OF_REVIEWER"
-          href="mailto:EMAIL OR http://CONTACT_PAGE" />
-          <!-- YYYY-MM-DD -->
     <html:link rel="help"
           href="https://www.w3.org/TR/SVG2/pservers.html#Hatches"/>
     <html:link rel="match"  href="hatch-multiplepath-001-ref.svg" />
-    <metadata class="flags">TOKENS</metadata>
-    <desc class="assert">TEST ASSERTION</desc>
   </g>
 
   <style id="test-font" type="text/css">

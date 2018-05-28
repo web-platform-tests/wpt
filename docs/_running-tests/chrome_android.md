@@ -19,7 +19,6 @@ Until we find a better way, we need to root the Android device and update the
 127.0.0.1   www2.web-platform.test
 127.0.0.1   xn--n8j6ds53lwwkrqhv28a.web-platform.test
 127.0.0.1   xn--lve-6lad.web-platform.test
-0.0.0.0     nonexistent-origin.web-platform.test
 ```
 
 ## CA certificate
@@ -36,6 +35,9 @@ Then copy `cacert.crt` to your phone's external storage (preferably to
 Downloads/ as it'll be easier to find). Open Settings -> Security & location ->
 Encryption & credentials -> Install from storage. Find and install `cacert.crt`.
 (The setting entries might be slightly different based your Android version.)
+
+Note that having this CA installed on your device outside of a test
+environment represents a security risk.
 
 
 Finally, we may run wpt with the `chrome_android` product

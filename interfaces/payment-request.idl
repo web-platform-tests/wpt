@@ -27,6 +27,8 @@ dictionary PaymentMethodData {
 dictionary PaymentCurrencyAmount {
   required DOMString currency;
   required DOMString value;
+  // Note: currencySystem is "at risk" of being removed!
+  DOMString currencySystem = "urn:iso:std:iso:4217";
 };
 
 dictionary PaymentDetailsBase {
@@ -78,20 +80,34 @@ enum PaymentItemType {
   "tax"
 };
 
-[SecureContext, Exposed=Window]
+[SecureContext, Exposed=(Window)]
 interface PaymentAddress {
   [Default] object toJSON();
-  readonly attribute DOMString country;
-  readonly attribute FrozenArray<DOMString> addressLine;
-  readonly attribute DOMString region;
   readonly attribute DOMString city;
+  readonly attribute DOMString country;
   readonly attribute DOMString dependentLocality;
-  readonly attribute DOMString postalCode;
-  readonly attribute DOMString sortingCode;
   readonly attribute DOMString languageCode;
   readonly attribute DOMString organization;
-  readonly attribute DOMString recipient;
   readonly attribute DOMString phone;
+  readonly attribute DOMString postalCode;
+  readonly attribute DOMString recipient;
+  readonly attribute DOMString region;
+  readonly attribute DOMString sortingCode;
+  readonly attribute FrozenArray<DOMString> addressLine;
+};
+
+dictionary AddressInit {
+  DOMString country;
+  sequence<DOMString> addressLine;
+  DOMString region;
+  DOMString city;
+  DOMString dependentLocality;
+  DOMString postalCode;
+  DOMString sortingCode;
+  DOMString languageCode;
+  DOMString organization;
+  DOMString recipient;
+  DOMString phone;
 };
 
 dictionary PaymentShippingOption {

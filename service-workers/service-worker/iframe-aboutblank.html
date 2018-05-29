@@ -15,7 +15,7 @@
 
         fetch_tests_from_worker(registration.installing || registration.active)
 
-        // inject an iframe with a linked reference in the `srcdoc`
+        // inject an iframe with src=about:blank
         const iframe = document.createElement('iframe')
         iframe.addEventListener('load', () => {
             const img = iframe.contentWindow.document.createElement('img')

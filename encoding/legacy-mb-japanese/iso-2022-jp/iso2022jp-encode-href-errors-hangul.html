@@ -26,25 +26,14 @@
 <meta name="assert" content="The browser produces percent-escaped character references when writing characters to an href value and encoding hangul characters that are not in the iso-2022-jp encoding.">
 <script src="../../resources/ranges.js"></script>
 <script>
-<<<<<<< HEAD
-function encode(input, expected, desc) {
-    // tests whether a Unicode character is converted to an equivalent byte sequence by href
-    // input: a Unicode character
-    // expected: expected byte sequence
-    // desc: what's being tested
-    test(function() {
-        var a = document.createElement("a"); // <a> uses document encoding for URL's query
-        a.href = "https://example.com/?" + input;
-        result = a.search.substr(1); // remove leading "?"
-        assert_equals(result, expected);
-    }, desc);
-=======
 var errors = true;
 var encoder = iso2022jpEncoder;
 var ranges = rangesHangul;
 function expect(result, codepoint) {
   return "%26%23" + codepoint + "%3B";
->>>>>>> Refactor and split up with `variant` all encoding tests
+}
+function normalizeStr(str) {
+  return str;
 }
 </script>
 <script src="../../resources/encode-href-common.js"></script>

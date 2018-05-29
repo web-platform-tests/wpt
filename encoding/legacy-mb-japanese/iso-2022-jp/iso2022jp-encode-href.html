@@ -20,7 +20,7 @@
 <link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
 <link rel="help" href="https://encoding.spec.whatwg.org/#iso-2022-jp">
 <meta name="assert" content="The browser produces the expected byte sequences for all characters in the iso-2022-jp encoding after 0x9F when writing characters to an href value, using the encoder steps in the specification.">
-<script src="../../ranges.js"></script>
+<script src="../../resources/ranges.js"></script>
 <script>
 var errors = false;
 var encoder = iso2022jpEncoder;
@@ -29,7 +29,7 @@ function expect(result, codepoint) {
   return "%" + result.replace(/ /g, "%").replace(/%1B%28%42$/, "");;
 }
 </script>
-<script src="../../encode-href-common.js"></script>
+<script src="../../resources/encode-href-common.js"></script>
 </head>
 <body>
 <div id="log"></div>

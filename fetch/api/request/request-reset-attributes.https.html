@@ -71,7 +71,7 @@ promise_test(async (t) => {
         await reg.unregister();
       }
     }
-}, 'Request.IsHistoryNavigation should persist.');
+}, 'Request.isHistoryNavigation is reset with non-empty RequestInit');
 
 promise_test(async (t) => {
     const scope = 'resources/hello.txt?name=mode';

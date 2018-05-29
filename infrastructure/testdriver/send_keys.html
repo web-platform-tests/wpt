@@ -20,4 +20,24 @@ async_test(t => {
     })
     .catch(t.unreached_func("send keys failed"));
 });
+
+async_test((t) => {
+  const input1 = document.createElement("input");
+  const input2 = document.createElement("input");
+  input1.id = "input-1";
+  input2.id = "input-2";
+  document.body.appendChild(input1);
+  document.body.appendChild(input2);
+
+  Promise.all([
+      test_driver.send_keys(input1, "first"),
+	  test_driver.send_keys(input2, "second")
+    ])
+    .then(() => {
+      assert_equals(input1.value, "first", "firist input received keys");
+      assert_equals(input2.value, "second", "second input received keys");
+      t.done();
+    })
+    .catch(t.unreached_func("send keys failed"));
+}, "supports parallel invocations");
 </script>

@@ -16,4 +16,27 @@ async_test(t => {
     .then(() => t.done())
     .catch(t.unreached_func("click failed"));
 });
+
+async_test((t) => {
+  const counts = {
+    button1: 0,
+    button2: 0
+  };
+  const button1 = document.createElement("button");
+  const button2 = document.createElement("button");
+  button1.id = "button-1";
+  button2.id = "button-2";
+  button1.addEventListener("click", t.step_func(() => counts.button1 += 1));
+  button2.addEventListener("click", t.step_func(() => counts.button2 += 1));
+  document.body.appendChild(button1);
+  document.body.appendChild(button2);
+
+  Promise.all([test_driver.click(button1), test_driver.click(button2)])
+    .then(() => {
+      assert_equals(counts.button1, 1, "firist button received one click");
+      assert_equals(counts.button2, 1, "second button received one click");
+      t.done();
+    })
+    .catch(t.unreached_func("click failed"));
+}, "Supports parallel invocations");
 </script>

@@ -54,6 +54,7 @@ setup(function() {
         currentChunk.push(item);
         item.cp = codepoints[i].cp;
         item.expected = codepoints[i].expected;
+        item.desc = codepoints[i].desc;
         currentTests.push(subsetTest(async_test,
                                      (item.desc ? item.desc + " " : "") +
                                      "U+" +

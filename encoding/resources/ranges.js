@@ -5,7 +5,7 @@ var rangesHan = [
   [0x3400, 0x4dbf, "extension A"],
 ];
 var rangesHangul = [
-  [0xac00, 0xd7af],
+  [0xac00, 0xd7af, "hangul"],
 ];
 var rangesMisc = [
   [0x80, 0x4ff, "latin, greek, cyrillic, etc"],

@@ -11,13 +11,17 @@
             await registration.unregister()
         }
 
-        registration = await navigator.serviceWorker.register('iframe-srcdoc-sw.js')
+        registration = await navigator.serviceWorker.register('iframe-aboutblank-sw.js')
 
         fetch_tests_from_worker(registration.installing || registration.active)
 
         // inject an iframe with a linked reference in the `srcdoc`
         const iframe = document.createElement('iframe')
-        iframe.srcdoc = '<img src=\'./resources/square.png\'/>'
+        iframe.addEventListener('load', () => {
+            const img = iframe.contentWindow.document.createElement('img')
+            img.src = './resources/square.png'
+            iframe.contentWindow.document.body.appendChild(img);
+        })
         document.body.appendChild(iframe)
       })()
     </script>

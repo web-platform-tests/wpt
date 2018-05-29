@@ -265,7 +265,7 @@ class SourceFile(object):
                 self.filename == "META.yml" or
                 self.filename.startswith(".") or
                 self.filename == "OWNERS" or
-                self.filename == "REVIEWERS" or
+                self.filename == "NOTIFY" or
                 self.type_flag == "support" or
                 self.in_non_test_dir())
 

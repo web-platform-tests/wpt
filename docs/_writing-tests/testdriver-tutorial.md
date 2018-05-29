@@ -77,47 +77,17 @@ This will be the default function called when invoking the test driver commands 
 
 ```javascript
 window.test_driver_internal.set_element_rect = function(x, y, width, height) {
-    const pending_promise = new Promise(function(resolve, reject) {
-        pending_resolve = resolve;
-        pending_reject = reject;
-    });
-    window.opener.postMessage(
-        {"type": "action", "action": "set_window_rect", "x": x, "y": y, "width": width, "height": height}, "*");
-    return pending_promise;
+    return enqueue(function() {
+            return send({"type": "action", "action": "set_window_rect", "x": x, "y": y, "width": width, "height": height});
+        });
 };
 ```
-The main thing here is the `postMessage` argument. The first argument is an object with properties
+The main thing here is the `send` argument. This is an object with properties
  - `type`: this always has to be the string `"action"`
  - `action`: the name of the testdriver command this defines (in this case, `set_window_rect`)
  - any other things you want to pass to the next point of execution (in this case, the x, y coordinates and the width and height)
 
-<!-- The pending promise needs to be there as it is resolved when the window recieves a completion message from the executor. -->
-The pending promise is out of scope of this function and is resolved when the window recieves a completion message from the executor.
-This happens here in the same file:
-
-```javascript
-    let pending_resolve = null;
-    let pending_reject = null;
-    window.addEventListener("message", function(event) {
-        const data = event.data;
-
-        if (typeof data !== "object" && data !== null) {
-            return;
-        }
-
-        if (data.type !== "testdriver-complete") {
-            return;
-        }
-
-        if (data.status === "success") {
-            pending_resolve();
-        } else {
-            pending_reject();
-        }
-    });
-```
-
-One limitation this introduces is that only one testdriver call can be made at one time since the `pending_resolve` and `pending_reject` variables are in an outer scope.
+The this object is transmitted to the opener document via the `postMessage` API. The `enqueue` function allow callers to invoke the function without waiting for previous operations to complete (such commands are scheduled in a first-in-first-out queue since the WebDriver processing model does not support concurrency).
 
 Next, this is passed to the executor and protocol in wptrunner. Time to switch to Python!
 

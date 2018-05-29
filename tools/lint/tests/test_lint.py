@@ -138,7 +138,7 @@ def test_lint_passing(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html",
-                                    "tests/OWNERS"], "normal")
+                                    "tests/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -149,7 +149,7 @@ def test_lint_failing(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/broken.html",
-                                    "tests/OWNERS"], "normal")
+                                    "tests/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -161,7 +161,7 @@ def test_ref_existent_relative(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/existent_relative.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -172,7 +172,7 @@ def test_ref_existent_root_relative(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/existent_root_relative.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -183,7 +183,7 @@ def test_ref_non_existent_relative(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/non_existent_relative.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -196,7 +196,7 @@ def test_ref_non_existent_root_relative(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/non_existent_root_relative.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -210,7 +210,7 @@ def test_ref_absolute_url(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/absolute.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -223,7 +223,7 @@ def test_about_blank_as_ref(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/about_blank-ref.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -234,7 +234,7 @@ def test_ref_same_file_empty(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/same_file_empty.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -246,7 +246,7 @@ def test_ref_same_file_path(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["ref/same_file_path.html",
-                                    "ref/OWNERS"], "normal")
+                                    "ref/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
@@ -256,7 +256,7 @@ def test_ref_same_file_path(caplog):
 
 def test_manual_path_testharness(caplog):
     rv = lint(_dummy_repo, ["tests/relative-testharness-manual.html",
-                            "tests/OWNERS"], "normal")
+                            "tests/REVIEWERS"], "normal")
     assert rv == 2
     assert "TESTHARNESS-PATH" in caplog.text
     assert "TESTHARNESSREPORT-PATH" in caplog.text
@@ -264,7 +264,7 @@ def test_manual_path_testharness(caplog):
 
 def test_css_visual_path_testharness(caplog):
     rv = lint(_dummy_repo, ["css/css-unique/relative-testharness.html",
-                            "css/css-unique/OWNERS"], "normal")
+                            "css/css-unique/REVIEWERS"], "normal")
     assert rv == 3
     assert "CONTENT-VISUAL" in caplog.text
     assert "TESTHARNESS-PATH" in caplog.text
@@ -273,7 +273,7 @@ def test_css_visual_path_testharness(caplog):
 
 def test_css_manual_path_testharness(caplog):
     rv = lint(_dummy_repo, ["css/css-unique/relative-testharness-interact.html",
-                            "css/css-unique/OWNERS"], "normal")
+                            "css/css-unique/REVIEWERS"], "normal")
     assert rv == 3
     assert "CONTENT-MANUAL" in caplog.text
     assert "TESTHARNESS-PATH" in caplog.text
@@ -285,7 +285,7 @@ def test_lint_passing_and_failing(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/broken.html",
                                     "tests/okay.html",
-                                    "tests/OWNERS"], "normal")
+                                    "tests/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -299,7 +299,7 @@ def test_check_css_globally_unique_identical_test(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/match/a.html",
                                     "css/css-unique/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -311,7 +311,7 @@ def test_check_css_globally_unique_different_test(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/not-match/a.html",
                                     "css/css-unique/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 2
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -323,7 +323,7 @@ def test_check_css_globally_unique_different_spec_test(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/selectors/a.html",
                                     "css/css-unique/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -335,7 +335,7 @@ def test_check_css_globally_unique_support_ignored(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/support/a.html",
                                     "css/css-unique/support/tools/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -347,7 +347,7 @@ def test_check_css_globally_unique_support_identical(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/support/a.html",
                                     "css/css-unique/match/support/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -359,7 +359,7 @@ def test_check_css_globally_unique_support_different(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/not-match/support/a.html",
                                     "css/css-unique/support/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 2
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -371,7 +371,7 @@ def test_check_css_globally_unique_test_support(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/support/a.html",
                                     "css/css-unique/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -383,7 +383,7 @@ def test_check_css_globally_unique_ref_identical(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/a-ref.html",
                                     "css/css-unique/match/a-ref.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -395,7 +395,7 @@ def test_check_css_globally_unique_ref_different(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/not-match/a-ref.html",
                                     "css/css-unique/a-ref.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 2
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -407,7 +407,7 @@ def test_check_css_globally_unique_test_ref(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/a-ref.html",
                                     "css/css-unique/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -419,7 +419,7 @@ def test_check_css_globally_unique_ignored(caplog):
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/tools/a.html",
                                     "css/css-unique/not-match/tools/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 3
             assert mocked_check_file_contents.call_count == 3
@@ -430,78 +430,78 @@ def test_check_css_globally_unique_ignored_dir(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["css/css-unique/support/a.html",
-                                    "css/css-unique/OWNERS"], "normal")
+                                    "css/css-unique/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
 
-# Test file            OWNERS file       Errors
-# tests/okay.html      -                 1
-# tests/foo/okay.html  -                 1
-# tests/okay.html      tests/OWNERS      0
-# tests/foo/okay.html  tests/OWNERS      0
-# tests/okay.html      tests/foo/OWNERS  1
-# tests/foo/okay.html  tests/foo/OWNERS  1
+# Test file            REVIEWERS file       Errors
+# tests/okay.html      -                    1
+# tests/foo/okay.html  -                    1
+# tests/okay.html      tests/REVIEWERS      0
+# tests/foo/okay.html  tests/REVIEWERS      0
+# tests/okay.html      tests/foo/REVIEWERS  1
+# tests/foo/okay.html  tests/foo/REVIEWERS  1
 
-def test_check_owners_test_l1_no_owners(caplog):
+def test_check_reviewers_test_l1_no_reviewers(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 1
             assert mocked_check_file_contents.call_count == 1
-    assert "MISSING-OWNERS" in caplog.text
+    assert "MISSING-REVIEWERS" in caplog.text
 
-def test_check_owners_test_l2_no_owners(caplog):
+def test_check_reviewers_test_l2_no_reviewers(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 1
             assert mocked_check_file_contents.call_count == 1
-    assert "MISSING-OWNERS" in caplog.text
+    assert "MISSING-REVIEWERS" in caplog.text
 
-def test_check_owners_test_l1_owners_l1(caplog):
+def test_check_reviewers_test_l1_reviewers_l1(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html",
-                                    "tests/OWNERS"], "normal")
+                                    "tests/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
-def test_check_owners_test_l2_owners_l1(caplog):
+def test_check_reviewers_test_l2_reviewers_l1(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html",
-                                    "tests/OWNERS"], "normal")
+                                    "tests/REVIEWERS"], "normal")
             assert rv == 0
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
-def test_check_owners_test_l1_owners_l2(caplog):
+def test_check_reviewers_test_l1_reviewers_l2(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html",
-                                    "tests/foo/OWNERS"], "normal")
+                                    "tests/foo/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
-    assert "MISSING-OWNERS" in caplog.text
+    assert "MISSING-REVIEWERS" in caplog.text
 
-def test_check_owners_test_l2_owners_l2(caplog):
+def test_check_reviewers_test_l2_reviewers_l2(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html",
-                                    "tests/foo/OWNERS"], "normal")
+                                    "tests/foo/REVIEWERS"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
-    assert "MISSING-OWNERS" in caplog.text
+    assert "MISSING-REVIEWERS" in caplog.text
 
 
 

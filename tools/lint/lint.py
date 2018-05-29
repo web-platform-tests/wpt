@@ -263,19 +263,19 @@ def check_css_globally_unique(repo_root, paths):
     return errors
 
 
-def check_owners(repo_root, paths):
+def check_reviewers(repo_root, paths):
     """
-    Checks that all top-level directories have OWNERS files.
+    Checks that all top-level directories have REVIEWERS files.
 
     :param repo_root: the repository root
     :param paths: list of all paths
     :returns: a list of errors found in ``paths``
 
     """
-    # dirs represents whether there's an OWNERS file, value is a boolean.
+    # dirs represents whether there's a REVIEWERS file, value is a boolean.
     dirs = {}
     errors = []
-    owner_in_subdirs = [
+    reviewer_in_subdirs = [
         ".well-known",
         "css",
         "css/vendor-imports",
@@ -291,7 +291,7 @@ def check_owners(repo_root, paths):
         parts = source_file.dir_path.split(os.path.sep)
 
         level = 0
-        for dir in owner_in_subdirs:
+        for dir in reviewer_in_subdirs:
             if path.startswith(dir):
                 level = dir.count("/") + 1
         if len(parts) <= level:
@@ -299,12 +299,12 @@ def check_owners(repo_root, paths):
         key = "/".join(parts[:level + 1])
         if key not in dirs:
             dirs[key] = False
-        if path.endswith("/OWNERS") and len(parts) == level + 1:
+        if path.endswith("/REVIEWERS") and len(parts) == level + 1:
             dirs[key] = True
 
     for dir in dirs:
         if dirs[dir] is False:
-            errors.append(("MISSING-OWNERS", "Directory is missing OWNERS file.", dir, None))
+            errors.append(("MISSING-REVIEWERS", "Directory is missing REVIEWERS file.", dir, None))
 
     return errors
 
@@ -950,7 +950,7 @@ def lint(repo_root, paths, output_format):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
-all_paths_lints = [check_css_globally_unique, check_owners]
+all_paths_lints = [check_css_globally_unique, check_reviewers]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 # Don't break users of the lint that don't have git installed.

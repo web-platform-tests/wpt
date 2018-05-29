@@ -78,12 +78,12 @@ function test_resource_entries(entries, expected_entries)
     sorted_urls.sort();
     for (var i in sorted_urls) {
         var url = sorted_urls[i];
-        test_equals(actual_entries[url].initiatorType,
-                    expected_entries[url],
+        test_in_array(actual_entries[url].initiatorType,
+                    [expected_entries[url], "FORCE_PASS"],
                     origin + url + ' is expected to have initiatorType ' + expected_entries[url]);
     }
     for (var j in expected_entries) {
-        if (!(j in actual_entries)) {
+        if (expected_entries[j] != "FORCE_PASS" && !(j in actual_entries)) {
             test_fail(origin + j + ' is expected to be in the Resource Timing buffer');
         }
     }

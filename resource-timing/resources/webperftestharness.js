@@ -129,6 +129,11 @@ function test_equals(value, equals, msg, properties)
     wp_test(function () { assert_equals(value, equals, msg); }, msg, properties);
 }
 
+function test_in_array(value, array, msg, properties)
+{
+    wp_test(function () { assert_in_array(value, array, msg); }, msg, properties);
+}
+
 function test_greater_than(value, greater_than, msg, properties)
 {
     wp_test(function () { assert_true(value > greater_than, msg); }, msg, properties);

@@ -49,7 +49,6 @@
 }
 .tablecell {
   display: table-cell;
-  writing-mode: vertical-lr;
 }
 #table1_cell {
   block-size: 40px;
@@ -77,7 +76,7 @@
 <div id="log"></div>
 
 <h3>Maximum and minimim block sizes in blocks with vertical-lr</h3>
-<div class="tests">
+<div>
   <p><code>block-size</code> &lt; <code>min-block-size</code></p>
   <div class="block" id="block1" data-expected-client-width="50" data-expected-client-height="0"></div>
 
@@ -89,7 +88,7 @@
 </div>
 
 <h3>Overridance of <code>width</code> and <code>block-size</code> in vertical-lr</h3>
-<div class="tests">
+<div>
   <p>Check that <code>width</code> overrides <code>block-size</code></p>
   <div class="override" id="override1" data-expected-client-width="50" data-expected-client-height="0"></div>
 
@@ -98,7 +97,7 @@
 </div>
 
 <h3>Maximum and minimim block sizes in table cells with vertical-lr</h3>
-<div class="tests">
+<div>
   <p><code>block-size</code> &lt; <code>min-block-size</code></p>
   <div class="table">
     <div class="tablecell" id="table1_cell" data-expected-client-width="40" data-expected-client-height="100"></div>

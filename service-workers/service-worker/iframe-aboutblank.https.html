@@ -11,7 +11,7 @@
             await registration.unregister()
         }
 
-        registration = await navigator.serviceWorker.register('iframe-aboutblank-sw.js')
+        registration = await navigator.serviceWorker.register('resources/iframe-aboutblank-sw.js')
 
         fetch_tests_from_worker(registration.installing || registration.active)
 

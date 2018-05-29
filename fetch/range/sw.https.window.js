@@ -4,7 +4,7 @@
 // META: script=resources/utils.js
 
 const { REMOTE_HOST } = get_host_info();
-const SCOPE = 'resources/basic.html';
+const SCOPE = 'resources/basic.html' + Math.random();
 
 function appendAudio(document, url) {
   const audio = document.createElement('audio');

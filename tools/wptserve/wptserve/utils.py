@@ -67,7 +67,8 @@ def is_bad_port(port):
         143,   # imap2
         179,   # bgp
         389,   # ldap
-        465,   # smtp+ssl
+        427,   # afp (alternate)
+        465,   # smtp (alternate)
         512,   # print / exec
         513,   # login
         514,   # shell
@@ -77,12 +78,13 @@ def is_bad_port(port):
         531,   # chat
         532,   # netnews
         540,   # uucp
+        548,   # afp
         556,   # remotefs
         563,   # nntp+ssl
-        587,   # smtp
+        587,   # smtp (outgoing)
         601,   # syslog-conn
         636,   # ldap+ssl
-        993,   # imap+ssl
+        993,   # ldap+ssl
         995,   # pop3+ssl
         2049,  # nfs
         3659,  # apple-sasl

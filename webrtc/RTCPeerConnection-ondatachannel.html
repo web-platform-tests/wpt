@@ -282,6 +282,7 @@ promise_test(async (t) => {
 
   assert_equals(dc1.label, 'test');
   assert_equals(dc1.ordered, false);
+  assert_equals(dc1.maxPacketLifeTime, null);
   assert_equals(dc1.maxRetransmits, 1);
   assert_equals(dc1.protocol, 'custom');
   assert_equals(dc1.negotiated, false);
@@ -294,9 +295,10 @@ promise_test(async (t) => {
 
     assert_equals(dc2.label, 'test');
     assert_equals(dc2.ordered, false);
+    assert_equals(dc2.maxPacketLifeTime, null);
     assert_equals(dc2.maxRetransmits, 1);
     assert_equals(dc2.protocol, 'custom');
-    assert_equals(dc1.negotiated, false);
+    assert_equals(dc2.negotiated, false);
     assert_equals(dc2.id, dc1.id);
     assert_equals(dc2.priority, 'high');
 
@@ -338,7 +340,7 @@ promise_test(async (t) => {
     assert_equals(dc2.maxPacketLifeTime, null);
     assert_equals(dc2.maxRetransmits, null);
     assert_equals(dc2.protocol, '');
-    assert_equals(dc1.negotiated, false);
+    assert_equals(dc2.negotiated, false);
     assert_equals(dc2.id, dc1.id);
     assert_equals(dc2.priority, 'low');
 

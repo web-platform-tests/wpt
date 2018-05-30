@@ -74,6 +74,7 @@ async_test(t => {
   6667, // irc (default)
   6668, // irc (alternate)
   6669, // irc (alternate)
+  6697, // irc+tls
 ].forEach(blockedPort => {
   async_test(t => {
     const ws = CreateWebSocketWithBlockedPort(blockedPort)

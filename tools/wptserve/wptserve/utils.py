@@ -95,6 +95,7 @@ def is_bad_port(port):
         6667,  # irc (default)
         6668,  # irc (alternate)
         6669,  # irc (alternate)
+        6697,  # irc+tls
     ]
 
 def get_port(host):

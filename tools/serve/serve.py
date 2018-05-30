@@ -162,6 +162,9 @@ class HtmlWrapperHandler(WrapperHandler):
         if key == b"script":
             attribute = value.decode('utf-8').replace('"', "&quot;").replace(">", "&gt;")
             return '<script src="%s"></script>' % attribute
+        if key == b"title":
+            value = value.decode('utf-8').replace("<", "&lt;")
+            return '<title>%s</title>' % value
         return None
 
 

@@ -825,7 +825,7 @@ interface HTMLInputElement : HTMLElement {
   [CEReactions] attribute DOMString pattern;
   [CEReactions] attribute DOMString placeholder;
   [CEReactions] attribute boolean readOnly;
-  [CEReactions] attribute boolean required;
+  [CEReactions] attribute boolean _required;
   [CEReactions] attribute unsigned long size;
   [CEReactions] attribute USVString src;
   [CEReactions] attribute DOMString step;
@@ -893,7 +893,7 @@ interface HTMLSelectElement : HTMLElement {
   readonly attribute HTMLFormElement? form;
   [CEReactions] attribute boolean multiple;
   [CEReactions] attribute DOMString name;
-  [CEReactions] attribute boolean required;
+  [CEReactions] attribute boolean _required;
   [CEReactions] attribute unsigned long size;
 
   readonly attribute DOMString type;
@@ -963,7 +963,7 @@ interface HTMLTextAreaElement : HTMLElement {
   [CEReactions] attribute DOMString name;
   [CEReactions] attribute DOMString placeholder;
   [CEReactions] attribute boolean readOnly;
-  [CEReactions] attribute boolean required;
+  [CEReactions] attribute boolean _required;
   [CEReactions] attribute unsigned long rows;
   [CEReactions] attribute DOMString wrap;
 

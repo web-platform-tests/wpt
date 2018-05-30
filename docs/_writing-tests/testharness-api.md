@@ -89,7 +89,7 @@ Assertions can be added to the test by calling the step method of the test
 object with a function containing the test assertions:
 
 ```js
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(e) {
   t.step(function() {
     assert_true(e.bubbles, "bubbles should be true");
   });
@@ -108,7 +108,7 @@ first argument. The above example can be rewritten as:
 
 ```js
 async_test(function(t) {
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function(e) {
     t.step(function() {
       assert_true(e.bubbles, "bubbles should be true");
     });
@@ -127,7 +127,7 @@ callback. A convenient method of doing this is through the `step_func` method
 which returns a function that, when called runs a test step. For example:
 
 ```js
-document.addEventListener("DOMContentLoaded", t.step_func(function() {
+document.addEventListener("DOMContentLoaded", t.step_func(function(e) {
   assert_true(e.bubbles, "bubbles should be true");
   t.done();
 }));
@@ -137,7 +137,7 @@ As a further convenience, the `step_func` that calls `done()` can instead
 use `step_func_done`, as follows:
 
 ```js
-document.addEventListener("DOMContentLoaded", t.step_func_done(function() {
+document.addEventListener("DOMContentLoaded", t.step_func_done(function(e) {
   assert_true(e.bubbles, "bubbles should be true");
 }));
 ```
@@ -249,6 +249,30 @@ resolve after that specific series of events has been fired at the watched node.
 created Promise waiting to be fulfilled, or if the event is of a different type
 to the type currently expected. This ensures that only the events that are
 expected occur, in the correct order, and with the correct timing.
+
+If you cannot or do not want to use `EventWatcher` for a test case,
+`promise_test` allows you to mix traditional callback handling and promises by
+exposing the `done_promise` on the `Test` instance.
+
+An example:
+
+```js
+function foo() {
+  return Promise.resolve("foo");
+}
+
+promise_test(function(t) {
+  someObject.addEventListener("someevent", t.step_func(function() {
+    t.done();
+  }));
+  
+  return foo()
+    .then(function(result) {
+      assert_equals(result, "foo", "foo should return 'foo'");
+      return t.done_promise;
+    });
+}, "Promise example + some event");
+```
 
 ## Single Page Tests ##
 

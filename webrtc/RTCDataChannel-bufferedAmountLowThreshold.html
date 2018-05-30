@@ -1,0 +1,181 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.bufferedAmountLowThreshold</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  6.2. bufferedAmountLowThreshold
+
+       The bufferedAmountLowThreshold attribute sets the threshold at which the bufferedAmount is
+       considered to be low. When the bufferedAmount decreases from above this threshold to equal
+       or below it, the bufferedamountlow event fires. The bufferedAmountLowThreshold is initially
+       zero on each new RTCDataChannel, but the application may change its value at any time.
+
+  13.  bufferedamountlow
+
+       The RTCDataChannel object's bufferedAmount decreases from above its
+       bufferedAmountLowThreshold to less than or equal to its bufferedAmountLowThreshold.
+ */
+const messages = [
+  ['meow', 4, 'DOMString of 4 bytes'],
+  [new Uint8Array(65536).fill(0xde), 65536, 'Uint8Array of 65536 bytes'],
+];
+
+for (const [message, length, description] of messages) {
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const dc = pc1.createDataChannel('test');
+
+    // Send once the channel opened
+    dc.onopen = t.step_func(() => {
+      dc.send(message);
+    });
+
+    // Done once the event has been raised
+    assert_equals(dc.bufferedAmountLowThreshold, 0,
+      'bufferedAmountLowThreshold should be 0 by default');
+    dc.onbufferedamountlow = t.step_func(() => {
+      assert_equals(dc.bufferedAmount, 0, 'bufferedAmount should be 0 once the event has fired');
+      t.done();
+    });
+
+    exchangeIceCandidates(pc1, pc2);
+    await doSignalingHandshake(pc1, pc2);
+
+    t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+    await t.done_promise;
+  }, `${description}: bufferedamountlow event should fire once bufferedAmount <= 0 (default)`, {
+    timeout: 5000
+  });
+
+  const thresholds = [
+    Math.floor(length / 2),
+    length,
+    length * 2,
+  ];
+
+  for (const threshold of thresholds) {
+    promise_test(async (t) => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
+
+      const dc = pc1.createDataChannel('test');
+      dc.bufferedAmountLowThreshold = threshold;
+
+      // Send once the channel opened
+      dc.onopen = t.step_func(() => {
+        dc.send(message);
+      });
+
+      // Done once the event has been raised
+      assert_equals(dc.bufferedAmountLowThreshold, threshold,
+        `bufferedAmountLowThreshold should be ${threshold}`);
+      dc.onbufferedamountlow = t.step_func(() => {
+        assert_less_than_equal(dc.bufferedAmount, threshold,
+          `bufferedAmount should be <= ${threshold} once the event has fired`);
+        t.done();
+      });
+
+      exchangeIceCandidates(pc1, pc2);
+      await doSignalingHandshake(pc1, pc2);
+
+      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+      await t.done_promise;
+    }, `${description}: bufferedamountlow event should fire once bufferedAmount <=
+  ${threshold} (custom)`, {
+      timeout: 5000
+    });
+  }
+
+  for (const threshold of thresholds) {
+    promise_test(async (t) => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      t.add_cleanup(() => pc1.close());
+      t.add_cleanup(() => pc2.close());
+
+      const dc = pc1.createDataChannel('test');
+      dc.bufferedAmountLowThreshold = threshold;
+
+      // Send once the channel opened
+      dc.onopen = t.step_func(() => {
+        for (let i = 0; i < 10; ++i) {
+          dc.send(message);
+        }
+      });
+
+      // Done once the event has been raised
+      assert_equals(dc.bufferedAmountLowThreshold, threshold,
+        `bufferedAmountLowThreshold should be ${threshold}`);
+      dc.onbufferedamountlow = t.step_func(() => {
+        assert_less_than_equal(dc.bufferedAmount, threshold,
+          `bufferedAmount should be <= ${threshold} once the event has fired`);
+        t.done();
+      });
+
+      exchangeIceCandidates(pc1, pc2);
+      await doSignalingHandshake(pc1, pc2);
+
+      t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+      await t.done_promise;
+    }, `${description} x 10: bufferedamountlow event should fire once bufferedAmount <=
+  ${threshold} (custom)`, {
+      timeout: 5000
+    });
+  }
+
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const dc1 = pc1.createDataChannel('test');
+
+    // Send once the channel opened
+    dc1.onopen = t.step_func(() => {
+      dc1.send(message);
+    });
+
+    // Done once the event has been raised (and the other channel did not fire)
+    dc1.onbufferedamountlow = t.step_func(() => {
+      t.step_timeout(() => t.step_func_done(), 100);
+    });
+
+    const dc2 = pc1.createDataChannel('test-2');
+    dc2.onbufferedamountlow = t.step_func(() => {
+      assert_unreached('dc2 should not fire bufferedamountlow');
+    });
+
+    exchangeIceCandidates(pc1, pc2);
+    await doSignalingHandshake(pc1, pc2);
+
+    t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
+
+    await t.done_promise;
+  }, `${description}: bufferedamountlow event should not fire on other channels`, {
+    timeout: 5000
+  });
+
+}
+</script>

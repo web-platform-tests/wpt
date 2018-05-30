@@ -217,39 +217,95 @@ function test_never_resolve(testFunc, testName) {
   }, testName);
 }
 
-// Helper function to exchange ice candidates between
-// two local peer connections
-function exchangeIceCandidates(pc1, pc2) {
-  // private function
-  function doExchange(localPc, remotePc) {
-    localPc.addEventListener('icecandidate', event => {
-      const { candidate } = event;
+// Helper class to queue ICE candidates of a peer connection
+// Can be passed to `exchangeIceCandidates` which will automatically empty the queue.
+class IceCandidateQueue {
+  constructor(pc) {
+    this.pc = pc;
+    this._queue = [];
+    this._listener = (event) => this._handleIceCandidate(event);
 
-      // candidate may be null to indicate end of candidate gathering.
-      // There is ongoing discussion on w3c/webrtc-pc#1213
-      // that there should be an empty candidate string event
-      // for end of candidate for each m= section.
-      if(candidate) {
-        remotePc.addIceCandidate(candidate);
-      }
-    });
+    // Queue ICE candidates
+    this.pc.addEventListener('icecandidate', this._listener);
   }
 
-  doExchange(pc1, pc2);
-  doExchange(pc2, pc1);
+  // Unbind the event listener and return all queued candidates
+  disband() {
+    this.pc.removeEventListener('icecandidate', this._listener);
+    return this._queue;
+  }
+
+  _handleIceCandidate(event) {
+    this._queue.push(event.candidate);
+  }
+}
+
+// Helper function to exchange ice candidates between
+// two local peer connections
+function exchangeIceCandidates(pc1OrQueue, pc2OrQueue) {
+  const handleCandidate = (remotePc, candidate) => {
+    // candidate may be null to indicate end of candidate gathering.
+    // There is ongoing discussion on w3c/webrtc-pc#1213
+    // that there should be an empty candidate string event
+    // for end of candidate for each m= section.
+    if (candidate) {
+      remotePc.addIceCandidate(candidate);
+    }
+  };
+
+  const exchangeCandidates = (localPcOrQueue, remotePcOrQueue) => {
+    let localPc = localPcOrQueue;
+    let remotePc = remotePcOrQueue;
+    if (remotePcOrQueue instanceof IceCandidateQueue) {
+      remotePc = remotePcOrQueue.pc;
+    }
+
+    // Queue? Disband it first
+    if (localPcOrQueue instanceof IceCandidateQueue) {
+      localPc = localPcOrQueue.pc;
+      for (const candidate of localPcOrQueue.disband()) {
+        handleCandidate(remotePc, candidate);
+      }
+    }
+
+    // Exchange further candidates
+    localPc.addEventListener('icecandidate', event => {
+      const { candidate } = event;
+      handleCandidate(remotePc, candidate);
+    });
+  };
+
+  exchangeCandidates(pc1OrQueue, pc2OrQueue);
+  exchangeCandidates(pc2OrQueue, pc1OrQueue);
 }
 
 // Helper function for doing one round of offer/answer exchange
 // betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc) {
+function doSignalingHandshake(localPc, remotePc, options={}) {
   return localPc.createOffer()
-  .then(offer => Promise.all([
-    localPc.setLocalDescription(offer),
-    remotePc.setRemoteDescription(offer)]))
+  .then(offer => {
+    // Modify offer if callback has been provided
+    if (options.modifyOffer) {
+      offer = options.modifyOffer(offer);
+    }
+
+    // Apply offer
+    return Promise.all([
+      localPc.setLocalDescription(offer),
+      remotePc.setRemoteDescription(offer)])
+  })
   .then(() => remotePc.createAnswer())
-  .then(answer => Promise.all([
-    remotePc.setLocalDescription(answer),
-    localPc.setRemoteDescription(answer)]))
+  .then(answer => {
+    // Modify answer if callback has been provided
+    if (options.modifyAnswer) {
+      answer = options.modifyAnswer(answer);
+    }
+
+    // Apply answer
+    return Promise.all([
+      remotePc.setLocalDescription(answer),
+      localPc.setRemoteDescription(answer)])
+  });
 }
 
 // Helper function to create a pair of connected data channel.
@@ -257,53 +313,146 @@ function doSignalingHandshake(localPc, remotePc) {
 // It does the heavy lifting of performing signaling handshake,
 // ICE candidate exchange, and waiting for data channel at two
 // end points to open.
+//
+// IMPORTANT: Due to a bug in Safari which leads to 'id' being 'null', we send
+//            the remote channel a message that requests the ID to be sent back
+//            to the local channel in order to identify the pair.
+const remoteChannels = {};
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
+  pc2=new RTCPeerConnection(),
+  options={})
 {
-  const channel1 = pc1.createDataChannel('');
+  options = Object.assign({}, {
+    channelLabel: '',
+    channelOptions: undefined,
+    doSignaling: true,
+    idRequestMessage: 'plz-send-me-id',
+  }, options);
 
-  exchangeIceCandidates(pc1, pc2);
+  let channel1Options;
+  let channel2Options = null;
+  if (options.channelOptions instanceof Array) {
+    [channel1Options, channel2Options] = options.channelOptions;
+  } else {
+    channel1Options = options.channelOptions;
+  }
+
+  const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
 
   return new Promise((resolve, reject) => {
     let channel2;
     let opened1 = false;
     let opened2 = false;
 
+    function cleanup() {
+      channel1.removeEventListener('open', onOpen1);
+      channel2.removeEventListener('open', onOpen2);
+      channel1.removeEventListener('error', onError);
+      channel2.removeEventListener('error', onError);
+    }
+
     function onBothOpened() {
+      cleanup();
       resolve([channel1, channel2]);
+    }
+
+    function onError(...args) {
+      cleanup();
+      reject(...args);
     }
 
     function onOpen1() {
       opened1 = true;
-      if(opened2) onBothOpened();
+
+      // Workaround for an annoying bug in Safari
+      if (channel1.id === null) {
+        channel1.addEventListener('message', onMessage1, { once: true });
+        channel1.send(options.idRequestMessage);
+        return;
+      }
+
+      if (opened2) {
+        onBothOpened();
+      }
     }
 
     function onOpen2() {
       opened2 = true;
-      if(opened1) onBothOpened();
-    }
-
-    function onDataChannel(event) {
-      channel2 = event.channel;
-      channel2.addEventListener('error', reject);
-      const { readyState } = channel2;
-
-      if(readyState === 'open') {
-        onOpen2();
-      } else if(readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2);
-      } else {
-        reject(new Error(`Unexpected ready state ${readyState}`));
+      if (opened1) {
+        onBothOpened();
       }
     }
 
-    channel1.addEventListener('open', onOpen1);
-    channel1.addEventListener('error', reject);
+    function onMessage1(event) {
+      const id = parseInt(event.data, 10);
+      channel2 = remoteChannels[id];
+      delete remoteChannels[id];
+      onDataChannelPairFound();
+    }
 
-    pc2.addEventListener('datachannel', onDataChannel);
+    function onMessage2(event) {
+      if (event.data === options.idRequestMessage) {
+        this.send(this.id.toString());
+      }
+    }
 
-    doSignalingHandshake(pc1, pc2);
+    function onDataChannelPairFound() {
+      channel2.addEventListener('error', onError, { once: true });
+      const { readyState } = channel2;
+
+      if (readyState === 'open') {
+        onOpen2();
+      } else if (readyState === 'connecting') {
+        channel2.addEventListener('open', onOpen2, { once: true });
+      } else {
+        onError(new Error(`Unexpected ready state ${readyState}`));
+      }
+    }
+
+    function onDataChannel(event) {
+      const channel = event.channel;
+
+      // Ignore remote channels that already have an ID request handler
+      if (remoteChannels[channel.id]) {
+        return;
+      }
+
+      // Keep this check. Will prevent finding pairs where both local and remote
+      // id are not an integer (e.g. null).
+      if (!Number.isInteger(channel.id)) {
+        return;
+      }
+
+      // Workaround for an annoying bug in Safari
+      if (channel1.id === null) {
+        remoteChannels[channel.id] = channel;
+        channel.addEventListener('message', onMessage2, { once: true });
+        return;
+      }
+
+      if (channel.id !== channel1.id) {
+        return;
+      }
+
+      channel2 = channel;
+      onDataChannelPairFound();
+    }
+
+    channel1.addEventListener('open', onOpen1, { once: true });
+    channel1.addEventListener('error', onError, { once: true });
+
+    if (channel2Options !== null) {
+      channel2 = pc2.createDataChannel(options.channelLabel, channel2Options);
+      onDataChannelPairFound();
+    } else {
+      pc2.addEventListener('datachannel', onDataChannel);
+    }
+
+    if (options.doSignaling) {
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2, options);
+    }
   });
 }
 
@@ -335,23 +484,25 @@ function blobToArrayBuffer(blob) {
   });
 }
 
-// Assert that two ArrayBuffer objects have the same byte values
-function assert_equals_array_buffer(buffer1, buffer2) {
-  assert_true(buffer1 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+// Assert that two TypedArray or ArrayBuffer objects have the same byte values
+function assert_equals_typed_array(array1, array2) {
+  const [view1, view2] = [array1, array2].map((array) => {
+    if (array instanceof ArrayBuffer) {
+      return new DataView(array);
+    } else {
+      assert_true(array.buffer instanceof ArrayBuffer,
+        'Expect buffer to be instance of ArrayBuffer');
+      return new DataView(array.buffer, array.byteOffset, array.byteLength);
+    }
+  });
 
-  assert_true(buffer2 instanceof ArrayBuffer,
-    'Expect buffer to be instance of ArrayBuffer');
+  assert_equals(view1.byteLength, view2.byteLength,
+    'Expect both arrays to be of the same byte length');
 
-  assert_equals(buffer1.byteLength, buffer2.byteLength,
-    'Expect both array buffers to be of the same byte length');
+  const byteLength = view1.byteLength;
 
-  const byteLength = buffer1.byteLength;
-  const byteArray1 = new Uint8Array(buffer1);
-  const byteArray2 = new Uint8Array(buffer2);
-
-  for(let i=0; i<byteLength; i++) {
-    assert_equals(byteArray1[i], byteArray2[i],
+  for (let i = 0; i < byteLength; ++i) {
+    assert_equals(view1.getUint8(i), view2.getUint8(i),
       `Expect byte at buffer position ${i} to be equal`);
   }
 }
@@ -443,5 +594,26 @@ class Resolver {
     });
     this.resolve = promiseResolve;
     this.reject = promiseReject;
+  }
+}
+
+
+// Contains a set of values and will yell at you if you try to add a value twice.
+class UniqueSet extends Set {
+  constructor(items) {
+    super();
+    if (items !== undefined) {
+      for (const item of items) {
+        this.add(item);
+      }
+    }
+  }
+
+  add(value, message) {
+    if (message === undefined) {
+      message = `Value '${value}' needs to be unique but it is already in the set`;
+    }
+    assert_true(!this.has(value), message);
+    super.add(value);
   }
 }

@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.onopen</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  6.2. When the user agent is to announce an RTCDataChannel as open, the user agent MUST queue a
+       task to run the following steps:
+
+       2. Let channel be the RTCDataChannel object to be announced.
+       3. Set channel's [[ReadyState]] slot to open.
+       4. Fire a simple event named open at channel.
+ */
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+
+  // Create a channel on pc1
+  const dc = pc1.createDataChannel('onopen');
+  dc.onopen = t.step_func(() => {
+    assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+    t.done();
+  });
+
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'In-band channel: Open event should be fired (local) when the data channel opens', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+
+  // Create a channel on pc1
+  pc1.createDataChannel('onopen');
+
+  // Wait for it to open on pc2
+  pc2.ondatachannel = t.step_func((event) => {
+    const dc = event.channel;
+    dc.onopen = t.step_func(() => {
+      assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+      t.done();
+    });
+  });
+
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'In-band channel: Open event should be fired (remote) when the data channel opens', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  exchangeIceCandidates(pc1, pc2);
+  let nOpen = 0;
+
+  // Create a negotiated channel on both pcs
+  const dc1 = pc1.createDataChannel('onopen', {
+    negotiated: true,
+    id: 42
+  });
+  const dc2 = pc2.createDataChannel('onopen', {
+    negotiated: true,
+    id: 42
+  });
+  for (const dc of [dc1, dc2]) {
+    dc.onopen = t.step_func(() => {
+      assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
+      if (++nOpen === 2) {
+        t.done();
+      }
+    });
+  }
+
+  await doSignalingHandshake(pc1, pc2);
+  await t.done_promise;
+}, 'Negotiated channel: Open event should be fired when the channels open', {
+  timeout: 5000
+});
+
+</script>

@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel.prototype.binaryType</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  6.2.  RTCDataChannel
+    interface RTCDataChannel : EventTarget {
+      ...
+                attribute DOMString           binaryType;
+      ...
+    };
+ */
+
+const validBinaryTypes = ['blob', 'arraybuffer'];
+const invalidBinaryTypes = ['jellyfish', 'arraybuffer '];
+
+/*
+  6.2.  RTCDataChannel
+    binaryType
+      The binaryType attribute MUST, on getting, return the value to which it was last
+      set. On setting, if the new value is either the string "blob" or the string
+      "arraybuffer", then set the IDL attribute to this new value. Otherwise, throw a
+      SyntaxError. When an RTCDataChannel object is created, the binaryType attribute
+      MUST be initialized to the string "blob".
+ */
+for (const binaryType of validBinaryTypes) {
+  test((t) => {
+    const pc = new RTCPeerConnection();
+    const dc = pc.createDataChannel('test-binary-type');
+    
+    dc.binaryType = binaryType;
+    assert_equals(dc.binaryType, binaryType, `dc.binaryType should be '${binaryType}'`);
+  }, `Setting binaryType to '${binaryType}' should succeed`, {
+    timeout: 3000
+  });
+}
+
+for (const binaryType of invalidBinaryTypes) {
+  test((t) => {
+    const pc = new RTCPeerConnection();
+    const dc = pc.createDataChannel('test-binary-type');
+    
+    assert_throws('SyntaxError', () => {
+      dc.binaryType = binaryType;
+    });
+  }, `Setting invalid binaryType '${binaryType}' should throw SyntaxError`, {
+    timeout: 3000
+  });
+}
+
+/*
+  The default value of 'binaryType' is tested in RTCPeerConnection-createDataChannel.
+
+  Aspects on switching on 'binaryType' when receiving have been covered in
+  RTCDataChannel-send-receive.
+*/
+</script>

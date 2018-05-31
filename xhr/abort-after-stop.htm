@@ -20,8 +20,11 @@
         client.open("GET", "resources/delay.py?ms=3000", true);
         client.send(null);
         test.step_timeout(() => {
-          assert_equals(abortFired, true);
+          test.step(t => assert_equals(abortFired, true));
           test.done();
+
+          // Prevent harness timeout caused by window.stop() preventing "load" event
+          window.dispatchEvent(new Event('load'));
         }, 200);
         window.stop();
       });

@@ -31,6 +31,9 @@ addEventListener('fetch', event => {
     case 'use-stored-ranged-response':
       useStoredRangeResponse(event);
       return;
+    case 'broadcast-accept-encoding':
+      broadcastAcceptEncoding(event);
+      return;
   }
 });
 
@@ -139,4 +142,18 @@ function useStoredRangeResponse(event) {
     if (!response) throw Error("Expected stored range response");
     return response.clone();
   }());
+}
+
+function broadcastAcceptEncoding(event) {
+  /** @type Request */
+  const request = event.request;
+  const id = new URL(request.url).searchParams.get('id');
+
+  broadcast({
+    id,
+    acceptEncoding: request.headers.get('Accept-Encoding')
+  });
+
+  // Just send back any response, it isn't important for the test.
+  event.respondWith(new Response(''));
 }

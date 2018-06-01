@@ -29,7 +29,8 @@
         metas.push(template.replace("%s", i).replace("%s", "last"));
         var pre = document.createElement('pre');
         pre.textContent = metas.join('\n');
-        document.body.appendChild(pre);
+        document.body.insertBefore(pre, document.body.firstChild);
+        document.getSelection().selectAllChildren(pre);
       });
     }
   }

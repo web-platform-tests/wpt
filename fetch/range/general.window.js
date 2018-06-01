@@ -22,7 +22,6 @@ promise_test(async () => {
 
   const audio = appendAudio(document, wavURL);
   await new Promise(r => audio.addEventListener('progress', r));
-  //await new Promise(r => audio.addEventListener('error', r));
   audio.remove();
 
   const response = await fetch(stashTakeURL);

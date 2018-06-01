@@ -22,18 +22,18 @@
         left: -50px;
       }
       #squareLinear {
-        top: 0px;
+        top: 25px;
         animation: move 2s linear;
       }
       #squareSteps {
-        top: 150px;
+        top: 175px;
         animation: move 2s steps(1000, end);
       }
       #coveringRect {
         position: absolute;
         background: lightgreen;
         width: 150px;
-        height: 250px;
+        height: 300px;
         left: -75px;
         top: 0px;
         transform: translate(150px);
@@ -52,23 +52,30 @@
     <script>
       var start = null;
       var animationDuration = 2000;
-      var coveringRectShift = 150;
-      var rectFinalShift = 500;
+      function halfWidth(id)
+      {
+        return document.getElementById(id).scrollWidth / 2;
+      }
+      function shift(id)
+      {
+        var transform = window.getComputedStyle(document.getElementById(id)).transform;
+        if (transform === "none")
+          return 0;
+        // See https://drafts.csswg.org/css-transforms-2/#serialization-of-the-computed-value
+        return parseFloat(transform.split(/,\s*/)[4]);
+      }
       function step(timestamp) {
-        if (!start) start = timestamp;
-        var progress = timestamp - start;
-        // Pause the animations when the squares pass under the covering rect.
-        var targetProgress = animationDuration * coveringRectShift / rectFinalShift;
-        if (progress > targetProgress) {
-          document.getElementById("squareLinear").classList.add("pause");
-          document.getElementById("squareSteps").classList.add("pause");
-        }
+        // For each square, pause the animation as soon as it passes under the covering rect.
+        ["squareLinear", "squareSteps"].forEach((id) => {
+          if (Math.abs(shift("coveringRect") - shift(id)) < halfWidth("coveringRect") - halfWidth(id))
+            document.getElementById(id).classList.add("pause");
+        });
 
-        // Wait a bit so that the squares pass the covering rect if the
-        // animation fails to be paused.
-        var delta = 200;
-        if (progress < targetProgress + delta)
-          window.requestAnimationFrame(step)
+        // Stop the reftest after the time when the animations would have stop.
+        // If pausing failed for some reason, the squares will be visible.
+        if (!start) start = timestamp;
+        if (timestamp - start < animationDuration)
+          window.requestAnimationFrame(step);
         else
           document.documentElement.classList.remove("reftest-wait");
       }

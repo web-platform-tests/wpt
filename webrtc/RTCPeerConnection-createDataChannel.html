@@ -642,7 +642,7 @@ promise_test(async (t) => {
 
   assert_equals(negotiatedDc.id, 42,
     'Expect negotiatedDc.id to be 42 after remote description has been set');
-}, 'Channels created after SCTP transport is established should have id assigned', {
+}, 'Channels created (after setRemoteDescription) should have id assigned', {
   timeout: 5000
 });
 

@@ -7,8 +7,7 @@
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script>
 
-test(() => {
-  assert_false('CanMakePaymentEvent' in window);
-}, 'CanMakePaymentEvent constructor must not be exposed in window');
+service_worker_test('can-make-payment-event-constructor.https.serviceworker.js',
+    'CanMakePaymentEvent can be constructed in service worker');
 
 </script>

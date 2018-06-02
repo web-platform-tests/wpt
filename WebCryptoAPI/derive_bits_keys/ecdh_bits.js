@@ -200,6 +200,8 @@ function run_test() {
                                             false, ["deriveBits", "deriveKey"])
                             .then(function(key) {
                                 privateKeys[namedCurve] = key;
+                            }, function(key) {
+                                privateKeys[namedCurve] = undefined;
                             });
             promises.push(operation);
         });
@@ -209,6 +211,8 @@ function run_test() {
                                             false, ["deriveKey"])
                             .then(function(key) {
                                 noDeriveBitsKeys[namedCurve] = key;
+                            }, function(key) {
+                                noDeriveBitsKeys[namedCurve] = undefined;
                             });
             promises.push(operation);
         });
@@ -218,6 +222,8 @@ function run_test() {
                                             false, [])
                             .then(function(key) {
                                 publicKeys[namedCurve] = key;
+                            }, function(key) {
+                                publicKeys[namedCurve] = undefined;
                             });
             promises.push(operation);
         });
@@ -225,6 +231,8 @@ function run_test() {
             var operation = subtle.generateKey({name: "ECDSA", namedCurve: namedCurve}, false, ["sign", "verify"])
                             .then(function(keyPair) {
                                 ecdsaKeyPairs[namedCurve] = keyPair;
+                            }, function(key) {
+                                ecdsaKeyPairs[namedCurve] = undefined;
                             });
             promises.push(operation);
         });

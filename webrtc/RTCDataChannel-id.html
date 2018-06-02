@@ -48,7 +48,7 @@ promise_test(async (t) => {
     `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
   const dc2 = pc.createDataChannel('another');
   assert_equals(dc2.id % 2, 1,
-    `Channel created by the DTLS server role must be odd (was ${dc1.id})`);
+    `Channel created by the DTLS server role must be odd (was ${dc2.id})`);
 
   // Ensure IDs are unique
   ids.add(dc1.id, `Channel ID ${dc1.id} should be unique`);

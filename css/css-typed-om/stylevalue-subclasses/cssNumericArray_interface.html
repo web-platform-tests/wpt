@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>CSSNumericArray IDL</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#cssmathsum">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script type="text/plain" id="idl">
+interface CSSNumericArray {
+    iterable<CSSNumericValue>;
+    readonly attribute unsigned long length;
+    getter CSSNumericValue (unsigned long index);
+};
+</script>
+<script>
+'use strict';
+const idlArray = new IdlArray();
+idlArray.add_untested_idls('interface CSSNumericValue : CSSStyleValue { };');
+idlArray.add_idls(document.getElementById('idl').textContent);
+idlArray.add_objects({
+    CSSNumericValue: [
+        'new CSSNumericValue()',
+    ]
+});
+idlArray.test();
+</script>

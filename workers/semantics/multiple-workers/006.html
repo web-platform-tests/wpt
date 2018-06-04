@@ -2,23 +2,15 @@
 if (location.hash == '#1') {
   onconnect = function(e) {
     var port = e.ports[0];
-    try {
-      var w2 = new Worker('#2');
-      w2.onmessage = function(e) {
-        port.postMessage('1'+e.data);
-      }
-    } catch(e) {
-      port.postMessage(String(e));
+    var w2 = new Worker('#2');
+    w2.onmessage = function(e) {
+      port.postMessage('1'+e.data);
     }
   }
 } else if (location.hash == '#2') {
-  try {
-    var w3 = new SharedWorker('006-1.js');
-    w3.port.onmessage = function(e) {
-      postMessage('2'+e.data);
-    }
-  } catch(e) {
-    postMessage(String(e));
+  var w3 = new SharedWorker('006-1.js');
+  w3.port.onmessage = function(e) {
+    postMessage('2'+e.data);
   }
 }
 

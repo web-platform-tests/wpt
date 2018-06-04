@@ -1,12 +1,8 @@
 <!--
 if (location.hash == '#1') {
-  try {
-    var w2 = new SharedWorker('#2');
-    w2.port.onmessage = function(e) {
-      postMessage('1'+e.data);
-    }
-  } catch(e) {
-    postMessage(String(e));
+  var w2 = new SharedWorker('#2');
+  w2.port.onmessage = function(e) {
+    postMessage('1'+e.data);
   }
 } else if (location.hash == '#2') {
   onconnect = function(e) {

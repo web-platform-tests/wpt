@@ -1,12 +1,8 @@
 <!--
 if (location.hash == '#1') {
-  try {
-    var w2 = new Worker('#2');
-    w2.onmessage = function(e) {
-      postMessage('1'+e.data);
-    }
-  } catch(e) {
-    postMessage(String(e));
+  var w2 = new Worker('#2');
+  w2.onmessage = function(e) {
+    postMessage('1'+e.data);
   }
 } else if (location.hash == '#2') {
   var w3 = new Worker('#3');

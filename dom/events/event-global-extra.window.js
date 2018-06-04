@@ -4,8 +4,8 @@ const otherWindow = document.body.appendChild(document.createElement("iframe")).
   async_test(t => {
     const eventTarget = new eventTargetConstructor();
     eventTarget.addEventListener("hi", t.step_func_done(e => {
-      assert_equals(e, otherWindow.event);
-      assert_equals(undefined, self.event);
+      assert_equals(undefined, otherWindow.event);
+      assert_equals(e, window.event);
     }));
     eventTarget.dispatchEvent(new Event("hi"));
   }, "window.event for constructors from another global: " + eventTargetConstructor);
@@ -29,13 +29,13 @@ async_test(t => {
   element.addEventListener("yoyo", t.step_func(e => {
     document.body.appendChild(element);
     assert_equals(element.ownerDocument, document);
-    assert_equals(window.event, undefined);
-    assert_equals(otherWindow.event, e);
+    assert_equals(window.event, e);
+    assert_equals(otherWindow.event, undefined);
   }), true);
   element.addEventListener("yoyo", t.step_func(e => {
     assert_equals(element.ownerDocument, document);
-    assert_equals(window.event, undefined);
-    assert_equals(otherWindow.event, e);
+    assert_equals(window.event, e);
+    assert_equals(otherWindow.event, undefined);
   }), true);
   child.addEventListener("yoyo", t.step_func_done(e => {
     assert_equals(child.ownerDocument, document);
@@ -45,7 +45,7 @@ async_test(t => {
   child.dispatchEvent(new Event("yoyo"));
 }, "window.event and moving an element post-dispatch");
 
-async_test(t => {
+test(t => {
   const host = document.createElement("div"),
         shadow = host.attachShadow({ mode: "open" }),
         child = shadow.appendChild(document.createElement("trala")),
@@ -55,22 +55,21 @@ async_test(t => {
     assert_equals(window.event, e);
     assert_equals(counter++, 3);
   }));
-  child.addEventListener("hi", t.step_func(() => {
-    assert_equals(window.event, undefined);
+  child.addEventListener("hi", t.step_func(e => {
+    assert_equals(window.event, e);
     assert_equals(counter++, 2);
   }));
-  furtherChild.addEventListener("hi", t.step_func(() => {
+  furtherChild.addEventListener("hi", t.step_func(e => {
     host.appendChild(child);
-    assert_equals(window.event, undefined);
+    assert_equals(window.event, e);
     assert_equals(counter++, 0);
   }));
-  furtherChild.addEventListener("hi", t.step_func(() => {
-    assert_equals(window.event, undefined);
+  furtherChild.addEventListener("hi", t.step_func(e => {
+    assert_equals(window.event, e);
     assert_equals(counter++, 1);
   }));
   furtherChild.dispatchEvent(new Event("hi", { composed: true, bubbles: true }));
   assert_equals(counter, 4);
-  t.done();
 }, "window.event should not be affected by nodes moving post-dispatch");
 
 async_test(t => {
@@ -85,7 +84,7 @@ async_test(t => {
     }));
     document.dispatchEvent(event);
     assert_equals(frameState.event, event);
-    assert_equals(frameState.windowEvent, undefined);
-    assert_equals(frameState.parentEvent, event);
+    assert_equals(frameState.windowEvent, event);
+    assert_equals(frameState.parentEvent, undefined);
   });
 }, "Listener from a different global");

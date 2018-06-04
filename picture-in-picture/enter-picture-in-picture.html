@@ -15,7 +15,6 @@ promise_test(async t => {
     assert_equals(event.bubbles, true);
     assert_equals(event.cancelable, false);
     assert_equals(event.composed, false);
-    assert_equals(document.pictureInPictureElement, video);
   }));
 
   return requestPictureInPictureWithTrustedClick(video);

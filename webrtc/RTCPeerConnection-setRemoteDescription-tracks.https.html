@@ -20,8 +20,8 @@
   // states of RTCPeerConnection, MediaStream and MediaStreamTrack.
 
   async_test(t => {
-    const caller = new RTCPeerConnection();
-    const callee = new RTCPeerConnection();
+    const caller = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+    const callee = new RTCPeerConnection({sdpSemantics: "unified-plan"});
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       const localTrack = tracks[0];
@@ -213,14 +213,14 @@
   }, 'stream.onaddtrack fires before setRemoteDescription resolves.');
 
   async_test(t => {
-    const caller = new RTCPeerConnection();
-    const callee = new RTCPeerConnection();
+    const caller = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+    const callee = new RTCPeerConnection({sdpSemantics: "unified-plan"});
     return getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
       const localTrack = tracks[0];
       const localStreams = streams;
       caller.addTrack(localTrack, localStreams[0], localStreams[1]);
-      const performOffer = performOffer(caller, callee);
+      const offerPromise = performOffer(caller, callee);
       callee.ontrack = t.step_func(trackEvent => {
         assert_equals(trackEvent.streams.length, 2,
                       'Expected the track event to fire with two streams.');
@@ -238,7 +238,7 @@
                             'Expected the remote stream\'s tracks to be the remote track.');
         t.done();
       });
-      return performOffer;
+      return offerPromise;
     }))
     .catch(t.step_func(reason => {
       assert_unreached(reason);

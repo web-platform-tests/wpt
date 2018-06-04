@@ -35,6 +35,11 @@ dictionary EventInit {
 };
 
 
+partial interface Window {
+  [Replaceable] readonly attribute any event;
+};
+
+
 [Constructor(DOMString type, optional CustomEventInit eventInitDict),
  Exposed=(Window,Worker)]
 interface CustomEvent : Event {
@@ -564,8 +569,4 @@ interface DOMTokenList {
   boolean supports(DOMString token);
   [CEReactions] stringifier attribute DOMString value;
   //  iterable<DOMString>;
-};
-
-partial interface Window {
-  [Replaceable] readonly attribute any event;
 };

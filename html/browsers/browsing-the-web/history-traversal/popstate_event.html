@@ -19,7 +19,7 @@ window.onload = t.step_func(function () {
     assert_equals(e.target, window, "target");
     assert_equals(e.type, "popstate", "type");
     assert_true(e instanceof PopStateEvent, "is PopStateEvent");
-    assert_true(e.bubbles, "bubbles");
+    assert_false(e.bubbles, "bubbles");
     assert_false(e.cancelable, "cancelable");
 
     states.push(e.state);

@@ -22,7 +22,7 @@ window.onload = t.step_func(function () {
     assert_equals(e.target, window, "target");
     assert_equals(e.type, "hashchange", "type");
     assert_true(e instanceof HashChangeEvent, "is HashChangeEvent");
-    assert_true(e.bubbles, "bubbles");
+    assert_false(e.bubbles, "bubbles");
     assert_false(e.cancelable, "cancelable");
     oldURLs.push(e.oldURL);
     newURLs.push(e.newURL);

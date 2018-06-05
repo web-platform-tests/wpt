@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Notifications API spec.
-// See https://notifications.spec.whatwg.org/
+// Content of this file was automatically extracted from the
+// "Notifications API Standard" spec.
+// See: https://notifications.spec.whatwg.org/
 
 [Constructor(DOMString title, optional NotificationOptions options),
  Exposed=(Window,Worker)]

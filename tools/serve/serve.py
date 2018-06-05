@@ -192,7 +192,6 @@ class WorkersHandler(HtmlWrapperHandler):
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-%(script)s
 <div id=log></div>
 <script>
 fetch_tests_from_worker(new Worker("%(path)s%(query)s"));
@@ -241,7 +240,6 @@ class SharedWorkersHandler(HtmlWrapperHandler):
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-%(script)s
 <div id=log></div>
 <script>
 fetch_tests_from_worker(new SharedWorker("%(path)s%(query)s"));
@@ -257,7 +255,6 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-%(script)s
 <div id=log></div>
 <script>
 (async function() {
@@ -274,8 +271,7 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 class AnyWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
-    wrapper = """%(meta)s
-self.GLOBAL = {
+    wrapper = """self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
 };

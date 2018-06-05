@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Long Tasks API spec.
-// See https://w3c.github.io/longtasks/
+// Content of this file was automatically extracted from the
+// "Long Tasks API 1" spec.
+// See: https://w3c.github.io/longtasks/
 
 interface PerformanceLongTaskTiming : PerformanceEntry {
     readonly attribute FrozenArray<TaskAttributionTiming> attribution;

@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the CSS Layout API spec.
-// See https://drafts.css-houdini.org/css-layout-api/
+// Content of this file was automatically extracted from the
+// "CSS Layout API Level 1" spec.
+// See: https://drafts.css-houdini.org/css-layout-api-1/
 
 [Exposed=LayoutWorklet]
 interface LayoutChild {

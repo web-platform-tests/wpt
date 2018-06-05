@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Scroll-linked Animations spec.
-// See https://wicg.github.io/scroll-animations/
+// Content of this file was automatically extracted from the
+// "Scroll-linked Animations" spec.
+// See: https://wicg.github.io/scroll-animations/
 
 enum ScrollDirection {
   "auto",

@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Accelerated Shape Detection in Images spec.
-// See https://wicg.github.io/shape-detection-api/
+// Content of this file was automatically extracted from the
+// "Accelerated Shape Detection in Images" spec.
+// See: https://wicg.github.io/shape-detection-api/
 
 [Exposed=(Window,Worker),
  Constructor(optional FaceDetectorOptions faceDetectorOptions)]
@@ -19,7 +20,7 @@ interface DetectedFace {
 };
 
 dictionary Landmark {
-  required FrozenArray<Point2D> location;
+  required FrozenArray<Point2D> locations;
   LandmarkType type;
 };
 

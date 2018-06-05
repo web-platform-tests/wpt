@@ -1,84 +1,82 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Accessibility Object Model spec.
-// See https://wicg.github.io/aom/spec/
+// Content of this file was automatically extracted from the
+// "Accessibility Object Model, Phase 1" spec.
+// See: https://wicg.github.io/aom/spec/
 
 partial interface Element {
-  readonly attribute AccessibleNode accessibleNode;
+    readonly attribute AccessibleNode accessibleNode;
 };
-
 interface AccessibleNode {
-  attribute DOMString? role;
-  attribute DOMString? roleDescription;
+    attribute DOMString?          role;
+    attribute DOMString?          roleDescription;
 
-  // Accessible label and description.
-  attribute DOMString? label;
-  attribute AccessibleNodeList? labeledBy;
-  attribute AccessibleNodeList? describedBy;
+    // Accessible label and description.
+    attribute DOMString?          label;
+    attribute AccessibleNodeList? labeledBy;
+    attribute AccessibleNodeList? describedBy;
 
-  // Global states and properties.
-  attribute DOMString? current;
+    // Global states and properties.
+    attribute DOMString?          current;
 
-  // Widget properties.
-  attribute DOMString? autocomplete;
-  attribute boolean? hidden;
-  attribute DOMString? keyShortcuts;
-  attribute boolean? modal;
-  attribute boolean? multiline;
-  attribute boolean? multiselectable;
-  attribute DOMString? orientation;
-  attribute boolean? readOnly;
-  attribute boolean? required;
-  attribute boolean? selected;
-  attribute DOMString? sort;
+    // Widget properties.
+    attribute DOMString?          autocomplete;
+    attribute boolean?            hidden;
+    attribute DOMString?          keyShortcuts;
+    attribute boolean?            modal;
+    attribute boolean?            multiline;
+    attribute boolean?            multiselectable;
+    attribute DOMString?          orientation;
+    attribute boolean?            readOnly;
+    attribute boolean?            required;
+    attribute boolean?            selected;
+    attribute DOMString?          sort;
 
-  // Widget states.
-  attribute DOMString? checked;
-  attribute boolean? expanded;
-  attribute boolean? disabled;
-  attribute DOMString? invalid;
-  attribute DOMString? hasPopUp;
-  attribute DOMString? pressed;
+    // Widget states.
+    attribute DOMString?          checked;
+    attribute boolean?            expanded;
+    attribute boolean?            disabled;
+    attribute DOMString?          invalid;
+    attribute DOMString?          hasPopUp;
+    attribute DOMString?          pressed;
 
-  // Control values.
-  attribute DOMString? valueText;
-  attribute DOMString? placeholder;
-  attribute double? valueNow;
-  attribute double? valueMin;
-  attribute double? valueMax;
+    // Control values.
+    attribute DOMString?          valueText;
+    attribute DOMString?          placeholder;
+    attribute double?             valueNow;
+    attribute double?             valueMin;
+    attribute double?             valueMax;
 
-  // Live regions.
-  attribute boolean? atomic;
-  attribute boolean? busy;
-  attribute DOMString? live;
-  attribute DOMString? relevant;
+    // Live regions.
+    attribute boolean?            atomic;
+    attribute boolean?            busy;
+    attribute DOMString?          live;
+    attribute DOMString?          relevant;
 
-  // Other relationships.
-  attribute AccessibleNode? activeDescendant;
-  attribute AccessibleNodeList? controls;
-  attribute AccessibleNode? details;
-  attribute AccessibleNode? errorMessage;
-  attribute AccessibleNodeList? flowTo;
-  attribute AccessibleNodeList? owns;
+    // Other relationships.
+    attribute AccessibleNode?     activeDescendant;
+    attribute AccessibleNodeList? controls;
+    attribute AccessibleNode?     details;
+    attribute AccessibleNode?     errorMessage;
+    attribute AccessibleNodeList? flowTo;
+    attribute AccessibleNodeList? owns;
 
-  // Collections.
-  attribute long? colCount;
-  attribute unsigned long? colIndex;
-  attribute unsigned long? colSpan;
-  attribute unsigned long? posInSet;
-  attribute long? rowCount;
-  attribute unsigned long? rowIndex;
-  attribute unsigned long? rowSpan;
-  attribute long? setSize;
-  attribute unsigned long? level;
+    // Collections.
+    attribute long?               colCount;
+    attribute unsigned long?      colIndex;
+    attribute unsigned long?      colSpan;
+    attribute unsigned long?      posInSet;
+    attribute long?               rowCount;
+    attribute unsigned long?      rowIndex;
+    attribute unsigned long?      rowSpan;
+    attribute long?               setSize;
+    attribute unsigned long?      level;
 };
-
-[
-  Constructor(optional sequence<AccessibleNode> nodes = [])
-]
+[Constructor(optional sequence<AccessibleNode> nodes = [])]
 interface AccessibleNodeList {
-  attribute unsigned long length;
-  getter AccessibleNode? item(unsigned long index);
-  setter void (unsigned long index, AccessibleNode node);
-  void add(AccessibleNode node, optional AccessibleNode? before = null);
-  void remove(long index);
+    attribute unsigned long length;
+    getter AccessibleNode? item(unsigned long index);
+    setter void            (unsigned long index, AccessibleNode node);
+    void                   add(AccessibleNode node,
+                               optional AccessibleNode? before = null);
+    void                   remove(long index);
 };

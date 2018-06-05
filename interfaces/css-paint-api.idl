@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the CSS Painting API spec.
-// See https://drafts.css-houdini.org/css-paint-api/
+// Content of this file was automatically extracted from the
+// "CSS Painting API Level 1" spec.
+// See: https://drafts.css-houdini.org/css-paint-api-1/
 
 partial interface CSS {
     [SameObject] readonly attribute Worklet paintWorklet;

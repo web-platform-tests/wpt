@@ -101,6 +101,55 @@ class TestFileHandler(TestUsingServer):
         expected = b"PASS"
         assert resp.read().rstrip() == expected
 
+    def test_any_html(self):
+        resp = self.request("/order-of-metas.any.html")
+        expected = b"""<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>foo</title>
+<script>
+self.GLOBAL = {
+  isWindow: function() { return true; },
+  isWorker: function() { return false; },
+};
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="1"></script>
+<script src="2"></script>
+<div id=log></div>
+<script src="/foo.any.js"></script>"""
+        assert resp.read().rstrip() == expected
+
+    def test_any_worker_html(self):
+        resp = self.request("/order-of-metas.any.worker.html")
+        expected = b"""<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>foo</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="1"></script>
+<script src="2"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new Worker("/foo.any.worker.js"));
+</script>"""
+        assert resp.read().rstrip() == expected
+    def test_any_worker_html(self):
+        resp = self.request("/order-of-metas.any.worker.js")
+        expected = b"""
+
+self.GLOBAL = {
+  isWindow: function() { return false; },
+  isWorker: function() { return true; },
+};
+importScripts("/resources/testharness.js");
+importScripts("1")
+importScripts("2")
+importScripts("/foo.any.js");
+done();"""
+        assert resp.read().rstrip() == expected
 
 class TestFunctionHandler(TestUsingServer):
     def test_string_rv(self):

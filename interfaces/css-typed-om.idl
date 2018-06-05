@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the CSS Typed OM spec.
-// See https://drafts.css-houdini.org/css-typed-om/
+// Content of this file was automatically extracted from the
+// "CSS Typed OM Level 1" spec.
+// See: https://drafts.css-houdini.org/css-typed-om-1/
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSStyleValue {

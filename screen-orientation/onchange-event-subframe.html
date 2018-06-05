@@ -4,11 +4,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<iframe id="testIframe" sandbox="allow-scripts allow-same-origin" style="display:none">
+<iframe id="testIframe" sandbox="allow-scripts allow-same-origin">
 </iframe>
 
 <script>
-    var test = async_test("Test subframes receive orientation change events");
+async_test(test => {
 
     var orientations = [
         'portrait-primary',
@@ -41,6 +41,7 @@
     var testIframe = document.getElementById("testIframe");
     testIframe.src = "resources/iframe-listen-orientation-change.html";
     testIframe.onload = changeOrientation;
+}, "Test subframes receive orientation change events");
 </script>
 </body>
 </html>

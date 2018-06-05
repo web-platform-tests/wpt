@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the CSS Animation Worklet API spec.
-// See https://wicg.github.io/animation-worklet/
+// Content of this file was automatically extracted from the
+// "CSS Animation Worklet API" spec.
+// See: https://wicg.github.io/animation-worklet/
 
 partial interface Window {
     [SameObject] readonly attribute Worklet animationWorklet;
@@ -20,6 +21,7 @@ interface AnimationWorkletGlobalScope : WorkletGlobalScope {
 interface WorkletAnimation : Animation {
         readonly attribute DOMString animatorName;
 };
+
 
 interface WorkletGroupEffectReadOnly :  GroupEffectReadOnly {};
 

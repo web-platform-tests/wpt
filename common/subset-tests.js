@@ -16,6 +16,9 @@
           subTestEnd = parseInt(match[2], 10);
       }
     }
+    // Below is utility code to generate <meta> for copy/paste into tests.
+    // Sample usage:
+    // test.html?split=1000
     match = /(?:^\?|&)split=(\d+)(?:&|$)/.exec(location.search);
     if (match) {
       var testsPerVariant = parseInt(match[1], 10);

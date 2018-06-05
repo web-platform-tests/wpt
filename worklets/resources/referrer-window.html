@@ -9,6 +9,8 @@
 </head>
 <body>
 <script>
+single();
+
 function createScriptURLForTopLevel(scriptOrigin) {
   if (scriptOrigin === 'same')
     return new URL('referrer-checker.py', location.href);

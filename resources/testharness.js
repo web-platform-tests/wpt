@@ -721,9 +721,17 @@ policies and contribution forms [3].
         test_environment.on_new_harness_properties(properties);
     }
 
+    function single() {
+        if (tests.tests.length !== 0) {
+            throw new Error("Called single() but there are already tests")
+        }
+        tests.set_file_is_test();
+    }
+    expose(single, "single");
+
     function done() {
-        if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+        if (tests.tests.length === 0 && !tests.file_is_test) {
+            throw new Error("Called done() without creating any tests or calling single()");
         }
         if (tests.file_is_test) {
             tests.tests[0].done();
@@ -1447,7 +1455,7 @@ policies and contribution forms [3].
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
-            throw new Error("Tried to create a test with file_is_test");
+            throw new Error("Tried to create a test after calling single()");
         }
         this.name = name;
 
@@ -1976,7 +1984,7 @@ policies and contribution forms [3].
 
     Tests.prototype.set_file_is_test = function() {
         if (this.tests.length > 0) {
-            throw new Error("Tried to set file as test after creating a test");
+            throw new Error("Called single() after creating a test");
         }
         this.wait_for_finish = true;
         this.file_is_test = true;
@@ -2740,7 +2748,7 @@ policies and contribution forms [3].
     function assert(expected_true, function_name, description, error, substitutions)
     {
         if (tests.tests.length === 0) {
-            tests.set_file_is_test();
+            throw new Error("Called " + function_name + "() without creating a test or calling single()");
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
@@ -2962,10 +2970,6 @@ policies and contribution forms [3].
 
     if (global_scope.addEventListener) {
         var error_handler = function(e) {
-            if (tests.tests.length === 0 && !tests.allow_uncaught_exception) {
-                tests.set_file_is_test();
-            }
-
             var stack;
             if (e.error && e.error.stack) {
                 stack = e.error.stack;
@@ -2985,6 +2989,9 @@ policies and contribution forms [3].
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = e.message;
                 tests.status.stack = stack;
+                if (!tests.length) {
+                    tests.phase = tests.phases.ABORTED;
+                }
             }
             done();
         };

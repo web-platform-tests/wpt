@@ -10,6 +10,7 @@
   <body>
     <script>
         setup({explicit_timeout: true});
+        single();
 
         const url = 'https://www.example.com/some/path?some_query#some_fragment';
         setupManualShareTest({title: 'the title', text: 'the message', url});

@@ -12,6 +12,7 @@ close();
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+single();
 var worker = new Worker('#');
 worker.onmessage = function(e) {
   assert_unreached("Got message");

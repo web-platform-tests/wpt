@@ -5,6 +5,7 @@
     <script src='/resources/testharnessreport.js'></script>
     <script>
       setup({explicit_done: true})
+      single();
       window.addEventListener('load', function(){
         assert_not_equals(typeof performance.getEntriesByType('resource')[0].serverTiming, 'undefined',
           'An instance of `PerformanceResourceTiming` should have a `serverTiming` attribute.')

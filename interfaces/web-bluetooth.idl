@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Web Bluetooth spec.
-// See https://webbluetoothcg.github.io/web-bluetooth/
+// Content of this file was automatically extracted from the
+// "Web Bluetooth" spec.
+// See: https://webbluetoothcg.github.io/web-bluetooth/
 
 dictionary BluetoothDataFilterInit {
   BufferSource dataPrefix;
@@ -51,7 +52,7 @@ dictionary AllowedBluetoothDevice {
   required (DOMString or sequence<UUID>) allowedServices;
 };
 dictionary BluetoothPermissionData {
-  required sequence<AllowedBluetoothDevice> allowedDevices = [];
+  required sequence<AllowedBluetoothDevice> allowedDevices;
 };
 
 interface BluetoothPermissionResult : PermissionStatus {
@@ -197,7 +198,6 @@ interface ServiceEventHandlers {
 };
 
 typedef DOMString UUID;
-
 interface BluetoothUUID {
   static UUID getService((DOMString or unsigned long) name);
   static UUID getCharacteristic((DOMString or unsigned long) name);

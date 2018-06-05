@@ -1,0 +1,37 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the
+// "User Interface Security and the Visibility API" spec.
+// See: http://w3c.github.io/webappsec-uisecurity/index.html
+
+callback VisibilityObserverCallback = void(sequence<VisibilityObserverEntry> entries, VisibilityObserver observer)
+
+[Constructor(VisibilityObserverCallback callback, optional VisibilityObserverEntryInit visibilityObserverEntryInit), Exposed=Window]
+interface VisibilityObserverEntry {
+  readonly attribute DOMRectReadOnly globalVisibleBounds;
+  readonly attribute DOMRectReadOnly visibleBounds;
+  readonly attribute DOMHighResTimeStamp time;
+ };
+
+dictionary VisibilityObserverEntryInit {
+  required DOMRectInit globalVisibleBounds;
+  required DOMRectInit visibleBounds;
+  required DOMHighResTimeStamp time;
+};
+
+[Constructor(VisibilityObserverCallback callback), Exposed=Window]
+interface VisibilityObserver {
+  void observe ();
+  void unobserve ();
+  sequence<VisibilityObserverEntry> takeRecords ();
+};
+
+dictionary VisibilityObserverInit {
+  (double or sequence<double>) areaThreshold = 0;
+ (boolean) displacementAware = false;
+ (DOMString) visibleMargin = "0px";
+ (Element)? observedElement;
+};
+
+partial interface Event {
+  readonly attribute boolean isUnsafe;
+};

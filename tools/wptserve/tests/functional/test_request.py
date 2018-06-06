@@ -62,7 +62,7 @@ class TestInputFile(TestUsingServer):
             # Cleanup and fail test
             InputFile.max_buffer_size = old_max_buf
             self.assertTrue(False, 'This should not be reached. Server failed.')
-        
+
         self.assertEqual(200, resp.getcode())
         self.assertEqual(["11", "7", "0", "0"],
                          resp.read().split(" "))
@@ -98,7 +98,7 @@ class TestInputFile(TestUsingServer):
             # Cleanup and fail test
             InputFile.max_buffer_size = old_max_buf
             self.assertTrue(False, 'This should not be reached. Server failed.')
-        
+
         self.assertEqual(200, resp.getcode())
         self.assertEqual(["12345\n", "abcdef\r\n", "zyxwv"], resp.read().split(" "))
         InputFile.max_buffer_size = old_max_buf

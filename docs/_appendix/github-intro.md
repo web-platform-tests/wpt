@@ -108,7 +108,7 @@ repository.
 ## Configure your environment
 
 If all you intend to do is to load [manual tests][manual-tests] or [ref tests][ref-tests] from your local file system,
-the above set up should be sufficient.
+the above setup should be sufficient.
 But many tests (and in particular, all [testharness.js tests][testharness-tests]) require a local web server.
 
 See [Local Setup][local-setup] for more information.

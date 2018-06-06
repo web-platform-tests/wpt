@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
 // META: script=resources/expect-seen-testharness.js
 // META: timeout=long
 // META: title=foo

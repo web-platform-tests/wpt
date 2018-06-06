@@ -133,7 +133,7 @@ def global_variant_url(url, suffix):
 
 
 class SourceFile(object):
-    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree"),
+    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree", useChardet=False),
                "xhtml":lambda x:ElementTree.parse(x, XMLParser.XMLParser()),
                "svg":lambda x:ElementTree.parse(x, XMLParser.XMLParser())}
 

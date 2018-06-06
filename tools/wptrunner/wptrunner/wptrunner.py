@@ -110,8 +110,6 @@ def list_disabled(test_paths, product, **kwargs):
 def list_tests(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    rv = []
-
     ssl_env = env.ssl_env(logger, **kwargs)
 
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
@@ -302,6 +300,14 @@ def run_tests(config, test_paths, product, **kwargs):
 
 def check_stability(**kwargs):
     import stability
+    if kwargs["stability"]:
+        logger.warning("--stability is deprecated; please use --verify instead!")
+        kwargs['verify_max_time'] = None
+        kwargs['verify_chaos_mode'] = False
+        kwargs['verify_repeat_loop'] = 0
+        kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
+        kwargs['verify_output_results'] = True
+
     return stability.check_stability(logger,
                                      max_time=kwargs['verify_max_time'],
                                      chaos_mode=kwargs['verify_chaos_mode'],
@@ -317,7 +323,7 @@ def start(**kwargs):
         list_disabled(**kwargs)
     elif kwargs["list_tests"]:
         list_tests(**kwargs)
-    elif kwargs["verify"]:
+    elif kwargs["verify"] or kwargs["stability"]:
         check_stability(**kwargs)
     else:
         return not run_tests(**kwargs)

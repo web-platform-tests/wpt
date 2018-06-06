@@ -29,3 +29,13 @@ td {
 <p>Test passes if there is a green box below and no red.
 <div id=red>X<br>X<br>X<br>X</div>
 <table><tr><td>XXXX</table>
+
+<!--
+  width:min-content on the div directly without using a table
+  would achieve the goal of this test, and be a lot simpler.
+
+  However, width:min-content is not yet widely supported.
+
+  Using a table, and forcing it to be as small as possible
+  will achieve min-content sizing of the div in all browsers.
+-->

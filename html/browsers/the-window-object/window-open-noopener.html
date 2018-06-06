@@ -2,8 +2,7 @@
 <meta charset=utf-8>
 <title>window.open() with "noopener" tests</title>
 
-<!-- The range of the variant is hardcoded, it must match size of testData! -->
-<meta name="variant" content="?0-6">
+<meta name="variant" content="?indexed">
 <meta name="variant" content="?_self">
 <meta name="variant" content="?_parent">
 <meta name="variant" content="?_top">
@@ -45,56 +44,59 @@ var testData = [
  * cases and non-null in the cases when the existing window gets reused) and so
  * forth.
  */
+function indexedTests() {
+  var tests = [];
+  for(var i = 0; i < testData.length; ++i) {
+    var test = testData[i];
+    var t = async_test(test.testDescription);
+    tests.push(t);
+    t.secondWindowFeatureString = test.secondWindowFeatureString;
+    t.windowName = "someuniquename" + i;
 
-function indexedTest(i) {
-  var test = testData[i];
-  var t = async_test(test.testDescription);
-  t.secondWindowFeatureString = test.secondWindowFeatureString;
-  t.windowName = "someuniquename" + i;
+    if (test.shouldReuse) {
+      t.step(function() {
+        var windowName = this.windowName;
 
-  if (test.shouldReuse) {
-    t.step(function() {
-      var windowName = this.windowName;
+        var w1 = window.open("", windowName);
+        this.add_cleanup(function() { w1.close(); });
 
-      var w1 = window.open("", windowName);
-      this.add_cleanup(function() { w1.close(); });
-
-      assert_equals(w1.opener, window);
-
-      var w2 = window.open("", windowName, this.secondWindowFeatureString);
-      assert_equals(w2, w1);
-      assert_equals(w2.opener, w1.opener);
-      assert_equals(w2.opener, window);
-      this.done();
-    });
-  } else {
-    t.step(function() {
-      var w1;
-      this.add_cleanup(function() {
-        w1.close();
-        channel.postMessage(null);
-      });
-
-      var windowName = this.windowName;
-      var channel = new BroadcastChannel(windowName);
-
-      channel.onmessage = this.step_func_done(function(e) {
-        var data = e.data;
-        assert_equals(data.name, windowName, "Should have the right name");
-        assert_equals(data.haveOpener, false, "Should not have opener");
         assert_equals(w1.opener, window);
-        assert_equals(w1.location.href, "about:blank");
+
+        var w2 = window.open("", windowName, this.secondWindowFeatureString);
+        assert_equals(w2, w1);
+        assert_equals(w2.opener, w1.opener);
+        assert_equals(w2.opener, window);
+        this.done();
       });
+    } else {
+      t.step(function() {
+        var w1;
+        this.add_cleanup(function() {
+          w1.close();
+          channel.postMessage(null);
+        });
 
-      w1 = window.open("", windowName);
-      assert_equals(w1.opener, window);
+        var windowName = this.windowName;
+        var channel = new BroadcastChannel(windowName);
 
-      var w2 = window.open("support/noopener-target.html?" + windowName,
-                          windowName, this.secondWindowFeatureString);
-      assert_equals(w2, null);
+        channel.onmessage = this.step_func_done(function(e) {
+          var data = e.data;
+          assert_equals(data.name, windowName, "Should have the right name");
+          assert_equals(data.haveOpener, false, "Should not have opener");
+          assert_equals(w1.opener, window);
+          assert_equals(w1.location.href, "about:blank");
+        });
 
-      assert_equals(w1.opener, window);
-    });
+        w1 = window.open("", windowName);
+        assert_equals(w1.opener, window);
+
+        var w2 = window.open("support/noopener-target.html?" + windowName,
+                            windowName, this.secondWindowFeatureString);
+        assert_equals(w2, null);
+
+        assert_equals(w1.opener, window);
+      });
+    }
   }
 }
 
@@ -116,14 +118,12 @@ function specialTargetTest(target) {
 }
 
 /**
- * Parse the Query string, check if it is a number (one of the indexed tests), 
+ * Parse the Query string, check if it matches keyword 'indexed' to run the indexed tests,
  * otherwise test it as a special target
  */
 var variant = window.location.href.split("?")[1]
-var index = parseInt(variant)
-console.log(index)
-if(!isNaN(index)) {
-  indexedTest(index);
+if(variant == "indexed") {
+  indexedTests();
 } else {
   specialTargetTest(variant);
 }

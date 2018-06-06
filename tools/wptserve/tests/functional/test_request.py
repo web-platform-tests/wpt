@@ -58,15 +58,11 @@ class TestInputFile(TestUsingServer):
 
         try:
             resp = self.request(route[1], method="POST", body="1"*20)
-        except HTTPError:
-            # Cleanup and fail test
+            self.assertEqual(200, resp.getcode())
+            self.assertEqual(["11", "7", "0", "0"],
+                            resp.read().split(" "))
+        finally:
             InputFile.max_buffer_size = old_max_buf
-            self.assertTrue(False, 'This should not be reached. Server failed.')
-
-        self.assertEqual(200, resp.getcode())
-        self.assertEqual(["11", "7", "0", "0"],
-                         resp.read().split(" "))
-        InputFile.max_buffer_size = old_max_buf
 
     def test_iter(self):
         @wptserve.handlers.handler
@@ -94,14 +90,10 @@ class TestInputFile(TestUsingServer):
 
         try:
             resp = self.request(route[1], method="POST", body="12345\nabcdef\r\nzyxwv")
-        except HTTPError:
-            # Cleanup and fail test
+            self.assertEqual(200, resp.getcode())
+            self.assertEqual(["12345\n", "abcdef\r\n", "zyxwv"], resp.read().split(" "))
+        finally:
             InputFile.max_buffer_size = old_max_buf
-            self.assertTrue(False, 'This should not be reached. Server failed.')
-
-        self.assertEqual(200, resp.getcode())
-        self.assertEqual(["12345\n", "abcdef\r\n", "zyxwv"], resp.read().split(" "))
-        InputFile.max_buffer_size = old_max_buf
 
 class TestRequest(TestUsingServer):
     def test_body(self):

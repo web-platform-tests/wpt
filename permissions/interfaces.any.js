@@ -35,5 +35,4 @@ promise_test(async () => {
     PermissionStatus: ['permissionStatus']
   });
   idl_array.test();
-  done();
 }, "Test IDL implementation of Permissions API");

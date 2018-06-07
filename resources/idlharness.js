@@ -668,7 +668,7 @@ function exposure_set(object, default_set) {
             `Multiple 'Exposed' extended attributes on ${object.name}`);
     }
 
-    let result = default_set;
+    let result = default_set || ["Window"];
     if (result && !(result instanceof Set)) {
         result = new Set(result);
     }
@@ -680,8 +680,7 @@ function exposure_set(object, default_set) {
         }
         result = new Set(set);
     }
-    if (result.has("Worker")) {
-        result.delete("Worker");
+    if (result && result.has("Worker")) {
         result.add("DedicatedWorker");
         result.add("ServiceWorker");
         result.add("SharedWorker");
@@ -803,7 +802,7 @@ IdlArray.prototype.test = function()
             return;
         }
 
-        var globals = exposure_set(member, ["Window"]);
+        var globals = exposure_set(member);
         member.exposed = exposed_in(globals);
         member.exposureSet = globals;
     }.bind(this));

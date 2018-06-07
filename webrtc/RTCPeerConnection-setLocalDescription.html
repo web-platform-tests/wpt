@@ -90,6 +90,21 @@
 
   }, 'Switching role from answerer to offerer after going back to stable state should succeed');
 
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    const offer = await pc.createOffer();
+    let eventSequence = '';
+    const signalingstatechangeResolver = new Resolver();
+    pc.onsignalingstatechange = () => {
+      eventSequence += 'onsignalingstatechange;';
+      signalingstatechangeResolver.resolve();
+    };
+    await pc.setLocalDescription(offer);
+    eventSequence += 'setLocalDescription;';
+    await signalingstatechangeResolver.promise;
+    assert_equals(eventSequence, 'onsignalingstatechange;setLocalDescription;');
+  }, 'onsignalingstatechange fires before setLocalDescription resolves');
+
   /*
     TODO
       4.3.2.  setLocalDescription

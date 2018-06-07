@@ -11,11 +11,11 @@ promise_test(t => {
         reject(new Error("change event should not be fired"));
       }
       await screen.orientation.lock(type);
+      assert_equals(screen.orientation.type, type);
+      resolve();
     } catch (e) {
       reject(e);
     }
-    assert_equals(screen.orientation.type, type);
-    resolve();
   });
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 

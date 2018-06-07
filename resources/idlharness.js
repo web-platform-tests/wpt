@@ -668,36 +668,45 @@ function exposure_set(object, default_set) {
             `Multiple 'Exposed' extended attributes on ${object.name}`);
     }
 
-    if (exposed.length === 0) {
-        return default_set;
+    let result = default_set;
+    if (result && !(result instanceof Set)) {
+        result = new Set(result);
     }
-
-    var set = exposed[0].rhs.value;
-    // Could be a list or a string.
-    if (typeof set == "string") {
-        set = [ set ];
+    if (exposed.length !== 0) {
+        var set = exposed[0].rhs.value;
+        // Could be a list or a string.
+        if (typeof set == "string") {
+            set = [ set ];
+        }
+        result = new Set(set);
     }
-    return set;
+    if (result.has("Worker")) {
+        result.delete("Worker");
+        result.add("DedicatedWorker");
+        result.add("ServiceWorker");
+        result.add("SharedWorker");
+    }
+    return result;
 }
 
 function exposed_in(globals) {
     if ('document' in self) {
-        return globals.indexOf("Window") >= 0;
+        return globals.has("Window");
     }
     if ('DedicatedWorkerGlobalScope' in self &&
         self instanceof DedicatedWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("DedicatedWorker") >= 0;
+        return globals.has("Worker") ||
+               globals.has("DedicatedWorker");
     }
     if ('SharedWorkerGlobalScope' in self &&
         self instanceof SharedWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("SharedWorker") >= 0;
+        return globals.has("Worker") ||
+               globals.has("SharedWorker");
     }
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("ServiceWorker") >= 0;
+        return globals.has("Worker") ||
+               globals.has("ServiceWorker");
     }
     throw new IdlHarnessError("Unexpected global object");
 }
@@ -737,27 +746,7 @@ IdlArray.prototype.test = function()
 
     // First merge in all the partial interfaces and implements statements we
     // encountered.
-    this.partials.forEach(function(parsed_idl)
-    {
-        if (!(parsed_idl.name in this.members)
-            || !(this.members[parsed_idl.name] instanceof IdlInterface
-                 || this.members[parsed_idl.name] instanceof IdlDictionary))
-        {
-            throw new IdlHarnessError(`Partial ${parsed_idl.type} ${parsed_idl.name} with no original ${parsed_idl.type}`);
-        }
-        if (parsed_idl.extAttrs)
-        {
-            parsed_idl.extAttrs.forEach(function(extAttr)
-            {
-                this.members[parsed_idl.name].extAttrs.push(extAttr);
-            }.bind(this));
-        }
-        parsed_idl.members.forEach(function(member)
-        {
-            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-        }.bind(this));
-    }.bind(this));
-    this.partials = [];
+    this.collapse_partial_interfaces();
 
     for (var lhs in this["implements"])
     {
@@ -832,6 +821,72 @@ IdlArray.prototype.test = function()
         }
     }
 };
+
+//@}
+IdlArray.prototype.collapse_partial_interfaces = function(value, type)
+//@{
+{
+    const testedPartials = new Map();
+    this.partials.forEach(function(parsed_idl)
+    {
+        // Ensure unique test name in case of multiple partials.
+        let partialTestName = parsed_idl.name;
+        let partialTestCount = 1;
+        if (testedPartials.has(parsed_idl.name)) {
+            partialTestCount += testedPartials.get(parsed_idl.name);
+            partialTestName = `${partialTestName} (${partialTestCount})`;
+        }
+        testedPartials.set(parsed_idl.name, partialTestCount);
+
+        test(function () {
+            if (!(parsed_idl.name in this.members)
+                || !(this.members[parsed_idl.name] instanceof IdlInterface
+                     || this.members[parsed_idl.name] instanceof IdlDictionary))
+            {
+                if (!parsed_idl.untested) {
+                    throw new IdlHarnessError(`Found partial ${parsed_idl.type} ${parsed_idl.name}, but no original ${parsed_idl.type} ${parsed_idl.name}`);
+                }
+                return;
+            }
+            if (parsed_idl.extAttrs)
+            {
+                // Special-case "Exposed". Must be a subset of original interface's exposure.
+                // Exposed on a partial is the equivalent of having the same Exposed on all nested members.
+                const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
+                if (exposureAttr) {
+                    if (!parsed_idl.untested) {
+                        test(function () {
+                            const partialExposure = exposure_set(parsed_idl);
+                            const memberExposure = exposure_set(this.members[parsed_idl.name]);
+                            partialExposure.forEach(name => {
+                                if (!memberExposure || !memberExposure.has(name)) {
+                                    throw new IdlHarnessError(`Partial ${parsed_idl.name} interface is exposed to '${name}', the original interface is not.`);
+                                }
+                            });
+                        }.bind(this), `Partial interface ${partialTestName}: valid exposure set`);
+                    }
+                    parsed_idl.members.forEach(function (member) {
+                        member.extAttrs.push(exposureAttr);
+                    }.bind(this));
+                }
+
+                parsed_idl.extAttrs.forEach(function(extAttr)
+                {
+                    // "Exposed" already handled above.
+                    if (extAttr.name === "Exposed") {
+                        return;
+                    }
+                    this.members[parsed_idl.name].extAttrs.push(extAttr);
+                }.bind(this));
+            }
+            parsed_idl.members.forEach(function(member)
+            {
+                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+            }.bind(this));
+        }.bind(this), `Partial interface ${partialTestName}`);
+    }.bind(this));
+    this.partials = [];
+}
 
 //@}
 IdlArray.prototype.assert_type_is = function(value, type)
@@ -1529,7 +1584,7 @@ IdlInterface.prototype.test_self = function()
             if (this.is_callback()) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name);
             }
-            if (this.exposureSet.indexOf("Window") === -1) {
+            if (!this.exposureSet.has("Window")) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window");
             }
             // TODO: when testing of [NoInterfaceObject] interfaces is supported,

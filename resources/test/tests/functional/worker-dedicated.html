@@ -8,7 +8,7 @@
 <body>
 <h1>Dedicated Web Worker Tests</h1>
 <p>Demonstrates running <tt>testharness</tt> based tests inside a dedicated web worker.
-<p>The test harness is expected to fail due to an uncaught exception in one worker.</p>
+<p>The test harness is expected to time out.</p>
 <div id="log"></div>
 
 <script>
@@ -19,8 +19,6 @@ test(function(t) {
 
 fetch_tests_from_worker(new Worker("worker.js"));
 
-fetch_tests_from_worker(new Worker("worker-error.js"));
-
 test(function(t) {
         assert_false(false, "False is false");
     },
@@ -29,8 +27,8 @@ test(function(t) {
 <script type="text/json" id="expected">
 {
   "summarized_status": {
-    "status_string": "ERROR",
-    "message": "Error: This failure is expected."
+    "status_string": "TIMEOUT",
+    "message": null
   },
   "summarized_tests": [
     {
@@ -44,12 +42,6 @@ test(function(t) {
       "name": "Test running on main document.",
       "properties": {},
       "message": null
-    },
-    {
-      "status_string": "FAIL",
-      "name": "Untitled",
-      "properties": {},
-      "message": "Error: This failure is expected."
     },
     {
       "status_string": "PASS",

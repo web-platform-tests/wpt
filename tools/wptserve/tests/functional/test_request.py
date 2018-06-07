@@ -100,6 +100,25 @@ class TestInputFile(TestUsingServer):
             InputFile.max_buffer_size = old_max_buf
 
 
+    def test_iter_input_longer_than_buffer(self):
+
+        @wptserve.handlers.handler
+        def handler(request, response):
+            f = request.raw_input
+            return " ".join(line for line in f)
+
+        route = ("POST", "/test/test_iter", handler)
+        self.server.router.register(*route)
+
+        old_max_buf = InputFile.max_buffer_size
+        InputFile.max_buffer_size = 10
+        try:
+            resp = self.request(route[1], method="POST", body="12345\nabcdef\r\nzyxwv")
+            self.assertEqual(200, resp.getcode())
+            self.assertEqual(["12345\n", "abcdef\r\n", "zyxwv"], resp.read().split(" "))
+        finally:
+            InputFile.max_buffer_size = old_max_buf
+
 class TestRequest(TestUsingServer):
     def test_body(self):
         @wptserve.handlers.handler

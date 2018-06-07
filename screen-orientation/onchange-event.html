@@ -15,7 +15,7 @@ promise_test(t => {
       reject(e);
     }
     assert_equals(screen.orientation.type, type);
-    setTimeout(resolve);
+    resolve();
   });
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 

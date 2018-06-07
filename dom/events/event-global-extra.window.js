@@ -1,14 +1,14 @@
 const otherWindow = document.body.appendChild(document.createElement("iframe")).contentWindow;
 
-[otherWindow.EventTarget, otherWindow.XMLHttpRequest].forEach(eventTargetConstructor => {
+["EventTarget", "XMLHttpRequest"].forEach(constructorName => {
   async_test(t => {
-    const eventTarget = new eventTargetConstructor();
+    const eventTarget = new otherWindow[constructorName]();
     eventTarget.addEventListener("hi", t.step_func_done(e => {
       assert_equals(otherWindow.event, undefined);
       assert_equals(e, window.event);
     }));
     eventTarget.dispatchEvent(new Event("hi"));
-  }, "window.event for constructors from another global: " + eventTargetConstructor);
+  }, "window.event for constructors from another global: " + constructorName);
 });
 
 // XXX: It would be good to test a subclass of EventTarget once we sort out

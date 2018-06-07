@@ -837,53 +837,56 @@ IdlArray.prototype.collapse_partials = function()
         }
         testedPartials.set(parsed_idl.name, partialTestCount);
 
-        test(function () {
-            if (!(parsed_idl.name in this.members)
-                || !(this.members[parsed_idl.name] instanceof IdlInterface
-                     || this.members[parsed_idl.name] instanceof IdlDictionary))
-            {
-                if (!parsed_idl.untested) {
-                    throw new IdlHarnessError(`Found partial ${parsed_idl.type} ${parsed_idl.name}, but no original ${parsed_idl.type} ${parsed_idl.name}`);
-                }
-                return;
-            }
-            if (parsed_idl.extAttrs)
-            {
-                // Special-case "Exposed". Must be a subset of original interface's exposure.
-                // Exposed on a partial is the equivalent of having the same Exposed on all nested members.
-                const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
-                if (exposureAttr) {
-                    if (!parsed_idl.untested) {
-                        test(function () {
-                            const partialExposure = exposure_set(parsed_idl);
-                            const memberExposure = exposure_set(this.members[parsed_idl.name]);
-                            partialExposure.forEach(name => {
-                                if (!memberExposure || !memberExposure.has(name)) {
-                                    throw new IdlHarnessError(
-                                        `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
-                                }
-                            });
-                        }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
-                    }
-                    parsed_idl.members.forEach(function (member) {
-                        member.extAttrs.push(exposureAttr);
-                    }.bind(this));
-                }
+        const originalExists = parsed_idl.name in this.members
+            && (this.members[parsed_idl.name] instanceof IdlInterface
+                || this.members[parsed_idl.name] instanceof IdlDictionary);
 
-                parsed_idl.extAttrs.forEach(function(extAttr)
-                {
-                    // "Exposed" already handled above.
-                    if (extAttr.name === "Exposed") {
-                        return;
-                    }
-                    this.members[parsed_idl.name].extAttrs.push(extAttr);
+        if (!parsed_idl.untested) {
+            test(function () {
+                assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
+            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);
+        }
+        if (!originalExists) {
+            // Not good.. but keep calm and carry on.
+            return;
+        }
+
+        if (parsed_idl.extAttrs)
+        {
+            // Special-case "Exposed". Must be a subset of original interface's exposure.
+            // Exposed on a partial is the equivalent of having the same Exposed on all nested members.
+            const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
+            if (exposureAttr) {
+                if (!parsed_idl.untested) {
+                    test(function () {
+                        const partialExposure = exposure_set(parsed_idl);
+                        const memberExposure = exposure_set(this.members[parsed_idl.name]);
+                        partialExposure.forEach(name => {
+                            if (!memberExposure || !memberExposure.has(name)) {
+                                throw new IdlHarnessError(
+                                    `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
+                            }
+                        });
+                    }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
+                }
+                parsed_idl.members.forEach(function (member) {
+                    member.extAttrs.push(exposureAttr);
                 }.bind(this));
             }
-            parsed_idl.members.forEach(function(member)
+
+            parsed_idl.extAttrs.forEach(function(extAttr)
             {
-                this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+                // "Exposed" already handled above.
+                if (extAttr.name === "Exposed") {
+                    return;
+                }
+                this.members[parsed_idl.name].extAttrs.push(extAttr);
             }.bind(this));
-        }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}`);
+        }
+        parsed_idl.members.forEach(function(member)
+        {
+            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
     }.bind(this));
     this.partials = [];
 }

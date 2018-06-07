@@ -7,7 +7,7 @@
     assert_throws("SecurityError", () => { document.domain = document.domain });
   });
   test(() => {
-    assert_throws("SecurityError", () => { (new Document).domain = "web-platform.test" });
+    assert_throws("SecurityError", () => { (new Document).domain = document.domain });
   });
   test(() => {
     assert_throws("SecurityError", () => { document.implementation.createHTMLDocument().domain = document.domain });

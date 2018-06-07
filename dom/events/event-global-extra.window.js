@@ -4,7 +4,7 @@ const otherWindow = document.body.appendChild(document.createElement("iframe")).
   async_test(t => {
     const eventTarget = new eventTargetConstructor();
     eventTarget.addEventListener("hi", t.step_func_done(e => {
-      assert_equals(undefined, otherWindow.event);
+      assert_equals(otherWindow.event, undefined);
       assert_equals(e, window.event);
     }));
     eventTarget.dispatchEvent(new Event("hi"));

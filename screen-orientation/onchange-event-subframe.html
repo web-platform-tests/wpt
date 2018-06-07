@@ -20,7 +20,7 @@ promise_test(async t => {
   const messageWatcher = new EventWatcher(t, window, "message");
 
   for (const orientation of orientations) {
-    screen.orientation.lock(orientation);
+    await screen.orientation.lock(orientation);
     const message = await messageWatcher.wait_for("message");
     assert_equals(message.data, orientation, "subframe receives orientation change event");
   }

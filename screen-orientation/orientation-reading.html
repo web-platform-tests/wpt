@@ -42,9 +42,9 @@ promise_test(async t => {
   const orientationWatcher = new EventWatcher(t, orientation, "change");
 
   if (orientationType.includes("portrait")) {
-    orientation.lock("landscape-primary");
+    await orientation.lock("landscape-primary");
   } else {
-    orientation.lock("portrait-primary");
+    await orientation.lock("portrait-primary");
   }
 
   await orientationWatcher.wait_for("change");

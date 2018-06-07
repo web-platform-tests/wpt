@@ -662,8 +662,8 @@ IdlArray.prototype.is_json_type = function(type)
 };
 
 function exposure_set(object, default_set) {
-    var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });
-    if (exposed.length > 1) {
+    var exposed = object.extAttrs && object.extAttrs.filter(a => a.name === "Exposed");
+    if (exposed && exposed.length > 1) {
         throw new IdlHarnessError(
             `Multiple 'Exposed' extended attributes on ${object.name}`);
     }
@@ -672,7 +672,7 @@ function exposure_set(object, default_set) {
     if (result && !(result instanceof Set)) {
         result = new Set(result);
     }
-    if (exposed.length !== 0) {
+    if (exposed && exposed.length) {
         var set = exposed[0].rhs.value;
         // Could be a list or a string.
         if (typeof set == "string") {
@@ -745,7 +745,7 @@ IdlArray.prototype.test = function()
 
     // First merge in all the partial interfaces and implements statements we
     // encountered.
-    this.collapse_partial_interfaces();
+    this.collapse_partials();
 
     for (var lhs in this["implements"])
     {
@@ -822,7 +822,7 @@ IdlArray.prototype.test = function()
 };
 
 //@}
-IdlArray.prototype.collapse_partial_interfaces = function(value, type)
+IdlArray.prototype.collapse_partials = function()
 //@{
 {
     const testedPartials = new Map();
@@ -859,10 +859,11 @@ IdlArray.prototype.collapse_partial_interfaces = function(value, type)
                             const memberExposure = exposure_set(this.members[parsed_idl.name]);
                             partialExposure.forEach(name => {
                                 if (!memberExposure || !memberExposure.has(name)) {
-                                    throw new IdlHarnessError(`Partial ${parsed_idl.name} interface is exposed to '${name}', the original interface is not.`);
+                                    throw new IdlHarnessError(
+                                        `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
                                 }
                             });
-                        }.bind(this), `Partial interface ${partialTestName}: valid exposure set`);
+                        }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
                     }
                     parsed_idl.members.forEach(function (member) {
                         member.extAttrs.push(exposureAttr);
@@ -882,7 +883,7 @@ IdlArray.prototype.collapse_partial_interfaces = function(value, type)
             {
                 this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
             }.bind(this));
-        }.bind(this), `Partial interface ${partialTestName}`);
+        }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}`);
     }.bind(this));
     this.partials = [];
 }

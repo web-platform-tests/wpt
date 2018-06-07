@@ -828,20 +828,20 @@ IdlArray.prototype.collapse_partials = function()
     const testedPartials = new Map();
     this.partials.forEach(function(parsed_idl)
     {
-        // Ensure unique test name in case of multiple partials.
-        let partialTestName = parsed_idl.name;
-        let partialTestCount = 1;
-        if (testedPartials.has(parsed_idl.name)) {
-            partialTestCount += testedPartials.get(parsed_idl.name);
-            partialTestName = `${partialTestName} (${partialTestCount})`;
-        }
-        testedPartials.set(parsed_idl.name, partialTestCount);
-
         const originalExists = parsed_idl.name in this.members
             && (this.members[parsed_idl.name] instanceof IdlInterface
                 || this.members[parsed_idl.name] instanceof IdlDictionary);
 
+        let partialTestName = parsed_idl.name;
         if (!parsed_idl.untested) {
+            // Ensure unique test name in case of multiple partials.
+            let partialTestCount = 1;
+            if (testedPartials.has(parsed_idl.name)) {
+                partialTestCount += testedPartials.get(parsed_idl.name);
+                partialTestName = `${partialTestName}[${partialTestCount}]`;
+            }
+            testedPartials.set(parsed_idl.name, partialTestCount);
+            
             test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
             }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);

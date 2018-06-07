@@ -21,6 +21,17 @@
       idlArray.add_idls('partial dictionary A {};');
       idlArray.test();
     })();
+
+    // Multiple partials existence
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_untested_idls('partial dictionary B {};');
+      idlArray.add_idls('partial dictionary B {};');
+      idlArray.add_idls('partial dictionary B {};');
+      idlArray.add_idls('partial dictionary B {};');
+      idlArray.add_idls('dictionary B {};');
+      idlArray.test();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -34,6 +45,24 @@
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_true: Original dictionary should be defined expected true got false"
+    },
+    {
+      "name": "Partial dictionary B: original dictionary defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial dictionary B[2]: original dictionary defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial dictionary B[3]: original dictionary defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
     }
   ],
   "type": "complete"

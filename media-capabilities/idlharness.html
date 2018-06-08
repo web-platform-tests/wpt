@@ -12,25 +12,24 @@
 <body>
 <h1>Media Session IDL tests</h1>
 <script>
-"use strict";
-function doTest([media_capabilities]) {
-    var idl_array = new IdlArray();
-    idl_array.add_untested_idls('interface Navigator {};');
-    idl_array.add_untested_idls('interface WorkerNavigator {};');
-    idl_array.add_untested_idls('interface Screen {};');
-    idl_array.add_idls(media_capabilities);
-    idl_array.add_objects({
-      Navigator: ["navigator"]
-    });
-    idl_array.test();
-}
-function fetchText(url) {
-    return fetch(url).then((response) => response.text());
-}
-promise_test(() => {
-    return Promise.all(["/interfaces/media-capabilities.idl"].map(fetchText))
-                  .then(doTest);
-}, "Test IDL implementation of Media Capabilities");
+'use strict';
+
+promise_test(async () => {
+  const idl = await fetch('/interfaces/media-capabilities.idl').then(r => r.text());
+  const html = await fetch('/interfaces/html.idl').then(r => r.text());
+  const cssomView = await fetch('/interfaces/cssom-view.idl').then(r => r.text());
+
+  var idl_array = new IdlArray();
+  idl_array.add_idls(idl);
+  idl_array.add_dependency_idls(html);
+  idl_array.add_dependency_idls(cssomView);
+  
+  idl_array.add_objects({
+    Navigator: ['navigator']
+  });
+  
+  idl_array.test();
+}, 'Test IDL implementation of Media Capabilities');
 </script>
 <div id="log"></div>
 </body>

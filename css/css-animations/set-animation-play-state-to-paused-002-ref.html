@@ -4,32 +4,33 @@
     <meta charset="utf-8">
     <title>Dynamically set animation-play-state to paused (reference)</title>
     <style>
-      #container {
+      #containerLinear, #containerSteps {
         position: absolute;
-        left: 0;
-        top: 3em;
+        left: 100px;
+      }
+      #containerLinear {
+        top: 100px;
+      }
+      #containerSteps {
+        top: 200px;
       }
       #coveringRectLinear, #coveringRectSteps {
         position: absolute;
         background: lightgreen;
-        width: 40px;
-        height: 70px;
-        left: 80px;
-        transform-origin: 50% 10%;
-        transform: translate(36px, 0) rotate(144deg);
-      }
-      #coveringRectLinear {
-        top: 50px;
-      }
-      #coveringRectSteps {
-        top: 150px;
+        left: -25px;
+        width: 50px;
+        top: -50px;
+        height: 100px;
+        transform: translate(72px, 0) rotate(144deg);
       }
     </style>
   </head>
   <body>
     <p>This test passes if you see two rotated green rectangles and no red.</p>
-    <div id="container">
+    <div id="containerLinear">
       <div id="coveringRectLinear"></div>
+    </div>
+    <div id="containerSteps">
       <div id="coveringRectSteps"></div>
     </div>
   </body>

@@ -1,10 +1,8 @@
-import unittest
 from types import MethodType
 
 import pytest
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer
 
 
 def send_body_as_header(self):
@@ -14,37 +12,35 @@ def send_body_as_header(self):
     self.write("X-Body: ")
     self._headers_complete = True
 
-class TestResponse(TestUsingServer):
-    def test_head_without_body(self):
-        @wptserve.handlers.handler
-        def handler(request, response):
-            response.writer.end_headers = MethodType(send_body_as_header,
-                                                     response.writer,
-                                                     wptserve.response.ResponseWriter)
-            return [("X-Test", "TEST")], "body\r\n"
 
-        route = ("GET", "/test/test_head_without_body", handler)
-        self.server.router.register(*route)
-        resp = self.request(route[1], method="HEAD")
-        self.assertEqual("6", resp.info()['Content-Length'])
-        self.assertEqual("TEST", resp.info()['x-Test'])
-        self.assertEqual("", resp.info()['x-body'])
+def test_head_without_body(server, request):
+    @wptserve.handlers.handler
+    def handler(request, response):
+        response.writer.end_headers = MethodType(send_body_as_header,
+                                                 response.writer,
+                                                 wptserve.response.ResponseWriter)
+        return [("X-Test", "TEST")], "body\r\n"
 
-    def test_head_with_body(self):
-        @wptserve.handlers.handler
-        def handler(request, response):
-            response.send_body_for_head_request = True
-            response.writer.end_headers = MethodType(send_body_as_header,
-                                                     response.writer,
-                                                     wptserve.response.ResponseWriter)
-            return [("X-Test", "TEST")], "body\r\n"
+    route = ("GET", "/test/test_head_without_body", handler)
+    server.router.register(*route)
+    resp = request(route[1], method="HEAD")
+    assert "6" == resp.info()['Content-Length']
+    assert "TEST" == resp.info()['x-Test']
+    assert "" == resp.info()['x-body']
 
-        route = ("GET", "/test/test_head_with_body", handler)
-        self.server.router.register(*route)
-        resp = self.request(route[1], method="HEAD")
-        self.assertEqual("6", resp.info()['Content-Length'])
-        self.assertEqual("TEST", resp.info()['x-Test'])
-        self.assertEqual("body", resp.info()['X-Body'])
 
-if __name__ == '__main__':
-    unittest.main()
+def test_head_with_body(server, request):
+    @wptserve.handlers.handler
+    def handler(request, response):
+        response.send_body_for_head_request = True
+        response.writer.end_headers = MethodType(send_body_as_header,
+                                                 response.writer,
+                                                 wptserve.response.ResponseWriter)
+        return [("X-Test", "TEST")], "body\r\n"
+
+    route = ("GET", "/test/test_head_with_body", handler)
+    server.router.register(*route)
+    resp = request(route[1], method="HEAD")
+    assert "6" == resp.info()['Content-Length']
+    assert "TEST" == resp.info()['x-Test']
+    assert "body" == resp.info()['X-Body']

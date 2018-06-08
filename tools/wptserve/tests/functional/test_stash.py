@@ -1,20 +1,14 @@
-import unittest
+from wptserve.router import any_method
+from wptserve.stash import StashServer
 import uuid
 
 import pytest
 
 wptserve = pytest.importorskip("wptserve")
-from wptserve.router import any_method
-from wptserve.stash import StashServer
-from .base import TestUsingServer
 
 
-class TestResponseSetCookie(TestUsingServer):
-    def run(self, result=None):
-        with StashServer(None, authkey=str(uuid.uuid4())):
-            super(TestResponseSetCookie, self).run(result)
-
-    def test_put_take(self):
+def test_put_take(server, request):
+    with StashServer(None, authkey=str(uuid.uuid4())):
         @wptserve.handlers.handler
         def handler(request, response):
             if request.method == "POST":
@@ -28,17 +22,13 @@ class TestResponseSetCookie(TestUsingServer):
 
         id = str(uuid.uuid4())
         route = (any_method, "/test/put_take", handler)
-        self.server.router.register(*route)
+        server.router.register(*route)
 
-        resp = self.request(route[1], method="POST", body={"id": id, "data": "Sample data"})
-        self.assertEqual(resp.read(), "OK")
+        resp = request(route[1], method="POST", body={"id": id, "data": "Sample data"})
+        assert resp.read() == "OK"
 
-        resp = self.request(route[1], query="id=" + id)
-        self.assertEqual(resp.read(), "Sample data")
+        resp = request(route[1], query="id=" + id)
+        assert resp.read() == "Sample data"
 
-        resp = self.request(route[1], query="id=" + id)
-        self.assertEqual(resp.read(), "NOT FOUND")
-
-
-if __name__ == '__main__':
-    unittest.main()
+        resp = request(route[1], query="id=" + id)
+        assert resp.read() == "NOT FOUND"

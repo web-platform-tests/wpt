@@ -1,44 +1,37 @@
-import unittest
-
 import pytest
 from six.moves.urllib.error import HTTPError
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer
 
 
-class TestFileHandler(TestUsingServer):
-    def test_not_handled(self):
-        with self.assertRaises(HTTPError) as cm:
-            self.request("/not_existing")
+def test__filehandler_not_handled(server, request):
+    with pytest.raises(HTTPError) as cm:
+        request("/not_existing")
 
-        self.assertEqual(cm.exception.code, 404)
+    assert cm.value.code == 404
 
-class TestRewriter(TestUsingServer):
-    def test_rewrite(self):
-        @wptserve.handlers.handler
-        def handler(request, response):
-            return request.request_path
 
-        route = ("GET", "/test/rewritten", handler)
-        self.server.rewriter.register("GET", "/test/original", route[1])
-        self.server.router.register(*route)
-        resp = self.request("/test/original")
-        self.assertEqual(200, resp.getcode())
-        self.assertEqual("/test/rewritten", resp.read())
+def test__rewriter_rewrite(server, request):
+    @wptserve.handlers.handler
+    def handler(request, response):
+        return request.request_path
 
-class TestRequestHandler(TestUsingServer):
-    def test_exception(self):
-        @wptserve.handlers.handler
-        def handler(request, response):
-            raise Exception
+    route = ("GET", "/test/rewritten", handler)
+    server.rewriter.register("GET", "/test/original", route[1])
+    server.router.register(*route)
+    resp = request("/test/original")
+    assert 200 == resp.getcode()
+    assert "/test/rewritten" == resp.read()
 
-        route = ("GET", "/test/raises", handler)
-        self.server.router.register(*route)
-        with self.assertRaises(HTTPError) as cm:
-            self.request("/test/raises")
 
-        self.assertEqual(cm.exception.code, 500)
+def test_request_handler_exception(server, request):
+    @wptserve.handlers.handler
+    def handler(request, response):
+        raise Exception
 
-if __name__ == "__main__":
-    unittest.main()
+    route = ("GET", "/test/raises", handler)
+    server.router.register(*route)
+    with pytest.raises(HTTPError) as cm:
+        request("/test/raises")
+
+    assert cm.value.code == 500

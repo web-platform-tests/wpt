@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Media Capabilities IDL tests</title>
-<link rel="help" href="https://wicg.github.io/media-capabilities/"/>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/WebIDLParser.js"></script>
-<script src="/resources/idlharness.js"></script>
-</head>
-<body>
-<h1>Media Session IDL tests</h1>
-<script>
+// META: script=/resources/WebIDLParser.js
+// META: script=/resources/idlharness.js
+
+// https://wicg.github.io/media-capabilities/
+
 'use strict';
 
 promise_test(async () => {
@@ -30,7 +21,3 @@ promise_test(async () => {
   
   idl_array.test();
 }, 'Test IDL implementation of Media Capabilities');
-</script>
-<div id="log"></div>
-</body>
-</html>

@@ -109,7 +109,7 @@ class HTMLItem(pytest.Item, pytest.Collector):
 
         summarized = self._summarize(actual)
 
-        assert summarized == self.expected
+        assert summarized == self._summarize(self.expected)
 
     def _summarize(self, actual):
         summarized = {}

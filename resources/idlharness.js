@@ -695,18 +695,15 @@ function exposed_in(globals) {
     }
     if ('DedicatedWorkerGlobalScope' in self &&
         self instanceof DedicatedWorkerGlobalScope) {
-        return globals.has("Worker") ||
-               globals.has("DedicatedWorker");
+        return globals.has("DedicatedWorker");
     }
     if ('SharedWorkerGlobalScope' in self &&
         self instanceof SharedWorkerGlobalScope) {
-        return globals.has("Worker") ||
-               globals.has("SharedWorker");
+        return globals.has("SharedWorker");
     }
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
-        return globals.has("Worker") ||
-               globals.has("ServiceWorker");
+        return globals.has("ServiceWorker");
     }
     throw new IdlHarnessError("Unexpected global object");
 }

@@ -841,7 +841,7 @@ IdlArray.prototype.collapse_partials = function()
                 partialTestName = `${partialTestName}[${partialTestCount}]`;
             }
             testedPartials.set(parsed_idl.name, partialTestCount);
-            
+
             test(function () {
                 assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
             }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);

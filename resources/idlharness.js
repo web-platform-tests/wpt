@@ -681,6 +681,7 @@ function exposure_set(object, default_set) {
         result = new Set(set);
     }
     if (result && result.has("Worker")) {
+        result.delete("Worker");
         result.add("DedicatedWorker");
         result.add("ServiceWorker");
         result.add("SharedWorker");

@@ -27,10 +27,16 @@
       const idlArray = new IdlArray();
       idlArray.add_untested_idls(`
         [Exposed=(Worker)]
-        interface B {};`);
+        interface B {};
+
+        [Exposed=(DedicatedWorker, ServiceWorker, SharedWorker)]
+        interface C {};`);
       idlArray.add_idls(`
         [Exposed=(DedicatedWorker, ServiceWorker, SharedWorker)]
-        partial interface B {};`);
+        partial interface B {};
+
+        [Exposed=(Worker)]
+        partial interface C {};`);
       idlArray.collapse_partials();
     })();
 
@@ -39,10 +45,10 @@
       const idlArray = new IdlArray();
       idlArray.add_untested_idls(`
         [Exposed=(Window, ServiceWorker)]
-        interface C {};`);
+        interface D {};`);
       idlArray.add_idls(`
         [Exposed=(DedicatedWorker)]
-        partial interface C {};`);
+        partial interface D {};`);
       idlArray.collapse_partials();
     })();
   </script>
@@ -79,9 +85,21 @@
     },
     {
       "name": "Partial interface C: valid exposure set",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface D: original interface defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial interface D: valid exposure set",
       "status_string": "FAIL",
       "properties": {},
-      "message": "Partial C interface is exposed to 'DedicatedWorker', the original interface is not."
+      "message": "Partial D interface is exposed to 'DedicatedWorker', the original interface is not."
     }
   ],
   "type": "complete"

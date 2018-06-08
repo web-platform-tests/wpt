@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>:heading pseudo-class</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<hgroup></hgroup>
+<hgroup><h1></h1></hgroup>
+<h1></h1>
+<h2></h2>
+<h3></h3>
+<h4></h4>
+<h5></h5>
+<h6></h6>
+<h7></h7>
+<script>
+test(() => {
+  assert_array_equals(document.querySelectorAll(':heading'), document.querySelectorAll('hgroup, body > h1, h2, h3, h4, h5, h6'));
+})
+</script>

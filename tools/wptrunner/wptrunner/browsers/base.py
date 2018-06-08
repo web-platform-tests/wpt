@@ -3,8 +3,6 @@ import platform
 import socket
 from abc import ABCMeta, abstractmethod
 
-from ..wptcommandline import require_arg
-
 here = os.path.split(__file__)[0]
 
 

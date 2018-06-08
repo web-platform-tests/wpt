@@ -11,6 +11,7 @@ function doTest([dom, fullscreen]) {
   var idlArray = new IdlArray();
   idlArray.add_untested_idls(dom);
   idlArray.add_untested_idls('interface EventHandler {};');
+  idlArray.add_untested_idls('interface Window {};');
   idlArray.add_idls(fullscreen);
   idlArray.add_objects({
     Document: ['new Document'],

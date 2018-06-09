@@ -250,6 +250,7 @@ var validSelectors = [
   {name: ":not pseudo-class selector, matching ", selector: "#not * :not(:first-child)",   expect: ["not-em1", "not-em2", "not-em3"], level: 3, testType: TEST_QSA | TEST_MATCH},
   {name: ":not pseudo-class selector, matching nothing", selector: ":not(*)",   expect: [] /* no matches */, level: 3, testType: TEST_QSA},
   {name: ":not pseudo-class selector, matching nothing", selector: ":not(*|*)", expect: [] /* no matches */, level: 3, testType: TEST_QSA},
+  {name: ":not pseudo-class selector argument surrounded by spaces, matching ", selector: "#not>:not( div )",   expect: ["not-p1", "not-p2", "not-p3"], level: 3, testType: TEST_QSA | TEST_MATCH},
 
   // Pseudo-elements
   // - ::first-line

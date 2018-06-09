@@ -34,6 +34,7 @@ var invalidSelectors = [
   {name: "Invalid [att=value] selector", selector: "[class= space unquoted ]"},
   {name: "Unknown pseudo-class",         selector: "div:example"},
   {name: "Unknown pseudo-class",         selector: ":example"},
+  {name: "Unknown pseudo-class",         selector: "div:linkexample"},
   {name: "Unknown pseudo-element",       selector: "div::example"},
   {name: "Unknown pseudo-element",       selector: "::example"},
   {name: "Invalid pseudo-element",       selector: ":::before"},

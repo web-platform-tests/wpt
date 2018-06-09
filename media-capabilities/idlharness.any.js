@@ -14,10 +14,10 @@ promise_test(async () => {
   idl_array.add_idls(idl);
   idl_array.add_dependency_idls(html);
   idl_array.add_dependency_idls(cssomView);
-  
+
   idl_array.add_objects({
     Navigator: ['navigator']
   });
-  
+
   idl_array.test();
 }, 'Test IDL implementation of Media Capabilities');

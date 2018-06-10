@@ -258,11 +258,9 @@ wrapping everything in functions for isolation becomes
 burdensome. For these cases `testharness.js` support "single page
 tests".
 
-In order for a test to be interpreted as a single page test, then
-it must simply not call `test()` or `async_test()` anywhere on the page, and
-must call the `done()` function to indicate that the test is complete. All
-the `assert_*` functions are available as normal, but are called without
-the normal step function wrapper. For example:
+To write a single page test, call `single_test()`. Call the `done()` function to
+indicate that the test is complete. All the `assert_*` functions are available
+as normal, but are called without the normal step function wrapper. For example:
 
 ```html
 <!doctype html>
@@ -271,12 +269,14 @@ the normal step function wrapper. For example:
 <script src="/resources/testharnessreport.js"></script>
 <body>
   <script>
+    single_test();
     assert_equals(document.body, document.getElementsByTagName("body")[0])
     done()
- </script>
+  </script>
 ```
 
-The test title for single page tests is always taken from `document.title`.
+The test title for single page tests is taken from `document.title` or from the
+argument to `single_test()`.
 
 ## Making assertions ##
 

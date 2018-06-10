@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <iframe src="/common/blank.html" marginwidth=0 marginheight=0></iframe>
 <script>
-single();
+single_test();
 onload = () => {
   assert_equals(window[0].document.body.attributes.length, 0, "Number of attributes on the child document's body");
   done();

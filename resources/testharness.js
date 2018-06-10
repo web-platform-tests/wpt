@@ -722,9 +722,6 @@ policies and contribution forms [3].
     }
 
     function single_test(name) {
-        if (tests.tests.length !== 0) {
-            throw new Error("Called single_test() but there are already tests")
-        }
         tests.set_file_is_test(name);
     }
     expose(single_test, "single_test");
@@ -1455,7 +1452,10 @@ policies and contribution forms [3].
     function Test(name, properties)
     {
         if (tests.file_is_test && tests.tests.length) {
-            throw new Error("Tried to create a test after calling single_test()");
+            var message = "Tried to create a test after calling single_test()";
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = message;
+            throw new Error(message);
         }
         this.name = name;
 
@@ -1984,7 +1984,10 @@ policies and contribution forms [3].
 
     Tests.prototype.set_file_is_test = function(name) {
         if (this.tests.length > 0) {
-            throw new Error("Called single_test() after creating a test");
+            var message = "Called single_test() after creating a test";
+            tests.status.status = tests.status.ERROR;
+            tests.status.message = message;
+            throw new Error(message);
         }
         this.wait_for_finish = true;
         this.file_is_test = true;

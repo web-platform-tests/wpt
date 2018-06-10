@@ -1,23 +1,18 @@
 <!DOCTYPE HTML>
-<title>Example single page test with no asserts</title>
+<title>Example with done() without test</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-single_test();
-done();
+  done();
 </script>
 <script type="text/json" id="expected">
 {
   "summarized_status": {
-    "status_string": "OK",
-    "message": null
+    "status_string": "ERROR",
+    "message": "Called assert_true() without creating a test or calling single_test()"
   },
   "summarized_tests": [
     {
-      "status_string": "PASS",
-      "name": "Example single page test with no asserts",
-      "properties": {},
-      "message": null
     }
   ],
   "type": "complete"

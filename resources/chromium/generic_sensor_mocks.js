@@ -205,7 +205,7 @@ var GenericSensorTest = (() => {
         ['accelerometer', 'gyroscope',
          'magnetometer', 'ambient-light-sensor'].forEach((entry) => {
           window.testRunner.setPermission(entry, 'granted',
-                                   location.origin, location.origin);
+                                          location.origin, location.origin);
         });
       }
 

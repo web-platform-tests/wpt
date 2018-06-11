@@ -15,7 +15,7 @@ editors and implementors.
 Setting Up the Repo
 ===================
 
-Clone or otherwise get https://github.com/w3c/web-platform-tests.
+Clone or otherwise get https://github.com/web-platform-tests/wpt.
 
 Note: because of the frequent creation and deletion of branches in this
 repo, it is recommended to "prune" stale branches when fetching updates,
@@ -35,7 +35,7 @@ To get the tests running, you need to set up the test domains in your
 [`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
 
 The necessary content can be generated with `./wpt make-hosts-file`; on
-Windows, you will need to preceed the prior command with `python` or
+Windows, you will need to precede the prior command with `python` or
 the path to the Python binary (`python wpt make-hosts-file`).
 
 For example, on most UNIX-like systems, you can setup the hosts file with:
@@ -62,7 +62,7 @@ The test server can be started using
 ./wpt serve
 ```
 
-**On Windows**: You will need to preceed the prior command with
+**On Windows**: You will need to precede the prior command with
 `python` or the path to the python binary.
 ```bash
 python wpt serve
@@ -104,7 +104,7 @@ line syntax is:
 ./wpt run product [tests]
 ```
 
-**On Windows**: You will need to preceed the prior command with
+**On Windows**: You will need to precede the prior command with
 `python` or the path to the python binary.
 ```bash
 python wpt run product [tests]
@@ -169,7 +169,7 @@ git submodule update --init --recursive
 ```
 
 Prior to commit `39d07eb01fab607ab1ffd092051cded1bdd64d78` submodules
-were requried for basic functionality. If you are working with an
+were required for basic functionality. If you are working with an
 older checkout, the above command is required in all cases.
 
 When moving between a commit prior to `39d07eb` and one after it git
@@ -181,7 +181,7 @@ error: The following untracked working tree files would be overwritten by checko
 […]
 ```
 
-followed by a long list of files. To avoid this error remove
+...followed by a long list of files. To avoid this error, remove
 the `resources` and `tools` directories before switching branches:
 
 ```
@@ -203,7 +203,7 @@ Failed to recurse into submodule path 'resources'
 Failed to recurse into submodule path 'tools'
 ```
 
-then remove the `tools` and `resources` directories, as above.
+...then remove the `tools` and `resources` directories, as above.
 
 <span id="windows-notes">Windows Notes</span>
 =============================================
@@ -227,7 +227,7 @@ line endings, as it will cause lint errors. For git, please set
 Certificates
 ============
 
-By default pregenerated certificates for the web-platform.test domain
+By default pre-generated certificates for the web-platform.test domain
 are provided in [`tools/certs`](tools/certs). If you wish to generate new
 certificates for any reason it's possible to use OpenSSL when starting
 the server, or starting a test run, by providing the
@@ -285,6 +285,14 @@ the path to the OpenSSL config file (typically this will be
 To prevent browser SSL warnings when running HTTPS tests locally, the
 web-platform-tests Root CA file `cacert.pem` in [tools/certs](tools/certs)
 must be added as a trusted certificate in your OS/browser.
+
+**NOTE**: The CA should not be installed in any browser profile used
+outside of tests, since it may be used to generate fake
+certificates. For browsers that use the OS certificate store, tests
+should therefore not be run manually outside a dedicated OS instance
+(e.g. a VM). To avoid this problem when running tests in Chrome or
+Firefox use `wpt run`, which disables certificate checks and therefore
+doesn't require the root CA to be trusted.
 
 Publication
 ===========
@@ -348,7 +356,7 @@ Issues with web-platform-tests
 
 If you spot an issue with a test and are not comfortable providing a
 pull request per above to fix it, please
-[file a new issue](https://github.com/w3c/web-platform-tests/issues/new).
+[file a new issue](https://github.com/web-platform-tests/wpt/issues/new).
 Thank you!
 
 Lint tool
@@ -424,11 +432,11 @@ upstream review.
 
 Search filters to find things to review:
 
-* [Open PRs (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
-* [Reviewed but still open PRs (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?q=is%3Apr+is%3Aopen+-label%3Amozilla%3Agecko-sync+-label%3Achromium-export+-label%3Awebkit-export+-label%3Aservo-export+review%3Aapproved) (Merge? Something left to fix? Ping other reviewer?)
-* [Open PRs without owners](https://github.com/w3c/web-platform-tests/pulls?q=is%3Apr+is%3Aopen+label%3Astatus%3Aneeds-owners)
-* [Open PRs with label `infra` (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Ainfra+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
-* [Open PRs with label `docs` (excluding vendor exports)](https://github.com/w3c/web-platform-tests/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Adocs+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+* [Open PRs (excluding vendor exports)](https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+* [Reviewed but still open PRs (excluding vendor exports)](https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+-label%3Amozilla%3Agecko-sync+-label%3Achromium-export+-label%3Awebkit-export+-label%3Aservo-export+review%3Aapproved+-label%3A%22do+not+merge+yet%22+-label%3A%22status%3Aneeds-spec-decision%22) (Merge? Something left to fix? Ping other reviewer?)
+* [Open PRs without owners](https://github.com/web-platform-tests/wpt/pulls?q=is%3Apr+is%3Aopen+label%3Astatus%3Aneeds-owners)
+* [Open PRs with label `infra` (excluding vendor exports)](https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Ainfra+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
+* [Open PRs with label `docs` (excluding vendor exports)](https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aopen+label%3Adocs+-label%3A%22mozilla%3Agecko-sync%22+-label%3A%22chromium-export%22+-label%3A%22webkit-export%22+-label%3A%22servo-export%22)
 
 Getting Involved
 ================
@@ -441,7 +449,7 @@ The mailing list is [archived][mailarchive].
 Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
 is [archived][ircarchive].
 
-[contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
+[contributing]: https://github.com/web-platform-tests/wpt/blob/master/CONTRIBUTING.md
 [ircw3org]: https://www.w3.org/wiki/IRC
 [ircarchive]: https://w3.logbot.info/testing
 [mailarchive]: https://lists.w3.org/Archives/Public/public-test-infra/

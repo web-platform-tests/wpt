@@ -25,7 +25,7 @@ explicitly-managed secret.
 - (unknown registrar): https://web-platform-tests.org
   - jgraham@hoppipolla.co.uk
 - (unknown registrar): https://w3c-test.org
-  - ???
+  - mike@w3.org
 - (unknown registrar): http://testthewebforward.org
   - web-human@w3.org
 - [Google Domains](https://domains.google/): https://wpt.fyi
@@ -59,13 +59,13 @@ explicitly-managed secret.
   - mike@bocoup.com
   - rick@bocoup.com
 - E-mail address: wpt.pr.bot@gmail.com
-  - zcorpan@bocoup.com
   - boaz@bocoup.com
   - mike@bocoup.com
+  - simon@bocoup.com
 - [Heroku](https://heroku.com): wpt.pr.bot@gmail.com
-  - zcorpan@bocoup.com
   - boaz@bocoup.com
   - mike@bocoup.com
+  - simon@bocoup.com
 
 [results-collection]: https://github.com/web-platform-tests/results-collection
 [web-platform-tests]: https://github.com/e3c/web-platform-tests

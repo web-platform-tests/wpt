@@ -108,8 +108,9 @@ class HTMLItem(pytest.Item, pytest.Collector):
         self._assert_sequence(indices)
 
         summarized = self._summarize(actual)
+        self.expected[u'summarized_tests'].sort(key=lambda test_obj: test_obj.get('name'))
 
-        assert summarized == self._summarize(self.expected)
+        assert summarized == self.expected
 
     def _summarize(self, actual):
         summarized = {}

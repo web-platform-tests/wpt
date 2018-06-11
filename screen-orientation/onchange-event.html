@@ -2,21 +2,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-promise_test(t => {
+promise_test(async t => {
   const type = screen.orientation.type;
-  // wrap onchange listener in new promise to catch unreached assertion
-  return new Promise(async (resolve, reject) => {
-    try {
-      screen.orientation.onchange = () => {
-        reject(new Error("change event should not be fired"));
-      }
-      await screen.orientation.lock(type);
-      assert_equals(screen.orientation.type, type);
-      resolve();
-    } catch (e) {
-      reject(e);
-    }
-  });
+  screen.orientation.onchange = t.unreached_func("change event should not be fired");
+  await screen.orientation.lock(type);
+  assert_equals(screen.orientation.type, type);
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 
 promise_test(async t => {

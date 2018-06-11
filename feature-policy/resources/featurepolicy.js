@@ -1,6 +1,6 @@
 // Feature test to avoid timeouts
 function assert_feature_policy_supported() {
-  assert_not_equals(document.policy, undefined, 'document.policy');
+  assert_not_equals(document.policy, undefined, 'Feature Policy is supported');
 }
 // Tests whether a feature that is enabled/disabled by feature policy works
 // as expected.

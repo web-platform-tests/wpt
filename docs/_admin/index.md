@@ -42,7 +42,8 @@ explicitly-managed secret.
   - [@youennf](https://github.com/youennf)
   - [@zcorpan](https://github.com/zcorpan)
 - [GitHub](https://github.com): w3c
-  - ??? (soon to be obviated)
+  - [@plehegar](https://github.com/plehegar)
+  - [@sideshowbarker](https://github.com/sideshowbarker)
 - [Google Cloud Platform](https://cloud.google.com): wptdashboard
   - boaz@bocoup.com
   - foolip@google.com
@@ -57,6 +58,14 @@ explicitly-managed secret.
   - boaz@bocoup.com
   - mike@bocoup.com
   - rick@bocoup.com
+- E-mail address: wpt.pr.bot@gmail.com
+  - zcorpan@bocoup.com
+  - boaz@bocoup.com
+  - mike@bocoup.com
+- [Heroku](https://heroku.com): wpt.pr.bot@gmail.com
+  - zcorpan@bocoup.com
+  - boaz@bocoup.com
+  - mike@bocoup.com
 
 [results-collection]: https://github.com/web-platform-tests/results-collection
 [web-platform-tests]: https://github.com/e3c/web-platform-tests

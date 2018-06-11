@@ -157,7 +157,7 @@ def check_git_ignore(repo_root, paths):
                 if filter_string[0] != '!':
                     errors += [("IGNORED PATH", "%s matches an ignore filter in .gitignore - "
                                 "please add a .gitignore exception" % path, path, None)]
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             # Nonzero return code means that no match exists.
             pass
     return errors
@@ -664,6 +664,8 @@ def check_script_metadata(repo_root, path, f):
             elif key == b"timeout":
                 if value != b"long":
                     errors.append(("UNKNOWN-TIMEOUT-METADATA", "Unexpected value for timeout metadata", path, idx + 1))
+            elif key == b"title":
+                pass
             elif key == b"script":
                 pass
             elif key == b"variant":

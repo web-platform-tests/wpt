@@ -13,7 +13,11 @@ test(function() {
   assert_equals(navigator.keyboard, navigator.keyboard);
 }, "navigator.keyboard SameObject");
 
-promise_test(function() {
+test(function() {
+  assert_true(navigator.keyboard.getLayoutMap instanceof Function);
+}, "navigator.keyboard.getLayoutMap instanceof Function");
+
+promise_test(() => {
   const p = navigator.keyboard.getLayoutMap();
   assert_true(p instanceof Promise);
   return p.then(function(map) {

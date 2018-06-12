@@ -173,16 +173,16 @@ them to be reviewed and merged.
 ## Verify
 
 The Web Platform Test project has an automated tool
-to verify that coding conventions have been verified,
+to verify that coding conventions have been followed,
 and to catch a number of common mistakes.
 
-You can and should run this tool localy.
+You can and should run this tool locally.
 It will be run on your submissions anyway,
 and any failure will be grounds for rejection,
 so you might as well fix them first.
 
-1. On the command line, navigate to to the directory where your forked copy of
-the repository is located.
+1. On the command line, navigate to to the directory where your clone
+of the repository is located.
 
 2. Run `./wpt lint`
 

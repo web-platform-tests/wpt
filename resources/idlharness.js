@@ -53,6 +53,7 @@ if (!('subsetTestByName' in self)) {
     self.subsetTestByName = function(name, callback, ...args) {
       return callback(...args);
     }
+    self.shouldRunSubTest = () => true;
 }
 /// Helpers ///
 function constValue (cnt)

@@ -11,7 +11,8 @@ class WptreportFormatter(BaseFormatter):
         self.results = {}
 
     def suite_start(self, data):
-        self.results['run_info'] = data['run_info']
+        if 'run_info' in data:
+            self.results['run_info'] = data['run_info']
         self.results['time_start'] = data['time']
 
     def suite_end(self, data):

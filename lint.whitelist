@@ -326,7 +326,6 @@ OPEN-NO-MODE: css/*
 PRINT STATEMENT: css/*
 CONTENT-VISUAL: css/*
 CONTENT-MANUAL: css/*
-CONTENT-VISUAL: payment-request/PaymentMethodChangeEvent/methodName-attribute.https.html
 
 ## Support files not in /support/ or similar
 SUPPORT-WRONG-DIR: css/requirements.txt

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table col width pixel</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="match" href="table-col-width-pixel-ref.html">
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+  }
+</style>
+
+<table>
+  <colgroup>
+    <col>
+    <col width="0">
+    <col width="100">
+    <col>
+  </colgroup>
+  <tr>
+    <td>Person</td>
+    <td>Height</td>
+    <td>Age</td>
+    <td>Weight</td>
+  </tr>
+  <tr>
+    <td>John</td>
+    <td>176</td>
+    <td>23</td>
+    <td>140</td>
+  </tr>
+  <tr>
+    <td>James</td>
+    <td>178</td>
+    <td>25</td>
+    <td>147</td>
+  </tr>
+</table>

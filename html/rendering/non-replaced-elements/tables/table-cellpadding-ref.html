@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table cellpadding</title>
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+  }
+  .zero th, .zero td {
+    padding: 0px;
+  }
+  .ten th, .ten td {
+    padding: 10px;
+  }
+</style>
+
+<table class="zero">
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$60</td>
+    </tr>
+    <tr>
+      <td>February</td>
+      <td>$80</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$140</td>
+    </tr>
+  </tfoot>
+</table>
+
+<table class="ten">
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$60</td>
+    </tr>
+    <tr>
+      <td>February</td>
+      <td>$80</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$140</td>
+    </tr>
+  </tfoot>
+</table>

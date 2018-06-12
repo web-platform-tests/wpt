@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table th height pixel</title>
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+  }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+    <tr>
+      <th style="height:0px">January</th>
+      <th>$60</th>
+    </tr>
+    <tr>
+      <th style="height:50px">February</th>
+      <th>$80</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$140</td>
+    </tr>
+  </tfoot>
+</table>

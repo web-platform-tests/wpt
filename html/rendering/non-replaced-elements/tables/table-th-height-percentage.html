@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table th height percentage</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="match" href="table-th-height-percentage-ref.html">
+
+<style>
+  table, th, td {
+    border: 1px solid black;
+  }
+  table {
+    height: 300px;
+  }
+</style>
+
+<table>
+  <tbody>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+    <tr>
+      <th height="0%">January</th>
+      <th>$60</th>
+    </tr>
+    <tr>
+      <th height="20%">February</th>
+      <th>$80</th>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$210</td>
+    </tr>
+  </tfoot>
+</table>

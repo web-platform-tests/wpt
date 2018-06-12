@@ -33,7 +33,7 @@ explicitly-managed secret.
   - jeffcarp@google.com
   - lukebjerring@google.com
   - mike@bocoup.com
-- [GitHub](hittps://github.com): web-platform-tests
+- [GitHub](https://github.com/): web-platform-tests
   - [@foolip](https://github.com/foolip)
   - [@Hexcles](https://github.com/Hexcles)
   - [@jgraham](https://github.com/jgraham)
@@ -41,10 +41,10 @@ explicitly-managed secret.
   - [@thejohnjansen](https://github.com/thejohnjansen)
   - [@youennf](https://github.com/youennf)
   - [@zcorpan](https://github.com/zcorpan)
-- [GitHub](https://github.com): w3c
+- [GitHub](https://github.com/): w3c
   - [@plehegar](https://github.com/plehegar)
   - [@sideshowbarker](https://github.com/sideshowbarker)
-- [Google Cloud Platform](https://cloud.google.com): wptdashboard
+- [Google Cloud Platform](https://cloud.google.com/): wptdashboard
   - boaz@bocoup.com
   - foolip@google.com
   - geoffers@gmail.com
@@ -62,7 +62,7 @@ explicitly-managed secret.
   - boaz@bocoup.com
   - mike@bocoup.com
   - simon@bocoup.com
-- [Heroku](https://heroku.com): wpt.pr.bot@gmail.com
+- [Heroku](https://heroku.com/): wpt.pr.bot@gmail.com
   - boaz@bocoup.com
   - mike@bocoup.com
   - simon@bocoup.com

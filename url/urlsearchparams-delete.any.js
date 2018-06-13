@@ -1,11 +1,6 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-delete">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+    http://url.spec.whatwg.org/#dom-urlsearchparams-delete
+ */
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     params.delete('a');
@@ -51,6 +46,3 @@ test(function() {
     assert_equals(url.href, 'http://example.com/', 'url.href does not have ?');
     assert_equals(url.search, '', 'url.search does not have ?');
 }, 'Removing non-existent param removes ? from URL');
-</script>
-</head>
-</html>

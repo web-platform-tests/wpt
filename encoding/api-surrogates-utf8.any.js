@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: Invalid UTF-16 surrogates with UTF-8 encoding</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: Invalid UTF-16 surrogates with UTF-8 encoding
 
 var badStrings = [
     {
@@ -50,5 +46,3 @@ badStrings.forEach(function(t) {
         assert_equals(new TextDecoder('utf-8').decode(encoded), t.decoded);
     }, 'Invalid surrogates encoded into UTF-8: ' + t.name);
 });
-
-</script>

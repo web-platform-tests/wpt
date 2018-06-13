@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: End-of-file</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: End-of-file
 
 test(function() {
     [
@@ -46,5 +42,3 @@ test(function() {
     assert_equals(decoder.decode(even), '\u0000');
 
 }, 'Fatal flag, streaming cases');
-
-</script>

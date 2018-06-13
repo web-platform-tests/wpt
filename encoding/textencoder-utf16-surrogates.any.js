@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: USVString surrogate handling when encoding</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: USVString surrogate handling when encoding
 
 var bad = [
     {
@@ -48,5 +44,3 @@ bad.forEach(function(t) {
 test(function() {
     assert_equals(new TextEncoder().encode().length, 0, 'Should default to empty string');
 }, 'USVString default');
-
-</script>

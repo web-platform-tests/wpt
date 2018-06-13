@@ -1,11 +1,6 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-get">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+    http://url.spec.whatwg.org/#dom-urlsearchparams-get
+ */
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     assert_equals(params.get('a'), 'b');
@@ -27,6 +22,3 @@ test(function() {
     assert_equals(params.get('third'), '', 'Search params object has name "third" with the empty value.');
     assert_equals(params.get('fourth'), null, 'Search params object has no "fourth" name and value.');
 }, 'More get() basics');
-</script>
-</head>
-</html>

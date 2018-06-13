@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<title>Encoding API: invalid label</title>
-<meta name="timeout" content="long">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/encodings.js"></script>
-<script>
+// META: title=Encoding API: invalid label
+// META: timeout=long
+// META: script=resources/encodings.js
+
 var tests = ["invalid-invalidLabel"];
 setup(function() {
   encodings_table.forEach(function(section) {
@@ -25,4 +22,3 @@ tests.forEach(function(input) {
     assert_throws(new RangeError(), function() { new TextDecoder(input); });
   }, 'Invalid label ' + format_value(input) + ' should be rejected by TextDecoder.');
 });
-</script>

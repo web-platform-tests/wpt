@@ -1,11 +1,7 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-getAll">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+    https://url.spec.whatwg.org/#dom-urlsearchparams-getAll
+ */
+
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     assert_array_equals(params.getAll('a'), ['b']);
@@ -31,6 +27,3 @@ test(function() {
     assert_true(matches && matches.length == 1, 'Search params object has values for name "a"');
     assert_array_equals(matches, ['one'], 'Search params object has expected name "a" values');
 }, 'getAll() multiples');
-</script>
-</head>
-</html>

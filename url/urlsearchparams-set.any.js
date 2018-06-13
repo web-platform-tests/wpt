@@ -1,11 +1,7 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-set">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+    https://url.spec.whatwg.org/#dom-urlsearchparams-set
+ */
+
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     params.set('a', 'B');
@@ -28,7 +24,3 @@ test(function() {
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_equals(params.get('a'), '4', 'Search params object has name "a" with value "4"');
 }, 'URLSearchParams.set');
-</script>
-</head>
-</html>
-

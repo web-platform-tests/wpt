@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<title>Encoding API: replacement encoding</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/encodings.js"></script>
-<script>
+// META: title=Encoding API: replacement encoding
+// META: script=resources/encodings.js
 
 encodings_table.forEach(function(section) {
     section.encodings.filter(function(encoding) {
@@ -17,4 +13,3 @@ encodings_table.forEach(function(section) {
     });
 });
 
-</script>

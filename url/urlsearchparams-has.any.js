@@ -1,11 +1,7 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-has">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+   http://url.spec.whatwg.org/#dom-urlsearchparams-has
+*/
+
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     assert_true(params.has('a'));
@@ -30,6 +26,3 @@ test(function() {
     params.delete('first');
     assert_false(params.has('first'), 'Search params object has no name "first"');
 }, 'has() following delete()');
-</script>
-</head>
-</html>

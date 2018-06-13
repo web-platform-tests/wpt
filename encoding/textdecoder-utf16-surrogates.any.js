@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: UTF-16 surrogate handling</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: UTF-16 surrogate handling
 
 var bad = [
     {
@@ -47,5 +43,3 @@ bad.forEach(function(t) {
         });
     }, t.encoding + ' - ' + t.name + ' (fatal flag set)');
 });
-
-</script>

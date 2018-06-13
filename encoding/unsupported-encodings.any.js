@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<title>Encoding API: unsupported encodings</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/decoding-helpers.js"></script>
-<script>
+// META: title=Encoding API: unsupported encodings
+// META: script=resources/decoding-helpers.js
 
 // Attempting to decode '<' as UTF-7 (+AD4) ends up as '+AD4'.
 ['UTF-7', 'utf-7'].forEach(label => {
@@ -34,4 +30,3 @@
               'U+0000/U+0000/U+00FE/U+00FF/U+0000/U+0000/U+0000/U+0041/U+0000/U+0000/U+0000/U+0042',
               `${label} with BOM should decode as windows-1252`);
 });
-</script>

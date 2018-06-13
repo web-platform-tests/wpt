@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: TextDecoder ignoreBOM option</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: TextDecoder ignoreBOM option
 
 var cases = [
     {encoding: 'utf-8', bytes: [0xEF, 0xBB, 0xBF, 0x61, 0x62, 0x63]},
@@ -41,5 +37,3 @@ test(function() {
     assert_true(new TextDecoder('utf-8', {ignoreBOM: true}).ignoreBOM, 'The ignoreBOM attribute can be set using an option.');
 
 }, 'The ignoreBOM attribute of TextDecoder');
-
-</script>

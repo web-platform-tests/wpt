@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<title>Encoding API: Encoding labels</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/encodings.js"></script>
-<script>
+// META: title=Encoding API: Encoding labels
+// META: script=resources/encodings.js
+
 var whitespace = [' ', '\t', '\n', '\f', '\r'];
 encodings_table.forEach(function(section) {
   section.encodings.filter(function(encoding) {
@@ -33,4 +30,3 @@ encodings_table.forEach(function(section) {
     });
   });
 });
-</script>

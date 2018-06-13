@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<title>Encoding API: Byte-order marks</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+// META: title=Encoding API: Byte-order marks
 
 var testCases = [
     {
@@ -44,5 +40,3 @@ testCases.forEach(function(t) {
 
     }, 'Byte-order marks: ' + t.encoding);
 });
-
-</script>

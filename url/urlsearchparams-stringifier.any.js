@@ -1,11 +1,6 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf8">
-<link rel="help" href="http://url.spec.whatwg.org/#dom-urlsearchparams-set">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
+/*
+    http://url.spec.whatwg.org/#dom-urlsearchparams-set
+ */
 test(function() {
     var params = new URLSearchParams();
     params.append('a', 'b c');
@@ -129,8 +124,3 @@ test(() => {
     assert_equals(url.toString(), 'http://www.example.com/?a=b%2Cc&x=y');
     assert_equals(params.toString(), 'a=b%2Cc&x=y');
 }, 'URLSearchParams connected to URL');
-
-</script>
-</head>
-</html>
-

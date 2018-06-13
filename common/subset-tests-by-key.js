@@ -2,29 +2,29 @@
 // Can be used together with <meta name="variant" content="...">
 // Sample usage:
 // for (const test of tests) {
-//   subsetTestByName("Foo", async_test, test.fn, test.name);
+//   subsetTestByKey("Foo", async_test, test.fn, test.name);
 // }
 (function() {
-  var subTestNamePattern = null;
+  var subTestKeyPattern = null;
   var match;
-  var collectNames = false;
+  var collectKeys = false;
   var collectCounts = false;
-  var names = {};
+  var keys = {};
   var exclude = false;
   if (location.search) {
     match = /(?:^\?|&)(include|exclude)=([^&]+)?/.exec(location.search);
     if (match) {
-      subTestNamePattern = new RegExp(`^${match[2]}$`);
+      subTestKeyPattern = new RegExp(`^${match[2]}$`);
       if (match[1] === 'exclude') {
         exclude = true;
       }
     }
     // Below is utility code to generate <meta> for copy/paste into tests.
     // Sample usage:
-    // test.html?get-names
-    match = /(?:^\?|&)get-names(&get-counts)?(?:&|$)/.exec(location.search);
+    // test.html?get-keys
+    match = /(?:^\?|&)get-keys(&get-counts)?(?:&|$)/.exec(location.search);
     if (match) {
-      collectNames = true;
+      collectKeys = true;
       if (match[1]) {
         collectCounts = true;
       }
@@ -34,10 +34,10 @@
         if (collectCounts) {
           template += ' <!--%s-->';
         }
-        for (var name in names) {
-          var meta = template.replace("%s", name);
+        for (var key in keys) {
+          var meta = template.replace("%s", key);
           if (collectCounts) {
-            meta = meta.replace("%s", names[name]);
+            meta = meta.replace("%s", keys[key]);
           }
           metas.push(meta);
         }
@@ -48,9 +48,9 @@
       });
     }
   }
-  function shouldRunSubTest(name) {
-    if (name && subTestNamePattern) {
-      var found = subTestNamePattern.test(name);
+  function shouldRunSubTest(key) {
+    if (key && subTestKeyPattern) {
+      var found = subTestKeyPattern.test(key);
       if (exclude) {
         return !found;
       }
@@ -58,19 +58,19 @@
     }
     return true;
   }
-  function subsetTestByName(name, testFunc, ...args) {
-    if (collectNames) {
-      if (collectCounts && name in names) {
-        names[name]++;
+  function subsetTestByKey(key, testFunc, ...args) {
+    if (collectKeys) {
+      if (collectCounts && key in keys) {
+        keys[key]++;
       } else {
-        names[name] = 1;
+        keys[key] = 1;
       }
     }
-    if (shouldRunSubTest(name)) {
+    if (shouldRunSubTest(key)) {
       return testFunc(...args);
     }
     return null;
   }
   self.shouldRunSubTest = shouldRunSubTest;
-  self.subsetTestByName = subsetTestByName;
+  self.subsetTestByKey = subsetTestByKey;
 })();

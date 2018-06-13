@@ -66,6 +66,10 @@ explicitly-managed secret.
   - boaz@bocoup.com
   - mike@bocoup.com
   - simon@bocoup.com
+- [GitHub](https://github.com/): @wpt-pr-bot account
+  - boaz@bocoup.com
+  - mike@bocoup.com
+  - simon@bocoup.com
 
 [results-collection]: https://github.com/web-platform-tests/results-collection
 [web-platform-tests]: https://github.com/e3c/web-platform-tests

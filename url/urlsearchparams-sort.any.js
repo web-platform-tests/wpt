@@ -1,9 +1,3 @@
-<!doctype html>
-<meta charset="utf8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id=log></div>
-<script>
 [
   {
     "input": "z=b&a=b&z=a&a=a",
@@ -66,4 +60,3 @@ test(function() {
   assert_equals(url.href, "http://example.com/")
   assert_equals(url.search, "")
 }, "Sorting non-existent params removes ? from URL")
-</script>

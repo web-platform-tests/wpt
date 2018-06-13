@@ -1,10 +1,3 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>application/x-www-form-urlencoded parser test</title>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<div id=log></div>
-<script>
 [
   { "input": "test", "output": [["test", ""]] },
   { "input": "\uFEFFtest=\uFEFF", "output": [["\uFEFFtest", "\uFEFF"]] },
@@ -67,5 +60,4 @@
       }
     })
   }, "response.formData() with input: " + val.input)
-})
-</script>
+});

@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "unsigned long"
+                    "idlType": "unsigned long",
+                    "extAttrs": []
                 },
                 "name": "length",
+                "escapedName": "length",
                 "extAttrs": []
             },
             {
@@ -34,9 +36,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "lookup",
+                "escapedName": "lookup",
                 "arguments": [
                     {
                         "optional": false,
@@ -48,9 +52,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "key"
+                        "name": "key",
+                        "escapedName": "key"
                     }
                 ],
                 "extAttrs": []

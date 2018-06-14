@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Crypto"
+                    "idlType": "Crypto",
+                    "extAttrs": []
                 },
                 "name": "crypto",
+                "escapedName": "crypto",
                 "extAttrs": []
             }
         ],
@@ -53,9 +55,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Crypto"
+                    "idlType": "Crypto",
+                    "extAttrs": []
                 },
                 "name": "crypto",
+                "escapedName": "crypto",
                 "extAttrs": []
             }
         ],

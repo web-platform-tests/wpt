@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "unsigned short"
+                    "idlType": "unsigned short",
+                    "extAttrs": []
                 },
                 "name": "age",
+                "escapedName": "age",
                 "extAttrs": []
             }
         ],

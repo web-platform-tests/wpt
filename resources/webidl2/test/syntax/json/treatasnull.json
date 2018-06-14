@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "name",
+                "escapedName": "name",
                 "extAttrs": []
             },
             {
@@ -33,9 +35,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "owner",
+                "escapedName": "owner",
                 "extAttrs": []
             },
             {
@@ -51,9 +55,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "boolean"
+                    "idlType": "boolean",
+                    "extAttrs": []
                 },
                 "name": "isMemberOfBreed",
+                "escapedName": "isMemberOfBreed",
                 "arguments": [
                     {
                         "optional": false,
@@ -75,9 +81,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "breedName"
+                        "name": "breedName",
+                        "escapedName": "breedName"
                     }
                 ],
                 "extAttrs": []

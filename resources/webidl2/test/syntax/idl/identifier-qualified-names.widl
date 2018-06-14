@@ -26,7 +26,3 @@
       // Attribute identifier: "value"
       attribute DOMString? _value;
     };
-
-interface Foo {
- void op(object interface);
-};

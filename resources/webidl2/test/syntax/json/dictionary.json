@@ -7,6 +7,7 @@
             {
                 "type": "field",
                 "name": "fillPattern",
+                "escapedName": "fillPattern",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -14,7 +15,8 @@
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -25,6 +27,7 @@
             {
                 "type": "field",
                 "name": "strokePattern",
+                "escapedName": "strokePattern",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -32,7 +35,8 @@
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -42,6 +46,7 @@
             {
                 "type": "field",
                 "name": "position",
+                "escapedName": "position",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -49,13 +54,15 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             },
             {
                 "type": "field",
                 "name": "seq",
+                "escapedName": "seq",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -69,8 +76,10 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
-                    }
+                        "idlType": "long",
+                        "extAttrs": []
+                    },
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -81,6 +90,7 @@
             {
                 "type": "field",
                 "name": "reqSeq",
+                "escapedName": "reqSeq",
                 "required": true,
                 "idlType": {
                     "type": "dictionary-type",
@@ -88,7 +98,8 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             }
@@ -104,6 +115,7 @@
             {
                 "type": "field",
                 "name": "h",
+                "escapedName": "h",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -111,13 +123,15 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             },
             {
                 "type": "field",
                 "name": "d",
+                "escapedName": "d",
                 "required": false,
                 "idlType": {
                     "type": "dictionary-type",
@@ -125,7 +139,8 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
                 "extAttrs": []
             }

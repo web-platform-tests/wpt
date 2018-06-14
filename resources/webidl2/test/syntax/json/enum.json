@@ -35,9 +35,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "MealType"
+                    "idlType": "MealType",
+                    "extAttrs": []
                 },
                 "name": "type",
+                "escapedName": "type",
                 "extAttrs": []
             },
             {
@@ -52,9 +54,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "size",
+                "escapedName": "size",
                 "extAttrs": []
             },
             {
@@ -70,9 +74,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "initialize",
+                "escapedName": "initialize",
                 "arguments": [
                     {
                         "optional": false,
@@ -84,9 +90,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "MealType"
+                            "idlType": "MealType",
+                            "extAttrs": []
                         },
-                        "name": "type"
+                        "name": "type",
+                        "escapedName": "type"
                     },
                     {
                         "optional": false,
@@ -98,9 +106,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "float"
+                            "idlType": "float",
+                            "extAttrs": []
                         },
-                        "name": "size"
+                        "name": "size",
+                        "escapedName": "size"
                     }
                 ],
                 "extAttrs": []

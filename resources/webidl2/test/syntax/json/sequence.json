@@ -17,9 +17,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "drawPolygon",
+                "escapedName": "drawPolygon",
                 "arguments": [
                     {
                         "optional": false,
@@ -37,10 +39,13 @@
                                 "generic": null,
                                 "nullable": false,
                                 "union": false,
-                                "idlType": "float"
-                            }
+                                "idlType": "float",
+                                "extAttrs": []
+                            },
+                            "extAttrs": []
                         },
-                        "name": "coordinates"
+                        "name": "coordinates",
+                        "escapedName": "coordinates"
                     }
                 ],
                 "extAttrs": []
@@ -64,10 +69,13 @@
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "float"
-                    }
+                        "idlType": "float",
+                        "extAttrs": []
+                    },
+                    "extAttrs": []
                 },
                 "name": "getInflectionPoints",
+                "escapedName": "getInflectionPoints",
                 "arguments": [],
                 "extAttrs": []
             }
@@ -93,9 +101,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "sequence"
+                    "idlType": "sequence",
+                    "extAttrs": []
                 },
                 "name": "bar",
+                "escapedName": "bar",
                 "arguments": [],
                 "extAttrs": []
             }
@@ -121,9 +131,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "f1",
+                "escapedName": "f1",
                 "arguments": [
                     {
                         "optional": false,
@@ -150,9 +162,11 @@
                                         "rhs": null
                                     }
                                 ]
-                            }
+                            },
+                            "extAttrs": []
                         },
-                        "name": "arg"
+                        "name": "arg",
+                        "escapedName": "arg"
                     }
                 ],
                 "extAttrs": []

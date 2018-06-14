@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "x",
+                "escapedName": "x",
                 "extAttrs": []
             },
             {
@@ -33,9 +35,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "float"
+                    "idlType": "float",
+                    "extAttrs": []
                 },
                 "name": "y",
+                "escapedName": "y",
                 "extAttrs": []
             }
         ],
@@ -56,8 +60,10 @@
                 "generic": null,
                 "nullable": false,
                 "union": false,
-                "idlType": "Point"
-            }
+                "idlType": "Point",
+                "extAttrs": []
+            },
+            "extAttrs": []
         },
         "name": "PointSequence",
         "extAttrs": []
@@ -79,9 +85,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
                 "name": "topleft",
+                "escapedName": "topleft",
                 "extAttrs": []
             },
             {
@@ -96,9 +104,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
                 "name": "bottomright",
+                "escapedName": "bottomright",
                 "extAttrs": []
             }
         ],
@@ -122,9 +132,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Rect"
+                    "idlType": "Rect",
+                    "extAttrs": []
                 },
                 "name": "bounds",
+                "escapedName": "bounds",
                 "extAttrs": []
             },
             {
@@ -140,9 +152,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "boolean"
+                    "idlType": "boolean",
+                    "extAttrs": []
                 },
                 "name": "pointWithinBounds",
+                "escapedName": "pointWithinBounds",
                 "arguments": [
                     {
                         "optional": false,
@@ -154,9 +168,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "Point"
+                            "idlType": "Point",
+                            "extAttrs": []
                         },
-                        "name": "p"
+                        "name": "p",
+                        "escapedName": "p"
                     }
                 ],
                 "extAttrs": []
@@ -174,9 +190,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "boolean"
+                    "idlType": "boolean",
+                    "extAttrs": []
                 },
                 "name": "allPointsWithinBounds",
+                "escapedName": "allPointsWithinBounds",
                 "arguments": [
                     {
                         "optional": false,
@@ -188,9 +206,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "PointSequence"
+                            "idlType": "PointSequence",
+                            "extAttrs": []
                         },
-                        "name": "ps"
+                        "name": "ps",
+                        "escapedName": "ps"
                     }
                 ],
                 "extAttrs": []

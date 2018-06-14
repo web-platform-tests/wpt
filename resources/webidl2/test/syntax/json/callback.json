@@ -8,7 +8,8 @@
             "generic": null,
             "nullable": false,
             "union": false,
-            "idlType": "void"
+            "idlType": "void",
+            "extAttrs": []
         },
         "arguments": [
             {
@@ -21,9 +22,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
-                "name": "status"
+                "name": "status",
+                "escapedName": "status"
             }
         ],
         "extAttrs": []
@@ -46,9 +49,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "eventOccurred",
+                "escapedName": "eventOccurred",
                 "arguments": [
                     {
                         "optional": false,
@@ -60,9 +65,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "details"
+                        "name": "details",
+                        "escapedName": "details"
                     }
                 ],
                 "extAttrs": []
@@ -80,7 +87,8 @@
             "generic": null,
             "nullable": false,
             "union": false,
-            "idlType": "boolean"
+            "idlType": "boolean",
+            "extAttrs": []
         },
         "arguments": [
             {
@@ -93,9 +101,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "any"
+                    "idlType": "any",
+                    "extAttrs": []
                 },
-                "name": "a"
+                "name": "a",
+                "escapedName": "a"
             },
             {
                 "optional": false,
@@ -107,9 +117,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "any"
+                    "idlType": "any",
+                    "extAttrs": []
                 },
-                "name": "b"
+                "name": "b",
+                "escapedName": "b"
             }
         ],
         "extAttrs": []

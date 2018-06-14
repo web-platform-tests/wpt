@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "name",
+                "escapedName": "name",
                 "extAttrs": []
             }
         ],
@@ -42,9 +44,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Dog"
+                    "idlType": "Dog",
+                    "extAttrs": []
                 },
                 "name": "pet",
+                "escapedName": "pet",
                 "extAttrs": []
             }
         ],
@@ -68,9 +72,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Human"
+                    "idlType": "Human",
+                    "extAttrs": []
                 },
                 "name": "owner",
+                "escapedName": "owner",
                 "extAttrs": []
             }
         ],

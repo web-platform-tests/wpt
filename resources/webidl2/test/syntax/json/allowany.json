@@ -17,9 +17,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [],
                 "extAttrs": []
             },
@@ -36,9 +38,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [
                     {
                         "optional": false,
@@ -50,9 +54,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "B"
+                            "idlType": "B",
+                            "extAttrs": []
                         },
-                        "name": "b"
+                        "name": "b",
+                        "escapedName": "b"
                     }
                 ],
                 "extAttrs": []
@@ -70,9 +76,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [
                     {
                         "optional": false,
@@ -91,9 +99,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "s"
+                        "name": "s",
+                        "escapedName": "s"
                     }
                 ],
                 "extAttrs": []

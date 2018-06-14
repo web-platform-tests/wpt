@@ -16,9 +16,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "unsigned long"
+                    "idlType": "unsigned long",
+                    "extAttrs": []
                 },
                 "name": "cardinality",
+                "escapedName": "cardinality",
                 "extAttrs": []
             },
             {
@@ -34,9 +36,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "union",
+                "escapedName": "union",
                 "arguments": [
                     {
                         "optional": false,
@@ -48,9 +52,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "long"
+                            "idlType": "long",
+                            "extAttrs": []
                         },
-                        "name": "ints"
+                        "name": "ints",
+                        "escapedName": "ints"
                     }
                 ],
                 "extAttrs": []
@@ -68,9 +74,11 @@
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "intersection",
+                "escapedName": "intersection",
                 "arguments": [
                     {
                         "optional": false,
@@ -82,9 +90,11 @@
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "long"
+                            "idlType": "long",
+                            "extAttrs": []
                         },
-                        "name": "ints"
+                        "name": "ints",
+                        "escapedName": "ints"
                     }
                 ],
                 "extAttrs": []

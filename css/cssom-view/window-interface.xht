@@ -59,23 +59,6 @@
                   assert: ['window properties are owned by window']
                 }
             );
-            test(
-                function() {
-                    assert_readonly(window, 'screen');
-                    assert_readonly(window, 'innerWidth');
-                    assert_readonly(window, 'innerHeight');
-                    assert_readonly(window, 'scrollX');
-                    assert_readonly(window, 'pageXOffset');
-                    assert_readonly(window, 'scrollY');
-                    assert_readonly(window, 'pageYOffset');
-                    assert_readonly(window, 'screenX');
-                    assert_readonly(window, 'screenY');
-                    assert_readonly(window, 'outerWidth');
-                    assert_readonly(window, 'outerHeight');
-                }, 'window_properties_readonly', {
-                    assert: ['window properties are readonly']
-                }
-            );
                 ]]>
         </script>
     </body>

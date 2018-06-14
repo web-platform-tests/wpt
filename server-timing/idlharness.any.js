@@ -18,5 +18,4 @@ promise_test(async () => {
     Performance: ['performance'],
   });
   idl_array.test();
-  done();
 }, 'Test server-timing IDL implementation');

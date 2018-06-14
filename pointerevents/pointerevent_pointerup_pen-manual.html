@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <head>
+        <title>pointerup</title>
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="pointerevent_support.js"></script>
+    </head>
+    <body onload="run()">
+        <h2>Pointer Event: Dispatch pointerup (pen)</h2>
+        <h4>Test Description: This test checks if pointerup event triggers for pen. Place your pen over the black rectangle and then click on the black rectangle. </h4>
+        <div id="target0"></div>
+        <script>
+            var test_pointerEvent = async_test("pointerup event received");
+            // showPointerTypes is defined in pointerevent_support.js
+            // Requirements: the callback function will reference the test_pointerEvent object and
+            // will fail unless the async_test is created with the var name "test_pointerEvent".
+            add_completion_callback(showPointerTypes);
+
+            var detected_pointertypes = {};
+
+            function run() {
+                var target0 = document.getElementById("target0");
+
+                // After a pen stylus clicks on the black rectangle area the pointerup event must be dispatched.
+                on_event(target0, "pointerup", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
+
+                    test_pointerEvent.step(function () {
+                        assert_equals(event.pointerType, "pen", "Test should be run using a pen as input");
+                        assert_equals(event.type, "pointerup", "The " + event.type + " event was received");
+                    });
+                    test_pointerEvent.done(); // complete test
+                });
+            }
+
+        </script>
+        <h1>Pointer Events pointerup tests</h1>
+        <div id="complete-notice">
+            <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+        </div>
+        <div id="log"></div>
+    </body>
+</html>

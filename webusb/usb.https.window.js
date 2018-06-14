@@ -1,33 +1,8 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/fake-devices.js"></script>
-<script src="resources/usb-helpers.js"></script>
-<script>
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
+// META: script=/webusb/resources/fake-devices.js
+// META: script=/webusb/resources/usb-helpers.js
 'use strict';
-
-usb_test(() => {
-  return getFakeDevice().then(({ device }) => {
-    return navigator.usb.getDevices().then(devices => {
-      assert_equals(devices.length, 1);
-      assert_equals(device, devices[0]);
-      assertDeviceInfoEquals(devices[0], fakeDeviceInit);
-    });
-  });
-}, 'getDevices returns devices that are connected');
-
-usb_test(() => {
-  return getFakeDevice().then(() => {
-    return navigator.usb.getDevices().then(devicesFirstTime => {
-      assert_equals(devicesFirstTime.length, 1);
-      return navigator.usb.getDevices().then(devicesSecondTime => {
-        assert_array_equals(devicesSecondTime, devicesFirstTime);
-      });
-    });
-  });
-}, 'getDevices returns the same objects for each USB device');
 
 usb_test(() => {
   return navigator.usb.requestDevice({ filters: [] })
@@ -55,7 +30,7 @@ usb_test(() => {
     navigator.usb.test.onrequestdevice = event => {
       navigator.usb.test.onrequestdevice = undefined;
       event.respondWith(fakeDevice);
-    }
+    };
     return callWithTrustedClick(() => {
       return navigator.usb.requestDevice({ filters: [] }).then(chosenDevice => {
         assert_equals(chosenDevice, device);
@@ -69,7 +44,7 @@ usb_test(() => {
     navigator.usb.test.onrequestdevice = event => {
       navigator.usb.test.onrequestdevice = undefined;
       event.respondWith(fakeDevice);
-    }
+    };
     return callWithTrustedClick(() => {
       return navigator.usb.requestDevice({ filters: [] }).then(chosenDevice => {
         assert_equals(chosenDevice, device);
@@ -97,7 +72,7 @@ usb_test(() => {
     }
 
     event.respondWith(null);
-  }
+  };
 
   return callWithTrustedClick(() => {
     return navigator.usb.requestDevice({ filters: expectedFilters })
@@ -111,31 +86,10 @@ usb_test(() => {
 }, 'filters are sent correctly');
 
 usb_test(() => {
-  return getFakeDevice().then(({ device }) => {
-    assertDeviceInfoEquals(device, fakeDeviceInit);
-    return device.open().then(() => device.close());
-  });
-}, 'onconnect event is trigged by adding a device');
-
-usb_test(usb => {
-  return getFakeDevice().then(({ device, fakeDevice }) => {
-    return waitForDisconnect(fakeDevice).then(removedDevice => {
-      assertDeviceInfoEquals(removedDevice, fakeDeviceInit);
-      assert_equals(removedDevice, device);
-      return removedDevice.open().then(() => {
-        assert_unreachable('should not be able to open a disconnected device');
-      }, error => {
-        assert_equals(error.code, DOMException.NOT_FOUND_ERR);
-      });
-    });
-  });
-}, 'ondisconnect event is triggered by removing a device');
-
-usb_test(() => {
   return getFakeDevice().then(({ device, fakeDevice }) => {
     navigator.usb.test.onrequestdevice = event => {
       event.respondWith(fakeDevice);
-    }
+    };
     return callWithTrustedClick(() => {
       let first = navigator.usb.requestDevice({ filters: [] });
       let second = navigator.usb.requestDevice({ filters: [] });
@@ -150,4 +104,3 @@ usb_test(() => {
     });
   });
 }, 'multiple requestDevice calls are allowed per user activation');
-</script>

@@ -41,6 +41,18 @@
         return pointerInteractablePaintTree.indexOf(element) !== -1;
     }
 
+    /**
+     * Decorate an element which is intended to receive interaction in order to
+     * assist human operators. This transformation is not necessary in fully
+     * automated contexts, but it is applied regardless of the presence of an
+     * operator in order to promote parity across automated and non-automated
+     * contexts.
+     *
+     * @param {Element} - element to decorate
+     */
+    function highlight(element) {
+        element.style.outline = 'dashed #0366d6 5px';
+    }
 
     /**
      * @namespace
@@ -80,6 +92,9 @@
 
             var rect = element.getClientRects()[0];
             var centerPoint = getInViewCenterPoint(rect);
+
+            highlight(element);
+
             return window.test_driver_internal.click(element,
                                                      {x: centerPoint[0],
                                                       y: centerPoint[1]});
@@ -117,6 +132,8 @@
                 !element.contains(pointerInteractablePaintTree[0])) {
                 return Promise.reject(new Error("element send_keys intercepted error"));
             }
+
+            highlight(element);
 
             return window.test_driver_internal.send_keys(element, keys);
         },

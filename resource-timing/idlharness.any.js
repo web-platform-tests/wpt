@@ -25,5 +25,4 @@ promise_test(async () => {
     PerformanceResourceTiming: ["performance.getEntriesByType('resource')[0]"]
   });
   idl_array.test();
-  done();
 }, 'Test server-timing IDL implementation');

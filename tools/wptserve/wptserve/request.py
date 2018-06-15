@@ -52,7 +52,7 @@ class InputFile(object):
         if length > self.max_buffer_size:
             self._buf = tempfile.TemporaryFile()
         else:
-            self._buf = StringIO.StringIO()
+            self._buf = StringIO()
 
     @property
     def _buf_position(self):

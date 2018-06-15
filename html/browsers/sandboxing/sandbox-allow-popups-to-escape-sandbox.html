@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>test allow-popups-to-escape-sandbox</title>
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#sandboxing">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+
+  <body>
+    <h1>sandbox="allow-popups-to-escape-sandbox" iframe</h1>
+    <script type="text/javascript">
+      var t1 = async_test("ensure iframe can not call as same-origin")
+      var t2 = async_test("allow-popups-to-escape-sandbox able to call as same-origin")
+      function calledFromIframe() {
+        t1.force_timeout(); //not sure how to fail
+      }
+      function calledFromPopUp() {
+        t2.done();
+      }
+      function loaded() {
+        t1.done();
+      }
+    </script>
+
+    <iframe src="/html/browsers/sandboxing/inner-iframe-popup.html" style="" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" id="sandboxedframe" onload="loaded();"></iframe>
+
+    <div id="log"></div>
+  </body>
+</html>

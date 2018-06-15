@@ -28,8 +28,6 @@ filenames.forEach((filename) => {
     console.log(filename, output.toString()); // output jscodeshift output.
     // read back file, resubstitute
     const newScript = fs.readFileSync(scriptFilename, 'utf-8').toString();
-
-    // const modifiedContent = originalContent.replace(script[0], script[1] + newScript + script[script.length - 1]);
     const modifiedContent = originalContent.split(script).join(newScript);
     fs.writeFileSync(filename, modifiedContent);
     fs.unlinkSync(scriptFilename);

@@ -7,6 +7,7 @@ import argparse
 import json
 import logging
 import os
+import platform
 import socket
 import sys
 import threading
@@ -159,8 +160,11 @@ class HtmlWrapperHandler(WrapperHandler):
             if value == b"long":
                 return '<meta name="timeout" content="long">'
         if key == b"script":
-            attribute = value.decode('utf-8').replace('"', "&quot;").replace(">", "&gt;")
+            attribute = value.decode('utf-8').replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
+        if key == b"title":
+            value = value.decode('utf-8').replace("&", "&amp;").replace("<", "&lt;")
+            return '<title>%s</title>' % value
         return None
 
 
@@ -433,7 +437,7 @@ def check_subdomains(config):
 
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
-        except Exception as e:
+        except Exception:
             logger.critical("Failed probing domain %s. "
                             "You may need to edit /etc/hosts or similar, see README.md." % domain)
             sys.exit(1)
@@ -447,8 +451,16 @@ def make_hosts_file(config, host):
     for domain in config.domains_set:
         rv.append("%s\t%s\n" % (host, domain))
 
-    for not_domain in config.not_domains_set:
-        rv.append("0.0.0.0\t%s\n" % not_domain)
+    # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
+    # appropriate alias for non-existent hosts. However, UNIX-like systems
+    # interpret the same address to mean any IP address, which is inappropraite
+    # for this context. These systems do not reserve any value for this
+    # purpose, so the inavailability of the domains must be taken for granted.
+    #
+    # https://github.com/web-platform-tests/wpt/issues/10560
+    if platform.uname()[0] == "Windows":
+        for not_domain in config.not_domains_set:
+            rv.append("0.0.0.0\t%s\n" % not_domain)
 
     return "".join(rv)
 
@@ -656,7 +668,7 @@ _subdomains = {u"www",
                u"天気の良い日",
                u"élève"}
 
-_not_subdomains = {u"nonexistent-origin"}
+_not_subdomains = {u"nonexistent"}
 
 
 class Config(config.Config):

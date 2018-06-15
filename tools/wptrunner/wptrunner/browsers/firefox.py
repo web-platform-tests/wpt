@@ -4,7 +4,6 @@ import platform
 import signal
 import subprocess
 import sys
-import tempfile
 
 import mozinfo
 import mozleak
@@ -21,9 +20,9 @@ from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executormarionette import (MarionetteTestharnessExecutor,
-                                            MarionetteRefTestExecutor,
-                                            MarionetteWdspecExecutor)
+from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
+                                            MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionetteWdspecExecutor)  # noqa: F401
 
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -122,7 +121,7 @@ def env_options():
     # network.dns.localDomains preference set below) to resolve the test
     # domains to localhost without relying on the network stack.
     #
-    # https://github.com/w3c/web-platform-tests/pull/9480
+    # https://github.com/web-platform-tests/wpt/pull/9480
     return {"server_host": "127.0.0.1",
             "bind_address": False,
             "supports_debugger": True}

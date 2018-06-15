@@ -13,17 +13,12 @@ pytestrunner = None
 here = os.path.join(os.path.split(__file__)[0])
 
 from .base import (CallbackHandler,
-                   ExecutorException,
                    RefTestExecutor,
                    RefTestImplementation,
-                   TestExecutor,
                    TestharnessExecutor,
                    WdspecExecutor,
-                   WdspecRun,
                    WebDriverProtocol,
                    extra_timeout,
-                   testharness_result_converter,
-                   reftest_result_converter,
                    strip_server)
 from .protocol import (BaseProtocolPart,
                        TestharnessProtocolPart,
@@ -445,7 +440,7 @@ class ExecuteAsyncScriptRun(object):
         else:
             wait_timeout = None
 
-        flag = self.result_flag.wait(wait_timeout)
+        self.result_flag.wait(wait_timeout)
 
         if self.result == (None, None):
             self.logger.debug("Timed out waiting for a result")
@@ -675,9 +670,6 @@ class InternalRefTestImplementation(object):
         self.executor.protocol.marionette._send_message("reftest:setup", data)
 
     def run_test(self, test):
-        viewport_size = test.viewport_size
-        dpi = test.dpi
-
         references = self.get_references(test)
         rv = self.executor.protocol.marionette._send_message("reftest:run",
                                                              {"test": self.executor.test_url(test),

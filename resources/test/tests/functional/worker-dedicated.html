@@ -19,6 +19,8 @@ test(function(t) {
 
 fetch_tests_from_worker(new Worker("worker.js"));
 
+fetch_tests_from_worker(new Worker("worker-2.js"));
+
 test(function(t) {
         assert_false(false, "False is false");
     },
@@ -52,6 +54,12 @@ test(function(t) {
     {
       "status_string": "PASS",
       "name": "Worker test that completes successfully",
+      "properties": {},
+      "message": null
+    },
+    {
+      "status_string": "PASS",
+      "name": "Worker test that completes successfully (from worker-2.js)",
       "properties": {},
       "message": null
     },

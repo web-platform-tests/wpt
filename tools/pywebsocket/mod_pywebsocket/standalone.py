@@ -159,7 +159,7 @@ from six.moves import BaseHTTPServer
 from six.moves import CGIHTTPServer
 from six.moves import SimpleHTTPServer
 from six.moves import socketserver
-import configparser
+from six.moves import configparser
 import base64
 from six.moves import http_client
 import logging

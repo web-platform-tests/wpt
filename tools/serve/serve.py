@@ -271,7 +271,8 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 class AnyWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
     path_replace = [(".any.worker.js", ".any.js")]
-    wrapper = """self.GLOBAL = {
+    wrapper = """%(meta)s
+self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
 };

@@ -263,16 +263,16 @@ def check_css_globally_unique(repo_root, paths):
     return errors
 
 
-def check_notify(repo_root, paths):
+def check_meta_yml(repo_root, paths):
     """
-    Checks that all top-level directories have NOTIFY files.
+    Checks that all top-level directories have META.yml files.
 
     :param repo_root: the repository root
     :param paths: list of all paths
     :returns: a list of errors found in ``paths``
 
     """
-    # dirs represents whether there's a NOTIFY file, value is a boolean.
+    # dirs represents whether there's a META.yml file, value is a boolean.
     dirs = {}
     errors = []
     reviewer_in_subdirs = [
@@ -299,12 +299,12 @@ def check_notify(repo_root, paths):
         key = "/".join(parts[:level + 1])
         if key not in dirs:
             dirs[key] = False
-        if path.endswith("/NOTIFY") and len(parts) == level + 1:
+        if path.endswith("/META.yml") and len(parts) == level + 1:
             dirs[key] = True
 
     for dir in dirs:
         if dirs[dir] is False:
-            errors.append(("MISSING-NOTIFY", "Directory is missing NOTIFY file.", dir, None))
+            errors.append(("MISSING-META-YML", "Directory is missing META.yml file.", dir, None))
 
     return errors
 
@@ -950,7 +950,7 @@ def lint(repo_root, paths, output_format):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy]
-all_paths_lints = [check_css_globally_unique, check_notify]
+all_paths_lints = [check_css_globally_unique, check_meta_yml]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 # Don't break users of the lint that don't have git installed.

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SpeechRecognition.onerror no-speech</title>
+    <script type="text/javascript" src="//w3c-test.org/resources/testharness.js">
+    </script>
+    <script type="text/javascript" src="//w3c-test.org/resources/testharnessreport.js">
+    </script>
+    <script type="text/javascript">
+      var TIMEOUT_OVERRIDE = 10000;  // In milliseconds.
+    </script>
+    <script type="text/javascript" src='webspeech.js'></script>
+  </head>
+  <body>
+    <h1>Conformance test for Web Speech API SpeechRecognition.onerror
+      no-speech</h1>
+    <p><b>Version</b>: Test is based on W3C
+      <a href="http://dvcs.w3.org/hg/speech-api/raw-file/9a0075d25326/speechapi.html">
+        Web Speech API Specification</a> 19 October 2012 and
+      <a href="http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi-errata.html">
+        Errata</a> through December 7, 2012.
+      <br>
+      <b>Prerequisites</b>: The machine that the test is executed on must have
+        a microphone.
+      <br>
+      <b>Prefix</b>: Uses webkitSpeechRecognition object. To test conformance
+        with actual spec, should instead use SpeechRecognition object.
+      <br>
+      <b>License</b>: Distributed under both the
+      <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license">
+        W3C Test Suite License</a> and the
+      <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">
+        W3C 3-clause BSD License</a>. To contribute to a W3C Test Suite, see the
+      <a href="http://www.w3.org/2004/10/27-testcases">
+        policies and contribution forms</a>.
+    </p>
+    <hr>
+    <p><b>Instructions:</b> Do NOT speak. Run test in silence.
+      This test may fail if too much noise.</p>
+    <div id="log"></div>
+    <div id="notes"></div>
+    <script type="text/javascript">
+var audioTest = new CycleTest('onaudio');
+reco.onaudiostart = audioTest.startEvent();
+reco.onaudioend = audioTest.endEvent();
+
+reco.onsoundstart = neverFireEvent('onsoundstart');
+reco.onsoundend = neverFireEvent('onsoundend');
+reco.onspeechstart = neverFireEvent('onspeechstart');
+reco.onspeechend = neverFireEvent('onsspeechend');
+reco.onresult = neverFireEvent('onresult');
+reco.onnomatch = neverFireEvent('onnomatch');
+
+var errorTest = new CountTest('onerror no-speech', 1, 1);
+reco.onerror = errorTest.test().step_func(function(event) {
+  errorTest.count(1);
+  assert_equals(typeof(event.message), 'string', 'typeof(event.message)');
+  notes.innerHTML += 'onerror message is "' + event.message + '"' + '<br>';
+  assert_equals(event.error, 'no-speech', 'onerror event.error');
+});
+
+reco.start();
+    </script>
+  </body>
+</html>
+

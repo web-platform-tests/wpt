@@ -10,13 +10,6 @@ var neverFireTest = async_test('Events that should not fire',
                                {timeout: TIMEOUT});
 var onstartTest = async_test('onstart', {timeout: TIMEOUT});
 var reco = new SpeechRecognition();
-test(function() {
-  assert_equals(reco.grammars.length, 0, 'SpeechRecognition.grammars.length');
-  assert_equals(reco.lang, '', 'SpeechRecognition.lang');
-  assert_false(reco.continuous, 'SpeechRecognition.continuous');
-  assert_false(reco.interimResults, 'SpeechRecognition.interimResults');
-  assert_equals(reco.maxAlternatives, 1, 'SpeechRecognition.maxAlternatives');
-}, 'SpeechRecognition defaults');
 
 reco.onstart = onstartTest.step_func(function(event) {
   assert_false(onstarted, 'onstart should only fire once.');

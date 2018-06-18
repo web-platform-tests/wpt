@@ -59,7 +59,7 @@ reco.onerror = errorTest.test().step_func(function(event) {
 reco.start();
 
 function beginTest() {
-  setTimeout(function() { reco.abort(); }, DELAY);
+  audioTest.test.step_timeout(function() { reco.abort(); }, DELAY);
 }
     </script>
   </body>

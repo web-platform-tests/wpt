@@ -7,7 +7,8 @@ const crossOriginURL = get_host_info().HTTP_REMOTE_ORIGIN + "/fetch/cross-origin
   "same, same-origin",
   "SAME-ORIGIN",
   "Same-Origin",
-  "same-origin, <>"
+  "same-origin, <>",
+  "same-origin, same-origin"
 ].forEach(incorrectHeaderValue => {
   // Note: an incorrect value results in a successful load, so this test is only meaningful in
   // implementations with support for the header.

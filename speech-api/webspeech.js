@@ -9,7 +9,7 @@ var onstarted = false;
 var neverFireTest = async_test('Events that should not fire',
                                {timeout: TIMEOUT});
 var onstartTest = async_test('onstart', {timeout: TIMEOUT});
-var reco = new webkitSpeechRecognition();
+var reco = new SpeechRecognition();
 test(function() {
   assert_equals(reco.grammars.length, 0, 'SpeechRecognition.grammars.length');
   assert_equals(reco.lang, '', 'SpeechRecognition.lang');

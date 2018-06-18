@@ -445,25 +445,25 @@ def test_check_css_globally_unique_ignored_dir(caplog):
 # tests/okay.html      tests/foo/META.yml  1
 # tests/foo/okay.html  tests/foo/META.yml  1
 
-def test_check_META.yml_test_l1_no_META.yml(caplog):
+def test_check_meta_yml_test_l1_no_meta_yml(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 1
             assert mocked_check_file_contents.call_count == 1
-    assert "MISSING-META.yml" in caplog.text
+    assert "MISSING-META-YML" in caplog.text
 
-def test_check_META.yml_test_l2_no_META.yml(caplog):
+def test_check_meta_yml_test_l2_no_meta_yml(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html"], "normal")
             assert rv == 1
             assert mocked_check_path.call_count == 1
             assert mocked_check_file_contents.call_count == 1
-    assert "MISSING-META.yml" in caplog.text
+    assert "MISSING-META-YML" in caplog.text
 
-def test_check_META.yml_test_l1_META.yml_l1(caplog):
+def test_check_meta_yml_test_l1_meta_yml_l1(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html",
@@ -473,7 +473,7 @@ def test_check_META.yml_test_l1_META.yml_l1(caplog):
             assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
-def test_check_META.yml_test_l2_META.yml_l1(caplog):
+def test_check_meta_yml_test_l2_meta_yml_l1(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html",
@@ -483,7 +483,7 @@ def test_check_META.yml_test_l2_META.yml_l1(caplog):
             assert mocked_check_file_contents.call_count == 2
     assert caplog.text == ""
 
-def test_check_META.yml_test_l1_META.yml_l2(caplog):
+def test_check_meta_yml_test_l1_meta_yml_l2(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/okay.html",
@@ -491,9 +491,9 @@ def test_check_META.yml_test_l1_META.yml_l2(caplog):
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
-    assert "MISSING-META.yml" in caplog.text
+    assert "MISSING-META-YML" in caplog.text
 
-def test_check_META.yml_test_l2_META.yml_l2(caplog):
+def test_check_meta_yml_test_l2_meta_yml_l2(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
             rv = lint(_dummy_repo, ["tests/foo/okay.html",
@@ -501,7 +501,7 @@ def test_check_META.yml_test_l2_META.yml_l2(caplog):
             assert rv == 1
             assert mocked_check_path.call_count == 2
             assert mocked_check_file_contents.call_count == 2
-    assert "MISSING-META.yml" in caplog.text
+    assert "MISSING-META-YML" in caplog.text
 
 
 

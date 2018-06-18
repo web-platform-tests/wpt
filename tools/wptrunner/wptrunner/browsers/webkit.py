@@ -30,7 +30,7 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
             "webdriver_args": kwargs.get("webdriver_args")}
 
 
-def capabilities_for_port(webkit_port, binary, binary_args):
+def capabilities_for_port(test_type, webkit_port, binary, binary_args):
     from selenium.webdriver import DesiredCapabilities
 
     if webkit_port == "gtk":
@@ -39,6 +39,8 @@ def capabilities_for_port(webkit_port, binary, binary_args):
             "binary": binary,
             "args": binary_args
         }
+        if test_type in ("testharness", "reftest"):
+            capabilities["acceptInsecureCerts"] = True
         return capabilities
 
     return {}
@@ -49,7 +51,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs = base_executor_kwargs(test_type, server_config,
                                            cache_manager, **kwargs)
     executor_kwargs["close_after_done"] = True
-    capabilities = capabilities_for_port(kwargs["webkit_port"],
+    capabilities = capabilities_for_port(test_type, kwargs["webkit_port"],
                                          kwargs["binary"],
                                          kwargs.get("binary_args", []))
     executor_kwargs["capabilities"] = capabilities

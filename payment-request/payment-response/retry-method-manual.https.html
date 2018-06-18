@@ -55,7 +55,7 @@ function callCompleteWhileRetrying(button) {
       response.complete("success"),
       "Calling complete() while retrying rejects with an InvalidStateError"
     );
-    await retryPromise; // retrying now "false"
+    await retryPromise;
     await response.complete("success");
   }, button.textContent.trim());
 }
@@ -71,7 +71,7 @@ function callingRequestAbortMustNotAbort(button) {
       request.abort(),
       "Calling request.abort() while retrying rejects with an InvalidStateError"
     );
-    await retryPromise; // retrying now "false"
+    await retryPromise;
     await response.complete("success");
   }, button.textContent.trim());
 }

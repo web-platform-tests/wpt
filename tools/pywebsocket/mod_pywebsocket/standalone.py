@@ -802,7 +802,7 @@ class WebSocketRequestHandler(CGIHTTPServer.CGIHTTPRequestHandler):
 
         # If any Exceptions without except clause setup (including
         # DispatchException) is raised below this point, it will be caught
-        # and logged by Websocketserver.
+        # and logged by WebSocketServer.
 
         try:
             try:

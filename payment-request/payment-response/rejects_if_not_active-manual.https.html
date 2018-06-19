@@ -68,6 +68,7 @@ function retryNotFullyActive(button) {
       retryPromise,
       "Inactive document, so must throw AbortError"
     );
+
     // We are done, so clean up.
     iframe.remove();
   }, text);
@@ -107,12 +108,13 @@ function retryBecomesNotFullyActive(button) {
     iframe.remove();
   }, text);
 }
-
 </script>
-
 <section>
   <h2>retry() and document active state</h2>
   <p>Manual Tests for PaymentResponse.retry() - Please run in order!</p>
+  <p>
+    For each test, when the payment sheet is shown, select a payment method and hit "Pay".
+  </p>
   <ol>
     <li>
       <button onclick="retryNotFullyActive(this);">

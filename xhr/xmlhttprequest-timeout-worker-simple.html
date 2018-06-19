@@ -21,7 +21,7 @@
     <p>This test validates that the XHR2 timeout property behaves as expected in in a worker context.</p>
     <div id="log"></div>
     <script type="text/javascript">
-        var worker = new Worker("resources/xmlhttprequest-timeout-simple.js");
+        var worker = new Worker("resources/xmlhttprequest-timeout-simple.js" + location.search);
         worker.onmessage = testResultCallbackHandler;
     </script>
 </body>

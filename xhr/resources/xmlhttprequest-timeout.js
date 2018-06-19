@@ -320,6 +320,9 @@ var TestCounter = {
 };
 
 function runTestRequests(testRequests) {
-    TestRequests = testRequests;
-    TestCounter.next();
+  if (location.search) {
+    testRequests = testRequests.filter(test => test[1] == decodeURIComponent(location.search.substr(1)));
+  }
+  TestRequests = testRequests.map(test => new RequestTracker(...test));
+  TestCounter.next();
 }

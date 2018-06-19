@@ -73,6 +73,10 @@ class LogHandler(reader.LogHandler):
 
         return subtest
 
+    def test_start(self, data):
+        test = self.find_or_create_test(data)
+        test["start_time"] = data["time"]
+
     def test_status(self, data):
         subtest = self.find_or_create_subtest(data)
         subtest["status"][data["status"]] += 1
@@ -82,6 +86,9 @@ class LogHandler(reader.LogHandler):
     def test_end(self, data):
         test = self.find_or_create_test(data)
         test["status"][data["status"]] += 1
+        start_time = test.pop("start_time")
+        test["duration"] = data["time"] - start_time
+        test["timeout"] = data["extra"]["test_timeout"]
 
 
 def is_inconsistent(results_dict, iterations):
@@ -97,13 +104,16 @@ def process_results(log, iterations):
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
     results = handler.results
+    longest_duration = 0
     for test_name, test in results.iteritems():
         if is_inconsistent(test["status"], iterations):
             inconsistent.append((test_name, None, test["status"], []))
         for subtest_name, subtest in test["subtests"].iteritems():
             if is_inconsistent(subtest["status"], iterations):
                 inconsistent.append((test_name, subtest_name, subtest["status"], subtest["messages"]))
-    return results, inconsistent
+        if test["duration"] > longest_duration:
+            longest_duration = test["duration"]
+    return results, inconsistent, longest_duration, test["timeout"]
 
 
 def err_string(results_dict, iterations):
@@ -202,8 +212,8 @@ def run_step(logger, iterations, restart_after_iteration, kwargs_extras, **kwarg
     logger._state.suite_started = False
 
     log.seek(0)
-    results, inconsistent = process_results(log, iterations)
-    return results, inconsistent, iterations
+    results, inconsistent, longest_duration, timeout = process_results(log, iterations)
+    return results, inconsistent, longest_duration, timeout, iterations
 
 
 def get_steps(logger, repeat_loop, repeat_restart, kwargs_extras):
@@ -242,6 +252,8 @@ def write_summary(logger, step_results, final_result):
 
     logger.info(':::')
 
+def write_duration(logger, longest_duration):
+    logger.info('::: Longest duration was %sms.' % longest_duration)
 
 def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, max_time=None,
                     output_results=True, **kwargs):
@@ -264,7 +276,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
         logger.info(':::')
         logger.info('::: Running test verification step "%s"...' % desc)
         logger.info(':::')
-        results, inconsistent, iterations = step_func(**kwargs)
+        results, inconsistent, longest_duration, timeout, iterations = step_func(**kwargs)
         if output_results:
             write_results(logger.info, results, iterations)
 
@@ -272,8 +284,17 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
             step_results.append((desc, "FAIL"))
             write_inconsistent(logger.info, inconsistent, iterations)
             write_summary(logger, step_results, "FAIL")
+            write_duration(logger, longest_duration)
             return 1
 
+        max_duration = timeout * 1000 * 0.8
+        if longest_duration > max_duration:
+            step_results.append((desc, "FAIL"))
+            logger.info('::: Test results were consistent but longest duration was %sms (expected < %sms).' % (longest_duration,
+                                                                                                               max_duration))
+            return 1
+
+        write_duration(logger, longest_duration)
         step_results.append((desc, "PASS"))
 
     write_summary(logger, step_results, "PASS")

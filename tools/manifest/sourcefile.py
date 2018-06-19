@@ -12,7 +12,7 @@ except ImportError:
 import html5lib
 
 from . import XMLParser
-from .item import Stub, ManualTest, WebdriverSpecTest, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
+from .item import Stub, ManualTest, WebdriverSpecTest, RefTestNode, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
 from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
@@ -132,10 +132,20 @@ def global_variant_url(url, suffix):
     return replace_end(url, ".js", suffix)
 
 
+def _parse_xml(f):
+    try:
+        # raises ValueError with an unsupported encoding,
+        # ParseError when there's an undefined entity
+        return ElementTree.parse(f)
+    except (ValueError, ElementTree.ParseError):
+        f.seek(0)
+        return ElementTree.parse(f, XMLParser.XMLParser())
+
+
 class SourceFile(object):
-    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree"),
-               "xhtml":lambda x:ElementTree.parse(x, XMLParser.XMLParser()),
-               "svg":lambda x:ElementTree.parse(x, XMLParser.XMLParser())}
+    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree", useChardet=False),
+               "xhtml":_parse_xml,
+               "svg":_parse_xml}
 
     root_dir_non_test = set(["common"])
 
@@ -252,6 +262,7 @@ class SourceFile(object):
         be a non-test file"""
         return (self.is_dir() or
                 self.name_prefix("MANIFEST") or
+                self.filename == "META.yml" or
                 self.filename.startswith(".") or
                 self.type_flag == "support" or
                 self.in_non_test_dir())

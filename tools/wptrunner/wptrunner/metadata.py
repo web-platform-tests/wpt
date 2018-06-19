@@ -1,10 +1,7 @@
 import os
 import shutil
-import sys
 import tempfile
-import types
 import uuid
-from collections import defaultdict
 
 from mozlog import reader
 from mozlog import structuredlog
@@ -118,8 +115,6 @@ def unexpected_changes(manifests, change_data, files_changed):
             break
     else:
         return []
-
-    rv = []
 
     return [fn for _, fn, _ in root_manifest if fn in files_changed and change_data.get(fn) != "M"]
 

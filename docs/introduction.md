@@ -76,20 +76,19 @@ The testsuite has a few types of tests, outlined below:
 
 ## GitHub
 
-[GitHub](https://github.com/w3c/web-platform-tests/) is used both for [issue tracking](https://github.com/w3c/web-platform-tests/issues) and [test submissions](https://github.com/w3c/web-platform-tests/pulls); we
+[GitHub](https://github.com/web-platform-tests/wpt/) is used both for [issue tracking](https://github.com/web-platform-tests/wpt/issues) and [test submissions](https://github.com/web-platform-tests/wpt/pulls); we
 provide [a limited introduction][github-intro] to both git and
 GitHub.
 
 Pull Requests are automatically labeled based on the directory the
 files they change are in; there are also comments added automatically
-to notify a number of people: this list of people comes from OWNERS
+to notify a number of people: this list of people comes from META.yml
 files in those same directories and their parents (i.e., they work
-recursively: `a/OWNERS` will get notified for `a/foo.html` and
+recursively: `a/META.yml` will get notified for `a/foo.html` and
 `a/b/bar.html`).
 
 If you want to be notified about changes to tests in a directory, feel
-free to add yourself to the OWNERS file: there's no requirement to own
-anything as a result!
+free to add yourself to the META.yml file!
 
 
 ## Local Setup
@@ -148,7 +147,7 @@ After your `hosts` file is configured, the servers will be locally accessible at
 http://web-platform.test:8000/<br>
 https://web-platform.test:8443/ *
 
-\**See [Trusting Root CA](https://github.com/w3c/web-platform-tests/blob/master/README.md#trusting-root-ca)*
+\**See [Trusting Root CA](https://github.com/web-platform-tests/wpt/blob/master/README.md#trusting-root-ca)*
 
 ## Running tests automatically
 

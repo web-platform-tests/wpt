@@ -772,6 +772,9 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 MISSING-LINK: css/geometry/*.worker.js
 MISSING-LINK: css/filter-effects/*.any.js
 
+# TODO https://github.com/web-platform-tests/wpt/pull/11559
+MISSING-META-YML: lifecycle
+
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js

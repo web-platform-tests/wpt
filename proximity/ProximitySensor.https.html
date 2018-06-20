@@ -9,6 +9,10 @@
 <div id="log"></div>
 <script>
 
-runGenericSensorTests('ProximitySensor');
+const kDefaultReading = [2, 4, true];
+
+runGenericSensorTests('ProximitySensor',
+                      verify_sensor_reading.bind(null, kDefaultReading),
+                      null);
 
 </script>

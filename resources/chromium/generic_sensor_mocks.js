@@ -8,6 +8,7 @@ var GenericSensorTest = (() => {
       this.client_ = null;
       this.reportingMode_ = reportingMode;
       this.sensorReadingTimerId_ = null;
+      this.updateReadingFunction_ = null;
       this.requestedFrequencies_ = [];
       let rv = handle.mapBuffer(offset, size);
       assert_equals(rv.result, Mojo.RESULT_OK, "Failed to map shared buffer");
@@ -61,9 +62,16 @@ var GenericSensorTest = (() => {
 
     reset() {
       this.stopReading();
+      this.updateReadingFunction_ = null;
       this.requestedFrequencies_ = [];
       this.buffer_.fill(0);
       this.binding_.close();
+    }
+
+    // Sets callback that is used to deliver sensor reading updates.
+    setUpdateSensorReadingFunction(updateReadingFunction) {
+      this.updateReadingFunction_ = updateReadingFunction;
+      return Promise.resolve(this);
     }
 
     startReading() {
@@ -84,6 +92,9 @@ var GenericSensorTest = (() => {
         // For all tests sensor reading should have monotonically
         // increasing timestamp in seconds.
         this.buffer_[1] = window.performance.now() * 0.001;
+        if (this.updateReadingFunction_) {
+          this.updateReadingFunction_(this.buffer_);
+        }
         if (this.reportingMode_ === device.mojom.ReportingMode.ON_CHANGE) {
           this.client_.sensorReadingChanged();
         }
@@ -95,6 +106,11 @@ var GenericSensorTest = (() => {
         window.clearInterval(this.sensorReadingTimerId_);
         this.sensorReadingTimerId_ = null;
       }
+    }
+
+    getSamplingFrequency() {
+       assert_true(this.requestedFrequencies_.length > 0);
+       return this.requestedFrequencies_[0];
     }
 
      get isReading() {
@@ -114,6 +130,7 @@ var GenericSensorTest = (() => {
       assert_equals(rv.result, Mojo.RESULT_OK, "Failed to create buffer");
       this.sharedBufferHandle_ = rv.handle;
       this.activeSensor_ = null;
+      this.resolveFunc_ = null;
       this.isContinuous_ = false;
       this.binding_ = new mojo.Binding(device.mojom.SensorProvider, this);
 
@@ -162,6 +179,10 @@ var GenericSensorTest = (() => {
         maximumFrequency: maxAllowedFrequencyHz
       });
 
+      if (this.resolveFunc_ !== null) {
+        this.resolveFunc_(this.activeSensor_);
+      }
+
       return {result: device.mojom.SensorCreationResult.SUCCESS,
               initParams: initParams};
     }
@@ -171,8 +192,20 @@ var GenericSensorTest = (() => {
         this.activeSensor_.reset();
         this.activeSensor_ = null;
       }
+      this.resolveFunc_ = null;
       this.binding_.close();
       this.interceptor_.stop();
+    }
+
+    // Returns mock sensor that was created in getSensor to the layout test.
+    getCreatedSensor() {
+      if (this.activeSensor_ != null) {
+        return Promise.resolve(this.activeSensor_);
+      }
+
+      return new Promise((resolve, reject) => {
+        this.resolveFunc_ = resolve;
+      });
     }
   }
 
@@ -212,6 +245,10 @@ var GenericSensorTest = (() => {
       // Wait for an event loop iteration to let any pending mojo commands in
       // the sensor provider finish.
       await new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    getMockSensorProvider() {
+      return testInternal.sensorProvider;
     }
   }
 

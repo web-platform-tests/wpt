@@ -9,8 +9,25 @@
 <div id="log"></div>
 <script>
 
-runGenericSensorTests('Accelerometer');
-runGenericSensorTests('GravitySensor');
-runGenericSensorTests('LinearAccelerationSensor');
+const kDefaultReading = [1.12345, 2.12345, 3.12345];
+const kMappedReading = [-2.12345, 1.12345, 3.12345];
+
+runGenericSensorTests(
+  'Accelerometer',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
+
+runGenericSensorTests(
+  'GravitySensor',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
+
+runGenericSensorTests(
+  'LinearAccelerationSensor',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
 
 </script>

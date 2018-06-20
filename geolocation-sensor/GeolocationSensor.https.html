@@ -8,6 +8,10 @@
 <script src="/generic-sensor/generic-sensor-tests.js"></script>
 <script>
 
-runGenericSensorTests('GeolocationSensor');
+const kDefaultReading = [45.5, -122.9, -44.3, 101, 3940, 3940, 180, 0];
+
+runGenericSensorTests('GeolocationSensor',
+                      verify_sensor_reading.bind(null, kDefaultReading),
+                      null);
 
 </script>

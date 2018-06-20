@@ -9,6 +9,10 @@
 <div id="log"></div>
 <script>
 
-runGenericSensorTests('AmbientLightSensor');
+const kDefaultReading = [3.1415];
+
+runGenericSensorTests('AmbientLightSensor',
+                      verify_sensor_reading.bind(null, kDefaultReading),
+                      null);
 
 </script>

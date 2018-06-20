@@ -47,7 +47,7 @@ function sensor_test(func, name, properties) {
   promise_test(async (t) => {
     let sensorTest = await initialize_generic_sensor_tests();
     try {
-      await func(t);
+      await func(t, sensorTest);
     } finally {
       await sensorTest.reset();
     };
@@ -55,71 +55,77 @@ function sensor_test(func, name, properties) {
 }
 
 const properties = {
-  'AmbientLightSensor' : ['timestamp', 'illuminance'],
-  'Accelerometer' : ['timestamp', 'x', 'y', 'z'],
-  'LinearAccelerationSensor' : ['timestamp', 'x', 'y', 'z'],
-  "GravitySensor" : ['timestamp', 'x', 'y', 'z'],
-  'Gyroscope' : ['timestamp', 'x', 'y', 'z'],
-  'Magnetometer' : ['timestamp', 'x', 'y', 'z'],
-  "UncalibratedMagnetometer" : ['timestamp', 'x', 'y', 'z',
+  'AmbientLightSensor' : ['illuminance'],
+  'Accelerometer' : ['x', 'y', 'z'],
+  'LinearAccelerationSensor' : ['x', 'y', 'z'],
+  "GravitySensor" : ['x', 'y', 'z'],
+  'Gyroscope' : ['x', 'y', 'z'],
+  'Magnetometer' : ['x', 'y', 'z'],
+  "UncalibratedMagnetometer" : ['x', 'y', 'z',
                                 'xBias', 'yBias', 'zBias'],
-  'AbsoluteOrientationSensor' : ['timestamp', 'quaternion'],
-  'RelativeOrientationSensor' : ['timestamp', 'quaternion'],
-  'GeolocationSensor' : ['timestamp', 'latitude', 'longitude', 'altitude',
+  'AbsoluteOrientationSensor' : ['quaternion'],
+  'RelativeOrientationSensor' : ['quaternion'],
+  'GeolocationSensor' : ['latitude', 'longitude', 'altitude',
                          'accuracy', 'altitudeAccuracy', 'heading', 'speed'],
-  'ProximitySensor' : ['timestamp', 'max']
+  'ProximitySensor' : ['distance', 'max', 'near']
 };
-const spatialSensors = ['Accelerometer',
-                       'LinearAccelerationSensor',
-                       'GravitySensor',
-                       'Gyroscope',
-                       'Magnetometer',
-                       'UncalibratedMagnetometer',
-                       'AbsoluteOrientationSensor',
-                       'RelativeOrientationSensor'];
 
-function assert_reading_not_null(sensor) {
+function verify_sensor_reading(pattern, sensor, is_null) {
+  let readings = new Array();
   for (let property in properties[sensor.constructor.name]) {
     let propertyName = properties[sensor.constructor.name][property];
-    assert_not_equals(sensor[propertyName], null);
+    readings.push(sensor[propertyName]);
   }
+
+  let round = val => {
+    if (isNaN(val))
+      return val;
+    return Number.parseFloat(val).toPrecision(6);
+  }
+
+  let arrEquals = (exp, act) => {
+    if (Array.isArray(exp))
+      return exp.every((r, i) => arrEquals(r, act[i]));
+    return round(exp) === round(act);
+  }
+
+  if (is_null) {
+    return (readings === null || readings.every(r => r === null)) &&
+           sensor.timestamp === null;
+  }
+  return arrEquals(pattern, readings) && sensor.timestamp !== null;
 }
 
-function assert_reading_null(sensor) {
-  for (let property in properties[sensor.constructor.name]) {
-    let propertyName = properties[sensor.constructor.name][property];
-    assert_equals(sensor[propertyName], null);
-  }
+function update_sensor_reading(buffer) {
+  buffer.set(kDefaultReading, 2);
 }
 
-function reading_to_array(sensor) {
-  const arr = new Array();
-  for (let property in properties[sensor.constructor.name]) {
-    let propertyName = properties[sensor.constructor.name][property];
-    arr[property] = sensor[propertyName];
-  }
-  return arr;
-}
-
-function runGenericSensorTests(sensorName) {
+function runGenericSensorTests(sensorName,
+                               verifyReading,
+                               verifyRemappedReading) {
   const sensorType = self[sensorName];
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
-    const sensor = new sensorType();
+    const sensor = new sensorType({frequency: 60});
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
+    assert_false(sensor.hasReading);
+
+    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+    const mockSensor = await mockSensorProvider.getCreatedSensor();
+    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
 
     await sensorWatcher.wait_for("reading");
-    assert_reading_not_null(sensor);
+    assert_true(verifyReading(sensor));
     assert_true(sensor.hasReading);
 
     sensor.stop();
-    assert_reading_null(sensor);
+    assert_true(verifyReading(sensor, true));
     assert_false(sensor.hasReading);
   }, `${sensorName}: Test that 'onreading' is called and sensor reading is valid`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
     const sensor1 = new sensorType();
     const sensor2 = new sensorType();
@@ -127,21 +133,26 @@ function runGenericSensorTests(sensorName) {
     sensor2.start();
     sensor1.start();
 
+    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+    const mockSensor = await mockSensorProvider.getCreatedSensor();
+    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
     await sensorWatcher.wait_for("reading");
     // Reading values are correct for both sensors.
-    assert_reading_not_null(sensor1);
-    assert_reading_not_null(sensor2);
+    assert_true(verifyReading(sensor1));
+    assert_true(verifyReading(sensor2));
 
     //After first sensor stops its reading values are null,
     //reading values for the second sensor remains
     sensor1.stop();
-    assert_reading_null(sensor1);
-    assert_reading_not_null(sensor2);
+    assert_true(verifyReading(sensor1, true));
+    assert_true(verifyReading(sensor2));
+
     sensor2.stop();
-    assert_reading_null(sensor2);
+    assert_true(verifyReading(sensor2, true));
   }, `${sensorName}: sensor reading is correct`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
@@ -218,14 +229,19 @@ function runGenericSensorTests(sensorName) {
     assert_false(sensor.activated);
   }, `${sensorName}: no exception is thrown when calling stop() on already stopped sensor`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
     const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
 
+    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+    const mockSensor = await mockSensorProvider.getCreatedSensor();
+    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
     await sensorWatcher.wait_for("reading");
     assert_true(sensor.hasReading);
+    assert_true(verifyReading(sensor));
     const timestamp = sensor.timestamp;
     sensor.stop();
     assert_false(sensor.hasReading);
@@ -233,62 +249,75 @@ function runGenericSensorTests(sensorName) {
     sensor.start();
     await sensorWatcher.wait_for("reading");
     assert_true(sensor.hasReading);
+    assert_true(verifyReading(sensor));
     assert_greater_than(timestamp, 0);
     assert_greater_than(sensor.timestamp, timestamp);
     sensor.stop();
   }, `${sensorName}: Test that fresh reading is fetched on start()`);
 
 //  TBD file a WPT issue: visibilityChangeWatcher times out.
-//  sensor_test(async t => {
+//  sensor_test(async (t, sensorTest) => {
 //    const sensor = new sensorType();
 //    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
 //    const visibilityChangeWatcher = new EventWatcher(t, document, "visibilitychange");
 //    sensor.start();
 
+//    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+//    const mockSensor = await mockSensorProvider.getCreatedSensor();
+//    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
 //    await sensorWatcher.wait_for("reading");
-//    assert_reading_not_null(sensor);
-//    const cachedSensor1 = reading_to_array(sensor);
+//    assert_true(verifyReading(sensor));
+//    const cachedTimestamp1 = sensor.timestamp;
 
 //    const win = window.open('', '_blank');
 //    await visibilityChangeWatcher.wait_for("visibilitychange");
-//    const cachedSensor2 = reading_to_array(sensor);
+//    const cachedTimestamp2 = sensor.timestamp;
 
 //    win.close();
 //    sensor.stop();
-//    assert_object_equals(cachedSensor1, cachedSensor2);
+//    assert_equals(cachedTimestamp1, cachedTimestamp2);
 //  }, `${sensorName}: sensor readings can not be fired on the background tab`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
-    const fastSensor = new sensorType({frequency: 30});
-    const slowSensor = new sensorType({frequency: 5});
-    slowSensor.start();
+    const fastSensor = new sensorType({frequency: 60});
+    fastSensor.start();
 
-    const fastCounter = await new Promise((resolve, reject) => {
+    let slowSensor;  // To be initialized later.
+
+    await new Promise((resolve, reject) => {
       let fastCounter = 0;
       let slowCounter = 0;
 
       fastSensor.onreading = () => {
+        if (fastCounter === 0) {
+          // For Magnetometer and ALS, the maximum frequency is less than 60Hz
+          // we make "slow" sensor 4 times slower than the actual applied
+          // frequency, so that the "fast" sensor will immediately overtake it
+          // despite the notification adjustments.
+          const slowFrequency = mockSensor.getSamplingFrequency() * 0.25;
+          slowSensor = new sensorType({frequency: slowFrequency});
+          slowSensor.onreading = () => {
+            if (slowCounter === 1) {
+              assert_true(fastCounter > 2,
+                          "Fast sensor overtakes the slow one");
+              fastSensor.stop();
+              slowSensor.stop();
+              resolve(mockSensor);
+            }
+            slowCounter++;
+          }
+          slowSensor.onerror = reject;
+          slowSensor.start();
+        }
         fastCounter++;
       }
-      slowSensor.onreading = () => {
-        slowCounter++;
-        if (slowCounter == 1) {
-          fastSensor.start();
-        } else if (slowCounter == 3) {
-          fastSensor.stop();
-          slowSensor.stop();
-          resolve(fastCounter);
-        }
-      }
       fastSensor.onerror = reject;
-      slowSensor.onerror = reject;
     });
-    assert_greater_than(fastCounter, 2,
-                        "Fast sensor overtakes the slow one");
   }, `${sensorName}: frequency hint works`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
     // Create a focused editbox inside a cross-origin iframe,
     // sensor notification must suspend.
@@ -301,21 +330,23 @@ function runGenericSensorTests(sensorName) {
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
 
+    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+    const mockSensor = await mockSensorProvider.getCreatedSensor();
+    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
     await sensorWatcher.wait_for("reading");
-    assert_reading_not_null(sensor);
-    const cachedTimestamp = sensor.timestamp;
-    const cachedSensor1 = reading_to_array(sensor);
+    assert_true(verifyReading(sensor));
+    const cachedTimestamp1 = sensor.timestamp;
 
     const iframeWatcher = new EventWatcher(t, iframe, "load");
     document.body.appendChild(iframe);
     await iframeWatcher.wait_for("load");
-    const cachedSensor2 = reading_to_array(sensor);
-    assert_array_equals(cachedSensor1, cachedSensor2);
+    const cachedTimestamp2 = sensor.timestamp;
+    assert_equals(cachedTimestamp1, cachedTimestamp2);
 
     iframe.remove();
     await sensorWatcher.wait_for("reading");
-    const cachedSensor3 = reading_to_array(sensor);
-    assert_greater_than(sensor.timestamp, cachedTimestamp);
+    assert_greater_than(sensor.timestamp, cachedTimestamp1);
 
     sensor.stop();
   }, `${sensorName}: sensor receives suspend / resume notifications when\
@@ -325,7 +356,7 @@ function runGenericSensorTests(sensorName) {
 //  test(() => {
 //     assert_throws("NotSupportedError", () => { new sensorType({invalid: 1}) });
 //     assert_throws("NotSupportedError", () => { new sensorType({frequency: 60, invalid: 1}) });
-//     if (spatialSensors.indexOf(sensorName) == -1) {
+//     if (verifyRemappedReading) {
 //       assert_throws("NotSupportedError", () => { new sensorType({referenceFrame: "screen"}) });
 //     }
 //  }, `${sensorName}: throw 'NotSupportedError' for an unsupported sensor option`);
@@ -346,21 +377,23 @@ function runGenericSensorTests(sensorName) {
     });
   }, `${sensorName}: throw 'TypeError' if frequency is invalid`);
 
-  if (spatialSensors.indexOf(sensorName) == -1) {
+  if (!verifyRemappedReading) {
     // The sensorType does not represent a spatial sensor.
     return;
   }
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
     const sensor = new sensorType({referenceFrame: "screen"});
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
 
+    const mockSensorProvider = await sensorTest.getMockSensorProvider();
+    const mockSensor = await mockSensorProvider.getCreatedSensor();
+    await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
     await sensorWatcher.wait_for("reading");
-    //TODO use mock data to verify sensor readings, blocked by issue:
-    // https://github.com/web-platform-tests/wpt/issues/9686
-    assert_reading_not_null(sensor);
+    assert_true(verifyRemappedReading(sensor));
 
     sensor.stop();
   }, `${sensorName}: sensor reading is correct when options.referenceFrame is 'screen'`);

@@ -12,5 +12,9 @@
 
 <script>
 runOrienationSensorTests('RelativeOrientationSensor');
-runGenericSensorTests('RelativeOrientationSensor');
+runGenericSensorTests(
+  'RelativeOrientationSensor',
+  verify_quat_sensor_reading.bind(null, [kDefaultReading]),
+  verify_quat_sensor_reading.bind(null, [kMappedReading])
+);
 </script>

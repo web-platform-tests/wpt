@@ -12,5 +12,9 @@
 
 <script>
 runOrienationSensorTests('AbsoluteOrientationSensor');
-runGenericSensorTests('AbsoluteOrientationSensor');
+runGenericSensorTests(
+  'AbsoluteOrientationSensor',
+  verify_sensor_reading.bind(null, [kDefaultReading]),
+  verify_sensor_reading.bind(null, [kMappedReading])
+);
 </script>

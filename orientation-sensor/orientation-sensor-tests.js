@@ -1,24 +1,21 @@
-//IEEE 754: single precision retricts to 7 decimal digits
-const float_precision = 1e-7;
+const kDefaultReading = [1, 0, 0, 0]; // 180 degrees around X axis.
+const kRotationMatrix = [1,  0,  0,  0,
+                         0, -1,  0,  0,
+                         0,  0, -1,  0,
+                         0,  0,  0,  1];
+const kRotationDOMMatrix = new DOMMatrix(kRotationMatrix);
 
-function create_matrix(quat) {
-  const X = quat[0];
-  const Y = quat[1];
-  const Z = quat[2];
-  const W = quat[3];
-  const mat = new Array(
-    1-2*Y*Y-2*Z*Z, 2*X*Y-2*Z*W, 2*X*Z+2*Y*W, 0,
-    2*X*Y+2*Z*W, 1-2*X*X-2*Z*Z, 2*Y*Z-2*X*W, 0,
-    2*X*Z-2*Y*W, 2*Y*Z+2*W*X, 1-2*X*X-2*Y*Y, 0,
-    0, 0, 0, 1
-  );
-  return mat;
-}
+// 'orientation.angle == 270'
+const kMappedReading = [-0.707107, 0.707107, 0, 0];
 
-async function checkQuaternion(t, sensorType) {
+async function checkQuaternion(t, sensorType, sensorTest) {
   const sensor = new sensorType();
   const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
   sensor.start();
+
+  const mockSensorProvider = await sensorTest.getMockSensorProvider();
+  const mockSensor = await mockSensorProvider.getCreatedSensor();
+  await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
 
   await eventWatcher.wait_for("reading");
   assert_equals(sensor.quaternion.length, 4);
@@ -26,7 +23,7 @@ async function checkQuaternion(t, sensorType) {
   sensor.stop();
 };
 
-async function checkPopulateMatrix(t, sensorType) {
+async function checkPopulateMatrix(t, sensorType, sensorTest) {
   const sensor = new sensorType();
   const eventWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
 
@@ -42,27 +39,30 @@ async function checkPopulateMatrix(t, sensorType) {
   }
 
   sensor.start();
+
+  const mockSensorProvider = await sensorTest.getMockSensorProvider();
+  const mockSensor = await mockSensorProvider.getCreatedSensor();
+  await mockSensor.setUpdateSensorReadingFunction(update_sensor_reading);
+
   await eventWatcher.wait_for("reading");
-  const quat = sensor.quaternion;
-  const mat_expect = create_matrix(quat);
 
   // Works for all supported types.
   const mat_32 = new Float32Array(16);
   sensor.populateMatrix(mat_32);
-  assert_array_approx_equals(mat_32, mat_expect, float_precision);
+  assert_array_equals(mat_32, kRotationMatrix);
 
   const mat_64 = new Float64Array(16);
   sensor.populateMatrix(mat_64);
-  assert_array_equals(mat_64, mat_expect);
+  assert_array_equals(mat_64, kRotationMatrix);
 
   const mat_dom = new DOMMatrix();
   sensor.populateMatrix(mat_dom);
-  assert_array_equals(mat_dom.toFloat64Array(), mat_expect);
+  assert_array_equals(mat_dom.toFloat64Array(), kRotationMatrix);
 
   // Sets every matrix element.
   mat_64.fill(123);
   sensor.populateMatrix(mat_64);
-  assert_array_equals(mat_64, mat_expect);
+  assert_array_equals(mat_64, kRotationMatrix);
 
   sensor.stop();
 }
@@ -70,14 +70,14 @@ async function checkPopulateMatrix(t, sensorType) {
 function runOrienationSensorTests(sensorName) {
   const sensorType = self[sensorName];
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
-    return checkQuaternion(t, sensorType);
+    return checkQuaternion(t, sensorType, sensorTest);
   }, `${sensorName}.quaternion return a four-element FrozenArray.`);
 
-  sensor_test(async t => {
+  sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
-    return checkPopulateMatrix(t, sensorType);
+    return checkPopulateMatrix(t, sensorType, sensorTest);
   }, `${sensorName}.populateMatrix() method works correctly.`);
 }
 

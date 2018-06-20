@@ -9,7 +9,19 @@
 <div id="log"></div>
 <script>
 
-runGenericSensorTests('Magnetometer');
-runGenericSensorTests('UncalibratedMagnetometer');
+const kDefaultReading = [-19.2, 12.1, -44.3];
+const kMappedReading = [-12.1, -19.2, -44.3];
+
+runGenericSensorTests(
+  'Magnetometer',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
+
+runGenericSensorTests(
+  'UncalibratedMagnetometer',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
 
 </script>

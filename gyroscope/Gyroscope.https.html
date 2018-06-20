@@ -9,6 +9,13 @@
 <div id="log"></div>
 <script>
 
-runGenericSensorTests('Gyroscope');
+const kDefaultReading = [1.12345, 2.12345, 3.12345];
+const kMappedReading = [-2.12345, 1.12345, 3.12345];
+
+runGenericSensorTests(
+  'Gyroscope',
+  verify_sensor_reading.bind(null, kDefaultReading),
+  verify_sensor_reading.bind(null, kMappedReading)
+);
 
 </script>

@@ -9,7 +9,7 @@
 promise_test(async () => {
   const idl = await fetch("/interfaces/secure-contexts.idl").then(r => r.text());
   const workers = await fetch("/interfaces/dedicated-workers.idl").then(r => r.text());
-  
+
   const idl_array = new IdlArray();
   idl_array.add_idls(idl);
   idl_array.add_dependency_idls(workers);

@@ -14,7 +14,7 @@
   const header = 'Feature-Policy header: picture-in-picture "none"';
 
   promise_test(t => {
-    return isPictureInPictureAllowed(t).then(t.step_func_done((result) => {
+    return isPictureInPictureAllowed().then(t.step_func_done((result) => {
       assert_false(result);
     }));
   }, header + ' disallows the top-level document.');

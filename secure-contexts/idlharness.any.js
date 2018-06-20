@@ -17,4 +17,4 @@ promise_test(async () => {
     WindowOrWorkerGlobalScope: ["self"],
   });
   idl_array.test();
-}, "Test IDL implementation of performance-timeline API");
+}, "Test IDL implementation of Secure Contexts");

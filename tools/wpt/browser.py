@@ -5,13 +5,10 @@ import re
 import shutil
 import stat
 import subprocess
-import sys
 import tempfile
 from abc import ABCMeta, abstractmethod
-from ConfigParser import RawConfigParser
 from datetime import datetime, timedelta
 from distutils.spawn import find_executable
-from io import BytesIO
 
 from utils import call, get, untar, unzip
 
@@ -112,7 +109,7 @@ class Firefox(Browser):
 
         try:
             mozinstall.install(filename, dest)
-        except mozinstall.mozinstall.InstallError as e:
+        except mozinstall.mozinstall.InstallError:
             if platform == "mac" and os.path.exists(os.path.join(dest, "Firefox Nightly.app")):
                 # mozinstall will fail if nightly is already installed in the venv because
                 # mac installation uses shutil.copy_tree
@@ -286,6 +283,28 @@ class Firefox(Browser):
         return m.group(1)
 
 
+class Fennec(Browser):
+    """Fennec-specific interface."""
+
+    product = "fennec"
+    requirements = "requirements_firefox.txt"
+
+    def install(self, dest=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None):
+        raise NotImplementedError
+
+    def find_webdriver(self):
+        raise NotImplementedError
+
+    def install_webdriver(self, dest=None):
+        raise NotImplementedError
+
+    def version(self, binary=None):
+        return None
+
+
 class Chrome(Browser):
     """Chrome-specific interface.
 
@@ -348,16 +367,19 @@ class Chrome(Browser):
 
     def version(self, binary=None):
         binary = binary or self.binary
-        try:
-            version_string = call(binary, "--version").strip()
-        except subprocess.CalledProcessError:
-            logger.warn("Failed to call %s", binary)
-            return None
-        m = re.match(r"Google Chrome (.*)", version_string)
-        if not m:
-            logger.warn("Failed to extract version from: s%", version_string)
-            return None
-        return m.group(1)
+        if uname[0] != "Windows":
+            try:
+                version_string = call(binary, "--version").strip()
+            except subprocess.CalledProcessError:
+                logger.warn("Failed to call %s", binary)
+                return None
+            m = re.match(r"Google Chrome (.*)", version_string)
+            if not m:
+                logger.warn("Failed to extract version from: s%", version_string)
+                return None
+            return m.group(1)
+        logger.warn("Unable to extract version from binary on Windows.")
+        return None
 
 
 class ChromeAndroid(Browser):

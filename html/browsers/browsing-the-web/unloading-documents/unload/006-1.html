@@ -4,7 +4,7 @@
 onpagehide = function() {
   onpagehide = null;
   setTimeout(function() {
-               parent.t.step_func(function() { assert_unreached('setTimeout survived navigatoin'); })
+               parent.t.unreached_func('setTimeout survived navigatoin');
              }, 1000);
 }
 if (parent.loaded) {

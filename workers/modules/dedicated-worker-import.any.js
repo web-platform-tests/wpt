@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<title>DedicatedWorker: import</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
-
 // Starts a dedicated worker for |scriptURL| and waits until the list of
 // imported modules is sent from the worker. Passes if the list is equal to
 // |expectedImportedModules|.
@@ -43,5 +37,3 @@ import_test('resources/dynamic-import-and-then-static-import-worker.js',
 import_test('resources/eval-dynamic-import-worker.js',
             ['export-on-load-script.js'],
             'eval(import()).');
-
-</script>

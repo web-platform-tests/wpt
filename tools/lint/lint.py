@@ -472,6 +472,26 @@ def check_regexp_line(repo_root, path, f):
 
     return errors
 
+meta_yml_extensions_pattern = re.compile(b"^[a-zA-z0-9_]+:$")
+meta_yml_item_pattern = re.compile(b"^  - [a-zA-Z0-9-]+$")
+
+def check_meta_yml_contents(repo_root, path, contents):
+    errors = []
+    for i, line in enumerate(contents.splitlines()):
+        if i == 0:
+            if line != "suggested_reviewers:":
+                errors.append(("INVALID-META-YML", "First line was not `suggested_reviewers:`", path, i+1))
+        else:
+            if meta_yml_extensions_pattern.match(line):
+                break  # Allow extensions in META.yml without having to update the linter.
+            if not meta_yml_item_pattern.match(line):
+                errors.append(("INVALID-META-YML", "Expected item with username", path, i+1))
+
+    if i < 1:
+        errors.append(("INVALID-META-YML", "Expected item with username", path, i+1))
+
+    return errors
+
 def check_parsed(repo_root, path, f):
     source_file = SourceFile(repo_root, path, "/", contents=f.read())
 
@@ -487,6 +507,9 @@ def check_parsed(repo_root, path, f):
             not source_file.name_is_reference and
             not source_file.spec_links):
             return [("MISSING-LINK", "Testcase file must have a link to a spec", path, None)]
+
+    if source_file.filename == "META.yml":
+        return check_meta_yml_contents(repo_root, path, source_file.contents)
 
     if source_file.name_is_non_test:
         return []

@@ -22,7 +22,6 @@
                         const img = iframe.contentWindow.document.createElement('img');
                         img.src = './square.png';
                         iframe.contentWindow.document.body.appendChild(img);
-                        console.info('test1b')
                     })
                     doc.body.appendChild(iframe);
                     add_completion_callback(_ => iframe.remove());

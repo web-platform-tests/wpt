@@ -6,4 +6,4 @@ async_test((test) => {
       test.done()
     }
   })
-})
+}, 'Service Workers should be notified about resources injected into anonymous IFRAMEs.')

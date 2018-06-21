@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+    <meta charset='utf-8' />
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <script src='resources/test-helpers.sub.js'></script>
+    <script>
+
+    promise_test((test) => {
+        const worker = './resources/anonymous-iframe.js';
+        const scope = "./resources/anonymous-iframe-frame.html";
+        return service_worker_unregister_and_register(test, worker, scope)
+            .then((reg) => wait_for_state(test, reg.installing, 'activated'))
+            .then(() => with_iframe(scope))
+            .then((iframe) => {
+                add_completion_callback(_ => iframe.remove());
+
+                // inject an iframe with src=about:blank
+                ((doc) => {
+                    const iframe = doc.createElement('iframe');
+                    iframe.addEventListener('load', () => {
+                        const img = iframe.contentWindow.document.createElement('img');
+                        img.src = './square.png';
+                        iframe.contentWindow.document.body.appendChild(img);
+                        console.info('test1b')
+                    })
+                    doc.body.appendChild(iframe);
+                    add_completion_callback(_ => iframe.remove());
+                })(iframe.contentWindow.document);
+
+                return fetch_tests_from_worker(iframe.contentWindow.navigator.serviceWorker.controller);
+            })
+            .catch(unreached_rejection(test))
+            .then(() => service_worker_unregister(test, scope));
+      }, 'Service Workers should be notified about resources injected into IFRAMEs with src=about:blank');
+
+    promise_test((test) => {
+        const worker = './resources/anonymous-iframe.js';
+        const scope = "./resources/anonymous-iframe-frame.html";
+        return service_worker_unregister_and_register(test, worker, scope)
+            .then((reg) => wait_for_state(test, reg.installing, 'activated'))
+            .then(() => with_iframe(scope))
+            .then((iframe) => {
+                add_completion_callback(_ => iframe.remove());
+
+                // inject an iframe with a linked reference in the `srcdoc`
+                ((doc) => {
+                    const iframe = doc.createElement('iframe')
+                    iframe.srcdoc = '<img src=\'./square.png\'/>'
+                    doc.body.appendChild(iframe)
+                    add_completion_callback(_ => iframe.remove());
+                })(iframe.contentWindow.document);
+
+                return fetch_tests_from_worker(iframe.contentWindow.navigator.serviceWorker.controller);
+            })
+            .catch(unreached_rejection(test))
+            .then(() => service_worker_unregister(test, scope));
+      }, 'Service Workers should be notified about resources injected into IFRAMEs via `srcdoc`');
+
+    </script>
+</head>

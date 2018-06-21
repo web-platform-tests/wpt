@@ -9,14 +9,21 @@
 'use strict';
 
 promise_test(async () => {
-  const cssfontloading = await fetch('/interfaces/css-font-loading.idl').then(r => r.text);
-  const dom = await fetch('/interfaces/dom.idl').then(r => r.text);
+  const cssfontloading = await fetch('/interfaces/css-font-loading.idl').then(r => r.text());
+  const dom = await fetch('/interfaces/dom.idl').then(r => r.text());
+  const html = await fetch('/interfaces/html.idl').then(r => r.text());
+  const cssom = await fetch('/interfaces/cssom.idl').then(r => r.text());
 
   const idl_array = new IdlArray();
   idl_array.add_idls(cssfontloading);
   idl_array.add_dependency_idls(dom);
+  idl_array.add_dependency_idls(html);
+  idl_array.add_dependency_idls(cssom);
   idl_array.add_objects({
-    Document: ['document']
+    Document: ['document'],
+    FontFace: ['new FontFace("family", "src")'],
+    FontFaceSetLoadEvent: ['new FontFaceSetLoadEvent("type")'],
+    FontFaceSet: ['document.fonts'],
   });
   idl_array.test();
 }, 'css-font-loading interfaces');

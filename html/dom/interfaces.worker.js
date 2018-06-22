@@ -3,10 +3,19 @@
 importScripts("/resources/testharness.js");
 importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");
 
-function doTest([html, dom, cssom, touchevents, uievents]) {
+// https://html.spec.whatwg.org/
+
+promise_test(async () => {
+  const srcs = ["html", "dom", "cssom", "touchevents", "uievents"];
+  const [html, dom, cssom, touchevents, uievents] = await Promise.all(
+      srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
+
   var idlArray = new IdlArray();
-  idlArray.add_untested_idls(dom + cssom + touchevents + uievents);
   idlArray.add_idls(html);
+  idlArray.add_dependency_idls(dom);
+  idlArray.add_dependency_idls(cssom);
+  idlArray.add_dependency_idls(touchevents);
+  idlArray.add_dependency_idls(uievents);
 
   idlArray.add_objects({
     WorkerNavigator: ['self.navigator'],
@@ -18,19 +27,6 @@ function doTest([html, dom, cssom, touchevents, uievents]) {
   });
 
   idlArray.test();
-};
-
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-promise_test(function() {
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      fetchData("/interfaces/touchevents.idl"),
-                      fetchData("/interfaces/uievents.idl")])
-                .then(doTest);
-}, "Test driver");
+}, 'html interfaces');
 
 done();

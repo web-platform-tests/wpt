@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-hashed-attributes' 'nonce-abc' 'sha256-thisdoesnotmatch'; img-src *;">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'unsafe-hashes' 'nonce-abc' 'sha256-thisdoesnotmatch'; img-src *;">
     <title>Event handlers should be not allowed if a matching hash is not present</title>
     <script src='/resources/testharness.js' nonce='abc'></script>
     <script src='/resources/testharnessreport.js' nonce='abc'></script>

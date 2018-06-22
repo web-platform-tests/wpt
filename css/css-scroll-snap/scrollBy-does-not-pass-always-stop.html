@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div {
+  position: absolute;
+  margin: 0px;
+}
+#scroller {
+  height: 600px;
+  width: 600px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+}
+#space {
+  width: 2000px;
+  height: 2000px;
+  scroll-snap-align: start;
+}
+
+.snap {
+  width: 200px;
+  height: 200px;
+  background-color: blue;
+  scroll-snap-align: start;
+}
+
+#left-top {
+  left: 10px;
+  top: 10px;
+  scroll-snap-stop: always;
+}
+
+#right-top {
+  left: 800px;
+  top: 10px;
+}
+
+#left-bottom {
+  left: 10px;
+  top: 800px;
+}
+
+#right-bottom {
+  left: 800px;
+  top: 800px;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div id="left-top" class="snap"></div>
+  <div id="right-top" class="snap"></div>
+  <div id="left-bottom" class="snap"></div>
+  <div id="right-bottom" class="snap"></div>
+</div>
+
+<script>
+var scroller = document.getElementById("scroller");
+var always_snap = document.getElementById("left-top");
+[
+  [{left: 800}, "horizontal"],
+  [{top: 800}, "vertical"],
+  [{left: 800, top: 800}, "both"]
+].forEach((input, direction) => {
+    test(() => {
+    always_snap.style.scrollSnapStop = "normal";
+    scroller.scrollTo(0, 0);
+    assert_equals(scroller.scrollLeft, 0);
+    assert_equals(scroller.scrollTop, 0);
+
+    scroller.scrollBy(input);
+    if (input.left)
+      assert_equals(scroller.scrollLeft, 800);
+    if (input.top)
+      assert_equals(scroller.scrollTop, 800);
+  }, "scrollBy() should snap at the closest snap position to the end on " + direction + " direction.");
+
+  test(() => {
+    always_snap.style.scrollSnapStop = "always";
+    scroller.scrollTo(0, 0);
+    assert_equals(scroller.scrollLeft, 0);
+    assert_equals(scroller.scrollTop, 0);
+
+    scroller.scrollBy(input);
+    if (input.left)
+      assert_equals(scroller.scrollLeft, 10);
+    if (input.top)
+      assert_equals(scroller.scrollTop, 10);
+  }, "scrollBy() should not pass 'scroll-snap-stop: always' snap positions on " + direction + " direction.");
+});
+</script>

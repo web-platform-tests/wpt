@@ -755,54 +755,7 @@ IdlArray.prototype.test = function()
     // encountered.
     this.collapse_partials();
 
-    for (var lhs in this["implements"])
-    {
-        this.recursively_get_implements(lhs).forEach(function(rhs)
-        {
-            var errStr = lhs + " implements " + rhs + ", but ";
-            if (!(lhs in this.members)) throw errStr + lhs + " is undefined.";
-            if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
-            if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
-            if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
-            this.members[rhs].members.forEach(function(member)
-            {
-                this.members[lhs].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
-        }.bind(this));
-    }
-    this["implements"] = {};
-
-    for (var lhs in this["includes"])
-    {
-        this.recursively_get_includes(lhs).forEach(function(rhs)
-        {
-            var errStr = lhs + " includes " + rhs + ", but ";
-            if (!(lhs in this.members)) throw errStr + lhs + " is undefined.";
-            if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
-            if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
-            if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
-            this.members[rhs].members.forEach(function(member)
-            {
-                this.members[lhs].members.push(new IdlInterfaceMember(member));
-            }.bind(this));
-        }.bind(this));
-    }
-    this["includes"] = {};
-
-    // Assert B defined for A : B
-    for (var member of Object.values(this.members).filter(m => m.base)) {
-        const lhs = member.name;
-        const rhs = member.base;
-        if (!(rhs in this.members)) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is undefined.`);
-        const lhs_is_interface = this.members[lhs] instanceof IdlInterface;
-        const rhs_is_interface = this.members[rhs] instanceof IdlInterface;
-        if (rhs_is_interface != lhs_is_interface) {
-            if (!lhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is not an interface.`);
-            if (!rhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is not an interface.`);
-        }
-        // Check for circular dependencies.
-        member.get_inheritance_stack();
-    }
+    this.collapse_inherits();
 
     Object.getOwnPropertyNames(this.members).forEach(function(memberName) {
         var member = this.members[memberName];
@@ -858,7 +811,7 @@ IdlArray.prototype.collapse_partials = function()
             testedPartials.set(parsed_idl.name, partialTestCount);
 
             test(function () {
-                assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
+                assert_true(originalExists, `Original ${parsed_idl.type} ${parsed_idl.name} should be defined`);
             }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);
         }
         if (!originalExists) {
@@ -906,6 +859,63 @@ IdlArray.prototype.collapse_partials = function()
         }.bind(this));
     }.bind(this));
     this.partials = [];
+}
+
+//@}
+IdlArray.prototype.collapse_inherits = function()
+//@{
+{
+    // Assert B defined for A : B
+    for (var member of Object.values(this.members).filter(m => !m.untested && m.base)) {
+        const lhs = member.name;
+        const rhs = member.base;
+        test(function() {
+            if (!(rhs in this.members)) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is undefined.`);
+            const lhs_is_interface = this.members[lhs] instanceof IdlInterface;
+            const rhs_is_interface = this.members[rhs] instanceof IdlInterface;
+            if (rhs_is_interface != lhs_is_interface) {
+                if (!lhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${lhs} is not an interface.`);
+                if (!rhs_is_interface) throw new IdlHarnessError(`${lhs} inherits ${rhs}, but ${rhs} is not an interface.`);
+            }
+            // Check for circular dependencies.
+            member.get_inheritance_stack();
+        }.bind(this), `${lhs} inheritance stack`);
+    }
+
+    for (var lhs in this["implements"]) {
+        test(function() {
+            this.recursively_get_implements(lhs).forEach(function (rhs) {
+                var errStr = lhs + " implements " + rhs + ", but ";
+                if (!(lhs in this.members)) throw errStr + lhs + " is undefined.";
+                if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
+                if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
+                if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
+                this.members[rhs].members.forEach(function (member) {
+                    this.members[lhs].members.push(new IdlInterfaceMember(member));
+                }.bind(this));
+            }.bind(this));
+        }.bind(this), `${lhs} implements stack`);
+    }
+    this["implements"] = {};
+
+    for (var lhs in this["includes"])
+    {
+        test(function () {
+            this.recursively_get_includes(lhs).forEach(function(rhs)
+            {
+                var errStr = lhs + " includes " + rhs + ", but ";
+                if (!(lhs in this.members)) throw errStr + lhs + " is undefined.";
+                if (!(this.members[lhs] instanceof IdlInterface)) throw errStr + lhs + " is not an interface.";
+                if (!(rhs in this.members)) throw errStr + rhs + " is undefined.";
+                if (!(this.members[rhs] instanceof IdlInterface)) throw errStr + rhs + " is not an interface.";
+                this.members[rhs].members.forEach(function(member)
+                {
+                    this.members[lhs].members.push(new IdlInterfaceMember(member));
+                }.bind(this));
+            }.bind(this));
+        }.bind(this), `${lhs} includes stack`);
+    }
+    this["includes"] = {};
 }
 
 //@}
@@ -1310,7 +1320,7 @@ IdlInterface.prototype.get_inheritance_stack = function() {
     while (idl_interface.base) {
         var base = this.array.members[idl_interface.base];
         if (!base) {
-            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
+            throw new IdlHarnessError(`${idl_interface.name} base ${idl_interface.base} not found`);
         } else if (stack.indexOf(base) > -1) {
             stack.push(base);
             let dep_chain = stack.map(i => i.name).join(',');

@@ -39,8 +39,8 @@ def capabilities_for_port(server_config, **kwargs):
             "binary": kwargs["binary"],
             "args": kwargs.get("binary_args", []),
             "certificates": [
-                { "host": server_config["browser_host"],
-                  "certificateFile": kwargs["host_cert_path"] }
+                {"host": server_config["browser_host"],
+                 "certificateFile": kwargs["host_cert_path"]}
             ]
         }
         return capabilities

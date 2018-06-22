@@ -769,7 +769,7 @@ IdlArray.prototype.test = function()
     }.bind(this));
 
     // Now run test() on every member, and test_object() for every object.
-    for (var name in this.members)
+    for (const name of Object.keys(this.members).sort())
     {
         this.members[name].test();
         if (name in this.objects)
@@ -794,7 +794,9 @@ IdlArray.prototype.collapse_partials = function()
 //@{
 {
     const testedPartials = new Map();
-    this.partials.forEach(function(parsed_idl)
+    this.partials
+        .sort((p1, p2) => p1.name > p2.name ? 1 : -1)
+        .forEach(function(parsed_idl)
     {
         const originalExists = parsed_idl.name in this.members
             && (this.members[parsed_idl.name] instanceof IdlInterface
@@ -866,7 +868,7 @@ IdlArray.prototype.collapse_inherits = function()
 //@{
 {
     // Assert B defined for A : B
-    for (var member of Object.values(this.members).filter(m => !m.untested && m.base)) {
+    for (var member of Object.values(this.members).filter(m => !m.untested && m.base).sort()) {
         const lhs = member.name;
         const rhs = member.base;
         test(function() {
@@ -882,7 +884,7 @@ IdlArray.prototype.collapse_inherits = function()
         }.bind(this), `${lhs} inheritance stack`);
     }
 
-    for (var lhs in this["implements"]) {
+    for (var lhs in Object.keys(this["implements"]).sort()) {
         test(function() {
             this.recursively_get_implements(lhs).forEach(function (rhs) {
                 var errStr = lhs + " implements " + rhs + ", but ";
@@ -898,7 +900,7 @@ IdlArray.prototype.collapse_inherits = function()
     }
     this["implements"] = {};
 
-    for (var lhs in this["includes"])
+    for (var lhs in Object.keys(this["includes"]).sort())
     {
         test(function () {
             this.recursively_get_includes(lhs).forEach(function(rhs)
@@ -1518,9 +1520,10 @@ IdlInterface.prototype.test_self = function()
             //    value of [[Prototype]] is the interface object for that other
             //    interface."
             var has_interface_object =
-                !this.array
-                     .members[this.base]
-                     .has_extended_attribute("NoInterfaceObject");
+                this.array.members[this.base] &&
+                    !this.array
+                        .members[this.base]
+                        .has_extended_attribute("NoInterfaceObject");
             if (has_interface_object) {
                 assert_own_property(self, this.base,
                                     'should inherit from ' + this.base +
@@ -1726,9 +1729,10 @@ IdlInterface.prototype.test_self = function()
             if (this.base) {
                 inherit_interface = this.base;
                 inherit_interface_has_interface_object =
-                    !this.array
-                         .members[inherit_interface]
-                         .has_extended_attribute("NoInterfaceObject");
+                    this.array.members[inherit_interface] &&
+                        !this.array
+                            .members[inherit_interface]
+                            .has_extended_attribute("NoInterfaceObject");
             } else if (this.name === "DOMException") {
                 inherit_interface = 'Error';
                 inherit_interface_has_interface_object = true;
@@ -2788,6 +2792,7 @@ IdlInterface.prototype.has_stringifier = function()
         return true;
     }
     if (this.base &&
+        this.array.members[this.base] &&
         this.array.members[this.base].has_stringifier()) {
         return true;
     }

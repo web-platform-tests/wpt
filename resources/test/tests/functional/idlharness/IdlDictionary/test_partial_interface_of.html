@@ -35,6 +35,19 @@
       idlArray.add_idls('dictionary B {};');
       idlArray.test();
     })();
+
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_untested_idls('dictionary A : B {};');
+      idlArray.collapse_inherits();
+    })();
+
+    (() => {
+      let i = new IdlArray();
+      i.add_untested_idls('dictionary C : D {};');
+      i.add_untested_idls('interface D {};');
+      i.collapse_inherits();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -43,6 +56,18 @@
     "message": null
   },
   "summarized_tests": [
+    {
+      "name": "A inheritance stack",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "A inherits B, but B is undefined."
+    },
+    {
+      "name": "C inheritance stack",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "C inherits D, but C is not an interface."
+    },
     {
       "name": "Partial dictionary A: original dictionary defined",
       "status_string": "FAIL",

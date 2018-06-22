@@ -54,6 +54,19 @@
         partial interface D {};`);
       idlArray.collapse_partials();
     })();
+
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls('interface E : F {};');
+      idlArray.collapse_inherits();
+    })();
+
+    (() => {
+      let i = new IdlArray();
+      i.add_idls('interface G : H {};');
+      i.add_idls('dictionary H {};');
+      i.collapse_inherits();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -62,6 +75,18 @@
     "message": null
   },
   "summarized_tests": [
+    {
+      "name": "E inheritance stack",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "E inherits F, but F is undefined."
+    },
+    {
+      "name": "G inheritance stack",
+      "status_string": "FAIL",
+      "properties": {},
+      "message": "G inherits H, but H is not an interface."
+    },
     {
       "name": "Partial interface A: original interface defined",
       "status_string": "FAIL",

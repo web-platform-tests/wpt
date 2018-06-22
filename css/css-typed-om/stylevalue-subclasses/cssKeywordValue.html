@@ -26,4 +26,10 @@ for (const args of gTestArguments) {
   }, `CSSKeywordValue can be constructed from ${args.description}`);
 }
 
+test(() => {
+  const result = new CSSKeywordValue(null);
+  assert_not_equals(result, null, 'A CSSKeywordValue should be created');
+  assert_equals(result.value, "null", 'Value attribute should be "null"');
+}, 'CSSKeywordValue can be constructed from a null pointer');
+
 </script>

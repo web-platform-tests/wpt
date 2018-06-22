@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webusb/resources/fake-devices.js"></script>
+<script src="/webusb/resources/usb-helpers.js"></script>
+<script>
+'use strict';
+const iframe = document.createElement('iframe');
+let iframeUsbObject;
+
+function createIframe() {
+  return new Promise(resolve => {
+    iframe.src = 'resources/open-in-iframe.html';
+    iframe.onload = () => {
+      resolve(iframe.contentWindow.navigator.usb);
+    };
+    document.body.appendChild(iframe);
+  });
+}
+
+usb_test(() => createIframe()
+    .then(_ => iframeUsbObject = _)
+    .then(() => iframeUsbObject.getDevices())
+    .then(devices => assert_equals(devices.length, 0))
+    .then(() => document.body.removeChild(iframe))
+    .then(() => GCController.collect())
+    .then(() => iframeUsbObject.getDevices())
+    .catch(err => assert_equals(err.name, 'NotSupportedError')),
+  'detaching from iframe invalidates reference to the iframe USB object');
+</script>

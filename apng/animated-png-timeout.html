@@ -4,8 +4,12 @@
 <img src=../images/apng.png onload="loaded()"/>
 <script>
   function loaded() {
-    setTimeout(function() {
+    requestAnimationFrame(addTimeout);
+  }
+
+  function addTimeout() {
+     setTimeout(function() {
       document.documentElement.classList.remove("reftest-wait");
     }, 1000);
-  }
+}
 </script>

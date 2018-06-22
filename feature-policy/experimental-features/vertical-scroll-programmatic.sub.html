@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/feature-policy/experimental-features/resources/vertical_scroll_common.js"></script>
+<style>
+html, body {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+iframe {
+  width: 95%;
+  height: 95%;
+  border: solid 1px gold;
+  margin-left: 0px;
+  margin-top: 0px;
+}
+</style>
+<p> An &lt;iframe&gt; further below which is not allowed to block scroll.</p>
+<iframe></iframe>
+<p style="margin-top: 10000px"> Making sure there is room for vertical scroll </p>
+<script>
+  "use strict";
+
+  test(() => {
+    window.scrollTo(large_number, large_number);
+    assert_false(
+     rect_intersects(visible_rect, iframe().getBoundingClientRect()),
+     "<iframe> bounds are inside visible rect:" +
+     JSON.stringify(iframe().getBoundingClientRect().toJSON()));
+   iframe().contentDocument.body.scrollIntoView({behavior: "instant"});
+   assert_true(
+     rect_intersects(visible_rect, iframe().getBoundingClientRect()),
+     "<iframe> bounds are outside visible rect:" +
+     JSON.stringify(iframe().getBoundingClientRect().toJSON()));
+  }, "Sanity-check: element.scrollIntoView() works fine on this page.");
+
+  promise_test(async() => {
+    window.scrollTo(large_number, large_number);
+    await loadUrlInIframe(same_origin_url + "?q=script");
+    assert_true(
+      rect_intersects(visible_rect, iframe().getBoundingClientRect()),
+      "Expected the <iframe> to scroll into view but its bounds are: " +
+      JSON.stringify(iframe().getBoundingClientRect().toJSON()));
+  },
+ "Verify a same-origin frame can always scroll into view.");
+
+ promise_test(async() => {
+    window.scrollTo(large_number, large_number);
+    await loadUrlInIframe(cross_origin_url + "?q=script");
+    assert_false(
+      rect_intersects(visible_rect, iframe().getBoundingClientRect()),
+      "Expected the <iframe> not to scroll into view but its bounds are: " +
+      JSON.stringify(iframe().getBoundingClientRect().toJSON()));
+  },
+ "Verify a cross-origin frame cannot scroll into view.");
+</script>

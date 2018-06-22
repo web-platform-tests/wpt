@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/feature-policy/experimental-features/resources/vertical_scroll_common.js"></script>
+<style>
+html, body {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+iframe {
+  width: 95%;
+  height: 95%;
+  border: solid 1px gold;
+  margin-left: 0px;
+  margin-top: 0px;
+}
+</style>
+<p> An &lt;iframe&gt; further below which is not allowed to block scroll.</p>
+<iframe></iframe>
+<p style="margin-top: 10000px"> Making sure there is room for vertical scroll </p>
+<script>
+  "use strict";
+
+    promise_test(async() => {
+      await testAPIReady();
+      window.scrollTo(0, 0);
+      await inject_input();
+      assert_greater_than(
+        document.scrollingElement.scrollTop,
+        0,
+        `scrollTop did not increase.`);
+    }, `Sanity-check: make sure page does scroll.` );
+
+    for (var url of [same_origin_url, cross_origin_url]) {
+      let same_origin = (url === same_origin_url);
+      promise_test(async(test_instance) => {
+        await testAPIReady();
+        let same_origin = test_instance.properties.same_origin;
+        window.scrollTo(0, 0);
+        let initial_scroll_top = document.scrollingElement.scrollTop;
+        await loadUrlInIframe(test_instance.properties.frame_url);
+        // Tap down inside the <iframe> and then apply a gesture scroll.
+        await inject_input();
+        let new_scroll_top = document.scrollingElement.scrollTop;
+        assert_equals(new_scroll_top > initial_scroll_top, !same_origin,
+          `Did ${same_origin ? "not" : ""} expect vertical scroll.` +
+          `(scrollTop changed from ${initial_scroll_top} to ${new_scroll_top}`);
+      },
+      `Verify that a ${same_origin ? "same" : "cross"}-origin frame can ` +
+      `${same_origin ? "" : "not "}block scrolling by canceling "touchaction".`,
+      {
+        "same_origin": same_origin,
+        "frame_url": `${url}?q=touchaction`,
+      });
+    }
+  </script>

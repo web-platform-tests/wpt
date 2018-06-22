@@ -1,0 +1,7 @@
+{
+  "headers": [{
+    "name": "Content-Security-Policy",
+    "value": "script-src 'self' 'unsafe-inline'",
+    "type": "fallback"
+  }]
+}

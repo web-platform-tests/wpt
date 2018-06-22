@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#scroller {
+  width: 500px;
+  height: 500px;
+  padding: 0px;
+  margin: 0px;
+  border: 10px solid black;
+  overflow: scroll;
+  scroll-padding: 8px;
+  scroll-snap-type: both mandatory;
+}
+#content {
+  width: 1000px;
+  height: 1000px;
+  padding: 0px;
+  margin: 0px;
+}
+#target {
+  position: relative;
+  left: 400px;
+  top: 400px;
+  width: 200px;
+  height: 200px;
+  background-color: red;
+  scroll-margin: 4px;
+  scroll-snap-align: start;
+}
+</style>
+
+<div id="scroller">
+  <div id="content">
+    <div id="target"></div>
+  </div>
+</div>
+<input type="button" id="btn" value="DONE" style="width: 100px; height: 50px;"/>
+<h1>CSSScrollSnap</h1>
+<h4>Tests that the scroller can snap to the correct alignment</h4>
+<ol id="list"></ol>
+<script>
+var test_id = 0;
+var scroller = document.getElementById("scroller");
+var content = document.getElementById("content");
+var target = document.getElementById("target");
+var btn = document.getElementById("btn");
+var w = scroller.clientWidth;
+var h = scroller.clientHeight;
+var initial_x = 0;
+var initial_y = 0;
+var scrolled_x = false;
+var scrolled_y = false;
+
+var params = [
+  { direction: "horizontal", align: "start", scrollTo: "center",
+    x1: 230, x2: 270, y1: 0, y2: 500, x: 388, y: null },
+  { direction: "horizontal", align: "center", scrollTo: "right",
+    x1: 80, x2: 120, y1: 0, y2: 500, x: 500 - w / 2, y: null },
+  { direction: "horizontal", align: "end", scrollTo: "left",
+    x1: 380, x2: 420, y1: 0, y2: 500, x: 604 - (w - 8), y: null },
+  { direction: "vertical", align: "start", scrollTo: "center",
+    x1: 0, x2: 500, y1: 230, y2: 270, x: null, y: 388 },
+  { direction: "vertical", align: "center", scrollTo: "bottom",
+    x1: 0, x2: 500, y1: 80, y2: 120, x: null, y: 500 - h / 2 },
+  { direction: "vertical", align: "end", scrollTo: "top",
+    x1: 0, x2: 500, y1: 380, y2: 420, x: null, y: 604 - (h - 8) },
+  { direction: "both", align: "start", scrollTo: "center",
+    x1: 230, x2: 270, y1: 230, y2: 270, x: 388, y: 388 },
+  { direction: "both", align: "center", scrollTo: "bottom-right",
+    x1: 80, x2: 120, y1: 80, y2: 120, x: 500 - w / 2, y: 500 - h / 2 },
+  { direction: "both", align: "end", scrollTo: "top-left",
+    x1: 380, x2: 420, y1: 380, y2: 420, x: 604 - (w - 8), y: 604 - (h - 8) }
+];
+
+var tests = [];
+for (var i = 0; i < params.length; ++i) {
+  tests.push(async_test("Snap a scroll on " + params[i].direction +
+    " direction to " + params[i].align + "-alignmemnt."));
+}
+
+var instructions = [];
+var list = document.getElementById("list");
+for (var i = 0; i < params.length; i++) {
+  var element = document.createElement("li");
+  var text = document.createTextNode("Scroll the container in " +
+    params[i].direction + " direction and make the target's " +
+    params[i].scrollTo + " align with " + "the container's " +
+    params[i].scrollTo + ", until the background is yellow. " +
+    "Then tap on DONE.");
+  element.appendChild(text);
+  list.appendChild(element);
+  instructions.push(element);
+}
+
+function verify() {
+  tests[test_id].step(function() {
+    if (params[test_id].x)
+      assert_equals(scroller.scrollLeft, params[test_id].x);
+    if (params[test_id].y)
+      assert_equals(scroller.scrollTop, params[test_id].y);
+    tests[test_id].done();
+  })
+  instructions[test_id].style.color = "black";
+  instructions[test_id].style.fontWeight = "normal";
+}
+
+function setup() {
+  if (test_id >= params.length)
+    return;
+  target.style.scrollSnapAlign = params[test_id].align;
+  content.style.backgroundColor = "white";
+  instructions[test_id].style.color = "red";
+  instructions[test_id].style.fontWeight = "bold";
+  scrolled_x = false;
+  scrolled_y = false;
+  initial_x = scroller.scrollLeft;
+  initial_y = scroller.scrollTop;
+}
+
+scroller.onscroll = function() {
+  if (!scrolled_x && (scroller.scrollLeft != initial_x ||
+                      params[test_id].direction == "vertical")) {
+    scrolled_x = true;
+  }
+  if (!scrolled_y && (scroller.scrollTop != initial_y ||
+                      params[test_id].direction == "horizontal")) {
+    scrolled_y = true;
+  }
+  if (scroller.scrollLeft >= params[test_id].x1 &&
+      scroller.scrollLeft <= params[test_id].x2 &&
+      scroller.scrollTop >= params[test_id].y1 &&
+      scroller.scrollTop <= params[test_id].y2 &&
+      scrolled_x && scrolled_y) {
+    content.style.backgroundColor = "yellow";
+  } else {
+    content.style.backgroundColor = "white";
+  }
+}
+
+btn.onclick = function() {
+  verify();
+  test_id += 1;
+  setup();
+}
+
+setup();
+
+</script>

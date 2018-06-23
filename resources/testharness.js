@@ -1313,12 +1313,21 @@ policies and contribution forms [3].
                 throw new AssertionError('Test bug: need to pass exception to assert_throws()');
             }
             if (typeof code === "object") {
-                assert("name" in e && e.name == code.name,
-                       "assert_throws", description,
-                       "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
-                                    {func:func, actual:e, actual_name:e.name,
-                                     expected:code,
-                                     expected_name:code.name});
+                if (!("name" in code)) {
+                    assert(e.constructor.name == code.constructor.name,
+                           "assert_throws", description,
+                           "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
+                                        {func:func, actual:e, actual_name:e.constructor.name,
+                                         expected:code,
+                                         expected_name:code.constructor.name});
+                } else {
+                    assert("name" in e && e.name == code.name,
+                           "assert_throws", description,
+                           "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
+                                        {func:func, actual:e, actual_name:e.name,
+                                         expected:code,
+                                         expected_name:code.name});
+                }
                 return;
             }
 

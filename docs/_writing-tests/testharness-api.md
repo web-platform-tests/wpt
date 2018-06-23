@@ -762,7 +762,8 @@ assert that property `property_name` on object is readonly
              name, e.g., "TimeoutError" (for compatibility with existing
              tests, a constant is also supported, e.g., "TIMEOUT_ERR")
   * object - the thrown exception must have a property called "name" that
-             matches code.name
+             matches `code.name`, or if `code.name` is not given, must have
+             the same `constructor.name` as code
 
 `func` - a function that should throw
 

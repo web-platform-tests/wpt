@@ -173,6 +173,19 @@
         assert_throws("TEST_ERR", function() {throw e});
     }, "Test assert_throws with non-DOM-exception expected to Fail");
 
+    function FooError() {
+      return this;
+    }
+    test(function()
+    {
+        assert_throws(new FooError(), function() {throw new FooError()});
+    }, "Test assert_throws with custom exception without name property");
+
+    test(function()
+    {
+        assert_throws(new FooError(), function() {throw {name: "FooError"}});
+    }, "Test assert_throws with custom exception without name property, expected to fail");
+
     var t = async_test("Test step_func")
     setTimeout(
       t.step_func(
@@ -266,6 +279,18 @@
       "status_string": "FAIL",
       "name": "Test throw DOM exception expected to fail",
       "message": "assert_throws: function \"function () {a.appendChild(b)}\" threw object \"HierarchyRequestError: Node cannot be inserted at the specified point in the hierarchy\" that is not a DOMException NOT_FOUND_ERR: property \"code\" is equal to 3, expected 8",
+      "properties": {}
+    },
+    {
+      "status_string": "PASS",
+      "name": "Test assert_throws with custom exception without name property",
+      "message": null,
+      "properties": {}
+    },
+    {
+      "status_string": "FAIL",
+      "name": "Test assert_throws with custom exception without name property, expected to fail",
+      "message": "assert_throws: function \"function() {throw {name: \"FooError\"}}\" threw object \"[object Object]\" (\"Object\") expected object \"[object Object]\" (\"FooError\")",
       "properties": {}
     },
     {

@@ -68,6 +68,7 @@ function eucjpDecoder(stream) {
             }
             if (byte >= 0x00 && byte <= 0x7f) bytes.unshift(byte);
             out += "�";
+            continue;
         }
         if (byte >= 0x00 && byte <= 0x7f) {
             out += dec2char(byte);

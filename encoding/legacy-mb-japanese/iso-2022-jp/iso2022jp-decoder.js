@@ -193,8 +193,8 @@ function iso2022jpDecoder(stream) {
                         continue;
                     }
                 }
-                bytes.unshift(lead);
                 bytes.unshift(byte);
+                bytes.unshift(lead);
                 outFlag = false;
                 decState = outState;
                 out += "�";

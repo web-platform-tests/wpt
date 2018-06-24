@@ -36,7 +36,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                                            cache_manager, **kwargs)
     executor_kwargs["close_after_done"] = True
     capabilities = dict(DesiredCapabilities.CHROME.items())
-    capabilities.setdefault("chromeOptions", {})["prefs"] = {
+    capabilities.setdefault("goog:chromeOptions", {})["prefs"] = {
         "profile": {
             "default_content_setting_values": {
                 "popups": 1
@@ -45,12 +45,12 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     }
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
-            capabilities["chromeOptions"][capability] = kwargs[kwarg]
+            capabilities["goog:chromeOptions"][capability] = kwargs[kwarg]
     if test_type == "testharness":
-        capabilities["chromeOptions"]["useAutomationExtension"] = False
-        capabilities["chromeOptions"]["excludeSwitches"] = ["enable-automation"]
+        capabilities["goog:chromeOptions"]["useAutomationExtension"] = False
+        capabilities["goog:chromeOptions"]["excludeSwitches"] = ["enable-automation"]
     if test_type == "wdspec":
-        capabilities["chromeOptions"]["w3c"] = True
+        capabilities["goog:chromeOptions"]["w3c"] = True
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 

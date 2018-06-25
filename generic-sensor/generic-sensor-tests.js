@@ -107,7 +107,7 @@ function runGenericSensorTests(sensorName,
 
   sensor_test(async (t, sensorTest) => {
     assert_true(sensorName in self);
-    const sensor = new sensorType({frequency: 60});
+    const sensor = new sensorType();
     const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
     sensor.start();
     assert_false(sensor.hasReading);
@@ -279,42 +279,34 @@ function runGenericSensorTests(sensorName,
 //    assert_equals(cachedTimestamp1, cachedTimestamp2);
 //  }, `${sensorName}: sensor readings can not be fired on the background tab`);
 
-  sensor_test(async (t, sensorTest) => {
+  sensor_test(async t => {
     assert_true(sensorName in self);
-    const fastSensor = new sensorType({frequency: 60});
-    fastSensor.start();
+    const fastSensor = new sensorType({frequency: 30});
+    const slowSensor = new sensorType({frequency: 5});
+    slowSensor.start();
 
-    let slowSensor;  // To be initialized later.
-
-    await new Promise((resolve, reject) => {
+    const fastCounter = await new Promise((resolve, reject) => {
       let fastCounter = 0;
       let slowCounter = 0;
 
       fastSensor.onreading = () => {
-        if (fastCounter === 0) {
-          // For Magnetometer and ALS, the maximum frequency is less than 60Hz
-          // we make "slow" sensor 4 times slower than the actual applied
-          // frequency, so that the "fast" sensor will immediately overtake it
-          // despite the notification adjustments.
-          const slowFrequency = mockSensor.getSamplingFrequency() * 0.25;
-          slowSensor = new sensorType({frequency: slowFrequency});
-          slowSensor.onreading = () => {
-            if (slowCounter === 1) {
-              assert_true(fastCounter > 2,
-                          "Fast sensor overtakes the slow one");
-              fastSensor.stop();
-              slowSensor.stop();
-              resolve(mockSensor);
-            }
-            slowCounter++;
-          }
-          slowSensor.onerror = reject;
-          slowSensor.start();
-        }
         fastCounter++;
       }
+      slowSensor.onreading = () => {
+        slowCounter++;
+        if (slowCounter == 1) {
+          fastSensor.start();
+        } else if (slowCounter == 3) {
+          fastSensor.stop();
+          slowSensor.stop();
+          resolve(fastCounter);
+        }
+      }
       fastSensor.onerror = reject;
+      slowSensor.onerror = reject;
     });
+    assert_greater_than(fastCounter, 2,
+                        "Fast sensor overtakes the slow one");
   }, `${sensorName}: frequency hint works`);
 
   sensor_test(async (t, sensorTest) => {

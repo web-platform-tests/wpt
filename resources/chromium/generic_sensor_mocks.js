@@ -108,14 +108,9 @@ var GenericSensorTest = (() => {
       }
     }
 
-    getSamplingFrequency() {
-       assert_true(this.requestedFrequencies_.length > 0);
-       return this.requestedFrequencies_[0];
+    get isReading() {
+      this.sensorReadingTimerId_ !== null;
     }
-
-     get isReading() {
-       this.sensorReadingTimerId_ !== null;
-     }
   }
 
   // Class that mocks SensorProvider interface defined in

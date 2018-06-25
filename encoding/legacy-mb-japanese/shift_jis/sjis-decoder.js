@@ -46,7 +46,7 @@ function sjisDecoder(stream) {
 			else leadoffset = 0xc1;
 			if ((byte >= 0x40 && byte <= 0x7e) || (byte >= 0x80 && byte <= 0xfc))
 				ptr = (lead - leadoffset) * 188 + byte - offset;
-			if (cp == null && ptr >= 8836 && ptr <= 10528) {
+			if (ptr != null && ptr >= 8836 && ptr <= 10715) {
 				out += dec2char(0xe000 + ptr - 8836);
 				continue;
 			}

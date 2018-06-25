@@ -62,7 +62,7 @@ function big5Decoder(stream) {
 			}
 			if (ptr == null) cp = null;
 			else cp = big5[ptr];
-			if (cp == null && byte >= 0x00 && byte < 0x7f) {
+			if (cp == null && byte >= 0x00 && byte <= 0x7f) {
 				bytes.unshift(byte);
 			}
 			if (cp == null) {

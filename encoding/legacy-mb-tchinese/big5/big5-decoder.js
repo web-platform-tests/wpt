@@ -73,7 +73,7 @@ function big5Decoder(stream) {
 			out += dec2char(cp);
 			continue;
 		}
-		if (byte >= 0x00 && byte < 0x7f) {
+		if (byte >= 0x00 && byte <= 0x7f) {
 			out += dec2char(byte);
 			continue;
 		}

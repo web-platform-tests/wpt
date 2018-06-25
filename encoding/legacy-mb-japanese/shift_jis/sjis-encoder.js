@@ -73,7 +73,7 @@ function sjisEncoder(stream) {
 		}
 		if (cp >= 0xff61 && cp <= 0xff9f) {
 			temp = cp - 0xff61 + 0xa1;
-			out += temp.toString(16).toUpperCase();
+			out += " " + temp.toString(16).toUpperCase();
 			continue;
 		}
 		if (cp == 0x2212) {

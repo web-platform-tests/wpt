@@ -122,7 +122,6 @@ function userCanAbortARetry(button) {
       response.complete("success"),
       "After the user aborts, response [[complete]] is true, so complete() rejects with a InvalidStateError"
     );
-    const request = new PaymentRequest()
   }, button.textContent.trim());
 }
 </script>

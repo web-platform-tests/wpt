@@ -9,8 +9,14 @@
 <script src="helpers.js"></script>
 <script>
 test(() => {
-  assert_true("retry" in PaymentResponse.prototype, "retry must be in prototype");
-  assert_true(PaymentResponse.prototype.retry instanceof Function, "retry must be a function");
+  assert_true(
+    "retry" in PaymentResponse.prototype,
+    "retry must be in prototype"
+  );
+  assert_true(
+    PaymentResponse.prototype.retry instanceof Function,
+    "retry must be a function"
+  );
 }, "PaymentResponse.prototype must have a retry() function (smoke test).");
 
 function checkCompletedCantRetry(button) {
@@ -124,6 +130,35 @@ function userCanAbortARetry(button) {
     );
   }, button.textContent.trim());
 }
+
+function abortTheUpdate(button) {
+  button.disabled = true;
+  promise_test(async t => {
+    const { response, request } = await getPaymentRequestResponse();
+    // causes "abort the update" to run
+    const shippingChangedPromise = new Promise(resolve => {
+      request.onshippingoptionchange = () => {
+        event.updateWith({ total: { amount: { currency: "USD", value: "INVALID" } }});
+        resolve();
+      };
+    });
+    const retryPromise = response.retry({});
+    await shippingChangedPromise;
+    await promise_rejects(
+      t,
+      "TypeError",
+      retryPromise,
+      "retry() aborts with a TypeError, because totals' value is invalid"
+    );
+    await promise_rejects(
+      t,
+      "InvalidStateError",
+      response.complete("success"),
+      "After the user aborts, response [[complete]] is true, so complete() rejects with a InvalidStateError"
+    );
+  }, button.textContent.trim());
+}
+
 </script>
 <h2>
     Manual Tests for PaymentResponse.retry() - Please run in order!
@@ -179,6 +214,15 @@ function userCanAbortARetry(button) {
     </p>
     <button onclick="userIsShownErrorsFields(this);">
       When retrying, the user is shown error fields to fix.
+    </button>
+  </li>
+  <li>
+    <p>
+      When shown the payment sheet, hit pay once. Then retry once.
+    </p>
+    <button onclick="abortTheUpdate(this);">
+      When "abort the update" occurs because of an update error,
+      the `retryPromise` is rejected and response.[[complete]] becomes true.
     </button>
   </li>
   <li>

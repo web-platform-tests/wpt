@@ -59,7 +59,6 @@
   do_test(":scope"                     , "test4",  "test4");
   do_test("select > :scope"            , "test4",  "test4");
   do_test("div > :scope"               , "test4",  "");
-  do_test(":has(> :scope)"             , "test4",  "test3");
 function do_test(aSelector, aElementId, aTargetId) {
   test(function() {
     var el = document.getElementById(aElementId).closest(aSelector);

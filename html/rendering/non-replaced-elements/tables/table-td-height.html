@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table td height</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="table-tests.js"></script>
+
+<style>
+  .table {
+    height: 300px;
+    border-spacing: 0px;
+  }
+  .table td {
+    padding: 0px;
+  }
+</style>
+
+<table class="table">
+  <tr>
+    <td>January</td>
+    <td>$60</td>
+  </tr>
+  <tr>
+    <td id="pixel" height="60">February</td>
+    <td>$80</td>
+  </tr>
+  <tr>
+    <td id="percentage" height="50%">March</td>
+    <td>$70</td>
+  </tr>
+  <tr>
+    <td>April</td>
+    <td>$30</td>
+  </tr>
+  <tr>
+    <td>May</td>
+    <td>$50</td>
+  </tr>
+</table>
+
+<script>
+
+testElementHeightAttribute("td");
+
+</script>

@@ -3,12 +3,11 @@
 <title>Table thead align</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-thead-align-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="table-tests.js"></script>
 
 <style>
-  table, th, td {
-    border: 1px solid black;
-  }
   table {
     width: 200px;
   }
@@ -17,104 +16,50 @@
 <table>
   <thead align="center">
     <tr>
-      <th>Table thead align test</th>
+      <th id="center">Table thead align test</th>
       <th>Value</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>thead align is center</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tfoot>
 </table>
 
 <table>
   <thead align="middle">
     <tr>
-      <th>Table thead align test</th>
+      <th id="middle">Table thead align test</th>
       <th>Value</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>thead align is middle</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tfoot>
 </table>
 
 <table>
   <thead align="left">
     <tr>
-      <th>Table thead align test</th>
+      <th id="left">Table thead align test</th>
       <th>Value</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>thead align is left</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tfoot>
 </table>
 
 <table>
   <thead align="right">
     <tr>
-      <th>Table thead align test</th>
+      <th id="right">Table thead align test</th>
       <th>Value</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>thead align is right</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tfoot>
 </table>
 
 <table>
   <thead align="justify">
     <tr>
-      <th>Table thead align test</th>
+      <th id="justify">Table thead align test</th>
       <th>Value</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>thead align is justify</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tfoot>
 </table>
+
+<script>
+
+testElementAlignAttribute("thead");
+
+</script>

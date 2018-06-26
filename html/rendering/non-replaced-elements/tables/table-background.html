@@ -3,29 +3,44 @@
 <title>Table background</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-background-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-<table background="/images/threecolors.png">
-  <thead>
+<table id="table" background="/images/threecolors.png">
+  <thead id="thead" background="/images/threecolors.png">
     <tr>
-      <th>Month</th>
+      <th id="th" background="/images/threecolors.png">Month</th>
       <th>Savings</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
+  <tbody id="tbody" background="/images/threecolors.png">
+    <tr id="tr" background="/images/threecolors.png">
       <td>January</td>
       <td>$60</td>
     </tr>
     <tr>
-      <td>February</td>
+      <td id="td" background="/images/threecolors.png">February</td>
       <td>$80</td>
     </tr>
   </tbody>
-  <tfoot>
+  <tfoot id="tfoot" background="/images/threecolors.png">
     <tr>
       <td>Sum</td>
       <td>$140</td>
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+const ids = ["table", "thead", "tbody", "tfoot", "tr", "td", "th"];
+for (let id of ids) {
+  test(() => {
+    let elem = document.getElementById(id);
+    let css = window.getComputedStyle(elem, null).getPropertyValue("background-image");
+    let url = new URL('/images/threecolors.png', window.location.href).href;
+    assert_equals(css, `url(\"${url}\")`);
+  }, `${id} background attribute is correct`)
+}
+
+</script>

@@ -3,118 +3,63 @@
 <title>Table tfoot align</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-tfoot-align-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="table-tests.js"></script>
 
 <style>
-  table, th, td {
-    border: 1px solid black;
-  }
   table {
     width: 200px;
   }
 </style>
 
 <table>
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tbody>
   <tfoot align="center">
     <tr>
-      <td>Table tfoot align is center</td>
-      <td>-</td>
+      <td id="center">Table tfoot align test</td>
+      <td>Value</td>
     </tr>
   </tfoot>
 </table>
 
 <table>
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tbody>
   <tfoot align="middle">
     <tr>
-      <td>Table tfoot align is middle</td>
-      <td>-</td>
+      <td id="middle">Table tfoot align test</td>
+      <td>Value</td>
     </tr>
   </tfoot>
 </table>
 
 <table>
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tbody>
   <tfoot align="left">
     <tr>
-      <td>Table tfoot align is left</td>
-      <td>-</td>
+      <td id="left">Table tfoot align test</td>
+      <td>Value</td>
     </tr>
   </tfoot>
 </table>
 
 <table>
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tbody>
   <tfoot align="right">
     <tr>
-      <td>Table tfoot align is right</td>
-      <td>-</td>
+      <td id="right">Table tfoot align test</td>
+      <td>Value</td>
     </tr>
   </tfoot>
 </table>
 
 <table>
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>-</td>
-      <td>-</td>
-    </tr>
-  </tbody>
   <tfoot align="justify">
     <tr>
-      <td>Table tfoot align is justify</td>
-      <td>-</td>
+      <td id="justify">Table tfoot align test</td>
+      <td>Value</td>
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+testElementAlignAttribute("tfoot");
+
+</script>

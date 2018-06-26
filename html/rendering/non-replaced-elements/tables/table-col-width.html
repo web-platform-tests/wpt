@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table col width</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  table {
+    width: 400px;
+    border-spacing: 0px;
+  }
+  td {
+    padding: 0px;
+  }
+</style>
+
+<table>
+  <colgroup>
+    <col>
+    <col width="100">
+    <col width="50%">
+    <col>
+  </colgroup>
+  <tr>
+    <td>Person</td>
+    <td id="pixel">Height</td>
+    <td id="percentage">Age</td>
+    <td>Weight</td>
+  </tr>
+  <tr>
+    <td>John</td>
+    <td>176</td>
+    <td>23</td>
+    <td>140</td>
+  </tr>
+  <tr>
+    <td>James</td>
+    <td>178</td>
+    <td>25</td>
+    <td>147</td>
+  </tr>
+</table>
+
+<script>
+
+const data = [
+  ["pixel", "100px"],
+  ["percentage", "200px"]
+];
+for (let [type, value] of data) {
+  test(() => {
+    let elem = document.getElementById(type);
+    let css = window.getComputedStyle(elem, null).getPropertyValue("width");
+    assert_equals(css, value);
+  }, `table col height attribute ${type} is correct`)
+}
+
+</script>

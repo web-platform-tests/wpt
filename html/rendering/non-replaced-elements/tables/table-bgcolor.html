@@ -3,29 +3,43 @@
 <title>Table bgcolor</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-bgcolor-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-<table bgcolor="red">
-  <thead>
+<table id="table" bgcolor="red">
+  <thead id="thead" bgcolor="red">
     <tr>
-      <th>Month</th>
+      <th id="th" bgcolor="red">Month</th>
       <th>Savings</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
+  <tbody id="tbody" bgcolor="red">
+    <tr id="tr" bgcolor="red">
       <td>January</td>
       <td>$60</td>
     </tr>
     <tr>
-      <td>February</td>
+      <td id="td" bgcolor="red">February</td>
       <td>$80</td>
     </tr>
   </tbody>
-  <tfoot>
+  <tfoot id="tfoot" bgcolor="red">
     <tr>
       <td>Sum</td>
       <td>$140</td>
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+const ids= ["table", "thead", "tbody", "tfoot", "tr", "td", "th"];
+for (let id of ids) {
+  test(() => {
+    let elem = document.getElementById(id);
+    let css = window.getComputedStyle(elem, null).getPropertyValue("background-color");
+    assert_equals(css, "rgb(255, 0, 0)");
+  }, `${id} bgcolor attribute is correct`)
+}
+
+</script>

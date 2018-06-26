@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Table height</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  .div_160 {
+    height: 160px;
+  }
+  .div_80 {
+    height: 80px;
+  }
+</style>
+
+<table id="table_150" height="150">
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$60</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$140</td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="div_160">
+  <table id="table_80" height="50%">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Savings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>January</td>
+        <td>$60</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Sum</td>
+        <td>$140</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<br>
+
+<div class="div_80">
+  <table id="table_88" height="110%">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Savings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>January</td>
+        <td>$60</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>Sum</td>
+        <td>$140</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script>
+
+test(() => {
+  let elem = document.getElementById("table_150");
+  let css = window.getComputedStyle(elem, null).getPropertyValue("height");
+  assert_equals(css, "150px");
+}, "table height attribute pixel is correct")
+
+const data = [
+  ["80", "50%"],
+  ["88", "110%"]
+];
+for (let [pixel, percentage] of data) {
+  test(() => {
+    let elem = document.getElementById(`table_${pixel}`);
+    let css = window.getComputedStyle(elem, null).getPropertyValue("height");
+    assert_equals(css, `${pixel}px`);
+  }, `table height attribute ${percentage} is correct`)
+}
+
+</script>

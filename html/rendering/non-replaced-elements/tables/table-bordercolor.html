@@ -3,16 +3,10 @@
 <title>Table bordercolor</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-bordercolor-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-<style>
-  table {
-    border-style: solid;
-    border-width: 3px;
-  }
-</style>
-
-<table bordercolor="red">
+<table id="table" bordercolor="red">
   <thead>
     <tr>
       <th>Month</th>
@@ -36,3 +30,13 @@
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+test(() => {
+  let elem = document.getElementById("table");
+  let css = window.getComputedStyle(elem, null).getPropertyValue("border-color");
+  assert_equals(css, "rgb(255, 0, 0)");
+}, `table bordercolor attribute is correct`)
+
+</script>

@@ -3,24 +3,19 @@
 <title>Table cellpadding</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-cellpadding-ref.html">
-
-<style>
-  table, th, td {
-    border: 1px solid black;
-  }
-</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
 <table cellpadding="0">
   <thead>
     <tr>
-      <th>Month</th>
+      <th id="th_0">Month</th>
       <th>Savings</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>January</td>
+      <td id="td_0">January</td>
       <td>$60</td>
     </tr>
     <tr>
@@ -39,13 +34,13 @@
 <table cellpadding="10">
   <thead>
     <tr>
-      <th>Month</th>
+      <th id="th_10">Month</th>
       <th>Savings</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>January</td>
+      <td id="td_10">January</td>
       <td>$60</td>
     </tr>
     <tr>
@@ -60,3 +55,20 @@
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+const paddings = ["0", "10"];
+for (let padding of paddings) {
+  test(() => {
+    let th = document.getElementById(`th_${padding}`);
+    let th_css = window.getComputedStyle(th, null).getPropertyValue("padding");
+    assert_equals(th_css, `${padding}px`);
+
+    let td = document.getElementById(`th_${padding}`);
+    let td_css = window.getComputedStyle(td, null).getPropertyValue("padding");
+    assert_equals(td_css, `${padding}px`);
+  }, `table cellpadding attribute ${padding}px is correct`)
+}
+
+</script>

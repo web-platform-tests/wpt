@@ -3,15 +3,10 @@
 <title>Table cellspacing</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#tables-2">
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="match" href="table-cellspacing-ref.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-<style>
-  table, th, td {
-    border: 1px solid black;
-  }
-</style>
-
-<table cellspacing="0">
+<table id="table_0" cellspacing="0">
   <thead>
     <tr>
       <th>Month</th>
@@ -36,7 +31,7 @@
   </tfoot>
 </table>
 
-<table cellspacing="10">
+<table id="table_10" cellspacing="10">
   <thead>
     <tr>
       <th>Month</th>
@@ -60,3 +55,16 @@
     </tr>
   </tfoot>
 </table>
+
+<script>
+
+const spacings = ["0", "10"];
+for (let spacing of spacings) {
+  test(() => {
+    let table = document.getElementById(`table_${spacing}`);
+    let th_css = window.getComputedStyle(table, null).getPropertyValue("border-spacing");
+    assert_equals(th_css, `${spacing}px ${spacing}px`);
+  }, `table cellspacing attribute ${spacing}px is correct`)
+}
+
+</script>

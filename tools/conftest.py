@@ -1,6 +1,5 @@
 import platform
 import os
-import sys
 
 from hypothesis import settings, HealthCheck
 

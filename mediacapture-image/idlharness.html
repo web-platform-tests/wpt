@@ -17,15 +17,20 @@
   'use strict';
 
   promise_test(async () => {
-    const srcs = ['mediacapture-image', 'mediacapture-main', 'html', 'dom'];
+    const srcs = ['image-capture', 'mediacapture-main', 'html', 'dom'];
     const [idl, main, html, dom] = await Promise.all(
       srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
 
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext("2d");
-    context.fillStyle = "red";
-    context.fillRect(0, 0, 10, 10);
-    var track = canvas.captureStream().getVideoTracks()[0];
+    let capturer;
+    try {
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext("2d");
+      context.fillStyle = "red";
+      context.fillRect(0, 0, 10, 10);
+      var track = canvas.captureStream().getVideoTracks()[0];
+    } catch (e) {
+      // Will be surfaced in idlharness.js's test_object below.
+    }
 
     var idl_array = new IdlArray();
     idl_array.add_idls(idl);
@@ -33,7 +38,7 @@
     idl_array.add_dependency_idls(html);
     idl_array.add_dependency_idls(dom);
     idl_array.add_objects({
-      ImageCapturer : [new ImageCapture(track)]
+      ImageCapturer : [capturer]
     });
     idl_array.test();
   }, 'Test mediacapture-image IDL interfaces');

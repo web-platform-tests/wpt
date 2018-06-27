@@ -257,7 +257,10 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
 
     const all_deps = new Set();
     Object.values(this.inheritance).forEach(v => all_deps.add(v));
-    Object.values(this.implements).forEach(v => all_deps.add(v));
+    Object.entries(this.implements).forEach(([k, v]) => {
+        all_deps.add(k);
+        all_deps.add(v);
+    });
     // NOTE: If 'A includes B' for B that we care about, then A is also a dep.
     Object.keys(this.includes).forEach(k => {
         all_deps.add(k);
@@ -818,8 +821,15 @@ IdlArray.prototype.test = function()
         this.members[name].test();
         if (name in this.objects)
         {
-            this.objects[name].forEach(function(str)
+            const objects = this.objects[name];
+            if (!objects || !Array.isArray(objects)) {
+                throw new IdlHarnessError(`Invalid or empty objects for member ${name}`);
+            }
+            objects.forEach(function(str)
             {
+                if (!this.members[name] || !(this.members[name] instanceof IdlInterface)) {
+                    throw new IdlHarnessError(`Invalid object member name ${name}`);
+                }
                 this.members[name].test_object(str);
             }.bind(this));
         }

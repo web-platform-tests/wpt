@@ -1,4 +1,3 @@
-import os
 import sys
 
 from os.path import join, dirname
@@ -9,7 +8,7 @@ import pytest
 from .base import all_products, active_products
 
 sys.path.insert(0, join(dirname(__file__), "..", "..", "..", ".."))  # repo root
-from tools import localpaths
+from tools import localpaths  # noqa: flake8
 from wptserve import sslutils
 
 from wptrunner import environment
@@ -52,7 +51,7 @@ def test_server_start_config(product):
                                          False,
                                          None,
                                          env_options,
-                                         env_extras) as test_environment:
+                                         env_extras):
             start.assert_called_once()
             args = start.call_args
             config = args[0][0]

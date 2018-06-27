@@ -1,8 +1,3 @@
-// GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Generic Sensor API" spec.
-// See: https://w3c.github.io/sensors/
-
 [SecureContext, Exposed=Window]
 interface Sensor : EventTarget {
   readonly attribute boolean activated;
@@ -28,3 +23,4 @@ interface SensorErrorEvent : Event {
 dictionary SensorErrorEventInit : EventInit {
   required DOMException error;
 };
+

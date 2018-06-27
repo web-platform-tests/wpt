@@ -2,43 +2,34 @@
 <title>postMessage's task triggered by user activation</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<!-- This test is manual since we cannot currently test action triggered by user
+     activation with the test runner (blocking popups is always disabled). -->
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="support/postMessage-triggered-by-user-activation.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-window-postmessage">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/comms.html#dom-messageport-postmessage">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-broadcastchannel-postmessage">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name">
 <body>
+<p>Click all the buttons below. If only "PASS" results appear the test passes,
+  otherwise it fails.</p>
 <script>
 "use strict";
 
-function canOpenPopup() {
-  let popup = window.open("about:blank", "_blank");
-  if (popup) {
-    popup.close();
-    return true;
-  }
-  return false;
-}
-
-function appendAndClickButton(buttonText, onClickCallback) {
-    let button = document.createElement("button");
-    button.textContent = buttonText;
-    button.onclick = onClickCallback;
-    document.body.appendChild(button);
-    test_driver.click(button);
-}
+setup({explicit_timeout: true}); // Disable timeout for manual testing.
 
 async_test(t => {
   window.onmessage = t.step_func_done(e => {
-    assert_equals(e.data, "click");
-    assert_true(canOpenPopup(), "onmessage be able to open popup");
+    assert_equals(e.data, "click1");
+    assert_true(canOpenPopup(), "onmessage should be able to open popup");
   });
 
-  appendAndClickButton("Window's postMessage", t.step_func(() => {
-    window.postMessage("click", "*");
+  let button = appendButton("Window's postMessage", t.step_func(() => {
+    window.postMessage("click1", "*");
   }));
+  test_driver.click(button);
 }, "With window");
 
 async_test(t => {
@@ -47,30 +38,31 @@ async_test(t => {
   const channel = new MessageChannel();
 
   channel.port2.onmessage = t.step_func_done(e => {
-    assert_equals(e.data, "click");
-    assert_true(canOpenPopup(), "onmessage be able to open popup");
+    assert_equals(e.data, "click2");
+    assert_true(canOpenPopup(), "onmessage should be able to open popup");
   });
 
-  appendAndClickButton("MessagePort's postMessage", t.step_func(() => {
-    channel.port1.postMessage("click");
+  let button = appendButton("MessagePort's postMessage", t.step_func(() => {
+    channel.port1.postMessage("click2");
   }));
+  test_driver.click(button);
 }, "With a MessageChannel and its MessagePorts");
 
 async_test(t => {
   assert_true("BroadcastChannel" in self, "The browser must support BroadcastChannel");
 
-  const channel = new BroadcastChannel("channel name");
+  const channel = new BroadcastChannel("channel3");
 
   channel.onmessage = t.step_func_done(e => {
-    assert_equals(e.data, "click");
-    assert_true(canOpenPopup(), "onmessage be able to open popup");
+    assert_equals(e.data, "click3");
+    assert_true(canOpenPopup(), "onmessage should be able to open popup");
   });
 
-  appendAndClickButton("BroadcastChannel's postMessage", t.step_func(() => {
-    let myChannel = new BroadcastChannel("channel name");
-    myChannel.postMessage("click");
+  let button = appendButton("BroadcastChannel's postMessage", t.step_func(() => {
+    let myChannel = new BroadcastChannel("channel3");
+    myChannel.postMessage("click3");
   }));
-
+  test_driver.click(button);
 }, "With a BroadcastChannel");
 
 </script>

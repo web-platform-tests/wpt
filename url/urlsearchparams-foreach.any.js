@@ -1,7 +1,3 @@
-/*
-    https://url.spec.whatwg.org/#dom-urlsearchparams
- */
-
 test(function() {
     var params = new URLSearchParams('a=1&b=2&c=3');
     var keys = [];

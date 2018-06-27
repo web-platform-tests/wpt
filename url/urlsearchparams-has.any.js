@@ -1,7 +1,3 @@
-/*
-   http://url.spec.whatwg.org/#dom-urlsearchparams-has
-*/
-
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     assert_true(params.has('a'));

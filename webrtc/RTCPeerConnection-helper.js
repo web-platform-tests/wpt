@@ -410,6 +410,11 @@ const trackFactories = {
 function getNoiseStream(caps) {
   var tracks = [];
 
+  if (!HTMLCanvasElement.prototype.captureStream ||
+    typeof MediaStreamAudioDestinationNode === 'undefined') {
+    return navigator.mediaDevices.getUserMedia(caps);
+  }
+
   if (caps && caps.audio) {
     tracks.push(trackFactories.audio());
   }

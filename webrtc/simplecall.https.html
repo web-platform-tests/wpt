@@ -30,7 +30,7 @@
     test.done();
   });
 
-  function getUserMediaOkCallback(localStream) {
+  function getNoiseStreamOkCallback(localStream) {
     gFirstConnection = new RTCPeerConnection(null);
     gFirstConnection.onicecandidate = onIceCandidateToFirst;
     localStream.getTracks().forEach(function(track) {
@@ -104,7 +104,7 @@
   // This function starts the test.
   test.step(function() {
     getNoiseStream({ video: true, audio: true })
-      .then(test.step_func(getUserMediaOkCallback), failed('getUserMedia'));
+      .then(test.step_func(getNoiseStreamOkCallback), failed('getNoiseStream'));
   });
 </script>
 

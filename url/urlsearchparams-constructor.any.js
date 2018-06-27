@@ -1,7 +1,3 @@
-/*
-    https://url.spec.whatwg.org/#dom-urlsearchparams
- */
-
 test(function() {
     var params = new URLSearchParams();
     assert_equals(params + '', '');

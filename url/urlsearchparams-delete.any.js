@@ -1,6 +1,3 @@
-/*
-    http://url.spec.whatwg.org/#dom-urlsearchparams-delete
- */
 test(function() {
     var params = new URLSearchParams('a=b&c=d');
     params.delete('a');

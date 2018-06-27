@@ -1,6 +1,3 @@
-/*
-    http://url.spec.whatwg.org/#dom-urlsearchparams-set
- */
 test(function() {
     var params = new URLSearchParams();
     params.append('a', 'b c');

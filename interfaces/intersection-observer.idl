@@ -1,8 +1,3 @@
-// GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Intersection Observer" spec.
-// See: https://w3c.github.io/IntersectionObserver/
-
 callback IntersectionObserverCallback = void (sequence<IntersectionObserverEntry> entries, IntersectionObserver observer);
 
 [Constructor(IntersectionObserverCallback callback, optional IntersectionObserverInit options),
@@ -43,3 +38,4 @@ dictionary IntersectionObserverInit {
   DOMString rootMargin = "0px";
   (double or sequence<double>) threshold = 0;
 };
+

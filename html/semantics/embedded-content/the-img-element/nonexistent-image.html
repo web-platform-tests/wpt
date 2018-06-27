@@ -16,7 +16,7 @@
       assert_equals(e.type, "error", "image.onerror() called");
     });
     img.src = "404";
-  }, "Loading a no suffix and nonexistent image should fire onerror events");
+  }, "Loading an invalid image should fire onerror event");
 
   async_test(t => {
     var img = document.getElementById("img2");
@@ -25,7 +25,7 @@
       assert_equals(e.type, "error", "image.onerror() called");
     });
     img.src = "404.png";
-  }, "Loading a nonexistent image should fire onerror events");
+  }, "Loading a nonexistent image should fire onerror event");
 
   async_test(t => {
     var img = document.getElementById("img3");
@@ -34,5 +34,5 @@
       assert_equals(e.type, "error", "image.onerror() called");
     });
     img.src = "";
-  }, "Loading an empty URL image should fire onerror events");
+  }, "Loading an empty URL image should fire onerror event");
 </script>

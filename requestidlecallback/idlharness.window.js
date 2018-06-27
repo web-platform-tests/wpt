@@ -26,4 +26,4 @@ async_test(function() {
         }));
       }
     });
-}, "IdleDeadline object setup");
+}, 'IdleDeadline object setup');

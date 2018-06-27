@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="David Grogan" href="dgrogan@chromium.org">
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-tables-3/#visibility-collapse-track-rendering">
+<link rel="match" href="visibility-collapse-row-004-ref.html">
+<meta name="flags" content="" />
+<meta name="assert" content="percent-height descendants of cells in collapsed rows are sized correctly" />
+<title>
+visibility:collapse rows and percent-height cell descendants
+</title>
+<style>
+table {
+  background-color: skyblue;
+  height: 50%;
+  border-spacing: 3px;
+}
+tr {
+  visibility: collapse;
+}
+div {
+  height:50%; /* Need a percent height to trigger setting cell's override height after cell is laid out */
+}
+</style>
+<p><a href="https://crbug.com/855917">Bug #855917</a>: CHECK failure: height >= 0 in layout_box.cc</p>
+<table>
+  <tr><td><div></div></td></tr>
+</table>

@@ -4,7 +4,6 @@ import os
 import sys
 
 import mock
-import pytest
 import six
 
 from ...localpaths import repo_root
@@ -409,7 +408,7 @@ def test_all_filesystem_paths():
                           (os.path.join('.', 'dir_a'),
                            [],
                            ['file_c', 'file_d'])]
-    ) as m:
+    ):
         got = list(lint_mod.all_filesystem_paths('.'))
         assert got == ['file_a',
                        'file_b',
@@ -438,7 +437,7 @@ def test_main_no_args():
     try:
         sys.argv = ['./lint']
         with _mock_lint('lint', return_value=True) as m:
-            with _mock_lint('changed_files', return_value=['foo', 'bar']) as m2:
+            with _mock_lint('changed_files', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
     finally:
@@ -450,7 +449,7 @@ def test_main_all():
     try:
         sys.argv = ['./lint', '--all']
         with _mock_lint('lint', return_value=True) as m:
-            with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']) as m2:
+            with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
     finally:

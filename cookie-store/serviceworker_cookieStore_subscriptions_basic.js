@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
 });
 
 // Workaround because add_cleanup doesn't support async functions yet.
-// See https://github.com/w3c/web-platform-tests/issues/6075
+// See https://github.com/web-platform-tests/wpt/issues/6075
 async function async_cleanup(cleanup_function) {
   try {
     await cleanup_function();
@@ -40,7 +40,7 @@ promise_test(async testCase => {
 promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
-  cookie_change_received_promise = new Promise((resolve) => {
+  const cookie_change_received_promise = new Promise((resolve) => {
     self.addEventListener('cookiechange', (event) => {
       resolve(event);
     });

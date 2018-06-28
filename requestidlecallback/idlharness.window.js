@@ -20,10 +20,11 @@ async_test(function() {
       if (!window.requestIdleCallback) {
         execIDLTest();
       } else {
-        requestIdleCallback(this.step_func(d => {
+        const callback = this.step_func(d => {
           deadline = d;
           execIDLTest();
-        }));
+        });
+        requestIdleCallback(callback, { timeout: 100 });
       }
     });
 }, 'IdleDeadline object setup');

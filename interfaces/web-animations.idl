@@ -35,10 +35,10 @@ interface Animation : EventTarget {
              attribute EventHandler             oncancel;
     void cancel ();
     void finish ();
-    void play ();
-    void pause ();
-    void updatePlaybackRate (double playbackRate);
-    void reverse ();
+    Promise<Animation> play ();
+    Promise<Animation> pause ();
+    Promise<Animation> updatePlaybackRate (double playbackRate);
+    Promise<Animation> reverse ();
 };
 
 enum AnimationPlayState { "idle", "running", "paused", "finished" };

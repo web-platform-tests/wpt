@@ -4,16 +4,16 @@
 // See: https://w3c.github.io/battery/
 
 partial interface Navigator {
-    Promise<BatteryManager> getBattery();
+  Promise<BatteryManager> getBattery();
 };
 [Exposed=Window]
 interface BatteryManager : EventTarget {
-    readonly attribute boolean             charging;
-    readonly attribute unrestricted double chargingTime;
-    readonly attribute unrestricted double dischargingTime;
-    readonly attribute double              level;
-             attribute EventHandler        onchargingchange;
-             attribute EventHandler        onchargingtimechange;
-             attribute EventHandler        ondischargingtimechange;
-             attribute EventHandler        onlevelchange;
+    readonly        attribute boolean charging;
+    readonly        attribute unrestricted double chargingTime;
+    readonly        attribute unrestricted double dischargingTime;
+    readonly        attribute double level;
+                    attribute EventHandler onchargingchange;
+                    attribute EventHandler onchargingtimechange;
+                    attribute EventHandler ondischargingtimechange;
+                    attribute EventHandler onlevelchange;
 };

@@ -193,6 +193,38 @@ class RefTestNode(URLManifestItem):
 class RefTest(RefTestNode):
     item_type = "reftest"
 
+    def __init__(self, *args, **kwargs):
+        pass_conditions = kwargs.pop("pass_conditions", set())
+        RefTestNode.__init__(self, *args, **kwargs)
+        self.pass_conditions = pass_conditions
+
+    def to_json(self):
+        rv = [self.url, self.references, {}]
+        extras = rv[-1]
+        if self.timeout is not None:
+            extras["timeout"] = self.timeout
+        if self.viewport_size is not None:
+            extras["viewport_size"] = self.viewport_size
+        if self.dpi is not None:
+            extras["dpi"] = self.dpi
+        if self.pass_conditions is not None:
+            extras["pass_conditions"] = self.pass_conditions
+        return rv
+
+    @classmethod
+    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
+        source_file = get_source_file(source_files, tests_root, manifest, path)
+        url, references, extras = obj
+        return cls(source_file,
+                   url,
+                   references,
+                   url_base=manifest.url_base,
+                   timeout=extras.get("timeout"),
+                   viewport_size=extras.get("viewport_size"),
+                   dpi=extras.get("dpi"),
+                   pass_conditions=extras.get("pass_conditions"),
+                   manifest=manifest)
+
 
 class ManualTest(URLManifestItem):
     item_type = "manual"

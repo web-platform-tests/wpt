@@ -1,12 +1,13 @@
 import itertools
 import json
 import os
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from six import iteritems, itervalues, viewkeys, string_types
 
+from .disjointset import DisjointSet
 from .item import ManualTest, WebdriverSpecTest, Stub, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
 from .log import get_logger
-from .utils import from_os_path, to_os_path
+from .utils import from_os_path, to_os_path, pairwise
 
 
 CURRENT_VERSION = 4
@@ -159,7 +160,62 @@ class Manifest(object):
                 reftests[item.source_file.rel_path].add(item)
             self._reftest_nodes_by_url[item.url] = item
 
+        for reftests_by_path in itervalues(reftests):
+            for reftest in reftests_by_path:
+                pass_conditions = []
+                for pass_path in self._get_reftest_pass_paths(reftest):
+                    pass_condition = set()
+                    ref_eq_set = DisjointSet()
+
+                    # iter 1: add all URLs to the set, merging those equal
+                    for url, ref_type, ref_url in pass_path:
+                        ref_eq_set.add(url)
+                        ref_eq_set.add(ref_url)
+                        if ref_type == "==":
+                            ref_eq_set.union(url, ref_url)
+
+                    # iter 2: check all != are sat and add them
+                    is_sat = True
+                    for url, ref_type, ref_url in pass_path:
+                        if ref_type != "!=":
+                            continue
+                        url = ref_eq_set.find(url)
+                        ref_url = ref_eq_set.find(ref_url)
+                        if url == ref_url:
+                            is_sat = False
+                            break
+                        pass_condition.add((url, ref_type, ref_url))
+
+                    if not is_sat:
+                        continue
+
+                    # then add all == comparisons
+                    for eq_subset in ref_eq_set.get_disjoint_subsets():
+                        for a, b in pairwise(eq_subset):
+                            pass_condition.add((a, "==", b))
+
+                    pass_conditions.append(list(pass_condition))
+
+                reftest.pass_conditions = pass_conditions
+
         return reftests, references, changed_hashes
+
+    def _get_reftest_pass_paths(self, source):
+        """walk the reftest graph from source and find pass conditions
+
+        returns an iterator of pass conditions, given as a set of (url,
+        ref_type, ref_url) tuples
+        """
+        stack = [(source, OrderedDict())]
+        while stack:
+            node, path = stack.pop()
+            for ref_url, ref_type in node.references:
+                path[node.url] = (ref_type, ref_url)
+                if ref_url in path or ref_url not in self.reftest_nodes_by_url:
+                    yield {(a, t, b) for a, (t, b) in iteritems(path)}
+                else:
+                    next_node = self.reftest_nodes_by_url[ref_url]
+                    stack.append((next_node, path.copy()))
 
     def to_json(self):
         out_items = {

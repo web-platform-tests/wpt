@@ -1,6 +1,10 @@
 #!/bin/bash
 
-MOZTREE="$HOME/builds/clean-mozilla-central/mozilla/"
+if [ "x$1" != "x" ]; then
+  MOZTREE="$1"
+else
+  MOZTREE="$HOME/builds/clean-mozilla-central/mozilla/"
+fi
 
 cd "$(dirname "$0")"
 

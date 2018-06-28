@@ -6,10 +6,9 @@
 // https://w3c.github.io/payment-handler/
 
 promise_test(async () => {
-  const idl = await fetch('/interfaces/payment-handler.idl').then(r => r.text());
-  const sw = await fetch('/interfaces/ServiceWorker.idl').then(r => r.text());
-  const dw = await fetch('/interfaces/dedicated-workers.idl').then(r => r.text());
-  const dom = await fetch('/interfaces/dom.idl').then(r => r.text());
+  const srcs = ['payment-handler', 'ServiceWorker', 'dedicated-workers', 'dom'];
+  const [idl, sw, dw, dom] = await Promise.all(
+      srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
 
   const idlArray = new IdlArray();
   idlArray.add_idls(idl);

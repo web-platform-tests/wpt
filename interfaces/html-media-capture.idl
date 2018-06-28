@@ -4,6 +4,5 @@
 // See: https://w3c.github.io/html-media-capture/
 
 partial interface HTMLInputElement {
-    [CEReactions]
-    attribute DOMString capture;
+    [CEReactions] attribute DOMString capture;
 };

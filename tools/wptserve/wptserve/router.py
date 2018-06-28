@@ -135,7 +135,7 @@ class Router(object):
                         object and the response object.
 
         """
-        if type(methods) in types.StringTypes or methods in (any_method, "*"):
+        if type(methods) is str or methods in (any_method, "*"):
             methods = [methods]
         for method in methods:
             self.routes.append((method, compile_path_match(path), handler))

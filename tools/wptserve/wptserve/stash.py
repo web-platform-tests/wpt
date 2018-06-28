@@ -42,15 +42,15 @@ def load_env_config():
         address = tuple(address)
     else:
         address = str(address)
-    authkey = base64.decodestring(authkey)
+    authkey = base64.b64decode(authkey)
     return address, authkey
 
 def store_env_config(address, authkey):
-    authkey = base64.encodestring(authkey)
-    os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey))
+    authkey = base64.b64encode(authkey)
+    os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey.decode("ascii")))
 
 def start_server(address=None, authkey=None):
-    manager = ServerDictManager(address, authkey)
+    manager = ServerDictManager(address, authkey.encode("ascii"))
     manager.start()
 
     return (manager, manager._address, manager._authkey)

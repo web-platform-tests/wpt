@@ -80,7 +80,7 @@ class RequestRewriter(object):
         :param output_path: Path to replace the input path with in
                             the request.
         """
-        if type(methods) in types.StringTypes:
+        if type(methods) is str:
             methods = [methods]
         self.rules[input_path] = (methods, output_path)
 

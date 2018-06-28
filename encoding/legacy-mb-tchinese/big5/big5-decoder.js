@@ -46,7 +46,7 @@ function big5Decoder(stream) {
 			if ((byte >= 0x40 && byte <= 0x7e) || (byte >= 0xa1 && byte <= 0xfe))
 				ptr = (lead - 0x81) * 157 + (byte - offset);
 			// "If there is a row in the table below whose first column is pointer, return the two code points listed in its second column"
-			switch (ptr) {
+			switch (ptr + "") {
 				case "1133":
 					out += "Ê̄";
 					continue;
@@ -62,9 +62,8 @@ function big5Decoder(stream) {
 			}
 			if (ptr == null) cp = null;
 			else cp = big5[ptr];
-			if (cp == null && byte >= 0x00 && byte < 0x7f) {
+			if (cp == null && byte >= 0x00 && byte <= 0x7f) {
 				bytes.unshift(byte);
-				continue;
 			}
 			if (cp == null) {
 				out += "�";
@@ -73,7 +72,7 @@ function big5Decoder(stream) {
 			out += dec2char(cp);
 			continue;
 		}
-		if (byte >= 0x00 && byte < 0x7f) {
+		if (byte >= 0x00 && byte <= 0x7f) {
 			out += dec2char(byte);
 			continue;
 		}

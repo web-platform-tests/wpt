@@ -576,15 +576,6 @@ policies and contribution forms [3].
         }
         tests.promise_tests = tests.promise_tests.then(function() {
             return new Promise(function(resolve) {
-                // The current test should be skipped if the harness is in an
-                // invalid state (e.g. if the "cleanup" logic of a previous test
-                // failed).
-                if (tests.status.status === tests.status.ERROR) {
-                    tests.result(test);
-                    resolve();
-                    return;
-                }
-
                 var promise = test.step(func, test, test);
 
                 test.step(function() {
@@ -1464,7 +1455,7 @@ policies and contribution forms [3].
         }
         this.name = name;
 
-        this.phase = tests.status.status === tests.status.ERROR ?
+        this.phase = tests.is_aborted ?
             this.phases.COMPLETE : this.phases.INITIAL;
 
         this.status = this.NOTRUN;
@@ -2197,7 +2188,7 @@ policies and contribution forms [3].
 
     Tests.prototype.all_done = function() {
         return this.tests.length > 0 && test_environment.all_loaded &&
-                this.num_pending === 0 && !this.wait_for_finish &&
+                (this.num_pending === 0 || this.is_aborted) && !this.wait_for_finish &&
                 !this.processing_callbacks &&
                 !this.pending_remotes.some(function(w) { return w.running; });
     };
@@ -2267,8 +2258,13 @@ policies and contribution forms [3].
         all_async(incomplete,
                   function(test, testDone)
                   {
-                      add_test_done_callback(test, testDone);
-                      test.done();
+                      if (test.phase === test.phases.INITIAL) {
+                          test.phase = test.phases.COMPLETE;
+                          testDone();
+                      } else {
+                          add_test_done_callback(test, testDone);
+                          test.done();
+                      }
                   },
                   all_complete);
     };
@@ -2280,6 +2276,7 @@ policies and contribution forms [3].
      */
     Tests.prototype.abort = function() {
         this.status.status = this.status.ERROR;
+        this.is_aborted = true;
 
         forEach(this.tests,
                 function(test) {
@@ -3233,8 +3230,6 @@ policies and contribution forms [3].
                 tests.status.status = tests.status.ERROR;
                 tests.status.message = e.message;
                 tests.status.stack = stack;
-                tests.abort();
-                tests.set_status(tests.status.ERROR, e.message, stack);
             }
             done();
         };

@@ -479,7 +479,7 @@ def check_meta_yml_contents(repo_root, path, contents):
     errors = []
     for i, line in enumerate(contents.splitlines()):
         if i == 0:
-            if line != "suggested_reviewers:":
+            if line != b"suggested_reviewers:":
                 errors.append(("INVALID-META-YML", "First line was not `suggested_reviewers:`", path, i+1))
         else:
             if meta_yml_extensions_pattern.match(line):

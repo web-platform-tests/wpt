@@ -41,7 +41,7 @@ function euckrDecoder(stream) {
 			lead = euckrLead;
 			ptr = null;
 			euckrLead = 0x00;
-			if (byte >= 0x41 || byte <= 0xfe)
+			if (byte >= 0x41 && byte <= 0xfe)
 				ptr = (lead - 0x81) * 190 + (byte - 0x41);
 			if (ptr == null) cp = null;
 			else cp = euckr[ptr];

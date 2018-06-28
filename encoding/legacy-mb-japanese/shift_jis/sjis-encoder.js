@@ -50,7 +50,7 @@ function sjisEncoder(stream) {
 	var cp;
 	var finished = false;
 	var endofstream = 2000000;
-
+	var temp, offset, leadoffset, first, second;
 	while (!finished) {
 		if (cps.length == 0) cp = endofstream;
 		else cp = cps.shift();

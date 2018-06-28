@@ -16,7 +16,7 @@ function big5Decoder(stream) {
 	stream = stream.replace(/%/g, " ");
 	stream = stream.replace(/[\s]+/g, " ").trim();
 	var bytes = stream.split(" ");
-	for (i = 0; i < bytes.length; i++) bytes[i] = parseInt(bytes[i], 16);
+	for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(bytes[i], 16);
 	var out = "";
 	var lead, byte, offset, ptr, cp;
 	var big5lead = 0x00;
@@ -46,17 +46,17 @@ function big5Decoder(stream) {
 			if ((byte >= 0x40 && byte <= 0x7e) || (byte >= 0xa1 && byte <= 0xfe))
 				ptr = (lead - 0x81) * 157 + (byte - offset);
 			// "If there is a row in the table below whose first column is pointer, return the two code points listed in its second column"
-			switch (ptr + "") {
-				case "1133":
+			switch (ptr) {
+				case 1133:
 					out += "Ê̄";
 					continue;
-				case "1135":
+				case 1135:
 					out += "Ê̌";
 					continue;
-				case "1164":
+				case 1164:
 					out += "ê̄";
 					continue;
-				case "1166":
+				case 1166:
 					out += "ê̌";
 					continue;
 			}

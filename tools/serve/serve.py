@@ -13,7 +13,7 @@ import sys
 import threading
 import time
 import traceback
-import urllib2
+from six.moves import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from multiprocessing import Process, Event
@@ -289,6 +289,9 @@ done();
         if key == b"script":
             attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
+        if key == b"title":
+            value = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
+            return 'self.META_TITLE = "%s";' % value
         return None
 
 
@@ -441,10 +444,10 @@ def check_subdomains(config):
     connected = False
     for i in range(10):
         try:
-            urllib2.urlopen("http://%s:%d/" % (host, port))
+            urllib.request.urlopen("http://%s:%d/" % (host, port))
             connected = True
             break
-        except urllib2.URLError:
+        except urllib.error.URLError:
             time.sleep(1)
 
     if not connected:
@@ -457,7 +460,7 @@ def check_subdomains(config):
             continue
 
         try:
-            urllib2.urlopen("http://%s:%d/" % (domain, port))
+            urllib.request.urlopen("http://%s:%d/" % (domain, port))
         except Exception:
             logger.critical("Failed probing domain %s. "
                             "You may need to edit /etc/hosts or similar, see README.md." % domain)

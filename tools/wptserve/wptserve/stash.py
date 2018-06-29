@@ -50,7 +50,9 @@ def store_env_config(address, authkey):
     os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey.decode("ascii")))
 
 def start_server(address=None, authkey=None):
-    manager = ServerDictManager(address, authkey.encode("ascii"))
+    if type(authkey) is str:
+        authkey = authkey.encode("ascii")
+    manager = ServerDictManager(address, authkey)
     manager.start()
 
     return (manager, manager._address, manager._authkey)

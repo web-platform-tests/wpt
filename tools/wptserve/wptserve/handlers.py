@@ -238,7 +238,7 @@ class PythonScriptHandler(object):
         try:
             environ = {"__file__": path}
             sys.path.insert(0, os.path.dirname(path))
-            with open(path) as f:
+            with open(path, 'rb') as f:
                 exec(compile(f.read(), path, 'exec'), environ, environ)
             if "main" in environ:
                 handler = FunctionHandler(environ["main"])

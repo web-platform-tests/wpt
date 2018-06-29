@@ -11,17 +11,18 @@ interface Gamepad {
   readonly attribute FrozenArray<double> axes;
   readonly attribute FrozenArray<GamepadButton> buttons;
 };
-[Exposed=Window]
+
 interface GamepadButton {
   readonly attribute boolean pressed;
   readonly attribute boolean touched;
   readonly attribute double value;
 };
+
 enum GamepadMappingType {
   "",
   "standard",
 };
-[Exposed=Window]
+
 partial interface Navigator {
   sequence<Gamepad?> getGamepads();
 };

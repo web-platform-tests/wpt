@@ -8,7 +8,7 @@ import socket
 from .constants import response_codes
 from .logger import get_logger
 
-from six import string_types, binary_type, text_type
+from six import string_types, binary_type, text_type, itervalues
 
 missing = object()
 
@@ -181,7 +181,7 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
-        if isinstance(self.content, str):
+        if isinstance(self.content, string_types):
             yield self.content
         elif hasattr(self.content, "read"):
             if read_file:
@@ -336,7 +336,7 @@ class ResponseHeaders(object):
         self.set(key, value)
 
     def __iter__(self):
-        for key, values in self.data.values():
+        for key, values in itervalues(self.data):
             for value in values:
                 yield key, value
 
@@ -426,6 +426,7 @@ class ResponseWriter(object):
     def write_content(self, data):
         """Write the body of the response."""
         if isinstance(data, (text_type, binary_type)):
+            # Deliberately allows both text and binary types. See `self.encode`.
             self.write(data)
         else:
             self.write_content_file(data)

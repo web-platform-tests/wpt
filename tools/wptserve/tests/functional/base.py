@@ -9,6 +9,7 @@ import unittest
 from six.moves.urllib.parse import urlencode, urlunsplit
 from six.moves.urllib.request import Request as BaseRequest
 from six.moves.urllib.request import urlopen
+from six import iteritems
 
 wptserve = pytest.importorskip("wptserve")
 
@@ -57,7 +58,7 @@ class TestUsingServer(unittest.TestCase):
         if headers is None:
             headers = {}
 
-        for name, value in headers.items():
+        for name, value in iteritems(headers):
             req.add_header(name, value)
 
         if body is not None:

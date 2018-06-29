@@ -29,7 +29,7 @@ class Request(BaseRequest):
         return self.method
 
     def add_data(self, data):
-        if hasattr(data, "iteritems"):
+        if hasattr(data, "items"):
             data = urlencode(data)
         print(data)
         self.add_header("Content-Length", str(len(data)))
@@ -57,7 +57,7 @@ class TestUsingServer(unittest.TestCase):
         if headers is None:
             headers = {}
 
-        for name, value in headers.iteritems():
+        for name, value in headers.items():
             req.add_header(name, value)
 
         if body is not None:

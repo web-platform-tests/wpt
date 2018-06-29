@@ -9,7 +9,6 @@ from .base import TestUsingServer
 
 
 class TestFileHandler(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_not_handled(self):
         with self.assertRaises(HTTPError) as cm:
             self.request("/not_existing")
@@ -17,7 +16,6 @@ class TestFileHandler(TestUsingServer):
         self.assertEqual(cm.exception.code, 404)
 
 class TestRewriter(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_rewrite(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -28,10 +26,9 @@ class TestRewriter(TestUsingServer):
         self.server.router.register(*route)
         resp = self.request("/test/original")
         self.assertEqual(200, resp.getcode())
-        self.assertEqual("/test/rewritten", resp.read())
+        self.assertEqual(b"/test/rewritten", resp.read())
 
 class TestRequestHandler(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_exception(self):
         @wptserve.handlers.handler
         def handler(request, response):

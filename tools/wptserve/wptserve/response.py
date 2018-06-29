@@ -2,7 +2,6 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from six.moves.http_cookies import BaseCookie, Morsel
 import json
-import types
 import uuid
 import socket
 
@@ -182,7 +181,7 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
-        if isinstance(self.content, types.StringTypes):
+        if isinstance(self.content, str):
             yield self.content
         elif hasattr(self.content, "read"):
             if read_file:
@@ -337,7 +336,7 @@ class ResponseHeaders(object):
         self.set(key, value)
 
     def __iter__(self):
-        for key, values in self.data.itervalues():
+        for key, values in self.data.values():
             for value in values:
                 yield key, value
 
@@ -426,7 +425,7 @@ class ResponseWriter(object):
 
     def write_content(self, data):
         """Write the body of the response."""
-        if isinstance(data, types.StringTypes):
+        if isinstance(data, (text_type, binary_type)):
             self.write(data)
         else:
             self.write_content_file(data)

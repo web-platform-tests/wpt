@@ -5,7 +5,6 @@ import hashlib
 import os
 import re
 import time
-import types
 import uuid
 from six.moves import StringIO
 
@@ -282,7 +281,7 @@ def slice(request, response, start, end=None):
 class ReplacementTokenizer(object):
     def arguments(self, token):
         unwrapped = token[1:-1]
-        return ("arguments", re.split(r",\s*", token[1:-1]) if unwrapped else [])
+        return ("arguments", re.split(br",\s*", token[1:-1]) if unwrapped else [])
 
     def ident(self, token):
         return ("ident", token)
@@ -392,6 +391,7 @@ class SubFunctions(object):
 
     @staticmethod
     def file_hash(request, algorithm, path):
+        algorithm = algorithm.decode("ascii")
         if algorithm not in SubFunctions.supported_algorithms:
             raise ValueError("Unsupported encryption algorithm: '%s'" % algorithm)
 
@@ -424,6 +424,7 @@ def template(request, content, escape_type="html"):
         tokens = deque(tokens)
 
         token_type, field = tokens.popleft()
+        field = field.decode("ascii")
 
         if token_type == "var":
             variable = field
@@ -478,7 +479,7 @@ def template(request, content, escape_type="html"):
                     "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, field)
                 )
 
-        assert isinstance(value, (int,) + types.StringTypes), tokens
+        assert isinstance(value, (int, str)), tokens
 
         if variable is not None:
             variables[variable] = value
@@ -490,7 +491,7 @@ def template(request, content, escape_type="html"):
         #TODO: read the encoding of the response
         return escape_func(text_type(value)).encode("utf-8")
 
-    template_regexp = re.compile(r"{{([^}]*)}}")
+    template_regexp = re.compile(br"{{([^}]*)}}")
     new_content = template_regexp.sub(config_replacement, content)
 
     return new_content

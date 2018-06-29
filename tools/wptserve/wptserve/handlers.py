@@ -237,7 +237,7 @@ class PythonScriptHandler(object):
         try:
             environ = {"__file__": path}
             sys.path.insert(0, os.path.dirname(path))
-            execfile(path, environ, environ)
+            exec(compile(open(path).read(), path, 'exec'), environ, environ)
             if "main" in environ:
                 handler = FunctionHandler(environ["main"])
                 handler(request, response)
@@ -375,7 +375,7 @@ class StringHandler(object):
         self.data = data
 
         self.resp_headers = [("Content-Type", content_type)]
-        for k, v in headers.iteritems():
+        for k, v in headers.items():
             self.resp_headers.append((k.replace("_", "-"), v))
 
         self.handler = handler(self.handle_request)

@@ -364,6 +364,28 @@ const trackFactories = {
   // without requiring explicit destruction.
   audioContext: null,
 
+  /**
+   * Given a set of requested media types, determine if the user agent is
+   * capable of procedurally generating a suitable media stream.
+   *
+   * @param {object} requested
+   * @param {boolean} [requested.audio] - flag indicating whether the desired
+   *                                      stream should include an audio track
+   * @param {boolean} [requested.video] - flag indicating whether the desired
+   *                                      stream should include a video track
+   *
+   * @returns {boolean}
+   */
+  canCreate(requested) {
+    const supported = {
+      audio: !!window.MediaStreamAudioDestinationNode,
+      video: !!HTMLCanvasElement.prototype.captureStream
+    };
+
+    return (!requested.audio || supported.audio) &&
+      (!requested.video || supported.video);
+  },
+
   audio() {
     const ctx = trackFactories.audioContext = trackFactories.audioContext ||
       new AudioContext();
@@ -407,26 +429,26 @@ const trackFactories = {
 //                                 should include an audio track
 // @param {boolean} [caps.video] - flag indicating whether the generated stream
 //                                 should include a video track
-function getNoiseStream(caps) {
-  var tracks = [];
-
-  if (!HTMLCanvasElement.prototype.captureStream ||
-    typeof MediaStreamAudioDestinationNode === 'undefined') {
+async function getNoiseStream(caps = {}) {
+  if (!trackFactories.canCreate(caps)) {
     return navigator.mediaDevices.getUserMedia(caps);
   }
+  const tracks = [];
 
-  if (caps && caps.audio) {
+  if (caps.audio) {
     tracks.push(trackFactories.audio());
   }
 
-  if (caps && caps.video) {
+  if (caps.video) {
     tracks.push(trackFactories.video());
   }
 
-  return Promise.resolve(new MediaStream(tracks));
+  return new MediaStream(tracks);
 }
 
-// Obtain a MediaStreamTrack of kind using getUserMedia.
+// Obtain a MediaStreamTrack of kind using procedurally-generated streams (and
+// falling back to `getUserMedia` when the user agent cannot generate the
+// requested streams).
 // Return Promise of pair of track and associated mediaStream.
 // Assumes that there is at least one available device
 // to generate the track.

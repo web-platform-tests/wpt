@@ -1,0 +1,164 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content of this file was automatically extracted from the
+// "Metadata API for Media Resources 1.0" spec.
+// See: https://www.w3.org/TR/mediaont-api-1.0/
+
+interface MediaResource {
+    short         getSupportedModes ();
+    MediaResource createMediaResource (DOMString mediaResource, optional MetadataSource[] metadataSources, optional short mode);
+};
+interface AsyncMediaResource : MediaResource {
+    void getMediaProperty (DOMString[] propertyNames, PropertyCallback successCallback, ErrorCallback errorCallback,       optional DOMString fragment, optional DOMString sourceFormat, optional DOMString language);
+    void getOriginalMetadata (DOMString sourceFormat, MetadataCallback successCallback, ErrorCallback errorCallback);
+};
+interface PropertyCallback {
+    void handleEvent (MediaAnnotation[] mediaAnnotations);
+};
+interface MetadataCallback {
+    void handleEvent (DOMString[] metadata);
+};
+interface SyncMediaResource : MediaResource {
+    MediaAnnotation[] getMediaProperty (DOMString[] propertyNames, optional DOMString fragment,       optional DOMString sourceFormat, optional DOMString language);
+    DOMString[]       getOriginalMetadata (DOMString sourceFormat);
+};
+interface MediaAnnotation {
+    attribute DOMString propertyName;
+    attribute DOMString value;
+    attribute DOMString language;
+    attribute DOMString sourceFormat;
+    attribute DOMString fragmentIdentifier;
+    attribute DOMString mappingType;
+    attribute short     statusCode;
+};
+interface Identifier : MediaAnnotation {
+    attribute DOMString identifierLink;
+};
+interface Title : MediaAnnotation {
+    attribute DOMString titleLabel;
+    attribute DOMString typeLink;
+    attribute DOMString typeLabel;
+};
+interface Language : MediaAnnotation {
+    attribute DOMString languageLink;
+    attribute DOMString languageLabel;
+};
+interface Locator : MediaAnnotation {
+    attribute DOMString locatorLink;
+};
+interface Contributor : MediaAnnotation {
+    attribute DOMString contributorLink;
+    attribute DOMString contributorLabel;
+    attribute DOMString roleLink;
+    attribute DOMString roleLabel;
+};
+interface Creator : MediaAnnotation {
+    attribute DOMString creatorLink;
+    attribute DOMString creatorLabel;
+    attribute DOMString roleLink;
+    attribute DOMString roleLabel;
+};
+interface MADate : MediaAnnotation {
+    attribute DOMString date;
+    attribute DOMString typeLink;
+    attribute DOMString typeLabel;
+};
+interface Location : MediaAnnotation {
+    attribute DOMString locationLink;
+    attribute DOMString locationLabel;
+    attribute double    longitude;
+    attribute double    latitude;
+    attribute double    altitude;
+    attribute DOMString coordinateSystemLabel;
+    attribute DOMString coordinateSystemLink;
+};
+interface Description : MediaAnnotation {
+    attribute DOMString descriptionLabel;
+};
+interface Keyword : MediaAnnotation {
+    attribute DOMString keywordLabel;
+    attribute DOMString keywordLink;
+};
+interface Genre : MediaAnnotation {
+    attribute DOMString genreLabel;
+    attribute DOMString genreLink;
+};
+interface Rating : MediaAnnotation {
+    attribute double    ratingValue;
+    attribute DOMString ratingSystemLabel;
+    attribute DOMString ratingSystemLink;
+    attribute double    minimum;
+    attribute double    maximum;
+};
+interface Relation : MediaAnnotation {
+    attribute DOMString targetLink;
+    attribute DOMString targetLabel;
+    attribute DOMString typeLink;
+    attribute DOMString typeLabel;
+};
+interface Collection : MediaAnnotation {
+    attribute DOMString collectionLink;
+    attribute DOMString collectionLabel;
+};
+interface Copyright : MediaAnnotation {
+    attribute DOMString copyrightLabel;
+    attribute DOMString holderLabel;
+    attribute DOMString holderLink;
+};
+interface Policy : MediaAnnotation {
+    attribute DOMString statementLink;
+    attribute DOMString statementLabel;
+    attribute DOMString typeLink;
+    attribute DOMString typeLabel;
+};
+interface Publisher : MediaAnnotation {
+    attribute DOMString publisherLink;
+    attribute DOMString publisherLabel;
+};
+interface TargetAudience : MediaAnnotation {
+    attribute DOMString audienceLink;
+    attribute DOMString audienceLabel;
+    attribute DOMString classificationSystemLink;
+    attribute DOMString classificationSystemLabel;
+};
+interface Fragment : MediaAnnotation {
+    attribute DOMString identifier;
+    attribute DOMString roleLink;
+    attribute DOMString roleLabel;
+};
+interface NamedFragment : MediaAnnotation {
+    attribute DOMString identifier;
+    attribute DOMString label;
+};
+interface FrameSize : MediaAnnotation {
+    attribute double    width;
+    attribute double    height;
+    attribute DOMString unit;
+};
+interface FrameSize : MediaAnnotation {
+    attribute DOMString compressionLink;
+    attribute DOMString compressionLabel;
+};
+interface Duration : MediaAnnotation {
+    attribute double duration;
+};
+interface Format : MediaAnnotation {
+    attribute DOMString formatLink;
+    attribute DOMString formatLabel;
+};
+interface SamplingRate : MediaAnnotation {
+    attribute double samplingRate;
+};
+interface FrameRate : MediaAnnotation {
+    attribute double frameRate;
+};
+interface AverageBitRate : MediaAnnotation {
+    attribute double averageBitRate;
+};
+interface NumTracks : MediaAnnotation {
+    attribute short     number;
+    attribute DOMString typeString;
+};
+interface MetadataSource {
+    attribute DOMString metadataSource;
+    attribute DOMString sourceFormat;
+};

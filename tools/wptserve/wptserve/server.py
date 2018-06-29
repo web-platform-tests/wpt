@@ -8,7 +8,6 @@ import sys
 import threading
 import time
 import traceback
-import types
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 

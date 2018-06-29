@@ -1,6 +1,5 @@
 import itertools
 import re
-import types
 
 from .logger import get_logger
 

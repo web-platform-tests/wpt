@@ -9,7 +9,7 @@
           title="Tavmjong Bah"
           href="http://tavmjong.free.fr"/>
     <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/shapes.html#RectElement"/>
+          href="https://www.w3.org/TR/SVG2/shapes.html#CircleElement"/>
     <html:link rel="match"  href="pathlength-002-ref.svg" />
   </g>
 

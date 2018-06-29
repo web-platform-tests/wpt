@@ -8,7 +8,7 @@ import time
 import uuid
 from six.moves import StringIO
 
-from six import text_type, string_types
+from six import text_type, binary_type, string_types
 
 def resolve_content(response):
     return b"".join(item for item in response.iter_content(read_file=True))
@@ -280,31 +280,32 @@ def slice(request, response, start, end=None):
 
 class ReplacementTokenizer(object):
     def arguments(self, token):
-        unwrapped = token[1:-1]
-        return ("arguments", re.split(br",\s*", token[1:-1]) if unwrapped else [])
+        unwrapped = token[1:-1].decode('utf8')
+        return ("arguments", re.split(r",\s*", unwrapped) if unwrapped else [])
 
     def ident(self, token):
-        return ("ident", token)
+        return ("ident", token.decode('utf8'))
 
     def index(self, token):
-        token = token[1:-1]
+        token = token[1:-1].decode('utf8')
         try:
-            token = int(token)
+            index = int(token)
         except ValueError:
-            token = token.decode('utf8')
-        return ("index", token)
+            index = token
+        return ("index", index)
 
     def var(self, token):
-        token = token[:-1]
+        token = token[:-1].decode('utf8')
         return ("var", token)
 
     def tokenize(self, string):
+        assert isinstance(string, binary_type)
         return self.scanner.scan(string)[0]
 
-    scanner = re.Scanner([(r"\$\w+:", var),
-                          (r"\$?\w+", ident),
-                          (r"\[[^\]]*\]", index),
-                          (r"\([^)]*\)", arguments)])
+    scanner = re.Scanner([(br"\$\w+:", var),
+                          (br"\$?\w+", ident),
+                          (br"\[[^\]]*\]", index),
+                          (br"\([^)]*\)", arguments)])
 
 
 class FirstWrapper(object):

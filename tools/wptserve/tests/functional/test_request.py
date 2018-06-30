@@ -64,18 +64,17 @@ class TestInputFile(TestUsingServer):
         finally:
             InputFile.max_buffer_size = old_max_buf
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_iter(self):
         @wptserve.handlers.handler
         def handler(request, response):
             f = request.raw_input
-            return " ".join(line for line in f)
+            return b" ".join(line for line in f)
 
         route = ("POST", "/test/test_iter", handler)
         self.server.router.register(*route)
-        resp = self.request(route[1], method="POST", body="12345\nabcdef\r\nzyxwv")
+        resp = self.request(route[1], method="POST", body=b"12345\nabcdef\r\nzyxwv")
         self.assertEqual(200, resp.getcode())
-        self.assertEqual(["12345\n", "abcdef\r\n", "zyxwv"], resp.read().split(" "))
+        self.assertEqual([b"12345\n", b"abcdef\r\n", b"zyxwv"], resp.read().split(b" "))
 
     @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_iter_input_longer_than_buffer(self):

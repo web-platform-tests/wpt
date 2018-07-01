@@ -34,7 +34,7 @@ class Request(BaseRequest):
             data = urlencode(data)
         print(data)
         self.add_header("Content-Length", str(len(data)))
-        BaseRequest.add_data(self, data)
+        self.data = data
 
 
 class TestUsingServer(unittest.TestCase):

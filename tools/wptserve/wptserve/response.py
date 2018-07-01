@@ -181,7 +181,7 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
-        if isinstance(self.content, string_types):
+        if isinstance(self.content, binary_type):
             yield self.content
         elif hasattr(self.content, "read"):
             if read_file:

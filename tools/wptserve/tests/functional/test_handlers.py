@@ -41,7 +41,6 @@ class TestFileHandler(TestUsingServer):
         self.assertEqual("10", resp.info()['Content-Length'])
         self.assertEqual(expected[10:20], data)
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_range_no_end(self):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-"})
         self.assertEqual(206, resp.getcode())
@@ -51,7 +50,6 @@ class TestFileHandler(TestUsingServer):
         self.assertEqual("bytes 10-%i/%i" % (len(expected) - 1, len(expected)), resp.info()['Content-Range'])
         self.assertEqual(expected[10:], data)
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_range_no_start(self):
         resp = self.request("/document.txt", headers={"Range":"bytes=-10"})
         self.assertEqual(206, resp.getcode())

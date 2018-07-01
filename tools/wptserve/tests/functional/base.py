@@ -9,7 +9,7 @@ import unittest
 from six.moves.urllib.parse import urlencode, urlunsplit
 from six.moves.urllib.request import Request as BaseRequest
 from six.moves.urllib.request import urlopen
-from six import iteritems
+from six import iteritems, text_type
 
 wptserve = pytest.importorskip("wptserve")
 
@@ -32,9 +32,11 @@ class Request(BaseRequest):
     def add_data(self, data):
         if hasattr(data, "items"):
             data = urlencode(data)
+        if isinstance(data, text_type):
+            data = data.encode("ascii")
         print(data)
         self.add_header("Content-Length", str(len(data)))
-        BaseRequest.add_data(self, data)
+        self.data = data
 
 
 class TestUsingServer(unittest.TestCase):

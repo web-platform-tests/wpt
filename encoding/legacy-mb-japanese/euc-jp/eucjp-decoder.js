@@ -18,6 +18,7 @@ function eucjpDecoder(stream) {
     var bytes = stream.split(" ");
     for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(bytes[i], 16);
     var out = "";
+
     var lead, byte, offset, ptr, cp;
     var jis0212flag = false;
     var eucjpLead = 0x00;

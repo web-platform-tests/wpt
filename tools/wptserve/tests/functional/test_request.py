@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 wptserve = pytest.importorskip("wptserve")

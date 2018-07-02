@@ -598,5 +598,5 @@ class Authentication(object):
                 raise HTTPException(400, "Unsupported authentication scheme %s" % auth_type)
 
     def decode_basic(self, data):
-        decoded_data = base64.decodestring(data)
-        return decoded_data.split(":", 1)
+        decoded_data = base64.b64decode(data)
+        return decoded_data.split(b":", 1)

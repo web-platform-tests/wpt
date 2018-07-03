@@ -495,11 +495,18 @@ def start_servers(host, ports, paths, routes, bind_address, config, ssl_config,
     for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
 
+        # Check that python 2.7.15 is being used for HTTP/2.0
+        if scheme == 'http2':
+            # Skip if not version 2.7.15
+            if not (sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] == 15):
+                continue
+
         for port in ports:
             if port is None:
                 continue
             init_func = {"http":start_http_server,
                          "https":start_https_server,
+                         "http2":start_http2_server,
                          "ws":start_ws_server,
                          "wss":start_wss_server}[scheme]
 
@@ -542,6 +549,21 @@ def start_https_server(host, port, paths, routes, bind_address, config, ssl_conf
                                  latency=kwargs.get("latency"))
 
 
+def start_http2_server(host, port, paths, routes, bind_address, config, ssl_config,
+                       **kwargs):
+    return wptserve.WebTestHttpd(host=host,
+                                 port=port,
+                                 doc_root=paths["doc_root"],
+                                 routes=routes,
+                                 rewrites=rewrites,
+                                 bind_address=bind_address,
+                                 config=config,
+                                 use_ssl=True,
+                                 key_file=ssl_config["key_path"],
+                                 certificate=ssl_config["cert_path"],
+                                 encrypt_after_connect=ssl_config["encrypt_after_connect"],
+                                 latency=kwargs.get("latency"),
+                                 http2=True)
 class WebSocketDaemon(object):
     def __init__(self, host, port, doc_root, handlers_root, log_level, bind_address,
                  ssl_config):
@@ -712,7 +734,8 @@ class Config(config.Config):
             "http": [8000, "auto"],
             "https": [8443],
             "ws": ["auto"],
-            "wss": ["auto"]
+            "wss": ["auto"],
+            "http2":[9000],
         },
         "check_subdomains": True,
         "log_level": "debug",
@@ -736,6 +759,11 @@ class Config(config.Config):
     }
 
     def __init__(self, *args, **kwargs):
+        # Skip if not version 2.7.15
+        if not (sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] == 15):
+            if self._default['ports'].get('http2'):
+                del self._default['ports']['http2']
+
         super(Config, self).__init__(
             subdomains=_subdomains,
             not_subdomains=_not_subdomains,

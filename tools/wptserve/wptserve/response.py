@@ -4,8 +4,7 @@ from six.moves.http_cookies import BaseCookie, Morsel
 import json
 import uuid
 import socket
-
-from .constants import response_codes
+from .constants import response_codes, h2_headers
 from .logger import get_logger
 
 from six import binary_type, text_type, itervalues
@@ -61,7 +60,7 @@ class Response(object):
        parts. If it is an iterable, any item may be a string or a function of zero
        parameters which, when called, returns a string."""
 
-    def __init__(self, handler, request):
+    def __init__(self, handler, request, h2=False):
         self.request = request
         self.encoding = "utf8"
 
@@ -70,13 +69,16 @@ class Response(object):
         self.explicit_flush = False
         self.close_connection = False
 
-        self.writer = ResponseWriter(handler, self)
+        self.logger = get_logger()
+        if h2:
+            self.writer = H2ResponseWriter(handler, self)
+        else:
+            self.writer = ResponseWriter(handler, self)
 
         self._status = (200, None)
         self.headers = ResponseHeaders()
         self.content = []
 
-        self.logger = get_logger()
 
     @property
     def status(self):
@@ -349,6 +351,107 @@ class ResponseHeaders(object):
 
     def __repr__(self):
         return repr(self.data)
+
+
+class H2Response(Response):
+
+    def write_status_headers(self):
+        self.writer.write_headers(self.headers, *self.status)
+
+    # Hacky way of detecting last item in generator
+    def write_content(self):
+        """Write out the response content"""
+        if self.request.method != "HEAD" or self.send_body_for_head_request:
+            item = None
+            item_iter = self.iter_content()
+            try:
+                item = item_iter.next()
+                while True:
+                    check_last = item_iter.next()
+                    self.writer.write_content(item, last=False)
+                    item = check_last
+            except StopIteration:
+                if item:
+                    self.writer.write_content(item, last=True)
+
+
+class H2ResponseWriter(object):
+
+    def __init__(self, handler, response):
+        self.socket = handler.request
+        self.h2conn = handler.conn
+        self._response = response
+        self._handler = handler
+        self._headers_seen = set()
+        self._headers_complete = False
+        self.content_written = False
+        self.request = response.request
+        self.file_chunk_size = 32 * 1024
+        self.logger = response.logger
+
+    def write_headers(self, headers, status_code, status_message=None):
+        formatted_headers = []
+        secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
+
+        for header, value in headers:
+            if header in h2_headers:
+                header = ':' + header
+                formatted_headers.append((header, str(value)))
+            else:
+                secondary_headers.append((header, str(value)))
+
+        formatted_headers.append((':status', str(status_code)))
+        formatted_headers.extend(secondary_headers)
+
+        self.h2conn.send_headers(
+            stream_id=self.request.h2_stream_id,
+            headers=formatted_headers,
+        )
+
+        self.write()
+
+    def write_content(self, item, last=False):
+        if isinstance(item, (text_type, binary_type)):
+            data = self.encode(item)
+        else:
+            data = self.write_file(item)
+
+        self.h2conn.send_data(
+            stream_id=self.request.h2_stream_id,
+            data=data,
+            end_stream=last,
+        )
+        self.write()
+        self.content_written = last
+
+    def write_file(self, f):
+        data = f.read()
+        f.close()
+
+        # Attempt at managing flow control
+        payload_size = self.get_max_payload_size()
+        while len(data) > payload_size:
+            self.write_content(data[:payload_size])
+            data = data[payload_size:]
+            payload_size = self.get_max_payload_size()
+        return data
+
+    def get_max_payload_size(self):
+        return min(self.h2conn.remote_settings.max_frame_size, self.h2conn.local_flow_control_window(self.request.h2_stream_id)) - 9
+
+    def write(self):
+        data = self.h2conn.data_to_send()
+        # self.logger.debug('SENDING: ' + data)
+        self.socket.sendall(data)
+
+    def encode(self, data):
+        """Convert unicode to bytes according to response.encoding."""
+        if isinstance(data, binary_type):
+            return data
+        elif isinstance(data, text_type):
+            return data.encode(self._response.encoding)
+        else:
+            raise ValueError
 
 
 class ResponseWriter(object):

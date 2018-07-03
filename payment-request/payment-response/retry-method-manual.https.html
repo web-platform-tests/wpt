@@ -159,6 +159,23 @@ function abortTheUpdate(button) {
   }, button.textContent.trim());
 }
 
+function callingRetryReturnsUniquePromise(button){
+  button.disabled = true;
+  promise_test(async t => {
+    const request = new PaymentRequest(defaultMethods, defaultDetails);
+    const retryPromise = request.retry();
+    const promises = new Set([
+      retryPromise,
+      request.retry(),
+      request.retry(),
+    ]);
+    assert_equals(promises.size, 3, "Must have three unique objects");
+    await retryPromise;
+    await response.complete();
+  }, button.textContent.trim());
+};
+
+
 </script>
 <h2>
     Manual Tests for PaymentResponse.retry() - Please run in order!
@@ -223,6 +240,14 @@ function abortTheUpdate(button) {
     <button onclick="abortTheUpdate(this);">
       When "abort the update" occurs because of an update error,
       the `retryPromise` is rejected and response.[[complete]] becomes true.
+    </button>
+  </li>
+  <li>
+    <p>
+      When shown the payment sheet, hit pay once. Then retry once.
+    </p>
+    <button onclick="callingRetryReturnsUniquePromise(this);">
+      Calling retry() multiple times is always a new object.
     </button>
   </li>
   <li>

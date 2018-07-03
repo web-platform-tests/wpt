@@ -1,18 +1,20 @@
 <html>
-<title>Accept-CH-Lifetime test</title>
+<title>Accept-CH-Lifetime test with same-origin iframe</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
 <!--
-Apart from this webpage, the test opens two more html web page. One test is run
-in this web page, and two in the other web pages.
+Apart from this webpage, the test opens another html web page. One test is run
+in this web page, and another in the second web page.
 -->
 
 <script>
 
-// This test fetches resources/accept_ch_lifetime.html. The response headers to
-// that webpage contain Accept-CH and Accept-CH-Lifetime headers.
+// This test fetches resources/accept_ch_lifetime.html in a same origin iframe.
+// The response headers to that webpage contain Accept-CH and Accept-CH-Lifetime
+// headers.
+
 // Fetching that webpage should cause the user-agent to persist origin
 // preferences for the client hints specified in Accept-CH header for a
 // duration specified in the Accept-CH-Lifetime header.
@@ -37,14 +39,16 @@ promise_test(t => {
   });
 }, "Precondition: Test that the browser does not have client hints preferences cached");
 
-// Fetching this webpage should cause user-agent to persist client hint
-// preferences for the origin.
-var win = window.open("resources/accept_ch_lifetime.html");
-assert_not_equals(win, null, "Popup windows not allowed?");
+</script>
 
+<!-- Fetching this webpage should cause user-agent to persist client hint
+ preferences for the origin.-->
+<iframe src="resources/accept_ch_lifetime.html"></iframe>
+
+<script>
 // Open a new window. Verify that the user agent attaches the client hints.
-var verify_win = window.open("resources/expect_client_hints_headers.html");
-assert_not_equals(verify_win, null, "Popup windows not allowed?");
+var win = window.open("resources/expect_client_hints_headers.html");
+assert_not_equals(win, null, "Popup windows not allowed?");
 async_test(t => {
   window.addEventListener('message', function(e) {
     if(!e.source.location.pathname.includes("expect_client_hints_headers.html")) {
@@ -54,7 +58,7 @@ async_test(t => {
       return;
     assert_equals(e.data, "PASS");
     t.done();
-})
+  })
 }, "Loading of resources/expect_client_hints_headers.html did not finish.");
 
 

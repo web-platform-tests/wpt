@@ -88,7 +88,7 @@ window.onload = async () => {
       assert_equals(promises.size, 3, "Must have three unique objects");
     };
     await test_driver.click(button);
-  }, "Calling abort() multiple times is always in a new object.");
+  }, "Calling abort() multiple times is always a new object.");
 };
 </script>
 <button id="button"></button>

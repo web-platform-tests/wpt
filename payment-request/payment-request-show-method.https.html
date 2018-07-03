@@ -80,7 +80,7 @@ promise_test(async t => {
     assert_equals(promises.size, 3, "Must have three unique objects");
   };
   await test_driver.click(button);
-}, "Calling show() multiple times is always in a new object.");
+}, "Calling show() multiple times is always a new object.");
 done();
 </script>
 <small>

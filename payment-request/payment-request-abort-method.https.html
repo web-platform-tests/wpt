@@ -15,7 +15,10 @@ setup({
   explicit_timeout: true,
 });
 const basicCard = Object.freeze({ supportedMethods: "basic-card" });
-const defaultMethods = Object.freeze([basicCard]);
+const applePay = Object.freeze({
+  supportedMethods: "https://apple.com/apple-pay",
+});
+const defaultMethods = Object.freeze([basicCard, applePay]);
 const defaultDetails = Object.freeze({
   total: {
     label: "Total",
@@ -73,6 +76,19 @@ window.onload = async () => {
     };
     await test_driver.click(button);
   });
+
+  promise_test(async t => {
+    button.onclick = async () => {
+      const request = new PaymentRequest(defaultMethods, defaultDetails);
+      const promises = new Set([
+        request.abort(),
+        request.abort(),
+        request.abort(),
+      ]);
+      assert_equals(promises.size, 3, "Must have three unique objects");
+    };
+    await test_driver.click(button);
+  }, "Calling abort() multiple times is always in a new object.");
 };
 </script>
 <button id="button"></button>

@@ -10,7 +10,7 @@ def main(request, response):
   file = open(path + filename, "r")
   header = file.read()
   file.close()
-  os.remove(path+filename)
+  os.remove(path + filename)
 
   ## Write the file contents to the response object ##
   response.writer.write_status(200)

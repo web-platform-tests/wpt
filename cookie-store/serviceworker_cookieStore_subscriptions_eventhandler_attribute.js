@@ -29,21 +29,8 @@ const kServiceWorkerActivatedPromise = new Promise(resolve => {
 promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
-  const subscriptions = await cookieStore.getChangeSubscriptions();
-  assert_equals(subscriptions.length, 1);
-
-  assert_equals(subscriptions[0].name, 'cookie-name');
-  assert_equals('equals', subscriptions[0].matchType);
-}, 'getChangeSubscriptions returns a subscription passed to subscribeToChanges');
-
-
-promise_test(async testCase => {
-  await kServiceWorkerActivatedPromise;
-
   const cookie_change_received_promise = new Promise((resolve) => {
-    self.addEventListener('cookiechange', (event) => {
-      resolve(event);
-    });
+    self.oncookiechange = (event) => { resolve(event); };
   });
 
   await cookieStore.set('cookie-name', 'cookie-value');
@@ -59,6 +46,6 @@ promise_test(async testCase => {
 
   await async_cleanup(() => cookieStore.delete('cookie-name'));
 }, 'cookiechange dispatched with cookie change that matches subscription ' +
-   'to event handler registered with addEventListener');
+   'to event handler registered with oncookiechange');
 
 done();

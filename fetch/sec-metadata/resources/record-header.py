@@ -1,6 +1,6 @@
 
 def main(request, response):
-  path = "fetch/sec-metadata/resources/tmp"
+  path = "fetch/sec-metadata/resources/tmp/"
 
   ## Get the query parameter (filename) from URL ##
   filename =request.url_parts.query.split("=")[1]

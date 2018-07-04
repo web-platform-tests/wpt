@@ -16,7 +16,6 @@ function assert_header_equals(value, expected) {
   assert_equals(result.site, expected.site, "site");
 }
 
-
 function assert_header_equals(xhr, test, expected){
   if (xhr.readyState === 4) {
     assert_equals(xhr.responseText, expected);

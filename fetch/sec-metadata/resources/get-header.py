@@ -1,6 +1,5 @@
 import os
 
-
 def main(request, response):
   path = "fetch/sec-metadata/resources/tmp"
 

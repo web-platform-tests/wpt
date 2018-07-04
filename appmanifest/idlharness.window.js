@@ -16,6 +16,7 @@ promise_test(async () => {
   idl_array.add_dependency_idls(dom);
   idl_array.add_objects({
     Window: ['window'],
+    BeforeInstallPromptEvent: ['new BeforeInstallPromptEvent("type")'],
   });
   idl_array.test();
 }, 'appmanifest interfaces');

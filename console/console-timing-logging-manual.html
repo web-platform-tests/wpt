@@ -10,18 +10,27 @@
 <p>Open the console inside the developer tools. It should contain entries whose contents are:</p>
 <p><code>default: &lt;some time></code></p>
 <p><code>default: &lt;some time></code></p>
+
 <p><code>default: &lt;some time></code></p>
 <p><code>default: &lt;some time> extra data</code></p>
 <p><code>default: &lt;some time></code></p>
+
 <p><code>default: &lt;some time></code></p>
 <p><code>default: &lt;some time> extra data</code></p>
 <p><code>default: &lt;some time></code></p>
+
 <p><code>default: &lt;some time></code></p>
 <p><code>default: &lt;some time> extra data</code></p>
 <p><code>default: &lt;some time></code></p>
+
+<p><code>custom toString(): &lt;some time></code></p>
+<p><code>custom toString(): &lt;some time> extra data</code></p>
+<p><code>custom toString(): &lt;some time></code></p>
+
 <p><code>a label: &lt;some time></code></p>
 <p><code>a label: &lt;some time> extra data</code></p>
 <p><code>a label: &lt;some time></code></p>
+
 <p style="color:grey;">[some warning message indicating that a timer for label "b" does not exist]</p>
 
 <script>
@@ -44,11 +53,17 @@ console.timeLog({toString() {return "default"}});
 console.timeLog({toString() {return "default"}}, "extra data");
 console.timeEnd({toString() {return "default"}});
 
+console.time({toString() {return "custom toString()"}});
+console.timeLog({toString() {return "custom toString()"}});
+console.timeLog({toString() {return "custom toString()"}}, "extra data");
+console.timeEnd({toString() {return "custom toString()"}});
+
 console.time("a label");
 console.timeLog("a label");
 console.timeLog("a label", "extra data");
 console.timeEnd("a label");
 
+console.timeLog("b"); // should produce a warning
 console.timeEnd("b"); // should produce a warning
 </script>
 </body>

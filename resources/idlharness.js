@@ -1321,7 +1321,7 @@ IdlInterface.prototype.get_inheritance_stack = function() {
     while (idl_interface.base) {
         var base = this.array.members[idl_interface.base];
         if (!base) {
-            throw new IdlHarnessError(`${idl_interface.name} base ${idl_interface.base} not found`);
+            throw new Error(idl_interface.type + " " + idl_interface.base + " not found (inherited by " + idl_interface.name + ")");
         } else if (stack.indexOf(base) > -1) {
             stack.push(base);
             let dep_chain = stack.map(i => i.name).join(',');
@@ -2267,11 +2267,12 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
     assert_equals(typeof memberHolderObject[member.name], "function",
                   "property must be a function");
 
-    const ctors = this.members
-        .filter(m => m.type == "operation" && m.name == member.name);
+    const ctors = this.members.filter(function(m) {
+        return m.type == "operation" && m.name == member.name;
+    });
     assert_equals(
-        minOverloadLength(ctors),
         memberHolderObject[member.name].length,
+        minOverloadLength(ctors),
         "property has wrong .length");
 
     // Make some suitable arguments
@@ -3018,7 +3019,7 @@ function IdlTypedef(obj)
 }
 //@}
 
-IdlNamespace.prototype = Object.create(IdlObject.prototype);
+IdlTypedef.prototype = Object.create(IdlObject.prototype);
 
 /// IdlNamespace ///
 function IdlNamespace(obj)
@@ -3038,23 +3039,23 @@ function IdlNamespace(obj)
 }
 //@}
 
+IdlNamespace.prototype = Object.create(IdlObject.prototype);
+
 IdlNamespace.prototype.do_member_operation_asserts = function (memberHolderObject, member, a_test)
 //@{
 {
-    var done = a_test.done.bind(a_test);
-    var operationUnforgeable = member.has_extended_attribute("Unforgeable");
     var desc = Object.getOwnPropertyDescriptor(memberHolderObject, member.name);
 
     assert_false("get" in desc, "property should not have a getter");
     assert_false("set" in desc, "property should not have a setter");
     assert_equals(
         desc.writable,
-        !operationUnforgeable,
+        !member.isUnforgeable,
         "property should be writable if and only if not unforgeable");
     assert_true(desc.enumerable, "property should be enumerable");
     assert_equals(
         desc.configurable,
-        !operationUnforgeable,
+        !member.isUnforgeable,
         "property should be configurable if and only if not unforgeable");
 
     assert_equals(
@@ -3062,17 +3063,20 @@ IdlNamespace.prototype.do_member_operation_asserts = function (memberHolderObjec
         "function",
          "property must be a function");
 
-    var args = member.arguments.map(a => create_suitable_object(a.idlType));
+    var args = member.arguments.map(function(a) {
+        return create_suitable_object(a.idlType);
+    });
     this.array.assert_type_is(
-        memberHolderObject[member.name].call(null, ...args),
+        memberHolderObject[member.name].call(null, args),
         member.idlType);
 
-    assert_equals(memberHolderObject[member.name].length,
+    assert_equals(
+        memberHolderObject[member.name].length,
         minOverloadLength(this.members.filter(function(m) {
             return m.type == "operation" && m.name == member.name;
         })),
         "operation has wrong .length");
-    done();
+    a_test.done();
 }
 //@}
 
@@ -3082,21 +3086,25 @@ IdlNamespace.prototype.test_member_operation = function(member)
     if (!shouldRunSubTest(this.name)) {
         return;
     }
-    const args = member.arguments
-        .map(a => `${a.idlType.idlType}${a.variadic ? '...' : ''}`)
-        .join(", ");
+    var args = member.arguments.map(function(a) {
+        var s = a.idlType.idlType;
+        if (a.variadic) {
+            s += '...';
+        }
+        return s;
+    }).join(", ");
     var a_test = subsetTestByKey(
         this.name,
         async_test,
-        `${this.name} namespace: operation ${member.name}(${args})`);
-    a_test.step(() => {
+        this.name + ' namespace: operation ' + member.name + '(' + args + ')');
+    a_test.step(function() {
         assert_own_property(
             self[this.name],
             member.name,
-            `namespace object missing operation ${format_value(member.name)}`);
+            'namespace object missing operation ' + format_value(member.name));
 
         this.do_member_operation_asserts(self[this.name], member, a_test);
-    });
+    }.bind(this));
 };
 //@}
 
@@ -3109,19 +3117,22 @@ IdlNamespace.prototype.test_member_attribute = function (member)
     var a_test = subsetTestByKey(
         this.name,
         async_test,
-        `${this.name} namespace: attribute ${member.name}`);
+        this.name + ' namespace: attribute ' + member.name);
     a_test.step(function()
     {
         assert_own_property(
             self[this.name],
             member.name,
-            `${this.name} does not have property ${format_value(member.name)}`);
+            this.name + ' does not have property ' + format_value(member.name));
 
-        var desc = Object.getOwnPropertyDescriptor(self[this.name], member.name);
         // "The attribute setter is undefined if the attribute is declared
         // readonly and has neither a [PutForwards] nor a [Replaceable]
         // extended attribute declared on it."
-        assert_equals(desc.set, undefined, "setter must be undefined for readonly attributes");
+        if (!member.has_extended_attribute("PutForwards")
+            && !member.has_extended_attribute("Replaceable")) {
+            var desc = Object.getOwnPropertyDescriptor(self[this.name], member.name);
+            assert_equals(desc.set, undefined, "setter must be undefined for readonly attributes");
+        }
         a_test.done();
     }.bind(this));
 };
@@ -3150,7 +3161,7 @@ IdlNamespace.prototype.test = function ()
             break;
 
         default:
-            throw `Invalid namespace member ${v.name}: ${v.type} not supported`;
+            throw 'Invalid namespace member ' + v.name + ': ' + v.type + ' not supported';
         }
     };
 };

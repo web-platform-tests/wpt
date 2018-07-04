@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/referrer-policy/generic/common.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+  <!-- handler.py records the Sec-Metadata header value.
+       Maybe name recordHeader.py would make more sense?  -->
+
+  <!-- Same-Origin request -->
+  <img src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/handler.py?file=img-same-origin">
+
+  <!-- Same-Site request -->
+  <img src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/handler.py?file=img-same-site">
+
+  <!-- Cross-Site request -->
+  <img src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/handler.py?file=img-cross-site">
+</body>
+
+<script>
+  var same_origin_test = async_test("Same-Origin image");
+  same_origin_test.step(function () {
+      filename = "img-same-origin";
+      expected_same_origin = 'destination="image", target="subresource", site="same-origin"';
+
+      //  Requests from the server the saved value of the Sec-Metadata header
+      same_origin_xhr = new XMLHttpRequest();
+      same_origin_xhr.open("GET", "/fetch/sec-metadata/resources/getFile.py?file=" + filename);
+
+      // Async test step triggered when the response is loaded
+      same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
+        assert_header_equals(same_origin_xhr, same_origin_test, expected_same_origin)
+      });
+      same_origin_xhr.send();
+  });
+
+  var same_site_test = async_test("Same-Site image");
+  same_site_test.step(function () {
+      filename = "img-same-site";
+      expected_same_site = 'destination="image", target="subresource", site="same-site"';
+
+      //  Requests from the server the saved value of the Sec-Metadata header
+      same_site_xhr = new XMLHttpRequest();
+      same_site_xhr.open("GET", "/fetch/sec-metadata/resources/getFile.py?file=" + filename);
+
+      // Async test step triggered when the response is loaded
+      same_site_xhr.onreadystatechange = same_site_test.step_func(function () {
+        assert_header_equals(same_site_xhr, same_site_test, expected_same_site)
+      });
+      same_site_xhr.send();
+  });
+
+  var cross_site_test = async_test("Cross-Site image");
+  cross_site_test.step(function () {
+      filename = "img-cross-site";
+      expected_cross_site = 'destination="image", target="subresource", site="cross-site"';
+
+      //  Requests from the server the saved value of the Sec-Metadata header
+      cross_site_xhr = new XMLHttpRequest();
+      cross_site_xhr.open("GET", "/fetch/sec-metadata/resources/getFile.py?file=" + filename);
+
+      // Async test step triggered when the response is loaded
+      cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {
+        assert_header_equals(cross_site_xhr, cross_site_test, expected_cross_site)
+      });
+      cross_site_xhr.send();
+  });
+</script>

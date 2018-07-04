@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Grid Layout Module Level 1: parsing display with invalid values</title>
+<link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-grid/#propdef-display">
+<meta name="assert" content="display supports the new values 'grid | inline-grid'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("display", "grid inline-grid");
+test_invalid_value("display", "none grid");
+</script>
+</body>
+</html>

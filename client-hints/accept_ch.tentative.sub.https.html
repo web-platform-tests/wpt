@@ -16,7 +16,7 @@
 // of client hints it receives in the request headers.
 
 promise_test(t => {
-  return fetch("https://{{domains[]}}:{{ports[https][0]}}/client-hints/echo_client_hints_received.py", {"mode": "no-cors"}).then(r => {
+  return fetch("https://{{domains[]}}:{{ports[https][0]}}/client-hints/echo_client_hints_received.py").then(r => {
     assert_equals(r.status, 200)
     // Verify that the browser includes client hints in the headers for a
     // same-origin fetch.

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+
+  <!-- Same-Origin request -->
+  <video src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-origin"
+  onloadstart="test_same_origin()"></video>
+
+  <!-- Same-Site request -->
+  <video src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-site"
+  onloadstart="test_same_site()"></video>
+
+  <!-- Cross-Site request -->
+  <video src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-cross-site"
+  onloadstart="test_cross_site()"></video>
+</body>
+
+<script>
+  function test_same_origin(){
+    var same_origin_test = async_test("Same-Origin video");
+    same_origin_test.step(function () {
+        filename = "video-same-origin";
+        expected_same_origin = {"destination":"video", "target":"subresource", "site":"same-origin"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        same_origin_xhr = new XMLHttpRequest();
+        same_origin_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
+          verify_response(same_origin_xhr, same_origin_test, expected_same_origin)
+        });
+        same_origin_xhr.send();
+    });
+  }
+
+  function test_same_site(){
+    var same_site_test = async_test("Same-Site video");
+    same_site_test.step(function () {
+        filename = "video-same-site";
+        expected_same_site = {"destination":"video", "target":"subresource", "site":"same-site"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        same_site_xhr = new XMLHttpRequest();
+        same_site_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        same_site_xhr.onreadystatechange = same_site_test.step_func(function () {
+          verify_response(same_site_xhr, same_site_test, expected_same_site)
+        });
+        same_site_xhr.send();
+    });
+  }
+
+  function test_cross_site(){
+    var cross_site_test = async_test("Cross-Site video");
+    cross_site_test.step(function () {
+        filename = "video-cross-site";
+        expected_cross_site = {"destination":"video", "target":"subresource", "site":"cross-site"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        cross_site_xhr = new XMLHttpRequest();
+        cross_site_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {
+          verify_response(cross_site_xhr, cross_site_test, expected_cross_site)
+        });
+        cross_site_xhr.send();
+    });
+  }
+</script>

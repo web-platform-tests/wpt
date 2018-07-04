@@ -7,24 +7,24 @@
 <body>
 
   <!-- Same-Origin request -->
-  <audio src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-origin"
-  onloadstart="test_same_origin()"></audio>
+  <link href="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-origin"
+  rel="stylesheet" onload="test_same_origin()">
 
   <!-- Same-Site request -->
-  <audio src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-site"
-  onloadstart="test_same_site()"></audio>
+  <link href="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-site"
+  rel="stylesheet" onload="test_same_site()">
 
   <!-- Cross-Site request -->
-  <audio src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-cross-site"
-  onloadstart="test_cross_site()"></audio>
+  <link href="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-cross-site"
+  rel="stylesheet" onload="test_cross_site()">
 </body>
 
 <script>
-  function test_same_origin(){
-    var same_origin_test = async_test("Same-Origin audio");
+  function test_same_origin() {
+    var same_origin_test = async_test("Same-Origin style");
     same_origin_test.step(function () {
-        filename = "audio-same-origin";
-        expected_same_origin = 'destination="audio", target="subresource", site="same-origin"';
+        filename = "style-same-origin";
+        expected_same_origin = {"destination":"style", "target":"subresource", "site":"same-origin"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
@@ -32,17 +32,17 @@
 
         // Async test step triggered when the response is loaded
         same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
-          assert_header_equals(same_origin_xhr, same_origin_test, expected_same_origin)
+          verify_response(same_origin_xhr, same_origin_test, expected_same_origin)
         });
         same_origin_xhr.send();
     });
   }
 
-  function test_same_site(){
-    var same_site_test = async_test("Same-Site audio");
+  function test_same_site() {
+    var same_site_test = async_test("Same-Site style");
     same_site_test.step(function () {
-        filename = "audio-same-site";
-        expected_same_site = 'destination="audio", target="subresource", site="same-site"';
+        filename = "style-same-site";
+        expected_same_site = {"destination":"style", "target":"subresource", "site":"same-site"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_site_xhr = new XMLHttpRequest();
@@ -50,17 +50,17 @@
 
         // Async test step triggered when the response is loaded
         same_site_xhr.onreadystatechange = same_site_test.step_func(function () {
-          assert_header_equals(same_site_xhr, same_site_test, expected_same_site)
+          verify_response(same_site_xhr, same_site_test, expected_same_site)
         });
         same_site_xhr.send();
     });
   }
 
-  function test_cross_site(){
-    var cross_site_test = async_test("Cross-Site audio");
+  function test_cross_site() {
+    var cross_site_test = async_test("Cross-Site style");
     cross_site_test.step(function () {
-        filename = "audio-cross-site";
-        expected_cross_site = 'destination="audio", target="subresource", site="cross-site"';
+        filename = "style-cross-site";
+        expected_cross_site = {"destination":"style", "target":"subresource", "site":"cross-site"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         cross_site_xhr = new XMLHttpRequest();
@@ -68,7 +68,7 @@
 
         // Async test step triggered when the response is loaded
         cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {
-          assert_header_equals(cross_site_xhr, cross_site_test, expected_cross_site)
+          verify_response(cross_site_xhr, cross_site_test, expected_cross_site)
         });
         cross_site_xhr.send();
     });

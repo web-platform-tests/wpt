@@ -3,7 +3,7 @@
 // "User Interface Security and the Visibility API" spec.
 // See: http://w3c.github.io/webappsec-uisecurity/index.html
 
-callback VisibilityObserverCallback = void(sequence<VisibilityObserverEntry> entries, VisibilityObserver observer)
+callback VisibilityObserverCallback = void(sequence<VisibilityObserverEntry> entries, VisibilityObserver observer);
 
 [Constructor(VisibilityObserverCallback callback, optional VisibilityObserverEntryInit visibilityObserverEntryInit), Exposed=Window]
 interface VisibilityObserverEntry {
@@ -27,9 +27,9 @@ interface VisibilityObserver {
 
 dictionary VisibilityObserverInit {
   (double or sequence<double>) areaThreshold = 0;
- (boolean) displacementAware = false;
- (DOMString) visibleMargin = "0px";
- (Element)? observedElement;
+ boolean displacementAware = false;
+ DOMString visibleMargin = "0px";
+ Element? observedElement;
 };
 
 partial interface Event {

@@ -11,8 +11,8 @@ in this web page, and two in the other web pages.
 
 <script>
 
-// This test fetches resources/accept_ch_lifetime.html. The response headers to
-// that webpage contain Accept-CH and Accept-CH-Lifetime headers.
+// This test fetches resources/http_equiv_accept_ch_lifetime.html. The response
+// to that webpage contains Accept-CH and Accept-CH-Lifetime http-equiv headers.
 // Fetching that webpage should cause the user-agent to persist origin
 // preferences for the client hints specified in Accept-CH header for a
 // duration specified in the Accept-CH-Lifetime header.
@@ -49,7 +49,6 @@ async_test(t => {
 })
 }, "Loading of resources/expect_client_hints_headers.html did not finish.");
 
-
 function acceptChLifetimeLoaded() {
   // Open a new window. Verify that the user agent attaches the client hints.
   var verify_win = window.open("expect_client_hints_headers.html");
@@ -58,7 +57,7 @@ function acceptChLifetimeLoaded() {
 
 // Fetching this webpage should cause user-agent to persist client hint
 // preferences for the origin.
-var win = window.open("resources/accept_ch_lifetime.html");
+var win = window.open("resources/http_equiv_accept_ch_lifetime.html");
 assert_not_equals(win, null, "Popup windows not allowed?");
 win.addEventListener('load', acceptChLifetimeLoaded, false);
 

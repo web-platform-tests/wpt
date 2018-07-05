@@ -1,5 +1,5 @@
 <html>
-<title>Accept-CH-Lifetime test with cross-origin iframe</title>
+<title>Accept-CH-Lifetime test with subresource</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,19 +11,19 @@ in this web page, and another in the second web page.
 
 <script>
 
-// This test fetches resources/accept_ch_lifetime.html in a cross origin iframe.
-// The response headers to that webpage contain Accept-CH and Accept-CH-Lifetime
-// headers.
+// This test fetches resources/http_equiv_accept_ch_lifetime.html as a
+// subresource. The response to that webpage contains Accept-CH and
+// Accept-CH-Lifetime http-equiv headers.
 
-// Fetching that webpage should NOT cause the user-agent to persist origin
-// preferences for the client hints specified.
+// Fetching that webpage as a subresource should NOT cause the user-agent to
+// persist origin preferences for the client hints specified in Accept-CH
+// header.
 
-// Next, to verify if the origin preferences were NOT persisted by the user
+// Next, to verify if the origin preferences were not persisted by the user
 // agent, this test fetches resources/do_not_expect_client_hints_headers.html
 // in a new window. Fetching of
-// resources/do_not_expect_client_hints_headers.html
-// verifies that the user agent did not actually sent the client hints in the
-// request headers.
+// resources/do_not_expect_client_hints_headers.html verifies that the user
+// agent does not send the client hints in the request headers.
 
 // Test is marked as tentative until https://github.com/whatwg/fetch/issues/726
 // is resolved.
@@ -39,6 +39,23 @@ promise_test(t => {
   });
 }, "Precondition: Test that the browser does not have client hints preferences cached");
 
+promise_test(t => {
+  // Fetching this web page as a subresource should NOT cause user-agent to
+  // persist client hint preferences for the origin.
+  return fetch("resources/http_equiv_accept_ch_lifetime.html").then(r => {
+    assert_equals(r.status, 200)
+    // Verify that the browser did not include client hints in the request
+    // headers.
+    assert_false(r.headers.has("device-memory-received"), "device-memory-received");
+
+    // Open a new window. Verify that the user agent does not attach the client
+    // hints.
+    var win = window.open("resources/do_not_expect_client_hints_headers.html");
+    assert_not_equals(win, null, "Popup windows not allowed?");
+
+  });
+}, "Test receiving Accept-CH-Lifetime header");
+
 async_test(t => {
   window.addEventListener('message', function(e) {
     if(!e.source.location.pathname.includes("do_not_expect_client_hints_headers.html")) {
@@ -51,18 +68,7 @@ async_test(t => {
   })
 }, "Loading of resources/do_not_expect_client_hints_headers.html did not finish.");
 
-function acceptChLifetimeLoaded() {
-  // Open a new window. Verify that the user agent does not attach the client
-  // hints.
-  var verify_win = window.open("resources/do_not_expect_client_hints_headers.html");
-  assert_not_equals(verify_win, null, "Popup windows not allowed?");
-}
 
 </script>
-
-<!-- Fetching this webpage should NOT cause user-agent to persist client hint
- preferences for the origin.-->
-<iframe onload="acceptChLifetimeLoaded()" src="https://{{hosts[][www]}}:{{ports[https][0]}}/client-hints/resources/accept_ch_lifetime.html"></iframe>
-
 </body>
 </html>

@@ -6,19 +6,21 @@
 <script src=/fetch/sec-metadata/resources/helper.js></script>
 <body>
   <!-- Same-Origin request -->
-  <video src="/media/movie_5.mp4" controls onloadstart="test_same_origin()">
-    <track default kind="captions" src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-origin" srclang="en">
+  <video src="/media/movie_5.mp4" controls>
+    <track default kind="captions" src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-origin"
+    srclang="en" onload="test_same_origin()">
   </video>
 
   <!-- Same-Site request -->
-  <video src="/media/movie_5.mp4" controls crossorigin onloadstart="test_same_site()">
-    <!-- TODO: The onload tag in track does not seem to work even though the documentation says it should. Maybe long polling in the test would solve the problem?-->
-    <track default kind="captions" src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-site" srclang="pl">
+  <video src="/media/movie_5.mp4" controls crossorigin>
+    <track default kind="captions" src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-same-site"
+    srclang="pl" onload="test_same_site()">
   </video>
 
   <!-- Cross-Site request -->
-  <video src="/media/movie_5.mp4" controls crossorigin onloadstart="test_cross_site()">
-    <track default kind="captions" src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-cross-site" srclang="de">
+  <video src="/media/movie_5.mp4" controls crossorigin>
+    <track default kind="captions" src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=track-cross-site"
+    srclang="de" onload="test_cross_site()">
   </video>
 </body>
 

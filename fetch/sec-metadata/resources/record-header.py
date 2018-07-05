@@ -32,6 +32,10 @@ def main(request, response):
   if filename.startswith("serviceworker"):
     response.headers.set("Content-Type", "application/javascript")
 
+  ## Add return valid .vtt content for the <track> tag
+  if filename.startswith("track"):
+    return "WEBVTT"
+
 def is_safe_path(basedir, path, follow_symlinks=True):
   if follow_symlinks:
     return os.path.realpath(path).startswith(basedir)

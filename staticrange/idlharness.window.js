@@ -17,7 +17,6 @@ promise_test(async () => {
     });
   } catch (e) {
     // Will be surfaced in idlharness.js's test_object below.
-    console.log(e);
   }
 
   const idl_array = new IdlArray();

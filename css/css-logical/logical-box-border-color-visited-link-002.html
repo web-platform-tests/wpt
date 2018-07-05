@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Logical Properties: Flow-Relative Border Colors in Visited Links</title>
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com" />
+<link rel="help" href="https://drafts.csswg.org/css-logical/#border-color" />
+<link rel="help" href="https://drafts.csswg.org/selectors/#visited-pseudo" />
+<link rel="match" href="../reference/ref-filled-green-200px-square.html" />
+<meta name="assert" content="This test checks that flow-relative border shorthand properties set border color for visited links." />
+<style>
+a {
+  display: inline-block;
+  vertical-align: top;
+  border: 50px solid red;
+}
+#link1, #link2:visited {
+  border-block-color: green;
+  border-inline-color: green;
+}
+#link3 {
+  border-block: 50px solid green;
+  border-inline: 50px solid green;
+}
+#link4:visited {
+  border-block: 0 none green;
+  border-inline: 0 none green;
+}
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<a id="link1"></a><a id="link2"></a><br />
+<a id="link3"></a><a id="link4"></a>
+<script>
+document.querySelectorAll("a").forEach(function(link) {
+  // Current URL should be visited
+  link.href = location.href;
+});
+</script>

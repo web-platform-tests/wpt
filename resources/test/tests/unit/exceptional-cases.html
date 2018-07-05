@@ -322,6 +322,45 @@ promise_test(() => {
       assert_equals(tests.test, 'PASS');
     });
 }, 'exception in `add_cleanup` of a promise_test');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        promise_test((t) => {
+          t.step(() => {
+            throw new Error('this error is expected');
+          });
+        }, 'test');
+        async_test((t) => t.done(), 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.test, 'FAIL');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'exception in `step` of an async_test');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        promise_test((t) => {
+          t.step(() => {
+            throw new Error('this error is expected');
+          });
+
+          return new Promise(() => {});
+        }, 'test');
+
+        // This following test should be run to completion despite the fact
+        // that the promise returned by the previous test never resolves.
+        promise_test((t) => Promise.resolve(), 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness, 'OK');
+      assert_equals(tests.test, 'FAIL');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'exception in `step` of a promise_test');
 </script>
 </body>
 </html>

@@ -582,6 +582,15 @@ policies and contribution forms [3].
                     assert_not_equals(promise, undefined);
                 });
 
+                // Test authors may use the `step` method within a
+                // `promise_test` even though this reflects a mixture of
+                // asynchronous control flow paradigms. The "done" callback
+                // should be registered prior to the resolution of the
+                // user-provided Promise to avoid timeouts in cases where the
+                // Promise does not settle but a `step` function has thrown an
+                // error.
+                add_test_done_callback(test, resolve);
+
                 Promise.resolve(promise)
                     .catch(test.step_func(
                         function(value) {
@@ -592,7 +601,6 @@ policies and contribution forms [3].
                                    "Unhandled rejection with value: ${value}", {value:value});
                         }))
                     .then(function() {
-                        add_test_done_callback(test, resolve);
                         test.done();
                     });
                 });

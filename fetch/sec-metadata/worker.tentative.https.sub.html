@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<!-- TODO: Implement long polling-->
+<script>
+
+  // TESTS //
+  if (window.Worker) {
+    //  Same-Origin test
+    var myWorker = new Worker('/fetch/sec-metadata/resources/record-header.py?file=worker-same-origin');
+    myWorker.terminate();
+    test_same_origin();
+  }
+
+  function test_same_origin(){
+    var same_origin_test = async_test("Same-Origin worker");
+    same_origin_test.step(function () {
+        filename = "worker-same-origin";
+        expected_same_origin = {"destination":"worker", "target":"subresource", "site":"same-origin"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        same_origin_xhr = new XMLHttpRequest();
+        same_origin_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
+          verify_response(same_origin_xhr, same_origin_test, expected_same_origin)
+        });
+        same_origin_xhr.send();
+    });
+  }
+</script>
+<body></body>

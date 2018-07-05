@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html manifest="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=manifest-cross-site"></html>
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<body onload="test_cross_site()">
+</body>
+
+<script>
+  function test_cross_site(){
+    var cross_site_test = async_test("Cross-Site manifest");
+    cross_site_test.step(function () {
+        filename = "manifest-cross-site";
+        expected_cross_site = {"destination":"manifest", "target":"subresource", "site":"cross-site"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        cross_site_xhr = new XMLHttpRequest();
+        cross_site_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {
+          verify_response(cross_site_xhr, cross_site_test, expected_cross_site)
+        });
+        cross_site_xhr.send();
+    });
+  }
+</script>

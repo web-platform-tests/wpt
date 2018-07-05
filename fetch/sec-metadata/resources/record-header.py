@@ -23,6 +23,7 @@ def main(request, response):
   file.close()
 
   ## Prevent the browser from caching returned responses ##
+  response.headers.set("Access-Control-Allow-Origin", "*")
   response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate")
   response.headers.set("Pragma", "no-cache")
   response.headers.set("Expires", "0")

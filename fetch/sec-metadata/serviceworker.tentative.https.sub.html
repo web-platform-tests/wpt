@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+  <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/fetch/sec-metadata/resources/record-header.py?file=serviceworker-same-origin').then(function(registration) {
+            test_same_origin();
+
+            // uninstall the serviceworker after the test
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              for(let registration of registrations) {
+                registration.unregister()
+              }
+            })
+          }, function(err) {
+            // registration failed
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+  </script>
+</body>
+
+<script>
+  // It is only possible to install service workers from the same origin and only over HTTPS
+  function test_same_origin(){
+    var same_origin_test = async_test("Same-Origin serviceworker");
+    same_origin_test.step(function () {
+        filename = "serviceworker-same-origin";
+        expected_same_origin = {"destination":"serviceworker", "target":"subresource", "site":"same-origin"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        same_origin_xhr = new XMLHttpRequest();
+        same_origin_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+
+        // Async test step triggered when the response is loaded
+        same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
+          verify_response(same_origin_xhr, same_origin_test, expected_same_origin)
+        });
+        same_origin_xhr.send();
+    });
+  }
+</script>

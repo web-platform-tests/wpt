@@ -27,6 +27,10 @@ def main(request, response):
   response.headers.set("Pragma", "no-cache")
   response.headers.set("Expires", "0")
 
+  ## Add Content-Type to the serviceworker response
+  if filename.startswith("serviceworker"):
+    response.headers.set("Content-Type", "application/javascript")
+
 def is_safe_path(basedir, path, follow_symlinks=True):
   if follow_symlinks:
     return os.path.realpath(path).startswith(basedir)

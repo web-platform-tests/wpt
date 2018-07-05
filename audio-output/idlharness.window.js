@@ -21,4 +21,4 @@ promise_test(async () => {
     HTMLVideoElement: ['video']
   });
   idl_array.test();
-}, 'Test IDL implementation of audio-output API'); 
+}, 'Test IDL implementation of audio-output API');

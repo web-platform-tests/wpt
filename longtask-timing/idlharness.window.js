@@ -35,9 +35,10 @@ promise_test(async t => {
     var begin = self.performance.now();
     while (self.performance.now() < begin + taskTime);
   }
-  setTimeout(longTask, 0);
+  t.step_timeout(longTask, 0);
 
-  const timeout = new Promise((_, reject) => setTimeout(reject, 2 * taskTime));
+  const timeout = new Promise(
+      (_, reject) => t.step_timeout(reject, 2 * taskTime));
   return Promise.race([testIdls, timeout])
     .then(
         t.step_func_done(),

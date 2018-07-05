@@ -16,31 +16,37 @@ promise_test(async t => {
   idl_array.add_dependency_idls(perf);
 
   const testIdls = new Promise(resolve => {
-    const observer = new PerformanceObserver(entryList => {
-      const entries = Array.from(entryList.getEntries());
-      const attribution = entries
-          .reduce((sum, e) => sum.concat(e.attribution || []), []);
-      idl_array.add_objects({
-        PerformanceLongTaskTiming: entries,
-        TaskAttributionTiming: attribution,
+    try {
+      const observer = new PerformanceObserver(entryList => {
+        const entries = Array.from(entryList.getEntries());
+        const attribution = entries.reduce(
+            (sum, e) => sum.concat(e.attribution || []), []);
+        idl_array.add_objects({
+          PerformanceLongTaskTiming: entries,
+          TaskAttributionTiming: attribution,
+        });
+        idl_array.test();
+        resolve();
       });
-      idl_array.test();
-      resolve();
-    });
-    observer.observe({entryTypes: ['longtask']});
+      observer.observe({entryTypes: ['longtask']});
+    } catch (e) {
+      // Will be surfaces in idlharness.js's test_object below.
+    }
   });
 
-  const taskTime = 100;
   const longTask = () => {
     var begin = self.performance.now();
-    while (self.performance.now() < begin + taskTime);
+    while (self.performance.now() < begin + 100);
   }
   t.step_timeout(longTask, 0);
 
   const timeout = new Promise(
-      (_, reject) => t.step_timeout(reject, 2 * taskTime));
+      (_, reject) => t.step_timeout(reject, 1000));
   return Promise.race([testIdls, timeout])
     .then(
         t.step_func_done(),
-        t.unreached_func('LongTask was not observed'));
+        () => {
+          idl_array.test(); // Rejected, but test what we can.
+          return Promise.reject('LongTask was not observed');
+        });
 }, 'longtasks interfaces');

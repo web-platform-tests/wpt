@@ -1,0 +1,16 @@
+enum AppBannerPromptOutcome {
+    "accepted",
+    "dismissed"
+};
+[Constructor,
+ Exposed=Window]
+interface BeforeInstallPromptEvent : Event {
+    Promise<PromptResponseObject> prompt();
+};
+dictionary PromptResponseObject {
+    AppBannerPromptOutcome userChoice;
+};
+partial interface Window {
+    attribute EventHandler onappinstalled;
+    attribute EventHandler onbeforeinstallprompt;
+};

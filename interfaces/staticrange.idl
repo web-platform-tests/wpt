@@ -15,10 +15,10 @@ dictionary StaticRangeInit {
 interface StaticRange {
   attribute Node startContainer;
   attribute unsigned long startOffset;
-		
+
   attribute Node endContainer;
   attribute unsigned long endOffset;
-		
+
   readonly attribute boolean collapsed;
 
   [NewObject] Range toRange();

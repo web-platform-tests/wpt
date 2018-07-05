@@ -32,11 +32,6 @@ def main(request, response):
   if filename.startswith("serviceworker"):
     response.headers.set("Content-Type", "application/javascript")
 
-  ## Add Content-Type to the serviceworker response
-  # if filename.startswith("manifest"):
-  #   response.headers.set("Content-Type", "text/cache-manifest")
-    # return ""
-
 def is_safe_path(basedir, path, follow_symlinks=True):
   if follow_symlinks:
     return os.path.realpath(path).startswith(basedir)

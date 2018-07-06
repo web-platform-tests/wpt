@@ -9,9 +9,12 @@
   // TESTS //
   if (window.Worker) {
       //  Same-Origin test
-      var mysharedworker = new SharedWorker('/fetch/sec-metadata/resources/record-header.py?file=sharedworker-same-origin');
-      mysharedworker.port.start();
-      test_same_origin();
+      var sharedWorker = new SharedWorker('/fetch/sec-metadata/resources/record-header.py?file=sharedworker-same-origin');
+      sharedWorker.port.start();
+      sharedWorker.port.onmessage = function(e) {
+        test_same_origin();
+      }
+      sharedWorker.port.postMessage("Ready");
     }
 
   function test_same_origin(){

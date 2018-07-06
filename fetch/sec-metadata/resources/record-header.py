@@ -29,27 +29,31 @@ def main(request, response):
   response.headers.set("Pragma", "no-cache")
   response.headers.set("Expires", "0")
 
-  ## Add a valid Content-Type to the serviceworker response
+  ## Add a valid ServiceWorker Content-Type ##
   if filename.startswith("serviceworker"):
     response.headers.set("Content-Type", "application/javascript")
 
-  ## Return a valid .vtt content for the <track> tag
+  ## Return a valid .vtt content for the <track> tag ##
   if filename.startswith("track"):
     return "WEBVTT"
 
-  ## Return a valid SharedWorker
+  ## Return a valid SharedWorker ##
   if filename.startswith("sharedworker"):
     file = open(resourcePath + "sharedWorker.js", "r")
     sharedWorker = file.read()
     file.close()
     return sharedWorker
 
-  ## Return a valid font
+  ## Return a valid font ##
   if filename.startswith("font"):
     file = open("fonts/Ahem.ttf", "r")
     font = file.read()
     file.close()
     return font
+
+  ## Return a valid style Content-Type ##
+  if filename.startswith("style"):
+    response.headers.set("Content-Type", "text/css")
 
 def is_safe_path(basedir, path, follow_symlinks=True):
   if follow_symlinks:

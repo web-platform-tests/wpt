@@ -4,21 +4,6 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
-<body>
-
-  <!-- Same-Origin request -->
-  <link href="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-origin"
-  rel="stylesheet" onload="test_same_origin()">
-
-  <!-- Same-Site request -->
-  <link href="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-site"
-  rel="stylesheet" onload="test_same_site()">
-
-  <!-- Cross-Site request -->
-  <link href="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-cross-site"
-  rel="stylesheet" onload="test_cross_site()">
-</body>
-
 <script>
   function test_same_origin() {
     var same_origin_test = async_test("Same-Origin style");
@@ -74,3 +59,17 @@
     });
   }
 </script>
+<body>
+  <!-- Same-Origin request -->
+  <link href="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-origin"
+  rel="stylesheet" onload="test_same_origin()">
+
+  <!-- Same-Site request -->
+  <link href="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-same-site"
+  rel="stylesheet" onload="test_same_site()">
+
+  <!-- Cross-Site request -->
+  <link href="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=style-cross-site"
+  rel="stylesheet" onload="test_cross_site()">
+</body>
+

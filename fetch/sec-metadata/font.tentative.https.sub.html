@@ -5,14 +5,16 @@
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
 <body>
-  <!-- TODO: The onload tag in does not seem to wait until the font is loaded. Maybe long polling in the test would solve the problem?-->
+  <div id="test1">1</div>
+  <div id="test2">2</div>
+  <div id="test3">3</div>
   <!-- Same-Origin request -->
   <style onload="test_same_origin()">
     @font-face {
       font-family: myFirstFont;
       src: url(https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-origin);
     }
-    body {
+    #test1 {
       font-family: myFirstFont;
     }
   </style>
@@ -20,22 +22,22 @@
   <!-- Same-Site request -->
   <style onload="test_same_site()">
     @font-face {
-      font-family: myFirstFont;
+      font-family: mySecondFont;
       src: url(https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-site);
     }
-    body {
-      font-family: myFirstFont;
+    #test2 {
+      font-family: mySecondFont;
     }
   </style>
 
   <!-- Cross-Site request -->
   <style onload="test_cross_site()">
     @font-face {
-      font-family: myFirstFont;
+      font-family: myThirdFont;
       src: url(https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-cross-site);
     }
-    body {
-      font-family: myFirstFont;
+    #test3 {
+      font-family: myThirdFont;
     }
   </style>
 </body>

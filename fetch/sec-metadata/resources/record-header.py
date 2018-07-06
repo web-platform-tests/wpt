@@ -44,6 +44,12 @@ def main(request, response):
     file.close()
     return sharedWorker
 
+  ## Return a valid font
+  if filename.startswith("font"):
+    file = open("fonts/Ahem.ttf", "r")
+    font = file.read()
+    file.close()
+    return font
 
 def is_safe_path(basedir, path, follow_symlinks=True):
   if follow_symlinks:

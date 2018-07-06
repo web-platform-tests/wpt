@@ -4,21 +4,6 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
-<body>
-
-  <!-- Same-Origin request -->
-  <video src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-origin"
-  onloadstart="test_same_origin()"></video>
-
-  <!-- Same-Site request -->
-  <video src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-site"
-  onloadstart="test_same_site()"></video>
-
-  <!-- Cross-Site request -->
-  <video src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-cross-site"
-  onloadstart="test_cross_site()"></video>
-</body>
-
 <script>
   function test_same_origin(){
     var same_origin_test = async_test("Same-Origin video");
@@ -74,3 +59,18 @@
     });
   }
 </script>
+<body>
+
+  <!-- Same-Origin request -->
+  <video src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-origin"
+  onloadstart="test_same_origin()"></video>
+
+  <!-- Same-Site request -->
+  <video src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-site"
+  onloadstart="test_same_site()"></video>
+
+  <!-- Cross-Site request -->
+  <video src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-cross-site"
+  onloadstart="test_cross_site()"></video>
+</body>
+

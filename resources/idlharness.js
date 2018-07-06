@@ -3021,7 +3021,9 @@ IdlTypedef.prototype = Object.create(IdlObject.prototype);
  * @param {String|String[]} srcs Spec name(s) for source idl files (fetched from
  *      /interfaces/{name}.idl).
  * @param {String|String[]} deps Spec name(s) for dependency idl files (fetched
- *      from /interfaces/{name}.idl).
+ *      from /interfaces/{name}.idl). Order is important - dependencies from
+ *      each source will only be included if they're already know to be a
+ *      dependency (i.e. have already been seen).
  * @param {Function} setup_func Function for extra setup of the idl_array, such
  *      as adding objects. Do not call idl_array.test() in the setup; it is
  *      called by this function (idl_test).

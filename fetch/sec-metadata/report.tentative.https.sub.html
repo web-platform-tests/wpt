@@ -6,27 +6,21 @@
 <link id="style" href="https://foo.bar" rel="stylesheet">
 <body></body>
 <script>
-  var same_origin_triggered = false;
-  var same_site_triggered = false;
-  var cross_site_triggered = false;
 
   document.addEventListener("securitypolicyviolation", (e) => {
     var css = document.getElementById("style");
     if (css != null)
       css.remove();
 
-    if(e.originalPolicy.split("=")[1] === "report-same-origin" && !same_origin_triggered){
-      same_origin_triggered = true;
+    if(e.originalPolicy.split("=")[1] === "report-same-origin"){
       test_same_origin();
     }
 
-    if(e.originalPolicy.split("=")[1] == "report-same-site" && !same_site_triggered){
-      same_site_triggered = true;
+    if(e.originalPolicy.split("=")[1] == "report-same-site"){
       test_same_site();
     }
 
-    if(e.originalPolicy.split("=")[1] == "report-cross-site" && !cross_site_triggered){
-      cross_site_triggered = true;
+    if(e.originalPolicy.split("=")[1] == "report-cross-site"){
       test_cross_site()
     }
   });

@@ -149,22 +149,6 @@ function expandTemplates (rawRequests) {
   return requests
 }
 
-function pause () {
-  return new Promise(function (resolve, reject) {
-    step_timeout(function () {
-      return resolve()
-    }, 3000)
-  })
-}
-
-function makeUrl (uuid, requests, idx) {
-  var arg = ''
-  if ('query_arg' in requests[idx]) {
-    arg = `&target=${requests[idx].query_arg}`
-  }
-  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
-}
-
 function fetchInit (config) {
   var init = {
     'headers': []
@@ -262,6 +246,22 @@ function checkRequests (requests, state) {
       }
     }
   }
+}
+
+function pause () {
+  return new Promise(function (resolve, reject) {
+    step_timeout(function () {
+      return resolve()
+    }, 3000)
+  })
+}
+
+function makeUrl (uuid, requests, idx) {
+  var arg = ''
+  if ('query_arg' in requests[idx]) {
+    arg = `&target=${requests[idx].query_arg}`
+  }
+  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
 }
 
 function serverState (uuid) {

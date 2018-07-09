@@ -38,26 +38,6 @@
  * - expected_response_text - A string to check the response body against.
  */
 
-function makeUrl (uuid, requests, idx) {
-  var arg = ''
-  if ('query_arg' in requests[idx]) {
-    arg = `&target=${requests[idx].query_arg}`
-  }
-  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
-}
-
-function serverState (uuid) {
-  return fetch(`resources/http-cache.py?querystate&token=${uuid}`)
-    .then(function (response) {
-      return response.text()
-    }).then(function (text) {
-      // null will be returned if the server never received any requests
-      // for the given uuid.  Normalize that to an empty list consistent
-      // with our representation.
-      return JSON.parse(text) || []
-    })
-}
-
 var templates = {
   'fresh': {
     'response_headers': [
@@ -210,7 +190,7 @@ function makeTest (rawRequests) {
       .then(function () {
         // Now, query the server state
         return serverState(uuid)
-      }).then(function (state) {
+      }).then(function (step_timeoutate) {
         for (let i = 0; i < requests.length; ++i) {
           var expectedValidatingHeaders = []
           var reqNum = i + 1
@@ -246,6 +226,14 @@ function makeTest (rawRequests) {
   }
 }
 
+function makeUrl (uuid, requests, idx) {
+  var arg = ''
+  if ('query_arg' in requests[idx]) {
+    arg = `&target=${requests[idx].query_arg}`
+  }
+  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
+}
+
 function fetchInit (config) {
   var init = {
     'headers': []
@@ -258,6 +246,18 @@ function fetchInit (config) {
   if ('credentials' in config) init.mode = config['credentials']
   if ('cache' in config) init.cache = config['cache']
   return init
+}
+
+function serverState (uuid) {
+  return fetch(`resources/http-cache.py?querystate&token=${uuid}`)
+    .then(function (response) {
+      return response.text()
+    }).then(function (text) {
+      // null will be returned if the server never received any requests
+      // for the given uuid.  Normalize that to an empty list consistent
+      // with our representation.
+      return JSON.parse(text) || []
+    })
 }
 
 function run_tests (tests) {

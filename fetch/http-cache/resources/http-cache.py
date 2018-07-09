@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from json import JSONEncoder, JSONDecoder
 from base64 import b64decode
 

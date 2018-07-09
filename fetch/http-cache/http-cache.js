@@ -130,37 +130,41 @@ function fetchInit (requests, config) {
 
 function makeCheckResponse (idx, config) {
   return function checkResponse (response) {
-    var resNum = parseInt(response.headers.get('Server-Request-Count'))
     var reqNum = idx + 1
+    var resNum = parseInt(response.headers.get('Server-Request-Count'))
     if ('expected_type' in config) {
       if (config.expected_type === 'error') {
-        assert_true(false, `Request ${reqNum} should have been an error`)
+        assert_true(false, `Request ${reqNum} doesn't throw an error`)
         return response.text()
       }
       if (config.expected_type === 'cached') {
-        assert_less_than(resNum, reqNum, 'Response used')
+        assert_less_than(resNum, reqNum, `Response ${reqNum} does not come from cache`)
       }
       if (config.expected_type === 'not_cached') {
-        assert_equals(resNum, reqNum, 'Response used')
+        assert_equals(resNum, reqNum, `Response ${reqNum} comes from cache`)
       }
     }
     if ('expected_status' in config) {
-      assert_equals(response.status, config.expected_status, 'Response status')
+      assert_equals(response.status, config.expected_status,
+        `Response ${reqNum} status is ${response.status}, not ${config.expected_status}`)
     } else if ('response_status' in config) {
-      assert_equals(response.status, config.response_status[0], 'Response status')
+      assert_equals(response.status, config.response_status[0],
+        `Response ${reqNum} status is ${response.status}, not ${config.response_status[0]}`)
     } else {
-      assert_equals(response.status, 200, 'Response status')
+      assert_equals(response.status, 200, `Response ${reqNum} status is ${response.status}, not 200`)
     }
     if ('response_headers' in config) {
       config.response_headers.forEach(function (header) {
         if (header.len < 3 || header[2] === true) {
-          assert_equals(response.headers.get(header[0]), header[1], 'Response header')
+          assert_equals(response.headers.get(header[0]), header[1],
+            `Response ${reqNum} header ${header[0]} is "${response.headers.get(header[0])}", not "${header[1]}"`)
         }
       })
     }
     if ('expected_response_headers' in config) {
       config.expected_response_headers.forEach(function (header) {
-        assert_equals(response.headers.get(header[0]), header[1], 'Response header')
+        assert_equals(response.headers.get(header[0]), header[1],
+          `Response ${reqNum} header ${header[0]} is "${response.headers.get(header[0])}", not "${header[1]}"`)
       })
     }
     return response.text()
@@ -170,44 +174,47 @@ function makeCheckResponse (idx, config) {
 function makeCheckResponseBody (config, uuid) {
   return function checkResponseBody (resBody) {
     if ('expected_response_text' in config) {
-      assert_equals(resBody, config.expected_response_text, 'Response body')
+      assert_equals(resBody, config.expected_response_text,
+        `Response body is "${resBody}", not "${config.expected_response_text}"`)
     } else if ('response_body' in config) {
-      assert_equals(resBody, config.response_body, 'Response body')
+      assert_equals(resBody, config.response_body,
+        `Response body is "${resBody}", not "${config.response_body}"`)
     } else {
-      assert_equals(resBody, uuid, 'Response body')
+      assert_equals(resBody, uuid, `Response body is "${resBody}", not "${uuid}"`)
     }
   }
 }
 
-function checkRequests (requests, state) {
+function checkRequests (requests, testState) {
   for (let i = 0; i < requests.length; ++i) {
     var expectedValidatingHeaders = []
+    var config = requests[i]
     var reqNum = i + 1
-    if ('expected_type' in requests[i]) {
-      if (requests[i].expected_type === 'cached') {
-        assert_true(state.length <= i, `cached response used for request ${reqNum}`)
+    if ('expected_type' in config) {
+      if (config.expected_type === 'cached') {
+        assert_true(testState.length <= i, `cached response used for request ${reqNum}`)
         continue // the server will not see the request, so we can't check anything else.
       }
-      if (requests[i].expected_type === 'not_cached') {
-        assert_false(state.length <= i, `cached response used for request ${reqNum}`)
+      if (config.expected_type === 'not_cached') {
+        assert_false(testState.length <= i, `cached response used for request ${reqNum}`)
       }
-      if (requests[i].expected_type === 'etag_validated') {
+      if (config.expected_type === 'etag_validated') {
         expectedValidatingHeaders.push('if-none-match')
       }
-      if (requests[i].expected_type === 'lm_validated') {
+      if (config.expected_type === 'lm_validated') {
         expectedValidatingHeaders.push('if-modified-since')
       }
     }
     for (let j in expectedValidatingHeaders) {
       var vhdr = expectedValidatingHeaders[j]
-      assert_own_property(state[i].request_headers, vhdr, `has ${vhdr} request header`)
+      assert_own_property(testState[i].request_headers, vhdr, `has ${vhdr} request header`)
     }
     if ('expected_request_headers' in requests[i]) {
       var expectedRequestHeaders = requests[i].expected_request_headers
       for (let j = 0; j < expectedRequestHeaders.length; ++j) {
-        var expectedHeader = expectedRequestHeaders[j]
-        assert_equals(state[i].request_headers[expectedHeader[0].toLowerCase()],
-          expectedHeader[1])
+        var expectedHdr = expectedRequestHeaders[j]
+        assert_equals(testState[i].request_headers[expectedHdr[0].toLowerCase()], expectedHdr[1],
+          `request ${reqNum} header ${expectedHdr[0]} value is "${testState[i].request_headers[expectedHdr[0].toLowerCase()]}", not "${expectedHdr[1]}"`)
       }
     }
   }

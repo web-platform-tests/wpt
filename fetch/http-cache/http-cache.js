@@ -101,7 +101,7 @@ function makeTest (rawRequests) {
     function runNextStep () {
       if (fetchFunctions.length) {
         var fetchFunction = fetchFunctions.shift()
-        if (fetchFunction.pause_after > 0) {
+        if (fetchFunction.pause_after === true) {
           return fetchFunction.code(idx++)
             .then(pause)
             .then(runNextStep)

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>HTTP Cache - 304 Updates</title>
     <meta name="help" href="https://fetch.spec.whatwg.org/#request">
+    <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/common/utils.js"></script>
@@ -21,13 +22,12 @@
               ["Expires", -5000],
               ["Last-Modified", -3000],
               ["Test-Header", "A"]
-            ],
-            pause_after: true
+            ]
           },
           {
             response_headers: [
               ["Expires", -3000],
-              ["Last-Modified", -2000],
+              ["Last-Modified", -3000],
               ["Test-Header", "B"]
             ],
             expected_type: "lm_validated",
@@ -45,8 +45,7 @@
               ["Expires", -5000],
               ["Last-Modified", -3000],
               ["Test-Header", "A"]
-            ],
-            pause_after: true
+            ]
           },
           {
             response_headers: [
@@ -57,7 +56,8 @@
             expected_type: "lm_validated",
             expected_response_headers: [
               ["Test-Header", "B"]
-            ]
+            ],
+            pause_after: true
           },
           {
             expected_type: "cached",
@@ -109,7 +109,8 @@
             expected_type: "etag_validated",
             expected_response_headers: [
               ["Test-Header", "B"]
-            ]
+            ],
+            pause_after: true
           },
           {
             expected_type: "cached",

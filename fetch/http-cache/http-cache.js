@@ -81,7 +81,7 @@ function makeTest (rawRequests) {
     return runNextStep()
       .then(function () {
         // Now, query the server state
-        return serverState(uuid)
+        return getServerState(uuid)
       }).then(function (state) {
         checkRequests(requests, state)
         return Promise.resolve()
@@ -228,7 +228,7 @@ function makeUrl (uuid, requests, idx) {
   return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
 }
 
-function serverState (uuid) {
+function getServerState (uuid) {
   return fetch(`resources/http-cache.py?querystate&token=${uuid}`)
     .then(function (response) {
       return response.text()

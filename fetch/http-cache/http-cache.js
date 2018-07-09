@@ -1,5 +1,5 @@
 /* global btoa fetch token promise_test step_timeout */
-/* global assert_equals assert_true assert_false assert_own_property assert_throws assert_unreached assert_less_than */
+/* global assert_equals assert_true assert_own_property assert_throws assert_less_than */
 
 var templates = {
   'fresh': {
@@ -101,13 +101,6 @@ function expandTemplates (test) {
         }
       }
     }
-    if ('expected_type' in request && request.expected_type === 'cached') {
-      // requests after one that's expected to be cached will get out of sync
-      // with the server; not currently supported.
-      if (rawRequests.length > i + 1) {
-        assert_unreached('Making requests after something is expected to be cached.')
-      }
-    }
     requests.push(request)
   }
   return requests
@@ -186,18 +179,14 @@ function makeCheckResponseBody (config, uuid) {
 }
 
 function checkRequests (requests, testState) {
+  var testIdx = 0
   for (let i = 0; i < requests.length; ++i) {
     var expectedValidatingHeaders = []
     var config = requests[i]
+    var serverRequest = testState[testIdx]
     var reqNum = i + 1
     if ('expected_type' in config) {
-      if (config.expected_type === 'cached') {
-        assert_true(testState.length <= i, `cached response used for request ${reqNum}`)
-        continue // the server will not see the request, so we can't check anything else.
-      }
-      if (config.expected_type === 'not_cached') {
-        assert_false(testState.length <= i, `cached response used for request ${reqNum}`)
-      }
+      if (config.expected_type === 'cached') continue // the server will not see the request
       if (config.expected_type === 'etag_validated') {
         expectedValidatingHeaders.push('if-none-match')
       }
@@ -205,17 +194,16 @@ function checkRequests (requests, testState) {
         expectedValidatingHeaders.push('if-modified-since')
       }
     }
-    for (let j in expectedValidatingHeaders) {
-      var vhdr = expectedValidatingHeaders[j]
-      assert_own_property(testState[i].request_headers, vhdr, `has ${vhdr} request header`)
-    }
-    if ('expected_request_headers' in requests[i]) {
-      var expectedRequestHeaders = requests[i].expected_request_headers
-      for (let j = 0; j < expectedRequestHeaders.length; ++j) {
-        var expectedHdr = expectedRequestHeaders[j]
-        assert_equals(testState[i].request_headers[expectedHdr[0].toLowerCase()], expectedHdr[1],
-          `request ${reqNum} header ${expectedHdr[0]} value is "${testState[i].request_headers[expectedHdr[0].toLowerCase()]}", not "${expectedHdr[1]}"`)
-      }
+    testIdx++
+    expectedValidatingHeaders.forEach(vhdr => {
+      assert_own_property(serverRequest.request_headers, vhdr,
+        `request ${reqNum} doesn't have ${vhdr} header`)
+    })
+    if ('expected_request_headers' in config) {
+      config.expected_request_headers.forEach(expectedHdr => {
+        assert_equals(serverRequest.request_headers[expectedHdr[0].toLowerCase()], expectedHdr[1],
+          `request ${reqNum} header ${expectedHdr[0]} value is "${serverRequest.request_headers[expectedHdr[0].toLowerCase()]}", not "${expectedHdr[1]}"`)
+      })
     }
   }
 }

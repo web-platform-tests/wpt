@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from json import JSONEncoder, JSONDecoder
+import json
 from base64 import b64decode
 
 def main(request, response):
@@ -20,14 +20,16 @@ def main(request, response):
 
 def handle_state(uuid, request, response):
     response.headers.set("Content-Type", "text/plain")
-    return JSONEncoder().encode(request.server.stash.take(uuid))
+    return json.dumps(request.server.stash.take(uuid))
 
 def handle_test(uuid, request, response):
-    server_state = request.server.stash.take(uuid)
-    if not server_state:
-        server_state = []
-
-    requests = JSONDecoder().decode(b64decode(request.headers.get('Test-Requests', "")))
+    server_state = request.server.stash.take(uuid) or []
+    try:
+        requests = json.loads(b64decode(request.headers.get('Test-Requests', "")))
+    except:
+        response.status = (400, "Bad Request")
+        response.headers.set("Content-Type", "text/plain")
+        return "No or bad Test-Requests request header"
     config = requests[len(server_state)]
 
     state = dict()

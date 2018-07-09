@@ -63,6 +63,14 @@ def main(request, response):
       file.close()
       return audio
 
+    ## Return a valid video ##
+    if filename.startswith("video"):
+      response.headers.set("Content-Type", "video/mp4")
+      file = open("media/A4.mp4", "r")
+      video = file.read()
+      file.close()
+      return video
+
     ## Return a valid style Content-Type ##
     if filename.startswith("style"):
       response.headers.set("Content-Type", "text/css")

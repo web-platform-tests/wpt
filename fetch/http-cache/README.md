@@ -64,7 +64,7 @@ Possible members of a request object:
 
 Some headers in `response_headers` are treated specially:
 
-* For date-carrying headers, if the value is a number, it will be interpreted as a delta to the time of the request.
+* For date-carrying headers, if the value is a number, it will be interpreted as a delta to the time of the first request at the server.
 * For URL-carrying headers, the value will be appended as a query parameter for `target`.
 
 See the source for exact details.

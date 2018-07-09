@@ -30,6 +30,8 @@ promise_test(async () => {
   while (true) {
     const after = await fetchJson(`../resources/stash-take.py?key=${stateKey}`);
     if (after) {
+      // stateKey='open' was removed from the dictionary by the first fetch of
+      // stash-take.py, so we should only ever see the value 'closed' here.
       assert_equals(after, 'closed', 'connection should have closed');
       break;
     }
@@ -56,7 +58,7 @@ promise_test(async t => {
 
   // The abort should not do anything. The connection should stay open. Wait 1
   // second to give time for the fetch to complete.
-  await new Promise(resolve => t.step_timeout(() => resolve(), 1000));
+  await new Promise(resolve => t.step_timeout(resolve, 1000));
 
   const after = await fetchJson(`../resources/stash-take.py?key=${key}`);
   assert_equals(after, 'on', 'fetch should have completed');

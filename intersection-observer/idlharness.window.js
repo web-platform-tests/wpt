@@ -7,7 +7,7 @@
 
 idl_test(
   ['intersection-observer'],
-  [], // No deps :)
+  ['dom'],
   idl_array => {
     let observer;
     try {
@@ -16,7 +16,7 @@ idl_test(
         rootMargin: '0px',
         threshold: 1.0
       }
-      observer = new IntersectionObserver(() => {}, {});
+      observer = new IntersectionObserver(() => {}, options);
     } catch (e) {
       // Will be surfaced by idlharness.js's test_object below.
     }

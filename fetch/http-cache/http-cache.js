@@ -120,27 +120,10 @@ function makeTest (rawRequests) {
     for (let i = 0; i < requests.length; ++i) {
       fetchFunctions.push({
         code: function (idx) {
-          var init = {}
           var url = makeUrl(uuid, requests, idx)
           var config = requests[idx]
-          if ('request_method' in config) {
-            init.method = config['request_method']
-          }
-          if ('request_headers' in config) {
-            init.headers = config['request_headers']
-          }
-          if ('request_body' in config) {
-            init.body = config['request_body']
-          }
-          if ('mode' in config) {
-            init.mode = config['mode']
-          }
-          if ('credentials' in config) {
-            init.mode = config['credentials']
-          }
-          if ('cache' in config) {
-            init.cache = config['cache']
-          }
+          var init = fetchInit(config)
+
           return fetch(url, init)
             .then(function (response) {
               var resNum = parseInt(response.headers.get('Server-Request-Count'))
@@ -261,6 +244,20 @@ function makeTest (rawRequests) {
         }
       })
   }
+}
+
+function fetchInit (config) {
+  var init = {
+    'headers': []
+  }
+  if ('request_method' in config) init.method = config['request_method']
+  if ('request_headers' in config) init.headers = config['request_headers']
+  if ('name' in config) init.headers.push(['Test-Name', config.name])
+  if ('request_body' in config) init.body = config['request_body']
+  if ('mode' in config) init.mode = config['mode']
+  if ('credentials' in config) init.mode = config['credentials']
+  if ('cache' in config) init.cache = config['cache']
+  return init
 }
 
 function run_tests (tests) {

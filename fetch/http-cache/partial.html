@@ -15,7 +15,7 @@
     <script>
     var tests = [
       {
-        name: 'HTTP cache stores partial content and reuses it',
+        name: "HTTP cache stores partial content and reuses it",
         requests: [
           {
             request_headers: [
@@ -23,17 +23,17 @@
             ],
             response_status: [206, "Partial Content"],
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
-              ['Content-Range', 'bytes 4-9/10']
+              ["Cache-Control", "max-age=3600"],
+              ["Content-Range", "bytes 4-9/10"]
             ],
             response_body: "01234",
             expected_request_headers: [
-              ['Range', "bytes=-5"]
+              ["Range", "bytes=-5"]
             ],
           },
           {
             request_headers: [
-              ['Range', "bytes=-5"]
+              ["Range", "bytes=-5"]
             ],
             expected_type: "cached",
             expected_status: 206,
@@ -42,11 +42,11 @@
         ]
       },
       {
-        name: 'HTTP cache stores complete response and serves smaller ranges from it (byte-range-spec)',
+        name: "HTTP cache stores complete response and serves smaller ranges from it (byte-range-spec)",
         requests: [
           {
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
+              ["Cache-Control", "max-age=3600"],
             ],
             response_body: "01234567890",
           },
@@ -61,11 +61,11 @@
         ]
       },
       {
-        name: 'HTTP cache stores complete response and serves smaller ranges from it (absent last-byte-pos)',
+        name: "HTTP cache stores complete response and serves smaller ranges from it (absent last-byte-pos)",
         requests: [
           {
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
+              ["Cache-Control", "max-age=3600"],
             ],
             response_body: "01234567890",
           },
@@ -80,11 +80,11 @@
         ]
       },
       {
-        name: 'HTTP cache stores complete response and serves smaller ranges from it (suffix-byte-range-spec)',
+        name: "HTTP cache stores complete response and serves smaller ranges from it (suffix-byte-range-spec)",
         requests: [
           {
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
+              ["Cache-Control", "max-age=3600"],
             ],
             response_body: "0123456789A",
           },
@@ -99,7 +99,7 @@
         ]
       },
       {
-        name: 'HTTP cache stores partial response and serves smaller ranges from it (byte-range-spec)',
+        name: "HTTP cache stores partial response and serves smaller ranges from it (byte-range-spec)",
         requests: [
           {
             request_headers: [
@@ -107,8 +107,8 @@
             ],
             response_status: [206, "Partial Content"],
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
-              ['Content-Range', 'bytes 4-9/10']
+              ["Cache-Control", "max-age=3600"],
+              ["Content-Range", "bytes 4-9/10"]
             ],
             response_body: "01234",
           },
@@ -123,7 +123,7 @@
         ]
       },
       {
-        name: 'HTTP cache stores partial response and serves smaller ranges from it (absent last-byte-pos)',
+        name: "HTTP cache stores partial response and serves smaller ranges from it (absent last-byte-pos)",
         requests: [
           {
             request_headers: [
@@ -131,14 +131,14 @@
             ],
             response_status: [206, "Partial Content"],
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
-              ['Content-Range', 'bytes 4-9/10']
+              ["Cache-Control", "max-age=3600"],
+              ["Content-Range", "bytes 4-9/10"]
             ],
             response_body: "01234",
           },
           {
             request_headers: [
-              ['Range', "bytes=6-"]
+              ["Range", "bytes=6-"]
             ],
             expected_type: "cached",
             expected_status: 206,
@@ -147,7 +147,7 @@
         ]
       },
       {
-        name: 'HTTP cache stores partial response and serves smaller ranges from it (suffix-byte-range-spec)',
+        name: "HTTP cache stores partial response and serves smaller ranges from it (suffix-byte-range-spec)",
         requests: [
           {
             request_headers: [
@@ -155,8 +155,8 @@
             ],
             response_status: [206, "Partial Content"],
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
-              ['Content-Range', 'bytes 4-9/10']
+              ["Cache-Control", "max-age=3600"],
+              ["Content-Range", "bytes 4-9/10"]
             ],
             response_body: "01234",
           },
@@ -171,7 +171,7 @@
         ]
       },
       {
-        name: 'HTTP cache stores partial content and completes it',
+        name: "HTTP cache stores partial content and completes it",
         requests: [
           {
             request_headers: [
@@ -179,8 +179,8 @@
             ],
             response_status: [206, "Partial Content"],
             response_headers: [
-              ['Cache-Control', 'max-age=3600'],
-              ['Content-Range', 'bytes 0-4/10']
+              ["Cache-Control", "max-age=3600"],
+              ["Content-Range", "bytes 0-4/10"]
             ],
             response_body: "01234",
           },

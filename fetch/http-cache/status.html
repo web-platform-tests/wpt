@@ -21,7 +21,7 @@
         body = http_content(code);
       }
       tests.push({
-        name: 'HTTP cache goes to the network if it has a stale ' + code + ' response',
+        name: "HTTP cache goes to the network if it has a stale " + code + " response",
         requests: [
           {
             template: "stale",
@@ -34,7 +34,7 @@
         ]
       })
       tests.push({
-        name: 'HTTP cache avoids going to the network if it has a fresh ' + code + ' response',
+        name: "HTTP cache avoids going to the network if it has a fresh " + code + " response",
         requests: [
           {
             template: "fresh",
@@ -49,7 +49,7 @@
       })
     }
     [
-      [200, 'OK'],
+      [200, "OK"],
       [203, "Non-Authoritative Information"],
       [204, "No Content", ""],
       [299, "Whatever"],

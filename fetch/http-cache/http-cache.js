@@ -1,7 +1,6 @@
 /* global btoa fetch token promise_test step_timeout */
 /* global assert_equals assert_true assert_false assert_own_property assert_throws assert_unreached assert_less_than */
 
-
 var templates = {
   'fresh': {
     'response_headers': [
@@ -37,10 +36,10 @@ var templates = {
   }
 }
 
-function makeTest (rawRequests) {
-  return function (test) {
+function makeTest (test) {
+  return function () {
     var uuid = token()
-    var requests = expandTemplates(rawRequests)
+    var requests = expandTemplates(test)
     var fetchFunctions = []
     for (let i = 0; i < requests.length; ++i) {
       fetchFunctions.push({
@@ -88,7 +87,8 @@ function makeTest (rawRequests) {
   }
 }
 
-function expandTemplates (rawRequests) {
+function expandTemplates (test) {
+  var rawRequests = test.requests
   var requests = []
   for (let i = 0; i < rawRequests.length; i++) {
     var request = rawRequests[i]
@@ -242,8 +242,8 @@ function getServerState (uuid) {
 }
 
 function run_tests (tests) {
-  tests.forEach(function (info) {
-    promise_test(makeTest(info.requests), info.name)
+  tests.forEach(function (test) {
+    promise_test(makeTest(test), test.name)
   })
 }
 

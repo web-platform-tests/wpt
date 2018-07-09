@@ -5,21 +5,21 @@
 
 interface MediaResource {
     short         getSupportedModes ();
-    MediaResource createMediaResource (DOMString mediaResource, optional MetadataSource[] metadataSources, optional short mode);
+    MediaResource createMediaResource (DOMString mediaResource, optional sequence<MetadataSource> metadataSources, optional short mode);
 };
 interface AsyncMediaResource : MediaResource {
-    void getMediaProperty (DOMString[] propertyNames, PropertyCallback successCallback, ErrorCallback errorCallback,       optional DOMString fragment, optional DOMString sourceFormat, optional DOMString language);
+    void getMediaProperty (sequence<DOMString> propertyNames, PropertyCallback successCallback, ErrorCallback errorCallback, optional DOMString fragment, optional DOMString sourceFormat, optional DOMString language);
     void getOriginalMetadata (DOMString sourceFormat, MetadataCallback successCallback, ErrorCallback errorCallback);
 };
 interface PropertyCallback {
-    void handleEvent (MediaAnnotation[] mediaAnnotations);
+    void handleEvent (sequence<MediaAnnotation> mediaAnnotations);
 };
 interface MetadataCallback {
-    void handleEvent (DOMString[] metadata);
+    void handleEvent (sequence<DOMString> metadata);
 };
 interface SyncMediaResource : MediaResource {
-    MediaAnnotation[] getMediaProperty (DOMString[] propertyNames, optional DOMString fragment,       optional DOMString sourceFormat, optional DOMString language);
-    DOMString[]       getOriginalMetadata (DOMString sourceFormat);
+    sequence<MediaAnnotation> getMediaProperty (sequence<DOMString> propertyNames, optional DOMString fragment, optional DOMString sourceFormat, optional DOMString language);
+    sequence<DOMString>       getOriginalMetadata (DOMString sourceFormat);
 };
 interface MediaAnnotation {
     attribute DOMString propertyName;
@@ -134,7 +134,7 @@ interface FrameSize : MediaAnnotation {
     attribute double    height;
     attribute DOMString unit;
 };
-interface FrameSize : MediaAnnotation {
+partial interface FrameSize {
     attribute DOMString compressionLink;
     attribute DOMString compressionLabel;
 };

@@ -60,5 +60,5 @@ Possible members of a request object:
                               headers to check the request for.
 - expected_response_headers - An array of `[header_name_string, header_value_string]` representing
                               headers to check the response for. See also response_headers.
-- expected_response_text - A string to check the response body against.
+- expected_response_text - A string to check the response body against. If not present, `response_body` will be checked if present and non-null; otherwise the response body will be checked for the test uuid (unless the status code disallows a body). Set to `null` to disable all response body checking.
 

@@ -1,7 +1,7 @@
 /* global btoa fetch token promise_test step_timeout */
 /* global assert_equals assert_true assert_own_property assert_throws assert_less_than */
 
-var templates = {
+const templates = {
   'fresh': {
     'response_headers': [
       ['Expires', http_date(100000)],
@@ -35,6 +35,8 @@ var templates = {
     ]
   }
 }
+
+const noBodyStatus = new Set([204, 304])
 
 function makeTest (test) {
   return function () {
@@ -166,13 +168,19 @@ function makeCheckResponse (idx, config) {
 
 function makeCheckResponseBody (config, uuid) {
   return function checkResponseBody (resBody) {
+    var statusCode = 200
+    if ('response_status' in config) {
+      statusCode = config.response_status[0]
+    }
     if ('expected_response_text' in config) {
-      assert_equals(resBody, config.expected_response_text,
-        `Response body is "${resBody}", not "${config.expected_response_text}"`)
-    } else if ('response_body' in config) {
+      if (config.expected_response_text !== null) {
+        assert_equals(resBody, config.expected_response_text,
+          `Response body is "${resBody}", not "${config.expected_response_text}"`)
+      }
+    } else if ('response_body' in config && config.response_body !== null) {
       assert_equals(resBody, config.response_body,
         `Response body is "${resBody}", not "${config.response_body}"`)
-    } else {
+    } else if (!noBodyStatus.has(statusCode)) {
       assert_equals(resBody, uuid, `Response body is "${resBody}", not "${uuid}"`)
     }
   }

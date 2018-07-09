@@ -69,11 +69,11 @@ def handle_test(uuid, request, response):
 
     code, phrase = config.get("response_status", [200, "OK"])
     if config.get("expected_type", "").endswith('validated'):
-        previous_hdrs = server_state[len(server_state) - 2]['response_headers']
-        previous_lm = previous_hdrs.get('last-modified', False)
+        ref_hdrs = server_state[0]['response_headers']
+        previous_lm = ref_hdrs.get('last-modified', False)
         if previous_lm and request.headers.get("If-Modified-Since", False) == previous_lm:
             code, phrase = [304, "Not Modified"]
-        previous_etag = previous_hdrs.get('etag', False)
+        previous_etag = ref_hdrs.get('etag', False)
         if previous_etag and request.headers.get("If-None-Match", False) == previous_etag:
             code, phrase = [304, "Not Modified"]
         if code != 304:

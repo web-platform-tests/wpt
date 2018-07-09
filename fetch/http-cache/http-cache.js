@@ -119,37 +119,8 @@ function makeTest (rawRequests) {
         // Now, query the server state
         return serverState(uuid)
       }).then(function (state) {
-        for (let i = 0; i < requests.length; ++i) {
-          var expectedValidatingHeaders = []
-          var reqNum = i + 1
-          if ('expected_type' in requests[i]) {
-            if (requests[i].expected_type === 'cached') {
-              assert_true(state.length <= i, `cached response used for request ${reqNum}`)
-              continue // the server will not see the request, so we can't check anything else.
-            }
-            if (requests[i].expected_type === 'not_cached') {
-              assert_false(state.length <= i, `cached response used for request ${reqNum}`)
-            }
-            if (requests[i].expected_type === 'etag_validated') {
-              expectedValidatingHeaders.push('if-none-match')
-            }
-            if (requests[i].expected_type === 'lm_validated') {
-              expectedValidatingHeaders.push('if-modified-since')
-            }
-          }
-          for (let j in expectedValidatingHeaders) {
-            var vhdr = expectedValidatingHeaders[j]
-            assert_own_property(state[i].request_headers, vhdr, `has ${vhdr} request header`)
-          }
-          if ('expected_request_headers' in requests[i]) {
-            var expectedRequestHeaders = requests[i].expected_request_headers
-            for (let j = 0; j < expectedRequestHeaders.length; ++j) {
-              var expectedHeader = expectedRequestHeaders[j]
-              assert_equals(state[i].request_headers[expectedHeader[0].toLowerCase()],
-                expectedHeader[1])
-            }
-          }
-        }
+        checkRequests(requests, state)
+        return Promise.resolve()
       })
   }
 }
@@ -255,6 +226,40 @@ function makeCheckResponseBody (config, uuid) {
       assert_equals(resBody, config.response_body, 'Response body')
     } else {
       assert_equals(resBody, uuid, 'Response body')
+    }
+  }
+}
+
+function checkRequests (requests, state) {
+  for (let i = 0; i < requests.length; ++i) {
+    var expectedValidatingHeaders = []
+    var reqNum = i + 1
+    if ('expected_type' in requests[i]) {
+      if (requests[i].expected_type === 'cached') {
+        assert_true(state.length <= i, `cached response used for request ${reqNum}`)
+        continue // the server will not see the request, so we can't check anything else.
+      }
+      if (requests[i].expected_type === 'not_cached') {
+        assert_false(state.length <= i, `cached response used for request ${reqNum}`)
+      }
+      if (requests[i].expected_type === 'etag_validated') {
+        expectedValidatingHeaders.push('if-none-match')
+      }
+      if (requests[i].expected_type === 'lm_validated') {
+        expectedValidatingHeaders.push('if-modified-since')
+      }
+    }
+    for (let j in expectedValidatingHeaders) {
+      var vhdr = expectedValidatingHeaders[j]
+      assert_own_property(state[i].request_headers, vhdr, `has ${vhdr} request header`)
+    }
+    if ('expected_request_headers' in requests[i]) {
+      var expectedRequestHeaders = requests[i].expected_request_headers
+      for (let j = 0; j < expectedRequestHeaders.length; ++j) {
+        var expectedHeader = expectedRequestHeaders[j]
+        assert_equals(state[i].request_headers[expectedHeader[0].toLowerCase()],
+          expectedHeader[1])
+      }
     }
   }
 }

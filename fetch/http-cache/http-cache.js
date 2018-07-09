@@ -46,7 +46,7 @@ function makeTest (rawRequests) {
       fetchFunctions.push({
         code: function (idx) {
           var config = requests[idx]
-          var url = makeUrl(uuid, config)
+          var url = makeTestUrl(uuid, config)
           var init = fetchInit(requests, config)
           return fetch(url, init)
             .then(makeCheckResponse(idx, config))
@@ -220,7 +220,7 @@ function pause () {
   })
 }
 
-function makeUrl (uuid, config) {
+function makeTestUrl (uuid, config) {
   var arg = ''
   if ('query_arg' in config) {
     arg = `&target=${config.query_arg}`

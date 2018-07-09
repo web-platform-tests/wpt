@@ -20,7 +20,7 @@
           {
             response_status: [299, "Whatever"],
             response_headers: [
-              ["Last-Modified", http_date(-3 * 100)],
+              ["Last-Modified", (-3 * 100)],
               ["Cache-Control", "public"]
             ],
           },
@@ -36,7 +36,7 @@
           {
             response_status: [299, "Whatever"],
             response_headers: [
-              ["Last-Modified", http_date(-3 * 100)]
+              ["Last-Modified", (-3 * 100)]
             ],
           },
           {
@@ -67,7 +67,7 @@
             {
               response_status: [code, phrase],
               response_headers: [
-                ["Last-Modified", http_date(-3 * 100)]
+                ["Last-Modified", (-3 * 100)]
               ],
               response_body: body,
             },

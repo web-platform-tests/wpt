@@ -4,14 +4,14 @@
 const templates = {
   'fresh': {
     'response_headers': [
-      ['Expires', http_date(100000)],
-      ['Last-Modified', http_date(0)]
+      ['Expires', 100000],
+      ['Last-Modified', 0]
     ]
   },
   'stale': {
     'response_headers': [
-      ['Expires', http_date(-5000)],
-      ['Last-Modified', http_date(-100000)]
+      ['Expires', -5000],
+      ['Last-Modified', -100000]
     ]
   },
   'lcl_response': {
@@ -23,15 +23,15 @@ const templates = {
   'location': {
     'query_arg': 'location_target',
     'response_headers': [
-      ['Expires', http_date(100000)],
-      ['Last-Modified', http_date(0)]
+      ['Expires', 100000],
+      ['Last-Modified', 0]
     ]
   },
   'content_location': {
     'query_arg': 'content_location_target',
     'response_headers': [
-      ['Expires', http_date(100000)],
-      ['Last-Modified', http_date(0)]
+      ['Expires', 100000],
+      ['Last-Modified', 0]
     ]
   }
 }
@@ -245,10 +245,6 @@ function run_tests (tests) {
   tests.forEach(function (test) {
     promise_test(makeTest(test), test.name)
   })
-}
-
-function http_date (delta) {
-  return new Date(Date.now() + (delta * 1000)).toGMTString()
 }
 
 var contentStore = {}

@@ -18,15 +18,16 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(-5000)],
-              ["Last-Modified", http_date(-3000)],
+              ["Expires", -5000],
+              ["Last-Modified", -3000],
               ["Test-Header", "A"]
-            ]
+            ],
+            pause_after: true
           },
           {
             response_headers: [
-              ["Expires", http_date(-3000)],
-              ["Last-Modified", http_date(-3000)],
+              ["Expires", -3000],
+              ["Last-Modified", -2000],
               ["Test-Header", "B"]
             ],
             expected_type: "lm_validated",
@@ -41,15 +42,16 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(-5000)],
-              ["Last-Modified", http_date(-3000)],
+              ["Expires", -5000],
+              ["Last-Modified", -3000],
               ["Test-Header", "A"]
-            ]
+            ],
+            pause_after: true
           },
           {
             response_headers: [
-              ["Expires", http_date(3000)],
-              ["Last-Modified", http_date(-3000)],
+              ["Expires", 3000],
+              ["Last-Modified", -3000],
               ["Test-Header", "B"]
             ],
             expected_type: "lm_validated",
@@ -70,14 +72,14 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(-5000)],
+              ["Expires", -5000],
               ["ETag", "ABC"],
               ["Test-Header", "A"]
             ]
           },
           {
             response_headers: [
-              ["Expires", http_date(-3000)],
+              ["Expires", -3000],
               ["ETag", "ABC"],
               ["Test-Header", "B"]
             ],
@@ -93,14 +95,14 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(-5000)],
+              ["Expires", -5000],
               ["ETag", "DEF"],
               ["Test-Header", "A"]
             ]
           },
           {
             response_headers: [
-              ["Expires", http_date(3000)],
+              ["Expires", 3000],
               ["ETag", "DEF"],
               ["Test-Header", "B"]
             ],

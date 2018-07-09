@@ -20,7 +20,7 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(30*24*60*60)]
+              ["Expires", (30 * 24 * 60 * 60)]
             ]
           },
           {
@@ -33,7 +33,7 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(-30*24*60*60)]
+              ["Expires", (-30 * 24 * 60 * 60)]
             ]
           },
           {
@@ -46,7 +46,7 @@
         requests: [
           {
             response_headers: [
-              ["Expires", http_date(0)]
+              ["Expires", 0]
             ]
           },
           {
@@ -99,7 +99,7 @@
           {
             response_headers: [
               ["Cache-Control", "max-age=3600"],
-              ["Expires", http_date(-10000)]
+              ["Expires", -10000]
             ]
           },
           {
@@ -127,7 +127,7 @@
           {
             response_headers: [
               ["Cache-Control", "max-age=0"],
-              ["Expires", http_date(10000)]
+              ["Expires", 10000]
             ]
           },
           {
@@ -182,7 +182,7 @@
           {
             response_headers: [
               ["Cache-Control", "max-age=10000, no-store"],
-              ["Expires", http_date(10000)]
+              ["Expires", 10000]
             ]
           },
           {
@@ -210,7 +210,7 @@
           {
             response_headers: [
               ["Cache-Control", "max-age=10000, no-cache"],
-              ["Expires", http_date(10000)],
+              ["Expires", 10000],
               ["ETag", "abcd"]
             ]
           },

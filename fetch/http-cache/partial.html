@@ -29,7 +29,7 @@
             response_body: "01234",
             expected_request_headers: [
               ["Range", "bytes=-5"]
-            ],
+            ]
           },
           {
             request_headers: [
@@ -46,9 +46,9 @@
         requests: [
           {
             response_headers: [
-              ["Cache-Control", "max-age=3600"],
+              ["Cache-Control", "max-age=3600"]
             ],
-            response_body: "01234567890",
+            response_body: "01234567890"
           },
           {
             request_headers: [
@@ -67,7 +67,7 @@
             response_headers: [
               ["Cache-Control", "max-age=3600"],
             ],
-            response_body: "01234567890",
+            response_body: "01234567890"
           },
           {
             request_headers: [
@@ -86,7 +86,7 @@
             response_headers: [
               ["Cache-Control", "max-age=3600"],
             ],
-            response_body: "0123456789A",
+            response_body: "0123456789A"
           },
           {
             request_headers: [
@@ -110,7 +110,7 @@
               ["Cache-Control", "max-age=3600"],
               ["Content-Range", "bytes 4-9/10"]
             ],
-            response_body: "01234",
+            response_body: "01234"
           },
           {
             request_headers: [
@@ -134,7 +134,7 @@
               ["Cache-Control", "max-age=3600"],
               ["Content-Range", "bytes 4-9/10"]
             ],
-            response_body: "01234",
+            response_body: "01234"
           },
           {
             request_headers: [
@@ -158,7 +158,7 @@
               ["Cache-Control", "max-age=3600"],
               ["Content-Range", "bytes 4-9/10"]
             ],
-            response_body: "01234",
+            response_body: "01234"
           },
           {
             request_headers: [
@@ -182,7 +182,7 @@
               ["Cache-Control", "max-age=3600"],
               ["Content-Range", "bytes 0-4/10"]
             ],
-            response_body: "01234",
+            response_body: "01234"
           },
           {
             expected_request_headers: [

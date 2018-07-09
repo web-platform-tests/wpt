@@ -26,7 +26,7 @@
           },
           {
             expected_type: "cached",
-            response_status: [299, "Whatever"],
+            response_status: [299, "Whatever"]
           }
         ]
       },
@@ -40,7 +40,7 @@
             ],
           },
           {
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       }
@@ -69,12 +69,12 @@
               response_headers: [
                 ["Last-Modified", (-3 * 100)]
               ],
-              response_body: body,
+              response_body: body
             },
             {
               expected_type: expected_type,
               response_status: [code, phrase],
-              response_body: body,
+              response_body: body
             }
           ]
         }

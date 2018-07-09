@@ -175,13 +175,13 @@ function makeCheckResponseBody (config, uuid) {
     if ('expected_response_text' in config) {
       if (config.expected_response_text !== null) {
         assert_equals(resBody, config.expected_response_text,
-          `Response body is "${resBody}", not "${config.expected_response_text}"`)
+          `Response body is "${resBody}", not expected "${config.expected_response_text}"`)
       }
     } else if ('response_body' in config && config.response_body !== null) {
       assert_equals(resBody, config.response_body,
-        `Response body is "${resBody}", not "${config.response_body}"`)
+        `Response body is "${resBody}", not sent "${config.response_body}"`)
     } else if (!noBodyStatus.has(statusCode)) {
-      assert_equals(resBody, uuid, `Response body is "${resBody}", not "${uuid}"`)
+      assert_equals(resBody, uuid, `Response body is "${resBody}", not default "${uuid}"`)
     }
   }
 }

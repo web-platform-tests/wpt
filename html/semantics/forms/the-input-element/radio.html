@@ -28,6 +28,39 @@
 <input type=radio form=testform name=group6 id=radio13>
 <input type=radio form=testform name=group6 id=radio14>
 
+<form>
+  <input type=radio name=group7 id=radio151 checked>
+  <input type=radio name=group7 id=radio152>
+</form>
+<form>
+  <input type=radio name=group7 id=radio153 checked>
+  <input type=radio name=group7 id=radio154>
+</form>
+<input type=radio name=group7 id=radio155 checked>
+<input type=radio name=group7 id=radio156>
+
+<input type=radio name=group8 id=radio161 checked>
+<input type=checkbox name=group8 id=radio162 checked>
+<input type=radio name=group8 id=radio163>
+
+<input type=radio id=radio171 checked>
+<input type=radio id=radio172>
+
+<div id='required'>
+  <input type=radio name=group9 id=radio181 required>
+  <input type=radio name=group9 id=radio182>
+</div>
+
+<input type=radio name=group10 id=radio191 checked>
+<input type=checkbox name=group10 id=radio192 checked>
+<input type=radio name=group10 id=radio193>
+
+<form id="testform201"></form>
+<form id="testform202"></form>
+<input type=radio name=group11 form=testform201 id=radio201 checked>
+<input type=radio name=group11 form=testform202 id=radio202 checked>
+<input type=radio name=group11 form=testform202 id=radio203>
+
 <script>
   var radio1 = document.getElementById('radio1'),
       radio2 = document.getElementById('radio2'),
@@ -44,6 +77,25 @@
       radio12 = document.getElementById('radio12'),
       radio13 = document.getElementById('radio13'),
       radio14 = document.getElementById('radio14'),
+      radio151 = document.getElementById('radio151'),
+      radio152 = document.getElementById('radio152'),
+      radio153 = document.getElementById('radio153'),
+      radio154 = document.getElementById('radio154'),
+      radio155 = document.getElementById('radio155'),
+      radio156 = document.getElementById('radio156'),
+      radio161 = document.getElementById('radio161'),
+      radio162 = document.getElementById('radio162'),
+      radio163 = document.getElementById('radio163'),
+      radio171 = document.getElementById('radio171'),
+      radio172 = document.getElementById('radio172'),
+      radio181 = document.getElementById('radio181'),
+      radio182 = document.getElementById('radio182'),
+      radio191 = document.getElementById('radio191'),
+      radio192 = document.getElementById('radio192'),
+      radio193 = document.getElementById('radio193'),
+      radio201 = document.getElementById('radio201'),
+      radio202 = document.getElementById('radio202'),
+      radio203 = document.getElementById('radio203'),
       testform = document.getElementById('testform'),
       t1 = async_test("click on mutable radio fires click event, then input event, then change event"),
       t3 = async_test("click on non-mutable radio doesn't fire the input event"),
@@ -111,6 +163,95 @@
     assert_true(radio13.checked);
     assert_false(radio14.checked);
   }, "moving radio input element out of or into a form should still work as expected");
+
+  test(function(){
+    assert_true(radio151.checked);
+    assert_false(radio152.checked);
+    assert_true(radio153.checked);
+    assert_false(radio154.checked);
+    assert_true(radio155.checked);
+    assert_false(radio156.checked);
+    radio152.checked = true;
+    assert_false(radio151.checked);
+    assert_true(radio152.checked);
+    assert_true(radio153.checked);
+    assert_false(radio154.checked);
+    assert_true(radio155.checked);
+    assert_false(radio156.checked);
+    radio154.checked = true;
+    assert_false(radio151.checked);
+    assert_true(radio152.checked);
+    assert_false(radio153.checked);
+    assert_true(radio154.checked);
+    assert_true(radio155.checked);
+    assert_false(radio156.checked);
+    radio156.checked = true;
+    assert_false(radio151.checked);
+    assert_true(radio152.checked);
+    assert_false(radio153.checked);
+    assert_true(radio154.checked);
+    assert_false(radio155.checked);
+    assert_true(radio156.checked);
+  }, "different form owners and no form owner can't effect each other checkedness states");
+
+  test(function(){
+    assert_true(radio161.checked);
+    assert_true(radio162.checked);
+    assert_false(radio163.checked);
+    radio163.checked = true;
+    assert_false(radio161.checked);
+    assert_true(radio162.checked);
+    assert_true(radio163.checked);
+    radio162.checked = false;
+    assert_false(radio161.checked);
+    assert_false(radio162.checked);
+    assert_true(radio163.checked);
+  }, "if input elements' type attribute are not radio, they can't effect each other checkedness states");
+
+  test(function(){
+    assert_true(radio171.checked);
+    assert_false(radio172.checked);
+    radio172.checked = true;
+    assert_true(radio171.checked);
+    assert_true(radio172.checked);
+  }, "if the radio elements' name attribute are empty, they can't effect each other checkedness states");
+
+  test(function(){
+    assert_false(radio181.checked);
+    assert_false(radio182.checked);
+    var elements = document.querySelectorAll("#required :invalid");
+    assert_array_equals(elements, document.getElementsByName("group9"));
+    radio181.checked = true;
+    assert_true(radio181.checked);
+    assert_false(radio182.checked);
+    elements = document.querySelectorAll("#required :invalid");
+    assert_array_equals(elements, []);
+    radio182.checked = true;
+    assert_false(radio181.checked);
+    assert_true(radio182.checked);
+    elements = document.querySelectorAll("#required :valid");
+    assert_array_equals(elements, document.getElementsByName("group9"));
+  }, "test the constraint validation is correct when an element in the radio button group is required");
+
+  test(function(){
+    assert_true(radio191.checked);
+    assert_true(radio192.checked);
+    assert_false(radio193.checked);
+    radio192.setAttribute("type", "radio");
+    assert_false(radio191.checked);
+    assert_true(radio192.checked);
+    assert_false(radio193.checked);
+  }, "changing an input element's type attribute to radio and setting its checkedness to true makes all the other elements' checkedness in the same radio button group be set to false");
+
+  test(function(){
+    assert_true(radio201.checked);
+    assert_true(radio202.checked);
+    assert_false(radio203.checked);
+    radio201.setAttribute("form", "testform202");
+    assert_true(radio201.checked);
+    assert_false(radio202.checked);
+    assert_false(radio203.checked);
+  }, "changing the form owner of a radio input element and setting its checkedness to true makes all the other elements' checkedness in the same radio button group be set to false");
 
   radio5.onclick = t1.step_func(function(e) {
     click_fired = true;

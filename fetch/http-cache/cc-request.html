@@ -25,7 +25,7 @@
             request_headers: [
               ["Cache-Control", "max-age=0"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -40,7 +40,7 @@
             request_headers: [
               ["Cache-Control", "max-age=1"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -57,7 +57,7 @@
             request_headers: [
               ["Cache-Control", "max-age=600"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -74,7 +74,7 @@
             request_headers: [
               ["Cache-Control", "max-stale=1000"]
             ],
-            expected_type: "cached",
+            expected_type: "cached"
           }
         ]
       },
@@ -91,7 +91,7 @@
             request_headers: [
               ["Cache-Control", "max-stale=1000"]
             ],
-            expected_type: "cached",
+            expected_type: "cached"
           }
         ]
       },
@@ -107,7 +107,7 @@
             request_headers: [
               ["Cache-Control", "min-fresh=2000"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -124,7 +124,7 @@
             request_headers: [
               ["Cache-Control", "min-fresh=1000"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -133,14 +133,14 @@
         requests: [
           {
             response_headers: [
-              ["Cache-Control", "max-age=3600"],
+              ["Cache-Control", "max-age=3600"]
             ]
           },
           {
             request_headers: [
               ["Cache-Control", "no-cache"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },
@@ -157,7 +157,7 @@
             request_headers: [
               ["Cache-Control", "no-cache"]
             ],
-            expected_type: "lm_validate",
+            expected_type: "lm_validate"
           }
         ]
       },
@@ -174,7 +174,7 @@
             request_headers: [
               ["Cache-Control", "no-cache"]
             ],
-            expected_type: "etag_validate",
+            expected_type: "etag_validate"
           }
         ]
       },
@@ -183,14 +183,14 @@
         requests: [
           {
             response_headers: [
-              ["Cache-Control", "max-age=3600"],
+              ["Cache-Control", "max-age=3600"]
             ]
           },
           {
             request_headers: [
               ["Cache-Control", "no-store"]
             ],
-            expected_type: "not_cached",
+            expected_type: "not_cached"
           }
         ]
       },

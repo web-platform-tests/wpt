@@ -58,14 +58,14 @@ function makeTest (rawRequests) {
               }
             })
         },
-        pause_after: 'pause_after' in requests[i]
+        pauseAfter: 'pause_after' in requests[i]
       })
     }
     var idx = 0
     function runNextStep () {
       if (fetchFunctions.length) {
         var nextFetchFunction = fetchFunctions.shift()
-        if (nextFetchFunction.pause_after === true) {
+        if (nextFetchFunction.pauseAfter === true) {
           return nextFetchFunction.code(idx++)
             .then(pause)
             .then(runNextStep)

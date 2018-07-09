@@ -98,14 +98,6 @@ function makeTest (rawRequests) {
       })
     }
 
-    function pause () {
-      return new Promise(function (resolve, reject) {
-        step_timeout(function () {
-          return resolve()
-        }, 3000)
-      })
-    }
-
     // TODO: it would be nice if this weren't serialised.
     var idx = 0
     function runNextStep () {
@@ -186,6 +178,14 @@ function expandTemplates (rawRequests) {
     requests.push(request)
   }
   return requests
+}
+
+function pause () {
+  return new Promise(function (resolve, reject) {
+    step_timeout(function () {
+      return resolve()
+    }, 3000)
+  })
 }
 
 function makeUrl (uuid, requests, idx) {

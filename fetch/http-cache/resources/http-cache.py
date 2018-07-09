@@ -31,6 +31,10 @@ def handle_test(uuid, request, response):
         response.headers.set("Content-Type", "text/plain")
         return "No or bad Test-Requests request header"
     config = requests[len(server_state)]
+    if not config:
+        response.status = (404, "Not Found")
+        response.headers.set("Content-Type", "text/plain")
+        return "Config not found"
 
     state = dict()
     state["request_method"] = request.method

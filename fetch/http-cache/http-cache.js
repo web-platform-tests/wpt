@@ -97,8 +97,6 @@ function makeTest (rawRequests) {
         pause_after: 'pause_after' in requests[i]
       })
     }
-
-    // TODO: it would be nice if this weren't serialised.
     var idx = 0
     function runNextStep () {
       if (fetchFunctions.length) {

@@ -229,9 +229,6 @@ function getServerState (uuid) {
     .then(function (response) {
       return response.text()
     }).then(function (text) {
-      // null will be returned if the server never received any requests
-      // for the given uuid.  Normalize that to an empty list consistent
-      // with our representation.
       return JSON.parse(text) || []
     })
 }

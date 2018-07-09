@@ -133,7 +133,7 @@ function makeCheckResponse (idx, config) {
     if ('expected_type' in config) {
       if (config.expected_type === 'error') {
         assert_true(false, `Request ${reqNum} should have been an error`)
-        return [response.text()]
+        return response.text()
       }
       if (config.expected_type === 'cached') {
         assert_less_than(resNum, reqNum, 'Response used')

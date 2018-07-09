@@ -45,9 +45,9 @@ function makeTest (rawRequests) {
     for (let i = 0; i < requests.length; ++i) {
       fetchFunctions.push({
         code: function (idx) {
-          var url = makeUrl(uuid, requests, idx)
           var config = requests[idx]
-          var init = fetchInit(config)
+          var url = makeUrl(uuid, config)
+          var init = fetchInit(requests, config)
           return fetch(url, init)
             .then(makeCheckResponse(idx, config))
             .then(makeCheckResponseBody(config, uuid), function (reason) {
@@ -112,7 +112,7 @@ function expandTemplates (rawRequests) {
   return requests
 }
 
-function fetchInit (config) {
+function fetchInit (requests, config) {
   var init = {
     'headers': []
   }
@@ -123,6 +123,7 @@ function fetchInit (config) {
   if ('mode' in config) init.mode = config['mode']
   if ('credentials' in config) init.mode = config['credentials']
   if ('cache' in config) init.cache = config['cache']
+  init.headers.push(['Test-Requests', btoa(JSON.stringify(requests))])
   return init
 }
 
@@ -219,12 +220,12 @@ function pause () {
   })
 }
 
-function makeUrl (uuid, requests, idx) {
+function makeUrl (uuid, config) {
   var arg = ''
-  if ('query_arg' in requests[idx]) {
-    arg = `&target=${requests[idx].query_arg}`
+  if ('query_arg' in config) {
+    arg = `&target=${config.query_arg}`
   }
-  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
+  return `resources/http-cache.py?token=${uuid}${arg}`
 }
 
 function getServerState (uuid) {

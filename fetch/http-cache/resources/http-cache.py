@@ -11,7 +11,7 @@ def main(request, response):
     if not server_state:
         server_state = []
 
-    requests = JSONDecoder().decode(b64decode(request.GET.first("info", "")))
+    requests = JSONDecoder().decode(b64decode(request.headers.get('Test-Requests', "")))
     config = requests[len(server_state)]
 
     state = dict()

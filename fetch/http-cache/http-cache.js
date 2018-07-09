@@ -80,10 +80,9 @@ function makeTest (rawRequests) {
 
     return runNextStep()
       .then(function () {
-        // Now, query the server state
         return getServerState(uuid)
-      }).then(function (state) {
-        checkRequests(requests, state)
+      }).then(function (testState) {
+        checkRequests(requests, testState)
         return Promise.resolve()
       })
   }

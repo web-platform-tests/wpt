@@ -85,50 +85,8 @@ function makeTest (rawRequests) {
           var config = requests[idx]
           var init = fetchInit(config)
           return fetch(url, init)
-            .then(function (response) {
-              var resNum = parseInt(response.headers.get('Server-Request-Count'))
-              var reqNum = idx + 1
-              if ('expected_type' in config) {
-                if (config.expected_type === 'error') {
-                  assert_true(false, `Request ${reqNum} should have been an error`)
-                  return [response.text()]
-                }
-                if (config.expected_type === 'cached') {
-                  assert_less_than(resNum, reqNum, 'Response used')
-                }
-                if (config.expected_type === 'not_cached') {
-                  assert_equals(resNum, reqNum, 'Response used')
-                }
-              }
-              if ('expected_status' in config) {
-                assert_equals(response.status, config.expected_status, 'Response status')
-              } else if ('response_status' in config) {
-                assert_equals(response.status, config.response_status[0], 'Response status')
-              } else {
-                assert_equals(response.status, 200, 'Response status')
-              }
-              if ('response_headers' in config) {
-                config.response_headers.forEach(function (header) {
-                  if (header.len < 3 || header[2] === true) {
-                    assert_equals(response.headers.get(header[0]), header[1], 'Response header')
-                  }
-                })
-              }
-              if ('expected_response_headers' in config) {
-                config.expected_response_headers.forEach(function (header) {
-                  assert_equals(response.headers.get(header[0]), header[1], 'Response header')
-                })
-              }
-              return response.text()
-            }).then(function (resBody) {
-              if ('expected_response_text' in config) {
-                assert_equals(resBody, config.expected_response_text, 'Response body')
-              } else if ('response_body' in config) {
-                assert_equals(resBody, config.response_body, 'Response body')
-              } else {
-                assert_equals(resBody, uuid, 'Response body')
-              }
-            }, function (reason) {
+            .then(makeCheckResponse(idx, config))
+            .then(makeCheckResponseBody(config, uuid), function (reason) {
               if ('expected_type' in config && config.expected_type === 'error') {
                 assert_throws(new TypeError(), function () { throw reason })
               } else {
@@ -170,7 +128,7 @@ function makeTest (rawRequests) {
       .then(function () {
         // Now, query the server state
         return serverState(uuid)
-      }).then(function (step_timeoutate) {
+      }).then(function (state) {
         for (let i = 0; i < requests.length; ++i) {
           var expectedValidatingHeaders = []
           var reqNum = i + 1
@@ -206,7 +164,7 @@ function makeTest (rawRequests) {
   }
 }
 
-function expandTemplates(rawRequests) {
+function expandTemplates (rawRequests) {
   var requests = []
   for (let i = 0; i < rawRequests.length; i++) {
     var request = rawRequests[i]
@@ -250,6 +208,57 @@ function fetchInit (config) {
   if ('credentials' in config) init.mode = config['credentials']
   if ('cache' in config) init.cache = config['cache']
   return init
+}
+
+function makeCheckResponse (idx, config) {
+  return function checkResopnse (response) {
+    var resNum = parseInt(response.headers.get('Server-Request-Count'))
+    var reqNum = idx + 1
+    if ('expected_type' in config) {
+      if (config.expected_type === 'error') {
+        assert_true(false, `Request ${reqNum} should have been an error`)
+        return [response.text()]
+      }
+      if (config.expected_type === 'cached') {
+        assert_less_than(resNum, reqNum, 'Response used')
+      }
+      if (config.expected_type === 'not_cached') {
+        assert_equals(resNum, reqNum, 'Response used')
+      }
+    }
+    if ('expected_status' in config) {
+      assert_equals(response.status, config.expected_status, 'Response status')
+    } else if ('response_status' in config) {
+      assert_equals(response.status, config.response_status[0], 'Response status')
+    } else {
+      assert_equals(response.status, 200, 'Response status')
+    }
+    if ('response_headers' in config) {
+      config.response_headers.forEach(function (header) {
+        if (header.len < 3 || header[2] === true) {
+          assert_equals(response.headers.get(header[0]), header[1], 'Response header')
+        }
+      })
+    }
+    if ('expected_response_headers' in config) {
+      config.expected_response_headers.forEach(function (header) {
+        assert_equals(response.headers.get(header[0]), header[1], 'Response header')
+      })
+    }
+    return response.text()
+  }
+}
+
+function makeCheckResponseBody (config, uuid) {
+  return function checkResponseBody (resBody) {
+    if ('expected_response_text' in config) {
+      assert_equals(resBody, config.expected_response_text, 'Response body')
+    } else if ('response_body' in config) {
+      assert_equals(resBody, config.response_body, 'Response body')
+    } else {
+      assert_equals(resBody, uuid, 'Response body')
+    }
+  }
 }
 
 function serverState (uuid) {

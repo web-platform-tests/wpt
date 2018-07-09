@@ -40,7 +40,6 @@ def handle_test(uuid, request, response):
         response.headers.set("Content-Type", "text/plain")
         return "Config not found"
     state = {
-        'now': time.time(),
         'request_method': request.method,
         'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers])
     }

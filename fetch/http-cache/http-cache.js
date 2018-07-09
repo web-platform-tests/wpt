@@ -127,7 +127,7 @@ function fetchInit (config) {
 }
 
 function makeCheckResponse (idx, config) {
-  return function checkResopnse (response) {
+  return function checkResponse (response) {
     var resNum = parseInt(response.headers.get('Server-Request-Count'))
     var reqNum = idx + 1
     if ('expected_type' in config) {

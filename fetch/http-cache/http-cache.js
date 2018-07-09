@@ -226,11 +226,11 @@ function makeTestUrl (uuid, config) {
   if ('query_arg' in config) {
     arg = `&target=${config.query_arg}`
   }
-  return `resources/http-cache.py?token=${uuid}${arg}`
+  return `resources/http-cache.py?dispatch=test&uuid=${uuid}${arg}`
 }
 
 function getServerState (uuid) {
-  return fetch(`resources/http-cache.py?querystate&token=${uuid}`)
+  return fetch(`resources/http-cache.py?dispatch=state&uuid=${uuid}`)
     .then(function (response) {
       return response.text()
     }).then(function (text) {

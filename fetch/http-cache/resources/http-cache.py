@@ -4,11 +4,21 @@ from json import JSONEncoder, JSONDecoder
 from base64 import b64decode
 
 def main(request, response):
-    uuid = request.GET.first("token", None)
-    if "querystate" in request.GET:
-        response.headers.set("Content-Type", "text/plain")
-        return JSONEncoder().encode(request.server.stash.take(uuid))
+    dispatch = request.GET.first("dispatch", None)
+    uuid = request.GET.first("uuid", None)
+    if dispatch == 'test':
+        return handle_test(uuid, request, response)
+    elif dispatch == 'state':
+        return handle_state(uuid, request, response)
+    response.status = (404, "Not Found")
+    response.headers.set("Content-Type", "text/plain")
+    return "Fallthrough"
 
+def handle_state(uuid, request, response):
+    response.headers.set("Content-Type", "text/plain")
+    return JSONEncoder().encode(request.server.stash.take(uuid))
+
+def handle_test(uuid, request, response):
     server_state = request.server.stash.take(uuid)
     if not server_state:
         server_state = []

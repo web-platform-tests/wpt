@@ -42,24 +42,24 @@ def handle_test(uuid, request, response):
         response.status = (404, "Not Found")
         response.headers.set("Content-Type", "text/plain")
         return "Config not found"
-    previous_config = requests[len(server_state) - 1]
-    state = {
-        'now': time.time(),
-        'request_method': request.method,
-        'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers])
-    }
-    server_state.append(state)
-    request.server.stash.put(uuid, server_state)
-
     noted_headers = {}
+    now = time.time()
     for header in config.get('response_headers', []):
         if header[0].lower() in LOCATIONHDRS: # magic locations
             header[1] = "%s&target=%s" % (request.url, header[1])
         if header[0].lower() in DATEHDRS and isinstance(header[1], int):  # magic dates
-            header[1] = http_date(state['now'], header[1])
+            header[1] = http_date(now, header[1])
         response.headers.set(header[0], header[1])
         if header[0].lower() in NOTEHDRS:
             noted_headers[header[0].lower()] = header[1]
+    state = {
+        'now': now,
+        'request_method': request.method,
+        'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers]),
+        'response_headers': noted_headers
+    }
+    server_state.append(state)
+    request.server.stash.put(uuid, server_state)
 
     if "access-control-allow-origin" not in noted_headers:
         response.headers.set("Access-Control-Allow-Origin", "*")
@@ -69,15 +69,15 @@ def handle_test(uuid, request, response):
 
     code, phrase = config.get("response_status", [200, "OK"])
     if config.get("expected_type", "").endswith('validated'):
-        previous_lm = get_header(previous_config['response_headers'], 'Last-Modified')
+        previous_hdrs = server_state[len(server_state) - 2]['response_headers']
+        previous_lm = previous_hdrs.get('last-modified', False)
         if previous_lm and request.headers.get("If-Modified-Since", False) == previous_lm:
             code, phrase = [304, "Not Modified"]
-        previous_etag = get_header(previous_config['response_headers'], 'ETag')
+        previous_etag = previous_hdrs.get('etag', False)
         if previous_etag and request.headers.get("If-None-Match", False) == previous_etag:
             code, phrase = [304, "Not Modified"]
         if code != 304:
             code, phrase = [999, '304 Not Generated']
-
     response.status = (code, phrase)
 
     content = config.get("response_body", uuid)
@@ -97,7 +97,7 @@ WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 MONTHS = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
           'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-def http_date(now, delta_secs):
+def http_date(now, delta_secs=0):
     date = datetime.datetime.utcfromtimestamp(now + delta_secs)
     return "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT" % (
         WEEKDAYS[date.weekday()],

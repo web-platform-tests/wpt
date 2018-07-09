@@ -74,28 +74,9 @@ var templates = {
 }
 
 function makeTest (rawRequests) {
-  var requests = []
-  for (let i = 0; i < rawRequests.length; i++) {
-    var request = rawRequests[i]
-    if ('template' in request) {
-      var template = templates[request['template']]
-      for (let member in template) {
-        if (!request.hasOwnProperty(member)) {
-          request[member] = template[member]
-        }
-      }
-    }
-    if ('expected_type' in request && request.expected_type === 'cached') {
-      // requests after one that's expected to be cached will get out of sync
-      // with the server; not currently supported.
-      if (rawRequests.length > i + 1) {
-        assert_unreached('Making requests after something is expected to be cached.')
-      }
-    }
-    requests.push(request)
-  }
   return function (test) {
     var uuid = token()
+    var requests = expandTemplates(rawRequests)
     var fetchFunctions = []
     for (let i = 0; i < requests.length; ++i) {
       fetchFunctions.push({
@@ -103,7 +84,6 @@ function makeTest (rawRequests) {
           var url = makeUrl(uuid, requests, idx)
           var config = requests[idx]
           var init = fetchInit(config)
-
           return fetch(url, init)
             .then(function (response) {
               var resNum = parseInt(response.headers.get('Server-Request-Count'))
@@ -224,6 +204,30 @@ function makeTest (rawRequests) {
         }
       })
   }
+}
+
+function expandTemplates(rawRequests) {
+  var requests = []
+  for (let i = 0; i < rawRequests.length; i++) {
+    var request = rawRequests[i]
+    if ('template' in request) {
+      var template = templates[request['template']]
+      for (let member in template) {
+        if (!request.hasOwnProperty(member)) {
+          request[member] = template[member]
+        }
+      }
+    }
+    if ('expected_type' in request && request.expected_type === 'cached') {
+      // requests after one that's expected to be cached will get out of sync
+      // with the server; not currently supported.
+      if (rawRequests.length > i + 1) {
+        assert_unreached('Making requests after something is expected to be cached.')
+      }
+    }
+    requests.push(request)
+  }
+  return requests
 }
 
 function makeUrl (uuid, requests, idx) {

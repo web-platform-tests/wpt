@@ -64,13 +64,13 @@ function makeTest (rawRequests) {
     var idx = 0
     function runNextStep () {
       if (fetchFunctions.length) {
-        var fetchFunction = fetchFunctions.shift()
-        if (fetchFunction.pause_after === true) {
-          return fetchFunction.code(idx++)
+        var nextFetchFunction = fetchFunctions.shift()
+        if (nextFetchFunction.pause_after === true) {
+          return nextFetchFunction.code(idx++)
             .then(pause)
             .then(runNextStep)
         } else {
-          return fetchFunction.code(idx++)
+          return nextFetchFunction.code(idx++)
             .then(runNextStep)
         }
       } else {

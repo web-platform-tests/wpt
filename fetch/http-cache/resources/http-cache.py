@@ -6,6 +6,10 @@ from base64 import b64decode
 def main(request, response):
     dispatch = request.GET.first("dispatch", None)
     uuid = request.GET.first("uuid", None)
+    if not uuid:
+        response.status = (404, "Not Found")
+        response.headers.set("Content-Type", "text/plain")
+        return "UUID not found"
     if dispatch == 'test':
         return handle_test(uuid, request, response)
     elif dispatch == 'state':

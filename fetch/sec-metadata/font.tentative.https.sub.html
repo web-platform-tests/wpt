@@ -4,7 +4,50 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+  <div id="test1">1</div>
+  <div id="test2">2</div>
+  <div id="test3">3</div>
+  <!-- Same-Origin request -->
+  <style>
+    @font-face {
+      font-family: myFirstFont;
+      src: url(https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-origin);
+    }
+    #test1 {
+      font-family: myFirstFont;
+    }
+  </style>
+
+  <!-- Same-Site request -->
+  <style>
+    @font-face {
+      font-family: mySecondFont;
+      src: url(https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-site);
+    }
+    #test2 {
+      font-family: mySecondFont;
+    }
+  </style>
+
+  <!-- Cross-Site request -->
+  <style>
+    @font-face {
+      font-family: myThirdFont;
+      src: url(https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-cross-site);
+    }
+    #test3 {
+      font-family: myThirdFont;
+    }
+  </style>
+</body>
 <script>
+  document.fonts.ready.then(function () {
+    test_same_origin();
+    test_same_site();
+    test_cross_site();
+  });
+
   function test_same_origin(){
     var same_origin_test = async_test("Same-Origin font");
     same_origin_test.step(function () {
@@ -59,40 +102,3 @@
     });
   }
 </script>
-<body>
-  <div id="test1">1</div>
-  <div id="test2">2</div>
-  <div id="test3">3</div>
-  <!-- Same-Origin request -->
-  <style onload="test_same_origin()">
-    @font-face {
-      font-family: myFirstFont;
-      src: url(https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-origin);
-    }
-    #test1 {
-      font-family: myFirstFont;
-    }
-  </style>
-
-  <!-- Same-Site request -->
-  <style onload="test_same_site()">
-    @font-face {
-      font-family: mySecondFont;
-      src: url(https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-same-site);
-    }
-    #test2 {
-      font-family: mySecondFont;
-    }
-  </style>
-
-  <!-- Cross-Site request -->
-  <style onload="test_cross_site()">
-    @font-face {
-      font-family: myThirdFont;
-      src: url(https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=font-cross-site);
-    }
-    #test3 {
-      font-family: myThirdFont;
-    }
-  </style>
-</body>

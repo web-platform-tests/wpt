@@ -99,7 +99,7 @@ function makeTest (rawRequests) {
     var request = rawRequests[i]
     if ('template' in request) {
       var template = templates[request['template']]
-      for (var member in template) {
+      for (let member in template) {
         if (!request.hasOwnProperty(member)) {
           request[member] = template[member]
         }
@@ -228,7 +228,7 @@ function makeTest (rawRequests) {
         // Now, query the server state
         return serverState(uuid)
       }).then(function (state) {
-        for (var i = 0; i < requests.length; ++i) {
+        for (let i = 0; i < requests.length; ++i) {
           var expectedValidatingHeaders = []
           var reqNum = i + 1
           if ('expected_type' in requests[i]) {

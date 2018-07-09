@@ -15,7 +15,7 @@
     <script>
     var tests = [
       {
-        name: 'HTTP cache reuses an unknown response with Last-Modified based upon heuristic freshness when Cache-Control: public is present.',
+        name: 'HTTP cache reuses an unknown response with Last-Modified based upon heuristic freshness when Cache-Control: public is present',
         requests: [
           {
             response_status: [299, "Whatever"],
@@ -31,7 +31,7 @@
         ]
       },
       {
-        name: 'HTTP cache does not reuse an unknown response with Last-Modified based upon heuristic freshness when Cache-Control: public is not present.',
+        name: 'HTTP cache does not reuse an unknown response with Last-Modified based upon heuristic freshness when Cache-Control: public is not present',
         requests: [
           {
             response_status: [299, "Whatever"],
@@ -62,7 +62,7 @@
       }
       tests.push(
         {
-          name: 'HTTP cache ' + desired + ' a ' + code + ' ' + phrase + ' response with Last-Modified based upon heuristic freshness.',
+          name: 'HTTP cache ' + desired + ' a ' + code + ' ' + phrase + ' response with Last-Modified based upon heuristic freshness',
           requests: [
             {
               response_status: [code, phrase],

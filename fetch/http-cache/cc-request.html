@@ -15,7 +15,7 @@
     <script>
     var tests = [
       {
-        name: "HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=0.",
+        name: "HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=0",
         requests: [
           {
             template: "fresh",
@@ -30,7 +30,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=1.",
+        name: "HTTP cache doesn't use aged but fresh response when request contains Cache-Control: max-age=1",
         requests: [
           {
             template: "fresh",
@@ -45,7 +45,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't use fresh response with Age header when request contains Cache-Control: max-age that is greater than remaining freshness.",
+        name: "HTTP cache doesn't use fresh response with Age header when request contains Cache-Control: max-age that is greater than remaining freshness",
         requests: [
           {
             response_headers: [
@@ -62,7 +62,7 @@
         ]
       },
       {
-        name: "HTTP cache does use aged stale response when request contains Cache-Control: max-stale that permits its use.",
+        name: "HTTP cache does use aged stale response when request contains Cache-Control: max-stale that permits its use",
         requests: [
           {
             response_headers: [
@@ -79,7 +79,7 @@
         ]
       },
       {
-        name: "HTTP cache does reuse stale response with Age header when request contains Cache-Control: max-stale that permits its use.",
+        name: "HTTP cache does reuse stale response with Age header when request contains Cache-Control: max-stale that permits its use",
         requests: [
           {
             response_headers: [
@@ -96,7 +96,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: min-fresh that wants it fresher.",
+        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: min-fresh that wants it fresher",
         requests: [
           {
             response_headers: [
@@ -112,7 +112,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't reuse fresh response with Age header when request contains Cache-Control: min-fresh that wants it fresher.",
+        name: "HTTP cache doesn't reuse fresh response with Age header when request contains Cache-Control: min-fresh that wants it fresher",
         requests: [
           {
             response_headers: [
@@ -129,7 +129,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-cache.",
+        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-cache",
         requests: [
           {
             response_headers: [
@@ -145,7 +145,7 @@
         ]
       },
       {
-        name: "HTTP cache validates fresh response with Last-Modified when request contains Cache-Control: no-cache.",
+        name: "HTTP cache validates fresh response with Last-Modified when request contains Cache-Control: no-cache",
         requests: [
           {
             response_headers: [
@@ -162,7 +162,7 @@
         ]
       },
       {
-        name: "HTTP cache validates fresh response with ETag when request contains Cache-Control: no-cache.",
+        name: "HTTP cache validates fresh response with ETag when request contains Cache-Control: no-cache",
         requests: [
           {
             response_headers: [
@@ -179,7 +179,7 @@
         ]
       },
       {
-        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-store.",
+        name: "HTTP cache doesn't reuse fresh response when request contains Cache-Control: no-store",
         requests: [
           {
             response_headers: [
@@ -195,7 +195,7 @@
         ]
       },
       {
-        name: 'HTTP cache generates 504 status code when nothing is in cache and request contains Cache-Control: only-if-cached.',
+        name: 'HTTP cache generates 504 status code when nothing is in cache and request contains Cache-Control: only-if-cached',
         requests: [
           {
             request_headers: [

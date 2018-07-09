@@ -39,6 +39,7 @@ def handle_test(uuid, request, response):
         response.status = (404, "Not Found")
         response.headers.set("Content-Type", "text/plain")
         return "Config not found"
+    previous_config = requests[len(server_state) - 1]
     state = {
         'request_method': request.method,
         'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers])
@@ -61,11 +62,15 @@ def handle_test(uuid, request, response):
     response.headers.set("Server-Request-Count", len(server_state))
 
     code, phrase = config.get("response_status", [200, "OK"])
-
-    if request.headers.get("If-Modified-Since", False) == noted_headers.get('last-modified', True):
-        code, phrase = [304, "Not Modified"]
-    if request.headers.get("If-None-Match", False) == noted_headers.get('etag', True):
-        code, phrase = [304, "Not Modified"]
+    if config.get("expected_type", "").endswith('validated'):
+        previous_lm = get_header(previous_config['response_headers'], 'Last-Modified')
+        if previous_lm and request.headers.get("If-Modified-Since", False) == previous_lm:
+            code, phrase = [304, "Not Modified"]
+        previous_etag = get_header(previous_config['response_headers'], 'ETag')
+        if previous_etag and request.headers.get("If-None-Match", False) == previous_etag:
+            code, phrase = [304, "Not Modified"]
+        if code != 304:
+            code, phrase = [999, '304 Not Generated']
 
     response.status = (code, phrase)
 
@@ -73,3 +78,11 @@ def handle_test(uuid, request, response):
     if code in NOBODYSTATUS:
         return ""
     return content
+
+
+def get_header(headers, header_name):
+    result = None
+    for header in headers:
+        if header[0].lower() == header_name.lower():
+            result = header[1]
+    return result

@@ -3,7 +3,7 @@ import re
 import subprocess
 
 from .. import vcs
-from ..vcs import bind_to_repo, git, hg
+from ..vcs import git, hg
 
 
 def get_unique_name(existing, initial):
@@ -131,11 +131,11 @@ class HgTree(object):
 class GitTree(object):
     name = "git"
 
-    def __init__(self, root=None):
+    def __init__(self, root=None, log_error=True):
         if root is None:
-            root = git("rev-parse", "--show-toplevel").strip()
+            root = git("rev-parse", "--show-toplevel", log_error=log_error).strip()
         self.root = root
-        self.git = vcs.bind_to_repo(git, self.root)
+        self.git = vcs.bind_to_repo(git, self.root, log_error=log_error)
         self.message = None
         self.commit_cls = Commit
 

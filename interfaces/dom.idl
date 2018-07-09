@@ -35,6 +35,11 @@ dictionary EventInit {
 };
 
 
+partial interface Window {
+  [Replaceable] readonly attribute any event;
+};
+
+
 [Constructor(DOMString type, optional CustomEventInit eventInitDict),
  Exposed=(Window,Worker)]
 interface CustomEvent : Event {
@@ -355,6 +360,7 @@ interface Element : Node {
   void setAttributeNS(DOMString? namespace, DOMString qualifiedName, DOMString value);
   void removeAttribute(DOMString qualifiedName);
   void removeAttributeNS(DOMString? namespace, DOMString localName);
+  boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
   boolean hasAttribute(DOMString qualifiedName);
   boolean hasAttributeNS(DOMString? namespace, DOMString localName);
 

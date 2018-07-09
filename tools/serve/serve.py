@@ -7,12 +7,13 @@ import argparse
 import json
 import logging
 import os
+import platform
 import socket
 import sys
 import threading
 import time
 import traceback
-import urllib2
+from six.moves import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from multiprocessing import Process, Event
@@ -64,7 +65,8 @@ class WrapperHandler(object):
         if query:
             query = "?" + query
         meta = "\n".join(self._get_meta(request))
-        response.content = self.wrapper % {"meta": meta, "path": path, "query": query}
+        script = "\n".join(self._get_script(request))
+        response.content = self.wrapper % {"meta": meta, "script": script, "path": path, "query": query}
         wrap_pipeline(path, request, response)
 
     def _get_path(self, path, resource_path):
@@ -92,7 +94,7 @@ class WrapperHandler(object):
         return path
 
     def _get_metadata(self, request):
-        """Get an iterator over script metadata based on //META comments in the
+        """Get an iterator over script metadata based on // META comments in the
         associated js file.
 
         :param request: The Request being processed.
@@ -104,12 +106,23 @@ class WrapperHandler(object):
 
     def _get_meta(self, request):
         """Get an iterator over strings to inject into the wrapper document
-        based on //META comments in the associated js file.
+        based on // META comments in the associated js file.
 
         :param request: The Request being processed.
         """
         for key, value in self._get_metadata(request):
             replacement = self._meta_replacement(key, value)
+            if replacement:
+                yield replacement
+
+    def _get_script(self, request):
+        """Get an iterator over strings to inject into the wrapper document
+        based on // META comments in the associated js file.
+
+        :param request: The Request being processed.
+        """
+        for key, value in self._get_metadata(request):
+            replacement = self._script_replacement(key, value)
             if replacement:
                 yield replacement
 
@@ -158,8 +171,14 @@ class HtmlWrapperHandler(WrapperHandler):
         if key == b"timeout":
             if value == b"long":
                 return '<meta name="timeout" content="long">'
+        if key == b"title":
+            value = value.decode('utf-8').replace("&", "&amp;").replace("<", "&lt;")
+            return '<title>%s</title>' % value
+        return None
+
+    def _script_replacement(self, key, value):
         if key == b"script":
-            attribute = value.decode('utf-8').replace('"', "&quot;").replace(">", "&gt;")
+            attribute = value.decode('utf-8').replace("&", "&amp;").replace('"', "&quot;")
             return '<script src="%s"></script>' % attribute
         return None
 
@@ -187,6 +206,7 @@ class WindowHandler(HtmlWrapperHandler):
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+%(script)s
 <div id=log></div>
 <script src="%(path)s"></script>
 """
@@ -206,6 +226,7 @@ self.GLOBAL = {
 </script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+%(script)s
 <div id=log></div>
 <script src="%(path)s"></script>
 """
@@ -256,14 +277,21 @@ self.GLOBAL = {
   isWorker: function() { return true; },
 };
 importScripts("/resources/testharness.js");
+%(script)s
 importScripts("%(path)s");
 done();
 """
 
     def _meta_replacement(self, key, value):
+        return None
+
+    def _script_replacement(self, key, value):
         if key == b"script":
             attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
             return 'importScripts("%s")' % attribute
+        if key == b"title":
+            value = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
+            return 'self.META_TITLE = "%s";' % value
         return None
 
 
@@ -324,7 +352,7 @@ class RoutesBuilder(object):
         for (method, suffix, handler_cls) in routes:
             self.mountpoint_routes[url_base].append(
                 (method,
-                 b"%s%s" % (str(url_base) if url_base != "/" else "", str(suffix)),
+                 "%s%s" % (url_base if url_base != "/" else "", suffix),
                  handler_cls(base_path=path, url_base=url_base)))
 
     def add_file_mount_point(self, file_url, base_path):
@@ -416,10 +444,10 @@ def check_subdomains(config):
     connected = False
     for i in range(10):
         try:
-            urllib2.urlopen("http://%s:%d/" % (host, port))
+            urllib.request.urlopen("http://%s:%d/" % (host, port))
             connected = True
             break
-        except urllib2.URLError:
+        except urllib.error.URLError:
             time.sleep(1)
 
     if not connected:
@@ -432,8 +460,8 @@ def check_subdomains(config):
             continue
 
         try:
-            urllib2.urlopen("http://%s:%d/" % (domain, port))
-        except Exception as e:
+            urllib.request.urlopen("http://%s:%d/" % (domain, port))
+        except Exception:
             logger.critical("Failed probing domain %s. "
                             "You may need to edit /etc/hosts or similar, see README.md." % domain)
             sys.exit(1)
@@ -447,8 +475,16 @@ def make_hosts_file(config, host):
     for domain in config.domains_set:
         rv.append("%s\t%s\n" % (host, domain))
 
-    for not_domain in config.not_domains_set:
-        rv.append("0.0.0.0\t%s\n" % not_domain)
+    # Windows interpets the IP address 0.0.0.0 as non-existent, making it an
+    # appropriate alias for non-existent hosts. However, UNIX-like systems
+    # interpret the same address to mean any IP address, which is inappropraite
+    # for this context. These systems do not reserve any value for this
+    # purpose, so the inavailability of the domains must be taken for granted.
+    #
+    # https://github.com/web-platform-tests/wpt/issues/10560
+    if platform.uname()[0] == "Windows":
+        for not_domain in config.not_domains_set:
+            rv.append("0.0.0.0\t%s\n" % not_domain)
 
     return "".join(rv)
 
@@ -456,7 +492,7 @@ def make_hosts_file(config, host):
 def start_servers(host, ports, paths, routes, bind_address, config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
-    for scheme, ports in ports.iteritems():
+    for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
 
         for port in ports:
@@ -656,7 +692,7 @@ _subdomains = {u"www",
                u"天気の良い日",
                u"élève"}
 
-_not_subdomains = {u"nonexistent-origin"}
+_not_subdomains = {u"nonexistent"}
 
 
 class Config(config.Config):

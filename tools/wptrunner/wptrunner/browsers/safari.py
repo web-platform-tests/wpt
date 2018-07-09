@@ -1,8 +1,8 @@
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import SafariDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
+                                          SeleniumRefTestExecutor)  # noqa: F401
 
 
 __wptrunner__ = {"product": "safari",
@@ -30,7 +30,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     from selenium.webdriver import DesiredCapabilities
 
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = dict(DesiredCapabilities.SAFARI.items())
     if kwargs["binary"] is not None:

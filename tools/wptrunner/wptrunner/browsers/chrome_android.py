@@ -1,12 +1,11 @@
 import subprocess
 
-from ..config import *
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
-from ..executors.executorchrome import ChromeDriverWdspecExecutor
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
+                                          SeleniumRefTestExecutor)  # noqa: F401
+from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "chrome_android",
@@ -43,8 +42,8 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         server_config['ports']['ws'] + server_config['ports']['wss']
     ))
 
-    executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+    executor_kwargs = base_executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+                                           **kwargs)
     executor_kwargs["close_after_done"] = True
     capabilities = dict(DesiredCapabilities.CHROME.items())
     capabilities["chromeOptions"] = {}

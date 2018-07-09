@@ -2,7 +2,7 @@ import os
 
 from .base import NullBrowser, ExecutorBrowser, require_arg
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExecutor, ServoWdspecExecutor
+from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExecutor, ServoWdspecExecutor  # noqa: F401
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -40,7 +40,7 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     rv = base_executor_kwargs(test_type, server_config,
-                              cache_manager, **kwargs)
+                              cache_manager, run_info_data, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
     if test_type == "wdspec":
         rv["capabilities"] = {}

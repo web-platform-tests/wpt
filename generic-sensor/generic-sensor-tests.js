@@ -33,14 +33,19 @@ let loadChromiumResources = Promise.resolve().then(() => {
   return chain;
 });
 
+async function initialize_generic_sensor_tests() {
+  if (typeof GenericSensorTest === 'undefined') {
+    await loadChromiumResources;
+  }
+  assert_true(typeof GenericSensorTest !== 'undefined');
+  let sensorTest = new GenericSensorTest();
+  await sensorTest.initialize();
+  return sensorTest;
+}
+
 function sensor_test(func, name, properties) {
   promise_test(async (t) => {
-    if (typeof GenericSensorTest === 'undefined') {
-      await loadChromiumResources;
-    }
-    assert_true(typeof GenericSensorTest !== 'undefined');
-    let sensorTest = new GenericSensorTest();
-    await sensorTest.initialize();
+    let sensorTest = await initialize_generic_sensor_tests();
     try {
       await func(t);
     } finally {
@@ -332,8 +337,7 @@ function runGenericSensorTests(sensorName) {
       NaN,
       Infinity,
       -Infinity,
-      {},
-      undefined
+      {}
     ];
     invalidFreqs.map(freq => {
       assert_throws(new TypeError(),
@@ -355,7 +359,7 @@ function runGenericSensorTests(sensorName) {
 
     await sensorWatcher.wait_for("reading");
     //TODO use mock data to verify sensor readings, blocked by issue:
-    // https://github.com/w3c/web-platform-tests/issues/9686
+    // https://github.com/web-platform-tests/wpt/issues/9686
     assert_reading_not_null(sensor);
 
     sensor.stop();

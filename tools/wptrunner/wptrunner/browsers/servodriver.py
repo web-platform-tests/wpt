@@ -9,8 +9,8 @@ from serve.serve import make_hosts_file
 
 from .base import Browser, require_arg, get_free_port, browser_command, ExecutorBrowser
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorservodriver import (ServoWebDriverTestharnessExecutor,
-                                             ServoWebDriverRefTestExecutor)
+from ..executors.executorservodriver import (ServoWebDriverTestharnessExecutor,  # noqa: F401
+                                             ServoWebDriverRefTestExecutor)  # noqa: F401
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -44,7 +44,7 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data, **kwargs):
     rv = base_executor_kwargs(test_type, server_config,
-                              cache_manager, **kwargs)
+                              cache_manager, run_info_data, **kwargs)
     return rv
 
 

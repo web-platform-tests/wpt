@@ -1,7 +1,9 @@
 <!doctype html>
+<meta name="timeout" content="long">
 <title>vertical-scroll test for touch-action</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/feature-policy/experimental-features/resources/common.js"></script>
 <script src="/feature-policy/experimental-features/resources/vertical-scroll.js"></script>
 <style>
 html, body {
@@ -38,12 +40,11 @@ iframe {
 
   // Wait for the helper scripts to load.
   promise_test(async() => {
-    if (window.touch_scroll_api_ready)
+    if (window.input_api_ready)
       return Promise.resolve();
     await new Promise( (r) => {
-      window.resolve_on_touch_scroll_api_ready = r;
+      window.resolve_on_input_api_ready = r;
     });
-
   }, "Make sure input injection API is ready.");
 
   // Sanity-check: Verify we can scroll using the test-API (empty <iframe>).
@@ -81,7 +82,7 @@ iframe {
     window.scrollTo(0, 0);
 
     // Disallow vertical scroll and reload the <iframe>.
-    iframeElement.setAttribute("allow", "vertical-scroll 'none';");
+    setFeatureState(iframeElement, "vertical-scroll", "'none'");
     await loadUrlInIframe(iframeElement, url);
 
     // Apply the scroll gesture. Main frame should scroll vertically.

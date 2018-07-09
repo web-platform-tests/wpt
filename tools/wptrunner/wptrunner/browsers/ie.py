@@ -1,9 +1,9 @@
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import InternetExplorerDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
-from ..executors.executorinternetexplorer import InternetExplorerDriverWdspecExecutor
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
+                                          SeleniumRefTestExecutor)  # noqa: F401
+from ..executors.executorinternetexplorer import InternetExplorerDriverWdspecExecutor  # noqa: F401
 
 __wptrunner__ = {"product": "ie",
                  "check_args": "check_args",
@@ -26,14 +26,12 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
-    from selenium.webdriver import DesiredCapabilities
-
     options = {}
     options["requireWindowFocus"] = True
     capabilities = {}
     capabilities["se:ieOptions"] = options
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs

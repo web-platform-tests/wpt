@@ -84,3 +84,4 @@ interface FontFaceSource {
 
 Document implements FontFaceSource;
 WorkerGlobalScope implements FontFaceSource;
+

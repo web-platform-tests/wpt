@@ -1,9 +1,9 @@
+import json
 import os
 import platform
 import signal
 import subprocess
 import sys
-import tempfile
 
 import mozinfo
 import mozleak
@@ -20,9 +20,9 @@ from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executormarionette import (MarionetteTestharnessExecutor,
-                                            MarionetteRefTestExecutor,
-                                            MarionetteWdspecExecutor)
+from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
+                                            MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionetteWdspecExecutor)  # noqa: F401
 
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -54,6 +54,8 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4
         else:
             return 3
+    elif run_info_data["os"] == "android":
+        return 4
     return 1
 
 
@@ -86,11 +88,13 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data,
+                                           **kwargs)
     executor_kwargs["close_after_done"] = test_type != "reftest"
     executor_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type,
                                                                    run_info_data,
                                                                    **kwargs)
+    executor_kwargs["e10s"] = run_info_data["e10s"]
     capabilities = {}
     if test_type == "reftest":
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
@@ -109,6 +113,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["acceptInsecureCerts"] = True
     if capabilities:
         executor_kwargs["capabilities"] = capabilities
+    executor_kwargs["debug"] = run_info_data["debug"]
     return executor_kwargs
 
 
@@ -121,7 +126,7 @@ def env_options():
     # network.dns.localDomains preference set below) to resolve the test
     # domains to localhost without relying on the network stack.
     #
-    # https://github.com/w3c/web-platform-tests/pull/9480
+    # https://github.com/web-platform-tests/wpt/pull/9480
     return {"server_host": "127.0.0.1",
             "bind_address": False,
             "supports_debugger": True}
@@ -129,6 +134,7 @@ def env_options():
 
 def run_info_extras(**kwargs):
     return {"e10s": kwargs["gecko_e10s"],
+            "verify": kwargs["verify"],
             "headless": "MOZ_HEADLESS" in os.environ}
 
 
@@ -245,11 +251,28 @@ class FirefoxBrowser(Browser):
     def load_prefs(self):
         prefs = Preferences()
 
-        prefs_path = os.path.join(self.prefs_root, "user.js")
-        if os.path.exists(prefs_path):
-            prefs.add(Preferences.read_prefs(prefs_path))
+        pref_paths = []
+
+        profiles = os.path.join(self.prefs_root, 'profiles.json')
+        if os.path.isfile(profiles):
+            with open(profiles, 'r') as fh:
+                for name in json.load(fh)['web-platform-tests']:
+                    pref_paths.append(os.path.join(self.prefs_root, name, 'user.js'))
         else:
-            self.logger.warning("Failed to find base prefs file in %s" % prefs_path)
+            # Old preference files used before the creation of profiles.json (remove when no longer supported)
+            legacy_pref_paths = (
+                os.path.join(self.prefs_root, 'prefs_general.js'),   # Used in Firefox 60 and below
+                os.path.join(self.prefs_root, 'common', 'user.js'),  # Used in Firefox 61
+            )
+            for path in legacy_pref_paths:
+                if os.path.isfile(path):
+                    pref_paths.append(path)
+
+        for path in pref_paths:
+            if os.path.exists(path):
+                prefs.add(Preferences.read_prefs(path))
+            else:
+                self.logger.warning("Failed to find base prefs file in %s" % path)
 
         # Add any custom preferences
         prefs.add(self.extra_prefs, cast=True)
@@ -357,7 +380,7 @@ class FirefoxBrowser(Browser):
         # local copy of certutil
         # TODO: Maybe only set this if certutil won't launch?
         env = os.environ.copy()
-        certutil_dir = os.path.dirname(self.binary)
+        certutil_dir = os.path.dirname(self.binary or self.certutil_binary)
         if mozinfo.isMac:
             env_var = "DYLD_LIBRARY_PATH"
         elif mozinfo.isUnix:

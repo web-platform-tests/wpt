@@ -48,6 +48,13 @@ policies and contribution forms [3].
  */
 (function(){
 "use strict";
+// Support subsetTestByKey from /common/subset-tests-by-key.js, but make it optional
+if (!('subsetTestByKey' in self)) {
+    self.subsetTestByKey = function(key, callback, ...args) {
+      return callback(...args);
+    }
+    self.shouldRunSubTest = () => true;
+}
 /// Helpers ///
 function constValue (cnt)
 //@{
@@ -183,11 +190,19 @@ self.IdlArray = function()
      *   A implements C;
      *   D implements E;
      *
-     * results in { A: ["B", "C"], D: ["E"] }.
+     * results in this["implements"] = { A: ["B", "C"], D: ["E"] }.
+     *
+     * Similarly,
+     *
+     *   interface A : B {};
+     *   interface B : C {};
+     *
+     * results in this["inheritance"] = { A: "B", B: "C" }
      */
     this.partials = [];
     this["implements"] = {};
     this["includes"] = {};
+    this["inheritance"] = {};
 };
 
 //@}
@@ -204,19 +219,121 @@ IdlArray.prototype.add_untested_idls = function(raw_idls, options)
 {
     /** Entry point.  See documentation at beginning of file. */
     var parsed_idls = WebIDL2.parse(raw_idls);
-    for (var i = 0; i < parsed_idls.length; i++)
-    {
+    this.mark_as_untested(parsed_idls);
+    this.internal_add_idls(parsed_idls, options);
+};
+
+//@}
+IdlArray.prototype.mark_as_untested = function (parsed_idls)
+//@{
+{
+    for (var i = 0; i < parsed_idls.length; i++) {
         parsed_idls[i].untested = true;
-        if ("members" in parsed_idls[i])
-        {
-            for (var j = 0; j < parsed_idls[i].members.length; j++)
-            {
+        if ("members" in parsed_idls[i]) {
+            for (var j = 0; j < parsed_idls[i].members.length; j++) {
                 parsed_idls[i].members[j].untested = true;
             }
         }
     }
-    this.internal_add_idls(parsed_idls, options);
 };
+//@}
+
+//@}
+IdlArray.prototype.is_excluded_by_options = function (name, options)
+//@{
+{
+    return options &&
+        (options.except && options.except.includes(name)
+         || options.only && !options.only.includes(name));
+};
+//@}
+
+//@}
+IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
+//@{
+{
+    const parsed_idls = WebIDL2.parse(raw_idls);
+    const new_options = { only: [] }
+
+    const all_deps = new Set();
+    Object.values(this.inheritance).forEach(v => all_deps.add(v));
+    Object.entries(this.implements).forEach(([k, v]) => {
+        all_deps.add(k);
+        all_deps.add(v);
+    });
+    // NOTE: If 'A includes B' for B that we care about, then A is also a dep.
+    Object.keys(this.includes).forEach(k => {
+        all_deps.add(k);
+        this.includes[k].forEach(v => all_deps.add(v));
+    });
+    this.partials.map(p => p.name).forEach(v => all_deps.add(v));
+    // Add the attribute idlTypes of all the nested members of all tested idls.
+    for (const obj of [this.members, this.partials]) {
+        const tested = Object.values(obj).filter(m => !m.untested && m.members);
+        for (const parsed of tested) {
+            for (const attr of Object.values(parsed.members).filter(m => !m.untested && m.type === 'attribute')) {
+                all_deps.add(attr.idlType.idlType);
+            }
+        }
+    }
+
+    if (options && options.except && options.only) {
+        throw new IdlHarnessError("The only and except options can't be used together.");
+    }
+
+    const should_skip = name => {
+        // NOTE: Deps are untested, so we're lenient, and skip re-encountered definitions.
+        // e.g. for 'idl' containing A:B, B:C, C:D
+        //      array.add_idls(idl, {only: ['A','B']}).
+        //      array.add_dependency_idls(idl);
+        // B would be encountered as tested, and encountered as a dep, so we ignore.
+        return name in this.members
+            || this.is_excluded_by_options(name, options);
+    }
+    // Record of skipped items, in case we later determine they are a dependency.
+    // Maps name -> [parsed_idl, ...]
+    const skipped = new Map();
+    const process = function(parsed) {
+        let name = parsed.name
+            || parsed.type == "implements" && parsed.target
+            || parsed.type == "includes" && parsed.target;
+        if (!name || should_skip(name) || !all_deps.has(name)) {
+            name &&
+                skipped.has(name)
+                    ? skipped.get(name).push(parsed)
+                    : skipped.set(name, [parsed]);
+            return;
+        }
+
+        new_options.only.push(name);
+        const follow_up = [];
+        for (const dep_type of ["inheritance", "implements", "includes"]) {
+            if (parsed[dep_type]) {
+                const dep = parsed[dep_type];
+                new_options.only.push(dep);
+                all_deps.add(dep);
+                follow_up.push(dep);
+            }
+        }
+
+        for (const deferred of follow_up) {
+            if (skipped.has(deferred)) {
+                const next = skipped.get(deferred);
+                skipped.delete(deferred);
+                next.forEach(process);
+            }
+        }
+    }
+    for (let parsed of parsed_idls) {
+        process(parsed);
+    }
+
+    this.mark_as_untested(parsed_idls);
+
+    if (new_options.only.length) {
+        this.internal_add_idls(parsed_idls, new_options);
+    }
+}
 
 //@}
 IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
@@ -242,17 +359,8 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         throw new IdlHarnessError("The only and except options can't be used together.");
     }
 
-    function should_skip(name)
-    {
-        if (options && options.only && options.only.indexOf(name) == -1)
-        {
-            return true;
-        }
-        if (options && options.except && options.except.indexOf(name) != -1)
-        {
-            return true;
-        }
-        return false;
+    var should_skip = name => {
+        return this.is_excluded_by_options(name, options);
     }
 
     parsed_idls.forEach(function(parsed_idl)
@@ -304,6 +412,17 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
         {
             throw new IdlHarnessError("Duplicate identifier " + parsed_idl.name);
         }
+
+        if (parsed_idl["inheritance"]) {
+            // NOTE: Clash should be impossible (would require redefinition of parsed_idl.name).
+            if (parsed_idl.name in this["inheritance"]
+                && parsed_idl["inheritance"] != this["inheritance"][parsed_idl.name]) {
+                throw new IdlHarnessError(
+                    `Inheritance for ${parsed_idl.name} was already defined`);
+            }
+            this["inheritance"][parsed_idl.name] = parsed_idl["inheritance"];
+        }
+
         switch(parsed_idl.type)
         {
         case "interface":
@@ -553,42 +672,48 @@ IdlArray.prototype.is_json_type = function(type)
 };
 
 function exposure_set(object, default_set) {
-    var exposed = object.extAttrs.filter(function(a) { return a.name == "Exposed" });
-    if (exposed.length > 1) {
+    var exposed = object.extAttrs && object.extAttrs.filter(a => a.name === "Exposed");
+    if (exposed && exposed.length > 1) {
         throw new IdlHarnessError(
             `Multiple 'Exposed' extended attributes on ${object.name}`);
     }
 
-    if (exposed.length === 0) {
-        return default_set;
+    let result = default_set || ["Window"];
+    if (result && !(result instanceof Set)) {
+        result = new Set(result);
     }
-
-    var set = exposed[0].rhs.value;
-    // Could be a list or a string.
-    if (typeof set == "string") {
-        set = [ set ];
+    if (exposed && exposed.length) {
+        var set = exposed[0].rhs.value;
+        // Could be a list or a string.
+        if (typeof set == "string") {
+            set = [ set ];
+        }
+        result = new Set(set);
     }
-    return set;
+    if (result && result.has("Worker")) {
+        result.delete("Worker");
+        result.add("DedicatedWorker");
+        result.add("ServiceWorker");
+        result.add("SharedWorker");
+    }
+    return result;
 }
 
 function exposed_in(globals) {
     if ('document' in self) {
-        return globals.indexOf("Window") >= 0;
+        return globals.has("Window");
     }
     if ('DedicatedWorkerGlobalScope' in self &&
         self instanceof DedicatedWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("DedicatedWorker") >= 0;
+        return globals.has("DedicatedWorker");
     }
     if ('SharedWorkerGlobalScope' in self &&
         self instanceof SharedWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("SharedWorker") >= 0;
+        return globals.has("SharedWorker");
     }
     if ('ServiceWorkerGlobalScope' in self &&
         self instanceof ServiceWorkerGlobalScope) {
-        return globals.indexOf("Worker") >= 0 ||
-               globals.indexOf("ServiceWorker") >= 0;
+        return globals.has("ServiceWorker");
     }
     throw new IdlHarnessError("Unexpected global object");
 }
@@ -628,27 +753,7 @@ IdlArray.prototype.test = function()
 
     // First merge in all the partial interfaces and implements statements we
     // encountered.
-    this.partials.forEach(function(parsed_idl)
-    {
-        if (!(parsed_idl.name in this.members)
-            || !(this.members[parsed_idl.name] instanceof IdlInterface
-                 || this.members[parsed_idl.name] instanceof IdlDictionary))
-        {
-            throw new IdlHarnessError(`Partial ${parsed_idl.type} ${parsed_idl.name} with no original ${parsed_idl.type}`);
-        }
-        if (parsed_idl.extAttrs)
-        {
-            parsed_idl.extAttrs.forEach(function(extAttr)
-            {
-                this.members[parsed_idl.name].extAttrs.push(extAttr);
-            }.bind(this));
-        }
-        parsed_idl.members.forEach(function(member)
-        {
-            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
-        }.bind(this));
-    }.bind(this));
-    this.partials = [];
+    this.collapse_partials();
 
     for (var lhs in this["implements"])
     {
@@ -705,7 +810,7 @@ IdlArray.prototype.test = function()
             return;
         }
 
-        var globals = exposure_set(member, ["Window"]);
+        var globals = exposure_set(member);
         member.exposed = exposed_in(globals);
         member.exposureSet = globals;
     }.bind(this));
@@ -716,13 +821,92 @@ IdlArray.prototype.test = function()
         this.members[name].test();
         if (name in this.objects)
         {
-            this.objects[name].forEach(function(str)
+            const objects = this.objects[name];
+            if (!objects || !Array.isArray(objects)) {
+                throw new IdlHarnessError(`Invalid or empty objects for member ${name}`);
+            }
+            objects.forEach(function(str)
             {
+                if (!this.members[name] || !(this.members[name] instanceof IdlInterface)) {
+                    throw new IdlHarnessError(`Invalid object member name ${name}`);
+                }
                 this.members[name].test_object(str);
             }.bind(this));
         }
     }
 };
+
+//@}
+IdlArray.prototype.collapse_partials = function()
+//@{
+{
+    const testedPartials = new Map();
+    this.partials.forEach(function(parsed_idl)
+    {
+        const originalExists = parsed_idl.name in this.members
+            && (this.members[parsed_idl.name] instanceof IdlInterface
+                || this.members[parsed_idl.name] instanceof IdlDictionary);
+
+        let partialTestName = parsed_idl.name;
+        if (!parsed_idl.untested) {
+            // Ensure unique test name in case of multiple partials.
+            let partialTestCount = 1;
+            if (testedPartials.has(parsed_idl.name)) {
+                partialTestCount += testedPartials.get(parsed_idl.name);
+                partialTestName = `${partialTestName}[${partialTestCount}]`;
+            }
+            testedPartials.set(parsed_idl.name, partialTestCount);
+
+            test(function () {
+                assert_true(originalExists, `Original ${parsed_idl.type} should be defined`);
+            }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: original ${parsed_idl.type} defined`);
+        }
+        if (!originalExists) {
+            // Not good.. but keep calm and carry on.
+            return;
+        }
+
+        if (parsed_idl.extAttrs)
+        {
+            // Special-case "Exposed". Must be a subset of original interface's exposure.
+            // Exposed on a partial is the equivalent of having the same Exposed on all nested members.
+            // See https://github.com/heycam/webidl/issues/154 for discrepency between Exposed and
+            // other extended attributes on partial interfaces.
+            const exposureAttr = parsed_idl.extAttrs.find(a => a.name === "Exposed");
+            if (exposureAttr) {
+                if (!parsed_idl.untested) {
+                    test(function () {
+                        const partialExposure = exposure_set(parsed_idl);
+                        const memberExposure = exposure_set(this.members[parsed_idl.name]);
+                        partialExposure.forEach(name => {
+                            if (!memberExposure || !memberExposure.has(name)) {
+                                throw new IdlHarnessError(
+                                    `Partial ${parsed_idl.name} ${parsed_idl.type} is exposed to '${name}', the original ${parsed_idl.type} is not.`);
+                            }
+                        });
+                    }.bind(this), `Partial ${parsed_idl.type} ${partialTestName}: valid exposure set`);
+                }
+                parsed_idl.members.forEach(function (member) {
+                    member.extAttrs.push(exposureAttr);
+                }.bind(this));
+            }
+
+            parsed_idl.extAttrs.forEach(function(extAttr)
+            {
+                // "Exposed" already handled above.
+                if (extAttr.name === "Exposed") {
+                    return;
+                }
+                this.members[parsed_idl.name].extAttrs.push(extAttr);
+            }.bind(this));
+        }
+        parsed_idl.members.forEach(function(member)
+        {
+            this.members[parsed_idl.name].members.push(new IdlInterfaceMember(member));
+        }.bind(this));
+    }.bind(this));
+    this.partials = [];
+}
 
 //@}
 IdlArray.prototype.assert_type_is = function(value, type)
@@ -778,7 +962,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
         return;
     }
 
-    if (type.sequence)
+    if (type.generic === "sequence")
     {
         assert_true(Array.isArray(value), "should be an Array");
         if (!value.length)
@@ -1226,7 +1410,7 @@ IdlInterface.prototype.test = function()
     }
 
     if (!this.exposed) {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             assert_false(this.name in self);
         }.bind(this), this.name + " interface: existence and properties of interface object");
         return;
@@ -1252,7 +1436,7 @@ IdlInterface.prototype.test = function()
 IdlInterface.prototype.test_self = function()
 //@{
 {
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         // This function tests WebIDL as of 2015-01-13.
 
@@ -1359,7 +1543,7 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + " interface: existence and properties of interface object");
 
     if (!this.is_callback()) {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             // This function tests WebIDL as of 2014-10-25.
             // https://heycam.github.io/webidl/#es-interface-call
 
@@ -1386,7 +1570,7 @@ IdlInterface.prototype.test_self = function()
     }
 
     if (!this.is_callback() || this.has_constants()) {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             // This function tests WebIDL as of 2015-11-17.
             // https://heycam.github.io/webidl/#interface-object
 
@@ -1411,7 +1595,7 @@ IdlInterface.prototype.test_self = function()
 
 
     if (this.has_extended_attribute("LegacyWindowAlias")) {
-        test(function()
+        subsetTestByKey(this.name, test, function()
         {
             var aliasAttrs = this.extAttrs.filter(function(o) { return o.name === "LegacyWindowAlias"; });
             if (aliasAttrs.length > 1) {
@@ -1420,7 +1604,7 @@ IdlInterface.prototype.test_self = function()
             if (this.is_callback()) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on non-interface " + this.name);
             }
-            if (this.exposureSet.indexOf("Window") === -1) {
+            if (!this.exposureSet.has("Window")) {
                 throw new IdlHarnessError("Invalid IDL: LegacyWindowAlias extended attribute on " + this.name + " which is not exposed in Window");
             }
             // TODO: when testing of [NoInterfaceObject] interfaces is supported,
@@ -1463,7 +1647,7 @@ IdlInterface.prototype.test_self = function()
     }
     // TODO: Test named constructors if I find any interfaces that have them.
 
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         // This function tests WebIDL as of 2015-01-21.
         // https://heycam.github.io/webidl/#interface-object
@@ -1590,7 +1774,7 @@ IdlInterface.prototype.test_self = function()
         this.test_immutable_prototype("interface prototype object", self[this.name].prototype);
     }
 
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         if (this.is_callback() && !this.has_constants()) {
             return;
@@ -1626,7 +1810,7 @@ IdlInterface.prototype.test_self = function()
     }.bind(this), this.name + ' interface: existence and properties of interface prototype object\'s "constructor" property');
 
 
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         if (this.is_callback() && !this.has_constants()) {
             return;
@@ -1696,7 +1880,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         return;
     }
 
-    test(function(t) {
+    subsetTestByKey(this.name, test, function(t) {
         var originalValue = Object.getPrototypeOf(obj);
         var newValue = Object.create(null);
 
@@ -1719,7 +1903,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         "of " + type + " - setting to a new value via Object.setPrototypeOf " +
         "should throw a TypeError");
 
-    test(function(t) {
+    subsetTestByKey(this.name, test, function(t) {
         var originalValue = Object.getPrototypeOf(obj);
         var newValue = Object.create(null);
 
@@ -1746,7 +1930,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         "of " + type + " - setting to a new value via __proto__ " +
         "should throw a TypeError");
 
-    test(function(t) {
+    subsetTestByKey(this.name, test, function(t) {
         var originalValue = Object.getPrototypeOf(obj);
         var newValue = Object.create(null);
 
@@ -1767,7 +1951,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         "of " + type + " - setting to a new value via Reflect.setPrototypeOf " +
         "should return false");
 
-    test(function() {
+    subsetTestByKey(this.name, test, function() {
         var originalValue = Object.getPrototypeOf(obj);
 
         Object.setPrototypeOf(obj, originalValue);
@@ -1775,7 +1959,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         "of " + type + " - setting to its original value via Object.setPrototypeOf " +
         "should not throw");
 
-    test(function() {
+    subsetTestByKey(this.name, test, function() {
         var originalValue = Object.getPrototypeOf(obj);
 
         obj.__proto__ = originalValue;
@@ -1783,7 +1967,7 @@ IdlInterface.prototype.test_immutable_prototype = function(type, obj)
         "of " + type + " - setting to its original value via __proto__ " +
         "should not throw");
 
-    test(function() {
+    subsetTestByKey(this.name, test, function() {
         var originalValue = Object.getPrototypeOf(obj);
 
         assert_true(Reflect.setPrototypeOf(obj, originalValue));
@@ -1800,7 +1984,7 @@ IdlInterface.prototype.test_member_const = function(member)
         throw new IdlHarnessError("Internal error: test_member_const called without any constants");
     }
 
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
@@ -1826,7 +2010,7 @@ IdlInterface.prototype.test_member_const = function(member)
 
     // "In addition, a property with the same characteristics must
     // exist on the interface prototype object."
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
@@ -1857,7 +2041,10 @@ IdlInterface.prototype.test_member_const = function(member)
 IdlInterface.prototype.test_member_attribute = function(member)
 //@{
   {
-    var a_test = async_test(this.name + " interface: attribute " + member.name);
+    if (!shouldRunSubTest(this.name)) {
+        return;
+    }
+    var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: attribute " + member.name);
     a_test.step(function()
     {
         if (this.is_callback() && !this.has_constants()) {
@@ -1940,7 +2127,7 @@ IdlInterface.prototype.test_member_attribute = function(member)
         }
     }.bind(this));
 
-    test(function () {
+    subsetTestByKey(this.name, test, function () {
         this.do_member_unscopable_asserts(member);
     }.bind(this), 'Unscopable handled correctly for ' + member.name + ' property on ' + this.name);
 };
@@ -1949,7 +2136,10 @@ IdlInterface.prototype.test_member_attribute = function(member)
 IdlInterface.prototype.test_member_operation = function(member)
 //@{
 {
-    var a_test = async_test(this.name + " interface: operation " + member.name +
+    if (!shouldRunSubTest(this.name)) {
+        return;
+    }
+    var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: operation " + member.name +
                             "(" + member.arguments.map(
                                 function(m) {return m.idlType.idlType; } ).join(", ")
                             +")");
@@ -2008,7 +2198,7 @@ IdlInterface.prototype.test_member_operation = function(member)
         this.do_member_operation_asserts(memberHolderObject, member, a_test);
     }.bind(this));
 
-    test(function () {
+    subsetTestByKey(this.name, test, function () {
         this.do_member_unscopable_asserts(member);
     }.bind(this),
          'Unscopable handled correctly for ' + member.name + "(" +
@@ -2136,7 +2326,7 @@ IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, mem
     var instanceName = memberHolderObject.constructor.name;
     if (member.has_extended_attribute("Default")) {
         var map = this.default_to_json_operation();
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             var json = memberHolderObject.toJSON();
             map.forEach(function(type, k) {
                 assert_true(k in json, "property " + JSON.stringify(k) + " should be present in the output of " + this.name + ".prototype.toJSON()");
@@ -2149,7 +2339,7 @@ IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, mem
             }, this);
         }.bind(this), "Test default toJSON operation of " + instanceName);
     } else {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             assert_true(this.array.is_json_type(member.idlType), JSON.stringify(member.idlType) + " is not an appropriate return value for the toJSON operation of " + instanceName);
             this.array.assert_type_is(memberHolderObject.toJSON(), member.idlType);
         }.bind(this), "Test toJSON operation of " + instanceName);
@@ -2162,7 +2352,7 @@ IdlInterface.prototype.test_member_iterable = function(member)
 {
     var interfaceName = this.name;
     var isPairIterator = member.idlType.length === 2;
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         var descriptor = Object.getOwnPropertyDescriptor(self[interfaceName].prototype, Symbol.iterator);
         assert_true(descriptor.writable, "property should be writable");
@@ -2172,11 +2362,11 @@ IdlInterface.prototype.test_member_iterable = function(member)
     }, "Testing Symbol.iterator property of iterable interface " + interfaceName);
 
     if (isPairIterator) {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             assert_equals(self[interfaceName].prototype[Symbol.iterator], self[interfaceName].prototype["entries"], "entries method is not the same as @@iterator");
         }, "Testing pair iterable interface " + interfaceName);
     } else {
-        test(function() {
+        subsetTestByKey(this.name, test, function() {
             ["entries", "keys", "values", "forEach", Symbol.Iterator].forEach(function(property) {
                 assert_equals(self[interfaceName].prototype[property], Array.prototype[property], property + " function is not the same as Array one");
             });
@@ -2188,7 +2378,7 @@ IdlInterface.prototype.test_member_iterable = function(member)
 IdlInterface.prototype.test_member_stringifier = function(member)
 //@{
 {
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         if (this.is_callback() && !this.has_constants()) {
             return;
@@ -2273,7 +2463,7 @@ IdlInterface.prototype.test_members = function()
         }
 
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            test(function() {
+            subsetTestByKey(this.name, test, function() {
                 // It's not exposed, so we shouldn't find it anywhere.
                 assert_false(member.name in self[this.name],
                              "The interface object must not have a property " +
@@ -2394,7 +2584,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
     if (!this.has_extended_attribute("NoInterfaceObject")
     && (typeof obj != expected_typeof || obj instanceof Object))
     {
-        test(function()
+        subsetTestByKey(this.name, test, function()
         {
             assert_equals(exception, null, "Unexpected exception when evaluating object");
             assert_equals(typeof obj, expected_typeof, "wrong typeof object");
@@ -2416,7 +2606,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
     // "The class string of a platform object that implements one or more
     // interfaces must be the identifier of the primary interface of the
     // platform object."
-    test(function()
+    subsetTestByKey(this.name, test, function()
     {
         assert_equals(exception, null, "Unexpected exception when evaluating object");
         assert_equals(typeof obj, expected_typeof, "wrong typeof object");
@@ -2434,6 +2624,9 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
 {
     // TODO: Indexed and named properties, more checks on interface members
     this.already_tested = true;
+    if (!shouldRunSubTest(this.name)) {
+        return;
+    }
 
     for (var i = 0; i < this.members.length; i++)
     {
@@ -2442,7 +2635,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             continue;
         }
         if (!exposed_in(exposure_set(member, this.exposureSet))) {
-            test(function() {
+            subsetTestByKey(this.name, test, function() {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_false(member.name in obj);
             }.bind(this), this.name + " interface: " + desc + ' must not have property "' + member.name + '"');
@@ -2450,7 +2643,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         }
         if (member.type == "attribute" && member.isUnforgeable)
         {
-            var a_test = async_test(this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
+            var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
             a_test.step(function() {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
@@ -2462,7 +2655,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                  member.name &&
                  member.isUnforgeable)
         {
-            var a_test = async_test(this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
+            var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: " + desc + ' must have own property "' + member.name + '"');
             a_test.step(function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
@@ -2482,7 +2675,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
             {
                 described_name += "(" + member.arguments.map(arg => arg.idlType.idlType).join(", ") + ")";
             }
-            test(function()
+            subsetTestByKey(this.name, test, function()
             {
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
@@ -2528,7 +2721,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         // TODO: Test passing arguments of the wrong type.
         if (member.type == "operation" && member.name && member.arguments.length)
         {
-            var a_test = async_test( this.name + " interface: calling " + member.name +
+            var a_test = subsetTestByKey(this.name, async_test, this.name + " interface: calling " + member.name +
             "(" + member.arguments.map(function(m) { return m.idlType.idlType; }).join(", ") +
             ") on " + desc + " with too few arguments must throw TypeError");
             a_test.step(function()
@@ -2820,4 +3013,43 @@ function IdlTypedef(obj)
 IdlTypedef.prototype = Object.create(IdlObject.prototype);
 
 }());
+
+/**
+ * idl_test is a promise_test wrapper that handles the fetching of the IDL,
+ * avoiding repetitive boilerplate.
+ *
+ * @param {String|String[]} srcs Spec name(s) for source idl files (fetched from
+ *      /interfaces/{name}.idl).
+ * @param {String|String[]} deps Spec name(s) for dependency idl files (fetched
+ *      from /interfaces/{name}.idl). Order is important - dependencies from
+ *      each source will only be included if they're already know to be a
+ *      dependency (i.e. have already been seen).
+ * @param {Function} setup_func Function for extra setup of the idl_array, such
+ *      as adding objects. Do not call idl_array.test() in the setup; it is
+ *      called by this function (idl_test).
+ */
+function idl_test(srcs, deps, setup_func, test_name) {
+    return promise_test(function (t) {
+        var idl_array = new IdlArray();
+        srcs = (srcs instanceof Array) ? srcs : [srcs] || [];
+        deps = (deps instanceof Array) ? deps : [deps] || [];
+        return Promise.all(
+            srcs.concat(deps).map(function(i) {
+                return fetch('/interfaces/' + i + '.idl').then(function(r) {
+                    return r.text();
+                });
+            })).then(function(idls) {
+                for (var i = 0; i < srcs.length; i++) {
+                    idl_array.add_idls(idls[i]);
+                }
+                for (var i = srcs.length; i < srcs.length + deps.length; i++) {
+                    idl_array.add_dependency_idls(idls[i]);
+                }
+                if (setup_func) {
+                    setup_func(idl_array)
+                };
+                idl_array.test();
+            });
+    }, test_name);
+}
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

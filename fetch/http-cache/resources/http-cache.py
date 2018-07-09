@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+import datetime
 import json
+import time
 from base64 import b64decode
 
 NOTEHDRS = set(['content-type', 'access-control-allow-origin', 'last-modified', 'etag'])
 NOBODYSTATUS = set([204, 304])
 LOCATIONHDRS = set(['location', 'content-location'])
+DATEHDRS = set(['date', 'expires', 'last-modified'])
 
 def main(request, response):
     dispatch = request.GET.first("dispatch", None)
@@ -41,6 +44,7 @@ def handle_test(uuid, request, response):
         return "Config not found"
     previous_config = requests[len(server_state) - 1]
     state = {
+        'now': time.time(),
         'request_method': request.method,
         'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers])
     }
@@ -49,8 +53,10 @@ def handle_test(uuid, request, response):
 
     noted_headers = {}
     for header in config.get('response_headers', []):
-        if header[0].lower() in LOCATIONHDRS: # magic!
+        if header[0].lower() in LOCATIONHDRS: # magic locations
             header[1] = "%s&target=%s" % (request.url, header[1])
+        if header[0].lower() in DATEHDRS and isinstance(header[1], int):  # magic dates
+            header[1] = http_date(state['now'], header[1])
         response.headers.set(header[0], header[1])
         if header[0].lower() in NOTEHDRS:
             noted_headers[header[0].lower()] = header[1]
@@ -86,3 +92,18 @@ def get_header(headers, header_name):
         if header[0].lower() == header_name.lower():
             result = header[1]
     return result
+
+WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+MONTHS = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+          'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+def http_date(now, delta_secs):
+    date = datetime.datetime.utcfromtimestamp(now + delta_secs)
+    return "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT" % (
+        WEEKDAYS[date.weekday()],
+        date.day,
+        MONTHS[date.month],
+        date.year,
+        date.hour,
+        date.minute,
+        date.second)

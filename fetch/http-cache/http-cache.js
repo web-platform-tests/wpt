@@ -41,13 +41,13 @@
 function makeUrl (uuid, requests, idx) {
   var arg = ''
   if ('query_arg' in requests[idx]) {
-    arg = '&target=' + requests[idx].query_arg
+    arg = `&target=${requests[idx].query_arg}`
   }
-  return 'resources/http-cache.py?token=' + uuid + '&info=' + btoa(JSON.stringify(requests)) + arg
+  return `resources/http-cache.py?token=${uuid}&info=${btoa(JSON.stringify(requests))}${arg}`
 }
 
 function serverState (uuid) {
-  return fetch('resources/http-cache.py?querystate&token=' + uuid)
+  return fetch(`resources/http-cache.py?querystate&token=${uuid}`)
     .then(function (response) {
       return response.text()
     }).then(function (text) {
@@ -147,7 +147,7 @@ function makeTest (rawRequests) {
               var reqNum = idx + 1
               if ('expected_type' in config) {
                 if (config.expected_type === 'error') {
-                  assert_true(false, 'Request ' + reqNum + ' should have been an error')
+                  assert_true(false, `Request ${reqNum} should have been an error`)
                   return [response.text()]
                 }
                 if (config.expected_type === 'cached') {
@@ -233,11 +233,11 @@ function makeTest (rawRequests) {
           var reqNum = i + 1
           if ('expected_type' in requests[i]) {
             if (requests[i].expected_type === 'cached') {
-              assert_true(state.length <= i, 'cached response used for request ' + reqNum)
+              assert_true(state.length <= i, `cached response used for request ${reqNum}`)
               continue // the server will not see the request, so we can't check anything else.
             }
             if (requests[i].expected_type === 'not_cached') {
-              assert_false(state.length <= i, 'cached response used for request ' + reqNum)
+              assert_false(state.length <= i, `cached response used for request ${reqNum}`)
             }
             if (requests[i].expected_type === 'etag_validated') {
               expectedValidatingHeaders.push('if-none-match')
@@ -248,7 +248,7 @@ function makeTest (rawRequests) {
           }
           for (let j in expectedValidatingHeaders) {
             var vhdr = expectedValidatingHeaders[j]
-            assert_own_property(state[i].request_headers, vhdr, ' has ' + vhdr + ' request header')
+            assert_own_property(state[i].request_headers, vhdr, `has ${vhdr} request header`)
           }
           if ('expected_request_headers' in requests[i]) {
             var expectedRequestHeaders = requests[i].expected_request_headers

@@ -7,16 +7,19 @@
 <body>
 
   <!-- Same-Origin request -->
-  <audio src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-origin"
-  onloadstart="test_same_origin()"></audio>
+  <audio onloadeddata="test_same_origin()" controls>
+    <source src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-origin" type="audio/mpeg">
+  </audio>
 
   <!-- Same-Site request -->
-  <audio src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-site"
-  onloadstart="test_same_site()"></audio>
+   <audio onloadeddata="test_same_site()" controls>
+    <source src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-same-site" type="audio/mpeg">
+  </audio>
 
   <!-- Cross-Site request -->
-  <audio src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-cross-site"
-  onloadstart="test_cross_site()"></audio>
+   <audio onloadeddata="test_cross_site()" controls>
+    <source src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=audio-cross-site" type="audio/mpeg">
+  </audio>
 </body>
 
 <script>

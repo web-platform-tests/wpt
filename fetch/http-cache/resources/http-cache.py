@@ -35,10 +35,11 @@ def handle_test(uuid, request, response):
         response.status = (404, "Not Found")
         response.headers.set("Content-Type", "text/plain")
         return "Config not found"
-
-    state = dict()
-    state["request_method"] = request.method
-    state["request_headers"] = dict([[h.lower(), request.headers[h]] for h in request.headers])
+    state = {
+        'now': time.time(),
+        'request_method': request.method,
+        'request_headers': dict([[h.lower(), request.headers[h]] for h in request.headers])
+    }
     server_state.append(state)
     request.server.stash.put(uuid, server_state)
 

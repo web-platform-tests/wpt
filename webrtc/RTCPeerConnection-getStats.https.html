@@ -238,32 +238,18 @@
 
     const dataChannel = pc1.createDataChannel('test-channel');
 
-    return navigator.mediaDevices.getUserMedia({
+    return getNoiseStream({
       audio: true,
       video: true
     })
     .then(t.step_func(mediaStream => {
       const tracks = mediaStream.getTracks();
-      assert_equals(tracks.length, 2,
-        'Expect media stream to have one audio and one video track');
+      const [audioTrack] = mediaStream.getAudioTracks();
+      const [videoTrack] = mediaStream.getVideoTracks();
 
-      let audioTrack;
-      let videoTrack;
-
-      for (const track of tracks) {
+      for (const track of mediaStream.getTracks()) {
         t.add_cleanup(() => track.stop());
-
         pc1.addTrack(track, mediaStream);
-
-        if (track.kind === 'audio') {
-          audioTrack = track;
-        } else if (track.kind === 'video') {
-          videoTrack = track;
-        }
-      }
-
-      if (!audioTrack || ! videoTrack) {
-        assert_unreached('Expect mediaStream to have both audio and video streams');
       }
 
       const testStatsReport = (pc, statsReport) => {

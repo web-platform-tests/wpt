@@ -257,7 +257,10 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
 
     const all_deps = new Set();
     Object.values(this.inheritance).forEach(v => all_deps.add(v));
-    Object.values(this.implements).forEach(v => all_deps.add(v));
+    Object.entries(this.implements).forEach(([k, v]) => {
+        all_deps.add(k);
+        all_deps.add(v);
+    });
     // NOTE: If 'A includes B' for B that we care about, then A is also a dep.
     Object.keys(this.includes).forEach(k => {
         all_deps.add(k);
@@ -818,8 +821,15 @@ IdlArray.prototype.test = function()
         this.members[name].test();
         if (name in this.objects)
         {
-            this.objects[name].forEach(function(str)
+            const objects = this.objects[name];
+            if (!objects || !Array.isArray(objects)) {
+                throw new IdlHarnessError(`Invalid or empty objects for member ${name}`);
+            }
+            objects.forEach(function(str)
             {
+                if (!this.members[name] || !(this.members[name] instanceof IdlInterface)) {
+                    throw new IdlHarnessError(`Invalid object member name ${name}`);
+                }
                 this.members[name].test_object(str);
             }.bind(this));
         }
@@ -3003,4 +3013,43 @@ function IdlTypedef(obj)
 IdlTypedef.prototype = Object.create(IdlObject.prototype);
 
 }());
+
+/**
+ * idl_test is a promise_test wrapper that handles the fetching of the IDL,
+ * avoiding repetitive boilerplate.
+ *
+ * @param {String|String[]} srcs Spec name(s) for source idl files (fetched from
+ *      /interfaces/{name}.idl).
+ * @param {String|String[]} deps Spec name(s) for dependency idl files (fetched
+ *      from /interfaces/{name}.idl). Order is important - dependencies from
+ *      each source will only be included if they're already know to be a
+ *      dependency (i.e. have already been seen).
+ * @param {Function} setup_func Function for extra setup of the idl_array, such
+ *      as adding objects. Do not call idl_array.test() in the setup; it is
+ *      called by this function (idl_test).
+ */
+function idl_test(srcs, deps, setup_func, test_name) {
+    return promise_test(function (t) {
+        var idl_array = new IdlArray();
+        srcs = (srcs instanceof Array) ? srcs : [srcs] || [];
+        deps = (deps instanceof Array) ? deps : [deps] || [];
+        return Promise.all(
+            srcs.concat(deps).map(function(i) {
+                return fetch('/interfaces/' + i + '.idl').then(function(r) {
+                    return r.text();
+                });
+            })).then(function(idls) {
+                for (var i = 0; i < srcs.length; i++) {
+                    idl_array.add_idls(idls[i]);
+                }
+                for (var i = srcs.length; i < srcs.length + deps.length; i++) {
+                    idl_array.add_dependency_idls(idls[i]);
+                }
+                if (setup_func) {
+                    setup_func(idl_array)
+                };
+                idl_array.test();
+            });
+    }, test_name);
+}
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

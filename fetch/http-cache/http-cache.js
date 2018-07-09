@@ -1,3 +1,6 @@
+/* global btoa fetch token promise_test step_timeout */
+/* global assert_equals assert_true assert_false assert_own_property assert_throws assert_unreached assert_less_than */
+
 /**
  * Each test run gets its own URL and randomized content and operates independently.
  *
@@ -35,7 +38,7 @@
  * - expected_response_text - A string to check the response body against.
  */
 
-function make_url (uuid, requests, idx) {
+function makeUrl (uuid, requests, idx) {
   var arg = ''
   if ('query_arg' in requests[idx]) {
     arg = '&target=' + requests[idx].query_arg
@@ -43,7 +46,7 @@ function make_url (uuid, requests, idx) {
   return 'resources/http-cache.py?token=' + uuid + '&info=' + btoa(JSON.stringify(requests)) + arg
 }
 
-function server_state (uuid) {
+function serverState (uuid) {
   return fetch('resources/http-cache.py?querystate&token=' + uuid)
     .then(function (response) {
       return response.text()
@@ -55,7 +58,7 @@ function server_state (uuid) {
     })
 }
 
-templates = {
+var templates = {
   'fresh': {
     'response_headers': [
       ['Expires', http_date(100000)],
@@ -90,10 +93,10 @@ templates = {
   }
 }
 
-function make_test (raw_requests) {
+function makeTest (rawRequests) {
   var requests = []
-  for (var i = 0; i < raw_requests.length; i++) {
-    var request = raw_requests[i]
+  for (let i = 0; i < rawRequests.length; i++) {
+    var request = rawRequests[i]
     if ('template' in request) {
       var template = templates[request['template']]
       for (var member in template) {
@@ -105,7 +108,7 @@ function make_test (raw_requests) {
     if ('expected_type' in request && request.expected_type === 'cached') {
       // requests after one that's expected to be cached will get out of sync
       // with the server; not currently supported.
-      if (raw_requests.length > i + 1) {
+      if (rawRequests.length > i + 1) {
         assert_unreached('Making requests after something is expected to be cached.')
       }
     }
@@ -113,12 +116,12 @@ function make_test (raw_requests) {
   }
   return function (test) {
     var uuid = token()
-    var fetch_functions = []
-    for (var i = 0; i < requests.length; ++i) {
-      fetch_functions.push({
+    var fetchFunctions = []
+    for (let i = 0; i < requests.length; ++i) {
+      fetchFunctions.push({
         code: function (idx) {
           var init = {}
-          var url = make_url(uuid, requests, idx)
+          var url = makeUrl(uuid, requests, idx)
           var config = requests[idx]
           if ('request_method' in config) {
             init.method = config['request_method']
@@ -140,18 +143,18 @@ function make_test (raw_requests) {
           }
           return fetch(url, init)
             .then(function (response) {
-              var res_num = parseInt(response.headers.get('Server-Request-Count'))
-              var req_num = idx + 1
+              var resNum = parseInt(response.headers.get('Server-Request-Count'))
+              var reqNum = idx + 1
               if ('expected_type' in config) {
                 if (config.expected_type === 'error') {
-                  assert_true(false, 'Request ' + req_num + ' should have been an error')
-                  return [response.text(), response_status]
+                  assert_true(false, 'Request ' + reqNum + ' should have been an error')
+                  return [response.text()]
                 }
                 if (config.expected_type === 'cached') {
-                  assert_less_than(res_num, req_num, 'Response used')
+                  assert_less_than(resNum, reqNum, 'Response used')
                 }
                 if (config.expected_type === 'not_cached') {
-                  assert_equals(res_num, req_num, 'Response used')
+                  assert_equals(resNum, reqNum, 'Response used')
                 }
               }
               if ('expected_status' in config) {
@@ -174,13 +177,13 @@ function make_test (raw_requests) {
                 })
               }
               return response.text()
-            }).then(function (res_body) {
+            }).then(function (resBody) {
               if ('expected_response_text' in config) {
-                assert_equals(res_body, config.expected_response_text, 'Response body')
+                assert_equals(resBody, config.expected_response_text, 'Response body')
               } else if ('response_body' in config) {
-                assert_equals(res_body, config.response_body, 'Response body')
+                assert_equals(resBody, config.response_body, 'Response body')
               } else {
-                assert_equals(res_body, uuid, 'Response body')
+                assert_equals(resBody, uuid, 'Response body')
               }
             }, function (reason) {
               if ('expected_type' in config && config.expected_type === 'error') {
@@ -190,13 +193,13 @@ function make_test (raw_requests) {
               }
             })
         },
-        pause_after: 'pause_after' in requests[i] && true || false
+        pause_after: 'pause_after' in requests[i]
       })
     }
 
     function pause () {
       return new Promise(function (resolve, reject) {
-  	    step_timeout(function () {
+        step_timeout(function () {
           return resolve()
         }, 3000)
       })
@@ -204,55 +207,55 @@ function make_test (raw_requests) {
 
     // TODO: it would be nice if this weren't serialised.
     var idx = 0
-    function run_next_step () {
-      if (fetch_functions.length) {
-        var fetch_function = fetch_functions.shift()
-        if (fetch_function.pause_after > 0) {
-          return fetch_function.code(idx++)
+    function runNextStep () {
+      if (fetchFunctions.length) {
+        var fetchFunction = fetchFunctions.shift()
+        if (fetchFunction.pause_after > 0) {
+          return fetchFunction.code(idx++)
             .then(pause)
-            .then(run_next_step)
+            .then(runNextStep)
         } else {
-          return fetch_function.code(idx++)
-            .then(run_next_step)
+          return fetchFunction.code(idx++)
+            .then(runNextStep)
         }
       } else {
         return Promise.resolve()
       }
     }
 
-    return run_next_step()
+    return runNextStep()
       .then(function () {
         // Now, query the server state
-        return server_state(uuid)
+        return serverState(uuid)
       }).then(function (state) {
         for (var i = 0; i < requests.length; ++i) {
-          var expected_validating_headers = []
-          var req_num = i + 1
+          var expectedValidatingHeaders = []
+          var reqNum = i + 1
           if ('expected_type' in requests[i]) {
             if (requests[i].expected_type === 'cached') {
-              assert_true(state.length <= i, 'cached response used for request ' + req_num)
+              assert_true(state.length <= i, 'cached response used for request ' + reqNum)
               continue // the server will not see the request, so we can't check anything else.
             }
             if (requests[i].expected_type === 'not_cached') {
-              assert_false(state.length <= i, 'cached response used for request ' + req_num)
+              assert_false(state.length <= i, 'cached response used for request ' + reqNum)
             }
             if (requests[i].expected_type === 'etag_validated') {
-              expected_validating_headers.push('if-none-match')
+              expectedValidatingHeaders.push('if-none-match')
             }
             if (requests[i].expected_type === 'lm_validated') {
-              expected_validating_headers.push('if-modified-since')
+              expectedValidatingHeaders.push('if-modified-since')
             }
           }
-          for (var j in expected_validating_headers) {
-            var vhdr = expected_validating_headers[j]
+          for (let j in expectedValidatingHeaders) {
+            var vhdr = expectedValidatingHeaders[j]
             assert_own_property(state[i].request_headers, vhdr, ' has ' + vhdr + ' request header')
           }
           if ('expected_request_headers' in requests[i]) {
-            var expected_request_headers = requests[i].expected_request_headers
-            for (var j = 0; j < expected_request_headers.length; ++j) {
-              var expected_header = expected_request_headers[j]
-              assert_equals(state[i].request_headers[expected_header[0].toLowerCase()],
-                expected_header[1])
+            var expectedRequestHeaders = requests[i].expected_request_headers
+            for (let j = 0; j < expectedRequestHeaders.length; ++j) {
+              var expectedHeader = expectedRequestHeaders[j]
+              assert_equals(state[i].request_headers[expectedHeader[0].toLowerCase()],
+                expectedHeader[1])
             }
           }
         }
@@ -262,7 +265,7 @@ function make_test (raw_requests) {
 
 function run_tests (tests) {
   tests.forEach(function (info) {
-    promise_test(make_test(info.requests), info.name)
+    promise_test(makeTest(info.requests), info.name)
   })
 }
 
@@ -270,13 +273,13 @@ function http_date (delta) {
   return new Date(Date.now() + (delta * 1000)).toGMTString()
 }
 
-var content_store = {}
-function http_content (cs_key) {
-  if (cs_key in content_store) {
-    return content_store[cs_key]
+var contentStore = {}
+function http_content (csKey) {
+  if (csKey in contentStore) {
+    return contentStore[csKey]
   } else {
     var content = btoa(Math.random() * Date.now())
-    content_store[cs_key] = content
+    contentStore[csKey] = content
     return content
   }
 }

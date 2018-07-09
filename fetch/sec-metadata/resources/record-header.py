@@ -1,63 +1,69 @@
 import os
+import uuid
+import hashlib
 
-tmpPath = os.getcwd() + "/fetch/sec-metadata/resources/tmp/"
 resourcePath = os.getcwd() + "/fetch/sec-metadata/resources/"
 
 def main(request, response):
 
   ## Get the query parameter (filename) from URL ##
   filename =request.url_parts.query.split("=")[1]
+  ## Convert the key from String to UUID valid String ##
+  testId = hashlib.md5(filename).hexdigest()
 
-  ## Check for path traversal ##
-  if not is_safe_path(tmpPath, tmpPath + filename):
-    response.writer.write_status(403)
+  ## Handle the header retrieval request ##
+  if request.method == "PUT":
+    response.writer.write_status(200)
     response.writer.end_headers()
+    header_value = request.server.stash.take(testId)
+    if header_value != None:
+      response.writer.write(header_value)
+
     response.close_connection = True
-    return
 
-  ## Write the header value to a temporary file ##
-  file = open(tmpPath + filename, "w")
+  ## Record incoming Sec-Metadata header value
+  else:
+    ## Return "NO SEC_METADATA HEADER" (or empty TBD) as a default value ##
+    header = request.headers.get("Sec-Metadata", "NO SEC-METADATA HEADER")
+    request.server.stash.put(testId, header)
 
-  ## Return "NO SEC_METADATA HEADER" (or empty TBD) as a default value ##
-  header = request.headers.get("Sec-Metadata", "NO SEC-METADATA HEADER")
-  file.write(header)
-  file.close()
+    ## Prevent the browser from caching returned responses and allow CORS ##
+    response.headers.set("Access-Control-Allow-Origin", "*")
+    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate")
+    response.headers.set("Pragma", "no-cache")
+    response.headers.set("Expires", "0")
 
-  ## Prevent the browser from caching returned responses and allow CORS ##
-  response.headers.set("Access-Control-Allow-Origin", "*")
-  response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate")
-  response.headers.set("Pragma", "no-cache")
-  response.headers.set("Expires", "0")
+    ## Add a valid ServiceWorker Content-Type ##
+    if filename.startswith("serviceworker"):
+      response.headers.set("Content-Type", "application/javascript")
 
-  ## Add a valid ServiceWorker Content-Type ##
-  if filename.startswith("serviceworker"):
-    response.headers.set("Content-Type", "application/javascript")
+    ## Return a valid .vtt content for the <track> tag ##
+    if filename.startswith("track"):
+      return "WEBVTT"
 
-  ## Return a valid .vtt content for the <track> tag ##
-  if filename.startswith("track"):
-    return "WEBVTT"
+    ## Return a valid SharedWorker ##
+    if filename.startswith("sharedworker"):
+      file = open(resourcePath + "sharedWorker.js", "r")
+      shared_worker = file.read()
+      file.close()
+      return shared_worker
 
-  ## Return a valid SharedWorker ##
-  if filename.startswith("sharedworker"):
-    file = open(resourcePath + "sharedWorker.js", "r")
-    sharedWorker = file.read()
-    file.close()
-    return sharedWorker
+    ## Return a valid font ##
+    if filename.startswith("font"):
+      file = open("fonts/Ahem.ttf", "r")
+      font = file.read()
+      file.close()
+      return font
 
-  ## Return a valid font ##
-  if filename.startswith("font"):
-    file = open("fonts/Ahem.ttf", "r")
-    font = file.read()
-    file.close()
-    return font
+    ## Return a valid audio ##
+    if filename.startswith("audio"):
+      response.headers.set("Content-Type", "audio/mpeg")
+      file = open("media/sound_5.mp3", "r")
+      audio = file.read()
+      file.close()
+      return audio
 
-  ## Return a valid style Content-Type ##
-  if filename.startswith("style"):
-    response.headers.set("Content-Type", "text/css")
-
-def is_safe_path(basedir, path, follow_symlinks=True):
-  if follow_symlinks:
-    return os.path.realpath(path).startswith(basedir)
-
-  return os.path.abspath(path).startswith(basedir)
+    ## Return a valid style Content-Type ##
+    if filename.startswith("style"):
+      response.headers.set("Content-Type", "text/css")
 

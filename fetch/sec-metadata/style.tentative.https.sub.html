@@ -13,7 +13,7 @@
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
-        same_origin_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+        same_origin_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
 
         // Async test step triggered when the response is loaded
         same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
@@ -31,7 +31,7 @@
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_site_xhr = new XMLHttpRequest();
-        same_site_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+        same_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
 
         // Async test step triggered when the response is loaded
         same_site_xhr.onreadystatechange = same_site_test.step_func(function () {
@@ -49,7 +49,7 @@
 
         //  Requests from the server the saved value of the Sec-Metadata header
         cross_site_xhr = new XMLHttpRequest();
-        cross_site_xhr.open("GET", "/fetch/sec-metadata/resources/get-header.py?file=" + filename);
+        cross_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
 
         // Async test step triggered when the response is loaded
         cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {

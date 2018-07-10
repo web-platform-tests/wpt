@@ -24,7 +24,7 @@ def main(request, response):
   ## Record incoming Sec-Metadata header value
   else:
     ## Return "NO SEC_METADATA HEADER" (or empty TBD) as a default value ##
-    header = request.headers.get("Sec-Metadata", "NO SEC-METADATA HEADER")
+    header = request.headers.get("Sec-Metadata", "")
     request.server.stash.put(testId, header)
 
     ## Prevent the browser from caching returned responses and allow CORS ##
@@ -72,6 +72,10 @@ def main(request, response):
       return video
 
     ## Return a valid style Content-Type ##
-    if filename.startswith("style"):
+    if filename.startswith("style") or filename.startswith("embed") or filename.startswith("object"):
       response.headers.set("Content-Type", "text/css")
+      file = open("tools/runner/runner.css", "r")
+      style = file.read()
+      file.close()
+      return style
 

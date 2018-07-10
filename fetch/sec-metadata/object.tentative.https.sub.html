@@ -7,15 +7,15 @@
 <body>
 
   <!-- Same-Origin request -->
-  <object data="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-same-origin"
+  <object type="text/css" data="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-same-origin"
   onload="test_same_origin()"></object>
 
   <!-- Same-Site request -->
-  <object data="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-same-site"
+  <object type="text/css" data="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-same-site"
   onload="test_same_site()"></object>
 
   <!-- Cross-Site request -->
-  <object data="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-cross-site"
+  <object type="text/css" data="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=object-cross-site"
   onload="test_cross_site()"></object>
 </body>
 

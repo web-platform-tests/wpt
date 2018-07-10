@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<meta charset="utf-8"/>
 <link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -7,15 +7,15 @@
 <body>
 
   <!-- Same-Origin request -->
-  <embed src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-same-origin"
+  <embed type="text/css" src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-same-origin"
   onload="test_same_origin()">
 
   <!-- Same-Site request -->
-  <embed src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-same-site"
+  <embed type="text/css" src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-same-site"
   onload="test_same_site()">
 
   <!-- Cross-Site request -->
-  <embed src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-cross-site"
+  <embed type="text/css" src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=embed-cross-site"
   onload="test_cross_site()">
 </body>
 

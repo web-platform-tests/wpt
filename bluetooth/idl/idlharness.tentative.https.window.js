@@ -12,7 +12,7 @@ idl_test(
     try {
       self.event = new BluetoothAdvertisingEvent('type');
     } catch(e) {
-      // Surfaced in idlharness.js's test_object below.
+      // Surfaced when 'event' is undefined below.
     }
 
     idl_array.add_objects({

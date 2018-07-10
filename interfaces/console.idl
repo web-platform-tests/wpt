@@ -29,5 +29,6 @@ namespace console { // but see namespace object requirements below
 
   // Timing
   void time(optional DOMString label = "default");
+  void timeLog(optional DOMString label = "default", any... data);
   void timeEnd(optional DOMString label = "default");
 };

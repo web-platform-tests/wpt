@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>prefix/suffix default (fixed)</title>
+<meta name="assert" content="The browser can produce a default prefix and suffix as specified for fixed counters.">
+<link rel="match" href="fixed-default-001-ref.html" />
+
+<style>
+@counter-style fixed {
+system: fixed;
+symbols: '\627' '\628' '\62C' '\62F' '\647\200D' '\648' '\632' '\62D' '\637' '\6CC' '\6A9' '\644' '\645' '\646' '\633' '\639' '\641' '\635' '\642' '\631' '\634' '\62A' '\62B' '\62E' '\630' '\636' '\638' '\63A';
+} ol li { list-style-type: fixed;  }
+
+/* the following CSS is not part of the test */
+ol, li {
+    list-style-position: inside;
+    margin: 0; padding: 0;
+    line-height: 40px;
+    }
+div { line-height: 40px; }
+.test { font-size: 25px; }
+.blank { background-color: orange; color: orange; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip this test if fixed counter styles are not supported.</p>
+<div class="test">
+<ol>
+<li title="1"><span class="blank">x</span></li>
+<li title="2"><span class="blank">x</span></li>
+<li title="3"><span class="blank">x</span></li>
+</ol>
+</div>
+<!--Notes:
+You will need an appropriate font to run this test.
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+</body>
+</html>

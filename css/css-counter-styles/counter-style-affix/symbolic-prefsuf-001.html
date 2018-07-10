@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>prefix/suffix (symbolic)</title>
+<meta name="assert" content="The browser can produce a prefix and suffix as specified for symbolic counters.">
+<link rel="match" href="symbolic-prefsuf-001-ref.html" />
+
+<style>
+@counter-style symbolic {
+system: symbolic;
+symbols: '*' ⁑ † ‡;
+prefix: '(';
+suffix: ')';
+}
+ol li { list-style-type: symbolic;  }
+
+/* the following CSS is not part of the test */
+ol, li {
+    list-style-position: inside;
+    margin: 0; padding: 0;
+    line-height: 40px;
+    }
+div { line-height: 40px; }
+.test { font-size: 25px; }
+.blank { background-color: orange; color: orange; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip this test if symbolic counter styles are not supported.</p>
+<div class="test">
+<ol>
+<li title="1"><span class="blank">x</span></li>
+<li title="2"><span class="blank">x</span></li>
+<li title="3"><span class="blank">x</span></li>
+</ol>
+<ol start="11">
+<li title="11"><span class="blank">x</span></li>
+</ol>
+<ol start="20">
+<li title="20"><span class="blank">x</span></li>
+</ol>
+</div>
+<!--Notes:
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+</body>
+</html>

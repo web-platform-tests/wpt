@@ -6,10 +6,10 @@ resourcePath = os.getcwd() + "/fetch/sec-metadata/resources/"
 
 def main(request, response):
 
-  ## Get the query parameter (filename) from URL ##
-  filename =request.url_parts.query.split("=")[1]
+  ## Get the query parameter (key) from URL ##
+  key = request.url_parts.query.split("=")[1]
   ## Convert the key from String to UUID valid String ##
-  testId = hashlib.md5(filename).hexdigest()
+  testId = hashlib.md5(key).hexdigest()
 
   ## Handle the header retrieval request ##
   if request.method == "PUT":
@@ -34,48 +34,56 @@ def main(request, response):
     response.headers.set("Expires", "0")
 
     ## Add a valid ServiceWorker Content-Type ##
-    if filename.startswith("serviceworker"):
+    if key.startswith("serviceworker"):
       response.headers.set("Content-Type", "application/javascript")
 
     ## Return a valid .vtt content for the <track> tag ##
-    if filename.startswith("track"):
+    if key.startswith("track"):
       return "WEBVTT"
 
     ## Return a valid SharedWorker ##
-    if filename.startswith("sharedworker"):
+    if key.startswith("sharedworker"):
       file = open(resourcePath + "sharedWorker.js", "r")
       shared_worker = file.read()
       file.close()
       return shared_worker
 
-    ## Return a valid font ##
-    if filename.startswith("font"):
+    ## Return a valid font content and Content-Type ##
+    if key.startswith("font"):
       file = open("fonts/Ahem.ttf", "r")
       font = file.read()
       file.close()
       return font
 
-    ## Return a valid audio ##
-    if filename.startswith("audio"):
+    ## Return a valid audio content and Content-Type ##
+    if key.startswith("audio"):
       response.headers.set("Content-Type", "audio/mpeg")
       file = open("media/sound_5.mp3", "r")
       audio = file.read()
       file.close()
       return audio
 
-    ## Return a valid video ##
-    if filename.startswith("video"):
+    ## Return a valid video content and Content-Type ##
+    if key.startswith("video"):
       response.headers.set("Content-Type", "video/mp4")
       file = open("media/A4.mp4", "r")
       video = file.read()
       file.close()
       return video
 
-    ## Return a valid style Content-Type ##
-    if filename.startswith("style") or filename.startswith("embed") or filename.startswith("object"):
+    ## Return a valid style content and Content-Type ##
+    if key.startswith("style") or key.startswith("embed") or key.startswith("object"):
       response.headers.set("Content-Type", "text/css")
       file = open("tools/runner/runner.css", "r")
       style = file.read()
       file.close()
       return style
+
+    ## Return a valid image content and Content-Type ##
+    if key.startswith("redirect"):
+      response.headers.set("Content-Type", "image/jpeg")
+      file = open("media/1x1-green.png", "r")
+      image = file.read()
+      file.close()
+      return image
 

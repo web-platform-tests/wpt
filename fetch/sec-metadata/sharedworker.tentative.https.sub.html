@@ -20,12 +20,12 @@
   function test_same_origin(){
     var same_origin_test = async_test("Same-Origin sharedworker");
     same_origin_test.step(function () {
-        filename = "sharedworker-same-origin";
+        key = "sharedworker-same-origin";
         expected_same_origin = {"destination":"sharedworker", "target":"subresource", "site":"same-origin"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
-        same_origin_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
+        same_origin_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + key);
 
         // Async test step triggered when the response is loaded
         same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {

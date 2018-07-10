@@ -26,12 +26,12 @@
   function test_same_origin(){
     var same_origin_test = async_test("Same-Origin audio");
     same_origin_test.step(function () {
-        filename = "audio-same-origin";
+        key = "audio-same-origin";
         expected_same_origin = {"destination":"audio", "target":"subresource", "site":"same-origin"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
-        same_origin_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
+        same_origin_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + key);
 
         // Async test step triggered when the response is loaded
         same_origin_xhr.onreadystatechange = same_origin_test.step_func(function () {
@@ -44,12 +44,12 @@
   function test_same_site(){
     var same_site_test = async_test("Same-Site audio");
     same_site_test.step(function () {
-        filename = "audio-same-site";
+        key = "audio-same-site";
         expected_same_site = {"destination":"audio", "target":"subresource", "site":"same-site"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_site_xhr = new XMLHttpRequest();
-        same_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
+        same_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + key);
 
         // Async test step triggered when the response is loaded
         same_site_xhr.onreadystatechange = same_site_test.step_func(function () {
@@ -62,12 +62,12 @@
   function test_cross_site(){
     var cross_site_test = async_test("Cross-Site audio");
     cross_site_test.step(function () {
-        filename = "audio-cross-site";
+        key = "audio-cross-site";
         expected_cross_site = {"destination":"audio", "target":"subresource", "site":"cross-site"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         cross_site_xhr = new XMLHttpRequest();
-        cross_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + filename);
+        cross_site_xhr.open("PUT", "/fetch/sec-metadata/resources/record-header.py?file=" + key);
 
         // Async test step triggered when the response is loaded
         cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {

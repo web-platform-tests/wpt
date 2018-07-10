@@ -1,11 +1,11 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Base URL in workers: XHR</title>
+<title>Base URL in module dedicated workers: XHR</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(function() {
-  var worker = new Worker("../beta/xhr.py");
+  var worker = new Worker("../beta/xhr.py", {type: "module"});
   worker.onmessage = this.step_func_done(function(e) {
     assert_equals(e.data, "gamma\n");
   });

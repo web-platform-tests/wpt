@@ -1,14 +1,11 @@
-<!--
-/*
--->
 <!doctype html>
-<title>WorkerLocation with redirects: classic dedicated workers</title>
+<title>WorkerLocation with redirects: module dedicated workers</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
 async_test(function() {
-  var worker = new Worker('helper-redirect.py?fail');
+  var worker = new Worker('helper-redirect.py?fail', {type: 'module'});
   worker.onmessage = this.step_func_done(function(e) {
     assert_equals(e.data[0], location.href.replace(/\/[^\/]+$/, '/post-location-members.js?a'));
     assert_equals(e.data[1], location.protocol);
@@ -21,8 +18,3 @@ async_test(function() {
   });
 });
 </script>
-<!--
-*/
-//-->
-
-

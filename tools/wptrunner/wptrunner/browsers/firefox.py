@@ -54,6 +54,8 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4
         else:
             return 3
+    elif run_info_data["os"] == "android":
+        return 4
     return 1
 
 
@@ -86,11 +88,13 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data,
+                                           **kwargs)
     executor_kwargs["close_after_done"] = test_type != "reftest"
     executor_kwargs["timeout_multiplier"] = get_timeout_multiplier(test_type,
                                                                    run_info_data,
                                                                    **kwargs)
+    executor_kwargs["e10s"] = run_info_data["e10s"]
     capabilities = {}
     if test_type == "reftest":
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
@@ -109,6 +113,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["acceptInsecureCerts"] = True
     if capabilities:
         executor_kwargs["capabilities"] = capabilities
+    executor_kwargs["debug"] = run_info_data["debug"]
     return executor_kwargs
 
 
@@ -129,6 +134,7 @@ def env_options():
 
 def run_info_extras(**kwargs):
     return {"e10s": kwargs["gecko_e10s"],
+            "verify": kwargs["verify"],
             "headless": "MOZ_HEADLESS" in os.environ}
 
 
@@ -246,16 +252,21 @@ class FirefoxBrowser(Browser):
         prefs = Preferences()
 
         pref_paths = []
-        prefs_general = os.path.join(self.prefs_root, 'prefs_general.js')
-        if os.path.isfile(prefs_general):
-            # Old preference file used in Firefox 60 and earlier (remove when no longer supported)
-            pref_paths.append(prefs_general)
 
         profiles = os.path.join(self.prefs_root, 'profiles.json')
         if os.path.isfile(profiles):
             with open(profiles, 'r') as fh:
                 for name in json.load(fh)['web-platform-tests']:
                     pref_paths.append(os.path.join(self.prefs_root, name, 'user.js'))
+        else:
+            # Old preference files used before the creation of profiles.json (remove when no longer supported)
+            legacy_pref_paths = (
+                os.path.join(self.prefs_root, 'prefs_general.js'),   # Used in Firefox 60 and below
+                os.path.join(self.prefs_root, 'common', 'user.js'),  # Used in Firefox 61
+            )
+            for path in legacy_pref_paths:
+                if os.path.isfile(path):
+                    pref_paths.append(path)
 
         for path in pref_paths:
             if os.path.exists(path):
@@ -369,7 +380,7 @@ class FirefoxBrowser(Browser):
         # local copy of certutil
         # TODO: Maybe only set this if certutil won't launch?
         env = os.environ.copy()
-        certutil_dir = os.path.dirname(self.binary)
+        certutil_dir = os.path.dirname(self.binary or self.certutil_binary)
         if mozinfo.isMac:
             env_var = "DYLD_LIBRARY_PATH"
         elif mozinfo.isUnix:

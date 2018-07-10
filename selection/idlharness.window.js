@@ -7,7 +7,7 @@
 
 idl_test(
   ['selection-api'],
-  ['dom', 'cssom', 'touchevents', 'uievents', 'html'],
+  ['dom', 'html'],
   idlArray => {
     // "Cast" window as GlobalEventHandlers
     try {

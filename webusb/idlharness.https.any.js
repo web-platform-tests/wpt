@@ -60,6 +60,7 @@ usb_test(async () => {
         USBIsochronousInTransferPacket: ['new USBIsochronousInTransferPacket("ok")'],
         USBIsochronousOutTransferPacket: ['new USBIsochronousOutTransferPacket("ok")'],
       });
+      idl_array.prevent_multiple_testing('Navigator');
     },
     'WebUSB IDL test'
   )

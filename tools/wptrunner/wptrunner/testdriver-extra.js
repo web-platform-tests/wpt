@@ -70,4 +70,13 @@
         window.opener.postMessage({"type": "action", "action": "send_keys", "selector": selector, "keys": keys}, "*");
         return pending_promise;
     };
+
+    window.test_driver_internal.pointer_action_sequence = function(actions) {
+        const pending_promise = new Promise(function(resolve, reject) {
+            pending_resolve = resolve;
+            pending_reject = reject;
+        });
+        window.opener.postMessage({"type": "action", "action": "pointer_action_sequence", "actions": actions}, "*");
+        return pending_promise;
+    };
 })();

@@ -273,6 +273,19 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
+class PointerActionSequenceProtocolPart(ProtocolPart):
+    """Protocol part for performing trusted clicks"""
+    __metaclass__ = ABCMeta
+
+    name = "pointer_action_sequence"
+
+    @abstractmethod
+    def pointer_action_sequence(self, actions):
+        """Send a sequence of pointer actions to the window.
+
+        :param actions: A protocol-specific handle to an array of actions."""
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for

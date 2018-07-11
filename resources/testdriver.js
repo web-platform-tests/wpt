@@ -184,8 +184,8 @@
          * @returns {Promise} fufiled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */
-        pointer_action_sequence() {
-            return window.test_driver_internal.pointer_action_sequence();
+        pointer_action_sequence(actions) {
+            return window.test_driver_internal.pointer_action_sequence(actions);
         }
     };
 

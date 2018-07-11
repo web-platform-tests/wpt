@@ -16,6 +16,8 @@ idl_test(
         ServiceWorkerGlobalScope: ['self'],
         ServiceWorkerRegistration: ['registration'],
         BackgroundFetchManager: ['registration.backgroundFetch'],
+        BackgroundFetchEvent: ['new BackgroundFetchEvent("type")'],
+        BackgroundFetchUpdateEvent: ['new BackgroundFetchUpdateEvent("type")'],
       });
     }
   },

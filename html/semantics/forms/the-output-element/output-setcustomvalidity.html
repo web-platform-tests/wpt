@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<title>output setCustomValidity</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<output id='test'></output>
+
+<script>
+
+test(() => {
+  let output = document.getElementById("test");
+  assert_false(output.validity.customError);
+  output.setCustomValidity("custom error");
+  assert_true(output.validity.customError);
+}, "output setCustomValidity is correct")
+
+</script>

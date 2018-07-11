@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<title>textarea setCustomValidity</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<textarea id='test'></textarea>
+
+<script>
+
+test(() => {
+  let textarea = document.getElementById("test");
+  assert_false(textarea.validity.customError);
+  textarea.setCustomValidity("custom error");
+  assert_true(textarea.validity.customError);
+}, "textarea setCustomValidity is correct")
+
+</script>

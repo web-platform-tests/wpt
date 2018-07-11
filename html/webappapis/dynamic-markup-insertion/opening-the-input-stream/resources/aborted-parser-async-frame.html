@@ -2,7 +2,7 @@
 <p>Text</p>
 <script>
 window.stop();
-setTimeout(() => {
+parent.step_timeout(() => {
   document.open();
   parent.handlers.afterOpenAsync();
 });

@@ -3,15 +3,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<fieldset id='test'></fieldset>
+<fieldset id='fieldset_test'></fieldset>
 
 <script>
 
 test(() => {
-  let fieldset = document.getElementById("test");
-  assert_false(fieldset.validity.customError);
-  fieldset.setCustomValidity("custom error");
-  assert_true(fieldset.validity.customError);
+  let elem = document.getElementById("fieldset_test");
+  assert_false(elem.validity.customError);
+  elem.setCustomValidity("custom error");
+  assert_true(elem.validity.customError);
 }, "fieldset setCustomValidity is correct")
 
 </script>

@@ -3,15 +3,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<select id='test'></select>
+<select id='select_test'></select>
 
 <script>
 
 test(() => {
-  let select = document.getElementById("test");
-  assert_false(select.validity.customError);
-  select.setCustomValidity("custom error");
-  assert_true(select.validity.customError);
+  let elem = document.getElementById("select_test");
+  assert_false(elem.validity.customError);
+  elem.setCustomValidity("custom error");
+  assert_true(elem.validity.customError);
 }, "select setCustomValidity is correct")
 
 </script>

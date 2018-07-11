@@ -3,15 +3,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<object id='test'></object>
+<object id='object_test'></object>
 
 <script>
 
 test(() => {
-  let object = document.getElementById("test");
-  assert_false(object.validity.customError);
-  object.setCustomValidity("custom error");
-  assert_true(object.validity.customError);
+  let elem = document.getElementById("object_test");
+  assert_false(elem.validity.customError);
+  elem.setCustomValidity("custom error");
+  assert_true(elem.validity.customError);
 }, "object setCustomValidity is correct")
 
 </script>

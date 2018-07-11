@@ -48,4 +48,34 @@ between the function being called and the promise settling.
 To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions).
 For example, to send the tab key you would send "\uE004".
 
+### `test_driver.pointer_action_sequence(actions)`
+ - `actions` <[Array]<[Object]>> an array of Action objects`
+  - `action` <[Object]> A single action
+   - `id` The ID of the pointer to use. If one with this id does not exist a new one will be used
+   - `pointerType` The type of pointer to use, an enum of `mouse`, `touch` and `pen`.
+   - `subtype` The type of action to perform, an enum of `pointerUp`, `pointerMove`, `pointerDown` and `pause`
+   - `target` Either a DOM Element object or an Object with exactly two integer attrbutes `x` and `y`.
+   - `duration` The duration in ms before the next action in the sequence should start
+
+
+This function causes a sequence of pointer actions to be sent to the browser. It returns a `Promise` that
+resolves after the actions have been sent or rejects if an error was thrown.
+
+### `test_driver.send_keys(element, keys)`
+#### `element: a DOM Element object`
+#### `keys: string to send to the element`
+
+This function causes the string `keys` to be send to the target
+element (an `Element` object), potentially scrolling the document to
+make it possible to send keys. It returns a `Promise` that resolves
+after the keys have been send or rejects if the keys cannot be sent
+to the element.
+
+Note that if the element that's keys need to be send to does not have
+a unique ID, the document must not have any DOM mutations made
+between the function being called and the promise settling.
+
+To send special keys, one must send the respective key's codepoint. Since this uses the WebDriver protocol, you can find a [list for code points to special keys in the spec](https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions).
+For example, to send the tab key you would send "\uE004".
+
 [testharness]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}

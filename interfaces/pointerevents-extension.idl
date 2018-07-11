@@ -1,7 +1,9 @@
 partial dictionary PointerEventInit {
-    sequence<PointerEvent> coalescedEvents;
+    sequence<PointerEvent> coalescedEvents = [];
+    sequence<PointerEvent> predictedEvents = [];
 };
 
 partial interface PointerEvent {
     sequence<PointerEvent> getCoalescedEvents();
+    sequence<PointerEvent> getPredictedEvents();
 };

@@ -170,6 +170,22 @@
          */
         freeze: function() {
             return window.test_driver_internal.freeze();
+        },
+
+        /**
+         * Send a sequence of pointer actions
+         *
+         * This function sends a sequence of pointer actions to the top level window
+         * to perform. It is modeled after the behaviour of {@link
+         * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
+         *
+         * @param {Array} actions - an array of action objects to perform as
+         *                          described in docs
+         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        pointer_action_sequence() {
+            return window.test_driver_internal.pointer_action_sequence();
         }
     };
 
@@ -203,6 +219,16 @@
          * it gets rejected
          */
         freeze: function() {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Send a sequence of pointer actions
+         *
+         * @returns {Promise} fufilled after actions are sent, rejected if any actions
+         *                    fail
+         */
+        pointer_action_sequence: function(actions) {
             return Promise.reject(new Error("unimplemented"));
         }
     };

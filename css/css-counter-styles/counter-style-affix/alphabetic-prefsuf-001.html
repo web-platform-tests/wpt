@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>prefix/suffix (alphabetic)</title>
+<meta name="assert" content="The browser can produce a prefix and suffix as specified for alphabetic counters.">
+<link rel="match" href="references/alphabetic-prefsuf-001-ref.html" />
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#the-counter-style-rule"/>
+
+<style>
+@counter-style alphabetic {
+system: alphabetic;
+symbols: '\3B1' '\3B2' '\3B3' '\3B4' '\3B5' '\3B6' '\3B7' '\3B8' '\3B9' '\3BA' '\3BB' '\3BC' '\3BD' '\3BE' '\3BF' '\3C0' '\3C1' '\3C3' '\3C4' '\3C5' '\3C6' '\3C7' '\3C8' '\3C9';
+prefix: '(';
+suffix: ')';
+}
+ol li { list-style-type: alphabetic;  }
+
+/* the following CSS is not part of the test */
+ol, li {
+    list-style-position: inside;
+    margin: 0; padding: 0;
+    line-height: 40px;
+    }
+div { line-height: 40px; }
+.test { font-size: 25px; }
+.blank { background-color: orange; color: orange; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip this test if alphabetic counter styles are not supported.</p>
+<div class="test">
+<ol start="1"><li title="1"><span class="blank">x</span></li></ol>
+<ol start="26"><li title="26"><span class="blank">x</span></li></ol>
+<ol start="999"><li title="999"><span class="blank">x</span></li></ol>
+</div>
+<!--Notes:
+You will need an appropriate font to run this test.
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+</body>
+</html>

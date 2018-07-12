@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>prefix/suffix default (additive)</title>
+<meta name="assert" content="The browser can produce a default prefix and suffix as specified for additive counters.">
+<link rel="match" href="references/additive-default-001-ref.html" />
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#the-counter-style-rule"/>
+
+<style>
+@counter-style additive {
+system: additive;
+range: 1 9999;
+additive-symbols: 9000 '\554', 8000 '\553', 7000 '\552', 6000 '\551', 5000 '\550', 4000 '\54F', 3000 '\54E', 2000 '\54D', 1000 '\54C', 900 '\54B', 800 '\54A', 700 '\549', 600 '\548', 500 '\547', 400 '\546', 300 '\545', 200 '\544', 100 '\543', 90 '\542', 80 '\541', 70 '\540', 60 '\53F', 50 '\53E', 40 '\53D', 30 '\53C', 20 '\53B', 10 '\53A', 9 '\539', 8 '\538', 7 '\537', 6 '\536', 5 '\535', 4 '\534', 3 '\533', 2 '\532', 1 '\531';
+}
+ol li { list-style-type: additive;  }
+
+/* the following CSS is not part of the test */
+ol, li {
+    list-style-position: inside;
+    margin: 0; padding: 0;
+    line-height: 40px;
+    }
+div { line-height: 40px; }
+.test { font-size: 25px; }
+.blank { background-color: orange; color: orange; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip this test if additive counter styles are not supported.</p>
+<div class="test">
+<ol start="10"><li><span class="blank">x</span></li></ol>
+<ol start="12"><li><span class="blank">x</span></li></ol>
+<ol start="222"><li><span class="blank">x</span></li></ol>
+<ol start="9999"><li><span class="blank">x</span></li></ol>
+</div>
+<!--Notes:
+You will need an appropriate font to run this test.
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+</body>
+</html>

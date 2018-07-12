@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>prefix/suffix (numeric)</title>
+<meta name="assert" content="The browser can produce a prefix and suffix as specified for numeric counters.">
+<link rel="match" href="references/numeric-prefsuf-001-ref.html" />
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#the-counter-style-rule"/>
+
+<style>
+@counter-style numeric {
+system: numeric;
+symbols: '\9E6' '\9E7' '\9E8' '\9E9' '\9EA' '\9EB' '\9EC' '\9ED' '\9EE' '\9EF';
+prefix: '(';
+suffix: ')';
+}
+ol li { list-style-type: numeric;  }
+
+/* the following CSS is not part of the test */
+ol, li {
+    list-style-position: inside;
+    margin: 0; padding: 0;
+    line-height: 40px;
+    }
+div { line-height: 40px; }
+.test { font-size: 25px; }
+.blank { background-color: orange; color: orange; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip this test if numeric counter styles are not supported.</p>
+<div class="test">
+<ol start="1"><li title="1"><span class="blank">x</span></li></ol>
+<ol start="11"><li title="11"><span class="blank">x</span></li></ol>
+<ol start="101"><li title="101"><span class="blank">x</span></li></ol>
+<ol start="1005"><li title="1005"><span class="blank">x</span></li></ol>
+</div>
+<!--Notes:
+You will need an appropriate font to run this test.
+The test relies on the start attribute working.
+To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
+-->
+</body>
+</html>

@@ -23,8 +23,8 @@ idl_test(
 
     idlArray.add_objects({
       PaymentRequest: ['paymentRequest'],
-      PaymentMethodChangeEvent: ['new PaymentMethodChangeEvent("type")'],
-      PaymentRequestUpdateEvent: ['new PaymentRequestUpdateEvent("type")'],
+      PaymentMethodChangeEvent: ['new PaymentMethodChangeEvent("paymentmethodchange")'],
+      PaymentRequestUpdateEvent: ['new PaymentRequestUpdateEvent("paymentrequestupdate")'],
     });
   },
   'Setup for Payment Request API IDL tests.'

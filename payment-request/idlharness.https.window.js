@@ -10,16 +10,18 @@ idl_test(
   ['dom', 'html'],
   idlArray => {
     try {
-      const methods = [{supportedMethods: 'foo'}];
+      const methods = [{supportedMethods: 'basic-card'}];
       const amount = {currency: 'USD', value: '0'};
-      const details = {total: {label: 'bar', amount: amount} };
+      const details = {total: {label: 'label', amount: amount} };
       window.paymentRequest = new PaymentRequest(methods, details);
     } catch (e) {
-      // Will be surfaced in idlharness.js's test_object below.
+      // Surfaced below when paymentRequest is undefined.
     }
 
     idlArray.add_objects({
       PaymentRequest: ['paymentRequest'],
+      PaymentMethodChangeEvent: ['new PaymentMethodChangeEvent("type")'],
+      PaymentRequestUpdateEvent: ['new PaymentRequestUpdateEvent("type")'],
     });
   },
   'Setup for Payment Request API IDL tests.'

@@ -10,7 +10,10 @@ idl_test(
   ['dom', 'html'],
   idlArray => {
     try {
-      const methods = [{supportedMethods: 'basic-card'}];
+      const methods = [
+        {supportedMethods: 'basic-card'},
+        {supportedMethods: 'https://apple.com/apple-pay'},
+      ];
       const amount = {currency: 'USD', value: '0'};
       const details = {total: {label: 'label', amount: amount} };
       window.paymentRequest = new PaymentRequest(methods, details);

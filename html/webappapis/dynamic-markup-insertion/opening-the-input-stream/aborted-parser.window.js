@@ -1,3 +1,6 @@
+// document.open() bails out early if there is an **active parser** with
+// non-zero script nesting level. window.stop() aborts the current parser and
+// makes it no longer active, and should allow document.open() to work.
 // For more details, see https://bugzilla.mozilla.org/show_bug.cgi?id=1475000.
 
 window.handlers = {};

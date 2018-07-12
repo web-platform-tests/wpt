@@ -15,6 +15,8 @@ async_test(t => {
   });
 }, "document.open() after parser is aborted");
 
+// Note: This test should pass even if window.close() is not there, as
+// document.open() is not executed synchronously in an inline script.
 async_test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
   frame.src = "resources/aborted-parser-async-frame.html";

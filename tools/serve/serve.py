@@ -382,20 +382,18 @@ class ServerProc(object):
         self.daemon = None
         self.stop = Event()
 
-    def start(self, init_func, host, port, paths, routes, bind_address, config,
-              ssl_config, **kwargs):
+    def start(self, init_func, host, port, paths, routes, bind_address, config, **kwargs):
         self.proc = Process(target=self.create_daemon,
                             args=(init_func, host, port, paths, routes, bind_address,
-                                  config, ssl_config),
+                                  config),
                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 
     def create_daemon(self, init_func, host, port, paths, routes, bind_address,
-                      config, ssl_config, **kwargs):
+                      config, **kwargs):
         try:
-            self.daemon = init_func(host, port, paths, routes, bind_address, config,
-                                    ssl_config, **kwargs)
+            self.daemon = init_func(host, port, paths, routes, bind_address, config, **kwargs)
         except socket.error:
             print("Socket error on port %s" % port, file=sys.stderr)
             raise
@@ -437,8 +435,8 @@ def check_subdomains(config):
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
-    wrapper.start(start_http_server, host, port, paths, build_routes(aliases), bind_address,
-                  None, ssl_config)
+    wrapper.start(start_http_server, host, port, paths, build_routes(aliases),
+                  bind_address, config)
 
     connected = False
     for i in range(10):
@@ -488,8 +486,7 @@ def make_hosts_file(config, host):
     return "".join(rv)
 
 
-def start_servers(host, ports, paths, routes, bind_address, config, ssl_config,
-                  **kwargs):
+def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
     servers = defaultdict(list)
     for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
@@ -510,14 +507,13 @@ def start_servers(host, ports, paths, routes, bind_address, config, ssl_config,
 
             server_proc = ServerProc()
             server_proc.start(init_func, host, port, paths, routes, bind_address,
-                              config, ssl_config, **kwargs)
+                              config, **kwargs)
             servers[scheme].append((port, server_proc))
 
     return servers
 
 
-def start_http_server(host, port, paths, routes, bind_address, config, ssl_config,
-                      **kwargs):
+def start_http_server(host, port, paths, routes, bind_address, config, **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
                                  doc_root=paths["doc_root"],
@@ -531,8 +527,7 @@ def start_http_server(host, port, paths, routes, bind_address, config, ssl_confi
                                  latency=kwargs.get("latency"))
 
 
-def start_https_server(host, port, paths, routes, bind_address, config, ssl_config,
-                       **kwargs):
+def start_https_server(host, port, paths, routes, bind_address, config, **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
                                  doc_root=paths["doc_root"],
@@ -541,9 +536,9 @@ def start_https_server(host, port, paths, routes, bind_address, config, ssl_conf
                                  bind_address=bind_address,
                                  config=config,
                                  use_ssl=True,
-                                 key_file=ssl_config["key_path"],
-                                 certificate=ssl_config["cert_path"],
-                                 encrypt_after_connect=ssl_config["encrypt_after_connect"],
+                                 key_file=config.ssl_config["key_path"],
+                                 certificate=config.ssl_config["cert_path"],
+                                 encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                  latency=kwargs.get("latency"))
 
 
@@ -628,45 +623,41 @@ class WebSocketDaemon(object):
         self.server = None
 
 
-def start_ws_server(host, port, paths, routes, bind_address, config, ssl_config,
-                    **kwargs):
+def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we don't inherit the
     # global lock in the logging module
     reload_module(logging)
     return WebSocketDaemon(host,
                            str(port),
                            repo_root,
-                           paths["ws_doc_root"],
+                           config.paths["ws_doc_root"],
                            "debug",
                            bind_address,
                            ssl_config = None)
 
 
-def start_wss_server(host, port, paths, routes, bind_address, config, ssl_config,
-                     **kwargs):
+def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we don't inherit the
     # global lock in the logging module
     reload_module(logging)
     return WebSocketDaemon(host,
                            str(port),
                            repo_root,
-                           paths["ws_doc_root"],
+                           config.paths["ws_doc_root"],
                            "debug",
                            bind_address,
-                           ssl_config)
+                           config.ssl_config)
 
 
-def start(config, ssl_environment, routes, **kwargs):
+def start(config, routes, **kwargs):
     host = config["server_host"]
     ports = config.ports
     paths = config.paths
     bind_address = config["bind_address"]
-    ssl_config = config.ssl_config
 
     logger.debug("Using ports: %r" % ports)
 
-    servers = start_servers(host, ports, paths, routes, bind_address, config,
-                            ssl_config, **kwargs)
+    servers = start_servers(host, ports, paths, routes, bind_address, config, **kwargs)
 
     return servers
 
@@ -820,7 +811,7 @@ def run(**kwargs):
             logger.debug("Going to use port %d for stash" % stash_address[1])
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, config.ssl_config, build_routes(config["aliases"]), **kwargs)
+            servers = start(config, build_routes(config["aliases"]), **kwargs)
 
             try:
                 while any(item.is_alive() for item in iter_procs(servers)):

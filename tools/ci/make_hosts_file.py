@@ -3,7 +3,7 @@ import os
 
 from ..localpaths import repo_root
 
-from ..serve.serve import load_config, make_hosts_file
+from ..serve.serve import build_config, make_hosts_file
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -11,6 +11,8 @@ def create_parser():
     return parser
 
 def run(**kwargs):
-    config = load_config(os.path.join(repo_root, "config.json"))
+    config_builder = build_config(os.path.join(repo_root, "config.json"),
+                                  ssl={"type":"none"})
 
-    print(make_hosts_file(config, kwargs["address"]))
+    with config_builder.get() as config:
+        print(make_hosts_file(config, kwargs["address"]))

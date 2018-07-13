@@ -430,7 +430,6 @@ class ServerProc(object):
 def check_subdomains(config):
     paths = config.paths
     bind_address = config.bind_address
-    ssl_config = config.ssl_config
     aliases = config.aliases
 
     host = config.server_host
@@ -678,8 +677,8 @@ def iter_procs(servers):
             yield server.proc
 
 
-def load_config(override_path=None, **kwargs):
-    rv = Config()
+def build_config(override_path=None, **kwargs):
+    rv = ConfigBuilder()
 
     if kwargs.get("h2"):
         rv._default["ports"]["http2"] = [9000]
@@ -720,10 +719,10 @@ _subdomains = {u"www",
 _not_subdomains = {u"nonexistent"}
 
 
-class Config(config.Config):
+class ConfigBuilder(config.ConfigBuilder):
     """serve config
 
-    this subclasses wptserve.config.Config to add serve config options"""
+    this subclasses wptserve.config.ConfigBuilder to add serve config options"""
 
     _default = {
         "browser_host": "web-platform.test",
@@ -760,29 +759,30 @@ class Config(config.Config):
         "aliases": []
     }
 
+    computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
+
     def __init__(self, *args, **kwargs):
-        super(Config, self).__init__(
+        super(ConfigBuilder, self).__init__(
             subdomains=_subdomains,
             not_subdomains=_not_subdomains,
             *args,
             **kwargs
         )
 
-    @property
-    def ws_doc_root(self):
-        if self._ws_doc_root is not None:
-            return self._ws_doc_root
+    def _get_ws_doc_root(self, data):
+        if data["ws_doc_root"] is not None:
+            return data["ws_doc_root"]
         else:
-            return os.path.join(self.doc_root, "websockets", "handlers")
+            return os.path.join(data["doc_root"], "websockets", "handlers")
 
-    @ws_doc_root.setter
     def ws_doc_root(self, v):
         self._ws_doc_root = v
 
-    @property
-    def paths(self):
-        rv = super(Config, self).paths
-        rv["ws_doc_root"] = self.ws_doc_root
+    ws_doc_root = property(None, ws_doc_root)
+
+    def _get_paths(self, data):
+        rv = super(ConfigBuilder, self)._get_paths(data)
+        rv["ws_doc_root"] = data["ws_doc_root"]
         return rv
 
 
@@ -803,32 +803,31 @@ def get_parser():
 
 
 def run(**kwargs):
-    config = load_config(os.path.join(repo_root, "config.json"),
-                         **kwargs)
+    with build_config(os.path.join(repo_root, "config.json"),
+                      **kwargs) as config:
+        global logger
+        logger = config.logger
+        set_logger(logger)
 
-    global logger
-    logger = config.logger
-    set_logger(logger)
+        bind_address = config["bind_address"]
 
-    bind_address = config["bind_address"]
+        if config["check_subdomains"]:
+            check_subdomains(config)
 
-    if config["check_subdomains"]:
-        check_subdomains(config)
+        stash_address = None
+        if bind_address:
+            stash_address = (config.server_host, get_port(""))
+            logger.debug("Going to use port %d for stash" % stash_address[1])
 
-    stash_address = None
-    if bind_address:
-        stash_address = (config.server_host, get_port())
-        logger.debug("Going to use port %d for stash" % stash_address[1])
+        with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
+            servers = start(config, config.ssl_config, build_routes(config["aliases"]), **kwargs)
 
-    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-        servers = start(config, config.ssl_env, build_routes(config["aliases"]), **kwargs)
-
-        try:
-            while any(item.is_alive() for item in iter_procs(servers)):
-                for item in iter_procs(servers):
-                    item.join(1)
-        except KeyboardInterrupt:
-            logger.info("Shutting down")
+            try:
+                while any(item.is_alive() for item in iter_procs(servers)):
+                    for item in iter_procs(servers):
+                        item.join(1)
+            except KeyboardInterrupt:
+                logger.info("Shutting down")
 
 
 def main():

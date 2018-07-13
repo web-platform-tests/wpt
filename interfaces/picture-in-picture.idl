@@ -22,7 +22,7 @@ partial interface DocumentOrShadowRoot {
   readonly attribute Element? pictureInPictureElement;
 };
 
-interface PictureInPictureWindow : EventTarget {
+interface PictureInPictureWindow {
   readonly attribute long width;
   readonly attribute long height;
 

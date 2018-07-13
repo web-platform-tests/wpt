@@ -10,7 +10,6 @@ from mozlog import get_default_logger, handlers, proxy
 
 from wptlogging import LogLevelRewriter
 from wptserve.handlers import StringHandler
-from wptserve import sslutils
 
 here = os.path.split(__file__)[0]
 repo_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir, os.pardir))
@@ -19,7 +18,7 @@ serve = None
 
 
 def do_delayed_imports(logger, test_paths):
-    global serve, sslutils
+    global serve
 
     serve_root = serve_path(test_paths)
     sys.path.insert(0, serve_root)

@@ -8,7 +8,7 @@ partial interface Document {
 };
 
 [Exposed=Window,
- MapClass(CSSOMString, NamedFlow)] interface NamedFlowMap {
+ MapClass=(CSSOMString, NamedFlow)] interface NamedFlowMap {
   NamedFlow? get(CSSOMString flowName);
   boolean has(CSSOMString flowName);
   NamedFlowMap set(CSSOMString flowName, NamedFlow flowValue);

@@ -93,7 +93,7 @@ def check_environ(product):
     if product not in ("firefox", "servo"):
         config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
         # Ovveride the ports to avoid looking for free ports
-        config_builder.ssl["type"] = "none"
+        config_builder.ssl = {"type": "none"}
         config_builder.ports = {"http": [8000]}
         with config_builder as config:
             expected_hosts = set(config.domains_set)

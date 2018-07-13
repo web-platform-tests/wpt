@@ -49,7 +49,7 @@ def test_server_start_config(product):
                                          False,
                                          None,
                                          env_options,
-                                         {},
+                                         {"type": "none"},
                                          env_extras):
             start.assert_called_once()
             args = start.call_args

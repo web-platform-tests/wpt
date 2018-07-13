@@ -2,7 +2,6 @@
 import pytest
 
 from tests.support.asserts import assert_error, assert_dialog_handled
-from tests.support.fixtures import create_dialog, create_window
 from tests.support.inline import inline
 
 
@@ -24,15 +23,13 @@ def test_handle_prompt_ignore():
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept"})
-def test_handle_prompt_accept(session):
-    _, session = new_session({"capabilities": {
-        "alwaysMatch": add_browser_capabilites({"unhandledPromptBehavior": "accept"})}})
+def test_handle_prompt_accept(session, create_dialog, create_window):
     original_handle = session.window_handle
 
-    session.window_handle = create_window(session)()
+    session.window_handle = create_window()
     session.url = inline("<title>WD doc title</title>")
 
-    create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
+    create_dialog("alert", text="dismiss #1", result_var="dismiss1")
     response = close(session)
     assert response.status == 200
 
@@ -41,10 +38,10 @@ def test_handle_prompt_accept(session):
     session.window_handle = original_handle
     assert_dialog_handled(session, "dismiss #1")
 
-    session.window_handle = create_window(session)()
+    session.window_handle = create_window()
     session.url = inline("<title>WD doc title</title>")
 
-    create_dialog(session)("confirm", text="dismiss #2", result_var="dismiss2")
+    create_dialog("confirm", text="dismiss #2", result_var="dismiss2")
     response = close(session)
     assert response.status == 200
 
@@ -53,10 +50,10 @@ def test_handle_prompt_accept(session):
     session.window_handle = original_handle
     assert_dialog_handled(session, "dismiss #2")
 
-    session.window_handle = create_window(session)()
+    session.window_handle = create_window()
     session.url = inline("<title>WD doc title</title>")
 
-    create_dialog(session)("prompt", text="dismiss #3", result_var="dismiss3")
+    create_dialog("prompt", text="dismiss #3", result_var="dismiss3")
     response = close(session)
     assert response.status == 200
 

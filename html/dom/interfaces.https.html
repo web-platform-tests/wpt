@@ -33,11 +33,19 @@ function createInput(type) {
   return input;
 }
 
-function doTest([html, dom, cssom, uievents, touchevents]) {
+promise_test(async () => {
+  await new Promise(resolve => { addEventListener('load', resolve); })
+  const srcs = ['html', 'SVG', 'dom', 'cssom', 'touchevents', 'uievents'];
+  const [html, svg, dom, cssom, touchevents, uievents] = await Promise.all(
+    srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
+
   var idlArray = new IdlArray();
-  var svg = "interface SVGElement : Element {};";
-  idlArray.add_untested_idls(dom + svg + cssom + uievents + touchevents);
   idlArray.add_idls(html);
+  idlArray.add_dependency_idls(dom);
+  idlArray.add_dependency_idls(cssom);
+  idlArray.add_dependency_idls(uievents);
+  idlArray.add_dependency_idls(touchevents);
+  idlArray.add_dependency_idls(svg);
 
   idlArray.add_objects({
     NodeList: ['document.getElementsByName("name")'],
@@ -214,29 +222,8 @@ function doTest([html, dom, cssom, uievents, touchevents]) {
     HTMLDirectoryElement: ['document.createElement("dir")'],
     HTMLFontElement: ['document.createElement("font")'],
   });
-  idlArray.prevent_multiple_testing("HTMLElement");
+  idlArray.prevent_multiple_testing('HTMLElement');
   idlArray.test();
-};
-
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
-  });
-}
-
-promise_test(function() {
-  // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      fetchData("/interfaces/touchevents.idl"),
-                      fetchData("/interfaces/uievents.idl"),
-                      waitForLoad()])
-                .then(doTest);
-}, "Test driver");
+}, 'html interfaces');
 
 </script>

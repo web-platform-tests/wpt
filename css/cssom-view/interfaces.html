@@ -15,59 +15,37 @@
 <div id=log></div>
 
 <script>
-"use strict";
+'use strict';
 
-function doTest([html, dom, uievents, cssom, cssom_view]) {
+promise_test(async t => {
+  await new Promise(resolve => { addEventListener('load', resolve); });
+  const srcs = ['cssom-view', 'html', 'dom', 'uievents', 'cssom'];
+  const [idl, html, dom, uievents, cssom] = await Promise.all(
+    srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
 
   var idlArray = new IdlArray();
-  var svg = "interface SVGElement : Element {};";
-  idlArray.add_untested_idls(html + dom + svg + cssom);
-  idlArray.add_untested_idls(uievents, { only: [
-    'UIEvent',
-    'UIEventInit',
-    'MouseEvent',
-    'MouseEventInit',
-    'EventModifierInit']
-  });
-  idlArray.add_idls(cssom_view);
+  idlArray.add_idls(idl);
+  idlArray.add_dependency_idls(cssom);
+  idlArray.add_dependency_idls(html);
+  idlArray.add_dependency_idls(dom);
+  idlArray.add_dependency_idls(uievents);
 
   idlArray.add_objects({
-    "Window": ["window"],
-    "MediaQueryList": ["matchMedia('all')"],
-    "MediaQueryListEvent": ["new MediaQueryListEvent('change')"],
-    "Screen": ["screen"],
-    "Document": ["document"],
-    "CaretPosition": ["document.caretPositionFromPoint(5, 5)"],
-    "Element": ["document.createElementNS('x', 'y')"],
-    "HTMLElement": ["document.createElement('div')"],
-    "HTMLImageElement": ["document.createElement('img')"],
-    "Range": ["new Range()"],
-    // "MouseEvent": ["new MouseEvent('foo')"],
-    "Text": ["document.createTextNode('x')"],
-    // "CSSPseudoElement": [],
+    Window: ['window'],
+    MediaQueryList: ['matchMedia("all")'],
+    MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
+    Screen: ['screen'],
+    Document: ['document'],
+    CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
+    Element: ['document.createElementNS("x", "y")'],
+    HTMLElement: ['document.createElement("div")'],
+    HTMLImageElement: ['document.createElement("img")'],
+    Range: ['new Range()'],
+    // MouseEvent: ['new MouseEvent("foo")'],
+    Text: ['document.createTextNode("x")'],
+    // CSSPseudoElement: [],
   });
   idlArray.test();
-};
-
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
-  });
-}
-
-promise_test(function() {
-  // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/uievents.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      fetchData("/interfaces/cssom-view.idl"),
-                      waitForLoad()])
-                .then(doTest);
 }, "Test driver");
 
 </script>

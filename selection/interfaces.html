@@ -1,0 +1,43 @@
+<!doctype html>
+<title>Selection interface tests</title>
+<div id=log></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+<script>
+'use strict';
+
+promise_test(async () => {
+  const srcs = [
+    'selection-api',
+    'dom',
+    'cssom',
+    'touchevents',
+    'uievents',
+    'html',
+    'SVG',
+    'web-animations',
+  ];
+  const [selection, dom, cssom, touchevents, uievents, html, svg, wa] =
+      await Promise.all(
+          srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
+
+  var idlArray = new IdlArray();
+  idlArray.add_idls(selection);
+  idlArray.add_untested_idls('interface CSSPseudoElement {};');
+  idlArray.add_untested_idls(wa);
+  idlArray.add_untested_idls(svg);
+  idlArray.add_untested_idls(dom);
+  idlArray.add_untested_idls(cssom);
+  idlArray.add_untested_idls(touchevents);
+  idlArray.add_untested_idls(uievents);
+  idlArray.add_untested_idls(html);
+  idlArray.add_objects({
+    Document: ['document'],
+    Selection: ['getSelection()'],
+    Window: ['window'],
+  });
+  idlArray.test();
+}, 'selection-api interfaces');
+</script>

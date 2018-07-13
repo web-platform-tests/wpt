@@ -6,12 +6,14 @@
 partial interface ServiceWorkerRegistration {
   [SameObject] readonly attribute PaymentManager paymentManager;
 };
+
 [SecureContext, Exposed=(Window,Worker)]
 interface PaymentManager {
   [SameObject] readonly attribute PaymentInstruments instruments;
   [Exposed=Window] static Promise<PermissionState> requestPermission();
   attribute DOMString userHint;
 };
+
 [SecureContext, Exposed=(Window,Worker)]
 interface PaymentInstruments {
     Promise<boolean> delete(DOMString instrumentKey);
@@ -21,20 +23,24 @@ interface PaymentInstruments {
     Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
     Promise<void> clear();
 };
+
 dictionary PaymentInstrument {
   required DOMString name;
   sequence<ImageObject> icons;
   DOMString method;
   object capabilities;
 };
+
 dictionary ImageObject {
     required USVString src;
     DOMString sizes;
     DOMString type;
 };
+
 partial interface ServiceWorkerGlobalScope {
   attribute EventHandler oncanmakepayment;
 };
+
 [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
 interface CanMakePaymentEvent : ExtendableEvent {
   readonly attribute USVString topOrigin;
@@ -43,15 +49,18 @@ interface CanMakePaymentEvent : ExtendableEvent {
   readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
   void respondWith(Promise<boolean> canMakePaymentResponse);
 };
+
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
   USVString topOrigin;
   USVString paymentRequestOrigin;
   sequence<PaymentMethodData> methodData;
   sequence<PaymentDetailsModifier> modifiers;
 };
+
 partial interface ServiceWorkerGlobalScope {
   attribute EventHandler onpaymentrequest;
 };
+
 [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
 interface PaymentRequestEvent : ExtendableEvent {
   readonly attribute USVString topOrigin;
@@ -64,6 +73,7 @@ interface PaymentRequestEvent : ExtendableEvent {
   Promise<WindowClient?> openWindow(USVString url);
   void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
 };
+
 dictionary PaymentRequestEventInit : ExtendableEventInit {
   USVString topOrigin;
   USVString paymentRequestOrigin;
@@ -73,6 +83,7 @@ dictionary PaymentRequestEventInit : ExtendableEventInit {
   sequence<PaymentDetailsModifier> modifiers;
   DOMString instrumentKey;
 };
+
 dictionary PaymentHandlerResponse {
 DOMString methodName;
 object details;

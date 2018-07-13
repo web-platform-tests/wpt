@@ -6,6 +6,8 @@ import subprocess
 import tempfile
 from datetime import datetime, timedelta
 
+from six import iteritems
+
 # Amount of time beyond the present to consider certificates "expired." This
 # allows certificates to be proactively re-generated in the "buffer" period
 # prior to their exact expiration time.
@@ -67,7 +69,7 @@ class OpenSSL(object):
         # StartProcess is picky about all the keys/values being plain strings,
         # but at least in MSYS shells, the os.environ dictionary can be mixed.
         env = {}
-        for k, v in os.environ.iteritems():
+        for k, v in iteritems(os.environ):
             try:
                 env[k.encode("utf8")] = v.encode("utf8")
             except UnicodeDecodeError:

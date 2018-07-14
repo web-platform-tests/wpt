@@ -17,6 +17,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers",
         "capabilities: mark test to use capabilities")
 
+
 @pytest.fixture
 def capabilities():
     """Default capabilities to use for a new WebDriver session."""

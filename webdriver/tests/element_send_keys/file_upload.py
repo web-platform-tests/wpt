@@ -36,7 +36,7 @@ def test_multiple_files(session, create_files):
 
 
 def test_multiple_files_multiple_directories(session, create_file):
-    files = [create_file("foo"_, create_file("bar")]
+    files = [create_file("foo"), create_file("bar")]
 
     session.url = inline("<input type=file multiple>")
     element = session.find.css("input", all=False)

@@ -3,7 +3,7 @@ from ..webdriver_server import SafariDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
                                           SeleniumRefTestExecutor)  # noqa: F401
-from ..executors.executorsafari import SafariDriverWdspecExecutor
+from ..executors.executorsafari import SafariDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "safari",

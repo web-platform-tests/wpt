@@ -12,7 +12,7 @@ def create_file(tmpdir_factory):
     inner.__name__ = "create_file"
     return inner
 
-	
+
 @pytest.fixture
 def create_files(tmpdir_factory):
     def inner(filenames):

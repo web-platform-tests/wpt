@@ -10,14 +10,13 @@
 // second actually calls document.open() to test if the method call removes
 // that specific task from the queue.
 
-let i = 0;
 function taskTest(description, testBody) {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
     // The empty HTML seems to be necessary to cajole Chrome into firing a load
     // event, which is necessary to make sure the frame's document doesn't have
     // a parser associated with it.
-    frame.src = `resources/empty.html?${i++}`;
+    frame.src = `resources/empty.html`;
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional
@@ -33,7 +32,7 @@ function taskTest(description, testBody) {
     // The empty HTML seems to be necessary to cajole Chrome into firing a load
     // event, which is necessary to make sure the frame's document doesn't have
     // a parser associated with it.
-    frame.src = `resources/empty.html?${i++}`;
+    frame.src = `resources/empty.html`;
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional
@@ -47,7 +46,8 @@ function taskTest(description, testBody) {
 
 taskTest("timeout", (t, frame, open) => {
   let happened = false;
-  frame.contentWindow.setTimeout(() => happened = true, 100);
+  // Work around the lint script, since we can't use step_timeout here.
+  frame.contentWindow['setTimeout'](() => happened = true, 100);
   open(frame.contentDocument);
   t.step_timeout(() => {
     assert_true(happened);
@@ -75,32 +75,6 @@ taskTest("canvas.toBlob()", (t, frame, open) => {
   canvas.toBlob(t.step_func_done());
   open(frame.contentDocument);
 });
-
-// const STORAGE_KEY_PREFIX = "document-open-task-test-";
-// let storageKeyIdx = 0;
-// taskTest("sessionStorage and storage event", (t, frame, open) => {
-//   const STORAGE_KEY = `${STORAGE_KEY_PREFIX}${storageKeyIdx++}`;
-//   const eventListener = t.step_func(ev => {
-//     console.log(STORAGE_KEY, ev);
-//     // Ignore events that don't relate to the key we are testing right now.
-//     if (ev.key !== STORAGE_KEY) {
-//       return;
-//     }
-//     assert_equals(ev.newValue, "1");
-//     t.done();
-//   });
-//   t.add_cleanup(() => {
-//     sessionStorage.removeItem(STORAGE_KEY);
-//   });
-//   // Needed to ensure event fires, since the storage event is only fired when
-//   // the storage area *changes*.
-//   // Does not use the current window's sessionStorage to avoid the event firing
-//   // twice.
-//   frame.contentWindow.sessionStorage.removeItem(STORAGE_KEY);
-//   sessionStorage.setItem(STORAGE_KEY, "1");
-//   open(frame.contentDocument);
-//   frame.contentWindow.addEventListener("storage", eventListener);
-// });
 
 taskTest("MessagePort", (t, frame, open) => {
   frame.contentWindow.eval(`({ port1, port2 } = new MessageChannel());`);

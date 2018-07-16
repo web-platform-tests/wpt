@@ -42,7 +42,7 @@ function getLoadedPaymentResponse(iframe, url) {
   });
 }
 
-function retryNotFullyActive(button) {
+function methodNotFullyActive(button, method, ...args) {
   const text = button.textContent.trim();
   promise_test(async t => {
     const iframe = document.createElement("iframe");
@@ -60,21 +60,20 @@ function retryNotFullyActive(button) {
       iframe.src = "/payment-request/resources/page2.html";
     });
     // Now, response's relevant global object's document is no longer active.
-    // So, retryPromise needs to reject appropriately.
-    const retryPromise = response.retry({});
+    // So, promise needs to reject appropriately.
+    const promise = response[methodName](...args);
     await promise_rejects(
       t,
       "AbortError",
-      retryPromise,
+      promise,
       "Inactive document, so must throw AbortError"
     );
-
     // We are done, so clean up.
     iframe.remove();
   }, text);
 }
 
-function retryBecomesNotFullyActive(button) {
+function methodBecomesNotFullyActive(button, methodName, ...args) {
   const text = button.textContent.trim();
   promise_test(async t => {
     const iframe = document.createElement("iframe");
@@ -87,8 +86,8 @@ function retryBecomesNotFullyActive(button) {
       "/payment-request/resources/page1.html"
     );
 
-    // we get the retryPromise from page1.html, while it's active!
-    const retryPromise = response.retry({});
+    // we get the promise from page1.html, while it's active!
+    const promise = response[methodName](...args);
 
     // We navigate the iframe again, putting response's document into an inactive state.
     await new Promise(resolve => {
@@ -97,11 +96,11 @@ function retryBecomesNotFullyActive(button) {
     });
 
     // Now, response's relevant global object's document is no longer active.
-    // So, retryPromise needs to reject appropriately.
+    // So, promise needs to reject appropriately.
     await promise_rejects(
       t,
       "AbortError",
-      retryPromise,
+      promise,
       "Inactive document, so must throw AbortError"
     );
     // We are done, so clean up.
@@ -110,20 +109,34 @@ function retryBecomesNotFullyActive(button) {
 }
 </script>
 <section>
-  <h2>retry() and document active state</h2>
-  <p>Manual Tests for PaymentResponse.retry() - Please run in order!</p>
   <p>
     For each test, when the payment sheet is shown, select a payment method and hit "Pay".
   </p>
+  <h2>retry() and document active state</h2>
+  <p>Manual Tests for PaymentResponse.retry() - Please run in order!</p>
   <ol>
     <li>
-      <button onclick="retryNotFullyActive(this);">
+      <button onclick="methodNotFullyActive(this, 'retry', {});">
         retry()'s retryPromise rejects if document is not fully active.
       </button>
     </li>
     <li>
-      <button onclick="retryBecomesNotFullyActive(this);">
+      <button onclick="methodBecomesNotFullyActive(this, 'retry', {});">
         retry()'s retryPromise rejects if the document becomes not fully active.
+      </button>
+    </li>
+  </ol>
+  <h2>complete() and document active state</h2>
+  <p>Manual Tests for PaymentResponse.complete() - Please run in order!</p>
+  <ol>
+    <li>
+      <button onclick="methodNotFullyActive(this, 'complete', 'success');">
+        complete()'s completePromise rejects if document is not fully active.
+      </button>
+    </li>
+    <li>
+      <button onclick="methodBecomesNotFullyActive(this, 'complete', 'success');">
+        complete()'s completePromise rejects if the document becomes not fully active.
       </button>
     </li>
     <li>

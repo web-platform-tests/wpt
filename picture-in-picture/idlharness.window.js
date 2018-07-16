@@ -12,7 +12,6 @@ promise_test(async () => {
     const video = await loadVideo();
     document.body.appendChild(video);
     self.video = video;
-    video.autoplay = true;
     self.pipw = await requestPictureInPictureWithTrustedClick(video);
   } catch (e) {
     // Will be surfaced when video/pipw are undefined below.

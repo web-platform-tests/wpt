@@ -26,11 +26,11 @@ def test_lone_keyup_sends_no_events(session, key_reporter, key_chain):
     ("a", "KeyA",),
     (u"\"", "Quote"),
     (u",", "Comma"),
-    (u"\u00E0", ""),
-    (u"\u0416", ""),
+    (u"\u00E0", "Unidentified"),
+    (u"\u0416", "Unidentified"),
     (u"@", "Digit2"),
-    (u"\u2603", ""),
-    (u"\uF6C2", ""),  # PUA
+    (u"\u2603", "Unidentified"),
+    (u"\uF6C2", "Unidentified"),  # PUA
 ])
 def test_single_printable_key_sends_correct_events(session,
                                                    key_reporter,

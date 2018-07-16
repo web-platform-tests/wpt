@@ -16,7 +16,7 @@ function taskTest(description, testBody) {
     // The empty HTML seems to be necessary to cajole Chrome into firing a load
     // event, which is necessary to make sure the frame's document doesn't have
     // a parser associated with it.
-    frame.src = `resources/empty.html`;
+    frame.src = "/common/blank.html";
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional
@@ -32,7 +32,7 @@ function taskTest(description, testBody) {
     // The empty HTML seems to be necessary to cajole Chrome into firing a load
     // event, which is necessary to make sure the frame's document doesn't have
     // a parser associated with it.
-    frame.src = `resources/empty.html`;
+    frame.src = "/common/blank.html";
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional

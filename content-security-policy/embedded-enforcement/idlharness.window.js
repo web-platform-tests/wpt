@@ -15,7 +15,7 @@ promise_test(async () => {
   idl_array.add_dependency_idls(html);
   idl_array.add_dependency_idls(dom);
   idl_array.add_objects({
-    HTMLIframeElement: ['document.createElement("iframe")'],
+    HTMLIFrameElement: ['document.createElement("iframe")'],
   });
   idl_array.test();
 }, 'csp-embedded-enforcement IDL');

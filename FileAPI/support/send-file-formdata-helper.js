@@ -93,15 +93,12 @@ const kTestFallbackWindows1252 =
 const kTestFallbackXUserDefined =
       kTestChars.replace(/[^\0-\x7F]/gu, x => `&#${x.codePointAt(0)};`);
 
-// formPostFileUploadTest - verifies multipart upload structure and
+// formDataPostFileUploadTest - verifies multipart upload structure and
 // numeric character reference replacement for filenames, field names,
-// and field values using <form> submission.
+// and field values using FormData and fetch().
 //
 // Uses /fetch/api/resources/echo-content.py to echo the upload
-// POST with UTF-8 byte interpretation, leading to the "UTF-8 goggles"
-// behavior documented below for expectedEncodedBaseName when non-
-// UTF-8-compatible byte sequences appear in the formEncoding-encoded
-// uploaded data.
+// POST.
 //
 // Fields in the parameter object:
 //
@@ -111,98 +108,38 @@ const kTestFallbackXUserDefined =
 //   contains all the characters. Used in the test name.
 // - fileBaseName: the not-necessarily-just-7-bit-ASCII file basename
 //   used for the constructed test file. Used in the test name.
-// - formEncoding: the acceptCharset of the form used to submit the
-//   test file. Used in the test name.
-// - expectedEncodedBaseName: the expected formEncoding-encoded
-//   version of fileBaseName with unencodable characters replaced by
-//   numeric character references and non-7-bit-ASCII bytes seen
-//   through UTF-8 goggles; subsequences not interpretable as UTF-8
-//   have each byte represented here by \uFFFD REPLACEMENT CHARACTER.
-const formPostFileUploadTest = ({
+const formDataPostFileUploadTest = ({
   fileNameSource,
   fileBaseName,
-  formEncoding,
-  expectedEncodedBaseName,
 }) => {
   promise_test(async testCase => {
 
-    if (document.readyState !== 'complete') {
-      await new Promise(resolve => addEventListener('load', resolve));
+    const formData = new FormData;
+    let file = new Blob([kTestChars], {type: 'text/plain'});
+    file.name = fileBaseName;
+    try {
+      // Switch to File in browsers that allow this
+      file = new File([file], file.name, {type: file.type});
+    } catch (ignoredException) {
     }
-
-    const formTargetFrame = Object.assign(document.createElement('iframe'), {
-      name: 'formtargetframe',
-    });
-    document.body.append(formTargetFrame);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(formTargetFrame);
-    });
-
-    const form = Object.assign(document.createElement('form'), {
-      acceptCharset: formEncoding,
-      action: '/fetch/api/resources/echo-content.py',
-      method: 'POST',
-      enctype: 'multipart/form-data',
-      target: formTargetFrame.name,
-    });
-    document.body.append(form);
-    testCase.add_cleanup(() => {
-      document.body.removeChild(form);
-    });
-
-    // Used to verify that the browser agrees with the test about
-    // which form charset is used.
-    form.append(Object.assign(document.createElement('input'), {
-      type: 'hidden',
-      name: '_charset_',
-    }));
 
     // Used to verify that the browser agrees with the test about
     // field value replacement and encoding independently of file system
     // idiosyncracies.
-    form.append(Object.assign(document.createElement('input'), {
-      type: 'hidden',
-      name: 'filename',
-      value: fileBaseName,
-    }));
+    formData.append('filename', file.name);
 
     // Same, but with name and value reversed to ensure field names
     // get the same treatment.
-    form.append(Object.assign(document.createElement('input'), {
-      type: 'hidden',
-      name: fileBaseName,
-      value: 'filename',
-    }));
+    formData.append(file.name, 'filename');
 
-    const fileInput = Object.assign(document.createElement('input'), {
-      type: 'file',
-      name: 'file',
-    });
-    form.append(fileInput);
+    formData.append('file', file, file.name);
 
-    // Removes c:\fakepath\ or other pseudofolder and returns just the
-    // final component of filePath; allows both / and \ as segment
-    // delimiters.
-    const baseNameOfFilePath = filePath => filePath.split(/[\/\\]/).pop();
-    await new Promise(resolve => {
-      const dataTransfer = new DataTransfer;
-      dataTransfer.items.add(
-          new File([kTestChars], fileBaseName, {type: 'text/plain'}));
-      fileInput.files = dataTransfer.files;
-      // For historical reasons .value will be prefixed with
-      // c:\fakepath\, but the basename should match the file name
-      // exposed through the newer .files[0].name API. This check
-      // verifies that assumption.
-      assert_equals(
-          baseNameOfFilePath(fileInput.files[0].name),
-          baseNameOfFilePath(fileInput.value),
-          `The basename of the field's value should match its files[0].name`);
-      form.submit();
-      formTargetFrame.onload = resolve;
-    });
-
-    const formDataText = formTargetFrame.contentDocument.body.textContent;
-    const formDataLines = formDataText.split('\n');
+    const formDataText =
+          await (await fetch('/fetch/api/resources/echo-content.py', {
+            method: 'POST',
+            body: formData,
+          })).text();
+    const formDataLines = formDataText.split('\r\n');
     if (formDataLines.length && !formDataLines[formDataLines.length - 1]) {
       --formDataLines.length;
     }
@@ -224,14 +161,10 @@ const formPostFileUploadTest = ({
     const toQuotable = str => str
           .replace(/[\0-\x1A\x1C-\x1F"\x7F]/g, encodeURIComponent)
           .replace(/\\/g, '\\\\');
-    const quotableFileName = toQuotable(expectedEncodedBaseName);
-    const quotableName = toQuotable(toCrLf(expectedEncodedBaseName));
-    const textValue = toLf(expectedEncodedBaseName);
+    const quotableFileName = toQuotable(fileBaseName);
+    const quotableName = toQuotable(toCrLf(fileBaseName));
+    const textValue = toCrLf(fileBaseName);
     const expectedText = [
-      boundary,
-      'Content-Disposition: form-data; name="_charset_"',
-      '',
-      formEncoding,
       boundary,
       'Content-Disposition: form-data; name="filename"',
       '',
@@ -247,11 +180,11 @@ const formPostFileUploadTest = ({
       '',
       kTestChars,
       boundary + '--',
-    ].join('\n');
+    ].join('\r\n');
     assert_true(
         formDataText.startsWith(expectedText),
         `Unexpected multipart-shaped form data received:\n${
              formDataText
            }\nExpected:\n${expectedText}`);
-  }, `Upload ${fileBaseName} (${fileNameSource}) in ${formEncoding} form`);
+  }, `Upload ${fileBaseName} (${fileNameSource}) in fetch with FormData`);
 };

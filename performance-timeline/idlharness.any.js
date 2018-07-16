@@ -9,7 +9,6 @@
 promise_test(async t => {
   const observe = new Promise((resolve, reject) => {
     try {
-      const callback = (e, o) => { };
       self.observer = new PerformanceObserver((entries, observer) => {
         self.entryList = entries;
         resolve();

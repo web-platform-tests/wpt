@@ -9,8 +9,7 @@
 
 promise_test(async () => {
   try {
-    const video = await loadVideo();
-    self.video = video;
+    self.video = await loadVideo();
     self.pipw = await requestPictureInPictureWithTrustedClick(video);
   } catch (e) {
     // Will be surfaced when video/pipw are undefined below.

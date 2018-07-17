@@ -5,7 +5,7 @@ from types import MethodType
 import pytest
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer
+from .base import TestUsingServer, TestUsingH2Server
 
 
 def send_body_as_header(self):
@@ -48,6 +48,31 @@ class TestResponse(TestUsingServer):
         self.assertEqual("6", resp.info()['Content-Length'])
         self.assertEqual("TEST", resp.info()['x-Test'])
         self.assertEqual("body", resp.info()['X-Body'])
+
+
+class TestH2Response(TestUsingH2Server):
+
+    def test_write_without_ending_stream(self):
+        data = b"TEST"
+
+        @wptserve.handlers.handler
+        def handler(request, response):
+            headers = [
+                ('server', 'test-h2'),
+                ('test', 'PASS'),
+            ]
+            response.writer.write_headers(headers, 202)
+            response.writer.write_data_frame(data, False)
+
+            # Should detect stream isn't ended and call `writer.end_stream()`
+
+        route = ("GET", "/h2test/test", handler)
+        self.server.router.register(*route)
+        self.conn.request(route[0], route[1])
+        resp = self.conn.get_response()
+        assert resp.status == 202
+        assert [x for x in resp.headers.items()] == [('server', 'test-h2'), ('test', 'PASS')]
+        assert resp.read() == data
 
 if __name__ == '__main__':
     unittest.main()

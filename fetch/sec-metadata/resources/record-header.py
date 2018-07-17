@@ -12,6 +12,7 @@ def main(request, response):
   testId = hashlib.md5(key).hexdigest()
 
   ## Handle the header retrieval request ##
+  ## GET and POST requests are already used to record header values ##
   if request.method == "PUT":
     response.writer.write_status(200)
     response.writer.end_headers()
@@ -23,7 +24,7 @@ def main(request, response):
 
   ## Record incoming Sec-Metadata header value
   else:
-    ## Return "NO SEC_METADATA HEADER" (or empty TBD) as a default value ##
+    ## Return empty string as a default value ##
     header = request.headers.get("Sec-Metadata", "")
     request.server.stash.put(testId, header)
 
@@ -79,11 +80,10 @@ def main(request, response):
       file.close()
       return style
 
-    ## Return a valid image content and Content-Type ##
+    ## Return a valid image content and Content-Type for redirect requests ##
     if key.startswith("redirect"):
       response.headers.set("Content-Type", "image/jpeg")
       file = open("media/1x1-green.png", "r")
       image = file.read()
       file.close()
       return image
-

@@ -3033,9 +3033,6 @@ function IdlNamespace(obj)
 
     /** An array of IdlInterfaceMembers. */
     this.members = obj.members.map(m => new IdlInterfaceMember(m));
-    if (this.has_extended_attribute("Unforgeable")) {
-        this.members.forEach(m => { m.isUnforgeable = true; });
-    }
 }
 //@}
 
@@ -3062,13 +3059,6 @@ IdlNamespace.prototype.do_member_operation_asserts = function (memberHolderObjec
         typeof memberHolderObject[member.name],
         "function",
          "property must be a function");
-
-    var args = member.arguments.map(function(a) {
-        return create_suitable_object(a.idlType);
-    });
-    this.array.assert_type_is(
-        memberHolderObject[member.name].call(null, args),
-        member.idlType);
 
     assert_equals(
         memberHolderObject[member.name].length,
@@ -3125,14 +3115,8 @@ IdlNamespace.prototype.test_member_attribute = function (member)
             member.name,
             this.name + ' does not have property ' + format_value(member.name));
 
-        // "The attribute setter is undefined if the attribute is declared
-        // readonly and has neither a [PutForwards] nor a [Replaceable]
-        // extended attribute declared on it."
-        if (!member.has_extended_attribute("PutForwards")
-            && !member.has_extended_attribute("Replaceable")) {
-            var desc = Object.getOwnPropertyDescriptor(self[this.name], member.name);
-            assert_equals(desc.set, undefined, "setter must be undefined for readonly attributes");
-        }
+        var desc = Object.getOwnPropertyDescriptor(self[this.name], member.name);
+        assert_equals(desc.set, undefined, "setter must be undefined for namespace members");
         a_test.done();
     }.bind(this));
 };

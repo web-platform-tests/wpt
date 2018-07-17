@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/
+spec: https://dom.spec.whatwg.org/#shadow-trees
 suggested_reviewers:
   - kojiishi
   - rniwa

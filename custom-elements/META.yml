@@ -1,4 +1,4 @@
-spec: https://html.spec.whatwg.org/
+spec: https://html.spec.whatwg.org/multipage/custom-elements.html
 suggested_reviewers:
   - snuggs
   - domenic

@@ -387,7 +387,7 @@ class H2ResponseWriter(object):
         self.request = response.request
         self.logger = response.logger
 
-    def write_headers(self, headers, status_code, status_message=None):
+    def write_headers(self, headers, status_code, status_message=None, stream_id=None, last=False):
         formatted_headers = []
         secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
 
@@ -403,13 +403,14 @@ class H2ResponseWriter(object):
 
         with self.h2conn as connection:
             connection.send_headers(
-                stream_id=self.request.h2_stream_id,
+                stream_id=self.request.h2_stream_id if stream_id is None else stream_id,
                 headers=formatted_headers,
+                end_stream=last or self.request.method == "HEAD"
             )
 
             self.write(connection)
 
-    def write_content(self, item, last=False):
+    def write_content(self, item, last=False, stream_id=None):
         if isinstance(item, (text_type, binary_type)):
             data = BytesIO(self.encode(item))
         else:
@@ -427,17 +428,28 @@ class H2ResponseWriter(object):
             data_len -= payload_size
             payload_size = self.get_max_payload_size()
 
-        self.write_content_frame(data.read(), last)
+        self.write_content_frame(data.read(), last, stream_id)
 
-    def write_content_frame(self, data, last):
+    def write_content_frame(self, data, last, stream_id=None):
         with self.h2conn as connection:
             connection.send_data(
-                stream_id=self.request.h2_stream_id,
+                stream_id=self.request.h2_stream_id if stream_id is None else stream_id,
                 data=data,
                 end_stream=last,
             )
             self.write(connection)
         self.content_written = last
+
+    def write_push(self, promise_headers, response_headers, status, data=None, stream_id=None):
+        with self.h2conn as connection:
+            connection.push_stream(self.request.h2_stream_id, stream_id, promise_headers)
+            self.write(connection)
+
+        has_data = data is not None
+        self.write_headers(response_headers, status, stream_id=stream_id, last=not has_data)
+
+        if has_data:
+            self.write_content(data, last=True, stream_id=stream_id)
 
     def get_max_payload_size(self):
         with self.h2conn as connection:

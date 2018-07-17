@@ -8,24 +8,26 @@
   </head>
   <body>
     <script>
-    function runTest(test, path, credentials, expectSuccess) {
-      return new Promise(resolve => {
-        const xhr = new XMLHttpRequest();
-        xhr.withCredentials = credentials;
-        xhr.open("GET", "resources/redirect.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN + path, true);
+    function runTest(testName, path, credentials, expectSuccess) {
+      return promise_test(test => {
+          return new Promise(resolve => {
+              const xhr = new XMLHttpRequest();
+              xhr.withCredentials = credentials;
+              xhr.open("GET", "resources/redirect.py?location=" + get_host_info().HTTP_REMOTE_ORIGIN + path, true);
 
-        xhr.onload = test.step_func(function() {
-          assert_true(expectSuccess);
-          assert_equals(xhr.responseText, "PASS: Cross-domain access allowed.");
-          resolve();
-        });
-        xhr.onerror = test.step_func(function() {
-          assert_false(expectSuccess);
-          assert_equals(xhr.status, 0);
-          resolve();
-        });
-        xhr.send(null);
-      });
+              xhr.onload = test.step_func(function() {
+                  assert_true(expectSuccess);
+                  assert_equals(xhr.responseText, "PASS: Cross-domain access allowed.");
+                  resolve();
+              });
+              xhr.onerror = test.step_func(function() {
+                  assert_false(expectSuccess);
+                  assert_equals(xhr.status, 0);
+                  resolve();
+              });
+              xhr.send(null);
+          });
+      }, testName);
     }
 
     const withoutCredentials = false;
@@ -36,40 +38,34 @@
     // Test simple same origin requests that receive cross origin redirects.
 
     // The redirect response passes the access check.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow-star.py",
-          withoutCredentials, succeeds)
-    }, "Request without credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)");
+    runTest("Request without credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)",
+            "/xhr/resources/access-control-basic-allow-star.py",
+            withoutCredentials, succeeds);
 
     // The redirect response fails the access check because credentials were sent.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow-star.py",
-          withCredentials, fails)
-    }, "Request with credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)");
+    runTest("Request with credentials is redirected to a cross-origin response with Access-Control-Allow-Origin=* (with star)",
+            "/xhr/resources/access-control-basic-allow-star.py",
+            withCredentials, fails);
 
     // The redirect response passes the access check.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow.py",
-          withoutCredentials, succeeds)
-    }, "Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin");
+    runTest("Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin",
+            "/xhr/resources/access-control-basic-allow.py",
+            withoutCredentials, succeeds);
 
     // The redirect response passes the access check.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow.py",
-          withCredentials, succeeds)
-    }, "Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin");
+    runTest("Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin",
+            "/xhr/resources/access-control-basic-allow.py",
+            withCredentials, succeeds);
 
     // forbidding credentials. The redirect response passes the access check.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow-no-credentials.py",
-          withoutCredentials, succeeds)
-    }, "Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)");
+    runTest("Request without credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)",
+            "/xhr/resources/access-control-basic-allow-no-credentials.py",
+            withoutCredentials, succeeds);
 
     // forbidding credentials. The redirect response fails the access check.
-    promise_test(t => {
-      return runTest(t, "/xhr/resources/access-control-basic-allow-no-credentials.py",
-          withCredentials, fails)
-    }, "Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)");
+    runTest("Request with credentials is redirected to a cross-origin response with a specific Access-Control-Allow-Origin (no credentials)",
+            "/xhr/resources/access-control-basic-allow-no-credentials.py",
+            withCredentials, fails);
     </script>
   </body>
 </html>

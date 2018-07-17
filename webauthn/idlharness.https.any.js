@@ -11,16 +11,17 @@ promise_test(() => {
     ['webauthn'],
     ['credential-management'],
     idlArray => {
+      idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface ArrayBuffer {};");
       idlArray.add_objects({
         WebAuthentication: ['navigator.authentication'],
         PublicKeyCredential: ['cred'],
-        AuthenticatorAssertionResponse: ['assertion']
+        AuthenticatorAssertionResponse: ['assertionResponse']
       });
     },
     'WebAuthn interfaces.'
   );
 
-  const challengeBytes = new Uint8Array(16);
+  let challengeBytes = new Uint8Array(16);
   window.crypto.getRandomValues(challengeBytes);
 
   return createCredential({
@@ -30,27 +31,25 @@ promise_test(() => {
           user: {
             id: new Uint8Array(16),
           },
-          challenge: challengeBytes,
         }
       }
     })
     .then(cred => {
       self.cred = cred;
       return navigator.credentials.get({
-        options: {
-          publicKey: {
-            timeout: 3000,
-            allowCredentials: [{
-              id: cred.rawId,
-              transports: ["usb", "nfc", "ble"],
-              type: "public-key"
-            }],
-          }
+        publicKey: {
+          timeout: 3000,
+          allowCredentials: [{
+            id: cred.rawId,
+            transports: ["usb", "nfc", "ble"],
+            type: "public-key"
+          }],
+          challenge: challengeBytes,
         }
       });
     })
     .then(assertion => {
-      self.assertion = assertion;
+      self.assertionResponse = assertion.response;
     })
     .then(execute_test)
     .catch(reason => {

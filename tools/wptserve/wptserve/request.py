@@ -5,6 +5,7 @@ from six import BytesIO
 import tempfile
 
 from six.moves.urllib.parse import parse_qsl, urlsplit
+from six.moves.queue import Queue
 
 from . import stash
 from .utils import HTTPException
@@ -278,14 +279,13 @@ class Request(object):
 
         self.raw_input = InputFile(request_handler.rfile,
                                    int(self.headers.get("Content-Length", 0)))
+
         self._body = None
 
         self._GET = None
         self._POST = None
         self._cookies = None
         self._auth = None
-
-        self.h2_stream_id = request_handler.h2_stream_id if hasattr(request_handler, 'h2_stream_id') else None
 
         self.server = Server(self)
 
@@ -347,6 +347,13 @@ class Request(object):
         if self._auth is None:
             self._auth = Authentication(self.headers)
         return self._auth
+
+
+class H2Request(Request):
+    def __init__(self, request_handler):
+        self.h2_stream_id = request_handler.h2_stream_id
+        self.frames = Queue()
+        super(H2Request, self).__init__(request_handler)
 
 
 class RequestHeaders(dict):

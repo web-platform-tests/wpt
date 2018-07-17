@@ -7,6 +7,8 @@ import traceback
 from six.moves.urllib.parse import parse_qs, quote, unquote, urljoin
 from six import iteritems
 
+from h2.events import RequestReceived, DataReceived
+
 from .constants import content_types
 from .pipes import Pipeline, template
 from .ranges import RangeParser
@@ -244,6 +246,10 @@ class PythonScriptHandler(object):
                 handler = FunctionHandler(environ["main"])
                 handler(request, response)
                 wrap_pipeline(path, request, response)
+            elif "h2main" in environ:
+                handler = environ["h2main"](H2ResponseHandler)
+                handler(request, response)
+                wrap_pipeline(path, request, response)
             else:
                 raise HTTPException(500, "No main function in script %s" % path)
         except IOError:
@@ -287,6 +293,33 @@ class FunctionHandler(object):
 def handler(func):
     return FunctionHandler(func)
 
+
+class H2ResponseHandler(object):
+
+    def __init__(self):
+        self.func_map = {
+            'headers': None,
+            'data': None,
+        }
+
+    def __call__(self, request, response):
+        while True:
+            frame = request.frames.get(True, None)
+            if isinstance(frame, RequestReceived):
+                self.handle_headers(frame, request, response)
+            elif isinstance(frame, DataReceived):
+                self.handle_data(frame, request, response)
+            else:
+                raise ValueError('Frame type not recognized: ' + str(frame))
+
+            if frame.stream_ended:
+                break
+
+    def handle_headers(self, frame, request, response):
+        pass
+
+    def handle_data(self, frame, request, response):
+        pass
 
 class JsonHandler(object):
     def __init__(self, func):

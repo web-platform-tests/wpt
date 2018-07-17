@@ -6,10 +6,6 @@
 
 'use strict';
 
-function cast(i, t) {
-  return Object.assign(Object.create(t.prototype), i);
-}
-
 promise_test(async t => {
   const observe = new Promise((resolve, reject) => {
     try {

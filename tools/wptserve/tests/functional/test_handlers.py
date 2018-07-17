@@ -8,7 +8,7 @@ import pytest
 from six.moves.urllib.error import HTTPError
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer, doc_root
+from .base import TestUsingServer, TestUsingH2Server, doc_root
 
 
 class TestFileHandler(TestUsingServer):
@@ -322,6 +322,84 @@ class TestAsIsHandler(TestUsingServer):
         self.assertEqual("PASS", resp.info()["X-Test"])
         self.assertEqual("Content", resp.read())
         #Add a check that the response is actually sane
+
+
+class TestH2ResponseHandler(TestUsingH2Server):
+
+    def test_handle_headers(self):
+
+        class Handler(wptserve.handlers.H2ResponseHandler):
+            def handle_headers(self, frame, request, response):
+                if request.headers['path'] == "/h2test/test_handler":
+                    response.headers.update([('test', 'passed')])
+                    response.status = 203
+                else:
+                    response.headers.update([('test', 'failed')])
+
+        route = ("GET", "/h2test/test_handler", Handler())
+        self.server.router.register(*route)
+        self.conn.request(route[0], route[1])
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
+    def test_handle_data(self):
+
+        class Handler(wptserve.handlers.H2ResponseHandler):
+            def handle_data(self, frame, request, response):
+                data = frame.data
+                response.content = ''.join(reversed(data))
+
+        route = ("POST", "/h2test/test_handler", Handler())
+        self.server.router.register(*route)
+        self.conn.request(route[0], route[1], body="hello world")
+
+        resp = self.conn.get_response()
+        assert resp.status == 200
+        assert resp.read() == 'dlrow olleh'
+
+    def test_handle_data_no_headers(self):
+        # The HTTP/2.0 protocol does allow for just DATA frames to be written when a stream is
+        # in the OPEN state.
+        class Handler(wptserve.handlers.H2ResponseHandler):
+            def handle_data(self, frame, request, response):
+                data = frame.data
+                response.content = ''.join(reversed(data))
+                response.write_content()
+
+        route = ("POST", "/h2test/test_handler", Handler())
+        self.server.router.register(*route)
+        sid = self.conn.request(route[0], route[1], body="hello world")
+        assert self.conn.streams[sid]._read() == 'dlrow olleh'
+
+
+    def test_handle_headers_data(self):
+
+        class Handler(wptserve.handlers.H2ResponseHandler):
+            def handle_headers(self, frame, request, response):
+                if request.headers['path'] == "/h2test/test_handler":
+                    response.headers.update([('test', 'passed')])
+                    response.status = 203
+                else:
+                    response.headers.update([('test', 'failed')])
+                    response.status = 404
+                response.write_status_headers()
+
+            def handle_data(self, frame, request, response):
+                data = frame.data
+                response.content = ''.join(reversed(data))
+                response.write_content()
+
+        route = ("POST", "/h2test/test_handler", Handler())
+        self.server.router.register(*route)
+        self.conn.request(route[0], route[1], body="hello world")
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == 'dlrow olleh'
 
 if __name__ == '__main__':
     unittest.main()

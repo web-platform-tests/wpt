@@ -13,22 +13,16 @@ idl_test(
       PerformancePaintTiming: ['paintTiming'],
     });
 
-    const awaitPaint = resolve => {
-      try {
-        const entries = performance.getEntriesByType('paint');
-        if (entries || entries.length) {
-          window.paintTiming = entries[0];
-          resolve();
-          return;
-        }
-        t.step_timeout(awaitPaint, 50);
-      } catch (e) {
-        // Will be surfaced in idlharness.js's test_object.
-      }
-    }
+    const awaitPaint = new Promise(resolve => {
+      let observer = new PerformanceObserver(list => {
+        self.paintTiming = list.getEntries()[0];
+        resolve();
+      });
+      observer.observe({ entryTypes: ['paint'] });
+    });
     const timeout = new Promise((_, reject) => {
       t.step_timeout(() => reject('Timed out waiting for paint event'), 3000);
     });
-    return Promise.race([new Promise(awaitPaint), timeout]);
+    return Promise.race([awaitPaint, timeout]);
   },
   'paint-timing interfaces.');

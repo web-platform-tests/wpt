@@ -3048,11 +3048,7 @@ function idl_test(srcs, deps, idl_setup_func, test_name) {
                 }
             })
             .then(function() {
-                try {
-                    return idl_setup_func(idl_array, t);
-                } catch (e) {
-                    return Promise.reject(e);
-                }
+                return idl_setup_func(idl_array, t);
             })
             .then(function() { idl_array.test(); })
             .catch(function (reason) {

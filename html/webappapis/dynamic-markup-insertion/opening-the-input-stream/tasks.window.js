@@ -10,6 +10,10 @@
 // second actually calls document.open() to test if the method call removes
 // that specific task from the queue.
 
+setup({
+  allow_uncaught_exception: true
+});
+
 function taskTest(description, testBody) {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));

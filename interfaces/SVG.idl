@@ -237,14 +237,6 @@ partial interface Document {
   readonly attribute SVGSVGElement? rootElement;
 };
 
-// must only be implemented in certain implementations
-partial interface Document {
-  readonly attribute DOMString title;
-  readonly attribute DOMString referrer;
-  readonly attribute DOMString domain;
-  readonly attribute Element? activeElement;
-};
-
 [Exposed=Window]
 interface SVGSVGElement : SVGGraphicsElement {
 

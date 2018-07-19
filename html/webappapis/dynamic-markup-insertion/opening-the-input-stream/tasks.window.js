@@ -10,10 +10,6 @@
 // second actually calls document.open() to test if the method call removes
 // that specific task from the queue.
 
-setup({
-  allow_uncaught_exception: true
-});
-
 function taskTest(description, testBody) {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
@@ -90,11 +86,15 @@ taskTest("MessagePort", (t, frame, open) => {
 });
 
 taskTest("Promise rejection", (t, frame, open) => {
-  const promise = frame.contentWindow.eval("Promise.reject(42);");
-  open(frame.contentDocument);
-  frame.contentWindow.onunhandledrejection = t.step_func_done(ev => {
-    assert_equals(ev.promise, promise);
-    assert_equals(ev.reason, 42);
+  // The frame.contentWindow.setTimeout is necessary to make the test work on
+  // Safari. See: https://bugs.webkit.org/show_bug.cgi?id=187822
+  frame.contentWindow.setTimeout(() => {
+    const promise = frame.contentWindow.eval("Promise.reject(42);");
+    open(frame.contentDocument);
+    frame.contentWindow.onunhandledrejection = t.step_func_done(ev => {
+      assert_equals(ev.promise, promise);
+      assert_equals(ev.reason, 42);
+    });
   });
 });
 

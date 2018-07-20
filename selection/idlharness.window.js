@@ -21,7 +21,7 @@ idl_test(
       Window: ['window'],
       Document: ['document'],
       Selection: ['getSelection()'],
-      GlobalEventHandlers: ['global'],
+      GlobalEventHandlers: ['self'],
     });
   },
   'selection-api interfaces'

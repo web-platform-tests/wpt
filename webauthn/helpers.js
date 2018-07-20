@@ -9,6 +9,32 @@ const cose_crv_P256 = 1;
 const cose_crv_x = -2;
 const cose_crv_y = -3;
 
+function u2f_promise_test(func, name, properties) {
+    return promise_test(async t => {
+        if (!navigator.credentials.test) {
+            loadChromiumResources();
+        }
+
+        return func(t);
+    }, name, properties);
+}
+
+function loadChromiumResources() {
+    let chain = Promise.resolve();
+    const deps = [
+        '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
+        '/gen/third_party/blink/public/platform/modules/webauth/virtual_authenticator.mojom.js',
+        'resources/virtual-navigator-credentials.js',
+    ];
+    for (const dep of deps) {
+        const script = document.createElement('script');
+        script.src = dep;
+        script.async = false;
+        document.head.appendChild(script);
+    }
+    return chain;
+}
+
 /**
  * These are the default arguments that will be passed to navigator.credentials.create()
  * unless modified by a specific test case

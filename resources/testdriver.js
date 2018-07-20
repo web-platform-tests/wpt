@@ -170,6 +170,13 @@
          */
         freeze: function() {
             return window.test_driver_internal.freeze();
+        },
+
+        /**
+         * Authenticate a pending U2F credential request.
+         */
+        authenticate_u2f: function() {
+            return window.test_driver_internal.authenticate_u2f();
         }
     };
 
@@ -204,6 +211,17 @@
          */
         freeze: function() {
             return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Authenticate a pending U2F credential request.
+         *
+         * @returns {Promise} fulfilled after the u2f authentication request is
+         * resolved, otherwise it gets rejected.
+         */
+        authenticate_u2f: function() {
+            return Promise.reject(
+                new Error("test_driver_internal.authenticate_u2f is unimplemented."));
         }
     };
 })();

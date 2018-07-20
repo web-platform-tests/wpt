@@ -6,6 +6,9 @@ function isPictureInPictureAllowed() {
     let video = document.createElement('video');
     video.src = '/media/movie_5.ogv';
     video.onloadedmetadata = () => {
+      if (!("requestPictureInPicture" in video)) {
+        resolve(false);
+      }
       video.requestPictureInPicture()
       .then(() => resolve(document.pictureInPictureEnabled))
       .catch(e => {

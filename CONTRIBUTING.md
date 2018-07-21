@@ -5,7 +5,7 @@ By contributing to this repository, you and the company you represent, if the
 company holds any copyrights in the contribution, grant to the W3C a perpetual,
 non-exclusive, royalty-free, world-wide right and license under all of your
 copyrights in this contribution to copy, publish, use, and modify the
-contribution and to distribute the contribution under a BSD License or one with
+contribution and to distribute the contribution under a BSD License or one  with
 more restrictive terms, as well as a right and license of the same scope to any
 derivative works prepared by the W3C and based on or incorporating all or part
 of the contribution. You further agree that any derivative works of this

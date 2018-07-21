@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content of this file was automatically extracted from the
-// "Pointer Events Extensions" spec.
+// "PointerEvents - Level 2 - Extensions" spec.
 // See: https://w3c.github.io/pointerevents/extension.html
 
 partial dictionary PointerEventInit {

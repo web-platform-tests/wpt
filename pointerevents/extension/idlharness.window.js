@@ -1,17 +1,15 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
-'use strict';
-
-// https://w3c.github.io/pointerevents/
+// https://w3c.github.io/pointerevents/extension.html
 
 idl_test(
   ['pointerevents-extension'],
-  ['pointerevents', 'uievents', 'dom', 'html'],
+  ['pointerevents', 'uievents', 'dom'],
   idl_array => {
     idl_array.add_objects({
-      PointerEvent: ['new PointerEvent("type")']
-    });
+      PointerEvent: ['new PointerEvent("pointer")'],
+    })
   },
-  'pointerevents-extension interfaces'
+  'pointerevents extension interfaces'
 );

@@ -1043,11 +1043,11 @@ policies and contribution forms [3].
                {expected:expected.length, actual:actual.length});
 
         for (var i = 0; i < actual.length; i++) {
-            assert(Object.prototype.hasOwnProperty.call(actual, i) === Object.prototype.hasOwnProperty.call(expected, i),
+            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
                    "assert_array_equals", description,
                    "property ${i}, property expected to be ${expected} but was ${actual}",
-                   {i:i, expected:Object.prototype.hasOwnProperty.call(expected, i) ? "present" : "missing",
-                   actual:Object.prototype.hasOwnProperty.call(actual, i) ? "present" : "missing"});
+                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
+                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
             assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
                    "property ${i}, expected ${expected} but got ${actual}",
@@ -1067,11 +1067,11 @@ policies and contribution forms [3].
                {expected:expected.length, actual:actual.length});
 
         for (var i = 0; i < actual.length; i++) {
-            assert(Object.prototype.hasOwnProperty.call(actual, i) === Object.prototype.hasOwnProperty.call(expected, i),
+            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
                    "assert_array_approx_equals", description,
                    "property ${i}, property expected to be ${expected} but was ${actual}",
-                   {i:i, expected:Object.prototype.hasOwnProperty.call(expected, i) ? "present" : "missing",
-                   actual:Object.prototype.hasOwnProperty.call(actual, i) ? "present" : "missing"});
+                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
+                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
             assert(typeof actual[i] === "number",
                    "assert_array_approx_equals", description,
                    "property ${i}, expected a number but got a ${type_actual}",

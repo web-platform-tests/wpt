@@ -1,7 +1,7 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 
-// http://webaudio.github.io/web-midi-api/
+// https://webaudio.github.io/web-midi-api/
 
 'use strict';
 

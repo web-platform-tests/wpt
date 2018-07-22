@@ -1007,7 +1007,7 @@ policies and contribution forms [3].
 
              var p;
              for (p in actual) {
-                 assert(expected.hasOwnProperty(p), "assert_object_equals", description,
+                 assert(Object.prototype.hasOwnProperty.call(expected, p), "assert_object_equals", description,
                                                     "unexpected property ${p}", {p:p});
 
                  if (typeof actual[p] === "object" && actual[p] !== null) {
@@ -1021,7 +1021,7 @@ policies and contribution forms [3].
                  }
              }
              for (p in expected) {
-                 assert(actual.hasOwnProperty(p),
+                 assert(Object.prototype.hasOwnProperty.call(actual, p),
                         "assert_object_equals", description,
                         "expected property ${p} missing", {p:p});
              }
@@ -1226,7 +1226,7 @@ policies and contribution forms [3].
     function _assert_own_property(name) {
         return function(object, property_name, description)
         {
-            assert(object.hasOwnProperty(property_name),
+            assert(Object.prototype.hasOwnProperty.call(object, property_name),
                    name, description,
                    "expected property ${p} missing", {p:property_name});
         };
@@ -1236,7 +1236,7 @@ policies and contribution forms [3].
 
     function assert_not_exists(object, property_name, description)
     {
-        assert(!object.hasOwnProperty(property_name),
+        assert(!Object.prototype.hasOwnProperty.call(object, property_name),
                "assert_not_exists", description,
                "unexpected property ${p} found", {p:property_name});
     }

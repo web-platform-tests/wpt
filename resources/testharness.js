@@ -1007,7 +1007,7 @@ policies and contribution forms [3].
 
              var p;
              for (p in actual) {
-                 assert(expected.hasOwnProperty(p), "assert_object_equals", description,
+                 assert(Object.prototype.hasOwnProperty.call(expected, p), "assert_object_equals", description,
                                                     "unexpected property ${p}", {p:p});
 
                  if (typeof actual[p] === "object" && actual[p] !== null) {
@@ -1021,7 +1021,7 @@ policies and contribution forms [3].
                  }
              }
              for (p in expected) {
-                 assert(actual.hasOwnProperty(p),
+                 assert(Object.prototype.hasOwnProperty.call(actual, p),
                         "assert_object_equals", description,
                         "expected property ${p} missing", {p:p});
              }
@@ -1043,11 +1043,11 @@ policies and contribution forms [3].
                {expected:expected.length, actual:actual.length});
 
         for (var i = 0; i < actual.length; i++) {
-            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
+            assert(Object.prototype.hasOwnProperty.call(actual, i) === Object.prototype.hasOwnProperty.call(expected, i),
                    "assert_array_equals", description,
                    "property ${i}, property expected to be ${expected} but was ${actual}",
-                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
+                   {i:i, expected:Object.prototype.hasOwnProperty.call(expected, i) ? "present" : "missing",
+                   actual:Object.prototype.hasOwnProperty.call(actual, i) ? "present" : "missing"});
             assert(same_value(expected[i], actual[i]),
                    "assert_array_equals", description,
                    "property ${i}, expected ${expected} but got ${actual}",
@@ -1067,11 +1067,11 @@ policies and contribution forms [3].
                {expected:expected.length, actual:actual.length});
 
         for (var i = 0; i < actual.length; i++) {
-            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i),
+            assert(Object.prototype.hasOwnProperty.call(actual, i) === Object.prototype.hasOwnProperty.call(expected, i),
                    "assert_array_approx_equals", description,
                    "property ${i}, property expected to be ${expected} but was ${actual}",
-                   {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
-                   actual:actual.hasOwnProperty(i) ? "present" : "missing"});
+                   {i:i, expected:Object.prototype.hasOwnProperty.call(expected, i) ? "present" : "missing",
+                   actual:Object.prototype.hasOwnProperty.call(actual, i) ? "present" : "missing"});
             assert(typeof actual[i] === "number",
                    "assert_array_approx_equals", description,
                    "property ${i}, expected a number but got a ${type_actual}",
@@ -1226,7 +1226,7 @@ policies and contribution forms [3].
     function _assert_own_property(name) {
         return function(object, property_name, description)
         {
-            assert(object.hasOwnProperty(property_name),
+            assert(Object.prototype.hasOwnProperty.call(object, property_name),
                    name, description,
                    "expected property ${p} missing", {p:property_name});
         };
@@ -1236,7 +1236,7 @@ policies and contribution forms [3].
 
     function assert_not_exists(object, property_name, description)
     {
-        assert(!object.hasOwnProperty(property_name),
+        assert(!Object.prototype.hasOwnProperty.call(object, property_name),
                "assert_not_exists", description,
                "unexpected property ${p} found", {p:property_name});
     }

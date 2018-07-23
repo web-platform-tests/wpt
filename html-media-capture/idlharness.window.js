@@ -9,12 +9,10 @@ idl_test(
   ['html-media-capture'],
   ['html', 'dom'],
   idl_array => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'user';
     idl_array.add_objects({
-      HTMLInputElement: [input],
+      HTMLInputElement: ['input'],
     });
+
+    self.input = document.createElement('input');
   },
   'html-media-capture interfaces.');

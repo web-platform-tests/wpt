@@ -3187,7 +3187,9 @@ function idl_test(srcs, deps, idl_setup_func, test_name) {
                 }
             })
             .then(function() {
-                return idl_setup_func(idl_array, t);
+                if (idl_setup_func) {
+                    return idl_setup_func(idl_array, t);
+                }
             })
             .then(function() { idl_array.test(); })
             .catch(function (reason) {

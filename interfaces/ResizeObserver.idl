@@ -11,7 +11,7 @@ interface ResizeObserver {
     void disconnect();
 };
 
-callback ResizeObserverCallback = void (sequence<ResizeObserverEntry> entries, ResizeObserver observer)
+callback ResizeObserverCallback = void (sequence<ResizeObserverEntry> entries, ResizeObserver observer);
 
 [Constructor(Element target)
 ]

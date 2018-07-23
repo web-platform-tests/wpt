@@ -348,7 +348,6 @@ def create_test_tree(metadata_path, test_manifest, property_order=None,
                 dir_id = "__dir__"
             dir_id = (test_manifest.url_base + dir_id).lstrip("/")
             if dir_id not in id_test_map:
-                dir_object = DirObject(dir_id, dir_path)
                 expected_data = load_or_create_expected(test_manifest,
                                                         metadata_path,
                                                         dir_id,
@@ -362,15 +361,6 @@ def create_test_tree(metadata_path, test_manifest, property_order=None,
             dir_path = dir_path.rsplit("/", 1)[0] if "/" in dir_path else ""
 
     return id_test_map
-
-
-class DirObject(object):
-    def __init__(self, id, path):
-        self.id = id
-        self.path = path
-
-    def __hash__(self):
-        return hash(self.id)
 
 
 def load_or_create_expected(test_manifest, metadata_path, test_path, tests, property_order=None,

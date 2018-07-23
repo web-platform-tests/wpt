@@ -10,8 +10,10 @@
 
   idl_test(
     ['css-images'],
-    [], // No deps
-    null, // No objects,
+    ['cssom'],
+    idl_array => {
+      // No objects,
+    },
     'Test IDL implementation of css-masking'
   );
 </script>

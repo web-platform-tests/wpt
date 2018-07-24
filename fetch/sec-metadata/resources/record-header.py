@@ -1,6 +1,7 @@
 import os
 import uuid
 import hashlib
+import time
 
 resourcePath = os.getcwd() + "/fetch/sec-metadata/resources/"
 
@@ -30,9 +31,14 @@ def main(request, response):
   else:
     ## Return empty string as a default value ##
     header = request.headers.get("Sec-Metadata", "")
-    request.server.stash.put(testId, header)
+    try:
+      request.server.stash.put(testId, header)
+    except KeyError:
+      ## The header is already recorded
+      pass
 
-    ## Prevent the browser from caching returned responses ##
+    ## Prevent the browser from caching returned responses and allow CORS ##
+    response.headers.set("Access-Control-Allow-Origin", "*")
     response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate")
     response.headers.set("Pragma", "no-cache")
     response.headers.set("Expires", "0")

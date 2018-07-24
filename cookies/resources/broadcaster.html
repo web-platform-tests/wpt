@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script>
+  const bc = new BroadcastChannel("samesite-broadcast");
+  window.onmessage = e => {
+    bc.postMessage(e.data);
+  }
+
+  if (window.parent != window)
+    window.parent.postMessage("ready", "*");
+</script>

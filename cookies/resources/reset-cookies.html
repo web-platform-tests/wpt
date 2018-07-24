@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script>
+  function credFetch(url) {
+    return fetch(url, {"credentials": "include"});
+  }
+
+  credFetch("/cookies/resources/dropSameSite.py")
+    .then(_ => {
+      return credFetch("/cookies/resources/setSameSite.py?" + window.location.search.substr(1));
+    })
+    .then(_ => {
+      window.opener.postMessage(document.cookie, "*");
+    });
+</script>

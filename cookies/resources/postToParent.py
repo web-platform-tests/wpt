@@ -8,6 +8,8 @@ def main(request, response):
 
     tmpl = """
 <!DOCTYPE html>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
 <script>
   var data = %s;
 
@@ -21,7 +23,13 @@ def main(request, response):
     console.log(e);
     if (e.data == "reload")
       window.location.reload();
+    if (e.data == "ready")
+      e.source.postMessage(data, "*");
   });
+
+  let iframe = document.createElement("iframe");
+  iframe.src = get_host_info().HTTP_ORIGIN + "/cookies/resources/broadcaster.html";
+  document.body.appendChild(iframe);
 </script>
 """
     return headers, tmpl % json.dumps(cookies)

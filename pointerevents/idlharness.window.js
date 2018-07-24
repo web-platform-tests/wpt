@@ -11,7 +11,6 @@ idl_test(
   idl_array => {
     idl_array.add_objects({
       Element: ['document'],
-      GlobalEventHandlers: ['window'],
       Window: ['window'],
       Navigator: ['navigator'],
       PointerEvent: ['new PointerEvent("type")']

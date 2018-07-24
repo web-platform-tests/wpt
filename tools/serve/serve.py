@@ -542,8 +542,7 @@ def start_https_server(host, port, paths, routes, bind_address, config, **kwargs
                                  latency=kwargs.get("latency"))
 
 
-def start_http2_server(host, port, paths, routes, bind_address, config, ssl_config,
-                       **kwargs):
+def start_http2_server(host, port, paths, routes, bind_address, config, **kwargs):
     return wptserve.WebTestHttpd(host=host,
                                  port=port,
                                  handler_cls=wptserve.Http2WebTestRequestHandler,
@@ -553,9 +552,9 @@ def start_http2_server(host, port, paths, routes, bind_address, config, ssl_conf
                                  bind_address=bind_address,
                                  config=config,
                                  use_ssl=True,
-                                 key_file=ssl_config["key_path"],
-                                 certificate=ssl_config["cert_path"],
-                                 encrypt_after_connect=ssl_config["encrypt_after_connect"],
+                                 key_file=config.ssl_config["key_path"],
+                                 certificate=config.ssl_config["cert_path"],
+                                 encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                  latency=kwargs.get("latency"),
                                  http2=True)
 class WebSocketDaemon(object):

@@ -997,6 +997,9 @@ policies and contribution forms [3].
 
     function assert_object_equals(actual, expected, description)
     {
+         assert(typeof actual === "object" && actual !== null, "assert_object_equals", description,
+                                                               "value is ${actual}, expected object",
+                                                               {actual: actual});
          //This needs to be improved a great deal
          function check_equal(actual, expected, stack)
          {
@@ -1830,6 +1833,15 @@ policies and contribution forms [3].
         }
         this.message_target.removeEventListener("message", this.message_handler);
         this.running = false;
+
+        // If remote context is cross origin assigning to onerror is not
+        // possible, so silently catch those errors.
+        try {
+          this.remote.onerror = null;
+        } catch (e) {
+          // Ignore.
+        }
+
         this.remote = null;
         this.message_target = null;
         if (this.doneResolve) {

@@ -13,7 +13,7 @@ import sys
 import threading
 import time
 import traceback
-import urllib2
+from six.moves import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from multiprocessing import Process, Event
@@ -27,7 +27,7 @@ from wptserve import stash
 from wptserve import config
 from wptserve.logger import set_logger
 from wptserve.handlers import filesystem_path, wrap_pipeline
-from wptserve.utils import get_port, HTTPException
+from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
 
 
@@ -352,7 +352,7 @@ class RoutesBuilder(object):
         for (method, suffix, handler_cls) in routes:
             self.mountpoint_routes[url_base].append(
                 (method,
-                 b"%s%s" % (str(url_base) if url_base != "/" else "", str(suffix)),
+                 "%s%s" % (url_base if url_base != "/" else "", suffix),
                  handler_cls(base_path=path, url_base=url_base)))
 
     def add_file_mount_point(self, file_url, base_path):
@@ -434,7 +434,7 @@ def check_subdomains(config):
     aliases = config.aliases
 
     host = config.server_host
-    port = get_port(host)
+    port = get_port()
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
@@ -444,10 +444,10 @@ def check_subdomains(config):
     connected = False
     for i in range(10):
         try:
-            urllib2.urlopen("http://%s:%d/" % (host, port))
+            urllib.request.urlopen("http://%s:%d/" % (host, port))
             connected = True
             break
-        except urllib2.URLError:
+        except urllib.error.URLError:
             time.sleep(1)
 
     if not connected:
@@ -460,7 +460,7 @@ def check_subdomains(config):
             continue
 
         try:
-            urllib2.urlopen("http://%s:%d/" % (domain, port))
+            urllib.request.urlopen("http://%s:%d/" % (domain, port))
         except Exception:
             logger.critical("Failed probing domain %s. "
                             "You may need to edit /etc/hosts or similar, see README.md." % domain)
@@ -492,14 +492,20 @@ def make_hosts_file(config, host):
 def start_servers(host, ports, paths, routes, bind_address, config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
-    for scheme, ports in ports.iteritems():
+    for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
+
+        # TODO Not very ideal, look into removing it in the future
+        # Check that python 2.7.15 is being used for HTTP/2.0
+        if scheme == 'http2' and not http2_compatible():
+            continue
 
         for port in ports:
             if port is None:
                 continue
             init_func = {"http":start_http_server,
                          "https":start_https_server,
+                         "http2":start_http2_server,
                          "ws":start_ws_server,
                          "wss":start_wss_server}[scheme]
 
@@ -542,6 +548,22 @@ def start_https_server(host, port, paths, routes, bind_address, config, ssl_conf
                                  latency=kwargs.get("latency"))
 
 
+def start_http2_server(host, port, paths, routes, bind_address, config, ssl_config,
+                       **kwargs):
+    return wptserve.WebTestHttpd(host=host,
+                                 port=port,
+                                 handler_cls=wptserve.Http2WebTestRequestHandler,
+                                 doc_root=paths["doc_root"],
+                                 routes=routes,
+                                 rewrites=rewrites,
+                                 bind_address=bind_address,
+                                 config=config,
+                                 use_ssl=True,
+                                 key_file=ssl_config["key_path"],
+                                 certificate=ssl_config["cert_path"],
+                                 encrypt_after_connect=ssl_config["encrypt_after_connect"],
+                                 latency=kwargs.get("latency"),
+                                 http2=True)
 class WebSocketDaemon(object):
     def __init__(self, host, port, doc_root, handlers_root, log_level, bind_address,
                  ssl_config):
@@ -659,6 +681,9 @@ def iter_procs(servers):
 def load_config(override_path=None, **kwargs):
     rv = Config()
 
+    if kwargs.get("h2"):
+        rv._default["ports"]["http2"] = [9000]
+
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
             override_obj = json.load(f)
@@ -712,7 +737,7 @@ class Config(config.Config):
             "http": [8000, "auto"],
             "https": [8443],
             "ws": ["auto"],
-            "wss": ["auto"]
+            "wss": ["auto"],
         },
         "check_subdomains": True,
         "log_level": "debug",
@@ -771,6 +796,9 @@ def get_parser():
                         help="Path to document root. Overrides config.")
     parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
+    parser.add_argument("--h2", action="store_true", dest="h2",
+                        help="Flag for enabling the HTTP/2.0 server")
+    parser.set_defaults(h2=False)
     return parser
 
 
@@ -789,7 +817,7 @@ def run(**kwargs):
 
     stash_address = None
     if bind_address:
-        stash_address = (config.server_host, get_port(config.server_host))
+        stash_address = (config.server_host, get_port())
         logger.debug("Going to use port %d for stash" % stash_address[1])
 
     with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):

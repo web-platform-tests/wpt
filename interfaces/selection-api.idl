@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the Selection API spec.
-// See https://w3c.github.io/selection-api/
+// Content of this file was automatically extracted from the
+// "Selection API" spec.
+// See: https://w3c.github.io/selection-api/
 
 interface Selection {
   readonly attribute Node? anchorNode;
@@ -29,7 +30,7 @@ interface Selection {
 };
 
 partial interface Document {
-  Selection ? getSelection();
+  Selection? getSelection();
 };
 
 partial interface Window {

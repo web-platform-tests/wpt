@@ -1,17 +1,15 @@
 'use strict';
 
-importScripts('interfaces-idls.js');
 importScripts('worker-testharness.js');
 importScripts('/resources/WebIDLParser.js');
 importScripts('/resources/idlharness.js');
 
 promise_test(async (t) => {
-  var idlArray = new IdlArray();
-  const dom = await fetch('/interfaces/dom.idl').then(r => r.text());
-  const serviceWorkerIdl = await fetch('/interfaces/ServiceWorker.idl').then(r => r.text());
+  const srcs = ['dom', 'html', 'service-workers', 'dedicated-workers'];
+  const [dom, html, serviceWorkerIdl, dedicated] = await Promise.all(
+    srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
 
-  idlArray.add_untested_idls(idls.untested);
-  idlArray.add_untested_idls(dom, { only: ['EventTarget'] });
+  var idlArray = new IdlArray();
   idlArray.add_idls(serviceWorkerIdl, { only: [
     'ServiceWorkerGlobalScope',
     'Client',
@@ -26,6 +24,9 @@ promise_test(async (t) => {
     'Cache',
     'CacheStorage',
   ]});
+  idlArray.add_dependency_idls(dedicated);
+  idlArray.add_dependency_idls(dom);
+  idlArray.add_dependency_idls(html);
   idlArray.add_objects({
     ServiceWorkerGlobalScope: ['self'],
     Clients: ['self.clients'],

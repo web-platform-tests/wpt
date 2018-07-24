@@ -7,13 +7,17 @@ resourcePath = os.getcwd() + "/fetch/sec-metadata/resources/"
 def main(request, response):
 
   ## Get the query parameter (key) from URL ##
-  key = request.url_parts.query.split("=")[1]
+  ## Tests will record POST requests (CSP Report) and GET (rest) ##
+  if request.GET:
+    key = request.GET['file']
+  elif request.POST:
+    key = request.POST['file']
+
   ## Convert the key from String to UUID valid String ##
   testId = hashlib.md5(key).hexdigest()
 
   ## Handle the header retrieval request ##
-  ## GET and POST requests are already used to record header values ##
-  if request.method == "PUT":
+  if 'retrieve' in request.GET:
     response.writer.write_status(200)
     response.writer.end_headers()
     header_value = request.server.stash.take(testId)
@@ -28,8 +32,7 @@ def main(request, response):
     header = request.headers.get("Sec-Metadata", "")
     request.server.stash.put(testId, header)
 
-    ## Prevent the browser from caching returned responses and allow CORS ##
-    response.headers.set("Access-Control-Allow-Origin", "*")
+    ## Prevent the browser from caching returned responses ##
     response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate")
     response.headers.set("Pragma", "no-cache")
     response.headers.set("Expires", "0")

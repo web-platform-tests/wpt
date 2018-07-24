@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<link rel="author" href="mtrzos@google.com" title="Maciek Trzos">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+
+  <!-- Cross-Site request -->
+  <!-- Add onloadstart="test_cross_site()" to Chromium Gerrit tests -->
+  <video onloadeddata="test_cross_site()" controls>
+    <source src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-cross-site" type="video/mp4">
+  </video>
+</body>
+<script>
+  function test_cross_site(){
+    var cross_site_test = async_test("Cross-Site video");
+    cross_site_test.step(function () {
+        key = "video-cross-site";
+        expected_cross_site = {"destination":"video", "target":"subresource", "site":"cross-site"};
+
+        //  Requests from the server the saved value of the Sec-Metadata header
+        cross_site_xhr = new XMLHttpRequest();
+        cross_site_xhr.open("GET", "/fetch/sec-metadata/resources/record-header.py?retrieve=true&file=" + key);
+
+        // Async test step triggered when the response is loaded
+        cross_site_xhr.onreadystatechange = cross_site_test.step_func(function () {
+          verify_response(cross_site_xhr, cross_site_test, expected_cross_site)
+        });
+        cross_site_xhr.send();
+    });
+  }
+</script>
+

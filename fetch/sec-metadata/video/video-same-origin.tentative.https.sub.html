@@ -4,21 +4,20 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+
+  <!-- Same-Origin request -->
+  <!-- Add onloadstart="test_same_origin()" to Chromium Gerrit tests -->
+  <video onloadeddata="test_same_origin()" controls>
+    <source src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=video-same-origin" type="video/mp4">
+  </video>
+</body>
 <script>
-
-  // TESTS //
-  if (window.Worker) {
-    //  Same-Origin test
-    var myWorker = new Worker('/fetch/sec-metadata/resources/record-header.py?file=worker-same-origin');
-    myWorker.terminate();
-    test_same_origin();
-  }
-
   function test_same_origin(){
-    var same_origin_test = async_test("Same-Origin worker");
+    var same_origin_test = async_test("Same-Origin video");
     same_origin_test.step(function () {
-        key = "worker-same-origin";
-        expected_same_origin = {"destination":"worker", "target":"subresource", "site":"same-origin"};
+        key = "video-same-origin";
+        expected_same_origin = {"destination":"video", "target":"subresource", "site":"same-origin"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
@@ -32,4 +31,4 @@
     });
   }
 </script>
-<body></body>
+

@@ -4,21 +4,18 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/fetch/sec-metadata/resources/helper.js></script>
+<body>
+
+  <!-- redirect Same-Site -> Same-Origin  -->
+  <img onload="test_same_origin()" onerror="test_same_origin()" src="https://{{hosts[][www]}}:{{ports[https][0]}}/xhr/resources/redirect.py?location=https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/record-header.py?file=redirect-same-site-same-origin"></img>
+</body>
+
 <script>
-
-  // TESTS //
-  if (window.Worker) {
-    //  Same-Origin test
-    var myWorker = new Worker('/fetch/sec-metadata/resources/record-header.py?file=worker-same-origin');
-    myWorker.terminate();
-    test_same_origin();
-  }
-
   function test_same_origin(){
-    var same_origin_test = async_test("Same-Origin worker");
+    var same_origin_test = async_test("Same-Site -> Same-Origin redirect");
     same_origin_test.step(function () {
-        key = "worker-same-origin";
-        expected_same_origin = {"destination":"worker", "target":"subresource", "site":"same-origin"};
+        key = "redirect-same-site-same-origin";
+        expected_same_origin = {"destination":"image", "target":"subresource", "site":"same-site"};
 
         //  Requests from the server the saved value of the Sec-Metadata header
         same_origin_xhr = new XMLHttpRequest();
@@ -32,4 +29,3 @@
     });
   }
 </script>
-<body></body>

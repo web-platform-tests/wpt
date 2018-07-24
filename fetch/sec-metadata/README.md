@@ -9,5 +9,3 @@ This directory contains tests related to the `Sec-Metadata` proposal:
 ::  <https://mikewest.github.io/sec-metadata/>
 
 Note: All of this is tentative, and will change (rapidly).
-
-Test Google Chrome Unstable with Sec-Metadata: `./wpt run --binary /usr/bin/google-chrome-unstable --binary-arg=--enable-experimental-web-platform-features chrome fetch/sec-metadata`

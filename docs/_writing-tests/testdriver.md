@@ -54,7 +54,7 @@ For example, to send the tab key you would send "\uE004".
    - `id` The ID of the pointer to use. If one with this id does not exist a new one will be used
    - `pointerType` The type of pointer to use, an enum of `mouse`, `touch` and `pen`.
    - `subtype` The type of action to perform, an enum of `pointerUp`, `pointerMove`, `pointerDown` and `pause`
-   - `target` Either a DOM Element object or an Object with exactly two integer attrbutes `x` and `y`.
+   - `coordinates` An Object with exactly two integer attrbutes `x` and `y`.
    - `duration` The duration in ms before the next action in the sequence should start
 
 

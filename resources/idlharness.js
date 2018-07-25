@@ -314,11 +314,10 @@ IdlArray.prototype.add_dependency_idls = function(raw_idls, options)
             if (!name || should_skip(name) || !all_deps.has(name)) {
                 // Flag as skipped, if it's not already processed, so we can
                 // come back to it later if we retrospectively call it a dep.
-                if (!(name in this.members)) {
-                    name && skipped.has(name)
+                if (name && !(name in this.members)) {
+                    skipped.has(name)
                         ? skipped.get(name).push(parsed)
                         : skipped.set(name, [parsed]);
-                    (name.includes('Global') || name.includes('Window')) && console.log("Skipped", parsed);
                 }
                 return false;
             }

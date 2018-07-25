@@ -8,7 +8,7 @@ idl_test(
   ['push-api'],
   ['service-workers', 'html', 'dom'],
   idl_array => {
-    // TODO: ServiceWorkerRegisrtation objects
+    // TODO: ServiceWorkerRegistration objects
     if ('ServiceWorkerGlobalScope' in self
         && self instanceof ServiceWorkerGlobalScope) {
       idl_array.add_objects({

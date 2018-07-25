@@ -1,3 +1,4 @@
+from six import iteritems
 from six.moves.urllib.parse import urljoin, urlparse
 from abc import ABCMeta, abstractproperty
 
@@ -162,7 +163,7 @@ class RefTestNode(URLManifestItem):
     item_type = "reftest_node"
 
     def __init__(self, source_file, url, references, url_base="/", timeout=None,
-                 viewport_size=None, dpi=None, manifest=None):
+                 viewport_size=None, dpi=None, manifest=None, fuzzy=None):
         URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
         for _, ref_type in references:
             if ref_type not in ["==", "!="]:
@@ -171,6 +172,7 @@ class RefTestNode(URLManifestItem):
         self.timeout = timeout
         self.viewport_size = viewport_size
         self.dpi = dpi
+        self.fuzzy = fuzzy
 
     def meta_key(self):
         return (self.timeout, self.viewport_size, self.dpi)
@@ -184,6 +186,8 @@ class RefTestNode(URLManifestItem):
             extras["viewport_size"] = self.viewport_size
         if self.dpi is not None:
             extras["dpi"] = self.dpi
+        if self.fuzzy:
+            extras["fuzzy"] = list(iteritems(self.fuzzy))
         return rv
 
     @classmethod
@@ -197,6 +201,8 @@ class RefTestNode(URLManifestItem):
                    timeout=extras.get("timeout"),
                    viewport_size=extras.get("viewport_size"),
                    dpi=extras.get("dpi"),
+                   fuzzy={tuple(item[0]): item[1]
+                          for item in extras.get("fuzzy", [])},
                    manifest=manifest)
 
     def to_RefTest(self):

@@ -13,3 +13,12 @@ idl_test(
   },
   'webgl1 interfaces'
 );
+
+idl_test(
+  ['webgl2'],
+  ['webgl1', 'dom'],
+  idl_array => {
+    // TODO: objects
+  },
+  'webgl2 interfaces'
+);

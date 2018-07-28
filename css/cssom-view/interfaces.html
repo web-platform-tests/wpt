@@ -17,35 +17,28 @@
 <script>
 'use strict';
 
-promise_test(async () => {
-  const srcs = ['cssom-view', 'css-pseudo', 'cssom', 'html', 'dom', 'uievents'];
-  const [idl, pseudo, cssom, html, dom, uievents] = await Promise.all(
-      srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
-
-  var idlArray = new IdlArray();
-  idlArray.add_idls(idl);
-  idlArray.add_dependency_idls(pseudo);
-  idlArray.add_dependency_idls(cssom);
-  idlArray.add_dependency_idls(html);
-  idlArray.add_dependency_idls(dom);
-  idlArray.add_dependency_idls(uievents);
-
-  idlArray.add_objects({
-    Window: ['window'],
-    MediaQueryList: ['matchMedia("all")'],
-    MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
-    Screen: ['screen'],
-    Document: ['document'],
-    CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
-    Element: ['document.createElementNS("x", "y")'],
-    HTMLElement: ['document.createElement("div")'],
-    HTMLImageElement: ['document.createElement("img")'],
-    Range: ['new Range()'],
-    // MouseEvent: ['new MouseEvent("foo")'],
-    Text: ['document.createTextNode("x")'],
-    // CSSPseudoElement: [],
-  });
-  idlArray.test();
-}, "Test driver");
+idl_test(
+  ['cssom-view'],
+  ['css-pseudo', 'cssom', 'uievents', 'html', 'dom'],
+  idlArray => {
+    idlArray.add_untested_idls('interface SVGElement {};')
+    idlArray.add_objects({
+      Window: ['window'],
+      MediaQueryList: ['matchMedia("all")'],
+      MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
+      Screen: ['screen'],
+      Document: ['document'],
+      CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
+      Element: ['document.createElementNS("x", "y")'],
+      HTMLElement: ['document.createElement("div")'],
+      HTMLImageElement: ['document.createElement("img")'],
+      Range: ['new Range()'],
+      // MouseEvent: ['new MouseEvent("foo")'],
+      Text: ['document.createTextNode("x")'],
+      // CSSPseudoElement: [],
+    });
+  },
+  'cssom-view interfaces'
+);
 
 </script>

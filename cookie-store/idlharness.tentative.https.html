@@ -9,31 +9,15 @@
 <script>
 'use strict';
 
-promise_test(async t => {
-  const srcs = [
-    'cookie-store',
-    'uievents',
-    'dom',
-    'html',
-    'SVG',
-    'ServiceWorker'
-  ];
-  const [idl, uievents, dom, html, svg, sw] = await Promise.all(
-    srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
-
-  const idl_array = new IdlArray();
-
-  idl_array.add_idls(idl);
-  idl_array.add_dependency_idls(sw);
-  idl_array.add_dependency_idls(svg);
-  idl_array.add_dependency_idls(uievents);
-  idl_array.add_dependency_idls(dom);
-  idl_array.add_dependency_idls(html);
-
-  idl_array.add_objects({
-    CookieStore: ['self.cookieStore'],
-    CookieChangeEvent: ['new CookieChangeEvent("change")'],
-  });
-  idl_array.test();
-}, 'Interface test');
+idl_test(
+  ['cookie-store'],
+  ['SVG', 'service-workers', 'uievents', 'html', 'dom'],
+  idl_array => {
+    idl_array.add_objects({
+      CookieStore: ['cookieStore'],
+      CookieChangeEvent: ['new CookieChangeEvent("change")'],
+    });
+  },
+  'Interface test'
+);
 </script>

@@ -38,7 +38,7 @@ promise_test(async () => {
 
   idl_test(
     ['html'],
-    ['SVG', 'dom', 'cssom', 'touchevents', 'uievents'],
+    ['SVG', 'cssom', 'touchevents', 'uievents', 'dom'],
     idlArray => {
       idlArray.add_objects({
         NodeList: ['document.getElementsByName("name")'],

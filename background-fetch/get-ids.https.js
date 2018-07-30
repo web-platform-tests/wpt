@@ -16,4 +16,4 @@ backgroundFetchTest(async (test, backgroundFetch) => {
 
   assert_true((await backgroundFetch.getIds()).includes(registrationId));
 
-}, 'The BackgroundFetchManager exposes active fetches');
+}, 'The BackgroundFetchManager exposes active fetches', 'resources/sw.js');

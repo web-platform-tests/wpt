@@ -17,4 +17,4 @@ backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(
       t, new TypeError(),
       bgFetch.fetch(uniqueId(), 'https://example.com'));
-}, 'fetch blocked by CSP should reject');
+}, 'fetch blocked by CSP should reject', 'resources/sw.js');

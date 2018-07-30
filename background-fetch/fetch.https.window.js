@@ -24,4 +24,5 @@ backgroundFetchTest(async (test, backgroundFetch) => {
   assert_equals(results[0].status, 200);
   assert_equals(results[0].text, 'Background Fetch');
 
-}, 'Using Background Fetch to successfully fetch a single resource');
+}, 'Using Background Fetch to successfully fetch a single resource',
+   'resources/sw.js');

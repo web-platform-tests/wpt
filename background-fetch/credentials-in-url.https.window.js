@@ -11,22 +11,25 @@
 
 backgroundFetchTest((t, bgFetch) => {
   return bgFetch.fetch(uniqueId(), 'https://example.com');
-}, 'fetch without credentials in URL should register ok');
+}, 'fetch without credentials in URL should register ok', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(
       t, new TypeError(),
       bgFetch.fetch(uniqueId(), 'https://username:password@example.com'));
-}, 'fetch with username and password in URL should reject');
+}, 'fetch with username and password in URL should reject',
+   'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(
       t, new TypeError(),
       bgFetch.fetch(uniqueId(), 'https://username:@example.com'));
-}, 'fetch with username and empty password in URL should reject');
+}, 'fetch with username and empty password in URL should reject',
+   'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(
       t, new TypeError(),
       bgFetch.fetch(uniqueId(), 'https://:password@example.com'));
-}, 'fetch with empty username and password in URL should reject');
+}, 'fetch with empty username and password in URL should reject',
+   'resources/sw.js');

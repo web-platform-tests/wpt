@@ -1,3 +1,4 @@
+// META: global=window,worker
 "use strict";
 
 setup({
@@ -6,10 +7,9 @@ setup({
 
 async_test(t => {
   const error = new Error("boo");
-  self.addEventListener("error", ev => {
+  self.addEventListener("error", t.step_func_done(ev => {
     assert_equals(ev.error, error);
-    t.done();
-  });
+  }));
 
   queueMicrotask(() => { throw error; });
 }, "It rethrows exceptions");

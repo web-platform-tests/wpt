@@ -1,3 +1,4 @@
+// META: global=window,worker
 "use strict";
 
 test(() => {
@@ -15,18 +16,16 @@ test(() => {
 
 async_test(t => {
   let called = false;
-  queueMicrotask(() => {
+  queueMicrotask(t.step_func_done(() => {
     called = true;
-    t.done();
-  });
+  }));
   assert_false(called);
 }, "It calls the callback asynchronously");
 
 async_test(t => {
-  queueMicrotask(function () {
+  queueMicrotask(t.step_func_done(function () { // note: intentionally not an arrow function
     assert_array_equals(arguments, []);
-    t.done();
-  }, "x", "y");
+  }), "x", "y");
 }, "It does not pass any arguments");
 
 async_test(t => {
@@ -34,8 +33,7 @@ async_test(t => {
   Promise.resolve().then(() => happenings.push("a"));
   queueMicrotask(() => happenings.push("b"));
   Promise.reject().catch(() => happenings.push("c"));
-  queueMicrotask(() => {
+  queueMicrotask(t.step_func_done(() => {
     assert_array_equals(happenings, ["a", "b", "c"]);
-    t.done();
-  });
+  }));
 }, "It interleaves with promises as expected");

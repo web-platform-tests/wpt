@@ -33,7 +33,7 @@ backgroundFetchTest((t, bgFetch) => {
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'http://example.com'));
-}, 'non-loopback http: fetch should reject');
+}, 'non-loopback http: fetch should reject', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
@@ -49,31 +49,31 @@ backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), ['https://example.com',
                                                     'http://example.com']));
-}, 'https: and non-loopback http: fetch should reject');
+}, 'https: and non-loopback http: fetch should reject', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), ['http://example.com',
                                                     'https://example.com']));
-}, 'non-loopback http: and https: fetch should reject');
+}, 'non-loopback http: and https: fetch should reject', 'resources/sw.js');
 
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'wss:127.0.0.1'));
-}, 'wss: fetch should reject');
+}, 'wss: fetch should reject', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'file:///'));
-}, 'file: fetch should reject');
+}, 'file: fetch should reject', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'data:text/plain,foo'));
-}, 'data: fetch should reject');
+}, 'data: fetch should reject', 'resources/sw.js');
 
 backgroundFetchTest((t, bgFetch) => {
   return promise_rejects(t, new TypeError(),
                          bgFetch.fetch(uniqueId(), 'foobar:bazqux'));
-}, 'unknown scheme fetch should reject');
+}, 'unknown scheme fetch should reject', 'resources/sw.js');

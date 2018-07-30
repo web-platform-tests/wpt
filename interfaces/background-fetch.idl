@@ -77,12 +77,12 @@ dictionary BackgroundFetchEventInit : ExtendableEventInit {
   required DOMString id;
 };
 
-[Constructor(DOMString type, BackgroundFetchSettledEventInit init), Exposed=ServiceWorker]
+[Constructor(DOMString type, BackgroundFetchEventInit init), Exposed=ServiceWorker]
 interface BackgroundFetchSettledEvent : BackgroundFetchEvent {
   readonly attribute BackgroundFetchSettledFetches fetches;
 };
 
-dictionary BackgroundFetchSettledEventInit : BackgroundFetchEventInit {
+dictionary BackgroundFetchEventInit : BackgroundFetchEventInit {
   required BackgroundFetchSettledFetches fetches;
 };
 
@@ -98,7 +98,7 @@ interface BackgroundFetchSettledFetch : BackgroundFetchFetch {
   readonly attribute Response? response;
 };
 
-[Constructor(DOMString type, BackgroundFetchSettledEventInit init), Exposed=ServiceWorker]
+[Constructor(DOMString type, BackgroundFetchEventInit init), Exposed=ServiceWorker]
 interface BackgroundFetchUpdateEvent : BackgroundFetchSettledEvent {
   Promise<void> updateUI(DOMString title);
 };

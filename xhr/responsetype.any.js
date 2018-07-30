@@ -1,31 +1,51 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>XMLHttpRequest.responseType</title>
-<link rel="author" title="Mathias Bynens" href="http://mathiasbynens.be/">
-<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
-<link rel="help" href="https://xhr.spec.whatwg.org/#the-responsetype-attribute">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=XMLHttpRequest.responseType
+
+/**
+ * Author: Mathias Bynens <http://mathiasbynens.be/>
+ * Author: Ms2ger <mailto:Ms2ger@gmail.com>
+ *
+ * Spec: <https://xhr.spec.whatwg.org/#the-responsetype-attribute>
+ */
 test(function() {
   var xhr = new XMLHttpRequest();
   assert_equals(xhr.responseType, '');
 }, 'Initial value of responseType');
 
-var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text'];
+var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text', "nosuchtype"];
+
+function isIgnoredType(type) {
+  if (type == "nosuchtype") {
+    return true;
+  }
+
+  if (type != "document") {
+    return false;
+  }
+
+  // "document" is ignored only on workers.
+  return GLOBAL.isWorker();
+}
+
+function expectedType(type) {
+  if (!isIgnoredType(type)) {
+    return type;
+  }
+
+  return "";
+}
+
 types.forEach(function(type) {
   test(function() {
     var xhr = new XMLHttpRequest();
     xhr.responseType = type;
-    assert_equals(xhr.responseType, type);
+    assert_equals(xhr.responseType, expectedType(type));
   }, 'Set responseType to ' + format_value(type) + ' when readyState is UNSENT.');
 
   test(function() {
     var xhr = new XMLHttpRequest();
     xhr.open('get', '/');
     xhr.responseType = type;
-    assert_equals(xhr.responseType, type);
+    assert_equals(xhr.responseType, expectedType(type));
   }, 'Set responseType to ' + format_value(type) + ' when readyState is OPENED.');
 
   async_test(function() {
@@ -34,7 +54,7 @@ types.forEach(function(type) {
     xhr.onreadystatechange = this.step_func(function() {
       if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
         xhr.responseType = type;
-        assert_equals(xhr.responseType, type);
+        assert_equals(xhr.responseType, expectedType(type));
         this.done();
       }
     });
@@ -46,9 +66,13 @@ types.forEach(function(type) {
     xhr.open('get', '/');
     xhr.onreadystatechange = this.step_func(function() {
       if (xhr.readyState === XMLHttpRequest.LOADING) {
-        assert_throws("InvalidStateError", function() {
+        if (isIgnoredType(type)) {
           xhr.responseType = type;
-        });
+        } else {
+          assert_throws("InvalidStateError", function() {
+            xhr.responseType = type;
+          });
+        }
         assert_equals(xhr.responseType, "");
         this.done();
       }
@@ -61,9 +85,13 @@ types.forEach(function(type) {
     xhr.open('get', '/');
     xhr.onreadystatechange = this.step_func(function() {
       if (xhr.readyState === XMLHttpRequest.DONE) {
-        assert_throws("InvalidStateError", function() {
+        if (isIgnoredType(type)) {
           xhr.responseType = type;
-        });
+        } else {
+          assert_throws("InvalidStateError", function() {
+            xhr.responseType = type;
+          });
+        }
         assert_equals(xhr.responseType, "");
         this.done();
       }
@@ -76,10 +104,15 @@ types.forEach(function(type) {
   test(function() {
     var xhr = new XMLHttpRequest();
     xhr.open('get', '/', false);
-    assert_throws("InvalidAccessError", function() {
+    if (GLOBAL.isWorker() || isIgnoredType(type)) {
+      // Setting responseType on workers is valid even for a sync XHR.
       xhr.responseType = type;
-    });
-    assert_equals(xhr.responseType, "");
+      assert_equals(xhr.responseType, expectedType(type));
+    } else {
+      assert_throws("InvalidAccessError", function() {
+        xhr.responseType = type;
+      });
+    }
   }, 'Set responseType to ' + format_value(type) + ' when readyState is OPENED and the sync flag is set.');
 
   test(function() {
@@ -87,10 +120,13 @@ types.forEach(function(type) {
     xhr.open('get', '/', false);
     xhr.send();
     assert_equals(xhr.readyState, XMLHttpRequest.DONE);
-    assert_throws("InvalidStateError", function() {
+    if (isIgnoredType(type)) {
       xhr.responseType = type;
-    });
+    } else {
+      assert_throws("InvalidStateError", function() {
+        xhr.responseType = type;
+      });
+    }
     assert_equals(xhr.responseType, "");
   }, 'Set responseType to ' + format_value(type) + ' when readyState is DONE and the sync flag is set.');
 });
-</script>

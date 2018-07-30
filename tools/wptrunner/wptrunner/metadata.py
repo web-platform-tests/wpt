@@ -330,7 +330,7 @@ def create_test_tree(metadata_path, test_manifest, property_order=None,
     id_test_map = {}
     exclude_types = frozenset(["stub", "helper", "manual", "support", "conformancechecker"])
     all_types = [item.item_type for item in manifestitem.__dict__.itervalues()
-                 if type(item) == type and
+                 if type(item) == type(manifestitem.ManifestItem) and
                  issubclass(item, manifestitem.ManifestItem) and
                  item.item_type is not None]
     include_types = set(all_types) - exclude_types

@@ -50,8 +50,10 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
                                     debug=debug,
                                     extras=run_info_extras)
 
-    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
-                                               manifest_download=kwargs["manifest_download"]).load()
+    test_manifests = testloader.load_manifests(test_paths,
+                                               force_manifest_update=kwargs["manifest_update"],
+                                               manifest_download=kwargs["manifest_download"],
+                                               logger=logger)
 
     manifest_filters = []
     meta_filters = []

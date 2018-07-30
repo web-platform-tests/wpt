@@ -28,8 +28,7 @@ except ImportError:
 
 def load_test_manifests(serve_root, test_paths):
     do_delayed_imports(serve_root)
-    manifest_loader = testloader.ManifestLoader(test_paths, False)
-    return manifest_loader.load()
+    return testloader.load_manifests(test_paths, False)
 
 
 def update_expected(test_paths, serve_root, log_file_names,

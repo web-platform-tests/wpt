@@ -5,10 +5,18 @@
 <body>
 <script>
   async_test(t => {
-    var policy = window.trustedTypes.createPolicy('SomeName')
+    let policy = window.trustedTypes.createPolicy('SomeName', s => s )
         .then(t.step_func_done(policy => {
-           assert_true(policy instanceof TrustedTypePolicy);
-           assert_equals(policy.name, 'SomeName');
+            assert_true(policy instanceof TrustedTypePolicy);
+            assert_equals(policy.name, 'SomeName');
     }));
   }, "policy.name = name");
+
+  async_test(t => {
+    let policy = window.trustedTypes.createPolicy('SomeName', s => s )
+        .then(t.step_func_done(policy => {
+            assert_true(policy.createHTML('whatever') instanceof TrustedHTML);
+            assert_equals(policy.createHTML('whatever') + "", 'whatever');
+    }));
+  }, "trustedHTML.html = whatever");
 </script>

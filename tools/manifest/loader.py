@@ -1,7 +1,6 @@
 import json
 import os
 
-from . import log
 from . import manifest
 from . import update
 from .download import download_from_github

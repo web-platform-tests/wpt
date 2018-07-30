@@ -123,6 +123,9 @@ class TestEnvironment(object):
             "wss": [8889],
         }
 
+        config.test_paths = self.test_paths
+        config.manifest_update = False
+
         if os.path.exists(override_path):
             with open(override_path) as f:
                 override_obj = json.load(f)
@@ -164,7 +167,7 @@ class TestEnvironment(object):
             pass
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder()
+        route_builder = serve.RoutesBuilder(self.config)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),

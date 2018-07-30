@@ -1,6 +1,6 @@
 import sys
 
-from os.path import join, dirname
+from os.path import abspath, join, dirname
 
 import mock
 import pytest
@@ -13,7 +13,10 @@ from tools import localpaths  # noqa: flake8
 from wptrunner import environment
 from wptrunner import products
 
-test_paths = {"/": {"tests_path": join(dirname(__file__), "..", "..", "..", "..")}}  # repo root
+repo_root = abspath(join(dirname(__file__), "..", "..", "..", ".."))
+
+test_paths = {"/": {"tests_path": repo_root,
+                    "manifest_path": join(repo_root, "MANIFEST.json")}}
 environment.do_delayed_imports(None, test_paths)
 
 

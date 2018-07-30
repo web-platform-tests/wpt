@@ -21,6 +21,7 @@ from multiprocessing import Process, Event
 from localpaths import repo_root
 from six.moves import reload_module
 
+from . import wpthandlers
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants
 from wptserve import server as wptserve, handlers
 from wptserve import stash
@@ -297,8 +298,11 @@ done();
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
+
 class RoutesBuilder(object):
-    def __init__(self):
+    def __init__(self, config, use_manifest=True):
+        self.config = config
+        self.use_manifest = use_manifest
         self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
                                    ("POST", "/tools/runner/update_manifest.py",
                                     handlers.python_script_handler)]
@@ -337,6 +341,14 @@ class RoutesBuilder(object):
 
         self.mountpoint_routes[url_base] = []
 
+        if self.use_manifest:
+            file_handler = lambda base_path, url_base: wpthandlers.FileHandler(
+                self.config,
+                base_path,
+                url_base)
+        else:
+            file_handler = handlers.FileHandler
+
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
             ("GET", "*.window.html", WindowHandler),
@@ -346,7 +358,7 @@ class RoutesBuilder(object):
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
-            ("GET", "*", handlers.FileHandler)
+            ("GET", "*", file_handler)
         ]
 
         for (method, suffix, handler_cls) in routes:
@@ -361,8 +373,9 @@ class RoutesBuilder(object):
         self.mountpoint_routes[file_url] = [("GET", file_url, handlers.FileHandler(base_path=base_path, url_base=url_base))]
 
 
-def build_routes(aliases):
-    builder = RoutesBuilder()
+def build_routes(config, use_manifest=True):
+    aliases = config.aliases
+    builder = RoutesBuilder(config, use_manifest)
     for alias in aliases:
         url = alias["url-path"]
         directory = alias["local-dir"]
@@ -428,14 +441,13 @@ class ServerProc(object):
 def check_subdomains(config):
     paths = config.paths
     bind_address = config.bind_address
-    aliases = config.aliases
 
     host = config.server_host
     port = get_port()
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
-    wrapper.start(start_http_server, host, port, paths, build_routes(aliases),
+    wrapper.start(start_http_server, host, port, paths, build_routes(config, False),
                   bind_address, config)
 
     connected = False
@@ -721,6 +733,7 @@ class ConfigBuilder(config.ConfigBuilder):
         },
         "doc_root": repo_root,
         "ws_doc_root": os.path.join(repo_root, "websockets", "handlers"),
+        "test_paths": None,
         "server_host": None,
         "ports": {
             "http": [8000, "auto"],
@@ -746,10 +759,11 @@ class ConfigBuilder(config.ConfigBuilder):
             },
             "none": {}
         },
-        "aliases": []
+        "aliases": [],
+        "manifest_update": True,
     }
 
-    computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
+    computed_properties = ["ws_doc_root", "test_paths"] + config.ConfigBuilder.computed_properties
 
     def __init__(self, *args, **kwargs):
         super(ConfigBuilder, self).__init__(
@@ -769,6 +783,16 @@ class ConfigBuilder(config.ConfigBuilder):
         self._ws_doc_root = v
 
     ws_doc_root = property(None, ws_doc_root)
+
+    def _get_test_paths(self, data):
+        if data["test_paths"] is not None:
+            return data["test_paths"]
+        else:
+            return {"/":
+                    {"tests_path": data["doc_root"],
+                     "metadata_path": data["doc_root"],
+                     "manifest_path": os.path.join(data["doc_root"],
+                                                   "MANIFEST.json")}}
 
     def _get_paths(self, data):
         rv = super(ConfigBuilder, self)._get_paths(data)
@@ -821,7 +845,9 @@ def run(**kwargs):
             logger.debug("Going to use port %d for stash" % stash_address[1])
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, build_routes(config["aliases"]), **kwargs)
+            servers = start(config,
+                            build_routes(config),
+                            **kwargs)
 
             try:
                 while any(item.is_alive() for item in iter_procs(servers)):

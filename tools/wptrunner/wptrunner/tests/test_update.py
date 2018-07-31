@@ -586,8 +586,7 @@ def test_update_wptreport_0():
                 "subtests": [{"name": "test1",
                               "status": "PASS",
                               "expected": "FAIL"}],
-                "status": "OK"}
-           ]}
+                "status": "OK"}]}
 
     updated = update(tests, log)
 

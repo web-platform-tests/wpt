@@ -9,6 +9,6 @@ testInIFrame("http://{{host}}:{{ports[http][1]}}/common/domain-setter.sub.html",
   assertDocumentIsReadyForSideEffectsTest(iframe.contentDocument, "same origin-domain (but not same origin) document");
   assert_throws("SecurityError", () => {
     ctx.iframes[0].contentDocument.open();
-  }, "Opening a same origin-domain (but not same origin) document doesn't throw.");
+  }, "document.open() should throw a SecurityError on a same origin-domain (but not same origin) document");
   assertOpenHasNoSideEffects(iframe.contentDocument, origURL, "same origin-domain (but not same origin) document");
 }, "document.open bailout should not have any side effects (same origin-domain (but not same origin) document)");

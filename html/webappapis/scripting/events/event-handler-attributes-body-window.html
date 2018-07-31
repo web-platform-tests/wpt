@@ -10,34 +10,41 @@
 <script>
 setup({ explicit_done: true });
 
-function f() {
-  return 0;
-}
-
 handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
-  shadowedHandlers.forEach(function(handler) {
-    test(function() {
-      document.body['on' + handler] = f;
-      assert_equals(window['on' + handler], f);
-    }, "shadowed " + handler);
-  });
-  notShadowedHandlers.forEach(function(handler) {
-    test(function() {
-      document.body['on' + handler] = f;
-      assert_equals(window['on' + handler], null);
-    }, "not shadowed " + handler);
-  });
+  const createdBody = document.createElement("body");
+  for (const [description, body, altBody] of [
+    ["document.body", document.body, createdBody],
+    ['document.createElement("body")', createdBody, document.body]
+  ]) {
+    const f = () => 0;
 
-  [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
-    document.body['on' + handler] = null;
-  });
+    shadowedHandlers.forEach(function(handler) {
+      test(function() {
+        body['on' + handler] = f;
+        assert_equals(window['on' + handler], f, "window should reflect");
+        assert_equals(altBody['on' + handler], f, "alternative body should reflect");
+      }, `shadowed ${handler} (${description})`);
+    });
+    notShadowedHandlers.forEach(function(handler) {
+      test(function() {
+        body['on' + handler] = f;
+        assert_equals(window['on' + handler], null, "window should reflect");
+        assert_equals(altBody['on' + handler], null, "alternative body should reflect");
+      }, `not shadowed ${handler} (${description})`);
+    });
 
-  shadowedHandlers.forEach(function(handler) {
-    test(function() {
-      assert_equals(document.body['on' + handler], null);
-      assert_equals(window['on' + handler], null);
-    }, "shadowed " + handler + " removal");
-  });
+    [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
+      body['on' + handler] = null;
+    });
+
+    shadowedHandlers.forEach(function(handler) {
+      test(function() {
+        assert_equals(body['on' + handler], null, "body should reflect changes to itself");
+        assert_equals(window['on' + handler], null, "window should reflect");
+        assert_equals(altBody['on' + handler], null, "alternative body should reflect");
+      }, `shadowed ${handler} removal (${description})`);
+    });
+  }
 
   done();
 });

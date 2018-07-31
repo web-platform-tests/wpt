@@ -35,7 +35,7 @@ const waitForLoad = new Promise(r => { addEventListener('load', r); });
 idl_test(
   ['cssom'],
   ['SVG', 'uievents', 'html', 'dom'],
-  idlArray => {
+  async idlArray => {
     idlArray.add_objects({
       Document: ['document', 'new Document()'],
       StyleSheetList: ['document.styleSheets'],
@@ -65,6 +65,7 @@ idl_test(
       SVGElement: ['svg_element'],
     });
 
+    await waitForLoad;
     self.style_element = document.getElementById('styleElement');
     self.sheet = style_element.sheet;
     self.svg_element = document.getElementById('svgElement');

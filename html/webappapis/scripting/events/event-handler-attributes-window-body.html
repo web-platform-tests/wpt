@@ -15,28 +15,33 @@ function f() {
 }
 
 handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
+  const body = document.createElement("body");
+
   shadowedHandlers.forEach(function(handler) {
     test(function() {
       window['on' + handler] = f;
-      assert_equals(document.body['on' + handler], f);
-    }, "shadowed " + handler);
+      assert_equals(document.body['on' + handler], f, "document.body should reflect");
+      assert_equals(body['on' + handler], f, "document.createElement('body') should reflect");
+    }, `shadowed ${handler}`);
   });
   notShadowedHandlers.forEach(function(handler) {
     test(function() {
       window['on' + handler] = f;
-      assert_equals(document.body['on' + handler], null);
-    }, "not shadowed " + handler);
+      assert_equals(document.body['on' + handler], null, "document.body should reflect");
+      assert_equals(body['on' + handler], null, "document.createElement('body') should reflect");
+    }, `not shadowed ${handler}`);
   });
 
   [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
-      window['on' + handler] = null;
+    window['on' + handler] = null;
   });
 
   shadowedHandlers.forEach(function(handler) {
     test(function() {
-      assert_equals(window['on' + handler], null);
-      assert_equals(document.body['on' + handler], null);
-    }, handler + " removal");
+      assert_equals(window['on' + handler], null, "window should reflect changes to itself");
+      assert_equals(document.body['on' + handler], null, "document.body should reflect");
+      assert_equals(body['on' + handler], null, "document.createElement('body') should reflect");
+    }, `shadowed ${handler} removal`);
   });
 
   done();

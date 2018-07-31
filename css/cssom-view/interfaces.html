@@ -17,11 +17,12 @@
 <script>
 'use strict';
 
+const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); });
+  
 idl_test(
   ['cssom-view'],
-  ['css-pseudo', 'cssom', 'uievents', 'html', 'dom'],
-  idlArray => {
-    idlArray.add_untested_idls('interface SVGElement {};')
+  ['SVG', 'css-pseudo', 'cssom', 'uievents', 'html', 'dom'],
+  async idlArray => {
     idlArray.add_objects({
       Window: ['window'],
       MediaQueryList: ['matchMedia("all")'],
@@ -37,8 +38,9 @@ idl_test(
       Text: ['document.createTextNode("x")'],
       // CSSPseudoElement: [],
     });
+
+    await waitForLoad;
   },
   'cssom-view interfaces'
 );
-
 </script>

@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<title>Event handler invocation order</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
 var objects = [{}, function() {}, new Number(42), new String()];
 var primitives = [42, null, undefined, ""];
 objects.forEach(function(object) {
@@ -64,4 +58,3 @@ t.step(function() {
   assert_equals(i, 4);
   t.done()
 });
-</script>

@@ -14,15 +14,21 @@ function f() {
   return 0;
 }
 
-handlersListPromise.then(({ shadowedHandlers }) => {
+handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
   shadowedHandlers.forEach(function(handler) {
     test(function() {
       window['on' + handler] = f;
       assert_equals(document.body['on' + handler], f);
-    }, handler);
+    }, "shadowed " + handler);
+  });
+  notShadowedHandlers.forEach(function(handler) {
+    test(function() {
+      window['on' + handler] = f;
+      assert_equals(document.body['on' + handler], null);
+    }, "not shadowed " + handler);
   });
 
-  shadowedHandlers.forEach(function(handler) {
+  [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
       window['on' + handler] = null;
   });
 

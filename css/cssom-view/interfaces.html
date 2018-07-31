@@ -17,30 +17,30 @@
 <script>
 'use strict';
 
-promise_test(async t => {
-  await new Promise(resolve => { addEventListener('load', resolve); });
+const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); });
 
-  idl_test(
-    ['cssom-view'],
-    ['html', 'dom', 'uievents', 'cssom'],
-    idlArray => {
-      idlArray.add_objects({
-        Window: ['window'],
-        MediaQueryList: ['matchMedia("all")'],
-        MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
-        Screen: ['screen'],
-        Document: ['document'],
-        CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
-        Element: ['document.createElementNS("x", "y")'],
-        HTMLElement: ['document.createElement("div")'],
-        HTMLImageElement: ['document.createElement("img")'],
-        Range: ['new Range()'],
-        // MouseEvent: ['new MouseEvent("foo")'],
-        Text: ['document.createTextNode("x")'],
-        // CSSPseudoElement: [],
-      });
-    },
-    'Test driver'
-  );
-});
+idl_test(
+  ['cssom-view'],
+  ['html', 'dom', 'uievents', 'cssom'],
+  async idlArray => {
+    idlArray.add_objects({
+      Window: ['window'],
+      MediaQueryList: ['matchMedia("all")'],
+      MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
+      Screen: ['screen'],
+      Document: ['document'],
+      CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
+      Element: ['document.createElementNS("x", "y")'],
+      HTMLElement: ['document.createElement("div")'],
+      HTMLImageElement: ['document.createElement("img")'],
+      Range: ['new Range()'],
+      // MouseEvent: ['new MouseEvent("foo")'],
+      Text: ['document.createTextNode("x")'],
+      // CSSPseudoElement: [],
+    });
+
+    await waitForLoad;
+  },
+  'Test driver'
+);
 </script>

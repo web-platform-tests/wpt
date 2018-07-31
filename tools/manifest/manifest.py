@@ -74,61 +74,54 @@ class Manifest(object):
         return self.reftest_nodes_by_url.get(url)
 
     def update(self, tree):
-        new_data = defaultdict(dict)
-        new_hashes = {}
-
         reftest_nodes = []
-        old_files = defaultdict(set, {k: set(viewkeys(v)) for k, v in iteritems(self._data)})
+        old_files = {}
 
         changed = False
         reftest_changes = False
 
         for source_file in tree:
             rel_path = source_file.rel_path
-            file_hash = source_file.hash
-
-            is_new = rel_path not in self._path_hash
-            hash_changed = False
-
-            if not is_new:
-                old_hash, old_type = self._path_hash[rel_path]
-                old_files[old_type].remove(rel_path)
-                if old_hash != file_hash:
-                    new_type, manifest_items = source_file.manifest_items()
-                    hash_changed = True
-                else:
-                    new_type, manifest_items = old_type, self._data[old_type][rel_path]
-                if old_type in ("reftest", "reftest_node") and new_type != old_type:
-                    reftest_changes = True
+            if not os.path.exists(source_file.path):
+                old_hash, old_type = self._path_hash.get(rel_path)
+                self._path_hash.pop(rel_path, None)
+                self._data[old_type].pop(rel_path, None)
+                old_files[old_type] = rel_path
             else:
-                new_type, manifest_items = source_file.manifest_items()
+                file_hash = source_file.hash
 
-            if new_type in ("reftest", "reftest_node"):
-                reftest_nodes.extend(manifest_items)
+                is_new = rel_path not in self._path_hash
+                hash_changed = False
+
+                if not is_new:
+                    old_hash, old_type = self._path_hash[rel_path]
+                    if old_hash != file_hash:
+                        new_type, manifest_items = source_file.manifest_items()
+                        hash_changed = True
+                    else:
+                        new_type, manifest_items = old_type, self._data[old_type][rel_path]
+                    if old_type in ("reftest", "reftest_node") and new_type != old_type:
+                        reftest_changes = True
+                else:
+                    new_type, manifest_items = source_file.manifest_items()
+
+                if new_type in ("reftest", "reftest_node"):
+                    reftest_nodes.extend(manifest_items)
+                    if is_new or hash_changed:
+                        reftest_changes = True
+                elif new_type:
+                    self._data[new_type][rel_path] = set(manifest_items)
+
+                self._path_hash[rel_path] = (file_hash, new_type)
+
                 if is_new or hash_changed:
-                    reftest_changes = True
-            elif new_type:
-                new_data[new_type][rel_path] = set(manifest_items)
+                    changed = True
 
-            new_hashes[rel_path] = (file_hash, new_type)
-
-            if is_new or hash_changed:
-                changed = True
-
-        if reftest_changes or old_files["reftest"] or old_files["reftest_node"]:
+        if reftest_changes or old_files.get("reftest") or old_files.get("reftest_node"):
             reftests, reftest_nodes, changed_hashes = self._compute_reftests(reftest_nodes)
-            new_data["reftest"] = reftests
-            new_data["reftest_node"] = reftest_nodes
-            new_hashes.update(changed_hashes)
-        else:
-            new_data["reftest"] = self._data["reftest"]
-            new_data["reftest_node"] = self._data["reftest_node"]
-
-        if any(itervalues(old_files)):
-            changed = True
-
-        self._data = new_data
-        self._path_hash = new_hashes
+            self._data["reftest"] = reftests
+            self._data["reftest_node"] = reftest_nodes
+            self._path_hash.update(changed_hashes)
 
         return changed
 

@@ -11,6 +11,7 @@ node_modules/
 
 # WPT repo stuff
 /MANIFEST.json
+/cache.json
 
 testharness_runner.html
 !/testharness_runner.html

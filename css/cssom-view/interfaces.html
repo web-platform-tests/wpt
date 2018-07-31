@@ -18,10 +18,10 @@
 'use strict';
 
 const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); });
-  
+
 idl_test(
   ['cssom-view'],
-  ['SVG', 'css-pseudo', 'cssom', 'uievents', 'html', 'dom'],
+  ['css-pseudo', 'cssom', 'uievents', 'SVG', 'html', 'dom'],
   async idlArray => {
     idlArray.add_objects({
       Window: ['window'],

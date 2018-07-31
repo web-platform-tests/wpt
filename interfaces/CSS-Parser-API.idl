@@ -6,7 +6,7 @@
 typedef (DOMString or ReadableStream) CSSStringSource;
 typedef (DOMString or CSSStyleValue or CSSParserValue) CSSToken;
 
-partial interface CSS {
+partial namespace CSS {
   Promise<sequence<CSSParserRule>> parseStylesheet(CSSStringSource css, optional CSSParserOptions options);
   Promise<sequence<CSSParserRule>> parseRuleList(CSSStringSource css, optional CSSParserOptions options);
   Promise<CSSParserRule> parseRule(CSSStringSource css, optional CSSParserOptions options);

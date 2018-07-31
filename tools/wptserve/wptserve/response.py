@@ -1,15 +1,14 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import Cookie
+from six.moves.http_cookies import BaseCookie, Morsel
 import json
-import types
 import uuid
 import socket
-
-from .constants import response_codes
+from .constants import response_codes, h2_headers
 from .logger import get_logger
+from io import BytesIO
 
-from six import string_types, binary_type, text_type
+from six import binary_type, text_type, itervalues
 
 missing = object()
 
@@ -62,7 +61,7 @@ class Response(object):
        parts. If it is an iterable, any item may be a string or a function of zero
        parameters which, when called, returns a string."""
 
-    def __init__(self, handler, request):
+    def __init__(self, handler, request, response_writer_cls=None):
         self.request = request
         self.encoding = "utf8"
 
@@ -71,13 +70,13 @@ class Response(object):
         self.explicit_flush = False
         self.close_connection = False
 
-        self.writer = ResponseWriter(handler, self)
+        self.logger = get_logger()
+        self.writer = response_writer_cls(handler, self) if response_writer_cls else ResponseWriter(handler, self)
 
         self._status = (200, None)
         self.headers = ResponseHeaders()
         self.content = []
 
-        self.logger = get_logger()
 
     @property
     def status(self):
@@ -134,7 +133,7 @@ class Response(object):
                 max_age = int(max_age.total_seconds())
             max_age = "%.0d" % max_age
 
-        m = Cookie.Morsel()
+        m = Morsel()
 
         def maybe_set(key, value):
             if value is not None and value is not False:
@@ -154,7 +153,7 @@ class Response(object):
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
         cookies = self.headers.get("Set-Cookie")
-        parser = Cookie.BaseCookie()
+        parser = BaseCookie()
         for cookie in cookies:
             parser.load(cookie)
 
@@ -182,7 +181,7 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
-        if isinstance(self.content, types.StringTypes):
+        if isinstance(self.content, (binary_type, text_type)):
             yield self.content
         elif hasattr(self.content, "read"):
             if read_file:
@@ -337,7 +336,7 @@ class ResponseHeaders(object):
         self.set(key, value)
 
     def __iter__(self):
-        for key, values in self.data.itervalues():
+        for key, values in itervalues(self.data):
             for value in values:
                 yield key, value
 
@@ -350,6 +349,112 @@ class ResponseHeaders(object):
 
     def __repr__(self):
         return repr(self.data)
+
+
+class H2Response(Response):
+
+    def __init__(self, handler, request):
+        super(H2Response, self).__init__(handler, request, response_writer_cls=H2ResponseWriter)
+
+    def write_status_headers(self):
+        self.writer.write_headers(self.headers, *self.status)
+
+    # Hacky way of detecting last item in generator
+    def write_content(self):
+        """Write out the response content"""
+        if self.request.method != "HEAD" or self.send_body_for_head_request:
+            item = None
+            item_iter = self.iter_content()
+            try:
+                item = item_iter.next()
+                while True:
+                    check_last = item_iter.next()
+                    self.writer.write_content(item, last=False)
+                    item = check_last
+            except StopIteration:
+                if item:
+                    self.writer.write_content(item, last=True)
+
+
+class H2ResponseWriter(object):
+
+    def __init__(self, handler, response):
+        self.socket = handler.request
+        self.h2conn = handler.conn
+        self._response = response
+        self._handler = handler
+        self.content_written = False
+        self.request = response.request
+        self.logger = response.logger
+
+    def write_headers(self, headers, status_code, status_message=None):
+        formatted_headers = []
+        secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
+
+        for header, value in headers:
+            if header in h2_headers:
+                header = ':' + header
+                formatted_headers.append((header, str(value)))
+            else:
+                secondary_headers.append((header, str(value)))
+
+        formatted_headers.append((':status', str(status_code)))
+        formatted_headers.extend(secondary_headers)
+
+        with self.h2conn as connection:
+            connection.send_headers(
+                stream_id=self.request.h2_stream_id,
+                headers=formatted_headers,
+            )
+
+            self.write(connection)
+
+    def write_content(self, item, last=False):
+        if isinstance(item, (text_type, binary_type)):
+            data = BytesIO(self.encode(item))
+        else:
+            data = item
+
+        # Find the length of the data
+        data.seek(0, 2)
+        data_len = data.tell()
+        data.seek(0)
+
+        # If the data is longer than max payload size, need to write it in chunks
+        payload_size = self.get_max_payload_size()
+        while data_len > payload_size:
+            self.write_content_frame(data.read(payload_size), False)
+            data_len -= payload_size
+            payload_size = self.get_max_payload_size()
+
+        self.write_content_frame(data.read(), last)
+
+    def write_content_frame(self, data, last):
+        with self.h2conn as connection:
+            connection.send_data(
+                stream_id=self.request.h2_stream_id,
+                data=data,
+                end_stream=last,
+            )
+            self.write(connection)
+        self.content_written = last
+
+    def get_max_payload_size(self):
+        with self.h2conn as connection:
+            return min(connection.remote_settings.max_frame_size, connection.local_flow_control_window(self.request.h2_stream_id)) - 9
+
+    def write(self, connection):
+        data = connection.data_to_send()
+        self.socket.sendall(data)
+
+    def encode(self, data):
+        """Convert unicode to bytes according to response.encoding."""
+        if isinstance(data, binary_type):
+            return data
+        elif isinstance(data, text_type):
+            return data.encode(self._response.encoding)
+        else:
+            raise ValueError
 
 
 class ResponseWriter(object):
@@ -365,11 +470,13 @@ class ResponseWriter(object):
         self._wfile = handler.wfile
         self._response = response
         self._handler = handler
+        self._status_written = False
         self._headers_seen = set()
         self._headers_complete = False
         self.content_written = False
         self.request = response.request
         self.file_chunk_size = 32 * 1024
+        self.default_status = 200
 
     def write_status(self, code, message=None):
         """Write out the status line of a response.
@@ -384,13 +491,18 @@ class ResponseWriter(object):
                 message = ''
         self.write("%s %d %s\r\n" %
                    (self._response.request.protocol_version, code, message))
+        self._status_written = True
 
     def write_header(self, name, value):
         """Write out a single header for the response.
 
+        If a status has not been written, a default status will be written (currently 200)
+
         :param name: Name of the header field
         :param value: Value of the header field
         """
+        if not self._status_written:
+            self.write_status(self.default_status)
         self._headers_seen.add(name.lower())
         self.write("%s: %s\r\n" % (name, value))
         if not self._response.explicit_flush:
@@ -402,7 +514,7 @@ class ResponseWriter(object):
             if name.lower() not in self._headers_seen:
                 self.write_header(name, f())
 
-        if (isinstance(self._response.content, string_types) and
+        if (isinstance(self._response.content, (binary_type, text_type)) and
             "content-length" not in self._headers_seen):
             #Would be nice to avoid double-encoding here
             self.write_header("Content-Length", len(self.encode(self._response.content)))
@@ -425,8 +537,22 @@ class ResponseWriter(object):
         self._headers_complete = True
 
     def write_content(self, data):
-        """Write the body of the response."""
-        if isinstance(data, types.StringTypes):
+        """Write the body of the response.
+
+        HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set."""
+        if not self._status_written:
+            self.write_status(self.default_status)
+        if not self._headers_complete:
+            self._response.content = data
+            self.end_headers()
+        self.write_raw_content(data)
+
+    def write_raw_content(self, data):
+        """Writes the data 'as is'"""
+        if data is None:
+            raise ValueError('data cannot be None')
+        if isinstance(data, (text_type, binary_type)):
+            # Deliberately allows both text and binary types. See `self.encode`.
             self.write(data)
         else:
             self.write_content_file(data)

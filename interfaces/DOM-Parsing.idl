@@ -1,6 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the DOM Parsing and Serialization spec.
-// See https://w3c.github.io/DOM-Parsing/
+// Content of this file was automatically extracted from the
+// "DOM Parsing and Serialization" spec.
+// See: https://w3c.github.io/DOM-Parsing/
 
 [Constructor, Exposed=Window]
 interface DOMParser {
@@ -16,6 +17,7 @@ enum SupportedType {
 };
 
 [Constructor, Exposed=Window]
+
   interface XMLSerializer {
   DOMString serializeToString(Node root);
 };

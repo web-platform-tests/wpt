@@ -93,12 +93,12 @@ function isSimilarSessionDescription(sessionDesc1, sessionDesc2) {
   }
 }
 
-function assert_session_desc_equals(sessionDesc1, sessionDesc2) {
+function assert_session_desc_similar(sessionDesc1, sessionDesc2) {
   assert_true(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
     'Expect both session descriptions to have the same count of media lines');
 }
 
-function assert_session_desc_not_equals(sessionDesc1, sessionDesc2) {
+function assert_session_desc_not_similar(sessionDesc1, sessionDesc2) {
   assert_false(isSimilarSessionDescription(sessionDesc1, sessionDesc2),
     'Expect both session descriptions to have different count of media lines');
 }
@@ -165,7 +165,11 @@ function generateOffer(options={}) {
 function generateAnswer(offer) {
   const pc = new RTCPeerConnection();
   return pc.setRemoteDescription(offer)
-  .then(() => pc.createAnswer());
+  .then(() => pc.createAnswer())
+  .then((answer) => {
+    pc.close();
+    return answer;
+  });
 }
 
 // Run a test function that return a promise that should
@@ -326,36 +330,110 @@ function assert_equals_array_buffer(buffer1, buffer2) {
   }
 }
 
-// Generate a MediaStreamTrack for testing use.
-// We generate it by creating an anonymous RTCPeerConnection,
-// call addTransceiver(), and use the remote track
-// from RTCRtpReceiver. This track is supposed to
-// receive media from a remote peer and be played locally.
-// We use this approach instead of getUserMedia()
-// to bypass the permission dialog and fake media devices,
-// as well as being able to generate many unique tracks.
-function generateMediaStreamTrack(kind) {
-  const pc = new RTCPeerConnection();
+// These media tracks will be continually updated with deterministic "noise" in
+// order to ensure UAs do not cease transmission in response to apparent
+// silence.
+//
+// > Many codecs and systems are capable of detecting "silence" and changing
+// > their behavior in this case by doing things such as not transmitting any
+// > media.
+//
+// Source: https://w3c.github.io/webrtc-pc/#offer-answer-options
+const trackFactories = {
+  // Share a single context between tests to avoid exceeding resource limits
+  // without requiring explicit destruction.
+  audioContext: null,
 
-  assert_idl_attribute(pc, 'addTransceiver',
-    'Expect pc to have addTransceiver() method');
+  /**
+   * Given a set of requested media types, determine if the user agent is
+   * capable of procedurally generating a suitable media stream.
+   *
+   * @param {object} requested
+   * @param {boolean} [requested.audio] - flag indicating whether the desired
+   *                                      stream should include an audio track
+   * @param {boolean} [requested.video] - flag indicating whether the desired
+   *                                      stream should include a video track
+   *
+   * @returns {boolean}
+   */
+  canCreate(requested) {
+    const supported = {
+      audio: !!window.MediaStreamAudioDestinationNode,
+      video: !!HTMLCanvasElement.prototype.captureStream
+    };
 
-  const transceiver = pc.addTransceiver(kind);
-  const { receiver } = transceiver;
-  const { track } = receiver;
+    return (!requested.audio || supported.audio) &&
+      (!requested.video || supported.video);
+  },
 
-  assert_true(track instanceof MediaStreamTrack,
-    'Expect receiver track to be instance of MediaStreamTrack');
+  audio() {
+    const ctx = trackFactories.audioContext = trackFactories.audioContext ||
+      new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const dst = oscillator.connect(ctx.createMediaStreamDestination());
+    oscillator.start();
+    return dst.stream.getAudioTracks()[0];
+  },
 
-  return track;
+  video({width = 640, height = 480} = {}) {
+    const canvas = Object.assign(
+      document.createElement("canvas"), {width, height}
+    );
+    const ctx = canvas.getContext('2d');
+    const stream = canvas.captureStream();
+
+    let count = 0;
+    setInterval(() => {
+      ctx.fillStyle = `rgb(${count%255}, ${count*count%255}, ${count%255})`;
+      count += 1;
+
+      ctx.fillRect(0, 0, width, height);
+    }, 100);
+
+    if (document.body) {
+      document.body.appendChild(canvas);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.appendChild(canvas);
+      });
+    }
+
+    return stream.getVideoTracks()[0];
+  }
+};
+
+// Generate a MediaStream bearing the specified tracks.
+//
+// @param {object} [caps]
+// @param {boolean} [caps.audio] - flag indicating whether the generated stream
+//                                 should include an audio track
+// @param {boolean} [caps.video] - flag indicating whether the generated stream
+//                                 should include a video track
+async function getNoiseStream(caps = {}) {
+  if (!trackFactories.canCreate(caps)) {
+    return navigator.mediaDevices.getUserMedia(caps);
+  }
+  const tracks = [];
+
+  if (caps.audio) {
+    tracks.push(trackFactories.audio());
+  }
+
+  if (caps.video) {
+    tracks.push(trackFactories.video());
+  }
+
+  return new MediaStream(tracks);
 }
 
-// Obtain a MediaStreamTrack of kind using getUserMedia.
+// Obtain a MediaStreamTrack of kind using procedurally-generated streams (and
+// falling back to `getUserMedia` when the user agent cannot generate the
+// requested streams).
 // Return Promise of pair of track and associated mediaStream.
 // Assumes that there is at least one available device
 // to generate the track.
 function getTrackFromUserMedia(kind) {
-  return navigator.mediaDevices.getUserMedia({ [kind]: true })
+  return getNoiseStream({ [kind]: true })
   .then(mediaStream => {
     const [track] = mediaStream.getTracks();
     return [track, mediaStream];

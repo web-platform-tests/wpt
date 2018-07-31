@@ -33,6 +33,12 @@ window.Audit = (function() {
 
   'use strict';
 
+  // NOTE: Moving this method (or any other code above) will change the location
+  // of 'CONSOLE ERROR...' message in the expected text files.
+  function _logError(message) {
+    console.error('[audit.js] ' + message);
+  }
+
   function _logPassed(message) {
     test(function(arg) {
       assert_true(true);
@@ -70,13 +76,16 @@ window.Audit = (function() {
               String(target.slice(0, options.numberOfArrayElements)) + '...';
           targetString = '[' + arrayElements + ']';
         } else if (target === null) {
-          // null is an object, so we need to handle this specially.
           targetString = String(target);
         } else {
-          // We're expecting String() to return something like "[object Foo]",
-          // so we split the string to get the object type "Foo".  This is
-          // pretty fragile.
-          targetString = '' + String(targetString).split(/[\s\]]/)[1];
+          targetString = '' + String(target).split(/[\s\]]/)[1];
+        }
+        break;
+      case 'function':
+        if (Error.isPrototypeOf(target)) {
+          targetString = "EcmaScript error " + target.name;
+        } else {
+          targetString = String(target);
         }
         break;
       default:
@@ -265,7 +274,10 @@ window.Audit = (function() {
 
     /**
      * Check if |actual| operation wrapped in a function throws an exception
-     * with a expected error type correctly. |expected| is optional.
+     * with a expected error type correctly. |expected| is optional. If it is a
+     * String, then it is considered to be the name of a DOMException. It can
+     * also be an instance of either an Error or a DOMException, to be more
+     * strict about the actual error type.
      *
      * @example
      *   should(() => { let a = b; }, 'A bad code').throw();
@@ -301,8 +313,15 @@ window.Audit = (function() {
           // The expected error type was not given.
           didThrowCorrectly = true;
           passDetail = '${actual} threw ' + error.name + errorMessage + '.';
-        } else if (error.name === this._expected) {
-          // The expected error type match the actual one.
+        } else if (typeof(this._expected) == "string" &&
+                   error instanceof DOMException &&
+                   error.name === this._expected) {
+          // A DOMException was thrown and expected, and the names match
+          didThrowCorrectly = true;
+          passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+        } else if (this._expected == error.constructor &&
+                   this._expected.name == error.name) {
+          // The expected error type and names match the actual one.
           didThrowCorrectly = true;
           passDetail = '${actual} threw ${expected}' + errorMessage + '.';
         } else {
@@ -350,7 +369,7 @@ window.Audit = (function() {
      *
      * @example
      *   should('My promise', promise).beResolve().then((result) => {
-     *     // log(result);
+     *     log(result);
      *   });
      *
      * @result
@@ -1289,6 +1308,56 @@ window.Audit = (function() {
   }
 
   /**
+   * Load file from a given URL and pass ArrayBuffer to the following promise.
+   * @param  {String} fileUrl file URL.
+   * @return {Promise}
+   *
+   * @example
+   *   Audit.loadFileFromUrl('resources/my-sound.ogg').then((response) => {
+   *       audioContext.decodeAudioData(response).then((audioBuffer) => {
+   *           // Do something with AudioBuffer.
+   *       });
+   *   });
+   */
+  function loadFileFromUrl(fileUrl) {
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', fileUrl, true);
+      xhr.responseType = 'arraybuffer';
+
+      xhr.onload = () => {
+        // |status = 0| is a workaround for the run_web_test.py server. We are
+        // speculating the server quits the transaction prematurely without
+        // completing the request.
+        if (xhr.status === 200 || xhr.status === 0) {
+          resolve(xhr.response);
+        } else {
+          let errorMessage = 'loadFile: Request failed when loading ' +
+              fileUrl + '. ' + xhr.statusText + '. (status = ' + xhr.status +
+              ')';
+          if (reject) {
+            reject(errorMessage);
+          } else {
+            new Error(errorMessage);
+          }
+        }
+      };
+
+      xhr.onerror = (event) => {
+        let errorMessage =
+            'loadFile: Network failure when loading ' + fileUrl + '.';
+        if (reject) {
+          reject(errorMessage);
+        } else {
+          new Error(errorMessage);
+        }
+      };
+
+      xhr.send();
+    });
+  }
+
+  /**
    * @class Audit
    * @description A WebAudio layout test task manager.
    * @example
@@ -1313,11 +1382,17 @@ window.Audit = (function() {
       if (options && options.requireResultFile == true) {
         _logError(
             'this test requires the explicit comparison with the ' +
-            'expected result when it runs with run-webkit-tests.');
+            'expected result when it runs with run_web_tests.py.');
       }
 
       return new TaskRunner();
     },
+
+    /**
+     * Load file from a given URL and pass ArrayBuffer to the following promise.
+     * See |loadFileFromUrl| method for the detail.
+     */
+    loadFileFromUrl: loadFileFromUrl
 
   };
 

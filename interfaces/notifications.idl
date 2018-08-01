@@ -1,27 +1,9 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>Notification interface IDL tests</title>
-<div id=log></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=/resources/WebIDLParser.js></script>
-<script src=/resources/idlharness.js></script>
-<script type=text/plain class=untested>
-interface EventTarget {
-  void addEventListener(DOMString type, EventListener? callback, optional boolean capture /* = false */);
-  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture /* = false */);
-  boolean dispatchEvent(Event event);
-};
-[TreatNonCallableAsNull]
-callback EventHandlerNonNull = any (Event event);
-typedef EventHandlerNonNull? EventHandler;
-</script>
-<script type=text/plain>
 [Constructor(DOMString title, optional NotificationOptions options),
  Exposed=(Window,Worker)]
 interface Notification : EventTarget {
   static readonly attribute NotificationPermission permission;
-  [Exposed=Window] static Promise<NotificationPermission> requestPermission(optional NotificationPermissionCallback deprecatedCallback);
+  [Exposed=Window] static Promise<NotificationPermission> requestPermission(
+      optional NotificationPermissionCallback deprecatedCallback);
 
   static readonly attribute unsigned long maxActions;
 
@@ -79,25 +61,39 @@ enum NotificationDirection {
 };
 
 dictionary NotificationAction {
+  NotificationActionType type = "button";
   required DOMString action;
   required DOMString title;
   USVString icon;
+  DOMString? placeholder = null;
 };
 
 callback NotificationPermissionCallback = void (NotificationPermission permission);
-</script>
-<script>
-"use strict";
-var idlArray = new IdlArray();
-[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
-  if (node.className == "untested") {
-    idlArray.add_untested_idls(node.textContent);
-  } else {
-    idlArray.add_idls(node.textContent);
-  }
-});
-idlArray.add_objects({
-  Notification: ['new Notification("Running idlharness.")'],
-});
-idlArray.test();
-</script>
+
+dictionary GetNotificationOptions {
+  DOMString tag = "";
+};
+
+partial interface ServiceWorkerRegistration {
+  Promise<void> showNotification(DOMString title, optional NotificationOptions options);
+  Promise<sequence<Notification>> getNotifications(optional GetNotificationOptions filter);
+};
+
+[Constructor(DOMString type, NotificationEventInit eventInitDict),
+ Exposed=ServiceWorker]
+interface NotificationEvent : ExtendableEvent {
+  readonly attribute Notification notification;
+  readonly attribute DOMString action;
+  readonly attribute DOMString? reply;
+};
+
+dictionary NotificationEventInit : ExtendableEventInit {
+  required Notification notification;
+  DOMString action = "";
+  DOMString? reply = null;
+};
+
+partial interface ServiceWorkerGlobalScope {
+  attribute EventHandler onnotificationclick;
+  attribute EventHandler onnotificationclose;
+};

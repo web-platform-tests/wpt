@@ -52,11 +52,7 @@ def update(tests, *logs):
 
 def create_updater(tests, url_base="/", **kwargs):
     id_test_map = {}
-    m = create_test_manifest(tests, url_base)
-    test_manifests = {
-        m: {"url_base": "/",
-            "tests_path": "."}
-    }
+    m = create_test_manifest(tests, url_base)fixup!
     expected_data = {}
     metadata.load_expected = lambda _, __, test_path, *args: expected_data[test_path]
 

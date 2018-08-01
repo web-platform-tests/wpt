@@ -53,22 +53,22 @@ def update(tests, *logs):
 def create_updater(tests, url_base="/", **kwargs):
     id_test_map = {}
     m = create_test_manifest(tests, url_base)
-    test_manifests = {
-        m: {"url_base": "/",
-            "tests_path": "."}
-    }
+    expected_data = {}
+    metadata.load_expected = lambda _, __, test_path, *args: expected_data[test_path]
+
     for test_path, test_ids, test_type, manifest_str in tests:
         tests = list(m.iterpath(test_path))
         if isinstance(test_ids, (str, unicode)):
             test_ids = [test_ids]
-        test_data = metadata.TestFileData(m, None, test_path, tests)
-        test_data._expected = manifestupdate.compile(BytesIO(manifest_str),
-                                                     test_path,
-                                                     url_base)
+        test_data = metadata.TestFileData("/", "testharness", None, test_path, tests)
+        expected_data[test_path] = manifestupdate.compile(BytesIO(manifest_str),
+                                                          test_path,
+                                                          url_base)
+
         for test_id in test_ids:
             id_test_map[test_id] = test_data
 
-    return id_test_map, metadata.ExpectedUpdater(test_manifests, id_test_map, **kwargs)
+    return id_test_map, metadata.ExpectedUpdater(id_test_map, **kwargs)
 
 
 def create_log(entries):

@@ -2280,7 +2280,7 @@ policies and contribution forms [3].
                           testDone();
                       } else {
                           add_test_done_callback(test, testDone);
-                          test.done();
+                          test.cleanup();
                       }
                   },
                   all_complete);

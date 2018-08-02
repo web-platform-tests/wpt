@@ -3,7 +3,7 @@
 // "Screen Capture" spec.
 // See: https://w3c.github.io/mediacapture-screen-share/
 
-partial interface NavigatorUserMedia {
+partial interface Navigator {
     Promise<MediaStream> getDisplayMedia(optional MediaStreamConstraints constraints);
 };
 

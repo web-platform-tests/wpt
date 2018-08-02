@@ -2363,7 +2363,6 @@ IdlInterface.prototype.add_iterable_members = function(member)
 IdlInterface.prototype.test_to_json_operation = function(memberHolderObject, member) {
     var instanceName = memberHolderObject && memberHolderObject.constructor.name
         || member.name + " object";
-    // var instanceName = memberHolderObject.constructor.name;
     if (member.has_extended_attribute("Default")) {
         subsetTestByKey(this.name, test, function() {
             var map = this.default_to_json_operation();

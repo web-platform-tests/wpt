@@ -1,0 +1,52 @@
+// META: script=/resources/WebIDLParser.js
+// META: script=/resources/idlharness.js
+// META: script=/webusb/resources/fake-devices.js
+// META: script=/webusb/resources/usb-helpers.js
+
+'use strict';
+
+idl_test(
+  ['webusb'],
+  ['html', 'dom'],
+  async idl_array => {
+    // Untested IDL interfaces
+    idl_array.add_untested_idls('dictionary PermissionDescriptor {};');
+    idl_array.add_untested_idls('interface PermissionStatus {};');
+
+    if (self.GLOBAL.isWindow()) {
+      idl_array.add_objects({ Navigator: ['navigator'] });
+    } else if (self.GLOBAL.isWorker()) {
+      idl_array.add_objects({ WorkerNavigator: ['navigator'] });
+    }
+
+    idl_array.add_objects({
+      Navigator: ['navigator'],
+      USB: ['navigator.usb'],
+      USBAlternateInterface: ['usbAlternateInterface'],
+      USBConfiguration: ['usbConfiguration'],
+      USBConnectionEvent: ['usbConnectionEvent'],
+      USBDevice: ['usbDevice'],
+      USBEndpoint: ['usbEndpoint'],
+      USBInterface: ['usbInterface'],
+      USBInTransferResult: ['new USBInTransferResult("ok")'],
+      USBOutTransferResult: ['new USBOutTransferResult("ok")'],
+      USBIsochronousInTransferResult: ['new USBIsochronousInTransferResult([])'],
+      USBIsochronousOutTransferResult: ['new USBIsochronousOutTransferResult([])'],
+      USBIsochronousInTransferPacket: ['new USBIsochronousInTransferPacket("ok")'],
+      USBIsochronousOutTransferPacket: ['new USBIsochronousOutTransferPacket("ok")'],
+    });
+    idl_array.prevent_multiple_testing('Navigator');
+
+    return usb_test(async () => {
+      // Ignored errors are surfaced in idlharness.js's test_object below.
+      self.usbDevice = await getFakeDevice().device;
+      self.usbConfiguration = usbDevice.configurations[0];
+      self.usbInterface = usbConfiguration.interfaces[0];
+      self.usbAlternateInterface = usbInterface.alternates[0];
+      self.usbEndpoint = usbAlternateInterface.endpoints[0];
+      self.usbConnectionEvent =
+          new USBConnectionEvent('connect', { device: usbDevice });
+    }, 'USB device setup');
+  },
+  'WebUSB IDL test'
+);

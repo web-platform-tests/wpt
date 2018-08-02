@@ -10,36 +10,33 @@
 <p class="instructions">When prompted, accept to share your audio stream, then your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that removinging a track from a MediaStream works as expected.</p>
-
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
-var t = async_test("Tests that a removal from a MediaStream works as expected", {timeout:10000});
-t.step(function () {
-  var audio;
-  navigator.mediaDevices.getUserMedia({audio:true}).then(gotAudio);
-  function gotAudio(stream) {
-     audio = stream;
-     navigator.mediaDevices.getUserMedia({video:true}).then(gotVideo);
-  }
 
-  function gotVideo(stream) {
-    var video = stream;
-    video.onremovetrack = function () {
-       assert_unreached("onremovetrack is not triggered when removal of track is triggered by the script itself");
-    };
-    t.step(function () {
-       assert_equals(video.getVideoTracks().length, 1, "video mediastream starts with one video track");
-       video.removeTrack(video.getVideoTracks()[0]);
-       assert_equals(video.getVideoTracks().length, 0, "video mediastream has no video track left");
-       video.removeTrack(audio.getAudioTracks()[0]); // should not throw
-    });
-    t.step(function() {
-       t.done();
-   });
-  }
-});
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+  const tracks = stream.getTracks();
+  t.add_cleanup(() => tracks.forEach(track => track.stop()));
+  const stream2 = await navigator.mediaDevices.getUserMedia({audio: true});
+  tracks.push(...stream2.getTracks());
+
+  stream.onremovetrack = stream2.onremovetrack = t.step_func(() =>
+    assert_unreached("onremovetrack is not triggered by script itself"));
+
+  assert_equals(stream.getTracks().length, 2, "mediastream starts with 2 tracks");
+  stream.removeTrack(stream.getVideoTracks()[0]);
+  assert_equals(stream.getTracks().length, 1, "mediastream has 1 track left");
+  stream.removeTrack(stream.getAudioTracks()[0]);
+  assert_equals(stream.getTracks().length, 0, "mediastream has no tracks left");
+  stream.removeTrack(stream2.getTracks()[0]); // should not throw
+
+  // Allow time to verify no events fire.
+  await new Promise(r => t.step_timeout(r, 1));
+
+}, "Tests that a removal from a MediaStream works as expected");
+
 </script>
 </body>
 </html>

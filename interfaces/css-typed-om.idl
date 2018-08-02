@@ -154,6 +154,14 @@ interface CSSMathMax : CSSMathValue {
     readonly attribute CSSNumericArray values;
 };
 
+[Exposed=(Window, Worker, PaintWorklet, LayoutWorklet),
+ Constructor(CSSNumberish min, CSSNumberish val, CSSNumberish max)]
+interface CSSMathClamp : CSSMathValue {
+    readonly attribute CSSNumericValue min;
+    readonly attribute CSSNumericValue val;
+    readonly attribute CSSNumericValue max;
+};
+
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSNumericArray {
     iterable<CSSNumericValue>;
@@ -168,6 +176,7 @@ enum CSSMathOperator {
     "invert",
     "min",
     "max",
+    "clamp",
 };
 
 partial namespace CSS {

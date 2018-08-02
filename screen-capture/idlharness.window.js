@@ -7,10 +7,10 @@
 
 idl_test(
   ['screen-capture'],
-  ['mediacapture-main'],
+  ['mediacapture-streams'],
   idl_array => {
     idl_array.add_objects({
       NavigatorUserMedia: ['navigator'],
     });
-  },
-  'screen-capture interfaces.');
+  }
+);

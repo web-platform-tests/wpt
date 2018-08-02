@@ -34,7 +34,6 @@ idl_test(
       USBIsochronousInTransferPacket: ['new USBIsochronousInTransferPacket("ok")'],
       USBIsochronousOutTransferPacket: ['new USBIsochronousOutTransferPacket("ok")'],
     });
-    idl_array.prevent_multiple_testing('Navigator');
 
     return usb_test(async () => {
       // Ignored errors are surfaced in idlharness.js's test_object below.

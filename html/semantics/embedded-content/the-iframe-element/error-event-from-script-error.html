@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+/**
+ * In order to assert that an error event does not fire, each sub-test in this
+ * file intentionally causes three uncaught exceptions. The is used to trigger
+ * the event in those browsers that incorrectly implement it. The second and
+ * third are used to determine when the test is complete (that is: when it is
+ * acceptable to stop waiting for the incorrect event) by scheduling additional
+ * tasks in the same task queues.
+ */
+'use strict';
+
+setup({
+  allow_uncaught_exception: true
+});
+
+async_test(function(t) {
+  var iframe = document.createElement('iframe');
+
+  window.addEventListener('error', function(event) {
+    t.done();
+  });
+  window.addEventListener('message', function(event) {
+    if (event.data == 'from child') {
+      throw new Error();
+    }
+  });
+
+  document.body.appendChild(iframe);
+  iframe.onerror = t.step_func(function() {
+    assert_unreached(
+      'The "error" event should not be triggered (`onerror` property)'
+    );
+  });
+  iframe.addEventListener('error', t.step_func(function() {
+    assert_unreached(
+      'The "error" event should not be triggered (`error` event handler)'
+    );
+  }));
+  iframe.contentDocument.open();
+  iframe.contentDocument.write([
+    '<!doctype html>',
+    '<meta charset=utf-8>',
+    '<script>',
+    '  "use strict";',
+    '  throw new Error("first error");',
+    '<' + '/script>',
+    '<script>',
+    '  "use strict";',
+    '  window.onerror = function() {',
+    '    parent.postMessage("from child", "*");',
+    '  };',
+    '  throw new Error("second error");',
+    '<' + '/script>'
+  ].join('\n'));
+  iframe.contentDocument.close();
+});
+</script>
+</body>

@@ -10,6 +10,7 @@ partial interface Navigator {
 partial dictionary MediaTrackConstraintSet {
              ConstrainDOMString displaySurface;
              ConstrainBoolean logicalSurface;
+             ConstrainDOMString cursor;
 };
 
 enum DisplayCaptureSurfaceType {
@@ -17,4 +18,10 @@ enum DisplayCaptureSurfaceType {
     "window",
     "application",
     "browser"
+};
+
+enum CursorCaptureConstraint {
+    "never",
+    "always",
+    "motion"
 };

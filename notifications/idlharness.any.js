@@ -14,7 +14,7 @@ idl_test(
       Notification: ['notification'],
       NotificationEvent: ['notificationEvent'],
     });
-    if (self.isWorker) {
+    if (self.ServiceWorkerGlobalScope) {
       idl_array.add_objects({ServiceWorkerGlobalScope: ['self']});
     }
 

@@ -20,6 +20,5 @@ idl_test(
 
     self.notification = new Notification("Running idlharness.");
     self.notificationEvent = new NotificationEvent("Running idlharness.");
-  },
-  'notification interfaces.'
+  }
 );

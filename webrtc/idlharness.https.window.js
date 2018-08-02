@@ -139,6 +139,5 @@ idl_test(
     */
 
     await asyncInit();
-  },
-  'Main test driver'
+  }
 );

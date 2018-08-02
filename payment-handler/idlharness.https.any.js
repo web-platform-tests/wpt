@@ -7,11 +7,29 @@
 
 // https://w3c.github.io/payment-handler/
 
-promise_test(async t => {
-  const isWindow = self.GLOBAL.isWindow();
-  const isServiceWorker = location.pathname.includes('.serviceworker.');
-  const hasRegistration = isServiceWorker || isWindow;
-  try {
+idl_test(
+  ['payment-handler'],
+  ['service-workers', 'dedicated-workers', 'dom'],
+  async (idl_array, t) => {
+    const isWindow = self.GLOBAL.isWindow();
+    const isServiceWorker = 'ServiceWorkerGlobalScope' in self;
+    const hasRegistration = isServiceWorker || isWindow;
+
+    if (hasRegistration) {
+      idl_array.add_objects({
+        ServiceWorkerRegistration: ['registration'],
+        PaymentManager: ['paymentManager'],
+        PaymentInstruments: ['instruments'],
+      });
+    }
+    if (isServiceWorker) {
+      idl_array.add_objects({
+        ServiceWorkerGlobalScope: ['self'],
+        CanMakePaymentEvent: ['new CanMakePaymentEvent("type")'],
+        PaymentRequestEvent: ['new PaymentRequestEvent("type")'],
+      })
+    }
+
     if (isWindow) {
       const scope = '/service-workers/service-worker/resources/';
       const reg = await service_worker_unregister_and_register(
@@ -24,28 +42,5 @@ promise_test(async t => {
       self.paymentManager = self.registration.paymentManager;
       self.instruments = self.paymentManager.instruments;
     }
-  } catch (e) {
-    // Will be surfaced when registration is undefined below.
   }
-
-  idl_test(
-    ['payment-handler'],
-    ['service-workers', 'dedicated-workers', 'dom'],
-    idl_array => {
-      if (hasRegistration) {
-        idl_array.add_objects({
-          ServiceWorkerRegistration: ['registration'],
-          PaymentManager: ['paymentManager'],
-          PaymentInstruments: ['instruments'],
-        });
-      }
-      if (isServiceWorker) {
-        idl_array.add_objects({
-          ServiceWorkerGlobalScope: ['self'],
-          CanMakePaymentEvent: ['new CanMakePaymentEvent("type")'],
-          PaymentRequestEvent: ['new PaymentRequestEvent("type")'],
-        })
-      }
-    },
-    'payment-handler interfaces.');
-})
+);

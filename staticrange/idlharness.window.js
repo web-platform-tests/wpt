@@ -5,25 +5,17 @@
 
 'use strict';
 
-promise_test(async () => {
-  const srcs = ['staticrange', 'dom'];
-  const [staticrange, dom] = await Promise.all(
-    srcs.map(i => fetch(`/interfaces/${i}.idl`).then(r => r.text())));
+idl_test(
+  ['staticrange'],
+  ['dom'],
+  idl_array => {
+    idl_array.add_objects({
+      StaticRange: ['staticRange'],
+    });
 
-  try {
-    window.staticRange = new StaticRange({
+    self.staticRange = new StaticRange({
       start: document.body,
       end: document.body
     });
-  } catch (e) {
-    // Will be surfaced in idlharness.js's test_object below.
   }
-
-  const idl_array = new IdlArray();
-  idl_array.add_idls(staticrange);
-  idl_array.add_dependency_idls(dom);
-  idl_array.add_objects({
-    StaticRange: ['staticRange'],
-  });
-  idl_array.test();
-}, 'staticrange IDL');
+);

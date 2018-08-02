@@ -44,7 +44,7 @@
   // with unique id to track the response. This assumes the use of
   // 'worker.js' as the worker, which implements this protocol.
   self.postToWorkerAndWait = (worker, data) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       data.rqid = next_request_id++;
       worker.postMessage(data);
       const listener = event => {
@@ -54,6 +54,7 @@
         resolve(event.data);
       };
       worker.addEventListener('message', listener);
+      worker.addEventListener('error', (e) => reject(e && e.message));
     });
   };
 

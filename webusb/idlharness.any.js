@@ -20,7 +20,6 @@ idl_test(
     }
 
     idl_array.add_objects({
-      Navigator: ['navigator'],
       USB: ['navigator.usb'],
       USBAlternateInterface: ['usbAlternateInterface'],
       USBConfiguration: ['usbConfiguration'],

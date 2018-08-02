@@ -12,7 +12,7 @@ interface SVGFilterElement : SVGElement {
   readonly attribute SVGAnimatedLength height;
 };
 
-SVGFilterElement implements SVGURIReference;
+SVGFilterElement includes SVGURIReference;
 
 interface mixin SVGFilterPrimitiveStandardAttributes {
   readonly attribute SVGAnimatedLength x;
@@ -240,7 +240,7 @@ interface SVGFEImageElement : SVGElement {
 };
 
 SVGFEImageElement includes SVGFilterPrimitiveStandardAttributes;
-SVGFEImageElement implements SVGURIReference;
+SVGFEImageElement includes SVGURIReference;
 
 interface SVGFEMergeElement : SVGElement {
 };

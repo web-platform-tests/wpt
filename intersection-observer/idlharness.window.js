@@ -9,19 +9,14 @@ idl_test(
   ['intersection-observer'],
   ['dom'],
   idl_array => {
-    let observer;
-    try {
-      var options = {
-        root: document.body,
-        rootMargin: '0px',
-        threshold: 1.0
-      }
-      observer = new IntersectionObserver(() => {}, options);
-    } catch (e) {
-      // Will be surfaced by idlharness.js's test_object below.
-    }
     idl_array.add_objects({
-      IntersectionObserver: [observer],
+      IntersectionObserver: ['observer'],
     });
-  },
-  'intersection-observer interfaces.');
+    var options = {
+      root: document.body,
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    self.observer = new IntersectionObserver(() => {}, options);
+  }
+);

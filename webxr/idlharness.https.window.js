@@ -15,8 +15,6 @@ idl_test(
       XRDevice: ['device'],
       XRSession: ['session'],
     });
-    idl_array.add_untested_idls("dictionary WebGLContextAttributes {};");
-
     self.device = await navigator.XR.requestDevice();
     self.session = await device.requestSession();
   },

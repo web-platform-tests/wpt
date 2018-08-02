@@ -7,22 +7,18 @@
 
 idl_test(
   ['notifications'],
-  ['service-workers', 'dom', 'html'],
+  ['service-workers', 'html', 'dom'],
   idl_array => {
-    let notification, notificationEvent;
-    try {
-      notification = new Notification("Running idlharness.");
-      notificationEvent = new NotificationEvent("Running idlharness.");
-    } catch (e) {
-      // Will be surfaced in idlharness.js's test_object below.
-    }
-
     idl_array.add_objects({
-      Notification: [notification],
-      NotificationEvent: [notificationEvent],
+      Notification: ['notification'],
+      NotificationEvent: ['notificationEvent'],
     });
     if (self.isWorker) {
-      idl_array.add_objects({ServiceWorkerGlobalScope: [self]});
+      idl_array.add_objects({ServiceWorkerGlobalScope: ['self']});
     }
+
+    self.notification = new Notification("Running idlharness.");
+    self.notificationEvent = new NotificationEvent("Running idlharness.");
   },
-  'notification interfaces.');
+  'notification interfaces.'
+);

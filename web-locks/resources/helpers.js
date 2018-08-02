@@ -54,7 +54,12 @@
         resolve(event.data);
       };
       worker.addEventListener('message', listener);
-      worker.addEventListener('error', (e) => reject(e && e.message));
+
+      // Registering this handler helps to avoid test timeouts in browsers that
+      // do not implement the API. This approach is not used in
+      // `postToFrameAndWait` because iframe elements are not specified to emit
+      // an `error` event for uncaught exceptions.
+      worker.addEventListener('error', e => reject(e && e.message));
     });
   };
 

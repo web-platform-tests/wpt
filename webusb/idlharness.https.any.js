@@ -7,12 +7,8 @@
 
 idl_test(
   ['webusb'],
-  ['html', 'dom'],
+  ['permissions', 'html', 'dom'],
   async idl_array => {
-    // Untested IDL interfaces
-    idl_array.add_untested_idls('dictionary PermissionDescriptor {};');
-    idl_array.add_untested_idls('interface PermissionStatus {};');
-
     if (self.GLOBAL.isWindow()) {
       idl_array.add_objects({ Navigator: ['navigator'] });
     } else if (self.GLOBAL.isWorker()) {

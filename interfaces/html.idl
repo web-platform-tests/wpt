@@ -1557,6 +1557,10 @@ Window includes WindowEventHandlers;
 
 callback FrameRequestCallback = void (DOMHighResTimeStamp time);
 
+dictionary WindowPostMessageOptions {
+  USVString targetOrigin = "/";
+};
+
 [Exposed=Window]
 interface BarProp {
   readonly attribute boolean visible;

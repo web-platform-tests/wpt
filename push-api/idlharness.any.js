@@ -22,6 +22,8 @@ idl_test(
     }
     if (GLOBAL.isWindow() || isServiceWorker) {
       idl_array.add_objects({
+        // self.registration set for window below, and registration is already
+        // part of ServiceWorkerGlobalScope.
         ServiceWorkerRegistration: ['registration'],
         PushManager: ['registration.pushManager'],
       });

@@ -38,6 +38,5 @@ idl_test(
           t.add_cleanup(function () { registration.unregister(); });
         });
     }
-  },
-  'push-api interfaces'
+  }
 );

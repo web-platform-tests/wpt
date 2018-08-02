@@ -10,6 +10,8 @@
 <p class="instructions">When prompted, accept to share your audio stream, then your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that removinging a track from a MediaStream works as expected.</p>
+<video id="video" height="120" width="160" autoplay muted></video>
+<audio id="audio" autoplay muted></audio>
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -36,6 +38,88 @@ promise_test(async t => {
   await new Promise(r => t.step_timeout(r, 1));
 
 }, "Tests that a removal from a MediaStream works as expected");
+
+async function doesEventFire(t, target, name, ms = 1) {
+  const cookie = {};
+  const value = await Promise.race([
+    new Promise(r => target.addEventListener(name, r, {once: true})),
+    new Promise(r => t.step_timeout(r, ms)).then(() => cookie)
+  ]);
+  return value !== cookie;
+}
+
+const doEventsFire = (t, target1, target2, name, ms = 1) => Promise.all([
+  doesEventFire(t, target1, "ended", ms),
+  doesEventFire(t, target2, "ended", ms)
+]);
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+  const tracks = stream.getTracks();
+  t.add_cleanup(() => tracks.forEach(track => track.stop()));
+
+  audio.srcObject = video.srcObject = stream;
+  t.add_cleanup(() => audio.srcObject = video.srcObject = null);
+
+  await Promise.all([
+    new Promise(r => audio.onloadedmetadata = r),
+    new Promise(r => video.onloadedmetadata = r)
+  ]);
+
+  assert_equals(audio.ended, false, "audio element starts out not ended");
+  assert_equals(video.ended, false, "video element starts out not ended");
+
+  stream.removeTrack(stream.getVideoTracks()[0]);
+  {
+    const [audioDidEnd, videoDidEnd] = await doEventsFire(t, audio, video, "ended");
+    assert_equals(audio.ended, false, "audio element unaffected");
+    assert_equals(audioDidEnd, false, "no audio ended event should fire yet");
+    assert_equals(video.ended, false, "video element keeps going with audio track");
+    assert_equals(videoDidEnd, false, "no video ended event should fire yet");
+  }
+  stream.removeTrack(stream.getAudioTracks()[0]);
+  {
+    const [audioDidEnd, videoDidEnd] = await doEventsFire(t, audio, video, "ended");
+    assert_equals(audio.ended, true, "audio element ended because no more audio tracks");
+    assert_equals(audioDidEnd, true, "go audio ended event");
+    assert_equals(video.ended, true, "video element ended because no more tracks");
+    assert_equals(videoDidEnd, true, "got video ended event");
+  }
+}, "Test that removal from a MediaStream fires ended on media elements (video first)");
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+  const tracks = stream.getTracks();
+  t.add_cleanup(() => tracks.forEach(track => track.stop()));
+
+  audio.srcObject = video.srcObject = stream;
+  t.add_cleanup(() => audio.srcObject = video.srcObject = null);
+
+  await Promise.all([
+    new Promise(r => audio.onloadedmetadata = r),
+    new Promise(r => video.onloadedmetadata = r)
+  ]);
+
+  assert_equals(audio.ended, false, "audio element starts out not ended");
+  assert_equals(video.ended, false, "video element starts out not ended");
+
+  stream.removeTrack(stream.getAudioTracks()[0]);
+  {
+    const [audioDidEnd, videoDidEnd] = await doEventsFire(t, audio, video, "ended");
+    assert_equals(audio.ended, true, "audio element ended because no more audio tracks");
+    assert_equals(audioDidEnd, true, "got audio ended event");
+    assert_equals(video.ended, false, "video element keeps going with video track");
+    assert_equals(videoDidEnd, false, "no video ended event should fire yet");
+  }
+  stream.removeTrack(stream.getVideoTracks()[0]);
+  {
+    const [audioDidEnd, videoDidEnd] = await doEventsFire(t, audio, video, "ended");
+    assert_equals(audio.ended, true, "audio element remains ended from before");
+    assert_equals(audioDidEnd, false, "no second audio ended event should fire");
+    assert_equals(video.ended, true, "video element ended because no more tracks");
+    assert_equals(videoDidEnd, true, "got video ended event");
+  }
+}, "Test that removal from a MediaStream fires ended on media elements (audio first)");
 
 </script>
 </body>

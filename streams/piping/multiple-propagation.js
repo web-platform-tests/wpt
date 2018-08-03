@@ -35,6 +35,32 @@ promise_test(t => {
     ]);
   });
 
+}, 'Piping from an errored readable stream to an erroring writable stream');
+
+promise_test(t => {
+  const rs = recordingReadableStream({
+    start(c) {
+      c.error(error1);
+    }
+  });
+  const ws = recordingWritableStream({
+    start(c) {
+      c.error(error2);
+    }
+  });
+
+  // Trying to abort a stream that was errored will give that error back
+  return Promise.resolve()
+      .then(() => promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the readable stream\'s error'))
+      .then(() => {
+        assert_array_equals(rs.events, []);
+        assert_array_equals(ws.events, []);
+
+        return Promise.all([
+          promise_rejects(t, error1, rs.getReader().closed, 'the readable stream must be errored with error1'),
+          promise_rejects(t, error2, ws.getWriter().closed, 'the writable stream must be errored with error2')
+        ]);
+      });
 }, 'Piping from an errored readable stream to an errored writable stream');
 
 promise_test(t => {

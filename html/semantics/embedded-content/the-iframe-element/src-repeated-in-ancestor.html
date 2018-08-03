@@ -22,13 +22,12 @@ if (parent !== window && parent.title == window.title) {
 
 function when(target, eventName) {
   return new Promise(function(resolve, reject) {
-    target.addEventListener(eventName, function handle() {
-      target.removeEventListener(eventName, handle);
+    target.addEventListener(eventName, function() {
       resolve();
-    });
+    }, { once: true });
     target.addEventListener('error', function() {
       reject(new Error('Error while waiting for ' + eventName));
-    });
+    }, { once: true });
   });
 }
 
@@ -48,6 +47,8 @@ function init(doc, t) {
     .then(function() { return iframes; });
 }
 
+// This test verifies that navigation does occur; it is intended to validate
+// the utility functions.
 promise_test(function(t) {
   return init(document, t)
     .then(function(iframes) {
@@ -67,7 +68,7 @@ promise_test(function(t) {
       var subjectNavigation = when(iframes[0].contentWindow, 'beforeunload');
       var controlNavigation = when(iframes[1].contentWindow, 'beforeunload');
 
-      iframes[0].src = location.pathname;
+      iframes[0].src = location.href;
       iframes[1].src = '/common/blank.html?4';
 
       return Promise.race([
@@ -85,7 +86,7 @@ promise_test(function(t) {
       var subjectNavigation = when(iframes[0].contentWindow, 'beforeunload');
       var controlNavigation = when(iframes[1].contentWindow, 'beforeunload');
 
-      iframes[0].src = location.pathname + '#something-else';
+      iframes[0].src = location.href + '#something-else';
       iframes[1].src = '/common/blank.html?5';
 
       return Promise.race([
@@ -114,7 +115,7 @@ promise_test(function(t) {
       var subjectNavigation = when(iframes[0].contentWindow, 'beforeunload');
       var controlNavigation = when(iframes[1].contentWindow, 'beforeunload');
 
-      iframes[0].src = location.pathname;
+      iframes[0].src = location.href;
       iframes[1].src = '/common/blank.html?6';
 
       return Promise.race([

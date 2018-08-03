@@ -12,9 +12,7 @@ idl_test(
     idl_array.add_objects({
       MIDIAccess: ['access'],
       MIDIInputMap: ['inputs'],
-      MIDIInput: ['input'],
       MIDIOutputMap: ['outputs'],
-      MIDIOutput: ['output'],
       MIDIConnectionEvent: ['new MIDIConnectionEvent("type")'],
     })
 
@@ -22,10 +20,12 @@ idl_test(
     self.inputs = access.inputs;
     if (inputs.size) {
       self.input = Array.from(access.inputs.values())[0];
+      idl_array.add_objects({ MIDIInput: ['input'] });
     }
     self.outputs = access.outputs;
     if (outputs.size) {
       self.output = Array.from(access.outputs.values())[0];
+      idl_array.add_objects({ MIDIOutput: ['output'] });
     }
   }
 );

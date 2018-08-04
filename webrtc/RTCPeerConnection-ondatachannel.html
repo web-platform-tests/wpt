@@ -162,15 +162,18 @@ promise_test(async (t) => {
   t.add_cleanup(() => pc1.close());
   t.add_cleanup(() => pc2.close());
 
-  pc2.ondatachannel = t.step_func(async (event) => {
+  pc2.ondatachannel = t.step_func((event) => {
     const dc = event.channel;
     dc.onopen = t.step_func((event) => {
       t.done();
     });
     
-    // This should NOT prevent triggering the 'open' event since it enqueues a task
-    await 0;
-    dc.close();
+    // This should NOT prevent triggering the 'open' event since it enqueues at least two tasks
+    t.step_timeout(() => {
+      t.step_timeout(() => {
+        dc.close()
+      }, 1);
+    }, 1);
   });
 
   pc1.createDataChannel('fire-me!');

@@ -4,11 +4,66 @@
 <script src="support/helper.sub.js"></script>
 <body>
 <script>
+  function createHTMLTest(policy, expected, t) {
+    let p = window.trustedTypes.createPolicy('SomeName', policy )
+        .then(t.step_func_done(p => {
+            assert_true(p.createHTML('whatever') instanceof TrustedHTML);
+            assert_equals(p.createHTML('whatever') + "", expected);
+    }));
+  }
+
   async_test(t => {
-    var policy = window.trustedTypes.createPolicy('SomeName')
+    let policy = window.trustedTypes.createPolicy('SomeName', s => s )
         .then(t.step_func_done(policy => {
-           assert_true(policy instanceof TrustedTypePolicy);
-           assert_equals(policy.name, 'SomeName');
+            assert_true(policy instanceof TrustedTypePolicy);
+            assert_equals(policy.name, 'SomeName');
     }));
   }, "policy.name = name");
+
+  async_test(t => {
+    createHTMLTest( s => s, 'whatever', t);
+  }, "trustedHTML.html = identity function");
+
+  async_test(t => {
+    createHTMLTest( s => null, "null", t);
+  }, "trustedHTML.html = null");
+
+  var str = 's';
+  async_test(t => {
+    createHTMLTest( s => str + s, str + 'whatever', t);
+  }, "trustedHTML.html = whatever + global string");
+
+  var x = 'global';
+  async_test(t => {
+    let p = window.trustedTypes.createPolicy('SomeName', s => { x = s; return s; })
+      .then(t.step_func_done(p => {
+        p.createHTML('whatever');
+        assert_equals(x, 'whatever');
+    }));
+  }, "trustedHTML.html = identity function, global string changed");
+
+  async_test(t => {
+    let p = window.trustedTypes.createPolicy('SomeName', s => { throw new Error(); } )
+        .then(t.step_func_done(p => {
+            assert_throws(new Error(), _ => {
+              p.createHTML('whatever');
+            });
+    }));
+  }, "trustedHTML.html = callback that throws");
+
+  function getHTML(s) {
+    return this.foo + " " + s;
+  }
+  var obj = {
+    "foo": "well,"
+  }
+
+  async_test(t => {
+    createHTMLTest( getHTML.bind(obj), 'well, whatever', t);
+  }, "trustedHTML.html = this binded to an object");
+
+  var foo = "well,";
+  async_test(t => {
+    createHTMLTest( getHTML, 'well, whatever', t);
+  }, "trustedHTML.html = this without bind");
 </script>

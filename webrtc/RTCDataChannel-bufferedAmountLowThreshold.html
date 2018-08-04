@@ -159,7 +159,7 @@ for (const [message, length, description] of messages) {
 
     // Done once the event has been raised (and the other channel did not fire)
     dc1.onbufferedamountlow = t.step_func(() => {
-      t.step_timeout(() => t.step_func_done(), 100);
+      t.step_timeout(t.step_func_done(), 100);
     });
 
     const dc2 = pc1.createDataChannel('test-2');

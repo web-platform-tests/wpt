@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<title>SpeechRecognition constructor algorithm</title>
+<link rel="help" href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html">
+</head>
+<body>
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(function() {
+  var r = new webkitSpeechRecognition();
+  assert_idl_attribute(r, 'lang');
+  assert_idl_attribute(r, 'continuous');
+  assert_idl_attribute(r, 'interimResults');
+  assert_idl_attribute(r, 'maxAlternatives');
+  assert_idl_attribute(r, 'start');
+
+  assert_equals(typeof r.start, 'function');
+  assert_idl_attribute(r, 'stop');
+  assert_equals(typeof r.stop, 'function');
+  assert_idl_attribute(r, 'abort');
+  assert_equals(typeof r.abort, 'function');
+
+  assert_idl_attribute(r, 'onaudiostart');
+  assert_idl_attribute(r, 'onsoundstart');
+  assert_idl_attribute(r, 'onspeechstart');
+  assert_idl_attribute(r, 'onspeechend');
+  assert_idl_attribute(r, 'onsoundend');
+  assert_idl_attribute(r, 'onaudioend');
+  assert_idl_attribute(r, 'onresult');
+  assert_idl_attribute(r, 'onnomatch');
+  assert_idl_attribute(r, 'onerror');
+  assert_idl_attribute(r, 'onstart');
+}, "Test that the SpeechRecognition constructor creates an object with the expected properties");
+</script>
+</body>
+</html>

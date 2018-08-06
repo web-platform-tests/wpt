@@ -22,9 +22,11 @@ function removeParams(url_string) {
   return url.href;
 }
 
-// Generates a referrer given a fetchType and a relevant referrer policy.
+// Generates a referrer given a fetchType, referrer policy, and a request URL
+// (used to determine whether request is remote-origin or not). This function
+// is used to generate expected referrers.
 function generateReferrer(referrerURL, referrerPolicy, requestURL) {
-  generatedReferrer = "";
+  let generatedReferrer = "";
   if (referrerPolicy === 'no-referrer')
     generatedReferrer = "";
   else if (referrerPolicy === 'origin')
@@ -78,9 +80,11 @@ function import_referrer_test(settings, description) {
     win.postMessage(scriptURL, '*');
     const msgEvent = await new Promise(resolve => window.onmessage = resolve);
 
-    // Generate the expected referrer given whether the test is a top-level or
-    // descendant test, the window's or worker's URL, and the window's or
-    // referrer policy, all respectively.
+    // Generate the expected referrer, given:
+    //   - The fetchType of the test
+    //   - Referrer URL to be used
+    //   - Relevant referrer policy
+    //   - Request URL
     let expectedReferrer;
     if (settings.fetchType === 'top-level') {
       // Top-level worker requests have their outgoing referrers set given their
@@ -91,9 +95,9 @@ function import_referrer_test(settings, description) {
       // referrer set given their containing script's URL and containing
       // window's referrer policy.
 
-      // In the two below cases, the referrer URL and the request URLs are the
-      // same because the initial request (for the top-level worker script)
-      // should act as the referrer for future descendant requests.
+      // In the below cases, the referrer URL and the request URLs are the same
+      // because the initial request (for the top-level worker script) should
+      // act as the referrer for future descendant requests.
       expectedReferrer = generateReferrer(settings.scriptURL, settings.windowReferrerPolicy, settings.scriptURL);
     } else if (settings.fetchType === 'descendant-dynamic') {
       // Dynamic descendant script requests from a worker have their outgoing
@@ -144,7 +148,8 @@ import_referrer_test(
 //
 // Static imports should inherit the containing window's referrer policy when
 // using the containing module script's URL as the referrer.
-// Note: This is subject to change in the future; see https://plz.put.me.here.
+// Note: This is subject to change in the future; see
+// https://github.com/w3c/webappsec-referrer-policy/issues/111.
 //
 // [Current document]
 // --(open)--> [Window] whose referrer policy is |windowReferrerPolicy|.

@@ -12,6 +12,24 @@ error1.name = 'error1';
 const error2 = new Error('error2!');
 error2.name = 'error2';
 
+function createErroredWritableStream(t) {
+  return Promise.resolve().then(() => {
+    const ws = recordingWritableStream({
+      start(c) {
+        c.error(error2);
+      }
+    });
+
+    const writer = ws.getWriter();
+    return promise_rejects(t, error2, writer.closed, 'the writable stream must be errored with error2')
+        .then(() => {
+          writer.releaseLock();
+          assert_array_equals(ws.events, []);
+          return ws;
+        });
+  });
+}
+
 promise_test(t => {
   const rs = recordingReadableStream({
     start(c) {
@@ -43,21 +61,11 @@ promise_test(t => {
       c.error(error1);
     }
   });
-  const ws = recordingWritableStream({
-    start(c) {
-      c.error(error2);
-    }
-  });
 
-  const writer = ws.getWriter();
-  return promise_rejects(t, error2, writer.closed, 'the writable stream must be errored with error2')
-      .then(() => {
-        writer.releaseLock();
-        return promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the readable stream\'s error');
-      })
+  return createErroredWritableStream(t)
+      .then(ws => promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the readable stream\'s error'))
       .then(() => {
         assert_array_equals(rs.events, []);
-        assert_array_equals(ws.events, []);
 
         return promise_rejects(t, error1, rs.getReader().closed, 'the readable stream must be errored with error1');
       });
@@ -95,22 +103,11 @@ promise_test(t => {
       c.error(error1);
     }
   });
-  const ws = recordingWritableStream({
-    start(c) {
-      c.error(error2);
-    }
-  });
-
-  const writer = ws.getWriter();
-  return promise_rejects(t, error2, writer.closed, 'the writable stream must be errored with error2')
-  .then(() => {
-    writer.releaseLock();
-    return promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
-                           'pipeTo must reject with the readable stream\'s error');
-  })
+  return createErroredWritableStream(t)
+  .then(ws => promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
+                              'pipeTo must reject with the readable stream\'s error'))
   .then(() => {
     assert_array_equals(rs.events, []);
-    assert_array_equals(ws.events, []);
 
     return promise_rejects(t, error1, rs.getReader().closed, 'the readable stream must be errored with error1');
   });
@@ -199,20 +196,10 @@ promise_test(t => {
       c.close();
     }
   });
-  const ws = recordingWritableStream({
-    start(c) {
-      c.error(error1);
-    }
-  });
-
-  const writer = ws.getWriter();
-  return promise_rejects(t, error1, writer.closed, 'writer must be errored with error1')
+  return createErroredWritableStream(t)
+  .then(ws => promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the writable stream\'s error'))
   .then(() => {
-    writer.releaseLock();
-    promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the writable stream\'s error');
-  }).then(() => {
     assert_array_equals(rs.events, []);
-    assert_array_equals(ws.events, []);
 
     return rs.getReader().closed;
   });

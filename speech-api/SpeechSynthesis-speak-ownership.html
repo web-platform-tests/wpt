@@ -1,10 +1,14 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <iframe></iframe>
 <script>
 // using an utterance for different SpeechSynthesis instances should throw
-test(t => {
+var t = async_test(
+  'Using the same SpeechSynthesisUtterance with two SpeechSynthesis instances');
+test_driver.click(document.body).then(t.step_func(() => {
   // the utterance is short to make the test faster
   const utter = new SpeechSynthesisUtterance('1');
   const iframe = document.querySelector('iframe');
@@ -15,5 +19,5 @@ test(t => {
   assert_throws(null, () => {
     iframe.contentWindow.speechSynthesis.speak(utter);
   });
-}, 'Using the same SpeechSynthesisUtterance with two SpeechSynthesis instances');
+}));
 </script>

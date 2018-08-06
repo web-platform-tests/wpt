@@ -253,29 +253,29 @@ def create_dialog(session):
     function to validate that the dialog has been "handled" (either accepted or
     dismissed) by returning some value."""
 
-    def create_dialog(dialog_type, text=None, prompt=None):
+    def create_dialog(dialog_type, text=None):
         assert dialog_type in ("alert", "confirm", "prompt"), (
             "Invalid dialog type: '%s'" % dialog_type)
 
         if text is None:
             text = ""
 
-        dialog_params = "text"
-        if prompt is not None:
-            dialog_params += ", prompt"
-
         assert isinstance(text, basestring), "`text` parameter must be a string"
+
+        dialog_params = "text"
+        if dialog_type == "prompt":
+            # For prompt() dialogs, add a value for the 'default' argument
+            dialog_params += ", ''"
 
         # Script completes itself when the user prompt has been opened.
         session.execute_async_script("""
             let dialog_type = arguments[0];
             let text = arguments[1];
-            let prompt = arguments[2];
 
             setTimeout(function() {{
               window.dialog_return_value = window[dialog_type]({});
             }}, 0);
-            """.format(dialog_params), args=(dialog_type, text, prompt))
+            """.format(dialog_params), args=(dialog_type, text))
 
         wait(session,
              lambda s: s.alert.text == text,

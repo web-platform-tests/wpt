@@ -12,10 +12,10 @@ def maximize(session):
 
 @pytest.fixture
 def check_user_prompt_closed_without_exception(session, create_dialog):
-    def check_user_prompt_closed_without_exception(dialog_type, retval, default_val):
+    def check_user_prompt_closed_without_exception(dialog_type, retval):
         original_size = session.window.size
 
-        create_dialog(dialog_type, text=dialog_type, prompt=default_val)
+        create_dialog(dialog_type, text=dialog_type)
 
         response = maximize(session)
         assert_success(response)
@@ -29,10 +29,10 @@ def check_user_prompt_closed_without_exception(session, create_dialog):
 
 @pytest.fixture
 def check_user_prompt_closed_with_exception(session, create_dialog):
-    def check_user_prompt_closed_with_exception(dialog_type, retval, default_val):
+    def check_user_prompt_closed_with_exception(dialog_type, retval):
         original_size = session.window.size
 
-        create_dialog(dialog_type, text=dialog_type, prompt=default_val)
+        create_dialog(dialog_type, text=dialog_type)
 
         response = maximize(session)
         assert_error(response, "unexpected alert open")
@@ -63,23 +63,23 @@ def check_user_prompt_not_closed_but_exception(session, create_dialog):
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept"})
-@pytest.mark.parametrize("dialog_type, retval, default_val", [
-    ("alert", None, None),
-    ("confirm", True, None),
-    ("prompt", "", ""),
+@pytest.mark.parametrize("dialog_type, retval", [
+    ("alert", None),
+    ("confirm", True),
+    ("prompt", ""),
 ])
-def test_accept(check_user_prompt_closed_without_exception, dialog_type, retval, default_val):
-    check_user_prompt_closed_without_exception(dialog_type, retval, default_val)
+def test_accept(check_user_prompt_closed_without_exception, dialog_type, retval):
+    check_user_prompt_closed_without_exception(dialog_type, retval)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "accept and notify"})
-@pytest.mark.parametrize("dialog_type, retval, default_val", [
-    ("alert", None, None),
-    ("confirm", True, None),
-    ("prompt", "", ""),
+@pytest.mark.parametrize("dialog_type, retval", [
+    ("alert", None),
+    ("confirm", True),
+    ("prompt", ""),
 ])
-def test_accept_and_notify(check_user_prompt_closed_with_exception, dialog_type, retval, default_val):
-    check_user_prompt_closed_with_exception(dialog_type, retval, default_val)
+def test_accept_and_notify(check_user_prompt_closed_with_exception, dialog_type, retval):
+    check_user_prompt_closed_with_exception(dialog_type, retval)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "dismiss"})
@@ -89,7 +89,7 @@ def test_accept_and_notify(check_user_prompt_closed_with_exception, dialog_type,
     ("prompt", None),
 ])
 def test_dismiss(check_user_prompt_closed_without_exception, dialog_type, retval):
-    check_user_prompt_closed_without_exception(dialog_type, retval, None)
+    check_user_prompt_closed_without_exception(dialog_type, retval)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "dismiss and notify"})
@@ -99,7 +99,7 @@ def test_dismiss(check_user_prompt_closed_without_exception, dialog_type, retval
     ("prompt", None),
 ])
 def test_dismiss_and_notify(check_user_prompt_closed_with_exception, dialog_type, retval):
-    check_user_prompt_closed_with_exception(dialog_type, retval, None)
+    check_user_prompt_closed_with_exception(dialog_type, retval)
 
 
 @pytest.mark.capabilities({"unhandledPromptBehavior": "ignore"})
@@ -114,4 +114,4 @@ def test_ignore(check_user_prompt_not_closed_but_exception, dialog_type):
     ("prompt", None),
 ])
 def test_default(check_user_prompt_closed_with_exception, dialog_type, retval):
-    check_user_prompt_closed_with_exception(dialog_type, retval, None)
+    check_user_prompt_closed_with_exception(dialog_type, retval)

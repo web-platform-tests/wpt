@@ -172,3 +172,4 @@ function run_fp_tests_enabled_on_self_origin(sensorName) {
     );
   }, `${sensorName}: ${header} disallows cross-origin iframes.`);
 }
+

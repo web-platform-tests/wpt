@@ -4,11 +4,95 @@
 <script src="support/helper.sub.js"></script>
 <body>
 <script>
+  function createXXXTest(policy, expectedHTML, expectedURL, t) {
+    this.foo = "well,";
+    this.bar = "#x";
+    let p = window.trustedTypes.createPolicy('SomeName', policy )
+        .then(t.step_func_done(p => {
+            this.foo = "well,";
+            this.bar = "#x";
+            assert_true(p.createHTML('whatever') instanceof TrustedHTML);
+            assert_true(p.createURL(URLS.safe) instanceof TrustedURL);
+            assert_equals(p.createHTML('whatever') + "", expectedHTML);
+            assert_equals(p.createURL(URLS.safe) + "", expectedURL);
+    }));
+  }
+
   async_test(t => {
-    var policy = window.trustedTypes.createPolicy('SomeName')
+    let policy = window.trustedTypes.createPolicy('SomeName', { createHTML: s => s } )
         .then(t.step_func_done(policy => {
-           assert_true(policy instanceof TrustedTypePolicy);
-           assert_equals(policy.name, 'SomeName');
+            assert_true(policy instanceof TrustedTypePolicy);
+            assert_equals(policy.name, 'SomeName');
     }));
   }, "policy.name = name");
+
+  async_test(t => {
+    createXXXTest( { createHTML: s => s, createURL: s => s }, 'whatever', URLS.safe, t);
+  }, "html, url = identity function");
+
+  async_test(t => {
+    createXXXTest( { createHTML: s => null, createURL: s => null }, "null", "", t);
+  }, "html, url = null");
+
+  var HTMLstr = 'well, ';
+  var URLstr = '#x';
+  async_test(t => {
+    createXXXTest( { createHTML: s => HTMLstr + s, createURL: s => s + URLstr}, HTMLstr + 'whatever', URLS.safe + URLstr, t);
+  }, "html, url = string + global string");
+
+  var HTMLx = 'global';
+  var URLx = 'global';
+  async_test(t => {
+    let p = window.trustedTypes.createPolicy('SomeName', {
+        createHTML: s => { HTMLx = s; return s; },
+        createURL: s => { URLx = s; return s; }
+      })
+      .then(t.step_func_done(p => {
+        assert_true(p.createHTML('whatever') instanceof TrustedHTML);
+        assert_true(p.createURL(URLS.safe) instanceof TrustedURL);
+        assert_equals(p.createHTML('whatever') + "", 'whatever');
+        assert_equals(p.createURL(URLS.safe) + "", URLS.safe);
+        assert_equals(HTMLx, 'whatever');
+        assert_equals(URLx, URLS.safe);
+    }));
+  }, "html, url = identity function, global string changed");
+
+  async_test(t => {
+    let p = window.trustedTypes.createPolicy('SomeName', {
+        createHTML: s => { throw new Error(); },
+        createURL: s => { throw new Error(); }
+      })
+      .then(t.step_func_done(p => {
+        assert_throws(new Error(), _ => {
+          p.createHTML('whatever');
+        });
+        assert_throws(new Error(), _ => {
+          p.createURL(URLS.safe);
+        });
+    }));
+  }, "html, url = callback that throws");
+
+  function getHTML(s) {
+    return this.foo + " " + s;
+  }
+  function getURL(s) {
+    return s + this.bar;
+  }
+  var obj = {
+    "foo": "well,",
+    "bar": "#x"
+  }
+
+  async_test(t => {
+    createXXXTest( {
+      createHTML: getHTML.bind(obj),
+      createURL: getURL.bind(obj) },
+      'well, whatever', URLS.safe + "#x", t);
+  }, "html, url = this bound to an object");
+
+  var foo = "well,";
+  var bar = "#x";
+  async_test(t => {
+    createXXXTest( { createHTML: s => getHTML(s), createURL: s => getURL(s) }, 'well, whatever', URLS.safe + bar, t);
+  }, "html, url = this without bind");
 </script>

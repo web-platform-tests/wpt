@@ -113,5 +113,5 @@ def http2_compatible():
     # Currently, the HTTP/2.0 server is only working in python 2.7.10+ and OpenSSL 1.0.2+
     import ssl
     ssl_v = ssl.OPENSSL_VERSION_INFO
-    return (sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] >= 10) \
-        and (ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2)))
+    return ((sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] >= 10) and
+            (ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2))))

@@ -12,7 +12,7 @@ idl_test(
       SpeechGrammarList: ['new SpeechGrammarList()'],
       SpeechRecognition: ['new SpeechRecognition()'],
       // TODO: SpeechRecognitionAlternative
-      // TODO: SpeechRecognitionError
+      // TODO: SpeechRecognitionErrorEvent
       // TODO: SpeechRecognitionEvent
       // TODO: SpeechRecognitionResult
       // TODO: SpeechRecognitionResultList

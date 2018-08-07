@@ -44,7 +44,7 @@ enum SpeechRecognitionErrorCode {
 };
 
 [Exposed=Window]
-interface SpeechRecognitionError : Event {
+interface SpeechRecognitionErrorEvent : Event {
     readonly attribute SpeechRecognitionErrorCode error;
     readonly attribute DOMString message;
 };
@@ -123,7 +123,7 @@ partial interface Window {
 interface SpeechSynthesisUtterance : EventTarget {
     attribute DOMString text;
     attribute DOMString lang;
-    attribute SpeechSynthesisVoice voice;
+    attribute SpeechSynthesisVoice? voice;
     attribute float volume;
     attribute float rate;
     attribute float pitch;

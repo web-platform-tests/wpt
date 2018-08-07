@@ -232,7 +232,7 @@ class PythonScriptHandler(object):
     def __repr__(self):
         return "<%s base_path:%s url_base:%s>" % (self.__class__.__name__, self.base_path, self.url_base)
 
-    def __call__(self, request, response):
+    def read_file_and_run(self, request, response, func):
         path = filesystem_path(self.base_path, request, self.url_base)
 
         sys_path = sys.path[:]
@@ -242,22 +242,45 @@ class PythonScriptHandler(object):
             sys.path.insert(0, os.path.dirname(path))
             with open(path, 'rb') as f:
                 exec(compile(f.read(), path, 'exec'), environ, environ)
-            if "main" in environ:
-                handler = FunctionHandler(environ["main"])
-                handler(request, response)
-                wrap_pipeline(path, request, response)
-            elif "h2main" in environ:
-                handler = environ["h2main"](H2ResponseHandler)
-                handler(request, response)
-                wrap_pipeline(path, request, response)
-            else:
-                raise HTTPException(500, "No main function in script %s" % path)
+
+            return func(request, response, environ, path)
+
         except IOError:
             raise HTTPException(404)
         finally:
             sys.path = sys_path
             sys.modules = sys_modules
 
+    def __call__(self, request, response):
+        def func(request, response, environ, path):
+            if "main" in environ:
+                handler = FunctionHandler(environ["main"])
+                handler(request, response)
+                wrap_pipeline(path, request, response)
+            else:
+                raise HTTPException(500, "No main function in script %s" % path)
+
+        self.read_file_and_run(request, response, func)
+
+
+    def generate_handler(self, request):
+        def func(request, response, environ, path):
+            def _main(req, resp):
+                pass
+
+            handler = FunctionHandler(_main)
+            if "main" in environ:
+                handler.func = environ["main"]
+            if "handle_headers" in environ:
+                handler.handle_headers = environ["handle_headers"]
+            if "handle_data" in environ:
+                handler.handle_data = environ["handle_data"]
+
+            if handler.func is _main and not hasattr(handler, "handle_headers") and not hasattr(handler, "handle_data"):
+                raise HTTPException(500, "No main function or handlers in script %s" % path)
+
+            return handler
+        return self.read_file_and_run(request, None, func)
 
 python_script_handler = PythonScriptHandler()
 
@@ -292,34 +315,6 @@ class FunctionHandler(object):
 #The generic name here is so that this can be used as a decorator
 def handler(func):
     return FunctionHandler(func)
-
-
-class H2ResponseHandler(object):
-
-    def __init__(self):
-        self.func_map = {
-            'headers': None,
-            'data': None,
-        }
-
-    def __call__(self, request, response):
-        while True:
-            frame = request.frames.get(True, None)
-            if isinstance(frame, RequestReceived):
-                self.handle_headers(frame, request, response)
-            elif isinstance(frame, DataReceived):
-                self.handle_data(frame, request, response)
-            else:
-                raise ValueError('Frame type not recognized: ' + str(frame))
-
-            if frame.stream_ended:
-                break
-
-    def handle_headers(self, frame, request, response):
-        pass
-
-    def handle_data(self, frame, request, response):
-        pass
 
 class JsonHandler(object):
     def __init__(self, func):

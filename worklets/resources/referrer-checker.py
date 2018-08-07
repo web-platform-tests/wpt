@@ -11,6 +11,7 @@ def main(request, response):
         if referrer == expected_referrer:
             return (200, response_headers, "")
         return (404, response_headers)
+
     if referrer_policy == "same-origin":
         if referrer == expected_referrer:
             return (200, response_headers, "")

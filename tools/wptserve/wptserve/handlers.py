@@ -296,30 +296,46 @@ def handler(func):
 
 class H2ResponseHandler(object):
 
-    def __init__(self):
-        self.func_map = {
-            'headers': None,
-            'data': None,
-        }
-
-    def __call__(self, request, response):
-        while True:
-            frame = request.frames.get(True, None)
-            if isinstance(frame, RequestReceived):
-                self.handle_headers(frame, request, response)
-            elif isinstance(frame, DataReceived):
-                self.handle_data(frame, request, response)
-            else:
-                raise ValueError('Frame type not recognized: ' + str(frame))
-
-            if frame.stream_ended:
-                break
+    def __call__(self, *args, **kwargs):
+        pass
 
     def handle_headers(self, frame, request, response):
         pass
 
     def handle_data(self, frame, request, response):
         pass
+
+class H2HandlerGenerator(PythonScriptHandler):
+
+    def generate_new_handler(self, request):
+        path = filesystem_path(self.base_path, request, self.url_base)
+
+        sys_path = sys.path[:]
+        sys_modules = sys.modules.copy()
+        try:
+            environ = {"__file__": path}
+            sys.path.insert(0, os.path.dirname(path))
+            with open(path, 'rb') as f:
+                exec(compile(f.read(), path, 'exec'), environ, environ)
+
+            handler = H2ResponseHandler()
+            handler_found = False
+            if "handle_data" in environ:
+                handler_found = True
+                handler.handle_data = environ["handle_data"]
+            if "handle_headers" in environ:
+                handler_found = True
+                handler.handle_headers = environ["handle_headers"]
+            if not handler_found:
+                raise HTTPException(500, "No header or data handler function in script %s" % path)
+            return handler
+        except IOError:
+            raise HTTPException(404)
+        finally:
+            sys.path = sys_path
+            sys.modules = sys_modules
+
+h2_handler = H2HandlerGenerator()
 
 class JsonHandler(object):
     def __init__(self, func):

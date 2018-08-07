@@ -28,6 +28,7 @@ from .response import Response, H2Response
 from .router import Router
 from .utils import HTTPException
 from .constants import h2_headers
+from .handlers import H2HandlerGenerator, H2ResponseHandler
 
 """HTTP server designed for testing purposes.
 
@@ -222,7 +223,7 @@ class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.logger = get_logger()
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
-    def finish_handling(self, request_line_is_valid, response_cls, request=None, response=None):
+    def finish_handling(self, request_line_is_valid, response_cls, request=None, response=None, handler=None):
             if request is None or response is None:
                 self.server.rewriter.rewrite(self)
 
@@ -239,7 +240,7 @@ class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 return
 
             self.logger.debug("%s %s" % (request.method, request.request_path))
-            handler = self.server.router.get_handler(request)
+            handler = self.server.router.get_handler(request) if handler is None else handler
 
             # If the handler we used for the request had a non-default base path
             # set update the doc_root of the request to reflect this
@@ -340,6 +341,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         self.stream_queues = {}
 
+        self.server.router.register("*", "*.h2py", H2HandlerGenerator())
         while not self.close_connection:
             try:
                 # This size may need to be made variable based on remote settings?
@@ -389,6 +391,8 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         # The file-like pipe object that will be used to share data to request object if data is received
         wfile = None
         request = None
+        response = None
+        req_handler = None
         while not self.close_connection:
             # Wait for next frame, blocking
             frame = self.stream_queues[stream_id].get(True, None)
@@ -399,24 +403,26 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 rfile, wfile = os.pipe()
                 rfile, wfile = os.fdopen(rfile, 'rb'), os.fdopen(wfile, 'wb')
 
-                handler = H2HandlerCopy(self, frame, rfile)
+                stream_handler = H2HandlerCopy(self, frame, rfile)
 
-                self.server.rewriter.rewrite(handler)
-                request = H2Request(handler)
-                request.frames.put(frame)
-                response = H2Response(handler, request)
+                stream_handler.server.rewriter.rewrite(stream_handler)
+                request = H2Request(stream_handler)
+                response = H2Response(stream_handler, request)
 
-                # Begin processing the response in another thread,
-                # and continue listening for more data here in this one
-                t = threading.Thread(
-                    target=BaseWebTestRequestHandler.finish_handling,
-                    args=(self, True, H2Response,),
-                    kwargs={'request':request, 'response':response}
-                )
-                t.start()
+                req_handler = stream_handler.server.router.get_handler(request)
+
+                if isinstance(req_handler, H2HandlerGenerator):
+                    req_handler = req_handler.generate_new_handler(request)
+
+                if isinstance(req_handler, H2ResponseHandler):
+                    req_handler.handle_headers(frame, request, response)
+
             elif isinstance(frame, DataReceived):
-                request.frames.put(frame)
                 wfile.write(frame.data)
+
+                if isinstance(req_handler, H2ResponseHandler):
+                    req_handler.handle_data(frame, request, response)
+
                 if frame.stream_ended:
                     wfile.close()
             elif isinstance(frame, (StreamReset, ConnectionTerminated)):
@@ -424,6 +430,9 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 del self.stream_queues[stream_id]
                 self.logger.debug('(%s - %s) Stream Reset, Thread Closing' % (self.uid, stream_id))
                 break
+
+            if hasattr(frame, "stream_ended") and frame.stream_ended:
+                self.finish_handling(True, H2Response, request=request, response=response, handler=req_handler)
 
 
 class H2ConnectionGuard(object):

@@ -345,6 +345,7 @@ class RoutesBuilder(object):
             ("GET", "*.https.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
+            ("*", "*.h2.py", handlers.H2HandlerGenerator),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

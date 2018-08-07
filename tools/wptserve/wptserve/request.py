@@ -352,7 +352,7 @@ class Request(object):
 class H2Request(Request):
     def __init__(self, request_handler):
         self.h2_stream_id = request_handler.h2_stream_id
-        self.frames = Queue()
+        self.frames = []
         super(H2Request, self).__init__(request_handler)
 
 

@@ -25,7 +25,7 @@ function removeParams(url_string) {
 // Generates a referrer given a fetchType, referrer policy, and a request URL
 // (used to determine whether request is remote-origin or not). This function
 // is used to generate expected referrers.
-function generateReferrer(referrerURL, referrerPolicy, requestURL) {
+function generateExpectedReferrer(referrerURL, referrerPolicy, requestURL) {
   let generatedReferrer = "";
   if (referrerPolicy === 'no-referrer')
     generatedReferrer = "";
@@ -89,7 +89,7 @@ function import_referrer_test(settings, description) {
     if (settings.fetchType === 'top-level') {
       // Top-level worker requests have their outgoing referrers set given their
       // containing window's URL and referrer policy.
-      expectedReferrer = generateReferrer('new-worker-window.html', settings.windowReferrerPolicy, settings.scriptURL);
+      expectedReferrer = generateExpectedReferrer('new-worker-window.html', settings.windowReferrerPolicy, settings.scriptURL);
     } else if (settings.fetchType === 'descendant-static') {
       // Static descendant script requests from a worker have their outgoing
       // referrer set given their containing script's URL and containing
@@ -98,11 +98,11 @@ function import_referrer_test(settings, description) {
       // In the below cases, the referrer URL and the request URLs are the same
       // because the initial request (for the top-level worker script) should
       // act as the referrer for future descendant requests.
-      expectedReferrer = generateReferrer(settings.scriptURL, settings.windowReferrerPolicy, settings.scriptURL);
+      expectedReferrer = generateExpectedReferrer(settings.scriptURL, settings.windowReferrerPolicy, settings.scriptURL);
     } else if (settings.fetchType === 'descendant-dynamic') {
       // Dynamic descendant script requests from a worker have their outgoing
       // referrer set given their containing script's URL and referrer policy.
-      expectedReferrer = generateReferrer(settings.scriptURL, settings.workerReferrerPolicy, settings.scriptURL);
+      expectedReferrer = generateExpectedReferrer(settings.scriptURL, settings.workerReferrerPolicy, settings.scriptURL);
     }
 
     // Delete query parameters from the actual referrer to make it easy to match

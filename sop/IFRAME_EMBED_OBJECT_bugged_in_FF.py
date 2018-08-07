@@ -49,28 +49,7 @@ def main(request, response):
 
         test_check = ""
 
-        privilege = ""
-        if(settings["privilege"] == "r"):
-            privilege = "read"
-        elif(settings["privilege"] == "w"):
-            privilege = "write"
-        elif(settings["privilege"] == "x"):
-            privilege = "execute"
-        else:
-            throw("ERROR: Unrecognized privilege")
-
-        if(settings["from_domain"] != settings["to_domain"]):
-            if(privilege != "execute"):
-                privilege = "partial " + privilege
-
-        if(privilege == "write"):
-            foot += """<div id="loadbar_{} - {} to {} - {} {}" style="display:none"><p>Not empty</p></div>""".format(
-                                                                                                                    settings["ee"],
-                                                                                                                    settings["from"],
-                                                                                                                    settings["to"],
-                                                                                                                    "cross-origin" if(settings["from_domain"] != settings["to_domain"]) else "same-origin",
-                                                                                                                    privilege
-                                                                                                                    )
+        privilege = get_privilege(settings)
         
         description = "{} - {} to {} - {} {}".format(
                                                     settings["ee"],
@@ -79,6 +58,9 @@ def main(request, response):
                                                     "cross-origin" if(settings["from_domain"] != settings["to_domain"]) else "same-origin",
                                                     privilege
                                                     )
+
+        if(privilege == "write"):
+            foot += """<div id="loadbar_{}" style="display:none"><p>Not empty</p></div>""".format(description)
 
         content += "function f_test_{}(){{\n".format(testname)
 
@@ -117,3 +99,20 @@ def parse_testname(name):
         return "ERROR: supplied test name is invalid"
 
     return parsed_data.groupdict()
+
+def get_privilege(settings):
+    privilege = ""
+    if(settings["privilege"] == "r"):
+        privilege = "read"
+    elif(settings["privilege"] == "w"):
+        privilege = "write"
+    elif(settings["privilege"] == "x"):
+        privilege = "execute"
+    else:
+        throw("ERROR: Unrecognized privilege")
+
+    if(settings["from_domain"] != settings["to_domain"] and settings["from_domain"] == "ED"):
+        if(privilege != "execute"):
+            privilege = "partial " + privilege
+
+    return privilege

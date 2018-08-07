@@ -62,28 +62,7 @@ def main(request, response):
 
         test_check = ""
 
-        privilege = ""
-        if(settings["privilege"] == "r"):
-            privilege = "read"
-        elif(settings["privilege"] == "w"):
-            privilege = "write"
-        elif(settings["privilege"] == "x"):
-            privilege = "execute"
-        else:
-            throw("ERROR: Unrecognized privilege")
-
-        if(settings["from_domain"] != settings["to_domain"]):
-            if(privilege != "execute"):
-                privilege = "partial " + privilege
-
-        if(privilege == "write" and settings["from"] == "ED"):
-            foot += """<div id="loadbar_{} - {} to {} - {} {}" style="display:none"><p>Not empty</p></div>""".format(
-                                                                                                                    settings["ee"],
-                                                                                                                    settings["from"],
-                                                                                                                    settings["to"],
-                                                                                                                    "cross-origin" if(settings["from_domain"] != settings["to_domain"]) else "same-origin",
-                                                                                                                    privilege
-                                                                                                                    )
+        privilege = get_privilege(settings)
         
         description = "{} - {} to {} - {} {}".format(
                                                     settings["ee"],
@@ -92,6 +71,9 @@ def main(request, response):
                                                     "cross-origin" if(settings["from_domain"] != settings["to_domain"]) else "same-origin",
                                                     privilege
                                                     )
+
+        if(privilege == "write" and settings["from"] == "ED"):
+            foot += """<div id="loadbar_{}" style="display:none"><p>Not empty</p></div>""".format(description)
 
 
         if(settings["from"] == "ED" or privilege == "execute"):
@@ -107,7 +89,7 @@ def main(request, response):
                 testname,
                 settings["ee"],
                 "data" if(settings["ee"] == "object") else "src",
-                origins[settings["from_domain"]],
+                origins[settings["from_domain"]] if(privilege != "execute") else origins[settings["to_domain"]],
                 privilege,
                 description
                 )
@@ -117,27 +99,7 @@ def main(request, response):
                                                                         description
                                                                       )
             content += "function f_test_{}(){{\n".format(testname)
-            payload = "assert_true(false, 'An error occured when contructing the payload in the python script');"
-            if(expected == "fail"):
-                payload = """
-        assert_equals(ee.getSVGDocument(), null);"""
-            elif(privilege == "write"):
-                payload = """
-        svgDoc = ee.getSVGDocument();
-        var firstChild = svgDoc.documentElement.firstElementChild;
-        assert_not_equals(firstChild, null);
-        svgDoc.documentElement.removeChild(firstChild);
-        var firstChild = svgDoc.documentElement.firstElementChild;
-        assert_equals(firstChild, null);"""
-            elif(privilege == "read"):
-                payload = """
-        svgDoc = ee.getSVGDocument();
-        var firstChildName = svgDoc.documentElement.firstElementChild.nodeName;
-        assert_equals(firstChildName, "rect");"""
-
-
-
-
+            payload = get_test_payload(expected, privilege, testname, description)
 
             content += """
     var ee = document.createElement('{}');
@@ -178,3 +140,43 @@ def parse_testname(name):
         return "ERROR: supplied test name is invalid"
 
     return parsed_data.groupdict()
+
+def get_privilege(settings):
+    privilege = ""
+    if(settings["privilege"] == "r"):
+        privilege = "read"
+    elif(settings["privilege"] == "w"):
+        privilege = "write"
+    elif(settings["privilege"] == "x"):
+        privilege = "execute"
+    else:
+        throw("ERROR: Unrecognized privilege")
+
+    if(settings["from_domain"] != settings["to_domain"] and settings["from"] == "ED"):
+        if(privilege != "execute"):
+            privilege = "partial " + privilege
+
+    return privilege
+
+def get_test_payload(expected, privilege, testname, description):
+    payload = "assert_true(false, 'An error occured when contructing the payload in the python script');"
+    if(expected == "fail"):
+        payload = """
+assert_equals(ee.getSVGDocument(), null);"""
+    
+    elif(privilege == "write"):
+        payload = """
+svgDoc = ee.getSVGDocument();
+var firstChild = svgDoc.documentElement.firstElementChild;
+assert_not_equals(firstChild, null);
+svgDoc.documentElement.removeChild(firstChild);
+var firstChild = svgDoc.documentElement.firstElementChild;
+assert_equals(firstChild, null);"""
+    
+    elif(privilege == "read"):
+        payload = """
+svgDoc = ee.getSVGDocument();
+var firstChildName = svgDoc.documentElement.firstElementChild.nodeName;
+assert_equals(firstChildName, "rect");"""
+    
+    return payload

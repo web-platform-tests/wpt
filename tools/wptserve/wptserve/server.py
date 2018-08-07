@@ -16,7 +16,7 @@ from six.moves.queue import Queue
 
 from h2.config import H2Configuration
 from h2.connection import H2Connection
-from h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset
+from h2.events import RequestReceived, ConnectionTerminated, DataReceived, StreamReset, StreamEnded
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -222,80 +222,76 @@ class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.logger = get_logger()
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
-    def finish_handling(self, request_line_is_valid, response_cls, request=None, response=None):
-            if request is None or response is None:
-                self.server.rewriter.rewrite(self)
+    def finish_handling_h1(self, request_line_is_valid):
 
-                request = Request(self)
-                response = response_cls(self, request)
+        self.server.rewriter.rewrite(self)
 
-            if request.method == "CONNECT":
-                self.handle_connect(response)
-                return
+        request = Request(self)
+        response = Response(self, request)
 
-            if not request_line_is_valid:
-                response.set_error(414)
-                response.write()
-                return
+        if request.method == "CONNECT":
+            self.handle_connect(response)
+            return
 
-            self.logger.debug("%s %s" % (request.method, request.request_path))
-            handler = self.server.router.get_handler(request)
+        if not request_line_is_valid:
+            response.set_error(414)
+            response.write()
+            return
 
-            # If the handler we used for the request had a non-default base path
-            # set update the doc_root of the request to reflect this
-            if hasattr(handler, "base_path") and handler.base_path:
-                request.doc_root = handler.base_path
-            if hasattr(handler, "url_base") and handler.url_base != "/":
-                request.url_base = handler.url_base
+        self.logger.debug("%s %s" % (request.method, request.request_path))
+        handler = self.server.router.get_handler(request)
+        self.finish_handling(request, response, handler)
 
-            if self.server.latency is not None:
-                if callable(self.server.latency):
-                    latency = self.server.latency()
-                else:
-                    latency = self.server.latency
-                self.logger.warning("Latency enabled. Sleeping %i ms" % latency)
-                time.sleep(latency / 1000.)
+    def finish_handling(self, request, response, handler):
+        # If the handler we used for the request had a non-default base path
+        # set update the doc_root of the request to reflect this
+        if hasattr(handler, "base_path") and handler.base_path:
+            request.doc_root = handler.base_path
+        if hasattr(handler, "url_base") and handler.url_base != "/":
+            request.url_base = handler.url_base
 
-            if handler is None:
-                self.logger.debug("No Handler found!")
-                response.set_error(404)
+        if self.server.latency is not None:
+            if callable(self.server.latency):
+                latency = self.server.latency()
             else:
-                try:
-                    handler(request, response)
-                except HTTPException as e:
-                    response.set_error(e.code, e.message)
-                except Exception as e:
-                    message = str(e)
-                    if message:
-                        err = [message]
-                    else:
-                        err = []
-                    err.append(traceback.format_exc())
-                    response.set_error(500, "\n".join(err))
-            self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
-                                                    request.method,
-                                                    request.request_path,
-                                                    request.headers.get('Referer'),
-                                                    request.raw_input.length))
+                latency = self.server.latency
+            self.logger.warning("Latency enabled. Sleeping %i ms" % latency)
+            time.sleep(latency / 1000.)
 
-            if not response.writer.content_written:
-                response.write()
+        if handler is None:
+            self.logger.debug("No Handler found!")
+            response.set_error(404)
+        else:
+            try:
+                handler(request, response)
+            except HTTPException as e:
+                response.set_error(e.code, e.message)
+            except Exception as e:
+                self.respond_with_error(response, e)
+        self.logger.debug("%i %s %s (%s) %i" % (response.status[0],
+                                                request.method,
+                                                request.request_path,
+                                                request.headers.get('Referer'),
+                                                request.raw_input.length))
 
-            # If a python handler has been used, the old ones won't send a END_STR data frame, so this
-            # allows for backwards compatibility by accounting for these handlers that don't close streams
-            if isinstance(response, H2Response) and not response.writer.stream_ended:
-                response.writer.end_stream()
+        if not response.writer.content_written:
+            response.write()
 
-            # If we want to remove this in the future, a solution is needed for
-            # scripts that produce a non-string iterable of content, since these
-            # can't set a Content-Length header. A notable example of this kind of
-            # problem is with the trickle pipe i.e. foo.js?pipe=trickle(d1)
-            if response.close_connection:
-                self.close_connection = True
+        # If a python handler has been used, the old ones won't send a END_STR data frame, so this
+        # allows for backwards compatibility by accounting for these handlers that don't close streams
+        if isinstance(response, H2Response) and not response.writer.stream_ended:
+            response.writer.end_stream()
 
-            if not self.close_connection:
-                # Ensure that the whole request has been read from the socket
-                request.raw_input.read()
+        # If we want to remove this in the future, a solution is needed for
+        # scripts that produce a non-string iterable of content, since these
+        # can't set a Content-Length header. A notable example of this kind of
+        # problem is with the trickle pipe i.e. foo.js?pipe=trickle(d1)
+        if response.close_connection:
+            self.close_connection = True
+
+        if not self.close_connection:
+            # Ensure that the whole request has been read from the socket
+            request.raw_input.read()
 
     def handle_connect(self, response):
         self.logger.debug("Got CONNECT")
@@ -309,6 +305,15 @@ class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                                            server_side=True)
             self.setup()
         return
+
+    def respond_with_error(self, response, e):
+        message = str(e)
+        if message:
+            err = [message]
+        else:
+            err = []
+        err.append(traceback.format_exc())
+        response.set_error(500, "\n".join(err))
 
 
 class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
@@ -336,12 +341,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
         self.request.sendall(data)
 
-        self.request_threads = []
+        # Dict of { stream_id: (thread, queue) }
+        stream_queues = {}
 
-        self.stream_queues = {}
-
-        while not self.close_connection:
-            try:
+        try:
+            while not self.close_connection:
                 # This size may need to be made variable based on remote settings?
                 data = self.request.recv(65535)
 
@@ -356,29 +360,37 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                         self.close_connection = True
 
                         # Flood all the streams with connection terminated, this will cause them to stop
-                        for stream_id, queue in self.stream_queues.items():
+                        for stream_id, (thread, queue) in stream_queues.items():
                             queue.put(frame)
+
                     elif hasattr(frame, 'stream_id'):
-                        if frame.stream_id not in self.stream_queues:
-                            self.stream_queues[frame.stream_id] = Queue()
-                            self.start_stream_thread(frame)
-                        self.stream_queues[frame.stream_id].put(frame)
+                        if frame.stream_id not in stream_queues:
+                            queue = Queue()
+                            stream_queues[frame.stream_id] = (self.start_stream_thread(frame, queue), queue)
+                        stream_queues[frame.stream_id][1].put(frame)
 
-            except (socket.timeout, socket.error) as e:
-                self.logger.debug('(%s) ERROR - Closing Connection - \n%s' % (self.uid, str(e)))
+                        if isinstance(frame, StreamEnded) or frame.stream_ended:
+                            del stream_queues[frame.stream_id]
+
+        except (socket.timeout, socket.error) as e:
+            self.logger.debug('(%s) ERROR - Closing Connection - \n%s' % (self.uid, str(e)))
+            if not self.close_connection:
                 self.close_connection = True
-                for t in self.request_threads:
-                    t.join()
+                for stream_id, (thread, queue) in stream_queues.items():
+                    queue.put(None)
+        finally:
+            for stream_id, (thread, queue) in stream_queues:
+                thread.join()
 
-    def start_stream_thread(self, frame):
+    def start_stream_thread(self, frame, queue):
         t = threading.Thread(
             target=Http2WebTestRequestHandler._stream_thread,
-            args=(self, frame.stream_id)
+            args=(self, frame.stream_id, queue)
         )
-        self.request_threads.append(t)
         t.start()
+        return t
 
-    def _stream_thread(self, stream_id):
+    def _stream_thread(self, stream_id, queue):
         """
         This thread processes frames for a specific stream. It waits for frames to be placed
         in the queue, and processes them. When it receives a request frame, it will start processing
@@ -389,9 +401,11 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         # The file-like pipe object that will be used to share data to request object if data is received
         wfile = None
         request = None
+        response = None
+        req_handler = None
         while not self.close_connection:
             # Wait for next frame, blocking
-            frame = self.stream_queues[stream_id].get(True, None)
+            frame = queue.get(True, None)
 
             self.logger.debug('(%s - %s) %s' % (self.uid, stream_id, str(frame)))
 
@@ -399,32 +413,47 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
                 rfile, wfile = os.pipe()
                 rfile, wfile = os.fdopen(rfile, 'rb'), os.fdopen(wfile, 'wb')
 
-                handler = H2HandlerCopy(self, frame, rfile)
+                stream_handler = H2HandlerCopy(self, frame, rfile)
 
-                self.server.rewriter.rewrite(handler)
-                request = H2Request(handler)
-                request.frames.put(frame)
-                response = H2Response(handler, request)
+                stream_handler.server.rewriter.rewrite(stream_handler)
+                request = H2Request(stream_handler)
+                response = H2Response(stream_handler, request)
 
-                # Begin processing the response in another thread,
-                # and continue listening for more data here in this one
-                t = threading.Thread(
-                    target=BaseWebTestRequestHandler.finish_handling,
-                    args=(self, True, H2Response,),
-                    kwargs={'request':request, 'response':response}
-                )
-                t.start()
+                req_handler = stream_handler.server.router.get_handler(request)
+
+                if hasattr(req_handler, "frame_handler"):
+                    # Convert this to a handler that will utilise H2 specific functionality, such as handling individual frames
+                    req_handler = self.frame_handler(request, response, req_handler)
+
+                if hasattr(req_handler, 'handle_headers'):
+                    req_handler.handle_headers(frame, request, response)
+
             elif isinstance(frame, DataReceived):
-                request.frames.put(frame)
                 wfile.write(frame.data)
+
+                if hasattr(req_handler, 'handle_data'):
+                    req_handler.handle_data(frame, request, response)
+
                 if frame.stream_ended:
                     wfile.close()
-            elif isinstance(frame, (StreamReset, ConnectionTerminated)):
-                # assert self.stream_queues[stream_id].empty()
-                del self.stream_queues[stream_id]
+            elif frame is None or isinstance(frame, (StreamReset, StreamEnded, ConnectionTerminated)):
                 self.logger.debug('(%s - %s) Stream Reset, Thread Closing' % (self.uid, stream_id))
                 break
 
+            request.frames.append(frame)
+
+            if hasattr(frame, "stream_ended") and frame.stream_ended:
+                self.finish_handling(request, response, req_handler)
+
+    def frame_handler(self, request, response, handler):
+        try:
+            return handler.frame_handler(request)
+        except HTTPException as e:
+            response.set_error(e.code, e.message)
+            response.write()
+        except Exception as e:
+            self.respond_with_error(response, e)
+            response.write()
 
 class H2ConnectionGuard(object):
     """H2Connection objects are not threadsafe, so this keeps thread safety"""
@@ -493,7 +522,7 @@ class Http1WebTestRequestHandler(BaseWebTestRequestHandler):
                 #parse_request() actually sends its own error responses
                 return
 
-            self.finish_handling(request_line_is_valid, Response)
+            self.finish_handling_h1(request_line_is_valid)
 
         except socket.timeout as e:
             self.log_error("Request timed out: %r", e)

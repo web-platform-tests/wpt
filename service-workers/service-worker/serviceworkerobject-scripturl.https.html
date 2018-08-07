@@ -7,17 +7,17 @@
 'use strict';
 
 function url_test(name, url) {
-    let scope = 'resources/scope/' + name;
-    let expectedURL = normalizeURL(url);
+  const scope = 'resources/scope/' + name;
+  const expectedURL = normalizeURL(url);
 
-    promise_test(async t => {
-        let registration =
-            await service_worker_unregister_and_register(t, url, scope);
-        let worker = await registration.installing;
-        t.add_cleanup(() => registration.unregister());
-        assert_equals(worker.scriptURL, expectedURL,
-                      'Returned ServiceWorker object should have scriptURL');
-    }, 'Verify the scriptURL property: ' + name);
+  promise_test(async t => {
+    const registration =
+        await service_worker_unregister_and_register(t, url, scope);
+    const worker = registration.installing;
+    assert_equals(worker.scriptURL, expectedURL,
+                  'Returned ServiceWorker object should have scriptURL');
+    await service_worker_unregister_and_done(t, scope);
+  }, 'Verify the scriptURL property: ' + name);
 }
 
 url_test('relative', 'resources/empty-worker.js');

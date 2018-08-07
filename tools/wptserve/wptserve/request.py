@@ -5,7 +5,6 @@ from six import BytesIO
 import tempfile
 
 from six.moves.urllib.parse import parse_qsl, urlsplit
-from six.moves.queue import Queue
 
 from . import stash
 from .utils import HTTPException
@@ -352,7 +351,7 @@ class Request(object):
 class H2Request(Request):
     def __init__(self, request_handler):
         self.h2_stream_id = request_handler.h2_stream_id
-        self.frames = Queue()
+        self.frames = []
         super(H2Request, self).__init__(request_handler)
 
 

@@ -186,7 +186,6 @@ class TestResponse(TestUsingServer):
 
 
 class TestH2Response(TestUsingH2Server):
-
     def test_write_without_ending_stream(self):
         data = b"TEST"
 
@@ -259,7 +258,6 @@ class TestH2Response(TestUsingH2Server):
         assert push.read() == push_data
 
     def test_set_error(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.set_error(503, message="Test error")
@@ -273,7 +271,6 @@ class TestH2Response(TestUsingH2Server):
         assert json.loads(resp.read()) == json.loads("{\"error\": {\"message\": \"Test error\", \"code\": 503}}")
 
     def test_file_like_response(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             content = BytesIO("Hello, world!")
@@ -288,7 +285,6 @@ class TestH2Response(TestUsingH2Server):
         assert resp.read() == "Hello, world!"
 
     def test_list_response(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.content = ['hello', 'world']
@@ -302,7 +298,6 @@ class TestH2Response(TestUsingH2Server):
         assert resp.read() == "helloworld"
 
     def test_content_longer_than_frame_size(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             size = response.writer.get_max_payload_size()
@@ -320,7 +315,6 @@ class TestH2Response(TestUsingH2Server):
         assert resp.read() == "a" * (payload_size + 5)
 
     def test_encode(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.encoding = "utf8"
@@ -336,7 +330,6 @@ class TestH2Response(TestUsingH2Server):
         self.conn.get_response()
 
     def test_raw_header_frame(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.writer.write_raw_header_frame([
@@ -354,7 +347,6 @@ class TestH2Response(TestUsingH2Server):
         assert resp.read() == ''
 
     def test_raw_header_frame_invalid(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.writer.write_raw_header_frame([
@@ -370,7 +362,6 @@ class TestH2Response(TestUsingH2Server):
             self.conn.get_response()
 
     def test_raw_data_frame(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.writer.write_raw_data_frame(data=b'Hello world', end_stream=True)
@@ -382,7 +373,6 @@ class TestH2Response(TestUsingH2Server):
         assert self.conn.streams[sid]._read() == 'Hello world'
 
     def test_raw_header_continuation_frame(self):
-
         @wptserve.handlers.handler
         def handler(request, response):
             response.writer.write_raw_header_frame([

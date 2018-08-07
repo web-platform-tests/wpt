@@ -324,82 +324,78 @@ class TestAsIsHandler(TestUsingServer):
         #Add a check that the response is actually sane
 
 
-class TestH2ResponseHandler(TestUsingH2Server):
-
+class TestH2Handler(TestUsingH2Server):
     def test_handle_headers(self):
-
-        class Handler(wptserve.handlers.H2ResponseHandler):
-            def handle_headers(self, frame, request, response):
-                if request.headers['path'] == "/h2test/test_handler":
-                    response.headers.update([('test', 'passed')])
-                    response.status = 203
-                else:
-                    response.headers.update([('test', 'failed')])
-
-        route = ("GET", "/h2test/test_handler", Handler())
-        self.server.router.register(*route)
-        self.conn.request(route[0], route[1])
+        self.conn.request("GET", '/test_h2_headers.py')
         resp = self.conn.get_response()
 
         assert resp.status == 203
         assert resp.headers['test'][0] == 'passed'
         assert resp.read() == ''
 
-    def test_handle_data(self):
-
-        class Handler(wptserve.handlers.H2ResponseHandler):
-            def handle_data(self, frame, request, response):
-                data = frame.data
-                response.content = ''.join(reversed(data))
-
-        route = ("POST", "/h2test/test_handler", Handler())
-        self.server.router.register(*route)
-        self.conn.request(route[0], route[1], body="hello world")
-
+    def test_only_main(self):
+        self.conn.request("GET", '/test_tuple_3.py')
         resp = self.conn.get_response()
+
+        assert resp.status == 202
+        assert resp.headers['Content-Type'][0] == 'text/html'
+        assert resp.headers['X-Test'][0] == 'PASS'
+        assert resp.read() == b'PASS'
+
+    def test_handle_data(self):
+        self.conn.request("POST", '/test_h2_data.py', body="hello world!")
+        resp = self.conn.get_response()
+
         assert resp.status == 200
-        assert resp.read() == 'dlrow olleh'
-
-    def test_handle_data_no_headers(self):
-        # The HTTP/2.0 protocol does allow for just DATA frames to be written when a stream is
-        # in the OPEN state.
-        class Handler(wptserve.handlers.H2ResponseHandler):
-            def handle_data(self, frame, request, response):
-                data = frame.data
-                response.content = ''.join(reversed(data))
-                response.write_content()
-
-        route = ("POST", "/h2test/test_handler", Handler())
-        self.server.router.register(*route)
-        sid = self.conn.request(route[0], route[1], body="hello world")
-        assert self.conn.streams[sid]._read() == 'dlrow olleh'
-
+        assert resp.read() == b'!dlrow olleh'
 
     def test_handle_headers_data(self):
-
-        class Handler(wptserve.handlers.H2ResponseHandler):
-            def handle_headers(self, frame, request, response):
-                if request.headers['path'] == "/h2test/test_handler":
-                    response.headers.update([('test', 'passed')])
-                    response.status = 203
-                else:
-                    response.headers.update([('test', 'failed')])
-                    response.status = 404
-                response.write_status_headers()
-
-            def handle_data(self, frame, request, response):
-                data = frame.data
-                response.content = ''.join(reversed(data))
-                response.write_content()
-
-        route = ("POST", "/h2test/test_handler", Handler())
-        self.server.router.register(*route)
-        self.conn.request(route[0], route[1], body="hello world")
+        self.conn.request("POST", '/test_h2_headers_data.py', body="hello world!")
         resp = self.conn.get_response()
 
         assert resp.status == 203
         assert resp.headers['test'][0] == 'passed'
-        assert resp.read() == 'dlrow olleh'
+        assert resp.read() == b'!dlrow olleh'
+
+    def test_no_main_or_handlers(self):
+        self.conn.request("GET", '/no_main.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 500
+        assert "No main function or handlers in script " in json.loads(resp.read())["error"]["message"]
+
+    def test_not_found(self):
+        self.conn.request("GET", '/no_exist.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 404
+
+    def test_requesting_multiple_resources(self):
+        # 1st .py resource
+        self.conn.request("GET", '/test_h2_headers.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
+        # 2nd .py resource
+        self.conn.request("GET", '/test_tuple_3.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 202
+        assert resp.headers['Content-Type'][0] == 'text/html'
+        assert resp.headers['X-Test'][0] == 'PASS'
+        assert resp.read() == b'PASS'
+
+        # 3rd .py resource
+        self.conn.request("GET", '/test_h2_headers.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -17,6 +17,14 @@ if (parent !== window && parent.title == window.title) {
  * a second "control" iframe may be used to verify cases where navigation
  * should *not* occur. `Promise.race` ensures that tests complete as soon as
  * possible.
+ *
+ * Although the specification dictates that the `beforeunload` event must be
+ * emitted synchronously during navigation, a number of user agents do not
+ * adhere to this requirement. WPT includes a dedicated test for synchronous
+ * emission of the event [1]. This test is authored to support non-standard
+ * behavior in order to avoid spuriously passing in those UAs.
+ *
+ * [1] https://github.com/web-platform-tests/wpt/pull/12343
  */
 'use strict';
 

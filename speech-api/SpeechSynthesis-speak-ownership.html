@@ -7,7 +7,7 @@
 <script>
 // using an utterance for different SpeechSynthesis instances should throw
 async_test(t => {
-  test_driver.bless('speechSynthesis.speak', t.step_func(() => {
+  test_driver.bless('speechSynthesis.speak', t.step_func_done(() => {
     // the utterance is short to make the test faster
     const utter = new SpeechSynthesisUtterance('1');
     const iframe = document.querySelector('iframe');

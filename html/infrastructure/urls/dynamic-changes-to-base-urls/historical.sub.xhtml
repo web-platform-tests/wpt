@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html id="h" xmlns="http://www.w3.org/1999/xhtml" xml:base="">
   <head>
-    <title>HTML Test: Dynamic changes to base URLs</title>
+    <title>Historical xml:base must be removed</title>
     <link rel="author" title="Intel" href="http://www.intel.com/"/>
-    <link rel="help" href="https://html.spec.whatwg.org/multipage/#dynamic-changes-to-base-urls" />
+    <link rel="help" href="https://github.com/whatwg/html/pull/84/files" />
     <script src="/resources/testharness.js" id="s1"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -20,7 +20,7 @@
       var testData = [
         {elements: ["a", "link", "area"], set: "href", get: "href"},
         {elements: ["q", "blockquote", "ins", "del"], set: "cite", get: "cite"},
-        {elements: ["img", "embed", "video", "iframe", "script", "source", "track"], set: "src", get: "src"},
+        {elements: ["audio", "input", "img", "embed", "video", "iframe", "script", "source", "track"], set: "src", get: "src"},
         {elements: ["form"], set: "action", get: "action"},
         {elements: ["object"], set: "data", get: "data"},
         {elements: ["button"], set: "formaction", get: "formAction"}
@@ -38,7 +38,7 @@
             html.setAttribute("xml:base", "");
             assert_equals(ele[item.get], url.substr(0, url.lastIndexOf("/")) +"/test.txt", "The '" + item.get + "' attribute is incorrect.");
             html.setAttribute("xml:base", "http://{{domains[www]}}:{{ports[http][0]}}");
-            assert_equals(ele[item.get], "http://{{domains[www]}}:{{ports[http][0]}}/test.txt", "The '" + item.get + "' attribute is incorrect.");
+            assert_not_equals(ele[item.get], "http://{{domains[www]}}:{{ports[http][0]}}/test.txt", "The '" + item.get + "' attribute is incorrect.");
           }, "The '" + item.set + "' attribute of the '" + item.elements[j] + "' element");
         }
       }
@@ -50,9 +50,9 @@
 
         div.setAttribute("xml:base", "http://{{domains[www2]}}:{{ports[http][0]}}");
         assert_equals(s1.src, val1, "The outer element must not be effected.");
-        assert_not_equals(div.firstChild.href, val2, "The inner element must be effected.");
-        assert_equals(div.firstChild.href, "http://{{domains[www2]}}:{{ports[http][0]}}/test.txt");
-      }, "Change the base URL must effect the descendant elements only");
+        assert_equals(div.firstChild.href, val2, "The inner element must be effected.");
+        assert_not_equals(div.firstChild.href, "http://{{domains[www2]}}:{{ports[http][0]}}/test.txt");
+      }, "Change the base URL must not effect the descendant elements");
       ]]>
     </script>
   </body>

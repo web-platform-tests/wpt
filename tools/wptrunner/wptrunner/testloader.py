@@ -467,7 +467,8 @@ class TestLoader(object):
                  total_chunks=1,
                  chunk_number=1,
                  include_https=True,
-                 skip_timeout=False):
+                 skip_timeout=False,
+                 executor_classes=None):
 
         self.test_types = test_types
         self.run_info = run_info
@@ -480,6 +481,7 @@ class TestLoader(object):
         self.disabled_tests = None
         self.include_https = include_https
         self.skip_timeout = skip_timeout
+        self.executor_classes = executor_classes
 
         self.chunk_type = chunk_type
         self.total_chunks = total_chunks
@@ -562,6 +564,11 @@ class TestLoader(object):
                  "disabled":defaultdict(list)}
 
         for test_path, test_type, test in self.iter_tests():
+            executor_class = (self.executor_classes and
+                              self.executor_classes.get(test_type))
+            if executor_class and executor_class.ignores(test):
+                continue
+
             enabled = not test.disabled()
             if not self.include_https and test.environment["protocol"] == "https":
                 enabled = False

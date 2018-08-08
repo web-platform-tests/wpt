@@ -41,7 +41,8 @@ def setup_logging(*args, **kwargs):
     logger = wptlogging.setup(*args, **kwargs)
 
 
-def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
+def get_loader(test_paths, product, executor_classes, debug=None,
+               run_info_extras=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
@@ -74,16 +75,19 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
                                         include_https=ssl_enabled,
-                                        skip_timeout=kwargs["skip_timeout"])
+                                        skip_timeout=kwargs["skip_timeout"],
+                                        executor_classes=executor_classes)
     return run_info, test_loader
 
 
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    product_data = products.load_product(kwargs["config"], product)
+    executor_classes = product_data[3]
+    run_info_extras = product_data[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product,
+    run_info, test_loader = get_loader(test_paths, product, executor_classes,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
@@ -95,9 +99,11 @@ def list_disabled(test_paths, product, **kwargs):
 
     rv = []
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    product_data = products.load_product(kwargs["config"], product)
+    executor_classes = product_data[3]
+    run_info_extras = product_data[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product,
+    run_info, test_loader = get_loader(test_paths, product, executor_classes,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.iteritems():
@@ -109,9 +115,11 @@ def list_disabled(test_paths, product, **kwargs):
 def list_tests(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
+    product_data = products.load_product(kwargs["config"], product)
+    executor_classes = product_data[3]
+    run_info_extras = product_data[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product,
+    run_info, test_loader = get_loader(test_paths, product, executor_classes,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test in test_loader.test_ids:
@@ -150,6 +158,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
         run_info, test_loader = get_loader(test_paths,
                                            product,
+                                           executor_classes,
                                            run_info_extras=run_info_extras(**kwargs),
                                            **kwargs)
 
@@ -241,12 +250,6 @@ def run_tests(config, test_paths, product, **kwargs):
                             if test.testdriver and not executor_cls.supports_testdriver:
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
-                            elif test.jsshell and not executor_cls.supports_jsshell:
-                                # We expect that tests for JavaScript shells
-                                # will not be run along with tests that run in
-                                # a full web browser, so we silently skip them
-                                # here.
-                                pass
                             else:
                                 run_tests["testharness"].append(test)
                     else:

@@ -108,6 +108,14 @@ class TestExecutor(object):
     test_type = None
     convert_result = None
     supports_testdriver = False
+
+    # `supports_jsshell` determines whether a given test is enumerated in the
+    # various test-traversal commands exposed by the wptrunner CLI (see the
+    # `ignores` method). It is intended to be overridden by subclasses which
+    # are defined outside of WPT.
+    #
+    # Note that this interpretation of "supports" is distinct from that of the
+    # `supports_testdriver` attribute.
     supports_jsshell = False
 
     def __init__(self, browser, server_config, timeout_multiplier=1,
@@ -182,6 +190,16 @@ class TestExecutor(object):
 
     def test_url(self, test):
         return urlparse.urljoin(self.server_url(test.environment["protocol"]), test.url)
+
+    @classmethod
+    def ignores(cls, test):
+        """Determine if a given test should be omitted during test
+        traversal."""
+
+        if cls.supports_jsshell:
+            return False
+
+        return test.test_type == "testharness" and test.jsshell
 
     @abstractmethod
     def do_test(self, test):

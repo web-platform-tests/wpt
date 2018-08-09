@@ -41,7 +41,7 @@ class Timeouts(object):
         self.session.send_session_command("POST", "timeouts", body)
         return None
 
-    def set_w3c(self, timeout, secs):
+    def set_legacy(self, timeout, secs):
         body = {"type": timeout, "ms": secs * 1000}
         timeouts = self.session.send_session_command("POST", "timeouts", body)
         return None

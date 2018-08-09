@@ -2,7 +2,6 @@ import json
 import os
 import socket
 import threading
-import time
 import traceback
 import urlparse
 import uuid
@@ -18,6 +17,7 @@ from .protocol import (BaseProtocolPart,
                        Protocol,
                        SelectorProtocolPart,
                        ClickProtocolPart,
+                       SendKeysProtocolPart,
                        TestDriverProtocolPart)
 from ..testrunner import Stop
 
@@ -36,7 +36,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         return method(script)
 
     def set_timeout(self, timeout):
-        self.webdriver.timeouts.set_w3c("script", timeout * 1000)
+        self.webdriver.timeouts.set_legacy("script", timeout)
 
     @property
     def current_window(self):
@@ -77,7 +77,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         handles = [item for item in self.webdriver.handles if item != exclude]
         for handle in handles:
             try:
-                self.webdriver.window_handle(handle)
+                self.webdriver.window_handle = handle
                 self.webdriver.close()
             except client.NoSuchWindowException:
                 pass
@@ -114,7 +114,7 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def elements_by_selector(self, selector):
-        return self.webdriver.find_elements_by_css_selector(selector)
+        return self.webdriver.find.css(selector)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
@@ -123,6 +123,14 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
 
     def element(self, element):
         return element.click()
+
+
+class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def send_keys(self, element, keys):
+        return element.send_keys(keys)
 
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
@@ -144,6 +152,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverTestharnessProtocolPart,
                   WebDriverSelectorProtocolPart,
                   WebDriverClickProtocolPart,
+                  WebDriverSendKeysProtocolPart,
                   WebDriverTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
@@ -225,7 +234,7 @@ class WebDriverRun(object):
             if message:
                 message += "\n"
             message += traceback.format_exc(e)
-            self.result = False, ("ERROR", e)
+            self.result = False, ("ERROR", message)
         finally:
             self.result_flag.set()
 

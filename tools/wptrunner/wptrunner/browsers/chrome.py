@@ -3,8 +3,6 @@ from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
                                           SeleniumRefTestExecutor)  # noqa: F401
-from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
-                                           WebDriverRefTestExecutor)  # noqa: F401
 from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
 
 
@@ -54,7 +52,6 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["goog:chromeOptions"]["excludeSwitches"] = ["enable-automation"]
     if test_type == "wdspec":
         capabilities["goog:chromeOptions"]["w3c"] = True
-
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 

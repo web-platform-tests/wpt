@@ -246,7 +246,7 @@ def run_tests(config, test_paths, product, **kwargs):
                         run_tests = {"testharness": []}
                         for test in test_loader.tests["testharness"]:
                             if (test.testdriver and not executor_cls.supports_testdriver) or (
-                                test.jsshell and not executor_cls.supports_jsshell):
+                                    test.jsshell and not executor_cls.supports_jsshell):
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
                             else:

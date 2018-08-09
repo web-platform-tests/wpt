@@ -6,13 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src='/resources/testdriver-vendor.js'></script>
 <script src="/resources/testdriver.js"></script>
-<button id="button"></button>
 <script>
-setup({
-  explicit_done: true,
-  explicit_timeout: true,
-});
-const button = document.getElementById("button");
 const basicCard = Object.freeze({ supportedMethods: "basic-card" });
 const defaultMethods = Object.freeze([basicCard]);
 const defaultDetails = Object.freeze({
@@ -127,8 +121,8 @@ promise_test(async t => {
   }
 }, `Optionally, at the user agent's discretion, return a promise rejected with a "NotAllowedError" DOMException.`);
 
-promise_test(async t => {
-  button.onclick = async () => {
+promise_test(t => {
+  return test_driver.bless("show payment request", async () => {
     const request = new PaymentRequest(defaultMethods, defaultDetails);
     const acceptPromise = request.show(); // Sets state to "interactive"
     const canMakePaymentPromise = request.canMakePayment();
@@ -146,12 +140,11 @@ promise_test(async t => {
     }
     // The state should be "closed"
     await promise_rejects(t, "InvalidStateError", request.canMakePayment());
-  };
-  await test_driver.click(button);
+  });
 }, 'If request.[[state]] is "interactive", then return a promise rejected with an "InvalidStateError" DOMException.');
 
-promise_test(async t => {
-  button.onclick = async () => {
+promise_test(t => {
+  return test_driver.bless("show payment request", async () => {
     const request = new PaymentRequest(defaultMethods, defaultDetails);
     const acceptPromise = request.show(); // The state is now "interactive"
     acceptPromise.catch(() => {}); // no-op, just to silence unhandled rejection in devtools.
@@ -170,28 +163,21 @@ promise_test(async t => {
         "must be an InvalidStateError."
       );
     }
-  };
-  await test_driver.click(button);
+  });
 }, 'If request.[[state]] is "closed", then return a promise rejected with an "InvalidStateError" DOMException.');
 
-promise_test(async t => {
-  button.onclick = async () => {
-    const request = new PaymentRequest(
-      [{ supportedMethods: "basic-card" }],
-      defaultDetails
-    );
-    const promises = new Set([
-      request.canMakePayment(),
-      request.canMakePayment(),
-      request.canMakePayment(),
-    ]);
-    assert_equals(promises.size, 3, "Must have three unique objects");
-  };
-  await test_driver.click(button);
+test(() => {
+  const request = new PaymentRequest(
+    [{ supportedMethods: "basic-card" }],
+    defaultDetails
+  );
+  const promises = new Set([
+    request.canMakePayment(),
+    request.canMakePayment(),
+    request.canMakePayment(),
+  ]);
+  assert_equals(promises.size, 3, "Must have three unique objects");
 }, "Calling canMakePayment() multiple times is always a new object.");
-
-done();
-
 </script>
 
 <small>

@@ -9,7 +9,7 @@
           title="Tavmjong Bah"
           href="http://tavmjong.free.fr"/>
     <html:link rel="help"
-          href="https://www.w3.org/TR/SVG2/pservers.html#Hatches"/>
+          href="https://svgwg.org/svg-next/pservers.html#Hatches"/>
     <html:link rel="match"  href="hatch-xy-001-ref.svg" />
   </g>
 

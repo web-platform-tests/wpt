@@ -1,30 +1,29 @@
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
-                                          SeleniumRefTestExecutor)  # noqa: F401
-from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
-                                           WebDriverRefTestExecutor)  # noqa: F401
-from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,
+                                          SeleniumRefTestExecutor)
+from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,
+                                           WebDriverRefTestExecutor)
+from ..executors.executorchrome import ChromeDriverWdspecExecutor
 
 
-__wptrunner__ = {"product": "chrome",
+__wptrunner__ = {"product": "chrome_webdriver",
                  "check_args": "check_args",
-                 "browser": "ChromeBrowser",
-                 "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor",
+                 "browser": "ChromeWebdriverBrowser",
+                 "executor": {"testharness": "WebDriverTestharnessExecutor",
+                              "reftest": "WebDriverRefTestExecutor",
                               "wdspec": "ChromeDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
                  "env_options": "env_options"}
 
-
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(test_type, run_info_data, config, **kwargs):
+def browser_kwargs(test_type, run_info_data, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
@@ -35,11 +34,10 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     from selenium.webdriver import DesiredCapabilities
 
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, run_info_data,
-                                           **kwargs)
+                                           cache_manager, **kwargs)
     executor_kwargs["close_after_done"] = True
     capabilities = dict(DesiredCapabilities.CHROME.items())
-    capabilities.setdefault("goog:chromeOptions", {})["prefs"] = {
+    capabilities.setdefault("chromeOptions", {})["prefs"] = {
         "profile": {
             "default_content_setting_values": {
                 "popups": 1
@@ -48,20 +46,16 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     }
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
-            capabilities["goog:chromeOptions"][capability] = kwargs[kwarg]
+            capabilities["chromeOptions"][capability] = kwargs[kwarg]
     if test_type == "testharness":
-        capabilities["goog:chromeOptions"]["useAutomationExtension"] = False
-        capabilities["goog:chromeOptions"]["excludeSwitches"] = ["enable-automation"]
+        capabilities["chromeOptions"]["useAutomationExtension"] = False
+        capabilities["chromeOptions"]["excludeSwitches"] = ["enable-automation"]
     if test_type == "wdspec":
-        capabilities["goog:chromeOptions"]["w3c"] = True
-
-    if __wptrunner__["executor"]["testharness"] == ("WebDriverTestharnessExecutor" 
-        or __wptrunner__["executor"]["reftest"] == "WebDriverRefTestExecutor"):
         capabilities["chromeOptions"]["w3c"] = True
-        always_match = {"alwaysMatch": capabilities}
-        executor_kwargs["capabilities"] = always_match
-    else:
-        executor_kwargs["capabilities"] = capabilities 
+        
+    capabilities["chromeOptions"]["w3c"] = True
+    always_match = {"alwaysMatch": capabilities}
+    executor_kwargs["capabilities"] = always_match
     return executor_kwargs
 
 
@@ -73,7 +67,7 @@ def env_options():
     return {}
 
 
-class ChromeBrowser(Browser):
+class ChromeWebdriverBrowser(Browser):
     """Chrome is backed by chromedriver, which is supplied through
     ``wptrunner.webdriver.ChromeDriverServer``.
     """

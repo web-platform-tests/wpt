@@ -206,8 +206,12 @@ def session(capabilities, configuration, request):
     # Update configuration capabilities with custom ones from the
     # capabilities fixture, which can be set by tests
     caps = copy.deepcopy(configuration["capabilities"])
-    caps.update(capabilities)
-    caps = {"alwaysMatch": caps}
+
+    if "alwaysMatch" in caps or "firstMatch" in caps:
+        caps.setdefault("alwaysMatch", {}).update(capabilities)
+    else:
+        caps.update(capabilities)
+        caps = {"alwaysMatch": caps}
 
     # If there is a session with different capabilities active, end it now
     if _current_session is not None and (

@@ -51,10 +51,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         capabilities["goog:chromeOptions"]["useAutomationExtension"] = False
         capabilities["goog:chromeOptions"]["excludeSwitches"] = ["enable-automation"]
 
-    if test_type == "wdspec":
-        executor_kwargs["capabilities"] = capabilities
-    else:
-        always_match = {"alwaysMatch": capabilities}
-        executor_kwargs["capabilities"] = always_match
+    always_match = {"alwaysMatch": capabilities}
+    executor_kwargs["capabilities"] = always_match
 
     return executor_kwargs

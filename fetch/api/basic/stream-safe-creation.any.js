@@ -3,10 +3,13 @@
 
 const creationCases = {
   fetch: async () => fetch(location.href),
-  request: () => new Request(location.href),
-  response: () => new Response('hi'),
-  consumeEmpty: () => new Response().text(),
-  consumeNonEmpty: () => new Response(new Uint8Array([64])).text()
+  request: () => new Request(location.href, {method: 'POST', body: 'hi'}),
+  response: () => new Response('bye'),
+  consumeEmptyResponse: () => new Response().text(),
+  consumeNonEmptyResponse: () => new Response(new Uint8Array([64])).text(),
+  consumeEmptyRequest: () => new Request(location.href).text(),
+  consumeNonEmptyRequest: () => new Request(location.href,
+                                            {method: 'POST', body: 'yes'}).arrayBuffer(),
 };
 
 for (creationCase of Object.keys(creationCases)) {
@@ -15,7 +18,7 @@ for (creationCase of Object.keys(creationCases)) {
       throw Error('Object.prototype.start was called');
     };
     t.add_cleanup(() => delete Object.prototype.start);
-    await creationCases[creationCase];
+    await creationCases[creationCase]();
   }, `throwing Object.prototype.start() should not affect stream creation by ` +
      `'${creationCase}'`);
 
@@ -26,7 +29,7 @@ for (creationCase of Object.keys(creationCases)) {
         configurable: true
       });
       t.add_cleanup(() => delete Object.prototype[accessorName]);
-      await creationCases[creationCase];
+      await creationCases[creationCase]();
     }, `throwing Object.prototype.${accessorName} accessor should not affect ` +
        `stream creation by '${creationCase}'`);
   }

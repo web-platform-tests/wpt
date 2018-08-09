@@ -407,6 +407,12 @@ class ChromeAndroid(Browser):
     def version(self, binary):
         return None
 
+class ChromeWebdriver(Chrome):
+    """Chrome-specific interface for chrome without using selenium.
+
+    Includes webdriver installation.
+    """
+    product = "chrome_webdriver"
 
 class Opera(Browser):
     """Opera-specific interface.
@@ -503,6 +509,10 @@ class Edge(Browser):
         return None
 
 
+class EdgeWebdriver(Edge):
+    product = "edge_webdriver"
+
+
 class InternetExplorer(Browser):
     """Internet Explorer-specific interface."""
 
@@ -548,6 +558,10 @@ class Safari(Browser):
 
     def version(self, binary):
         return None
+
+
+class SafariWebdriver(Safari):
+    product = "safari_webdriver"
 
 
 class Servo(Browser):

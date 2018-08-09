@@ -95,7 +95,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "sauce_key")
 
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(test_type, run_info_data, config, **kwargs):
     sauce_config = get_sauce_config(**kwargs)
 
     return {"sauce_config": sauce_config}
@@ -104,7 +104,7 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data, **kwargs)
 
     executor_kwargs["capabilities"] = get_capabilities(**kwargs)
 
@@ -233,7 +233,7 @@ class SauceBrowser(Browser):
         Browser.__init__(self, logger)
         self.sauce_config = sauce_config
 
-    def start(self):
+    def start(self, **kwargs):
         pass
 
     def stop(self, force=False):

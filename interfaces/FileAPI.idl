@@ -51,7 +51,7 @@ interface FileReader: EventTarget {
   // async read methods
   void readAsArrayBuffer(Blob blob);
   void readAsBinaryString(Blob blob);
-  void readAsText(Blob blob, optional DOMString label);
+  void readAsText(Blob blob, optional DOMString encoding);
   void readAsDataURL(Blob blob);
 
   void abort();
@@ -60,7 +60,6 @@ interface FileReader: EventTarget {
   const unsigned short EMPTY = 0;
   const unsigned short LOADING = 1;
   const unsigned short DONE = 2;
-
 
   readonly attribute unsigned short readyState;
 
@@ -85,7 +84,7 @@ interface FileReaderSync {
 
   ArrayBuffer readAsArrayBuffer(Blob blob);
   DOMString readAsBinaryString(Blob blob);
-  DOMString readAsText(Blob blob, optional DOMString label);
+  DOMString readAsText(Blob blob, optional DOMString encoding);
   DOMString readAsDataURL(Blob blob);
 };
 

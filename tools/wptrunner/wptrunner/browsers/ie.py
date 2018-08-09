@@ -20,7 +20,7 @@ __wptrunner__ = {"product": "ie",
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {"webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
 
@@ -31,7 +31,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     capabilities = {}
     capabilities["se:ieOptions"] = options
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data, **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs

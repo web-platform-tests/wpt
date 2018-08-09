@@ -16,7 +16,6 @@ def command(func):
 
         if session.session_id is None:
             session.start()
-        assert session.session_id is not None
 
         return func(self, *args, **kwargs)
 
@@ -234,6 +233,8 @@ class Actions(object):
 
 
 class Window(object):
+    identifier = "window-fcc6-11e5-b4f8-330a88ab9d7f"
+
     def __init__(self, session):
         self.session = session
 
@@ -283,6 +284,23 @@ class Window(object):
     @command
     def fullscreen(self):
         return self.session.send_session_command("POST", "window/fullscreen")
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Window.identifier]
+        return cls(uuid, session)
+
+
+class Frame(object):
+    identifier = "frame-075b-4da1-b6ba-e579c2d3230a"
+
+    def __init__(self, session):
+        self.session = session
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Frame.identifier]
+        return cls(uuid, session)
 
 
 class Find(object):
@@ -404,13 +422,16 @@ class Session(object):
         return value
 
     def end(self):
+        """Tries to close the active session."""
         if self.session_id is None:
             return
 
-        url = "session/%s" % self.session_id
-        self.send_command("DELETE", url)
-
-        self.session_id = None
+        try:
+            self.send_command("DELETE", "session/%s" % self.session_id)
+        except error.SessionNotCreatedException:
+            pass
+        finally:
+            self.session_id = None
 
     def send_command(self, method, url, body=None):
         """
@@ -646,7 +667,8 @@ class Element(object):
         self.id = id
         self.session = session
 
-        assert id not in self.session._element_cache
+        if id in self.session._element_cache:
+            raise ValueError("Element already in cache: %s" % id)
         self.session._element_cache[self.id] = self
 
     def __repr__(self):
@@ -658,7 +680,6 @@ class Element(object):
 
     @classmethod
     def from_json(cls, json, session):
-        assert Element.identifier in json
         uuid = json[Element.identifier]
         if uuid in session._element_cache:
             return session._element_cache[uuid]
@@ -684,7 +705,7 @@ class Element(object):
 
     @command
     def clear(self):
-        self.send_element_command("POST", self.url("clear"), {})
+        self.send_element_command("POST", "clear", {})
 
     @command
     def send_keys(self, text):

@@ -1,4 +1,5 @@
 import socket
+import sys
 
 def invert_dict(dict):
     rv = {}
@@ -98,7 +99,7 @@ def is_bad_port(port):
         6697,  # irc+tls
     ]
 
-def get_port(host):
+def get_port(host=''):
     port = 0
     while True:
         free_socket = _open_socket(host, 0)
@@ -107,3 +108,7 @@ def get_port(host):
         if not is_bad_port(port):
             break
     return port
+
+def http2_compatible():
+    # Currently, the HTTP/2.0 server is only working in python 2.7.15
+    return (sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] == 15)

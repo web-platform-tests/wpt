@@ -69,7 +69,6 @@ dictionary CookieStoreSetOptions {
   USVString? domain = null;
   USVString path = "/";
   boolean secure = true;
-  boolean httpOnly = false;
   CookieSameSite sameSite = "strict";
 };
 
@@ -108,4 +107,5 @@ partial interface Window {
 
 partial interface ServiceWorkerGlobalScope {
   [Replaceable, SameObject] readonly attribute CookieStore cookieStore;
+  attribute EventHandler oncookiechange;
 };

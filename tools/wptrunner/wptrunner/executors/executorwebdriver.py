@@ -39,7 +39,8 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         try:
             self.webdriver.timeouts.script = timeout
         except client.WebDriverException:
-            self.webdriver.timeouts.set_legacy("script", timeout)
+            body = {"type": "script", "ms": timeout * 1000}
+            self.webdriver.session.send_session_command("POST", "timeouts", body)
 
     @property
     def current_window(self):

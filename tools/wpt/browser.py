@@ -556,6 +556,10 @@ class Safari(Browser):
         return None
 
 
+class SafariWebdriver(Safari):
+    product = "safari_webdriver"
+
+
 class Servo(Browser):
     """Servo-specific interface."""
 

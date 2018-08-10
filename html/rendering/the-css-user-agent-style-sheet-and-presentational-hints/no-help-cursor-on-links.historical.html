@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>link with rel="help" cursor tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<link rel="help" href="https://html.spec.whatwg.org/#phrasing-content-3">
+<link rel="help" href="https://github.com/whatwg/html/pull/3902">
+
+<div id="log"></div>
+
+<a href="/common/blank.html?unvisited" rel="help" id="unvisited">unvisited</a>
+<a href="/common/blank.html?willbevisited" rel="help" id="willbevisited">will be visited</a>
+
+<script>
+"use strict";
+
+
+test(() => {
+  const el = document.querySelector("#unvisited");
+  const style = window.getComputedStyle(el);
+
+  assert_equals(style.cursor, "pointer");
+},"Unvisited help links must have pointer cursor, not help cursor");
+
+async_test(t => {
+  const el = document.querySelector("#willbevisited");
+
+  const iframe = document.createElement("iframe");
+  iframe.src = el.href;
+  iframe.onload = t.step_func_done(() => {
+    const style = window.getComputedStyle(el);
+    assert_equals(style.cursor, "pointer");
+  });
+
+  document.body.appendChild(iframe);
+}, "Visited help links must have pointer cursor, not help cursor");
+</script>

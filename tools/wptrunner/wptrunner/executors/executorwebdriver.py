@@ -233,11 +233,17 @@ class WebDriverRun(object):
         except (socket.timeout, client.UnknownErrorException):
             self.result = False, ("CRASH", None)
         except Exception as e:
-            message = getattr(e, "message", "")
-            if message:
-                message += "\n"
-            message += traceback.format_exc(e)
-            self.result = False, ("ERROR", message)
+            if (isinstance(e, client.WebDriverException) and
+                    e.http_status == 408 and
+                    e.status_code == "asynchronous script timeout"):
+                # workaround for https://bugs.chromium.org/p/chromedriver/issues/detail?id=2001
+                self.result = False, ("EXTERNAL-TIMEOUT", None)
+            else:
+                message = getattr(e, "message", "")
+                if message:
+                    message += "\n"
+                message += traceback.format_exc(e)
+                self.result = False, ("ERROR", message)
         finally:
             self.result_flag.set()
 

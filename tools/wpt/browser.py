@@ -413,7 +413,6 @@ class ChromeWebdriver(Chrome):
     Includes webdriver installation.
     """
     product = "chrome_webdriver"
-    pass
 
 class Opera(Browser):
     """Opera-specific interface.

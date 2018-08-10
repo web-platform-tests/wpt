@@ -509,6 +509,10 @@ class Edge(Browser):
         return None
 
 
+class EdgeWebdriver(Edge):
+    product = "edge_webdriver"
+
+
 class InternetExplorer(Browser):
     """Internet Explorer-specific interface."""
 

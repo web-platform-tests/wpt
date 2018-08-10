@@ -311,6 +311,11 @@ https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class EdgeWebdriver(Edge):
+    name = "edge_webdriver"
+    browser_cls = browser.EdgeWebdriver
+
+
 class InternetExplorer(BrowserSetup):
     name = "ie"
     browser_cls = browser.InternetExplorer
@@ -402,6 +407,7 @@ product_setup = {
     "chrome_android": ChromeAndroid,
     "chrome_webdriver": ChromeWebdriver,
     "edge": Edge,
+    "edge_webdriver": EdgeWebdriver,
     "ie": InternetExplorer,
     "safari": Safari,
     "safari_webdriver": SafariWebdriver,

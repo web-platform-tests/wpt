@@ -349,6 +349,11 @@ class Safari(BrowserSetup):
             kwargs["webdriver_binary"] = webdriver_binary
 
 
+class SafariWebdriver(Safari):
+    name = "safari_webdriver"
+    browser_cls = browser.SafariWebdriver
+
+
 class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
@@ -399,6 +404,7 @@ product_setup = {
     "edge": Edge,
     "ie": InternetExplorer,
     "safari": Safari,
+    "safari_webdriver": SafariWebdriver,
     "servo": Servo,
     "sauce": Sauce,
     "opera": Opera,

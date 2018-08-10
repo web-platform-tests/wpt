@@ -23,6 +23,18 @@ test(() => {
   assert_equals(style.cursor, "pointer");
 },"Unvisited help links must have pointer cursor, not help cursor");
 
+
+// This test is kind of dubious. Browsers don't allow you to distinguish visited and unvisited links
+// from script, for privacy reasons. So we can't really be sure that loading the iframe would make
+// the link count as visited. Manually running this test turns the link purple in some browsers,
+// but leaves it blue in others. Even then it's not clear whether it turned purple before or after
+// the onload; this test assumes that once the iframe onload fires, it counts as visited, which
+// may not be justified even in the purple-turning browsers.
+//
+// Still, the test doesn't really hurt. At worst it's redundant with the above.
+//
+// If someone comes up with a better way of testing this (i.e. something that truly guarantees that
+// the link will count as "visited" for UA stylesheet purposes), then please submit a PR.
 async_test(t => {
   const el = document.querySelector("#willbevisited");
 

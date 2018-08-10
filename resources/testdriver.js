@@ -62,24 +62,25 @@
          *                    rejected if interaction fails or the provided
          *                    function throws an error
          */
-        bless: function(intent, action) {
-            var button = document.createElement("button");
+        async bless(intent, action) {
+            const button = document.createElement("button");
             button.innerHTML = "This test requires user interaction.<br />" +
                 "Please click here to allow " + intent + ".";
             button.id = "wpt-test-driver-bless-" + (idCounter += 1);
+            if (document.readyState === "loading") {
+                await new Promise(
+                    resolve => document.addEventListener("DOMContentLoaded", resolve)
+                );
+            }
             document.body.appendChild(button);
-
-            return new Promise(function(resolve, reject) {
-                    button.addEventListener("click", resolve);
-
-                    test_driver.click(button).catch(reject);
-                }).then(function() {
-                    button.remove();
-
-                    if (typeof action === "function") {
-                        return action();
-                    }
-                });
+            await new Promise((resolve, reject) => {
+                button.addEventListener("click", resolve);
+                test_driver.click(button).catch(reject);
+            });
+            button.remove();
+            if (typeof action === "function") {
+                return action();
+            }
         },
 
         /**

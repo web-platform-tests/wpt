@@ -41,11 +41,6 @@ class Timeouts(object):
         self.session.send_session_command("POST", "timeouts", body)
         return None
 
-    def set_legacy(self, timeout, secs):
-        body = {"type": timeout, "ms": secs * 1000}
-        self.session.send_session_command("POST", "timeouts", body)
-        return None
-
     @property
     def script(self):
         return self._get("script")

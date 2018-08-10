@@ -12,7 +12,7 @@
     document.body.appendChild(frame);
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func_done(() => {
-      assert_equals(frame.contentDocument.open(type), frame.contentDocument);
+      frame.contentDocument.open(type);
       frame.contentDocument.write("<B>heya</b>");
       frame.contentDocument.close();
       assert_equals(frame.contentDocument.body.firstChild.localName, "b");

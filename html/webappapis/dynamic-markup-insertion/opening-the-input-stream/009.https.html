@@ -3,7 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe src="/common/blank.html"></iframe>
+<iframe src="004-1.html"></iframe>
 <script>
 var iframe = document.getElementsByTagName("iframe")[0];
 var steps;
@@ -28,7 +28,7 @@ function(x) {
 );
 }
 onload = function() {
-  assert_equals(iframe.contentDocument.open(), iframe.contentDocument);
+  iframe.contentDocument.open();
   steps.forEach(function(x) {x()});
 }
 </script>

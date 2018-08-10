@@ -9,7 +9,7 @@
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
     t.add_cleanup(() => frame.remove());
-    assert_equals(frame.contentDocument.open(type), frame.contentDocument);
+    frame.contentDocument.open(type);
     frame.contentDocument.write("<B>heya</b>");
     frame.contentDocument.close();
     assert_equals(frame.contentDocument.body.firstChild.localName, "b");

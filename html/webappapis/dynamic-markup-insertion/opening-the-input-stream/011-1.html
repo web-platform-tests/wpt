@@ -1,5 +1,5 @@
 <script>
-parent.t.step(() => { parent.assert_equals(document.open(), document); });
+document.open()
 setTimeout(parent.t.step_func(function() {parent.t.done()}), 0);
 document.close();
 </script>

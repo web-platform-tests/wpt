@@ -39,6 +39,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         try:
             self.webdriver.timeouts.script = timeout
         except client.WebDriverException:
+            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2057
             body = {"type": "script", "ms": timeout * 1000}
             self.webdriver.session.send_session_command("POST", "timeouts", body)
 

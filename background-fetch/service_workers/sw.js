@@ -1,4 +1,4 @@
-let source = null;
+importScripts('sw-helpers.js');
 
 async function getFetchResult(settledFetch) {
   if (!settledFetch.response)
@@ -11,14 +11,9 @@ async function getFetchResult(settledFetch) {
   };
 }
 
-self.addEventListener('message', event => {
-  source = event.source;
-  source.postMessage('ready');
-});
-
 self.addEventListener('backgroundfetched', event => {
   event.waitUntil(
     event.fetches.values()
       .then(fetches => Promise.all(fetches.map(fetch => getFetchResult(fetch))))
-      .then(results => source.postMessage({ type: event.type, results })));
+      .then(results => sendMessageToDocument({ type: event.type, results })));
 });

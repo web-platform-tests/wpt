@@ -36,7 +36,10 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         return method(script)
 
     def set_timeout(self, timeout):
-        self.webdriver.timeouts.set_legacy("script", timeout)
+        try:
+            self.webdriver.timeouts.script = timeout
+        except client.WebDriverException:
+            self.webdriver.timeouts.set_legacy("script", timeout)
 
     @property
     def current_window(self):

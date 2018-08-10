@@ -11,9 +11,9 @@ promise_test(async t => {
   const SCOPE = '../resources/navigationpreload';
   const registration =
       await service_worker_unregister_and_register(t, SCRIPT, SCOPE);
-  const np = registration.navigationPreload;
-  assert_true(np instanceof NavigationPreloadManager, 'navigationPreload ' +
-              'attribute return NavigationPreloadManager object');
+  const navigationPreload = registration.navigationPreload;
+  assert_true(navigationPreload instanceof NavigationPreloadManager,
+              'ServiceWorkerRegistration.navigationPreload');
   await registration.unregister();
 }, "The navigationPreload attribute must return service worker " +
     "registration's NavigationPreloadManager object.");

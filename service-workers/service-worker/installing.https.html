@@ -18,24 +18,26 @@ promise_test(async t => {
   const container = frame.contentWindow.navigator.serviceWorker;
   assert_equals(container.controller, null, 'controller');
   assert_equals(registration.active, null, 'registration.active');
-  assert_equals(registration.waiting, null, 'registration.active');
+  assert_equals(registration.waiting, null, 'registration.waiting');
   assert_equals(registration.installing.scriptURL, normalizeURL(SCRIPT),
-                'registration.active');
+                'registration.installing.scriptURL');
   // FIXME: Add a test for a frame created after installation.
   // Should the existing frame ("frame") block activation?
-
-  frame.remove();
-  await service_worker_unregister_and_done(t, SCOPE);
+  t.add_cleanup(async() => {
+    frame.remove();
+    await service_worker_unregister_and_done(t, SCOPE);
+  });
 }, 'installing is set');
 
 // Tests that The ServiceWorker objects returned from installing attribute getter
 // that represent the same service worker are the same objects.
 promise_test(async t => {
-  const registration =
+  const registration1 =
       await service_worker_unregister_and_register(t, SCRIPT, SCOPE);
-  const r = await navigator.serviceWorker.getRegistration(SCOPE);
-  assert_equals(registration.installing, r.installing, 'getRegistration ' +
-                'should return the same object');
+  const registration2 = await navigator.serviceWorker.getRegistration(SCOPE);
+  assert_equals(registration1.installing, registration2.installing,
+                'ServiceWorkerRegistration.installing should return the ' +
+                'same object');
   await service_worker_unregister_and_done(t, SCOPE);
 }, 'The ServiceWorker objects returned from installing attribute getter that ' +
    'represent the same service worker are the same objects');

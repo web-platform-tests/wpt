@@ -25,18 +25,21 @@ promise_test(async t => {
 
   // FIXME: Add a test for a frame created after installation.
   // Should the existing frame ("frame") block activation?
-  frame.remove();
-  await service_worker_unregister_and_done(t, SCOPE);
+  t.add_cleanup(async() => {
+    frame.remove();
+    await service_worker_unregister_and_done(t, SCOPE);
+  });
 }, 'active is set');
 
 // Tests that the ServiceWorker objects returned from active attribute getter
 // that represent the same service worker are the same objects.
 promise_test(async t => {
-  const registration =
+  const registration1 =
       await service_worker_unregister_and_register(t, SCRIPT, SCOPE);
-  const r = await navigator.serviceWorker.getRegistration(SCOPE);
-  assert_equals(registration.active, r.active, 'getRegistration ' +
-                'should return the same object');
+  const registration2 = await navigator.serviceWorker.getRegistration(SCOPE);
+  assert_equals(registration1.active, registration2.active,
+                'ServiceWorkerRegistration.active should return the same ' +
+                'object');
   await service_worker_unregister_and_done(t, SCOPE);
 }, 'The ServiceWorker objects returned from active attribute getter that ' +
    'represent the same service worker are the same objects');

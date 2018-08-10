@@ -11,6 +11,14 @@ const SCOPE = 'resources/blank.html';
 
 // "active" is set
 promise_test(async t => {
+
+  t.add_cleanup(async() => {
+    if(frame)
+      frame.remove();
+    if(registration)
+      await registration.unregister();
+  });
+
   await service_worker_unregister(t, SCOPE);
   const frame = await with_iframe(SCOPE);
   const registration =
@@ -25,10 +33,6 @@ promise_test(async t => {
 
   // FIXME: Add a test for a frame created after installation.
   // Should the existing frame ("frame") block activation?
-  t.add_cleanup(async() => {
-    frame.remove();
-    await service_worker_unregister_and_done(t, SCOPE);
-  });
 }, 'active is set');
 
 // Tests that the ServiceWorker objects returned from active attribute getter
@@ -40,7 +44,7 @@ promise_test(async t => {
   assert_equals(registration1.active, registration2.active,
                 'ServiceWorkerRegistration.active should return the same ' +
                 'object');
-  await service_worker_unregister_and_done(t, SCOPE);
+  await registration1.unregister();
 }, 'The ServiceWorker objects returned from active attribute getter that ' +
    'represent the same service worker are the same objects');
 </script>

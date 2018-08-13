@@ -2,7 +2,6 @@ from copy import deepcopy
 
 from . import safari
 
-from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
 

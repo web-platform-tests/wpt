@@ -125,7 +125,7 @@ browsers listed above.
 
 For JavaScript code that is re-used across many tests (e.g. `testharness.js`
 and the files located in the directory named `common`), language features that
-were introduced in [ECMAScript 2015][es2015] or later should be avoided. This
+were introduced in [ECMAScript 2017][es2017] or later should be avoided. This
 practice avoids introducing test failures for consumers maintaining older
 JavaScript runtimes.
 
@@ -215,6 +215,6 @@ for CSS have some additional requirements for:
 [google-chrome]: https://google.com/chrome/browser/desktop/
 [apple-safari]: https://apple.com/safari
 [microsoft-edge]: http://microsoftedge.com/
-[es2015]: http://www.ecma-international.org/ecma-262/6.0/
+[es2017]: https://www.ecma-international.org/ecma-262/8.0/index.html
 [es-compat]: https://kangax.github.io/compat-table/
 [caniuse]: https://caniuse.com/

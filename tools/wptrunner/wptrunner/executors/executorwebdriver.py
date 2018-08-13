@@ -41,7 +41,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         except client.WebDriverException:
             # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2057
             body = {"type": "script", "ms": timeout * 1000}
-            self.webdriver.session.send_session_command("POST", "timeouts", body)
+            self.webdriver.send_session_command("POST", "timeouts", body)
 
     @property
     def current_window(self):
@@ -135,7 +135,14 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def send_keys(self, element, keys):
-        return element.send_keys(keys)
+        try:
+            return element.send_keys(keys)
+        except client.UnknownErrorException as e:
+            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=1999
+            if (e.http_status != 500 or
+                e.status_code != "unknown error"):
+                raise
+            return element.send_element_command("POST", "value", {"value": list(keys)})
 
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):

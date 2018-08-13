@@ -118,8 +118,8 @@ therefore, not rely on any features aside from the one under test unless they
 are supported in all four browsers.
 
 Existing tests can be used as a guide to identify acceptable features. For
-features that are not used in existing tests, community-maintained projects
-such as [the ECMAScript compatibility tables][es-compat] and
+language features that are not used in existing tests, community-maintained
+projects such as [the ECMAScript compatibility tables][es-compat] and
 [caniuse.com][caniuse] provide an overview of basic feature support across the
 browsers listed above.
 

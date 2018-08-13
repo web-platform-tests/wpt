@@ -702,8 +702,14 @@ def build_config(override_path=None, **kwargs):
 
     return rv
 
-def _make_subdomains_product(s, depth=3):
-    return set(u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1))))
+def _make_subdomains_product(s):
+    # A "depth" of 2 satisfies the original feature request: the availability
+    # of "a subdomain of a subdomain (and another subdomain of the same
+    # subdomain)
+    # https://github.com/web-platform-tests/wpt/issues/8581
+    depth = 2
+
+    return set(u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth + 1))))
 
 _subdomains = {u"www",
                u"www1",
@@ -712,10 +718,6 @@ _subdomains = {u"www",
                u"élève"}
 
 _not_subdomains = {u"nonexistent"}
-
-_subdomains = _make_subdomains_product(_subdomains)
-
-_not_subdomains = _make_subdomains_product(_not_subdomains)
 
 
 class ConfigBuilder(config.ConfigBuilder):
@@ -763,8 +765,12 @@ class ConfigBuilder(config.ConfigBuilder):
     def __init__(self, *args, **kwargs):
         if "subdomains" not in kwargs:
             kwargs["subdomains"] = _subdomains
+        kwargs["subdomains"] = _make_subdomains_product(kwargs["subdomains"])
+
         if "not_subdomains" not in kwargs:
             kwargs["not_subdomains"] = _not_subdomains
+        kwargs["not_subdomains"] = _make_subdomains_product(kwargs["not_subdomains"])
+
         super(ConfigBuilder, self).__init__(
             *args,
             **kwargs

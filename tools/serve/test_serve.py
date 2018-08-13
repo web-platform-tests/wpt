@@ -23,9 +23,17 @@ def test_make_hosts_file_nix():
                               "192.168.42.42\tfoo.bar",
                               "192.168.42.42\tfoo2.bar",
                               "192.168.42.42\ta.foo.bar",
+                              "192.168.42.42\ta.a.foo.bar",
+                              "192.168.42.42\ta.b.foo.bar",
                               "192.168.42.42\ta.foo2.bar",
+                              "192.168.42.42\ta.a.foo2.bar",
+                              "192.168.42.42\ta.b.foo2.bar",
                               "192.168.42.42\tb.foo.bar",
-                              "192.168.42.42\tb.foo2.bar"}
+                              "192.168.42.42\tb.a.foo.bar",
+                              "192.168.42.42\tb.b.foo.bar",
+                              "192.168.42.42\tb.foo2.bar",
+                              "192.168.42.42\tb.a.foo2.bar",
+                              "192.168.42.42\tb.b.foo2.bar"}
         assert lines[-1] == ""
 
 @pytest.mark.skipif(platform.uname()[0] != "Windows",
@@ -40,15 +48,31 @@ def test_make_hosts_file_windows():
         lines = hosts.split("\n")
         assert set(lines) == {"",
                               "0.0.0.0\tx.foo.bar",
+                              "0.0.0.0\tx.x.foo.bar",
+                              "0.0.0.0\tx.y.foo.bar",
                               "0.0.0.0\tx.foo2.bar",
+                              "0.0.0.0\tx.x.foo2.bar",
+                              "0.0.0.0\tx.y.foo2.bar",
                               "0.0.0.0\ty.foo.bar",
+                              "0.0.0.0\ty.x.foo.bar",
+                              "0.0.0.0\ty.y.foo.bar",
                               "0.0.0.0\ty.foo2.bar",
+                              "0.0.0.0\ty.x.foo2.bar",
+                              "0.0.0.0\ty.y.foo2.bar",
                               "192.168.42.42\tfoo.bar",
                               "192.168.42.42\tfoo2.bar",
                               "192.168.42.42\ta.foo.bar",
+                              "192.168.42.42\ta.a.foo.bar",
+                              "192.168.42.42\ta.b.foo.bar",
                               "192.168.42.42\ta.foo2.bar",
+                              "192.168.42.42\ta.a.foo2.bar",
+                              "192.168.42.42\ta.b.foo2.bar",
                               "192.168.42.42\tb.foo.bar",
-                              "192.168.42.42\tb.foo2.bar"}
+                              "192.168.42.42\tb.a.foo.bar",
+                              "192.168.42.42\tb.b.foo.bar",
+                              "192.168.42.42\tb.foo2.bar",
+                              "192.168.42.42\tb.a.foo2.bar",
+                              "192.168.42.42\tb.b.foo2.bar"}
         assert lines[-1] == ""
 
 

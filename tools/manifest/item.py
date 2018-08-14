@@ -2,19 +2,20 @@ from six.moves.urllib.parse import urljoin, urlparse
 from abc import ABCMeta, abstractproperty
 
 
-def get_source_file(source_files, tests_root, manifest, path):
-    def make_new():
-        from .sourcefile import SourceFile
+class SourceFileCache(object):
+    def __init__(self):
+        self.source_files = {}
 
-        return SourceFile(tests_root, path, manifest.url_base)
+    def get(self, tests_root, manifest, path):
+        def make_new():
+            from .sourcefile import SourceFile
 
-    if source_files is None:
-        return make_new()
+            return SourceFile(tests_root, path, manifest.url_base)
 
-    if path not in source_files:
-        source_files[path] = make_new()
+        if path not in self.source_files:
+            self.source_files[path] = make_new()
 
-    return source_files[path]
+        return self.source_files[path]
 
 
 item_types = {}
@@ -36,6 +37,8 @@ class ManifestItem(object):
     __metaclass__ = ManifestItemMeta
 
     item_type = None
+
+    source_file_cache = SourceFileCache()
 
     def __init__(self, source_file, manifest=None):
         self.manifest = manifest
@@ -84,8 +87,8 @@ class ManifestItem(object):
         return [{}]
 
     @classmethod
-    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest, path)
+    def from_json(cls, manifest, tests_root, path, obj):
+        source_file = cls.source_file_cache.get(tests_root, manifest, path)
         return cls(source_file,
                    manifest=manifest)
 
@@ -113,8 +116,8 @@ class URLManifestItem(ManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest, path)
+    def from_json(cls, manifest, tests_root, path, obj):
+        source_file = cls.source_file_cache.get(tests_root, manifest, path)
         url, extras = obj
         return cls(source_file,
                    url,
@@ -145,8 +148,8 @@ class TestharnessTest(URLManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest, path)
+    def from_json(cls, manifest, tests_root, path, obj):
+        source_file = cls.source_file_cache.get(tests_root, manifest, path)
 
         url, extras = obj
         return cls(source_file,
@@ -187,8 +190,8 @@ class RefTestNode(URLManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest, path)
+    def from_json(cls, manifest, tests_root, path, obj):
+        source_file = cls.source_file_cache.get(tests_root, manifest, path)
         url, references, extras = obj
         return cls(source_file,
                    url,
@@ -248,8 +251,8 @@ class WebDriverSpecTest(URLManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, tests_root, path, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest, path)
+    def from_json(cls, manifest, tests_root, path, obj):
+        source_file = cls.source_file_cache.get(tests_root, manifest, path)
 
         url, extras = obj
         return cls(source_file,

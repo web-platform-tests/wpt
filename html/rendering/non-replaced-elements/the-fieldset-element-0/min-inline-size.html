@@ -1,0 +1,32 @@
+<!doctype html>
+<title>fieldset min-inline-size</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+ fieldset { width: 0; height: 0 }
+ fieldset > div { width: 100px; height: 100px }
+ #vertical-lr { writing-mode: vertical-lr }
+ #vertical-rl { writing-mode: vertical-rl }
+</style>
+<fieldset id=horizontal-tb><div></div></fieldset>
+<fieldset id=vertical-lr><div></div></fieldset>
+<fieldset id=vertical-rl><div></div></fieldset>
+<script>
+  test(() => {
+    const fieldset = document.getElementById('horizontal-tb');
+    assert_equals(getComputedStyle(fieldset).width, '100px', 'width');
+    assert_equals(getComputedStyle(fieldset).height, '0px', 'height');
+  }, 'horizontal-tb');
+
+  test(() => {
+    const fieldset = document.getElementById('vertical-lr');
+    assert_equals(getComputedStyle(fieldset).width, '0px', 'width');
+    assert_equals(getComputedStyle(fieldset).height, '100px', 'height');
+  }, 'vertical-lr');
+
+  test(() => {
+    const fieldset = document.getElementById('vertical-rl');
+    assert_equals(getComputedStyle(fieldset).width, '0px', 'width');
+    assert_equals(getComputedStyle(fieldset).height, '100px', 'height');
+  }, 'vertical-rl');
+</script>

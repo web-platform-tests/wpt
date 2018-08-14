@@ -46,7 +46,7 @@ interface BackgroundFetchRegistration : EventTarget {
   readonly attribute unsigned long long uploaded;
   readonly attribute unsigned long long downloadTotal;
   readonly attribute unsigned long long downloaded;
-  readonly attribute BackgroundFetchState state;
+  readonly attribute blink::mojom::BackgroundFetchState state;
   readonly attribute BackgroundFetchFailureReason failureReason;
 
   attribute EventHandler onprogress;
@@ -56,7 +56,7 @@ interface BackgroundFetchRegistration : EventTarget {
   Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options);
 };
 
-enum BackgroundFetchState { "pending", "success", "failure" };
+enum blink::mojom::BackgroundFetchState { "pending", "success", "failure" };
 
 enum BackgroundFetchFailureReason {
   "",

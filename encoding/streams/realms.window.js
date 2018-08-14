@@ -1,7 +1,3 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script>
 'use strict';
 
 // Test that objects created by the TextEncoderStream and TextDecoderStream APIs
@@ -331,5 +327,3 @@ function runTextDecoderStreamTests() {
   }, 'TypeError for incomplete input should come from constructor realm ' +
      'of TextDecoderStream');
 }
-
-</script>

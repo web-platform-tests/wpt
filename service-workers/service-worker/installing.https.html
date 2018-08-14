@@ -13,10 +13,10 @@ const SCOPE = 'resources/blank.html';
 promise_test(async t => {
 
   t.add_cleanup(async() => {
-    if(frame)
+    if (frame)
       frame.remove();
-    if(registration)
-    await registration.unregister();
+    if (registration)
+      await registration.unregister();
   });
 
   await service_worker_unregister(t, SCOPE);

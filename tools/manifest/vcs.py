@@ -1,13 +1,12 @@
 import os
 import subprocess
 import json
-from copy import copy
 
 from .sourcefile import SourceFile
 
 
 class Git(object):
-    def __init__(self, repo_root, url_base):
+    def __init__(self, repo_root, url_base, filters=None):
         self.root = os.path.abspath(repo_root)
         self.git = Git.get_func(repo_root)
         self.url_base = url_base
@@ -76,91 +75,70 @@ class Git(object):
 
 
 class FileSystem(object):
-    def __init__(self, root, url_base):
+    def __init__(self, root, url_base, mtime_filter):
         self.root = root
         self.url_base = url_base
         from gitignore import gitignore
         self.path_filter = gitignore.PathFilter(self.root, extras=[".git/"])
-        self.cache = MtimeCache(self.root, self.path_filter)
-        self.mtimes = self.cache.get_cache()
+        self.mtime_filter = mtime_filter
 
     def __iter__(self):
-        paths = self.get_paths()
-        for path in paths:
-            yield SourceFile(self.root, path, self.url_base)
-
-    def get_paths(self):
-        changed = False
-        m_copy = copy(self.mtimes)
+        # Avoiding some relpath calls is a performance win
+        old_pwd = os.path.abspath(".")
+        os.chdir(self.root)
         for dirpath, dirnames, filenames in os.walk(self.root):
             for filename in filenames:
-                abs_path = os.path.join(dirpath, filename)
-                path = os.path.relpath(abs_path, self.root)
+                # We strip the ./ prefix off the path
+                path = os.path.join(dirpath, filename)[2:]
                 if self.path_filter(path):
-                    if self.cache.has_changed(path, abs_path, self.mtimes.get(path)):
-                        changed=True
-                        m_copy[path] = os.path.getmtime(abs_path)
-                        yield path
-                    self.mtimes.pop(path, None)
+                    try:
+                        stat = os.stat(path)
+                    except OSError:
+                        continue
+                    if self.mtime_filter.update(path, stat):
+                        yield SourceFile(self.root, path, self.url_base)
 
             dirnames[:] = [item for item in dirnames if self.path_filter(
                            os.path.relpath(os.path.join(dirpath, item), self.root) + "/")]
-
-        for path in self.mtimes:
-            del m_copy[path]
-            changed=True
-            yield path
-
-        if changed:
-            self.cache.write_cache(m_copy)
+        os.chdir(old_pwd)
 
 
-class MtimeCache():
-    def __init__(self, root, path_filter):
+class MtimeFilter(object):
+    def __init__(self, root):
         self.path = os.path.join(root, "cache.json")
         self.root = root
-        self.path_filter = path_filter
+        self.data = self.load()
+        self.updated = set()
+        self.modified = False
 
-    def update_cache(self):
-        mtimes = {}
-        for k,v in self.get_mtimes():
-            mtimes[k] = v
-        self.write_cache(mtimes)
-
-    def write_cache(self, mtimes):
+    def dump(self):
+        missing = set(self.data.keys()) - self.updated
+        if not missing or not self.modified:
+            return
+        for item in missing:
+            del self.data[item]
         with open(self.path, 'w') as f:
-            json.dump(mtimes, f, indent=1)
+            json.dump(self.data, f, indent=1)
 
-    def load_cache(self):
-        with open(self.path, 'r') as f:
-            return json.load(f)
-
-    def get_cache(self):
-        if not os.path.exists(self.path):
-            mtimes = {}
-            for k,v in self.get_mtimes():
-                mtimes[k] = v
-            self.write_cache(mtimes)
-        else:
-            mtimes = self.load_cache()
-        return mtimes
-
-    def has_changed(self, rel_path, abs_path, cached_mtime):
+    def load(self):
         try:
-            new_mtime = os.path.getmtime(abs_path)
-        except Exception as e:
+            with open(self.path, 'r') as f:
+                return json.load(f)
+        except IOError:
+            return {}
+
+    def update(self, rel_path, stat=None):
+        self.updated.add(rel_path)
+        try:
+            if stat is None:
+                stat = os.stat(os.path.join(self.root,
+                                            rel_path))
+        except Exception:
             return True
-        if new_mtime!=cached_mtime:
+
+        mtime = stat.st_mtime
+        if mtime != self.data.get(rel_path):
+            self.modified = True
+            self.data[rel_path] = mtime
             return True
         return False
-
-    def get_mtimes(self):
-        for dirpath, dirnames, filenames in os.walk(self.root):
-            for filename in filenames:
-                abs_path = os.path.join(dirpath, filename)
-                path = os.path.relpath(abs_path, self.root)
-                if self.path_filter(path):
-                    yield path, os.path.getmtime(abs_path)
-
-            dirnames[:] = [item for item in dirnames if self.path_filter(
-                           os.path.relpath(os.path.join(dirpath, item), self.root) + "/")]

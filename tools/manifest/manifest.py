@@ -2,12 +2,17 @@ import itertools
 import json
 import os
 from collections import defaultdict
-from six import iteritems, itervalues, viewkeys, string_types
+from six import iteritems, string_types
 
-from .item import ManualTest, WebdriverSpecTest, Stub, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
+from .item import (ManualTest, WebdriverSpecTest, Stub, RefTestNode, RefTest,
+                   TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest)
 from .log import get_logger
 from .utils import from_os_path, to_os_path
 
+try:
+    import ujson as json
+except ImportError:
+    pass
 
 CURRENT_VERSION = 4
 
@@ -27,11 +32,87 @@ def iterfilter(filters, iter):
         yield item
 
 
+item_classes = {"testharness": TestharnessTest,
+                "reftest": RefTest,
+                "reftest_node": RefTestNode,
+                "manual": ManualTest,
+                "stub": Stub,
+                "wdspec": WebdriverSpecTest,
+                "conformancechecker": ConformanceCheckerTest,
+                "visual": VisualTest,
+                "support": SupportFile}
+
+
+class TypeData(object):
+    def __init__(self, manifest, type_cls):
+        self.manifest = manifest
+        self.type_cls = type_cls
+        self.data = {}
+        self.json_data = None
+        self.tests_root = None
+
+    def __getitem__(self, key):
+        if key not in self.data:
+            self.load(key)
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
+
+    def __iter__(self):
+        self.load_all()
+        for path, tests in iteritems(self.data):
+            yield path, tests
+
+    def load(self, key):
+        if self.json_data is not None:
+            data = set()
+            path = from_os_path(key)
+            for test in self.json_data.get(path, []):
+                manifest_item = self.type_cls.from_json(self.manifest,
+                                                        self.tests_root,
+                                                        path,
+                                                        test)
+                data.add(manifest_item)
+            self.data[key] = data
+        else:
+            raise ValueError
+
+    def load_all(self):
+        if self.json_data is not None:
+            for path, value in iteritems(self.json_data):
+                key = to_os_path(path)
+                if key in self.data:
+                    continue
+                data = set()
+                for test in self.json_data.get(path, []):
+                    manifest_item = self.type_cls.from_json(self.manifest,
+                                                            self.tests_root,
+                                                            path,
+                                                            test)
+                    data.add(manifest_item)
+                self.data[key] = data
+            self.json_data = None
+
+    def set_json(self, tests_root, data):
+        self.tests_root = tests_root
+        self.json_data = data
+
+
+class ManifestData(object):
+    def __init__(self, manifest):
+        self.data = {key: TypeData(manifest, value) for key, value in item_classes.iteritems()}
+        self.json_obj = None
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+
 class Manifest(object):
     def __init__(self, url_base="/"):
         assert url_base is not None
         self._path_hash = {}
-        self._data = defaultdict(dict)
+        self._data = ManifestData(self)
         self._reftest_nodes_by_url = None
         self.url_base = url_base
 
@@ -42,7 +123,7 @@ class Manifest(object):
         if not types:
             types = sorted(self._data.keys())
         for item_type in types:
-            for path, tests in sorted(iteritems(self._data[item_type])):
+            for path, tests in sorted(self._data[item_type]):
                 yield item_type, path, tests
 
     def iterpath(self, path):
@@ -181,19 +262,7 @@ class Manifest(object):
 
         self._path_hash = {to_os_path(k): v for k, v in iteritems(obj["paths"])}
 
-        item_classes = {"testharness": TestharnessTest,
-                        "reftest": RefTest,
-                        "reftest_node": RefTestNode,
-                        "manual": ManualTest,
-                        "stub": Stub,
-                        "wdspec": WebdriverSpecTest,
-                        "conformancechecker": ConformanceCheckerTest,
-                        "visual": VisualTest,
-                        "support": SupportFile}
-
         meta_filters = meta_filters or []
-
-        source_files = {}
 
         for test_type, type_paths in iteritems(obj["items"]):
             if test_type not in item_classes:
@@ -202,18 +271,7 @@ class Manifest(object):
             if types and test_type not in types:
                 continue
 
-            test_cls = item_classes[test_type]
-            tests = defaultdict(set)
-            for path, manifest_tests in iteritems(type_paths):
-                path = to_os_path(path)
-                for test in iterfilter(meta_filters, manifest_tests):
-                    manifest_item = test_cls.from_json(self,
-                                                       tests_root,
-                                                       path,
-                                                       test,
-                                                       source_files=source_files)
-                    tests[path].add(manifest_item)
-            self._data[test_type] = tests
+            self._data[test_type].set_json(tests_root, type_paths)
 
         return self
 
@@ -233,6 +291,8 @@ def load(tests_root, manifest, types=None, meta_filters=None):
         except IOError:
             return None
         except ValueError:
+            import pdb
+            pdb.post_mortem()
             logger.warning("%r may be corrupted", manifest)
             return None
         return rv

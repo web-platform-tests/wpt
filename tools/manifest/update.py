@@ -13,15 +13,22 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
 logger = get_logger()
 
+
 def update(tests_root, manifest, working_copy=False):
     logger.info("Updating manifest")
     tree = None
     if not working_copy:
+        mtime_filter = None
         tree = vcs.Git.for_path(tests_root, manifest.url_base)
     if tree is None:
-        tree = vcs.FileSystem(tests_root, manifest.url_base)
+        mtime_filter = vcs.MtimeFilter(tests_root)
+        tree = vcs.FileSystem(tests_root, manifest.url_base, mtime_filter)
 
-    return manifest.update(tree)
+    try:
+        return manifest.update(tree)
+    finally:
+        if mtime_filter:
+            mtime_filter.dump()
 
 
 def update_from_cli(**kwargs):
@@ -87,11 +94,19 @@ def find_top_repo():
     return rv
 
 
-def run(**kwargs):
-    if kwargs["path"] is None:
-        kwargs["path"] = os.path.join(kwargs["tests_root"], "MANIFEST.json")
-
-    update_from_cli(**kwargs)
+def run(*args, **kwargs):
+    import cProfile
+    profiler = cProfile.Profile()
+    profiler.enable()
+    try:
+        if kwargs["path"] is None:
+            kwargs["path"] = os.path.join(kwargs["tests_root"], "MANIFEST.json")
+            update_from_cli(**kwargs)
+    except Exception:
+        import pdb
+        pdb.post_mortem()
+    profiler.disable()
+    profiler.dump_stats("update.profile")
 
 
 def main():

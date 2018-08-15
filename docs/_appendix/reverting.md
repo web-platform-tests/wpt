@@ -20,7 +20,7 @@ break things for users of web-platform-tests. Such breakage can include:
 
 When such breakage happens, if the maintainers of the affected systems request
 it, pull requests to revert the original change should normally be approved and
-merged as soon as possible. (When the origin change itself was fixing a serious
+merged as soon as possible. (When the original change itself was fixing a serious
 problem, it's a judgement call, but prefer the fastest path to a stable state
 acceptable to everyone.)
 

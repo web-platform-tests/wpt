@@ -14,6 +14,6 @@ idl_test(
 
     const stream = await getNoiseStream({ audio: true, video: true });
     self.audioTrack = stream.getAudioTracks()[0];
-    self.videoTrack = stream.getAudioTracks()[0];
+    self.videoTrack = stream.getVideoTracks()[0];
   }
 );

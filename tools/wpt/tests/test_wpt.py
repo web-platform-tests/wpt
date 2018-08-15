@@ -285,8 +285,7 @@ def test_files_changed_null(capsys):
         "html/browsers/offline/appcache/workers/resources/appcache-worker-import.py",
         "html/browsers/offline/appcache/workers/resources/appcache-worker.manifest",
         "html/browsers/offline/appcache/workers/resources/appcache-worker.py",
-        ""
-    ])
+        ""])
     assert err == ""
 
 

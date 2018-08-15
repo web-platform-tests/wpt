@@ -49,5 +49,9 @@ function testIdentity(desc, frameToObject, frameToConstructor) {
 
 testIdentity("Document", frame => frame.contentDocument, frame => frame.contentWindow.Document);
 testIdentity("WindowProxy", frame => frame.contentWindow, frame => frame.contentWindow.Window);
+testIdentity("BarProp", frame => frame.contentWindow.locationbar, frame => frame.contentWindow.BarProp);
+testIdentity("History", frame => frame.contentWindow.history, frame => frame.contentWindow.History);
+testIdentity("localStorage", frame => frame.contentWindow.localStorage, frame => frame.contentWindow.Storage);
 testIdentity("Location", frame => frame.contentWindow.location, frame => frame.contentWindow.Location);
+testIdentity("sessionStorage", frame => frame.contentWindow.sessionStorage, frame => frame.contentWindow.Storage);
 testIdentity("Navigator", frame => frame.contentWindow.navigator, frame => frame.contentWindow.Navigator);

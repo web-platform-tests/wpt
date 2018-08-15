@@ -26,6 +26,6 @@ acceptable to everyone.)
 
 Once a revert has happened, the maintainers of the affected systems are
 expected to work with the original patch author to resolve the problem so that
-the change can be relanded. A reasonable timeframe to do s is within one week.
+the change can be relanded. A reasonable timeframe to do so is within one week.
 
 [CSS build system]: https://github.com/web-platform-tests/wpt/tree/master/css/tools

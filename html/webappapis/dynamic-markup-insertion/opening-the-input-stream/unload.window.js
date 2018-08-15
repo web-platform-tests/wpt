@@ -6,7 +6,7 @@ async_test(t => {
   frame.src = "/common/blank.html";
   frame.onload = t.step_func_done(() => {
     frame.contentWindow.onpagehide = t.unreached_func("onpagehide got called");
-    frame.contentWindow.onvisibilitychange = t.unreached_func("onvisibilitychange got called");
+    frame.contentDocument.onvisibilitychange = t.unreached_func("onvisibilitychange got called");
     frame.contentWindow.onunload = t.unreached_func("onunload got called");
     frame.contentDocument.open();
     frame.contentDocument.close();

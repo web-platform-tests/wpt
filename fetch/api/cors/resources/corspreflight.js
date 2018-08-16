@@ -1,9 +1,9 @@
-function headerNames(headers)
-{
-    let names = [];
-    for (let header of headers)
-        names.push(header[0].toLowerCase());
-    return names
+function headerNames(headers) {
+  let names = [];
+  for (let header of headers) {
+    names.push(header[0].toLowerCase());
+  }
+  return names;
 }
 
 /*

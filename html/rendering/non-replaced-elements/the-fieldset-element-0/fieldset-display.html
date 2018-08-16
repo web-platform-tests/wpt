@@ -22,7 +22,7 @@
       testElm.style.display = val;
       const computed = getComputedStyle(testElm);
       // Note that computed value is different from the used value.
-      // e.g., if ruby is not supported, the following assertion will
+      // E.g., if ruby is not supported, the following assertion will
       // fail as the computed value of display will be block.
       // If ruby is supported, computed.display will return "ruby",
       // but the used value is supposed to be "inline".

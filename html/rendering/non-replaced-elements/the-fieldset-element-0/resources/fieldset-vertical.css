@@ -1,0 +1,18 @@
+body > div { display: inline-block }
+fieldset, .f { padding: 0; height:10em; width:2em; border:1em groove; margin: 0em; line-height:1 }
+legend, .l { padding: 0; width: 1em }
+.l {
+  background: white; /* overlap the border to emulate the border not being painted */
+  display: table; /* shrink-wrap */
+}
+
+[style="writing-mode: vertical-lr"] .l {
+  margin-left: -1em;
+}
+[style="writing-mode: vertical-rl"] .l {
+  margin-right: -1em;
+}
+.top { margin-bottom: auto }
+.center { margin-top: auto; margin-bottom: auto }
+.bottom { margin-top: auto }
+.rtl { direction: rtl }

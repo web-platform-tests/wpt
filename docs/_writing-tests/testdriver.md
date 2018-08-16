@@ -34,6 +34,16 @@ This method returns a promise which is resolved with the result of
 invoking the `action` function. If no such function is provided, the
 promise is resolved with the value `undefined`.
 
+Example:
+
+```js
+var mediaElement = document.createElement('video');
+
+test_driver.bless('initiate media playback', function () {
+  mediaElement.play();
+});
+```
+
 ### `test_driver.click(element)`
 #### `element: a DOM Element object`
 

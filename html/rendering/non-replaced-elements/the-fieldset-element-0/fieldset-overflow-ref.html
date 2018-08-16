@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<title>fieldset overflow</title>
+<style>
+.f, .l {
+  border: 1em solid;
+  margin: 0;
+  padding: 0;
+  background: lime;
+}
+
+.f {
+  overflow: auto;
+  height: 1em;
+  margin-top: 2em;
+}
+.l {
+  height: 1em;
+  width: 5em;
+  line-height: 1;
+  display: table;
+  margin-top: -4em;
+  margin-left: 1em;
+}
+</style>
+<p>There should be no red.</p>
+<div class=f>
+</div>
+<div class=l></div>
+<script>
+document.getElementById('last').scrollIntoView()
+</script>

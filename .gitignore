@@ -11,14 +11,8 @@ node_modules/
 
 # WPT repo stuff
 /MANIFEST.json
-/cache.json
-
-testharness_runner.html
-!/testharness_runner.html
-!/tools/wptrunner/wptrunner/testharness_runner.html
-
-_certs
-config.json
+/.wptcache/
+/config.json
 
 # Various OS/editor specific files
 *#
@@ -28,5 +22,5 @@ config.json
 scratch
 .idea/
 .vscode/
-.DS_Store
+.DS_Store/
 *.rej

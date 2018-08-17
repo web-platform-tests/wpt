@@ -76,7 +76,7 @@
             pending_resolve = resolve;
             pending_reject = reject;
         });
-        window.opener.postMessage({"type": "action", "action": "pointer_action_sequence", "actions": actions}, "*");
+        window.opener.postMessage({"type": "action", "action": "action_sequence", "actions": actions}, "*");
         return pending_promise;
     };
 })();

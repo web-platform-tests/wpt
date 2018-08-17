@@ -50,15 +50,9 @@ For example, to send the tab key you would send "\uE004".
 
 ### `test_driver.pointer_action_sequence(actions)`
  - `actions` <[Array]<[Object]>> an array of Action objects`
-  - `action` <[Object]> A single action
-   - `id` The ID of the pointer to use. If one with this id does not exist a new one will be used
-   - `pointerType` The type of pointer to use, an enum of `mouse`, `touch` and `pen`.
-   - `subtype` The type of action to perform, an enum of `pointerUp`, `pointerMove`, `pointerDown` and `pause`
-   - `coordinates` An Object with exactly two integer attrbutes `x` and `y`.
-   - `duration` The duration in ms before the next action in the sequence should start
+  - `action` <[Object]> A single action. See [spec](https://www.w3.org/TR/webdriver/#actions) for format
 
-
-This function causes a sequence of pointer actions to be sent to the browser. It returns a `Promise` that
+This function causes a sequence of actions to be sent to the browser. It is based of the [WebDriver API](https://www.w3.org/TR/webdriver/#actions) The action can be a keyboard event, a pointer event or a pause. It returns a `Promise` that
 resolves after the actions have been sent or rejects if an error was thrown.
 
 ### `test_driver.send_keys(element, keys)`

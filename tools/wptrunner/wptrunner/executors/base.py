@@ -509,7 +509,7 @@ class CallbackHandler(object):
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
             "send_keys": SendKeysAction(self.logger, self.protocol),
-            "pointer_action_sequence": PointerActionSequenceAction(self.logger, self.protocol)
+            "action_sequence": ActionSequenceAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -586,7 +586,7 @@ class SendKeysAction(object):
         self.protocol.send_keys.send_keys(elements[0], keys)
 
 
-class PointerActionSequenceAction(object):
+class ActionSequenceAction(object):
     def __init__(self, logger, protocol):
         self.logger = logger
         self.protocol = protocol
@@ -597,5 +597,5 @@ class PointerActionSequenceAction(object):
         actions = payload["actions"]
         self.logger.debug(actions)
         self.logger.debug(payload["action"])
-        self.logger.debug("Sending pointer action sequence to window")
-        self.protocol.pointer_action_sequence.pointer_action_sequence(actions)
+        self.logger.debug("Sending action sequence to window")
+        self.protocol.action_sequence.action_sequence(actions)

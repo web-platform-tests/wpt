@@ -173,9 +173,9 @@
         },
 
         /**
-         * Send a sequence of pointer actions
+         * Send a sequence of actions
          *
-         * This function sends a sequence of pointer actions to the top level window
+         * This function sends a sequence of actions to the top level window
          * to perform. It is modeled after the behaviour of {@link
          * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
          *
@@ -184,8 +184,8 @@
          * @returns {Promise} fufiled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */
-        pointer_action_sequence(actions) {
-            return window.test_driver_internal.pointer_action_sequence(actions);
+        action_sequence(actions) {
+            return window.test_driver_internal.action_sequence(actions);
         }
     };
 
@@ -228,7 +228,7 @@
          * @returns {Promise} fufilled after actions are sent, rejected if any actions
          *                    fail
          */
-        pointer_action_sequence: function(actions) {
+        action_sequence: function(actions) {
             return Promise.reject(new Error("unimplemented"));
         }
     };

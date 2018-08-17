@@ -827,7 +827,7 @@ def run(**kwargs):
             servers = start(config, build_routes(config["aliases"]), **kwargs)
 
             try:
-                while any(item.is_alive() for item in iter_procs(servers)):
+                while all(item.is_alive() for item in iter_procs(servers)):
                     for item in iter_procs(servers):
                         item.join(1)
             except KeyboardInterrupt:

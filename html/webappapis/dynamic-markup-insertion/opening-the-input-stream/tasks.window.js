@@ -10,6 +10,7 @@
 // second actually calls document.open() to test if the method call removes
 // that specific task from the queue.
 
+// This is necessary to allow the promise rejection test below.
 setup({
   allow_uncaught_exception: true
 });
@@ -17,15 +18,17 @@ setup({
 function taskTest(description, testBody) {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
-    // The empty HTML seems to be necessary to cajole Chrome into firing a load
-    // event, which is necessary to make sure the frame's document doesn't have
-    // a parser associated with it.
+    // The empty HTML seems to be necessary to cajole Chrome and Safari into
+    // firing a load event asynchronously, which is necessary to make sure the
+    // frame's document doesn't have a parser associated with it.
+    // See: https://bugs.chromium.org/p/chromium/issues/detail?id=875354
     frame.src = "/common/blank.html";
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional
       // non-spec-compliant readiness state "uninitialized", so test for the
       // two known valid readiness states instead.
+      // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1191683
       assert_in_array(frame.contentDocument.readyState, ["interactive", "complete"]);
       testBody(t, frame, doc => {});
     });
@@ -49,14 +52,8 @@ function taskTest(description, testBody) {
 }
 
 taskTest("timeout", (t, frame, open) => {
-  let happened = false;
-  // Work around the lint script, since we can't use step_timeout here.
-  frame.contentWindow['setTimeout'](() => happened = true, 100);
+  frame.contentWindow.setTimeout(t.step_func_done(), 100);
   open(frame.contentDocument);
-  t.step_timeout(() => {
-    assert_true(happened);
-    t.done();
-  }, 200);
 });
 
 taskTest("window message", (t, frame, open) => {

@@ -23,7 +23,7 @@
   <script>
   test(function() {
     //these strings should not match, since the tested file is in windows-1250, and fallback is defined as utf-8
-    assert_not_equals(window.getSomeString().length, 5);
+    assert_not_equals(window.getSomeString().length, 10);
   });
   </script>
 
@@ -33,7 +33,7 @@
   <script>
   //these strings should match, since fallback utf-8 is the correct setting.
   test(function() {
-    assert_equals(window.getSomeString().length, 5);
+    assert_equals(window.getSomeString().length, 10);
   });
   </script>
 

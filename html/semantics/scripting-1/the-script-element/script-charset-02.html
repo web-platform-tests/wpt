@@ -9,10 +9,13 @@
   -->
   <title>Script @type: unknown parameters</title>
   <link rel="author" title="askalski" href="github.com/askalski">
-  <link rel="help" href="https://html.spec.whatwg.org/multipage/#scriptingLanguages">
+  <link rel="author" title="Aaqa Ishtyaq" href="github.com/aaqaishtyaq">
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-classic-script">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <div id="log"></div>
+  <!-- to avoid conflating tests for script encoding declaring the encoding at the top of file. i.e, windows-1250-->
+  <meta charset="windows-1250">
 
   <!-- test of step4, which is taking utf-8 as fallback -->
   <!-- in this case, neither response's Content Type nor charset attribute bring correct charset information.
@@ -22,8 +25,14 @@
   </script>
   <script>
   test(function() {
+    //pre-condition for this test
+    assert_equals(document.characterSet, "windows-1250")
+  });
+  </script>
+  <script>
+  test(function() {
     //these strings should not match, since the tested file is in windows-1250, and fallback is defined as utf-8
-    assert_not_equals(window.getSomeString().length, 10);
+    assert_not_equals(window.getSomeString(), "\u0139\u203a\xc4\u2021\xc4\u2026\u0139\u013d\u0139\u015f");
   });
   </script>
 
@@ -33,7 +42,7 @@
   <script>
   //these strings should match, since fallback utf-8 is the correct setting.
   test(function() {
-    assert_equals(window.getSomeString().length, 10);
+    assert_equals(window.getSomeString(), "\u0139\u203a\xc4\u2021\xc4\u2026\u0139\u013d\u0139\u015f");
   });
   </script>
 

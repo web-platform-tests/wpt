@@ -21,7 +21,7 @@ function taskTest(description, testBody) {
     // The empty HTML seems to be necessary to cajole Chrome and Safari into
     // firing a load event asynchronously, which is necessary to make sure the
     // frame's document doesn't have a parser associated with it.
-    // See: https://bugs.chromium.org/p/chromium/issues/detail?id=875354
+    // See: https://crbug.com/875354
     frame.src = "/common/blank.html";
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
@@ -39,12 +39,14 @@ function taskTest(description, testBody) {
     // The empty HTML seems to be necessary to cajole Chrome into firing a load
     // event, which is necessary to make sure the frame's document doesn't have
     // a parser associated with it.
+    // See: https://crbug.com/875354
     frame.src = "/common/blank.html";
     t.add_cleanup(() => frame.remove());
     frame.onload = t.step_func(() => {
       // Make sure there is no parser. Firefox seems to have an additional
       // non-spec-compliant readiness state "uninitialized", so test for the
       // two known valid readiness states instead.
+      // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1191683
       assert_in_array(frame.contentDocument.readyState, ["interactive", "complete"]);
       testBody(t, frame, doc => doc.open());
     });

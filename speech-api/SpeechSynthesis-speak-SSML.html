@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+// The shortest possible valid SSML document to speak "one":
+const ssmlText = `<speak version="1.1"
+       xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+  one
+</speak>`;
+
+// A precondition test to ensure the SSML can be parsed.
+// The resulting document isn't used in the actual test.
+test(() => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(ssmlText, 'text/xml');
+  assert_equals(doc.documentElement.textContent.trim(), 'one');
+}, 'precondition: valid XML document');
+
+async_test(t => {
+  // The assumption of this test is that if SSML is *not* supported at all,
+  // then "less than speak version equals one point one ..." will be spoken,
+  // which will take at least twice as long as just "one".
+  const textUtterance = new SpeechSynthesisUtterance('one');
+  textUtterance.onerror = t.unreached_func('textUtterance.onerror');
+  textUtterance.lang = 'en-US';
+
+  const ssmlUtterance = new SpeechSynthesisUtterance(ssmlText);
+  ssmlUtterance.onerror = t.unreached_func('ssmlUtterance.onerror');
+
+  test_driver.bless('speechSynthesis.speak', t.step_func(() => {
+    // First measure the duration of a plan "one".
+    const textUtteranceStart = performance.now();
+    speechSynthesis.speak(textUtterance);
+    textUtterance.onend = t.step_func(() => {
+      const textUtteranceDuration = performance.now() - textUtteranceStart;
+
+      // Now speak the SSML "one" with a timeout.
+      speechSynthesis.speak(ssmlUtterance);
+      ssmlUtterance.onend = t.step_func_done();
+      t.step_timeout(() => {
+        assert_unreached('SSML utterance took more than twice as long as plain utterance');
+      }, 2 * textUtteranceDuration);
+    });
+  }));
+}, 'SpeechSynthesisUtterance with SSML text');
+</script>

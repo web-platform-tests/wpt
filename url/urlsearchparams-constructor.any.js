@@ -37,11 +37,13 @@ test(function() {
     assert_true(params != null, 'constructor returned non-null value.');
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_false(params.has('b'), 'Search params object has not got name "b"');
-    var params = new URLSearchParams('a=b&c');
+
+    params = new URLSearchParams('a=b&c');
     assert_true(params != null, 'constructor returned non-null value.');
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_true(params.has('c'), 'Search params object has name "c"');
-    var params = new URLSearchParams('&a&&& &&&&&a+b=& c&m%c3%b8%c3%b8');
+
+    params = new URLSearchParams('&a&&& &&&&&a+b=& c&m%c3%b8%c3%b8');
     assert_true(params != null, 'constructor returned non-null value.');
     assert_true(params.has('a'), 'Search params object has name "a"');
     assert_true(params.has('a b'), 'Search params object has name "a b"');

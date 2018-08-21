@@ -17,25 +17,33 @@
 
 if (!opener) {
   async_test(t => {
+    const testURL = document.URL;
+    const blankURL = new URL("/common/blank.html", document.URL).href;
+
     // 1. Open an auxiliary window.
     const win = window.open("/common/blank.html");
     t.add_cleanup(() => { win.close(); });
 
     win.addEventListener("load", t.step_func(() => {
+      // The timeout seems to be necessary for Firefox, which when `load` is
+      // called may still have an active parser.
       t.step_timeout(() => {
         const doc = win.document;
-        assert_equals(win.document.body.childNodes.length, 0, "precondition");
+        assert_equals(doc.body.childNodes.length, 0, "precondition");
+        assert_equals(doc.URL, blankURL, "precondition");
 
         window.onChildLoad = t.step_func(message => {
           // 3. The dynamically overwritten content will trigger this function,
           // which puts in place the actual test.
 
           assert_equals(message, "Written", "script on written page is executed");
+          assert_equals(window.document.URL, testURL, "postcondition: after document.write()");
           window.onChildLoad = t.step_func_done(message => {
             // 6. This function should be called from the if (opener) branch of
             // this file. It would throw an assertion error if the overwritten
             // content was executed instead.
             assert_equals(message, "Done!", "actual test");
+            assert_equals(window.document.URL, testURL, "postcondition: after reload");
           });
 
           // 4. Reload the pop-up window. Because of the doc.open() call, this
@@ -44,7 +52,8 @@ if (!opener) {
         });
 
         // 2. When it is loaded, dynamically overwrite its content.
-        doc.open();
+        assert_equals(doc.open(), doc);
+        assert_equals(doc.URL, testURL, "postcondition: after document.open()");
         doc.write("<p>Content</p><script>opener.onChildLoad('Written');</script>");
         doc.close();
       }, 100);

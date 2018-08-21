@@ -1,15 +1,19 @@
 // This test tests for the nonexistence of a reload override buffer, which is
 // used in a previous version of the HTML Standard to make reloads of a
 // document.open()'d document load the written-to document rather than doing an
-// actual reload of the URL.
+// actual reload of the document's URL.
 //
 // This test has a somewhat interesting structure compared to the other tests
 // in this directory. It eschews the <iframe> structure used by other tests,
-// since when the child frame is reloaded it should adopt the URL of the test
+// since when the child frame is reloaded it would adopt the URL of the test
 // page (the responsible document of the entry settings object), and the spec
 // forbids navigation in nested browsing contexts to the same URL as their
 // parent. To work around that, we use window.open() which does not suffer from
 // that restriction.
+//
+// In any case, this test as the caller of `document.open()` would be used both
+// as the test file and as part of the test file. The `if (!opener)` condition
+// controls what role this file plays.
 
 if (!opener) {
   async_test(t => {

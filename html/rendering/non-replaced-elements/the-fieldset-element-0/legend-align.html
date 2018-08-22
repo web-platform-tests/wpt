@@ -37,7 +37,7 @@ for (const val of ['left', 'center', 'right']) {
   test_align(`div[align=${val}] legend`, `legend[align=${val}]`);
 }
 
-test_align(`div[style="text-align: center"] legend`, `legend[align=center]`);
+test_align(`div[style="text-align: center"] legend`, `legend[align=left]`);
 test_align(`div[style="text-align: center"][align=center] legend`, `legend[align=center]`);
 test_align(`legend[style="margin: 0 auto"]`, `legend[align=center]`);
 test_align(`legend[style="margin: 0 0 0 auto"]`, `legend[align=right]`);

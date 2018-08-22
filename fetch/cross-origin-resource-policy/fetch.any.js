@@ -1,3 +1,4 @@
+// META: global=window,worker
 // META: script=/common/get-host-info.sub.js
 
 const host = get_host_info();

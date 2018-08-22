@@ -3,7 +3,6 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
- body { margin: 0; }
  fieldset { margin: 0; padding: 20px; border: 10px solid; width: 300px; }
  legend { height: 10px; }
  #legend1 { float: left; }
@@ -23,8 +22,8 @@
  const fieldset = document.getElementById('fieldset');
  const legends = document.getElementsByTagName('legend');
  const [legend1, legend2, legend3, legend4, legend5] = legends;
- const expectedTop = 0;
- const expectedLeft = 10 + 20;
+ const expectedTop = 8;
+ const expectedLeft = 8 + 10 + 20;
 
  function assert_rendered_legend(legend) {
    assert_equals(legend.offsetTop, expectedTop, `${legend.id}.offsetTop`);

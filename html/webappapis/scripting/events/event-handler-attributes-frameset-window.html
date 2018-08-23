@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>event handlers</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="resources/event-handler-body.js"></script>
+<script>
+setup({ explicit_done: true });
+handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
+  const createdBody = document.createElement("frameset");
+  for (const [description, body, altBody] of [
+    ["document.body", document.body, createdBody],
+    ['document.createElement("frameset")', createdBody, document.body]
+  ]) {
+    const f = () => 0;
+
+    shadowedHandlers.forEach(handler => {
+      test(() => {
+        body['on' + handler] = f;
+        assert_equals(window['on' + handler], f, "window should reflect");
+        assert_equals(altBody['on' + handler], f, "alternative body should reflect");
+      }, `shadowed ${handler} (${description})`);
+    });
+    notShadowedHandlers.forEach(handler => {
+      test(() => {
+        body['on' + handler] = f;
+        assert_equals(window['on' + handler], null, "window should reflect");
+        assert_equals(altBody['on' + handler], null, "alternative body should reflect");
+      }, `not shadowed ${handler} (${description})`);
+    });
+
+    [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
+      body['on' + handler] = null;
+    });
+
+    shadowedHandlers.forEach(handler => {
+      test(() => {
+        assert_equals(body['on' + handler], null, "body should reflect changes to itself");
+        assert_equals(window['on' + handler], null, "window should reflect");
+        assert_equals(altBody['on' + handler], null, "alternative body should reflect");
+      }, `shadowed ${handler} removal (${description})`);
+    });
+  }
+
+  // The testharness framework appends test results to document.body,
+  // show test results in frame after test done.
+  add_completion_callback(() => {
+    const log_elem = document.getElementById("log");
+    const frame_elem = document.querySelector("frame");
+    frame_elem.contentDocument.body.innerHTML = log_elem.innerHTML;
+  });
+
+  done();
+});
+</script>
+<frameset>
+  <frame src="/common/blank.html" />
+</frameset>

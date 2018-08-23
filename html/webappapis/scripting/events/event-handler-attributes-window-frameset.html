@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>event handlers</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="resources/event-handler-body.js"></script>
+<script>
+setup({ explicit_done: true });
+handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
+  const frameset = document.createElement("frameset");
+  const f = () => 0;
+
+  shadowedHandlers.forEach(handler => {
+    test(() => {
+      window['on' + handler] = f;
+      assert_equals(document.body['on' + handler], f, "frameset as document.body should reflect");
+      assert_equals(frameset['on' + handler], f, "document.createElement('frameset') should reflect");
+    }, `shadowed ${handler}`);
+  });
+
+  notShadowedHandlers.forEach(handler => {
+    test(() => {
+      window['on' + handler] = f;
+      assert_equals(document.body['on' + handler], null, "frameset as document.body should reflect");
+      assert_equals(frameset['on' + handler], null, "document.createElement('frameset') should reflect");
+    }, `not shadowed ${handler}`);
+  });
+
+  [...shadowedHandlers, ...notShadowedHandlers].forEach(function(handler) {
+    window['on' + handler] = null;
+  });
+
+  shadowedHandlers.forEach(handler => {
+    test(() => {
+      assert_equals(window['on' + handler], null, "window should reflect changes to itself");
+      assert_equals(document.body['on' + handler], null, "frameset as document.body should reflect");
+      assert_equals(frameset['on' + handler], null, "document.createElement('frameset') should reflect");
+    }, `shadowed ${handler} removal`);
+  });
+
+  // The testharness framework appends test results to document.body,
+  // show test results in frame after test done.
+  add_completion_callback(() => {
+    const log_elem = document.getElementById("log");
+    const frame_elem = document.querySelector("frame");
+    frame_elem.contentDocument.body.innerHTML = log_elem.innerHTML;
+  });
+
+  done();
+});
+</script>
+<frameset>
+  <frame src="/common/blank.html" />
+</frameset>

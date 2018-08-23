@@ -22,4 +22,4 @@ async_test(t => {
     iframe.contentDocument.open("", "replace");
     assert_equals(iframe.contentWindow.history.state, "state");
   });
-}, "history.state is kept by document.open() (with legacy replace parameter set)");
+}, "history.state is kept by document.open() (with historical replace parameter set)");

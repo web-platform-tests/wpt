@@ -94,4 +94,18 @@ of the response. For details see the
 [wptserve documentation](https://wptserve.readthedocs.org).
 
 
+### Writing tests for HTTP/2.0
+
+The server now has a prototype HTTP/2.0 server which gives you access to
+some of the HTTP/2.0 specific functionality. Currently, the server is off
+by default and needs to be run using `./wpt serve --h2` in order to enable it.
+The HTTP 2 server supports handlers that work per-frame; these are documented in
+[Writing H2 Tests][h2tests], or to the [H2ResponseWriter API][h2responsewriter]
+
+> <b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
+and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
+[TLS ALPN](https://tools.ietf.org/html/rfc7301) extension, which is only supported in [OpenSSL 1.0.2](https://www.openssl.org/news/openssl-1.0.2-notes.html) and up.
+
 [file names]: {{ site.baseurl }}{% link _writing-tests/file-names.md %}
+[h2tests]: {{ site.baseurl }}{% link _writing-tests/h2tests.md %}
+[h2responsewriter]: {{ site.baseurl }}{% link _writing-tests/h2responsewriter.md %}

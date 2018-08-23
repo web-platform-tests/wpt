@@ -45,7 +45,7 @@ tasks:
               # Contributors interested in configurating TaskCluster to run
               # against their fork of WPT should change the `workerType` to
               # "github-worker".
-              workerType: github-worker
+              workerType: wpt-docker-worker
               metadata:
                 name: wpt-${browser.name}-${browser.channel}-${chunk[0]}-${chunk[1]}
                 description: >-
@@ -79,80 +79,32 @@ tasks:
                       ${browser.name};
     - $if: tasks_for == "github-pull-request"
       then:
-        $map: [{name: firefox, channel: nightly}, {name: chrome, channel: dev}]
-        each(browser):
-          $map:
-            - name: wpt-${browser.name}-${browser.channel}-stability
-              description: >-
-                Verify that all tests affected by a pull request are stable
-                when executed in ${browser.name}. As of 2018-08-23, this task
-                is being vetted for correctness, so its outcome will not
-                influence the status of the pull request.
-              command:
-                status=PASS;
-                echo $affected |
-                  base64 -d |
-                  xargs -0 ./tools/ci/ci_taskcluster.sh --verify ${browser.name} || status=FAIL;
-                echo $status > ../artifacts/stability-status.txt
-              creates_artifacts: true
-            - name: wpt-${browser.name}-${browser.channel}-results
-              description: >-
-                Collect results for all tests affected by a pull request in
-                ${browser.name}.
-              command:
-                echo $affected |
-                  base64 -d |
-                  xargs -0 ./tools/ci/ci_taskcluster.sh ${browser.name}
-              creates_artifacts: true
-          each(operation):
-            taskId: {$eval: 'as_slugid(operation.name)'}
-            taskGroupId: {$eval: 'as_slugid("task group")'}
-            created: {$fromNow: ''}
-            deadline: {$fromNow: '24 hours'}
-            provisionerId: aws-provisioner-v1
-            # Contributors interested in configurating TaskCluster to run
-            # against their fork of WPT should change the `workerType` to
-            # "github-worker".
-            workerType: github-worker
-            metadata:
-              name: ${operation.name}
-              description: ${operation.description}
-              owner: ${event.pull_request.user.login}@users.noreply.github.com
-              source: ${event.repository.url}
-            payload:
-              image: gsnedders/web-platform-tests:0.13
-              maxRunTime: 7200
-              artifacts:
-                $if: operation.creates_artifacts
-                then:
-                  public/results:
-                    path: /home/test/artifacts
-                    type: directory
-              # Bash removes null bytes from string values when set as
-              # environment variables. This invalidates the output of `wpt
-              # affected-tests` because it uses the null byte as a separator
-              # between test names. The list of effected tests is
-              # Base64-encoded in order to preserve the null bytes.
-              command:
-                - /bin/bash
-                - --login
-                - -c
-                - set -ex;
-                  ~/start.sh
-                    ${event.repository.clone_url}
-                    ${event.pull_request.base.ref}
-                    ${event.pull_request.base.sha}
-                    ${browser.name}-${browser.channel};
-                  cd ~/web-platform-tests;
-                  ./wpt manifest-download || true;
-                  git fetch
-                    ${event.repository.clone_url}
-                    refs/pull/${event.number}/head;
-                  git checkout FETCH_HEAD;
-                  affected=$(./wpt tests-affected
-                    --null
-                    ${event.pull_request.base.sha}
-                    | base64);
-                  echo Affected tests:;
-                  echo $affected | base64 -d | sed 's/\x0/\\n/g';
-                  ${operation.command}
+        taskId: {$eval: 'as_slugid("something")'}
+        taskGroupId: {$eval: 'as_slugid("task group")'}
+        created: {$fromNow: ''}
+        deadline: {$fromNow: '24 hours'}
+        provisionerId: aws-provisioner-v1
+        # Contributors interested in configurating TaskCluster to run
+        # against their fork of WPT should change the `workerType` to
+        # "github-worker".
+        workerType: wpt-docker-worker
+        metadata:
+          name: A name
+          description: a description
+          owner: ${event.pull_request.user.login}@users.noreply.github.com
+          source: ${event.repository.url}
+        payload:
+          image: gsnedders/web-platform-tests:0.13
+          maxRunTime: 7200
+          # Bash removes null bytes from string values when set as
+          # environment variables. This invalidates the output of `wpt
+          # affected-tests` because it uses the null byte as a separator
+          # between test names. The list of effected tests is
+          # Base64-encoded in order to preserve the null bytes.
+          command:
+            - /bin/bash
+            - --login
+            - -c
+            - set -ex;
+              exit 0;
+{operation.command}

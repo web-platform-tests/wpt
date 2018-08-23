@@ -5,13 +5,14 @@ _venv/
 .cache/
 .pytest_cache/
 .tox/
+.coverage*
 
 # Node
 node_modules/
 
 # WPT repo stuff
 /MANIFEST.json
-/.wptcache/
+.wptcache/
 /config.json
 
 # Various OS/editor specific files
@@ -22,5 +23,5 @@ node_modules/
 scratch
 .idea/
 .vscode/
-.DS_Store/
+.DS_Store
 *.rej

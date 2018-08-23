@@ -51,7 +51,7 @@ def test_metadata_inherit():
                                                     url_base="")
 
     test = tests[0][2].pop()
-    test_obj = wpttest.from_manifest(test, inherit_metadata, test_metadata.get_test(test.id))
+    test_obj = wpttest.from_manifest(tests, test, inherit_metadata, test_metadata.get_test(test.id))
     assert test_obj.max_assertion_count == 3
     assert test_obj.min_assertion_count == 1
     assert test_obj.prefs == {"b": "c", "c": "d"}
@@ -69,6 +69,6 @@ def test_conditional():
                                                     url_base="")
 
     test = tests[1][2].pop()
-    test_obj = wpttest.from_manifest(test, [], test_metadata.get_test(test.id))
+    test_obj = wpttest.from_manifest(tests, test, [], test_metadata.get_test(test.id))
     assert test_obj.prefs == {"a": "b", "c": "d"}
     assert test_obj.expected() == "FAIL"

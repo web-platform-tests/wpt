@@ -73,7 +73,7 @@ async_test(t => {
   });
 
   // We need to connect the frame after the load event is set up to mitigate
-  // against https://crbug.com/875354.
+  // against https://crbug.com/569511.
   document.body.appendChild(frame);
 }, "document.open() does not change document's URL (non-active document with an associated Window object; navigated away)");
 

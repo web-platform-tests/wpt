@@ -1,0 +1,23 @@
+function assert_beacon(stream) {
+  assert_throws(new TypeError(), () => navigator.sendBeacon("...", stream));
+}
+
+test(() => {
+  const stream = new ReadableStream();
+  stream.getReader();
+  assert_beacon(stream);
+}, "sendBeacon() with a stream on which getReader() is called");
+
+test(() => {
+  const stream = new ReadableStream();
+  stream.getReader().read();
+  assert_beacon(stream);
+}, "sendBeacon() with a stream on which read() is called");
+
+promise_test(async () => {
+  const stream = new ReadableStream({ pull: c => c.enqueue(new Uint8Array()) }),
+        reader = stream.getReader();
+  await reader.read();
+  reader.releaseLock();
+  assert_beacon(stream);
+}, "sendBeacon() with a stream on which read() and releaseLock() are called");

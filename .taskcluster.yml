@@ -85,12 +85,16 @@ tasks:
             - name: wpt-${browser.name}-${browser.channel}-stability
               description: >-
                 Verify that all tests affected by a pull request are stable
-                when executed in ${browser.name}.
+                when executed in ${browser.name}. As of 2018-08-23, this task
+                is being vetted for correctness, so its outcome will not
+                influence the status of the pull request.
               command:
+                status=PASS;
                 echo $affected |
                   base64 -d |
-                  xargs -0 ./tools/ci/ci_taskcluster.sh --verify ${browser.name}
-              creates_artifacts: false
+                  xargs -0 ./tools/ci/ci_taskcluster.sh --verify ${browser.name} || status=FAIL;
+                echo $status > ../artifacts/stability-status.txt
+              creates_artifacts: true
             - name: wpt-${browser.name}-${browser.channel}-results
               description: >-
                 Collect results for all tests affected by a pull request in

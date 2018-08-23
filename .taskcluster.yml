@@ -45,7 +45,7 @@ tasks:
               # Contributors interested in configurating TaskCluster to run
               # against their fork of WPT should change the `workerType` to
               # "github-worker".
-              workerType: wpt-docker-worker
+              workerType: github-worker
               metadata:
                 name: wpt-${browser.name}-${browser.channel}-${chunk[0]}-${chunk[1]}
                 description: >-
@@ -113,7 +113,7 @@ tasks:
             # Contributors interested in configurating TaskCluster to run
             # against their fork of WPT should change the `workerType` to
             # "github-worker".
-            workerType: wpt-docker-worker
+            workerType: github-worker
             metadata:
               name: ${operation.name}
               description: ${operation.description}

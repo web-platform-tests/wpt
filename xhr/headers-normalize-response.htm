@@ -40,8 +40,4 @@ error("\0");
 matchHeaderValue("   ");
 matchHeaderValue("\t");
 matchHeaderValue("");
-
-promise_test(t => {
-  return promise_rejects(t, new TypeError(), fetch("resources/parse-headers.py?my-custom-header="+encodeURIComponent("x\0x")));
-}, "Ensure fetch() rejects too")
 </script>

@@ -7,7 +7,7 @@ from distutils.spawn import find_executable
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
 
-from . import browser, utils, virtualenv
+from . import browser, install, utils, virtualenv
 from ..serve import serve
 
 logger = None
@@ -47,7 +47,10 @@ def create_parser():
     parser.add_argument("--yes", "-y", dest="prompt", action="store_false", default=True,
                         help="Don't prompt before installing components")
     parser.add_argument("--install-browser", action="store_true",
-                        help="Install the latest development version of the browser")
+                        help="Install the browser")
+    parser.add_argument("--browser-channel", action="store",
+                        choices=install.channel_by_name.keys(),
+                        default="nightly", help="Name of browser release channel")
     parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
@@ -150,9 +153,9 @@ class BrowserSetup(object):
             elif resp == "n":
                 return False
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         if self.prompt_install(self.name):
-            return self.browser.install(venv.path)
+            return self.browser.install(venv.path, channel)
 
     def install_requirements(self):
         self.venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements))
@@ -290,7 +293,7 @@ class Edge(BrowserSetup):
     name = "edge"
     browser_cls = browser.Edge
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -311,7 +314,7 @@ class InternetExplorer(BrowserSetup):
     name = "ie"
     browser_cls = browser.InternetExplorer
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -332,7 +335,7 @@ class Safari(BrowserSetup):
     name = "safari"
     browser_cls = browser.Safari
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -349,7 +352,7 @@ class Sauce(BrowserSetup):
     name = "sauce"
     browser_cls = browser.Sauce
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -362,7 +365,7 @@ class Servo(BrowserSetup):
     name = "servo"
     browser_cls = browser.Servo
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         if self.prompt_install(self.name):
             return self.browser.install(venv.path)
 
@@ -379,7 +382,7 @@ class WebKit(BrowserSetup):
     name = "webkit"
     browser_cls = browser.WebKit
 
-    def install(self, venv):
+    def install(self, venv, channel=None):
         raise NotImplementedError
 
     def setup_kwargs(self, kwargs):
@@ -401,7 +404,7 @@ product_setup = {
 }
 
 
-def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
+def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     from wptrunner import wptrunner, wptcommandline
 
     global logger
@@ -424,9 +427,14 @@ def setup_wptrunner(venv, prompt=True, install=False, **kwargs):
     setup_cls = product_setup[kwargs["product"]](venv, prompt, sub_product)
     setup_cls.install_requirements()
 
-    if install:
+    if install_browser:
         logger.info("Installing browser")
-        kwargs["binary"] = setup_cls.install(venv)
+        channel = install.get_channel(kwargs["product"],
+                                      kwargs["browser_channel"])
+        if channel != kwargs["browser_channel"]:
+            logger.info("Interpreting channel '%s' as '%s'" % (kwargs["browser_channel"],
+                                                               channel))
+        kwargs["binary"] = setup_cls.install(venv, channel=channel)
 
     setup_cls.setup(kwargs)
 
@@ -447,7 +455,7 @@ def run(venv, **kwargs):
 
     kwargs = setup_wptrunner(venv,
                              prompt=prompt,
-                             install=install_browser,
+                             install_browser=install_browser,
                              **kwargs)
 
     rv = run_single(venv, **kwargs) > 0

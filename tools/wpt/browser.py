@@ -84,8 +84,26 @@ class Firefox(Browser):
 
         return "%s%s" % (platform, bits)
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel="nightly"):
         """Install Firefox."""
+
+        branch = {
+            "nightly": "mozilla-central",
+            "beta": "mozilla-beta",
+            "stable": "mozilla-stable"
+        }
+        scraper = {
+            "nightly": "daily",
+            "beta": "release",
+            "stable": "release"
+        }
+        version = {
+            "stable": "latest",
+            "beta": "latest-beta",
+            "nightly": "latest"
+        }
+        if channel not in branch:
+            raise ValueError("Unrecognised release channel: %s" % channel)
 
         from mozdownload import FactoryScraper
         import mozinstall
@@ -105,7 +123,10 @@ class Firefox(Browser):
 
         dest = os.path.join(dest, "browsers")
 
-        filename = FactoryScraper("daily", branch="mozilla-central", destination=dest).download()
+        filename = FactoryScraper(scraper[channel],
+                                  branch=branch[channel],
+                                  version=version[channel],
+                                  destination=dest).download()
 
         try:
             mozinstall.install(filename, dest)
@@ -289,7 +310,7 @@ class Fennec(Browser):
     product = "fennec"
     requirements = "requirements_firefox.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self, venv_path=None):
@@ -324,7 +345,7 @@ class Chrome(Browser):
         logger.warn("Unable to find the browser binary.")
         return None
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def platform_string(self):
@@ -391,7 +412,7 @@ class ChromeAndroid(Browser):
     product = "chrome_android"
     requirements = "requirements_chrome_android.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self):
@@ -425,7 +446,7 @@ class Opera(Browser):
         logger.warn("Unable to find the browser binary.")
         return None
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def platform_string(self):
@@ -487,7 +508,7 @@ class Edge(Browser):
     product = "edge"
     requirements = "requirements_edge.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self):
@@ -509,7 +530,7 @@ class InternetExplorer(Browser):
     product = "ie"
     requirements = "requirements_ie.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self):
@@ -534,7 +555,7 @@ class Safari(Browser):
     product = "safari"
     requirements = "requirements_safari.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self):
@@ -574,8 +595,10 @@ class Servo(Browser):
 
         return (platform, extension, decompress)
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel="nightly"):
         """Install latest Browser Engine."""
+        if channel != "nightly":
+            raise ValueError("Only nightly versions of Servo are available")
         if dest is None:
             dest = os.pwd
 
@@ -609,7 +632,7 @@ class Sauce(Browser):
     product = "sauce"
     requirements = "requirements_sauce.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self):
@@ -631,7 +654,7 @@ class WebKit(Browser):
     product = "webkit"
     requirements = "requirements_webkit.txt"
 
-    def install(self, dest=None):
+    def install(self, dest=None, channel=None):
         raise NotImplementedError
 
     def find_binary(self, path=None):

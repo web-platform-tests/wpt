@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>fieldset and div with display: contents</title>
+<link rel=fieldset-foo-ref.html>
+<link rel=stylesheet href=resources/fieldset-default-style.css>
+<style>
+.fieldset-default-style { -webkit-appearance: fieldset; }
+.legend-default-style { -webkit-appearance: fieldset-legend; }
+.contents { display: contents; }
+</style>
+<p>There should be a normal fieldset below with the legend "Foo".</p>
+<div class=fieldset-default-style>
+ <div class=contents>
+  <div class=legend-default-style>Foo</div>
+ </div>
+</div>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>fieldset and shadow DOM</title>
+<link rel=fieldset-foo-ref.html>
+<link rel=stylesheet href=resources/fieldset-default-style.css>
+<style>
+ .legend-default-style { -webkit-appearance: fieldset-legend; }
+</style>
+<p>There should be a normal fieldset below with the legend "Foo".</p>
+<template id="my-fieldset">
+  <link rel=stylesheet href=resources/fieldset-default-style.css>
+  <style>
+   .fieldset-default-style { -webkit-appearance: fieldset; }
+  </style>
+  <div class=fieldset-default-style><slot name="my-text"></slot></div>
+</template>
+
+<my-fieldset>
+  <div class=legend-default-style slot="my-text">Foo</div>
+</my-fieldset>
+
+<script>
+customElements.define('my-fieldset',
+  class extends HTMLElement {
+    constructor() {
+      super();
+
+      const template = document.getElementById('my-fieldset');
+      const templateContent = template.content;
+
+      this.attachShadow({mode: 'open'}).appendChild(
+        templateContent.cloneNode(true)
+      );
+    }
+  }
+);
+</script>

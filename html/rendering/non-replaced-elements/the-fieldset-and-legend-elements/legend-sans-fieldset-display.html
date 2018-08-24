@@ -17,6 +17,7 @@
  .ruby { display: ruby; }
  .rt { display: ruby-text; }
  rt { font-size: inherit; }
+ .legend { -webkit-appearance: legend; }
 </style>
 <legend class=table>
   <legend class=caption>caption</legend>
@@ -27,6 +28,15 @@
     </legend>
   </legend>
 </legend>
+<div class="legend table">
+  <div class="legend caption">caption</div>
+  <div class="legend col"></div><div class="legend col"></div>
+  <div class="legend tbody">
+    <div class="legend tr">
+      <div class="legend td">td</div><div class="legend td">td</div>
+    </div>
+  </div>
+</div>
 <table>
   <caption>caption</caption>
   <col><col>
@@ -36,11 +46,12 @@
 </table>
 <ul>
   <legend class=li>li</legend>
+  <div class="legend li">li</div>
   <li>li</li>
 </ul>
-<p>foo <legend class=inline>inline</legend> <span>inline</span>
-<p>foo <legend class=inline-block>inline-block</legend> <span class=inline-block>inline-block</span>
-<p><legend class=ruby>ruby<legend class=rt>rt</legend></legend> <ruby>ruby<rt>rt</ruby>
+<p>foo <legend class=inline>inline</legend> <span class="legend inline">inline</span> <span>inline</span>
+<p>foo <legend class=inline-block>inline-block</legend> <span class="legend inline-block">inline-block</span> <span class=inline-block>inline-block</span>
+<p><legend class=ruby>ruby<legend class=rt>rt</legend></legend> <span class="legend ruby">ruby<span class="legend rt">rt</span></span> <ruby>ruby<rt>rt</ruby>
 <script>
   function test_display(testSelector, refSelector) {
     test(() => {
@@ -53,16 +64,17 @@
       assert_equals(testStyle.height, refStyle.height, testSelector + ' height');
     }, testSelector);
   }
-
-  test_display('.table', 'table');
-  test_display('.caption', 'caption');
-  test_display('.col', 'col');
-  test_display('.tbody', 'tbody');
-  test_display('.tr', 'tr');
-  test_display('.td', 'td');
-  test_display('.li', 'li');
-  test_display('.inline', 'span');
-  test_display('.inline-block', 'span.inline-block');
-  test_display('.ruby', 'ruby');
-  test_display('.rt', 'rt');
+  for (const prefix of ["", ".legend"]) {
+    test_display(`${prefix}.table`, 'table');
+    test_display(`${prefix}.caption`, 'caption');
+    test_display(`${prefix}.col`, 'col');
+    test_display(`${prefix}.tbody`, 'tbody');
+    test_display(`${prefix}.tr`, 'tr');
+    test_display(`${prefix}.td`, 'td');
+    test_display(`${prefix}.li`, 'li');
+    test_display(`${prefix}.inline`, 'span');
+    test_display(`${prefix}.inline-block`, 'span.inline-block');
+    test_display(`${prefix}.ruby`, 'ruby');
+    test_display(`${prefix}.rt`, 'rt');
+  }
 </script>

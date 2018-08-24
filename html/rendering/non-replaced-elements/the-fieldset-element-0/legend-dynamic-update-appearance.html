@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>legend and dynamic update</title>
+<link rel=fieldset-foo-ref.html>
+<link rel=stylesheet href=resources/fieldset-default-style.css>
+<style>
+ .fieldset-default-style { -webkit-appearance: fieldset; }
+ .legend-default-style { -webkit-appearance: fieldset-legend; }
+</style>
+<p>There should be a normal fieldset below with the legend "Foo".</p>
+<div class=fieldset-default-style>
+  <div class=legend-default-style>F</div>
+</div>
+<script>
+  const legend = document.querySelector('.legend-default-style');
+  // force layout
+  legend.offsetTop;
+  requestAnimationFrame(() => {
+    legend.textContent += "oo";
+    requestAnimationFrame(() => {
+      document.documentElement.removeAttribute('class');
+    });
+  });
+</script>

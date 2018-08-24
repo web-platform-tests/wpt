@@ -2,12 +2,12 @@
 <title>fieldset and overflow</title>
 <link rel=match href=fieldset-overflow-hidden-ref.html>
 <style>
-fieldset { margin:0; padding: 0; overflow: hidden; border: none; border-top: 1em solid transparent; }
-legend { padding: 0; }
+.fieldset { -webkit-appearance: fieldset; overflow: hidden; border-top: 1em solid transparent; }
+.legend { -webkit-appearance: fieldset-legend; }
 .over { position: absolute; top: 4em; height: 1em; left: 0; right: 0; background: white; }
 </style>
 <p>It should say PASS below.</p>
-<fieldset>
- <legend>PASS</legend>
-</fieldset>
+<div class=fieldset>
+ <div class=legend>PASS</div>
+</div>
 <div class=over></div>

@@ -3,24 +3,33 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
- #inline-ref { display: inline-block; }
+ #inline-ref, #appearance-inline-ref { display: inline-block; }
+ #appearance-test { -webkit-appearance: fieldset; }
 </style>
 <fieldset id="block-ref">x</fieldset>
 <fieldset id="inline-ref">x</fieldset>
 <fieldset id="test">x</fieldset>
+
+<div id="appearance-block-ref">x</div>
+<div id="appearance-inline-ref">x</div>
+<div id="appearance-test">x</div>
 <script>
   const blockWidth = getComputedStyle(document.querySelector('#block-ref')).width;
   const inlineWidth = getComputedStyle(document.querySelector('#inline-ref')).width;
   const testElm = document.querySelector('#test');
+  const appearanceTestElm = document.querySelector('#appearance-test');
+  const appearanceBlockWidth = getComputedStyle(document.querySelector('#appearance-block-ref')).width;
+  const appearanceInlineWidth = getComputedStyle(document.querySelector('#appearance-inline-ref')).width;
   const blocks = ['block', 'table', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-row', 'table-cell',
                   'table-column-group', 'table-column', 'table-caption', 'list-item', 'flow', 'flow-root','run-in'];
   const inlines = ['inline', 'inline-block', 'inline-table', 'ruby', 'ruby-base', 'ruby-text', 'ruby-base-container', 'ruby-text-container'];
 
-  function test_display(val, expectedWidth) {
+  function test_display(elm, val, expectedWidth) {
+    const prefix = elm.localName === 'div' ? 'div with -webkit-appearance: fieldset and' : 'fieldset with';
     test(() => {
-      testElm.style.removeProperty('display');
-      testElm.style.display = val;
-      const computed = getComputedStyle(testElm);
+      elm.style.removeProperty('display');
+      elm.style.display = val;
+      const computed = getComputedStyle(elm);
       // Note that computed value is different from the used value.
       // E.g., if ruby is not supported, the following assertion will
       // fail as the computed value of display will be block.
@@ -28,14 +37,16 @@
       // but the used value is supposed to be "inline".
       assert_equals(computed.display, val, `display: ${val} is not supported`);
       assert_equals(computed.width, expectedWidth);
-    }, `fieldset with display: ${val}`);
+    }, `${prefix} display: ${val}`);
   }
 
   for (const val of blocks) {
-    test_display(val, blockWidth);
+    test_display(testElm, val, blockWidth);
+    test_display(appearanceTestElm, val, appearanceBlockWidth);
   }
 
   for (const val of inlines) {
-    test_display(val, inlineWidth);
+    test_display(testElm, val, inlineWidth);
+    test_display(appearanceTestElm, val, appearanceInlineWidth);
   }
 </script>

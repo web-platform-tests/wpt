@@ -8,6 +8,7 @@
   padding: 0;
 }
 fieldset { border: none; }
+.fieldset { -webkit-appearance: fieldset; }
 .float {
   float: left;
   width: 50px;
@@ -19,11 +20,17 @@ fieldset { border: none; }
 <div class=float></div>
 <fieldset><div class=float></div></fieldset>
 
+<div class=float></div>
+<div class=fieldset><div class=float></div></div>
+
 <script>
-test(() => {
-  const fieldset = document.querySelector('fieldset');
-  assert_equals(fieldset.offsetTop, 0, 'fieldset.offsetTop');
-  assert_equals(fieldset.offsetLeft, 50, 'fieldset.offsetLeft');
-  assert_equals(fieldset.clientHeight, 50, 'fieldset.clientHeight');
-});
+let expectedTop = 0;
+for (const fieldset of [document.querySelector('fieldset'), document.querySelector('.fieldset')]) {
+  test(() => {
+    assert_equals(fieldset.offsetTop, expectedTop, 'fieldset.offsetTop');
+    assert_equals(fieldset.offsetLeft, 50, 'fieldset.offsetLeft');
+    assert_equals(fieldset.clientHeight, 50, 'fieldset.clientHeight');
+  });
+  expectedTop += 50;
+}
 </script>

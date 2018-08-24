@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <title>Fieldset and transform: translateZ(0)</title>
 <link rel=match href=fieldset-transform-translatez-ref.html>
+<link rel=stylesheet href=resources/fieldset-default-style.css>
 <style>
 #outer { transform: translateZ(0); }
-fieldset { background: #eee; overflow: hidden; margin: 0 0 10px; }
+.fieldset-default-style { -webkit-appearance: fieldset; background: #eee; overflow: hidden; margin: 0 0 10px; }
 #inner { position: relative; }
+.legend-default-style { -webkit-appearance: fieldset-legend; }
 .over { position: absolute; top: 4.1em; left: 1em; right: 1em; height: 1em; background: #eee; }
 </style>
 <p>It should say PASS below without anything obscuring the text.</p>
 <div id=outer>
-  <fieldset>
-    <legend>
+  <div class=fieldset-default-style>
+    <div class=legend-default-style>
       <div id="inner">PASS</div>
-    </legend>
-  </fieldset>
+    </div>
+  </div>
 </div>
 <div class=over></div>

@@ -2,32 +2,19 @@
 <title>fieldset default style</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<link rel=stylesheet href=resources/fieldset-default-style.css>
 <style>
-#ref {
-  display: block;
-  margin-left: 2px;
-  margin-right: 2px;
-  /* TODO replace above declarations with these when they are widely supported.
-  margin-inline-start: 2px;
-  margin-inline-end: 2px;
-  */
-  border: groove 2px ThreeDFace;
-  padding: 0.35em 0.75em 0.625em 0.75em;
-  /* TODO replace above declarations with these when they are widely supported.
-  padding-block-start: 0.35em;
-  padding-inline-end: 0.75em;
-  padding-block-end: 0.625em;
-  padding-inline-start: 0.75em;
-  */
-  min-width: min-content;
-  /* TODO change the above to min-inline-size when it's widely supported. */
-}
+#appearance-test { -webkit-appearance: fieldset; }
 </style>
 <fieldset id=test></fieldset>
-<div id=ref></div>
+<div id=ref class=fieldset-default-style></div>
+<div id=appearance-test></div>
+<div id=appearance-ref></div>
 <script>
   const testElm = document.querySelector('#test');
   const refElm = document.querySelector('#ref');
+  const appearanceTestElm = document.querySelector('#appearance-test');
+  const appearanceRefElm = document.querySelector('#appearance-ref');
   const props = ['display',
                  'margin-top',
                  'margin-right',
@@ -53,9 +40,15 @@
                  ];
   const testStyle = getComputedStyle(testElm);
   const refStyle = getComputedStyle(refElm);
+  const appearanceTestStyle = getComputedStyle(appearanceTestElm);
+  const appearanceRefStyle = getComputedStyle(appearanceRefElm);
   props.forEach(prop => {
     test(() => {
       assert_equals(testStyle[prop], refStyle[prop]);
-    }, `${prop}`);
+    }, `${prop} for fieldset`);
+
+    test(() => {
+      assert_equals(appearanceTestStyle[prop], appearanceRefStyle[prop]);
+    }, `${prop} for div with -webkit-appearance: fieldset`);
   });
 </script>

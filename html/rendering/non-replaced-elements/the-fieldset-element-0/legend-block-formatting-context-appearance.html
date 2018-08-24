@@ -2,10 +2,12 @@
 <title>The legend element: block formatting context</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<link rel=stylesheet href=resources/fieldset-default-style.css>
 <style>
-.fieldset-default-style { -webkit-appearance: fieldset; }
-.legend-default-style { -webkit-appearance: fieldset-legend; }
+/* Set margin and padding for fieldset to 0 to make things simpler */
+fieldset {
+  margin: 0;
+  padding: 0;
+}
 .wrapper {
   height: 200px;
   position: relative;
@@ -20,17 +22,17 @@
 
 <div class=wrapper>
  <div class=float></div>
- <div class=legend-default-style id=in-body><div class=float></div></div>
+ <legend id=in-body><div class=float></div></legend>
  <div class=float></div>
 </div>
 
 <div class=wrapper>
- <div class=fieldset-default-style>
+ <fieldset>
   <div class=float></div>
-  <div class=legend-default-style id=rendered-legend><div class=float></div></div>
-  <div class=legend-default-style id=in-fieldset-second-child><div class=float></div></div>
-  <div><div class=legend-default-style id=in-fieldset-descendant><div class=float></div></div></div>
- </div>
+  <legend id=rendered-legend><div class=float></div></legend>
+  <legend id=in-fieldset-second-child><div class=float></div></legend>
+  <div><legend id=in-fieldset-descendant><div class=float></div></legend></div>
+ </fieldset>
 </div>
 
 <script>

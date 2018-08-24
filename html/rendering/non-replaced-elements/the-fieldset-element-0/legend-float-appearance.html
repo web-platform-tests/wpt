@@ -1,0 +1,12 @@
+<!doctype html>
+<title>floated legend should not disappear</title>
+<link rel=match href=legend-float-ref.html>
+<style>
+  .fieldset { -webkit-appearance: fieldset; border: none; width: 100px; height: 50px; background: red; }
+  .legend { -webkit-appearance: fieldset-legend; width: 100px; height: 50px; background: lime; }
+  .left { float: left; }
+  .right { float: right; }
+</style>
+<p>There should be no red.</p>
+<div class=fieldset><div class="legend left"></div></div>
+<div class=fieldset><div class="legend right"></div></div>

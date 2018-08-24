@@ -4,10 +4,16 @@ policy:
 tasks:
   $if: tasks_for == "github-push"
   then:
-    $if: event.ref == "refs/heads/master"
+    $if: event.ref == "refs/heads/master" || event.ref == "refs/heads/epochs/daily" || event.ref == "refs/heads/epochs/weekly"
     then:
       $flattenDeep:
-        $map: [{name: firefox, channel: nightly}, {name: chrome, channel: dev}]
+        $map:
+          $flatten:
+            $match: {
+              event.ref == "refs/heads/master": [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
+              event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: beta}, {name: chrome, channel: beta}],
+              event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: stable}, {name: chrome, channel: stable}]
+            }
         each(browser):
           $map:
             - [testharness, 1, 15]
@@ -55,7 +61,7 @@ tasks:
               owner: ${event.pusher.email}
               source: ${event.repository.url}
             payload:
-              image: gsnedders/web-platform-tests:0.13
+              image: harjgam/web-platform-tests:0.14
               maxRunTime: 7200
               artifacts:
                 public/results:
@@ -65,9 +71,9 @@ tasks:
                 - /bin/bash
                 - --login
                 - -c
-                - "~/start.sh ${event.repository.url} ${event.ref[len('refs/heads/'):]} ${event.after} ${browser.name}-${browser.channel} &&
+                - "~/start.sh ${event.repository.url} ${event.ref[len('refs/heads/'):]} ${event.after} ${browser.name} ${browser.channel} &&
                   cd ~/web-platform-tests &&
-                  ./tools/ci/ci_taskcluster.sh ${browser.name} ${chunk[0]} ${chunk[1]} ${chunk[2]}"
+                  ./tools/ci/ci_taskcluster.sh ${browser.name} ${browser.channel} ${chunk[0]} ${chunk[1]} ${chunk[2]}"
     else: []
   # > NOTE: A well-designed template should produce `tasks: []` for any
   # > unrecognized `task_for` values; this allows later expansion of this

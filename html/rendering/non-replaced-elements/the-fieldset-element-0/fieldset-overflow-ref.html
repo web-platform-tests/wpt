@@ -1,31 +1,25 @@
 <!DOCTYPE HTML>
-<title>fieldset overflow</title>
+<title>Reference for fieldset overflow</title>
 <style>
-.f, .l {
+.fieldset, .legend {
   border: 1em solid;
-  margin: 0;
-  padding: 0;
   background: lime;
 }
 
-.f {
-  overflow: auto;
+.fieldset {
   height: 1em;
   margin-top: 2em;
 }
-.l {
+.legend {
   height: 1em;
   width: 5em;
   line-height: 1;
-  display: table;
   margin-top: -4em;
   margin-left: 1em;
 }
 </style>
 <p>There should be no red.</p>
-<div class=f>
+<div class=fieldset>
 </div>
-<div class=l></div>
-<script>
-document.getElementById('last').scrollIntoView()
-</script>
+<div class=legend></div>
+

@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <body style="background: red;">
   <script>
-    window.parent.postMessage("child-three-loaded", {targetOrigin: "*", includeUserActivation: true});
+    window.requestAnimationFrame(function() {
+      window.requestAnimationFrame(function() {
+        window.parent.postMessage("child-three-loaded", {targetOrigin: "*", includeUserActivation: true});
+      });
+    });
     window.addEventListener("click", event => {
       window.parent.postMessage("child-three-clicked", {targetOrigin: "*", includeUserActivation: true});
       var win = window.open('404.html');

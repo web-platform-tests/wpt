@@ -2,6 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
+<script src="resources/service-worker-recorder.js"></script>
 <script>
 promise_test(function(t) {
     var script =
@@ -10,24 +11,23 @@ promise_test(function(t) {
 
     return service_worker_unregister_and_register(t, script, scope)
       .then(function(registration) {
-          return wait_for_state(t, registration.installing, 'activated');
+          return wait_for_state(t, registration.installing, 'activated')
+            .then(function() {
+                return ServiceWorkerRecorder.client.clear(registration.active);
+              });
         })
       .then(function() {
           return with_iframe(scope);
         })
       .then(function(frame) {
           t.add_cleanup(function() { frame.remove(); });
-          var channel = new MessageChannel();
-          var saw_message = new Promise(function(resolve) {
-              channel.port1.onmessage = function(e) { resolve(e.data); }
-            });
-          var worker = frame.contentWindow.navigator.serviceWorker.controller;
 
-          worker.postMessage({port: channel.port2}, [channel.port2]);
-          return saw_message;
+          return ServiceWorkerRecorder.client.read(
+              frame.contentWindow.navigator.serviceWorker.controller
+            );
         })
-      .then(function(message) {
-          assert_equals(message, 'PASS');
+      .then(function(result) {
+          assert_array_equals(result, ['first handler invoked']);
           return service_worker_unregister_and_done(t, scope);
         })
   }, 'respondWith() invokes stopImmediatePropagation()');

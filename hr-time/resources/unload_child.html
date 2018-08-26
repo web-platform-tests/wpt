@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Helper page for ../unload-manual.html</title>
+<ol start="2">
+ <li><button id="navigation">Click here</button>
+ <li>Confirm the unload/reload dialog.
+</ol>
+<script>
+onload = function() {
+  opener.child_load_index++;
+
+  // after the reload
+  if (opener.child_load_index > 1) {
+    // child_origin is the expected time origin of the secondary window
+    var child_origin = opener.performance.now() - performance.now();
+    opener.t.step(function () {
+     opener.assert_approx_equals(opener.child_unload_time, child_origin, 10);
+     opener.t.done();
+    });
+    window.onbeforeunload = null;
+    window.close();
+  }
+
+  document.getElementById('navigation').onclick = function() {
+    window.location.reload();
+  };
+
+  window.onbeforeunload = function() {
+    opener.child_unload_time = opener.performance.now();
+    return "Reload?";
+  };
+};
+</script>

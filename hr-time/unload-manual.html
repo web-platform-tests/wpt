@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>time origin value manual test</title>
+<link rel="help" href="https://w3c.github.io/hr-time/#time-origin-1">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({explicit_timeout: true});
+
+var t = async_test();
+
+var child_unload_time = 0;
+var child_load_index = 0;
+</script>
+
+<h2>Description</h2>
+<p>This test validates that time origin is almost equal to the time of the user confirming the
+navigation if a confirmation dialog is displayed during the prompt to unload algorithm.</p>
+
+<div id="log">
+ <h2>Manual Test Steps</h2>
+ <ol>
+  <li><a href="resources/unload_child.html" target="_blank">Click here</a>
+ </ol>
+</div>

@@ -1,0 +1,102 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#run-a-classic-script">
+<link rel="help" href="https://url.spec.whatwg.org/#percent-decode">
+<link rel="help" href="https://encoding.spec.whatwg.org/#utf-8-decode">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<!--
+  In https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol ...
+
+  Step 4 invokes https://url.spec.whatwg.org/#percent-decode
+
+  Step 9 invokes https://html.spec.whatwg.org/multipage/webappapis.html#creating-a-classic-script
+
+  Step 10 invokes https://html.spec.whatwg.org/multipage/webappapis.html#run-a-classic-script
+-->
+
+<!--
+  Step 4
+
+  %0a is treated as a byte and decoded to "\n" (0x0A is \n), which means the string "ok" is
+  the actual return value.
+-->
+<iframe src='javascript:"wrong"; // # %0a "ok";'></iframe>
+<iframe src='javascript:"a";%0a"ok";'></iframe>
+<iframe src='javascript:%0a"ok";'></iframe>
+<!--
+  Step 4
+
+  %20 is treated as a byte and decoded to " " (0x20 is space), leading space is removed and the
+  string "ok" is the actual return value.
+-->
+<iframe src='javascript:"wrong";"%20ok";'></iframe>
+<!--
+  Step 4,
+
+  %25 is treated as a byte and decoded to "%" (0x25 is %)
+-->
+<iframe src='javascript:"%2525" === "%" + "25" ? "ok" : "not ok";'></iframe>
+<iframe src='javascript:"%2525%25" === "%" + "25%" ? "ok" : "not ok";'></iframe>
+<!--
+  Step 4,
+
+  %24 is treated as a byte and decoded to "$" (0x24 is $)
+-->
+<iframe src='javascript:var $a = Number.MAX_SAFE_INTEGER; Number(`${%24a}`) === Number.MAX_SAFE_INTEGER ? "ok" : "not ok";'></iframe>
+
+<!--
+  Step 9 & 10,
+
+  (true ? "ok" : "not ok";) is just a JavaScript expression to evaluate
+-->
+<iframe src='javascript:true ? "ok" : "not ok";'></iframe>
+
+<!--
+  Step 9 & 10,
+
+  Script evaluation that will be unsuccessful, result is undefined
+-->
+<iframe src='javascript:syntax error'></iframe>
+
+<!--
+  Step 9 & 10,
+
+  Script evaluation that will be unsuccessful, result is undefined
+-->
+<iframe src='javascript:"use strict"; foo = 1;'></iframe>
+
+<!--
+  Step 9 & 10,
+
+  Script evaluation that will be unsuccessful, result is undefined
+-->
+<iframe src='javascript:throw new Error(Number.MAX_SAFE_INTEGER)'></iframe>
+
+<script>
+function verifyDecodedResult(frame, expected = "ok") {
+  let content = frame.contentDocument.body.textContent;
+  assert_equals(content, expected, `frame src = ${content};`);
+}
+async_test((test) => {
+  window.onload = test.step_func_done(() => {
+    let frames = document.querySelectorAll("iframe");
+    verifyDecodedResult(frames[0]);
+    verifyDecodedResult(frames[1]);
+    verifyDecodedResult(frames[2]);
+    verifyDecodedResult(frames[3]);
+    verifyDecodedResult(frames[4]);
+    verifyDecodedResult(frames[5]);
+    verifyDecodedResult(frames[6]);
+    verifyDecodedResult(frames[7]);
+
+    // These test scripts whose evaluation will be
+    // unsuccessful resulting in an empty string.
+    verifyDecodedResult(frames[8], "");
+    verifyDecodedResult(frames[9], "");
+    verifyDecodedResult(frames[10], "");
+    test.done();
+  });
+}, "'javascript: url' percent decoding & evaluation");
+</script>

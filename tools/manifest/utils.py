@@ -1,7 +1,16 @@
+import itertools
 import platform
 import os
 
 from six import BytesIO
+from six.moves import zip as izip
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return izip(a, b)
+
 
 def rel_path_to_url(rel_path, url_base="/"):
     assert not os.path.isabs(rel_path)

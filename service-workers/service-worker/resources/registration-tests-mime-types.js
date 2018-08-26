@@ -24,19 +24,13 @@ function registration_tests_mime_types(register_method, check_error_types) {
   promise_test(function(t) {
       var script = 'resources/import-mime-type-worker.py';
       var scope = 'resources/scope/no-mime-type-worker/';
-      return promise_rejects(t,
-          check_error_types ? 'SecurityError' : null,
-          register_method(script, {scope: scope}),
-          'Registration of no MIME type imported script should fail.');
+      return register_method(script, {scope: scope});
     }, 'Registering script that imports script with no MIME type');
 
   promise_test(function(t) {
       var script = 'resources/import-mime-type-worker.py?mime=text/plain';
       var scope = 'resources/scope/bad-mime-type-worker/';
-      return promise_rejects(t,
-          check_error_types ? 'SecurityError' : null,
-          register_method(script, {scope: scope}),
-          'Registration of plain text imported script should fail.');
+      return register_method(script, {scope: scope});
     }, 'Registering script that imports script with bad MIME type');
 
   const validMimeTypes = [

@@ -15,14 +15,17 @@ self.addEventListener('message', function(event) {
         resolveLockPromise();
         break;
       case 'no-current-extension-different-task':
-        async_task_waituntil(event).then(reportResultExpecting('InvalidStateError'));
+        async_waituntil(event).then(reportResultExpecting('InvalidStateError'));
         break;
-      case 'no-current-extension-different-microtask':
-        async_microtask_waituntil(event).then(reportResultExpecting('InvalidStateError'));
+      case 'no-current-extension-in-a-microtask-of-different-task':
+        async_waituntil_in_microtask_of_different_task(event).then(reportResultExpecting('InvalidStateError'));
+        break;
+      case 'extended-in-a-microtask-of-the-same-task':
+        async_waituntil_in_microtask_of_same_task(event).then(reportResultExpecting('OK'));
         break;
       case 'current-extension-different-task':
         event.waitUntil(new Promise((res) => { resolveTestPromise = res; }));
-        async_task_waituntil(event).then(reportResultExpecting('OK')).then(resolveTestPromise);
+        async_waituntil(event).then(reportResultExpecting('OK')).then(resolveTestPromise);
         break;
       case 'current-extension-expired-same-microtask-turn':
         waitPromise = Promise.resolve();
@@ -35,12 +38,12 @@ self.addEventListener('message', function(event) {
         // extensions was performed.
         waitPromise = Promise.resolve();
         event.waitUntil(waitPromise);
-        waitPromise.then(() => { return async_microtask_waituntil(event); })
+        waitPromise.then(() => { return async_waituntil_in_microtask_of_same_task(event); })
           .then(reportResultExpecting('InvalidStateError'))
         break;
       case 'current-extension-expired-different-task':
         event.waitUntil(Promise.resolve());
-        async_task_waituntil(event).then(reportResultExpecting('InvalidStateError'));
+        async_waituntil(event).then(reportResultExpecting('InvalidStateError'));
         break;
       case 'script-extendable-event':
         self.dispatchEvent(new ExtendableEvent('nontrustedevent'));
@@ -55,7 +58,7 @@ self.addEventListener('fetch', function(event) {
       var resolveFetch;
       let response = new Promise((res) => { resolveFetch = res; });
       event.respondWith(response);
-      async_task_waituntil(event)
+      async_waituntil(event)
         .then(reportResultExpecting('OK'))
         .then(() => { resolveFetch(new Response('OK')); });
     } else if (event.request.url.indexOf('respondwith-microtask-sync-waituntil') != -1) {
@@ -66,7 +69,7 @@ self.addEventListener('fetch', function(event) {
     } else if (event.request.url.indexOf('respondwith-microtask-async-waituntil') != -1) {
       response = Promise.resolve(new Response('RESP'));
       event.respondWith(response);
-      response.then(() => { return async_microtask_waituntil(event); })
+      response.then(() => { return async_waituntil_in_microtask_of_same_task(event); })
         .then(reportResultExpecting('InvalidStateError'))
     }
   });
@@ -93,7 +96,7 @@ function sync_waituntil(event) {
   });
 }
 
-function async_microtask_waituntil(event) {
+function async_waituntil_in_microtask_of_same_task(event) {
   return new Promise((res, rej) => {
     Promise.resolve().then(() => {
       try {
@@ -106,7 +109,7 @@ function async_microtask_waituntil(event) {
   });
 }
 
-function async_task_waituntil(event) {
+function async_waituntil(event) {
   return new Promise((res, rej) => {
     setTimeout(() => {
       try {
@@ -115,6 +118,21 @@ function async_task_waituntil(event) {
       } catch (error) {
         res(error.name);
       }
+    }, 0);
+  });
+}
+
+function async_waituntil_in_microtask_of_different_task(event) {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      Promise.resolve().then(() => {
+        try {
+          event.waitUntil(Promise.resolve());
+          res('OK');
+        } catch (error) {
+          res(error.name);
+        }
+      });
     }, 0);
   });
 }

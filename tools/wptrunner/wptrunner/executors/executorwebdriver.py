@@ -364,7 +364,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
-        self.protocol.webdriver.window.size = (600, 600)
+        width_offset, height_offset = self.protocol.webdriver.execute_script(
+            """return [window.outerWidth - window.innerWidth,
+                       window.outerHeight - window.innerHeight];""")
+        self.protocol.webdriver.window.size = (600 + width_offset,
+                                               600 + height_offset)
 
         result = self.implementation.run_test(test)
 

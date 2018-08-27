@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>fieldset accessibility test: shadow DOM</title>
+<template id="my-fieldset">
+  <fieldset>
+    <slot name="my-text"></slot>
+    <input>
+  </fieldset>
+</template>
+
+<my-fieldset>
+  <legend slot="my-text">Foo</legend>
+</my-fieldset>
+
+<script>
+customElements.define('my-fieldset',
+  class extends HTMLElement {
+    constructor() {
+      super();
+
+      const template = document.getElementById('my-fieldset');
+      const templateContent = template.content;
+
+      this.attachShadow({mode: 'open'}).appendChild(
+        templateContent.cloneNode(true)
+      );
+    }
+  }
+);
+</script>

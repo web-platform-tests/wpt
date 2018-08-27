@@ -16,4 +16,10 @@
     assert_false(name in window);
   }, name + " interface should not exist");
 });
+
+// https://github.com/w3c/speech-api/pull/38
+test(() => {
+  assert_false("onmark" in SpeechSynthesisUtterance.prototype, "on prototype");
+  assert_false("onmark" in new SpeechSynthesisUtterance, "on instance");
+}, "onmark event handler attribute (for SSML) should not exist");
 </script>

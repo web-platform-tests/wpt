@@ -6,7 +6,7 @@ test(t => {
   assert_equals(frame.contentDocument.compatMode, "CSS1Compat");
   frame.contentDocument.close();
   assert_equals(frame.contentDocument.compatMode, "BackCompat");
-}, "document.open() and quirks mode (iframe, no doctype)");
+}, "document.open() sets document to no-quirks mode (write no doctype)");
 
 test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
@@ -22,7 +22,7 @@ test(t => {
   assert_equals(frame.contentDocument.compatMode, "BackCompat");
   frame.contentDocument.close();
   assert_equals(frame.contentDocument.compatMode, "BackCompat");
-}, "document.open() and quirks mode (iframe, old doctype)");
+}, "document.open() sets document to no-quirks mode (write old doctype)");
 
 test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
@@ -36,9 +36,14 @@ test(t => {
   assert_equals(frame.contentDocument.compatMode, "CSS1Compat");
   frame.contentDocument.close();
   assert_equals(frame.contentDocument.compatMode, "CSS1Compat");
-}, "document.open() and quirks mode (iframe, new doctype)");
+}, "document.open() sets document to no-quirks mode (write new doctype)");
 
-// Test derived from quirks/blocks-ignore-line-height.html.
+// This tests the document.open() call in fact sets the document to no-quirks
+// mode, not limited-quirks mode. It is derived from
+// quirks/blocks-ignore-line-height.html in WPT, as there is no direct way to
+// distinguish between a no-quirks document and a limited-quirks document. It
+// assumes that the user agent passes the linked test, which at the time of
+// writing is all major web browsers.
 test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
   t.add_cleanup(() => frame.contentDocument.close());
@@ -66,4 +71,4 @@ test(t => {
                 frame.contentWindow.getComputedStyle(idSRef).height);
   assert_not_equals(frame.contentWindow.getComputedStyle(idTest).height,
                     frame.contentWindow.getComputedStyle(idRef).height);
-}, "document.open() and quirks mode (iframe, not limited-quirks)");
+}, "document.open() sets document to no-quirks mode, not limited-quirks mode");

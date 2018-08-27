@@ -4,7 +4,7 @@
 <script src=/resources/testharnessreport.js></script>
 <link rel=stylesheet href=resources/fieldset-default-style.css>
 <style>
-#appearance-test { -webkit-appearance: fieldset; }
+#appearance-test, #ref { -webkit-appearance: fieldset; }
 </style>
 <fieldset id=test></fieldset>
 <div id=ref class=fieldset-default-style></div>
@@ -37,6 +37,7 @@
                  'padding-bottom',
                  'padding-left',
                  'min-width',
+                 '-webkit-appearance',
                  ];
   const testStyle = getComputedStyle(testElm);
   const refStyle = getComputedStyle(refElm);
@@ -47,8 +48,10 @@
       assert_equals(testStyle[prop], refStyle[prop]);
     }, `${prop} for fieldset`);
 
-    test(() => {
-      assert_equals(appearanceTestStyle[prop], appearanceRefStyle[prop]);
-    }, `${prop} for div with -webkit-appearance: fieldset`);
+    if (prop !== '-webkit-appearance') {
+      test(() => {
+        assert_equals(appearanceTestStyle[prop], appearanceRefStyle[prop]);
+      }, `${prop} for div with -webkit-appearance: fieldset`);
+    }
   });
 </script>

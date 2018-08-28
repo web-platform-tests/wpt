@@ -1,0 +1,15 @@
+<script>
+function queueTest() {
+  // The timeout is necessary to avoid the parser still being active when
+  // `document.open()` is called and becoming a no-op.
+  setTimeout(() => {
+    document.open();
+    document.write("<p>New content</p>");
+    document.close();
+    opener.onDocumentOpen();
+  }, 200);
+}
+</script>
+<body onload="opener.onFrameLoaded(); queueTest();">
+<p>Old content</p>
+</body>

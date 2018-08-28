@@ -42,24 +42,24 @@ const badChunks = [
       mc.port1.postMessage(ab, [ab]);
       return ab;
     })()
+  },
+  {
+    name: 'SharedArrayBuffer',
+    // Use a getter to postpone construction so that all tests don't fail where
+    // SharedArrayBuffer is not yet implemented.
+    get value() {
+      return new SharedArrayBuffer();
+    }
+  },
+  {
+    name: 'shared Uint8Array',
+    get value() {
+      new Uint8Array(new SharedArrayBuffer())
+    }
   }
 ];
 
-let badShared = [];
-if (typeof SharedArrayBuffer !== 'undefined') {
-  badShared = [
-    {
-      name: 'SharedArrayBuffer',
-      value: new SharedArrayBuffer()
-    },
-    {
-      name: 'shared Uint8Array',
-      value: new Uint8Array(new SharedArrayBuffer())
-    }
-  ]
-}
-
-for (const chunk of badChunks.concat(badShared)) {
+for (const chunk of badChunks) {
   promise_test(async t => {
     const tds = new TextDecoderStream();
     const reader = tds.readable.getReader();

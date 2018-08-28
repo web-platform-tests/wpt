@@ -5,9 +5,6 @@
 // each realm and then posting Javascript to them to be evaluated. Inputs and
 // outputs are passed around via global variables in each realm's scope.
 
-// Some of these tests do not pass with the TransformStream polyfill. They work
-// correctly with a conformant implementation.
-
 // Async setup is required before creating any tests, so require done() to be
 // called.
 setup({explicit_done: true});
@@ -19,7 +16,7 @@ function createRealm() {
 <script>
 onmessage = event => {
   if (event.source !== window.parent) {
-    return;
+    throw new Error('unexpected message with source ' + event.source);
   }
   eval(event.data);
 };
@@ -105,6 +102,7 @@ async function evalInRealmAndReturn(realm, code) {
 // realms. |what| can contain constructor arguments.
 async function constructAndStore(what) {
   const objId = id();
+  // Call |constructorRealm|'s constructor from inside |constructedRealm|.
   writeRealm[objId] = await evalInRealmAndReturn(
       constructedRealm, `new parent.constructorRealm.${what}`);
   readRealm[objId] = writeRealm[objId];
@@ -194,30 +192,38 @@ function runTextEncoderStreamTests() {
   }, 'the output chunks when write is called with a pending read should come ' +
      'from the same realm as the constructor of TextEncoderStream');
 
+  // There is not absolute consensus regarding what realm exceptions should be
+  // created in. Implementations may vary. The expectations in exception-related
+  // tests may change in future once consensus is reached.
   promise_test(async t => {
     const objId = await constructAndStore('TextEncoderStream');
     // Read first to relieve backpressure.
     const readPromise = readInReadRealm(objId);
     // promise_rejects() does not permit directly inspecting the rejection, so
     // it's necessary to write it out long-hand.
+    let writeSucceeded = false;
     try {
       // Write an invalid chunk.
       await writeInWriteRealm(objId, {
         toString() { return {}; }
       });
-      assert_unreached('write should fail');
+      writeSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'write TypeError should come from constructor realm');
     }
+    assert_false(writeSucceeded, 'write should fail');
 
+    let readSucceeded = false;
     try {
       await readPromise;
-      assert_unreached('read should fail');
+      readSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'read TypeError should come from constructor realm');
     }
+
+    assert_false(readSucceeded, 'read should fail');
   }, 'TypeError for unconvertable chunk should come from constructor realm ' +
      'of TextEncoderStream');
 }
@@ -230,8 +236,9 @@ function runTextDecoderStreamTests() {
     await writePromise;
     assert_equals(result.constructor, constructorRealm.Object,
                   'result should be in constructor realm');
-    // All strings have the same prototype object, regardless of which frame
-    // created them. So checking the realm of result.value is not meaningful.
+    // A string is not an object, so doesn't have an associated realm. Accessing
+    // string properties will create a transient object wrapper belonging to the
+    // current realm. So checking the realm of result.value is not useful.
   }, 'the result object when read is called after write should come from the ' +
      'same realm as the constructor of TextDecoderStream');
 
@@ -243,8 +250,9 @@ function runTextDecoderStreamTests() {
     const result = await chunkPromise;
     assert_equals(result.constructor, constructorRealm.Object,
                   'result should be in constructor realm');
-    // All strings have the same prototype object, regardless of which frame
-    // created them. So checking the realm of result.value is not meaningful.
+    // A string is not an object, so doesn't have an associated realm. Accessing
+    // string properties will create a transient object wrapper belonging to the
+    // current realm. So checking the realm of result.value is not useful.
   }, 'the result object when write is called with a pending ' +
      'read should come from the same realm as the constructor of TextDecoderStream');
 
@@ -254,22 +262,26 @@ function runTextDecoderStreamTests() {
     const readPromise = readInReadRealm(objId);
     // promise_rejects() does not permit directly inspecting the rejection, so
     // it's necessary to write it out long-hand.
+    let writeSucceeded = false;
     try {
       // Write an invalid chunk.
       await writeInWriteRealm(objId, {});
-      assert_unreached('write should fail');
+      writeSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'write TypeError should come from constructor realm');
     }
+    assert_false(writeSucceeded, 'write should fail');
 
+    let readSucceeded = false;
     try {
       await readPromise;
-      assert_unreached('read should fail');
+      readSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'read TypeError should come from constructor realm');
     }
+    assert_false(readSucceeded, 'read should fail');
   }, 'TypeError for chunk with the wrong type should come from constructor ' +
      'realm of TextDecoderStream');
 
@@ -280,21 +292,25 @@ function runTextDecoderStreamTests() {
     const readPromise = readInReadRealm(objId);
     // promise_rejects() does not permit directly inspecting the rejection, so
     // it's necessary to write it out long-hand.
+    let writeSucceeded = false;
     try {
       await writeInWriteRealm(objId, new Uint8Array([0xff]));
-      assert_unreached('write should fail');
+      writeSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'write TypeError should come from constructor realm');
     }
+    assert_false(writeSucceeded, 'write should fail');
 
+    let readSucceeded = false;
     try {
       await readPromise;
-      assert_unreached('read should fail');
+      readSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'read TypeError should come from constructor realm');
     }
+    assert_false(readSucceeded, 'read should fail');
   }, 'TypeError for invalid chunk should come from constructor realm ' +
      'of TextDecoderStream');
 
@@ -308,6 +324,7 @@ function runTextDecoderStreamTests() {
     writeRealm[incompleteBytesId] = new Uint8Array([0xf0]);
     // promise_rejects() does not permit directly inspecting the rejection, so
     // it's necessary to write it out long-hand.
+    let closeSucceeded = false;
     try {
       // Can't use writeInWriteRealm() here because it doesn't make it possible
       // to reuse the writer.
@@ -319,11 +336,12 @@ function runTextDecoderStreamTests() {
     .close.call(writer);
 })();
 `);
-      assert_unreached('close should fail');
+      closeSucceeded = true;
     } catch (err) {
       assert_equals(err.constructor, constructorRealm.TypeError,
                     'close TypeError should come from constructor realm');
     }
+    assert_false(closeSucceeded, 'close should fail');
   }, 'TypeError for incomplete input should come from constructor realm ' +
      'of TextDecoderStream');
 }

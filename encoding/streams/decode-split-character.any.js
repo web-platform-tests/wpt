@@ -6,13 +6,12 @@
 
 const inputBytes = [73, 32, 240, 159, 146, 153, 32, 115, 116, 114, 101,
                     97, 109, 115];
-const expectedOutput = ['I ', '\u{1F499} streams'];
-
 for (const splitPoint of [2, 3, 4, 5]) {
   promise_test(async () => {
     const input = readableStreamFromArray(
         [new Uint8Array(inputBytes.slice(0, splitPoint)),
          new Uint8Array(inputBytes.slice(splitPoint))]);
+    const expectedOutput = ['I ', '\u{1F499} streams'];
     const output = input.pipeThrough(new TextDecoderStream());
     const array = await readableStreamToArray(output);
     assert_array_equals(array, expectedOutput,
@@ -40,11 +39,11 @@ for (let splitPoint = 1; splitPoint < 7; ++splitPoint) {
       [new Uint8Array(inputBytes.slice(0, splitPoint)),
        new Uint8Array([]),
        new Uint8Array(inputBytes.slice(splitPoint))]);
+    const concatenatedOutput = 'I \u{1F499} streams';
     const output = input.pipeThrough(new TextDecoderStream());
     const array = await readableStreamToArray(output);
     assert_equals(array.length, 2, 'two chunks should be output');
-    assert_equals(array[0].concat(array[1]),
-                  expectedOutput[0].concat(expectedOutput[1]),
+    assert_equals(array[0].concat(array[1]), concatenatedOutput,
                   'output should be unchanged by the empty chunk');
   }, 'an empty chunk inside a code point split between chunks should not ' +
      'change the output; split point = ' + splitPoint);

@@ -68,6 +68,5 @@ for (const chunk of badChunks.concat(badShared)) {
     const readPromise = reader.read();
     await promise_rejects(t, new TypeError(), writePromise, 'write should reject');
     await promise_rejects(t, new TypeError(), readPromise, 'read should reject');
-    const rejection = await writePromise.catch(_ => _);
   }, `chunk of type ${chunk.name} should error the stream`);
 }

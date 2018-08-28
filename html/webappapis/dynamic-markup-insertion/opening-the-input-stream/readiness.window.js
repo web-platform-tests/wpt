@@ -7,10 +7,9 @@ async_test(t => {
   frame.src = "/common/blank.html";
   frame.onload = t.step_func_done(() => {
     const states = [];
-    const onreadystatechange = t.step_func(() => {
+    frame.contentDocument.onreadystatechange = t.step_func(() => {
       states.push(frame.contentDocument.readyState);
     });
-    frame.contentDocument.onreadystatechange = onreadystatechange;
     assert_equals(frame.contentDocument.readyState, "complete");
     assert_array_equals(states, []);
 
@@ -18,7 +17,7 @@ async_test(t => {
     // from all nodes in the DOM tree. Then, after a new parser is created and
     // initialized, it changes the current document readiness to "loading".
     // However, because all event listeners are removed, we cannot observe the
-    // readystatechange event filed for "loading" inside open().
+    // readystatechange event fired for "loading" inside open().
     frame.contentDocument.open();
     assert_equals(frame.contentDocument.readyState, "loading");
     assert_array_equals(states, []);

@@ -508,7 +508,8 @@ class CallbackHandler(object):
 
         self.actions = {
             "click": ClickAction(self.logger, self.protocol),
-            "send_keys": SendKeysAction(self.logger, self.protocol)
+            "send_keys": SendKeysAction(self.logger, self.protocol),
+            "action_sequence": ActionSequenceAction(self.logger, self.protocol)
         }
 
     def __call__(self, result):
@@ -583,3 +584,18 @@ class SendKeysAction(object):
             raise ValueError("Selector matches multiple elements")
         self.logger.debug("Sending keys to element: %s" % selector)
         self.protocol.send_keys.send_keys(elements[0], keys)
+
+
+class ActionSequenceAction(object):
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        # TODO: some sort of shallow error checking
+
+        actions = payload["actions"]
+        self.logger.debug(actions)
+        self.logger.debug(payload["action"])
+        self.logger.debug("Sending action sequence to window")
+        self.protocol.action_sequence.action_sequence(actions)

@@ -14,7 +14,7 @@ window.onmessage = e => {
       assert_equals(result.message, "Success");
       if (result.message === "Exception") {
         const [, code, name, stack] = result.details;
-        assert_true(false, `Unexpected exception "${name}" (${code}) ${stack}`);
+        assert_unreached(`Unexpected exception "${name}" (${code}) ${stack}`);
       }
     } else {
       assert_equals(result.message, "Exception");

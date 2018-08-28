@@ -171,6 +171,30 @@
          */
         freeze: function() {
             return window.test_driver_internal.freeze();
+        },
+
+        /**
+         * Send a sequence of actions
+         *
+         * This function sends a sequence of actions to the top level window
+         * to perform. It is modeled after the behaviour of {@link
+         * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
+         *
+         * @param {Array} actions - an array of action objects to perform as
+         *                          described in docs. Elements of this array
+         *                          represent either a pointer action or a
+         *                          keyboard action. When representing a pointer
+         *                          action they should include "action",
+         *                          "source_type", "x", "y", and "input_id".
+         *                          "action_type" must be one of the pointer
+         *                          actions defined in the Web Driver spec. When
+         *                          representing a keyboard action they should
+         *                          include "action" and "key".
+         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        action_sequence(actions) {
+            return window.test_driver_internal.action_sequence(actions);
         }
     };
 
@@ -204,6 +228,16 @@
          * it gets rejected
          */
         freeze: function() {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Send a sequence of pointer actions
+         *
+         * @returns {Promise} fufilled after actions are sent, rejected if any actions
+         *                    fail
+         */
+        action_sequence: function(actions) {
             return Promise.reject(new Error("unimplemented"));
         }
     };

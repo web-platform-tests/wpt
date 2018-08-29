@@ -69,10 +69,4 @@ WORKDIR /home/test/
 
 COPY .bashrc /home/test/.bashrc
 
-# Ubuntu inserts a logout script which exits with a non-zero status. This makes
-# it impossible to use the `exit` built-in from a login shell where the `-e`
-# option has been set. Since the script is intended to clear the console for
-# interactive sessions, it may safely be removed.
-RUN rm /home/test/.bash_logout
-
 COPY start.sh /home/test/start.sh

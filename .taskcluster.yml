@@ -55,7 +55,7 @@ tasks:
                 owner: ${event.pusher.email}
                 source: ${event.repository.url}
               payload:
-                image: jugglinmike/web-platform-tests:0.18
+                image: gsnedders/web-platform-tests:0.13
                 maxRunTime: 7200
                 artifacts:
                   public/results:
@@ -72,11 +72,23 @@ tasks:
                       ${event.after}
                       ${browser.name}-${browser.channel};
                     cd ~/web-platform-tests;
-                    ./tools/ci/ci_taskcluster.sh
+                    ./wpt manifest-download || true;
+                    ./tools/ci/taskcluster-run.py
+                      --browser ${browser.name}
+                      --
+                      --log-tbpl=../artifacts/log_tbpl.log
+                      --log-tbpl-level=info
+                      --log-wptreport=../artifacts/wpt_report.json
+                      --log-mach=-
+                      -y
+                      --no-pause
+                      --no-restart-on-unexpected
+                      --install-fonts
+                      --no-fail-on-unexpected
                       --test-type=${chunk[0]}
                       --this-chunk=${chunk[1]}
-                      --total-chunks=${chunk[2]}
-                      ${browser.name};
+                      --total-chunks=${chunk[2]};
+                    gzip ../artifacts/wpt_report.json;
     - $if: tasks_for == "github-pull-request"
       then:
         $map: [{name: firefox, channel: nightly}, {name: chrome, channel: dev}]
@@ -85,25 +97,13 @@ tasks:
             - name: wpt-${browser.name}-${browser.channel}-stability
               description: >-
                 Verify that all tests affected by a pull request are stable
-                when executed in ${browser.name}. As of 2018-08-23, this task
-                is being vetted for correctness, so its outcome will not
-                influence the status of the pull request.
-              command:
-                status=PASS;
-                echo $affected |
-                  base64 -d |
-                  xargs -0 ./tools/ci/ci_taskcluster.sh --verify ${browser.name} || status=FAIL;
-                echo $status > ../artifacts/stability-status.txt
-              creates_artifacts: true
+                when executed in ${browser.name}.
+              extra_args: '--verify'
             - name: wpt-${browser.name}-${browser.channel}-results
               description: >-
                 Collect results for all tests affected by a pull request in
                 ${browser.name}.
-              command:
-                echo $affected |
-                  base64 -d |
-                  xargs -0 ./tools/ci/ci_taskcluster.sh ${browser.name}
-              creates_artifacts: true
+              extra_args: '--no-fail-on-unexpected --log-wptreport=../artifacts/wpt_report.json'
           each(operation):
             taskId: {$eval: 'as_slugid(operation.name)'}
             taskGroupId: {$eval: 'as_slugid("task group")'}
@@ -120,19 +120,12 @@ tasks:
               owner: ${event.pull_request.user.login}@users.noreply.github.com
               source: ${event.repository.url}
             payload:
-              image: jugglinmike/web-platform-tests:0.18
+              image: gsnedders/web-platform-tests:0.13
               maxRunTime: 7200
               artifacts:
-                $if: operation.creates_artifacts
-                then:
-                  public/results:
-                    path: /home/test/artifacts
-                    type: directory
-              # Bash removes null bytes from string values when set as
-              # environment variables. This invalidates the output of `wpt
-              # affected-tests` because it uses the null byte as a separator
-              # between test names. The list of effected tests is
-              # Base64-encoded in order to preserve the null bytes.
+                public/results:
+                  path: /home/test/artifacts
+                  type: directory
               command:
                 - /bin/bash
                 - --login
@@ -149,14 +142,19 @@ tasks:
                     ${event.repository.clone_url}
                     refs/pull/${event.number}/head;
                   git checkout FETCH_HEAD;
-                  affected=$(./wpt tests-affected
-                    --null
-                    ${event.pull_request.base.sha}...
-                    | base64 --wrap 0);
-                  if [ -z $(echo $affected | base64 -d) ]; then
-                    echo Zero tests affected.;
-                    exit 0;
-                  fi;
-                  echo Affected tests:;
-                  echo $affected | base64 -d | sed 's/\x0/\n/g';
-                  ${operation.command}
+                  result=0;
+                  ./tools/ci/taskcluster-run.py
+                    --browser ${browser.name}
+                    --commit-range ${event.pull_request.base.sha}...
+                    --
+                    ${operation.extra_args}
+                    --log-tbpl=../artifacts/log_tbpl.log
+                    --log-tbpl-level=info
+                    --log-mach=-
+                    -y
+                    --no-pause
+                    --no-restart-on-unexpected
+                     --install-fonts || result=$?;
+                  if [ -f ../artifacts/wpt_report.json ]; then gzip ../artifacts/wpt_report.json; fi;
+                  echo $result > ../artifacts/run-return-code.txt;
+                  echo "Command exited with code $result (failures are allowed while this task is being vetted)."

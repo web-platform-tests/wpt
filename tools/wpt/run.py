@@ -48,9 +48,12 @@ def create_parser():
                         help="Don't prompt before installing components")
     parser.add_argument("--install-browser", action="store_true",
                         help="Install the browser")
-    parser.add_argument("--browser-channel", action="store",
+    parser.add_argument("--channel", action="store",
                         choices=install.channel_by_name.keys(),
-                        default="nightly", help="Name of browser release channel")
+                        default=None, help='Name of browser release channel.'
+                        '"stable" and "release" are synonyms for the latest browser stable release,'
+                        '"nightly", "dev", "experimental", and "preview" are all synonyms for '
+                        'the latest available development release.')
     parser._add_container_actions(wptcommandline.create_parser())
     return parser
 
@@ -427,13 +430,19 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     setup_cls = product_setup[kwargs["product"]](venv, prompt, sub_product)
     setup_cls.install_requirements()
 
+    if install_browser and not kwargs["channel"]:
+        kwargs["channel"] = "nightly"
+
+    if kwargs["channel"]:
+        channel = install.get_channel(kwargs["product"], kwargs["channel"])
+        if channel != kwargs["channel"]:
+            logger.info("Interpreting channel '%s' as '%s'" % (kwargs["channel"],
+                                                               channel))
+        kwargs["browser_channel"] = channel
+    del kwargs["channel"]
+
     if install_browser:
         logger.info("Installing browser")
-        channel = install.get_channel(kwargs["product"],
-                                      kwargs["browser_channel"])
-        if channel != kwargs["browser_channel"]:
-            logger.info("Interpreting channel '%s' as '%s'" % (kwargs["browser_channel"],
-                                                               channel))
         kwargs["binary"] = setup_cls.install(venv, channel=channel)
 
     setup_cls.setup(kwargs)

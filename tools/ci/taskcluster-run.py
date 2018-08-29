@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
+import gzip
 import logging
 import os
+import shutil
 import subprocess
 
 browser_specific_args = {
@@ -23,7 +25,19 @@ def tests_affected(commit_range):
     return tests
 
 
-def main(browser, commit_range, wpt_args):
+def find_wptreport(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log-wptreport', action='store')
+    return parser.parse_known_args(args)[0].log_wptreport
+
+
+def gzip_file(filename):
+    with open(filename, 'rb') as f_in:
+        with gzip.open('%s.gz' % filename, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+
+def main(product, commit_range, wpt_args):
     """Invoke the `wpt run` command according to the needs of the TaskCluster
     continuous integration service."""
 
@@ -34,6 +48,9 @@ def main(browser, commit_range, wpt_args):
         logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     )
     logger.addHandler(handler)
+
+    child = subprocess.Popen(['python', './wpt', 'manifest-download'])
+    child.wait()
 
     if commit_range:
         logger.info(
@@ -49,21 +66,36 @@ def main(browser, commit_range, wpt_args):
         tests = []
         logger.info("Running all tests")
 
-    wpt_args += browser_specific_args.get(browser, [])
+    wpt_args += [
+        "--log-tbpl=../artifacts/log_tbpl.log",
+        "--log-tbpl-level=info",
+        "--log-mach=-",
+        "-y",
+        "--no-pause",
+        "--no-restart-on-unexpected",
+        "--install-fonts"
+    ]
+    wpt_args += browser_specific_args.get(product, [])
 
-    command = ["python", "./wpt", "run"] + wpt_args + [browser] + tests
+    command = ["python", "./wpt", "run"] + wpt_args + [product] + tests
 
     logger.info("Executing command: %s" % " ".join(command))
 
     subprocess.check_call(command)
 
+    wptreport = find_wptreport(wpt_args)
+    if wptreport:
+        gzip_file(wptreport)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument("--browser", action="store", required=True)
     parser.add_argument("--commit-range", action="store",
                         help="""Git commit range. If specified, this will be
                              supplied to the `wpt tests-affected` command to
-                             determine the list of tests executed""")
-    parser.add_argument("wpt_args", nargs="*")
+                             determine the list of test to execute""")
+    parser.add_argument("product", action="store",
+                        help="Browser to run tests in")
+    parser.add_argument("wpt_args", nargs="*",
+                        help="Arguments to forward to `wpt run` command")
     main(**vars(parser.parse_args()))

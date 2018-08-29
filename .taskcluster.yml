@@ -72,23 +72,14 @@ tasks:
                       ${event.after}
                       ${browser.name}-${browser.channel};
                     cd ~/web-platform-tests;
-                    ./wpt manifest-download || true;
                     ./tools/ci/taskcluster-run.py
-                      --browser ${browser.name}
+                      ${browser.name}
                       --
-                      --log-tbpl=../artifacts/log_tbpl.log
-                      --log-tbpl-level=info
                       --log-wptreport=../artifacts/wpt_report.json
-                      --log-mach=-
-                      -y
-                      --no-pause
-                      --no-restart-on-unexpected
-                      --install-fonts
                       --no-fail-on-unexpected
                       --test-type=${chunk[0]}
                       --this-chunk=${chunk[1]}
                       --total-chunks=${chunk[2]};
-                    gzip ../artifacts/wpt_report.json;
     - $if: tasks_for == "github-pull-request"
       then:
         $map: [{name: firefox, channel: nightly}, {name: chrome, channel: dev}]
@@ -137,24 +128,15 @@ tasks:
                     ${event.pull_request.base.sha}
                     ${browser.name}-${browser.channel};
                   cd ~/web-platform-tests;
-                  ./wpt manifest-download || true;
                   git fetch
                     ${event.repository.clone_url}
                     refs/pull/${event.number}/head;
                   git checkout FETCH_HEAD;
                   result=0;
                   ./tools/ci/taskcluster-run.py
-                    --browser ${browser.name}
                     --commit-range ${event.pull_request.base.sha}...
+                    ${browser.name}
                     --
-                    ${operation.extra_args}
-                    --log-tbpl=../artifacts/log_tbpl.log
-                    --log-tbpl-level=info
-                    --log-mach=-
-                    -y
-                    --no-pause
-                    --no-restart-on-unexpected
-                     --install-fonts || result=$?;
-                  if [ -f ../artifacts/wpt_report.json ]; then gzip ../artifacts/wpt_report.json; fi;
+                    ${operation.extra_args} || result=$?;
                   echo $result > ../artifacts/run-return-code.txt;
                   echo "Command exited with code $result (failures are allowed while this task is being vetted)."

@@ -79,7 +79,7 @@ def main(request, response):
             document.head.appendChild(ee);
             """.format(
                 "" if _crossOrigin == "Not set" else "\n\t\t\tee.crossOrigin = '{}';".format(_crossOrigin),
-                request.server.config["domains"][""] if _to[3] == "A" else request.server.config["domains"]["www2"],
+                request.server.config["domains"][""][""] if _to[3] == "A" else request.server.config["domains"][""]["www2"],
                 request.server.config["ports"]["http"][0],
                 _origin,
                 _credentials
@@ -106,7 +106,7 @@ def main(request, response):
             document.head.appendChild(ee);
             """.format(
                 "" if _crossOrigin == "Not set" else "\n\t\t\tee.crossOrigin = '{}';".format(_crossOrigin),
-                request.server.config["domains"][""] if _to[3] == "A" else request.server.config["domains"]["www2"],
+                request.server.config["domains"][""][""] if _to[3] == "A" else request.server.config["domains"][""]["www2"],
                 request.server.config["ports"]["http"][0],
                 _origin,
                 _credentials
@@ -128,7 +128,7 @@ def main(request, response):
             document.head.appendChild(ee);
             """.format(
                 "" if _crossOrigin == "Not set" else "\n\t\t\tee.crossOrigin = '{}';".format(_crossOrigin),
-                request.server.config["domains"][""] if _to[3] == "A" else request.server.config["domains"]["www2"],
+                request.server.config["domains"][""][""] if _to[3] == "A" else request.server.config["domains"][""]["www2"],
                 request.server.config["ports"]["http"][0],
                 _origin,
                 _credentials
@@ -147,7 +147,7 @@ def main(request, response):
             document.head.appendChild(ee);
             """.format(
                 "" if _crossOrigin == "Not set" else "\n\t\t\tee.crossOrigin = '{}';".format(_crossOrigin),
-                request.server.config["domains"][""] if _to[3] == "A" else request.server.config["domains"]["www2"],
+                request.server.config["domains"][""][""] if _to[3] == "A" else request.server.config["domains"][""]["www2"],
                 request.server.config["ports"]["http"][0],
                 _origin,
                 _credentials
@@ -170,7 +170,7 @@ def main(request, response):
             document.head.appendChild(ee);
             """.format(
                 "" if _crossOrigin == "Not set" else "\n\t\t\tee.crossOrigin = '{}';".format(_crossOrigin),
-                request.server.config["domains"][""] if _from[3] == "A" else request.server.config["domains"]["www2"],
+                request.server.config["domains"][""][""] if _from[3] == "A" else request.server.config["domains"][""]["www2"],
                 request.server.config["ports"]["http"][0],
                 _origin,
                 _credentials

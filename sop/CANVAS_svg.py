@@ -87,8 +87,8 @@ def main(request, response):
     global tests, head, foot
 
     origins = {
-                "A" : "http://" + request.server.config["domains"][""] + ":" + str(request.server.config["ports"]["http"][0]),
-                "B" : "http://" + request.server.config["domains"]["www2"] + ":" + str(request.server.config["ports"]["http"][0])
+                "A" : "http://" + request.server.config["domains"][""][""] + ":" + str(request.server.config["ports"]["http"][0]),
+                "B" : "http://" + request.server.config["domains"][""]["www2"] + ":" + str(request.server.config["ports"]["http"][0])
             }
 
     response.headers.set("Content-type", "text/html")

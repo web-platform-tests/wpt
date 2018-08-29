@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VIDEO test cases</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+
+        // -------------------- DEFINITIONS -----------------------------------
+        // ----- SAME-ORIGIN -----
+        var test_HD_A_VIDEO_ED_A_r = async_test("VIDEO - partial same-origin read");
+
+        // ----- CROSS-ORIGIN -----
+        var test_HD_A_VIDEO_ED_B_r = async_test("VIDEO - partial cross-origin read");
+
+
+        // -------------------- IMPLEMENTATIONS -------------------------------
+        // ----- SAME-ORIGIN -----
+
+        function f_test_HD_A_VIDEO_ED_A_r() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_VIDEO_ED_A_r.step_func_done(function() {
+                assert_equals(video.videoWidth, 112);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/ogg.py';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[]}}:{{ports[http][0]}}/sop/resources/mp4.py';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        // ----- CROSS-ORIGIN -----
+        function f_test_HD_A_VIDEO_ED_B_r() {
+            var video = document.createElement('video');
+            video.onloadeddata = test_HD_A_VIDEO_ED_B_r.step_func_done(function() {
+                assert_equals(video.videoWidth, 112);
+            });
+
+            var source2 = document.createElement('source');
+            source2.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/ogg.py';
+            source2.type = 'video/ogg';
+            video.appendChild(source2);
+
+            var source = document.createElement('source');
+            source.src = 'http://{{domains[www2]}}:{{ports[http][0]}}/sop/resources/mp4.py';
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.controls = 'true';
+            video.style.display = 'none';
+
+            document.body.appendChild(video);
+        }
+
+        // -------------------- FUNCTION CALLS -------------------------------
+        // ----- SAME-ORIGIN -----
+        f_test_HD_A_VIDEO_ED_A_r();
+
+        // ----- CROSS-ORIGIN -----
+        f_test_HD_A_VIDEO_ED_B_r();
+
+    </script>
+
+    <div id="log"></div>
+
+</body>
+</html>

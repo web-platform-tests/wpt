@@ -47,10 +47,8 @@ def main(request, response):
     for (testname) in tests:
         settings = parse_testname(testname)
 
-        test_check = ""
-
         privilege = get_privilege(settings)
-        
+
         description = "{} - {} to {} - {} {}".format(
                                                     settings["ee"],
                                                     settings["from"],
@@ -111,7 +109,7 @@ def get_privilege(settings):
     else:
         throw("ERROR: Unrecognized privilege")
 
-    if(settings["from_domain"] != settings["to_domain"] and settings["from_domain"] == "ED"):
+    if(settings["from_domain"] != settings["to_domain"] and settings["from"] == "ED"):
         if(privilege != "execute"):
             privilege = "partial " + privilege
 

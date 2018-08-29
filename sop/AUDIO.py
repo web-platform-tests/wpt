@@ -66,7 +66,7 @@ def main(request, response):
         audio.pause();
         {}
     }})
-    
+
     var source = document.createElement("source");
     source.src = "{}/sop/resources/mp3.py";
     source.type = "audio/mpeg";

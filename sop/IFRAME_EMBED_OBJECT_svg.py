@@ -60,10 +60,8 @@ def main(request, response):
     for (testname, expected) in tests:
         settings = parse_testname(testname)
 
-        test_check = ""
-
         privilege = get_privilege(settings)
-        
+
         description = "{} - {} to {} - {} {}".format(
                                                     settings["ee"],
                                                     settings["from"],
@@ -163,7 +161,7 @@ def get_test_payload(expected, privilege, testname, description):
     if(expected == "fail"):
         payload = """
 assert_equals(ee.getSVGDocument(), null);"""
-    
+
     elif(privilege == "write"):
         payload = """
 svgDoc = ee.getSVGDocument();
@@ -172,11 +170,11 @@ assert_not_equals(firstChild, null);
 svgDoc.documentElement.removeChild(firstChild);
 var firstChild = svgDoc.documentElement.firstElementChild;
 assert_equals(firstChild, null);"""
-    
+
     elif(privilege == "read"):
         payload = """
 svgDoc = ee.getSVGDocument();
 var firstChildName = svgDoc.documentElement.firstElementChild.nodeName;
 assert_equals(firstChildName, "rect");"""
-    
+
     return payload

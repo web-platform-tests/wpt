@@ -112,9 +112,6 @@ def main(request, response):
         if ("allow-same-origin" not in sandbox) and (settings["from_domain"] == settings["to_domain"]) and (settings["from"] == "ED"):
             privilege = "partial " + privilege
 
-
-        test_check = ""
-        
         if(sandbox == ""):
             sandbox_desc = "Not Set"
         elif(sandbox == "ee.sandbox = '';"):
@@ -247,7 +244,7 @@ def get_sandbox(sandbox_string):
 
     elif(sandbox_string == "_empty_value"):
         sandbox = "ee.sandbox = '';"
-    
+
     else:
         sandbox = "ee.sandbox = '"
         s_string = sandbox_string.split("allow")

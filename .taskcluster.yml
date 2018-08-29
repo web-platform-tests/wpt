@@ -134,7 +134,7 @@ tasks:
                   git checkout FETCH_HEAD;
                   result=0;
                   ./tools/ci/taskcluster-run.py
-                    --commit-range ${event.pull_request.base.sha}...
+                    --commit-range ${event.pull_request.base.sha}..
                     ${browser.name}
                     --
                     ${operation.extra_args} || result=$?;

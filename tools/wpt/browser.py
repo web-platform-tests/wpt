@@ -31,7 +31,7 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         """Find the binary of the browser.
 
         If the WebDriver for the browser is able to find the binary itself, this
@@ -121,7 +121,7 @@ class Firefox(Browser):
             # os.getcwd() doesn't include the venv path
             dest = os.path.join(os.getcwd(), "_venv")
 
-        dest = os.path.join(dest, "browsers")
+        dest = os.path.join(dest, "browsers", channel)
 
         filename = FactoryScraper(scraper[channel],
                                   branch=branch[channel],
@@ -167,11 +167,14 @@ class Firefox(Browser):
 
         return binary
 
-    def find_binary(self, venv_path=None):
+    def find_binary(self, venv_path=None, channel=None):
         if venv_path is None:
             venv_path = os.path.join(os.getcwd(), "_venv")
 
-        binary = self.find_binary_path(os.path.join(venv_path, "browsers"))
+        path = os.path.join(venv_path, "browsers")
+        if channel is not None:
+            path = os.path.join(path, channel)
+        binary = self.find_binary_path(path)
 
         if not binary and uname[0] == "Darwin":
             macpaths = ["/Applications/FirefoxNightly.app/Contents/MacOS",
@@ -211,6 +214,18 @@ class Firefox(Browser):
         if channel == "stable":
             repo = "https://hg.mozilla.org/releases/mozilla-release"
             tag = "FIREFOX_%s_RELEASE" % version.replace(".", "_")
+        elif channel == "beta":
+            repo = "https://hg.mozilla.org/releases/mozilla-beta"
+            major_version = version.split(".", 1)[0]
+            # For beta we have a different format for betas that are now in stable releases
+            # vs those that are not
+            tags = get("https://hg.mozilla.org/releases/mozilla-beta/json-tags").json()["tags"]
+            tags = {item["tag"] for item in tags}
+            end_tag = "FIREFOX_BETA_%s_END" % major_version
+            if end_tag in tags:
+                tag = end_tag
+            else:
+                tag = "tip"
         else:
             repo = "https://hg.mozilla.org/mozilla-central"
             if channel == "beta":
@@ -223,8 +238,14 @@ class Firefox(Browser):
 
         return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
 
-    def install_prefs(self, binary, dest=None):
-        version, channel = self.get_version_and_channel(binary)
+    def install_prefs(self, binary, dest=None, channel=None):
+        version, channel_ = self.get_version_and_channel(binary)
+        if channel is not None and channel != channel_:
+            # Beta doesn't always seem to have the b in the version string, so allow the
+            # manually supplied value to override the one from the binary
+            logger.warning("Supplied channel doesn't match binary, using supplied channel")
+        elif channel is None:
+            channel = channel_
         if dest is None:
             dest = os.pwd
 
@@ -294,9 +315,9 @@ class Firefox(Browser):
             untar(get(url).raw, dest=dest)
         return find_executable(os.path.join(dest, "geckodriver"))
 
-    def version(self, binary=None):
+    def version(self, binary=None, channel=None):
         """Retrieve the release version of the installed browser."""
-        binary = binary or self.find_binary()
+        binary = binary or self.find_binary(channel)
         version_string = call(binary, "--version").strip()
         m = re.match(r"Mozilla Firefox (.*)", version_string)
         if not m:
@@ -313,7 +334,7 @@ class Fennec(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self, venv_path=None):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -367,7 +388,7 @@ class Chrome(Browser):
 
         return "%s%s" % (platform, bits)
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -415,7 +436,7 @@ class ChromeAndroid(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -468,7 +489,7 @@ class Opera(Browser):
 
         return "%s%s" % (platform, bits)
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -511,7 +532,7 @@ class Edge(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -533,7 +554,7 @@ class InternetExplorer(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -558,7 +579,7 @@ class Safari(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self):
+    def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -611,8 +632,11 @@ class Servo(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def find_binary(self):
-        return find_executable("servo")
+    def find_binary(self, venv_path=None, channel=None):
+        path = find_executable("servo", os.path.join(venv_path, "servo"))
+        if path is None:
+            path = find_executable("servo")
+        return path
 
     def find_webdriver(self):
         return None
@@ -635,7 +659,7 @@ class Sauce(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self):
+    def find_binary(self, venev_path=None, channel=None):
         raise NotImplementedError
 
     def find_webdriver(self):
@@ -657,7 +681,7 @@ class WebKit(Browser):
     def install(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def find_binary(self, path=None):
+    def find_binary(self, venv_path=None, channel=None):
         return None
 
     def find_webdriver(self):

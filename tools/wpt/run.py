@@ -173,7 +173,8 @@ class Firefox(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
-            binary = self.browser.find_binary(self.venv.path)
+            binary = self.browser.find_binary(self.venv.path,
+                                              kwargs["browser_channel"])
             if binary is None:
                 raise WptrunError("""Firefox binary not found on $PATH.
 
@@ -211,7 +212,9 @@ Consider installing certutil via your OS package manager or directly.""")
                 kwargs["test_types"].remove("wdspec")
 
         if kwargs["prefs_root"] is None:
-            prefs_root = self.browser.install_prefs(kwargs["binary"], self.venv.path)
+            prefs_root = self.browser.install_prefs(kwargs["binary"],
+                                                    self.venv.path,
+                                                    channel=kwargs["browser_channel"])
             kwargs["prefs_root"] = prefs_root
 
 
@@ -374,7 +377,7 @@ class Servo(BrowserSetup):
 
     def setup_kwargs(self, kwargs):
         if kwargs["binary"] is None:
-            binary = self.browser.find_binary()
+            binary = self.browser.find_binary(self.venv.path, None)
 
             if binary is None:
                 raise WptrunError("Unable to find servo binary on the PATH")

@@ -15,7 +15,6 @@ promise_test(async t => {
   video.loop = true;
   let watcher = new EventWatcher(t, video, ["playing", "pause"]);
   document.body.appendChild(video);
-  let done = false;
 
   await watcher.wait_for("playing");
   assert_false(video.paused, "paused when video is display");

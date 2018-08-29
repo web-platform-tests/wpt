@@ -87,8 +87,10 @@ class LogHandler(reader.LogHandler):
         test = self.find_or_create_test(data)
         test["status"][data["status"]] += 1
         start_time = test.pop("start_time")
+        # Timestamps are in ms since epoch.
         test["duration"] = data["time"] - start_time
-        test["timeout"] = data["extra"]["test_timeout"]
+        # test_timeout is in seconds; convert it to ms.
+        test["timeout"] = data["extra"]["test_timeout"] * 1000
 
 
 def is_inconsistent(results_dict, iterations):
@@ -287,7 +289,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
             write_duration(logger, longest_duration)
             return 1
 
-        max_duration = timeout * 1000 * 0.8
+        max_duration = timeout * 0.8
         if longest_duration > max_duration:
             step_results.append((desc, "FAIL"))
             logger.info('::: Test results were consistent but longest duration was %sms (expected < %sms).' % (longest_duration,

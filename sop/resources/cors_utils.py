@@ -2,8 +2,8 @@
 # This function sets CORS header according to the get parameter given in the request
 #
 def cors(request, response):
-    originA = "http://" + request.server.config["domains"][""] + ":" + str(request.server.config["ports"]["http"][0])
-    originB = "http://" + request.server.config["domains"]["www2"] + ":" + str(request.server.config["ports"]["http"][0])
+    originA = "http://" + str(request.server.config["domains"][""]) + ":" + str(request.server.config["ports"]["http"][0])
+    originB = "http://" + str(request.server.config["domains"]["www2"]) + ":" + str(request.server.config["ports"]["http"][0])
 
     if "origin" in request.GET:
         origin = request.GET.first("origin")

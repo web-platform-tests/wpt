@@ -14,6 +14,9 @@
       // Test various convolver configurations when the convolver response has
       // a four channels.
 
+      // This is somewhat arbitrary.  It is the minimum value for which tests
+      // pass with both FFmpeg and KISS FFT implementations for 256 points.
+      // The value was similar for each implementation.
       const absoluteThreshold = 3 * Math.pow(2, -22);
 
       // Fairly arbitrary sample rate, except that we want the rate to be a

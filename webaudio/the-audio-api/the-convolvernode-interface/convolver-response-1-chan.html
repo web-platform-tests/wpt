@@ -14,7 +14,10 @@
       // Test various convolver configurations when the convolver response has
       // one channel (mono).
 
-      const absoluteThreshold = 4.7684e-7; // 2^-21
+      // This is somewhat arbitrary.  It is the minimum value for which tests
+      // pass with both FFmpeg and KISS FFT implementations for 256 points.
+      // The value was similar for each implementation.
+      const absoluteThreshold = Math.pow(2, -21);
 
       // Fairly arbitrary sample rate, except that we want the rate to be a
       // power of two so that 1/sampleRate is exactly respresentable as a

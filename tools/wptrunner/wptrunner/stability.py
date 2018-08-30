@@ -330,7 +330,7 @@ def check_stability(logger, repeat_loop=10, repeat_restart=5, chaos_mode=True, m
             write_summary(logger, step_results, "FAIL")
             return 1
 
-        if len(slow) > 0:
+        if slow:
             step_results.append((desc, "FAIL"))
             write_slow_tests(logger.info, slow)
             write_summary(logger, step_results, "FAIL")

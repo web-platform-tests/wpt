@@ -1,4 +1,6 @@
-_LOCK_KEY = "network-error-logging:lock"
+import time
+
+_LOCK_KEY = "67966d2e-a847-41d8-b7c3-5f6aee3375ba"
 _TIMEOUT = 5  # seconds
 
 def wait_for_lock(request):

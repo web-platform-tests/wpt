@@ -50,13 +50,15 @@ test(() => {
   const validationURL = "https://pass.com";
   const event = new MerchantValidationEvent("test", { validationURL });
   assert_idl_attribute(event, "validationURL");
-  assert_equals(event.validationURL, validationURL);
+  assert_equals(event.validationURL, "https://pass.com/");
 }, "Must have a validationURL IDL attribute, which is initialized with to the validationURL dictionary value.");
 
 test(() => {
-  const validationURL = "http://\ufdd0zyx.com"; // invalid character
-  assert_throw(() => new MerchantValidationEvent("test", { validationURL }) );
-}, "Must throw if initialized with an invalid URL.");
+  const validationURL = "http://\u005B"; // invalid URL
+  assert_throws(new TypeError(), () => {
+    new MerchantValidationEvent("test", { validationURL })
+  });
+}, "Must throw TypeError if initialized with an invalid URL.");
 
 test(() => {
   const validationURL = "";

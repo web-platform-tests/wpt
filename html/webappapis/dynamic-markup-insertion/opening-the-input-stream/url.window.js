@@ -13,16 +13,14 @@ async_test(t => {
   const frameURL = new URL("resources/page-with-frame.html", document.URL).href;
   const frame = document.body.appendChild(document.createElement("iframe"));
   t.add_cleanup(() => frame.remove());
-
-  // We do not test for win.location.href in this test due to
-  // https://github.com/whatwg/html/issues/3959.
-
   frame.onload = t.step_func(() => {
     assert_equals(frame.contentDocument.URL, frameURL);
+    assert_equals(frame.contentWindow.location.href, frameURL);
     const childFrame = frame.contentDocument.querySelector("iframe");
     const childDoc = childFrame.contentDocument;
     const childWin = childFrame.contentWindow;
     assert_equals(childDoc.URL, blankURL);
+    assert_equals(childWin.location.href, blankURL);
 
     // Right now childDoc is still fully active.
 
@@ -30,6 +28,7 @@ async_test(t => {
       // Now childDoc is still active but no longer fully active.
       assert_equals(childDoc.open(), childDoc);
       assert_equals(childDoc.URL, blankURL);
+      assert_equals(childWin.location.href, blankURL);
     });
     frame.src = "/common/blank.html";
   });

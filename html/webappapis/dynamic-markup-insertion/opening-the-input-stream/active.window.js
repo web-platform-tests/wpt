@@ -3,19 +3,21 @@ function assertOpenIsEffective(doc, initialNodeCount) {
 
   // Test direct document.open() call.
   assert_equals(doc.open(), doc);
-  assert_equals(doc.childNodes.length, 0);
+  assert_equals(doc.childNodes.length, 0, "after open: no nodes in document");
   doc.write("<!DOCTYPE html>");
-  assert_equals(doc.childNodes.length, 1);
+  assert_equals(doc.childNodes.length, 1, "after write: doctype node in document");
   doc.close();
-  assert_equals(doc.childNodes.length, 2);
+  assert_equals(doc.childNodes.length, 2, "after parser close: doctype node and an html element in document");
 
-  // Test implicit document.open() call through write().
+  // Test implicit document.open() call through write(). Since we called
+  // doc.close() above, which sets the insertion point of the parser to
+  // undefined, document.write() will run the document open steps.
   doc.write();
-  assert_equals(doc.childNodes.length, 0);
+  assert_equals(doc.childNodes.length, 0, "after implicit open: no nodes in document");
   doc.write("<!DOCTYPE html>");
-  assert_equals(doc.childNodes.length, 1);
+  assert_equals(doc.childNodes.length, 1, "after write: doctype node in document");
   doc.close();
-  assert_equals(doc.childNodes.length, 2);
+  assert_equals(doc.childNodes.length, 2, "after parser close: doctype node and an html element in document");
 }
 
 test(t => {
@@ -45,7 +47,6 @@ async_test(t => {
 
 test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
-  t.add_cleanup(() => frame.remove());
   const doc = frame.contentDocument;
 
   // Right now the frame is connected and it has an active document.
@@ -61,14 +62,14 @@ async_test(t => {
   frame.src = "resources/dummy.html";
 
   frame.onload = t.step_func(() => {
-    const doc = frame.contentDocument;
+    const firstDocument = frame.contentDocument;
     // Right now the frame is connected and it has an active document.
 
     frame.onload = t.step_func_done(() => {
       // Now even though the frame is still connected, its document is no
       // longer active.
-      assert_not_equals(frame.contentDocument, doc);
-      assertOpenIsEffective(doc, 2);
+      assert_not_equals(frame.contentDocument, firstDocument);
+      assertOpenIsEffective(firstDocument, 2);
     });
 
     frame.src = "/common/blank.html";
@@ -76,15 +77,22 @@ async_test(t => {
 }, "document.open() does not change document's URL (non-active document with an associated Window object; navigated away)");
 
 test(t => {
-  const frame = document.body.appendChild(document.createElement("iframe"));
-  t.add_cleanup(() => frame.remove());
-  const doc = frame.contentDocument.implementation.createHTMLDocument();
+  const doc = document.implementation.createHTMLDocument();
   assertOpenIsEffective(doc, 2);
 }, "document.open() does not change document's URL (non-active document without an associated Window object; createHTMLDocument)");
 
 test(t => {
-  const frame = document.body.appendChild(document.createElement("iframe"));
-  t.add_cleanup(() => frame.remove());
-  const doc = new frame.contentWindow.DOMParser().parseFromString("", "text/html");
+  const doc = new DOMParser().parseFromString("", "text/html");
   assertOpenIsEffective(doc, 1);
 }, "document.open() does not change document's URL (non-active document without an associated Window object; DOMParser)");
+
+async_test(t => {
+  const xhr = new XMLHttpRequest();
+  xhr.onload = t.step_func_done(() => {
+    assert_equals(xhr.status, 200);
+    assertOpenIsEffective(xhr.responseXML, 2);
+  });
+  xhr.responseType = "document";
+  xhr.open("GET", "resources/dummy.html");
+  xhr.send();
+}, "document.open() does not change document's URL (non-active document without an associated Window object; XMLHttpRequest)");

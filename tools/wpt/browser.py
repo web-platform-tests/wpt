@@ -407,7 +407,7 @@ class ChromeAndroid(Browser):
     def version(self, binary):
         return None
 
-class ChromeWebdriver(Chrome):
+class ChromeWebDriver(Chrome):
     """Chrome-specific interface for chrome without using selenium.
 
     Includes webdriver installation.
@@ -509,7 +509,7 @@ class Edge(Browser):
         return None
 
 
-class EdgeWebdriver(Edge):
+class EdgeWebDriver(Edge):
     product = "edge_webdriver"
 
 
@@ -560,7 +560,7 @@ class Safari(Browser):
         return None
 
 
-class SafariWebdriver(Safari):
+class SafariWebDriver(Safari):
     product = "safari_webdriver"
 
 

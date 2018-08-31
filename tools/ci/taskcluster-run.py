@@ -49,9 +49,6 @@ def main(product, commit_range, wpt_args):
     )
     logger.addHandler(handler)
 
-    child = subprocess.Popen(['python', './wpt', 'manifest-download'])
-    child.wait()
-
     if commit_range:
         logger.info(
             "Identifying tests affected in range '%s'..." % commit_range

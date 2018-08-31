@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Writing modes - Absolutely positioned box in flipped blocks mode inside iframe</title>
+    <link rel="author" title="Suneel Kota" href="mailto:suneel.kota@samsung.com">
+    <link rel="help" href="https://www.w3.org/TR/css-writing-modes-4/#vertical-layout">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <iframe id="boxframe" srcdoc="
+      &lt;!DOCTYPE html&gt;
+      &lt;html&gt;
+        &lt;head&gt;
+          &lt;style&gt;
+            html {
+              writing-mode: vertical-rl;
+              overflow: scroll;
+            }
+            div {
+              position: fixed;
+              left: 0;
+              top: 0;
+              width: 20px;
+              height: 50px;
+              background-color: #0ff;
+          }
+          &lt;/style&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+          &lt;div&gt;&lt;/div&gt;
+        &lt;/body&gt;
+      &lt;/html&gt;
+    "></iframe>
+  <script>
+  async_test(function(t) {
+    var iframe = document.getElementById("boxframe");
+    iframe.onload = t.step_func_done(onIframeLoad);
+
+    function onIframeLoad(){
+      var box = frames[0].document.querySelector("div");
+      assert_equals(box.offsetLeft, 0);
+    }
+  });
+  </script>
+  </body>
+</html>

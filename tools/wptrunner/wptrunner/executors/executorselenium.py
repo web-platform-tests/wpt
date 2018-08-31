@@ -96,7 +96,8 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
     def get_test_window(self, window_id, parent):
         test_window = None
         try:
-            # Try this, it's in Level 1 but nothing supports it yet
+            # Try using the JSON serialization of the WindowProxy object,
+            # it's in Level 1 but nothing supports it yet
             win_s = self.webdriver.execute_script("return window['%s'];" % window_id)
             win_obj = json.loads(win_s)
             test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]

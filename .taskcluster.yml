@@ -46,10 +46,12 @@ tasks:
           created: {$fromNow: ''}
           deadline: {$fromNow: '24 hours'}
           provisionerId: aws-provisioner-v1
-          # Contributors interested in configurating TaskCluster to run
-          # against their fork of WPT should change the `workerType` to
-          # "github-worker".
-          workerType: wpt-docker-worker
+          workerType:
+            $if: event.repository.full_name == 'web-platform-tests/wpt'
+            then:
+              wpt-docker-worker
+            else:
+              github-worker
           metadata:
             name: wpt-${browser.name}-${browser.channel}-${chunk[0]}-${chunk[1]}
             description: >-

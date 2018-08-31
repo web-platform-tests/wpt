@@ -55,7 +55,7 @@ tasks:
                 owner: ${event.pusher.email}
                 source: ${event.repository.url}
               payload:
-                image: jugglinmike/web-platform-tests:0.19
+                image: jugglinmike/web-platform-tests:0.20
                 maxRunTime: 7200
                 artifacts:
                   public/results:
@@ -70,7 +70,6 @@ tasks:
                       ${event.repository.url}
                       ${event.ref[len('refs/heads/'):]}
                       ${event.after}
-                      50
                       ${browser.name}-${browser.channel};
                     cd ~/web-platform-tests;
                     ./tools/ci/taskcluster-run.py
@@ -112,12 +111,18 @@ tasks:
               owner: ${event.pull_request.user.login}@users.noreply.github.com
               source: ${event.repository.url}
             payload:
-              image: jugglinmike/web-platform-tests:0.19
+              image: jugglinmike/web-platform-tests:0.20
               maxRunTime: 7200
               artifacts:
                 public/results:
                   path: /home/test/artifacts
                   type: directory
+              # Fetch the GitHub-provided merge commit (rather than the pull
+              # request branch) so that the tasks simulate the behavior of the
+              # submitted patch after it is merged. Using the merge commit also
+              # simplifies detection of modified files because the first parent
+              # of the merge commit can consistently be used to summarize the
+              # changes.
               command:
                 - /bin/bash
                 - --login
@@ -125,14 +130,13 @@ tasks:
                 - set -ex;
                   ~/start.sh
                     ${event.repository.clone_url}
-                    refs/pull/${event.number}/head
-                    ${event.pull_request.head.sha}
-                    ${event.pull_request.commits + 1}
+                    refs/pull/${event.number}/merge
+                    FETCH_HEAD
                     ${browser.name}-${browser.channel};
                   cd ~/web-platform-tests;
                   result=0;
                   ./tools/ci/taskcluster-run.py
-                    --commit-range HEAD~${event.pull_request.commits}
+                    --commit-range HEAD^
                     ${browser.name}
                     --
                     ${operation.extra_args} || result=$?;

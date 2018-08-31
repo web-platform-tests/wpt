@@ -14,8 +14,7 @@ set -ex
 REMOTE=${1:-https://github.com/web-platform-tests/wpt}
 REF=${2:-master}
 REVISION=${3:-FETCH_HEAD}
-DEPTH=${4:-50}
-BROWSER=${5:-all}
+BROWSER=${4:-all}
 
 cd ~
 
@@ -24,9 +23,8 @@ cd web-platform-tests
 git init
 git remote add origin ${REMOTE}
 
-# Initially we fetch a limited number of commits in order to save several
-# minutes of fetching
-git fetch --quiet --depth=${DEPTH} origin ${REF}
+# Initially we just fetch 50 commits in order to save several minutes of fetching
+git fetch --quiet --depth=50 origin ${REF}
 
 if [[ ! `git rev-parse --verify -q ${REVISION}` ]];
 then

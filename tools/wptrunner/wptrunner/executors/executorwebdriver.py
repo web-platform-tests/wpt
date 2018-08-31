@@ -328,7 +328,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
                                  timeout_multiplier=timeout_multiplier,
                                  debug_info=debug_info)
         self.protocol = WebDriverProtocol(self, browser,
-                                         capabilities=capabilities)
+                                          capabilities=capabilities)
         self.implementation = RefTestImplementation(self)
         self.close_after_done = close_after_done
         self.has_window = False

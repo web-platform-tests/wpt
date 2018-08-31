@@ -55,7 +55,7 @@ tasks:
                 owner: ${event.pusher.email}
                 source: ${event.repository.url}
               payload:
-                image: gsnedders/web-platform-tests:0.13
+                image: jugglinmike/web-platform-tests:0.19
                 maxRunTime: 7200
                 artifacts:
                   public/results:
@@ -70,6 +70,7 @@ tasks:
                       ${event.repository.url}
                       ${event.ref[len('refs/heads/'):]}
                       ${event.after}
+                      50
                       ${browser.name}-${browser.channel};
                     cd ~/web-platform-tests;
                     ./tools/ci/taskcluster-run.py
@@ -111,7 +112,7 @@ tasks:
               owner: ${event.pull_request.user.login}@users.noreply.github.com
               source: ${event.repository.url}
             payload:
-              image: gsnedders/web-platform-tests:0.13
+              image: jugglinmike/web-platform-tests:0.19
               maxRunTime: 7200
               artifacts:
                 public/results:
@@ -124,17 +125,14 @@ tasks:
                 - set -ex;
                   ~/start.sh
                     ${event.repository.clone_url}
-                    ${event.pull_request.base.ref}
-                    ${event.pull_request.base.sha}
+                    refs/pull/${event.number}/head
+                    ${event.pull_request.head.sha}
+                    ${event.pull_request.commits + 1}
                     ${browser.name}-${browser.channel};
                   cd ~/web-platform-tests;
-                  git fetch
-                    ${event.repository.clone_url}
-                    refs/pull/${event.number}/head;
-                  git checkout FETCH_HEAD;
                   result=0;
                   ./tools/ci/taskcluster-run.py
-                    --commit-range ${event.pull_request.base.sha}..
+                    --commit-range HEAD~${event.pull_request.commits}
                     ${browser.name}
                     --
                     ${operation.extra_args} || result=$?;

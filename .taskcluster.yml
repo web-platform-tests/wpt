@@ -68,7 +68,7 @@ tasks:
                   - set -ex;
                     ~/start.sh
                       ${event.repository.url}
-                      ${event.ref[len('refs/heads/'):]}
+                      ${event.ref}
                       ${event.after}
                       ${browser.name}-${browser.channel};
                     cd ~/web-platform-tests;

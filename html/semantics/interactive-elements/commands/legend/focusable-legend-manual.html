@@ -5,9 +5,10 @@
 <script src=../common/accesskey.js></script>
 <p>Press the access key combination for "a". <kbd></kbd></p>
 <fieldset>
- <legend tabindex=0 onclick="fail('unexpected click event on legend')" onfocus="pass()" accesskey=a>
+ <legend tabindex=0 onclick="fail('unexpected click event on legend')"
+                    onfocus="fail('legend was focused')" accesskey=a>
   legend
-  <input onfocus="fail('input in legend was focused')">
+  <input onfocus="pass()">
  </legend>
  <input onfocus="fail('input after legend was focused')">
 </fieldset>

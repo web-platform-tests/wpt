@@ -593,9 +593,19 @@ class ActionSequenceAction(object):
 
     def __call__(self, payload):
         # TODO: some sort of shallow error checking
-
         actions = payload["actions"]
-        self.logger.debug(actions)
-        self.logger.debug(payload["action"])
-        self.logger.debug("Sending action sequence to window")
-        self.protocol.action_sequence.action_sequence(actions)
+        for actionSequence in actions:
+            if actionSequence["type"] == "pointer":
+                for action in actionSequence["actions"]:
+                    if (action["type"] == "pointerMove" and
+                        isinstance(action["origin"], dict)):
+                        action["origin"] = self.get_element(action["origin"]["selector"])
+        self.protocol.action_sequence.send_actions({"actions": actions})
+
+    def get_element(self, selector):
+        elements = self.protocol.select.elements_by_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector matches no elements")
+        elif len(elements) > 1:
+            raise ValueError("Selector matches multiple elements")
+        return elements[0]

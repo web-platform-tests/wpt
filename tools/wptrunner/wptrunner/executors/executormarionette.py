@@ -20,7 +20,8 @@ from .base import (CallbackHandler,
                    WebDriverProtocol,
                    extra_timeout,
                    strip_server)
-from .protocol import (AssertsProtocolPart,
+from .protocol import (ActionSequenceProtocolPart,
+                       AssertsProtocolPart,
                        BaseProtocolPart,
                        TestharnessProtocolPart,
                        PrefsProtocolPart,
@@ -358,6 +359,16 @@ class MarionetteSendKeysProtocolPart(SendKeysProtocolPart):
         return element.send_keys(keys)
 
 
+class MarionetteActionSequenceProtocolPart(ActionSequenceProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def send_actions(self, actions):
+        actions = self.marionette._to_json(actions)
+        self.logger.info(actions)
+        self.marionette._send_message("WebDriver:PerformActions", actions)
+
+
 class MarionetteTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
         self.marionette = self.parent.marionette
@@ -432,6 +443,7 @@ class MarionetteProtocol(Protocol):
                   MarionetteSelectorProtocolPart,
                   MarionetteClickProtocolPart,
                   MarionetteSendKeysProtocolPart,
+                  MarionetteActionSequenceProtocolPart,
                   MarionetteTestDriverProtocolPart,
                   MarionetteAssertsProtocolPart,
                   MarionetteCoverageProtocolPart]

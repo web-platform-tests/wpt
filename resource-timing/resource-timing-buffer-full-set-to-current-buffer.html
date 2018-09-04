@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="help" href="https://w3c.github.io/resource-timing/#dom-performance-setresourcetimingbuffersize">
+<title>This test validates that setResourceTimingBufferFull behaves appropriately when set to the current buffer level.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function loadRandomResource() {
+    return fetch(window.location.href + "?" + Math.random());
+}
+
+setup(function() {
+    // Get the browser into a consistent state.
+    performance.clearResourceTimings();
+    performance.setResourceTimingBufferSize(100);
+
+    window.result = "";
+
+});
+
+let gatherEntries = new Promise(function(resolve, reject) {
+    // Gather up 3 Resource Entries to kick off the rest of test behavior.
+    let observer = new PerformanceObserver(function(list) {
+        let allResourceEntries = performance.getEntriesByType("resource");
+        if (allResourceEntries.length !== 3)
+            return;
+        observer.disconnect();
+        resolve();
+    });
+    observer.observe({entryTypes: ["resource"]});
+    for (let i = 0; i < 3; ++i)
+        loadRandomResource();
+});
+
+let setBufferSize = new Promise(function(resolve, reject) {
+    performance.onresourcetimingbufferfull = function() {
+        window.result += "Event Fired with "  + performance.getEntriesByType("resource").length + " entries. ";
+    };
+    window.result += "before setLimit(3). ";
+    performance.setResourceTimingBufferSize(3);
+    window.result += "after setLimit(3). ";
+    resolve();
+});
+
+promise_test(function() {
+    return gatherEntries;
+}, "Reset the entries number");
+promise_test(function() {
+    return setBufferSize;
+}, "Set the buffer size");
+promise_test(function() {
+    return new Promise(function(resolve, reject) {
+        loadRandomResource().then(function() {
+            window.result += "after loading 4th resource. ";
+            if(window.result != "before setLimit(3). after setLimit(3). Event Fired with 3 entries. after loading 4th resource. ") {
+                reject("Non matching value: " + window.result);
+            }
+            resolve();
+        })});
+}, "Run the test");
+</script>

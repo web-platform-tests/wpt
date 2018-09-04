@@ -180,16 +180,15 @@
          * to perform. It is modeled after the behaviour of {@link
          * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
          *
-         * @param {Array} actions - an array of action objects to perform as
-         *                          described in docs. Elements of this array
-         *                          represent either a pointer action or a
-         *                          keyboard action. When representing a pointer
-         *                          action they should include "action",
-         *                          "source_type", "x", "y", and "input_id".
-         *                          "action_type" must be one of the pointer
-         *                          actions defined in the Web Driver spec. When
-         *                          representing a keyboard action they should
-         *                          include "action" and "key".
+         * @param {Array} actions - an array of actions. The format is the same as the actions
+                                    property of the WebDriver command {@link
+                                    https://w3c.github.io/webdriver/#perform-actions|Perform
+                                    Actions} command. Each element is an object representing an
+                                    input source and each input source itself has an actions
+                                    property detailing the behaviour of that source at each timestep
+                                    (or tick). Authors are not expected to construct the actions
+                                    sequence by hand, but to use the builder api provided in
+                                    testdriver-actions.js
          * @returns {Promise} fufiled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */

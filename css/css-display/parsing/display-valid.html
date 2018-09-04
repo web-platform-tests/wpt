@@ -2,18 +2,20 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>CSS Grid Layout Module Level 1: parsing display with valid values</title>
+<title>CSS Display: parsing display with valid values</title>
 <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
-<link rel="help" href="https://drafts.csswg.org/css-grid/#propdef-display">
 <link rel="help" href="https://drafts.csswg.org/css2/visuren.html#display-prop">
+<link rel="help" href="https://drafts.csswg.org/css-display/#the-display-properties">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-containers">
+<meta name="assert" content="display supports the full spec grammar.">
 <meta name="assert" content="display supports the new values 'grid | inline-grid'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="support/parsing-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
 </head>
 <body>
 <script>
-// https://drafts.csswg.org/css-grid/#propdef-display
+// https://drafts.csswg.org/css-grid-1/#grid-containers
 test_valid_value("display", "grid");
 test_valid_value("display", "inline-grid");
 

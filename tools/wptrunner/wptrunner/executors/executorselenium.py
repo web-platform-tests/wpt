@@ -174,7 +174,8 @@ class SeleniumProtocol(Protocol):
                   SeleniumSelectorProtocolPart,
                   SeleniumClickProtocolPart,
                   SeleniumSendKeysProtocolPart,
-                  SeleniumTestDriverProtocolPart]
+                  SeleniumTestDriverProtocolPart,
+                  SeleniumActionSequenceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         do_delayed_imports()

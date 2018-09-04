@@ -28,7 +28,13 @@
 
 // A tiny helper which returns the result of fetching |url| with credentials.
 function credFetch(url) {
-  return fetch(url, {"credentials": "include"});
+  return fetch(url, {"credentials": "include"})
+    .then(response => {
+      if (response.status !== 200) {
+        throw new Error(response.statusText);
+      }
+      return response;
+    });
 }
 
 // Returns a URL on |origin| which redirects to a given absolute URL.

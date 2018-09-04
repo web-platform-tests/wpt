@@ -64,7 +64,6 @@ async_test(t => {
       // Now try to fire the focus event two different ways.
       childWin.focus();
       const focusEvent = new FocusEvent("focus");
-      focusEvent.initUIEvent("focus");
       childWin.dispatchEvent(focusEvent);
       childDoc.close();
     });
@@ -90,7 +89,6 @@ test(t => {
   // Now try to fire the focus event two different ways.
   win.focus();
   const focusEvent = new FocusEvent("focus");
-  focusEvent.initUIEvent("focus");
   win.dispatchEvent(focusEvent);
   doc.close();
 }, "Standard event listeners are to be removed from Window for a non-active document that is the associated Document of a Window (frame is removed)");
@@ -110,7 +108,6 @@ test(t => {
   doc.open();
 
   const focusEvent = new FocusEvent("focus");
-  focusEvent.initUIEvent("focus");
   window.dispatchEvent(focusEvent);
 
   assert_equals(winHappened, 1);
@@ -132,7 +129,6 @@ test(t => {
   doc.open();
 
   const focusEvent = new FocusEvent("focus");
-  focusEvent.initUIEvent("focus");
   window.dispatchEvent(focusEvent);
 
   assert_equals(winHappened, 1);
@@ -158,7 +154,6 @@ async_test(t => {
     doc.open();
 
     const focusEvent = new FocusEvent("focus");
-    focusEvent.initUIEvent("focus");
     window.dispatchEvent(focusEvent);
 
     assert_equals(winHappened, 1);

@@ -26,7 +26,7 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         """Install the WebDriver implementation for this browser."""
         return NotImplemented
 
@@ -299,10 +299,17 @@ class Firefox(Browser):
         assert latest_release != 0
         return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         """Install latest Geckodriver."""
         if dest is None:
             dest = os.getcwd()
+
+        if channel == "nightly":
+            path = self.install_geckodriver_nightly(dest)
+            if path is not None:
+                return path
+            else:
+                logger.warning("Nightly webdriver not found; falling back to release")
 
         version = self._latest_geckodriver_version()
         format = "zip" if uname[0] == "Windows" else "tar.gz"
@@ -314,6 +321,32 @@ class Firefox(Browser):
         else:
             untar(get(url).raw, dest=dest)
         return find_executable(os.path.join(dest, "geckodriver"))
+
+    def install_geckodriver_nightly(self, dest):
+        import tarfile
+        import mozdownload
+        logger.info("Attempting to install webdriver from nightly")
+        try:
+            s = mozdownload.DailyScraper(branch="mozilla-central",
+                                         extension="common.tests.tar.gz",
+                                         destination=dest)
+            package_path = s.download()
+        except mozdownload.errors.NotFoundError:
+            return
+        exe_suffix = ".exe" if uname[0] == "Windows" else ""
+        with tarfile.open(package_path, "r") as f:
+            try:
+                member = f.getmember("bin%sgeckodriver%s" % (os.path.sep,
+                                                             exe_suffix))
+            except KeyError:
+                return
+            # Remove bin/ from the path.
+            member.name = os.path.basename(member.name)
+            f.extractall(members=[member], path=dest)
+            path = os.path.join(dest, member.name)
+        logger.info("Extracted geckodriver to %s" % path)
+        os.unlink(package_path)
+        return path
 
     def version(self, binary=None, channel=None):
         """Retrieve the release version of the installed browser."""
@@ -340,7 +373,7 @@ class Fennec(Browser):
     def find_webdriver(self):
         raise NotImplementedError
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary=None):
@@ -394,7 +427,7 @@ class Chrome(Browser):
     def find_webdriver(self):
         return find_executable("chromedriver")
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         if dest is None:
             dest = os.pwd
         latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
@@ -442,9 +475,9 @@ class ChromeAndroid(Browser):
     def find_webdriver(self):
         return find_executable("chromedriver")
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         chrome = Chrome()
-        return chrome.install_webdriver(dest)
+        return chrome.install_webdriver(dest, channel)
 
     def version(self, binary):
         return None
@@ -495,7 +528,7 @@ class Opera(Browser):
     def find_webdriver(self):
         return find_executable("operadriver")
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         if dest is None:
             dest = os.pwd
         latest = get("https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest").json()["tag_name"]
@@ -538,7 +571,7 @@ class Edge(Browser):
     def find_webdriver(self):
         return find_executable("MicrosoftWebDriver")
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):
@@ -560,7 +593,7 @@ class InternetExplorer(Browser):
     def find_webdriver(self):
         return find_executable("IEDriverServer.exe")
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):
@@ -585,7 +618,7 @@ class Safari(Browser):
     def find_webdriver(self):
         return find_executable("safaridriver")
 
-    def install_webdriver(self):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):
@@ -641,7 +674,7 @@ class Servo(Browser):
     def find_webdriver(self):
         return None
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):
@@ -665,7 +698,7 @@ class Sauce(Browser):
     def find_webdriver(self):
         raise NotImplementedError
 
-    def install_webdriver(self, dest=None):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):
@@ -687,7 +720,7 @@ class WebKit(Browser):
     def find_webdriver(self):
         return None
 
-    def install_webdriver(self):
+    def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
     def version(self, binary):

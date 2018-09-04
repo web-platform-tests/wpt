@@ -35,7 +35,9 @@ def get_parser():
                         default="nightly", help='Name of browser release channel. '
                         '"stable" and "release" are synonyms for the latest browser stable release,'
                         '"nightly", "dev", "experimental", and "preview" are all synonyms for '
-                        'the latest available development release.')
+                        'the latest available development release. For WebDriver installs, '
+                        'we attempt to select an appropriate, compatible, version for the '
+                        'latest browser release on the selected channel.')
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
     return parser
@@ -78,9 +80,6 @@ def install(name, component, destination, channel="nightly"):
 
     subclass = getattr(browser, name.title())
     sys.stdout.write('Now installing %s %s...\n' % (name, component))
-    kwargs = {"dest": destination}
-    if component == "browser":
-        kwargs["channel"] = channel
-    path = getattr(subclass(), method)(**kwargs)
+    path = getattr(subclass(), method)(dest=destination, channel=channel)
     if path:
         sys.stdout.write('Binary installed as %s\n' % (path,))

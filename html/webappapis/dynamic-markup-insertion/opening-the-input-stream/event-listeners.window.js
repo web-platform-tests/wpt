@@ -93,7 +93,7 @@ test(t => {
   focusEvent.initUIEvent("focus");
   win.dispatchEvent(focusEvent);
   doc.close();
-}, "Standard event listeners are to be removed from Window for a non-active document with a browsing context (frame is removed)");
+}, "Standard event listeners are to be removed from Window for a non-active document that is the associated Document of a Window (frame is removed)");
 
 test(t => {
   let winHappened = 0;
@@ -212,7 +212,7 @@ test(t => {
   doc.open();
   win.dispatchEvent(new Event("x"));
   doc.close();
-}, "Custom event listeners are to be removed from Window for a non-active document with a browsing context (frame is removed)");
+}, "Custom event listeners are to be removed from Window for a non-active document that is the associated Document of a Window (frame is removed)");
 
 test(t => {
   const doc = document.implementation.createHTMLDocument();

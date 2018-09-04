@@ -74,17 +74,17 @@ async_test(t => {
 
     frame.src = "/common/blank.html";
   });
-}, "document.open() does not change document's URL (non-active document with an associated Window object; navigated away)");
+}, "document.open() removes the document's children (non-active document with an associated Window object; navigated away)");
 
 test(t => {
   const doc = document.implementation.createHTMLDocument();
   assertOpenIsEffective(doc, 2);
-}, "document.open() does not change document's URL (non-active document without an associated Window object; createHTMLDocument)");
+}, "document.open() removes the document's children (non-active document without an associated Window object; createHTMLDocument)");
 
 test(t => {
   const doc = new DOMParser().parseFromString("", "text/html");
   assertOpenIsEffective(doc, 1);
-}, "document.open() does not change document's URL (non-active document without an associated Window object; DOMParser)");
+}, "document.open() removes the document's children (non-active document without an associated Window object; DOMParser)");
 
 async_test(t => {
   const xhr = new XMLHttpRequest();
@@ -95,4 +95,4 @@ async_test(t => {
   xhr.responseType = "document";
   xhr.open("GET", "resources/dummy.html");
   xhr.send();
-}, "document.open() does not change document's URL (non-active document without an associated Window object; XMLHttpRequest)");
+}, "document.open() removes the document's children (non-active document without an associated Window object; XMLHttpRequest)");

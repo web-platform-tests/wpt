@@ -53,7 +53,9 @@ def create_parser():
                         default=None, help='Name of browser release channel.'
                         '"stable" and "release" are synonyms for the latest browser stable release,'
                         '"nightly", "dev", "experimental", and "preview" are all synonyms for '
-                        'the latest available development release.')
+                        'the latest available development release. For WebDriver installs, '
+                        'we attempt to select an appropriate, compatible, version for the '
+                        'latest browser release on the selected channel.')
     parser._add_container_actions(wptcommandline.create_parser())
     return parser
 

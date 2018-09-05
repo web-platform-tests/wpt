@@ -333,19 +333,23 @@ class Firefox(Browser):
             package_path = s.download()
         except mozdownload.errors.NotFoundError:
             return
-        exe_suffix = ".exe" if uname[0] == "Windows" else ""
-        with tarfile.open(package_path, "r") as f:
-            try:
-                member = f.getmember("bin%sgeckodriver%s" % (os.path.sep,
-                                                             exe_suffix))
-            except KeyError:
-                return
-            # Remove bin/ from the path.
-            member.name = os.path.basename(member.name)
-            f.extractall(members=[member], path=dest)
-            path = os.path.join(dest, member.name)
-        logger.info("Extracted geckodriver to %s" % path)
-        os.unlink(package_path)
+
+        try:
+            exe_suffix = ".exe" if uname[0] == "Windows" else ""
+            with tarfile.open(package_path, "r") as f:
+                try:
+                    member = f.getmember("bin%sgeckodriver%s" % (os.path.sep,
+                                                                 exe_suffix))
+                except KeyError:
+                    return
+                # Remove bin/ from the path.
+                member.name = os.path.basename(member.name)
+                f.extractall(members=[member], path=dest)
+                path = os.path.join(dest, member.name)
+            logger.info("Extracted geckodriver to %s" % path)
+        finally:
+            os.unlink(package_path)
+
         return path
 
     def version(self, binary=None, channel=None):

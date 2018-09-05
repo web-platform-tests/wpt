@@ -18,9 +18,9 @@ function test_align(selectorTest, expectedAlign) {
   }, selectorTest);
 }
 
-test_align(`legend`, `start`);
+test_align('legend', 'start');
 
 for (const val of ['left', 'center', 'right', 'justify']) {
-  test_align(`legend[align=${val}]`, val);
+  test_align(`legend[align=${val}]`, 'start');
 }
 </script>

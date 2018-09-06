@@ -19,7 +19,7 @@ def tests_affected(commit_range):
     tests = output.split("\0")
 
     # Account for trailing null byte
-    if not tests[-1]:
+    if tests and not tests[-1]:
         tests.pop()
 
     return tests

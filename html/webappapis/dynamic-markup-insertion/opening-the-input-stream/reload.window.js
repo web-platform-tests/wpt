@@ -15,13 +15,13 @@
 // as the test file and as part of the test file. The `if (!opener)` condition
 // controls what role this file plays.
 
-if (!opener) {
+if (window.name !== "opened-dummy-window") {
   async_test(t => {
     const testURL = document.URL;
     const dummyURL = new URL("resources/dummy.html", document.URL).href;
 
     // 1. Open an auxiliary window.
-    const win = window.open("resources/dummy.html");
+    const win = window.open("resources/dummy.html", "opened-dummy-window");
     t.add_cleanup(() => { win.close(); });
 
     win.addEventListener("load", t.step_func(() => {

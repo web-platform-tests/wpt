@@ -12,8 +12,8 @@
 // that restriction.
 //
 // In any case, this test as the caller of `document.open()` would be used both
-// as the test file and as part of the test file. The `if (!opener)` condition
-// controls what role this file plays.
+// as the test file and as part of the test file. The `if (window.name !==
+// "opened-dummy-window")` condition controls what role this file plays.
 
 if (window.name !== "opened-dummy-window") {
   async_test(t => {

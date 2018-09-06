@@ -192,6 +192,12 @@ scheme host and port.""")
                               help="Path to directory containing extra json files to add to run info")
     config_group.add_argument("--product", action="store", choices=product_choices,
                               default=None, help="Browser against which to run tests")
+    config_group.add_argument("--browser-version", action="store",
+                              default=None, help="Informative string detailing the browser "
+                              "release version. This is included in the run_info data.")
+    config_group.add_argument("--browser-channel", action="store",
+                              default=None, help="Informative string detailing the browser "
+                              "release channel. This is included in the run_info data.")
     config_group.add_argument("--config", action="store", type=abs_path, dest="config",
                               help="Path to config file")
     config_group.add_argument("--install-fonts", action="store_true",
@@ -287,6 +293,11 @@ scheme host and port.""")
     sauce_group.add_argument("--sauce-connect-binary",
                              dest="sauce_connect_binary",
                              help="Path to Sauce Connect binary")
+    sauce_group.add_argument("--sauce-init-timeout", action="store",
+                             type=int, default=30,
+                             help="Number of seconds to wait for Sauce "
+                                  "Connect tunnel to be available before "
+                                  "aborting")
 
     webkit_group = parser.add_argument_group("WebKit-specific")
     webkit_group.add_argument("--webkit-port", dest="webkit_port",

@@ -8,7 +8,7 @@ import shutil
 import subprocess
 
 browser_specific_args = {
-    "firefox": ["--install-browser", "--reftest-internal"]
+    "firefox": ["--install-browser"]
 }
 
 def tests_affected(commit_range):

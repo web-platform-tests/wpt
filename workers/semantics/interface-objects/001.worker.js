@@ -13,6 +13,7 @@ var expected = [
   "ImageData",
   "ImageBitmap",
   "CanvasPath",
+  "TextMetrics",
   "Path2D",
   "PromiseRejectionEvent",
   "EventSource",

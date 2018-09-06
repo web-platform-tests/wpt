@@ -6,13 +6,17 @@ async_test(t => {
   let sync = true;
   const observer = new frame.contentWindow.MutationObserver(t.step_func_done(records => {
     assert_false(sync);
+    // Even though we passed `subtree: true` to observer.observe, due to the
+    // fact that "replace all" algorithm removes children with the "suppress
+    // observers flag" set, we still only get the html element as the sole
+    // removed node.
     assert_equals(records.length, 1);
     assert_equals(records[0].type, "childList");
     assert_equals(records[0].target, frame.contentDocument);
     assert_array_equals(records[0].addedNodes, []);
     assert_array_equals(records[0].removedNodes, [originalHTMLElement]);
   }));
-  observer.observe(frame.contentDocument, { childList: true });
+  observer.observe(frame.contentDocument, { childList: true, subtree: true });
   assert_equals(frame.contentDocument.open(), frame.contentDocument);
   sync = false;
 }, "document.open() should inform mutation observer of node removal");

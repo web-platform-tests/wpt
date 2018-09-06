@@ -46,7 +46,7 @@ def get_parser():
 def get_channel(browser, channel):
     channel = channel_by_name[channel]
     if isinstance(channel, dict):
-        channel = channel[browser]
+        channel = channel.get(browser)
     return channel
 
 

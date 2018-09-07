@@ -37,7 +37,6 @@
                  'padding-bottom',
                  'padding-left',
                  'min-width',
-                 '-webkit-appearance',
                  ];
   const testStyle = getComputedStyle(testElm);
   const refStyle = getComputedStyle(refElm);
@@ -48,10 +47,11 @@
       assert_equals(testStyle[prop], refStyle[prop]);
     }, `${prop} for fieldset`);
 
-    if (prop !== '-webkit-appearance') {
-      test(() => {
-        assert_equals(appearanceTestStyle[prop], appearanceRefStyle[prop]);
-      }, `${prop} for div with -webkit-appearance: fieldset`);
-    }
+    test(() => {
+      assert_equals(appearanceTestStyle[prop], appearanceRefStyle[prop]);
+    }, `${prop} for div with -webkit-appearance: fieldset`);
   });
+  test(() => {
+    assert_equals(testStyle['-webkit-appearance'], 'fieldset');
+  }, "-webkit-appearance for fieldset");
 </script>

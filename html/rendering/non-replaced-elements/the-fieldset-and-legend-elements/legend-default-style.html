@@ -42,13 +42,15 @@ setup(() => {
                 // Extra tests
                 'height',
                 'box-sizing',
+                'legend',
                ];
 });
 legends.forEach(legend => {
   const testStyle = getComputedStyle(legend);
   props.forEach(prop => {
     test(() => {
-      assert_equals(testStyle[prop], refStyle[prop]);
+      const expected = prop === 'legend' ? 'auto' : refStyle[prop];
+      assert_equals(testStyle[prop], expected);
     }, `${legend.id}: ${prop}`);
   });
 

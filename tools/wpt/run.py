@@ -406,6 +406,7 @@ product_setup = {
     "ie": InternetExplorer,
     "safari": Safari,
     "servo": Servo,
+    "servodriver": Servo,
     "sauce": Sauce,
     "opera": Opera,
     "webkit": WebKit,

@@ -204,6 +204,105 @@
                 .then(() => task.done());
           });
 
+      // Test the value setter followed by an automation in the past.  This is
+      // an array of dictionaries whose members are:
+      //   method - the automation method to be tested
+      //   args   - the arguments to be used for the method
+      //   value  - the expected output value.
+      [{method: 'setValueAtTime', args: [0.5, 0], value: 0.5},
+       {method: 'linearRampToValueAtTime', args: [0.5, 0], value: 0.5},
+       {method: 'exponentialRampToValueAtTime', args: [0.5, 0], value: 0.5}, {
+         method: 'setValueCurveAtTime',
+         // Duration is arbitrary
+         args: [[0.5, 0.5], 0, 4 * RENDER_QUANTUM_FRAMES / sampleRate],
+         value: 0.5
+       },
+       {
+         method: 'setTargetAtTime',
+         // The time constant is arbitrary
+         args: [0.5, 0, .01],
+         value: 0.5
+       }].forEach(entry => {
+        audit.define(
+            {
+              label: 'Value setter ' + entry.method,
+              description:
+                  'Test value setter with automation methods in the past'
+            },
+            (task, should) => {
+              let context = new OfflineAudioContext(
+                  {length: 4 * RENDER_QUANTUM_FRAMES, sampleRate: sampleRate});
+
+              let src = new ConstantSourceNode(context, {offset: 1});
+              let gain = new GainNode(context, {gain: 1});
+              gain.gain.setValueAtTime(1, 0);
+
+              src.connect(gain).connect(context.destination);
+              src.start();
+
+              let valueSetterValue = 5;
+
+              // Wait one render quantum
+              context.suspend(RENDER_QUANTUM_FRAMES / context.sampleRate)
+                  .then(() => {
+                    // The value setter must do setValueAtTime(1, currentTime).
+                    // Choose something large and obvious for the value.
+                    gain.gain.value = valueSetterValue;
+                    // This automation should clamp the time to currentTime, so
+                    // that this event happens at the same time as the value
+                    // setter.  This either replaces the value setter or adds
+                    // the automation after the setter, effectively replacing
+                    // the setter automation.
+                    gain.gain[entry.method](...entry.args);
+                  })
+                  .then(() => context.resume());
+
+              context.startRendering()
+                  .then(audioBuffer => {
+                    let data = audioBuffer.getChannelData(0);
+                    // The first render should have an output of 1
+                    should(
+                        data.slice(0, RENDER_QUANTUM_FRAMES),
+                        `${
+                           entry.method
+                         }: constantSource[0:${RENDER_QUANTUM_FRAMES - 1}]`)
+                        .beConstantValueOf(1);
+
+                    if (entry.method === 'setTargetAtTime') {
+                      // setTargetAtTime needs special handling because the
+                      // output is not constant.  Compute the expected output.
+                      let expected =
+                          new Float32Array(data.length - RENDER_QUANTUM_FRAMES);
+                      let time = RENDER_QUANTUM_FRAMES / sampleRate
+                      for (var k = 0; k < expected.length; ++k) {
+                        expected[k] = audioParamSetTarget(
+                            time, valueSetterValue,
+                            RENDER_QUANTUM_FRAMES / sampleRate, entry.args[0],
+                            entry.args[2]);
+                        time += 1 / sampleRate;
+                      }
+
+                      should(
+                          data.slice(RENDER_QUANTUM_FRAMES),
+                          `${
+                             entry.method
+                           }: constantSource[${RENDER_QUANTUM_FRAMES}:]`)
+                          .beCloseToArray(expected, {relativeThreshold: 2.1523e-7});
+                    } else {
+                      // After that, the output should be equal to the specified
+                      // value.
+                      should(
+                          data.slice(RENDER_QUANTUM_FRAMES),
+                          `${
+                             entry.method
+                           }: constantSource[${RENDER_QUANTUM_FRAMES}:]`)
+                          .beConstantValueOf(entry.value);
+                    }
+                  })
+                  .then(() => task.done());
+
+            });
+      });
 
       audit.run();
 

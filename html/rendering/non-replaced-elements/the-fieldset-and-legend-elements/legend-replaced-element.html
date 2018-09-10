@@ -1,0 +1,16 @@
+<!doctype html>
+<title>legend: auto on replaced elements</title>
+<link rel=match href=legend-replaced-element-ref.html>
+<style>
+fieldset > * { legend: auto; }
+</style>
+<fieldset><img src=/images/pattern.png></fieldset>
+<fieldset><video>
+ <source src=/images/pattern.mp4 type=video/mp4>
+ <source src=/images/pattern.ogv type=video/ogg>
+</video></fieldset>
+<fieldset><audio controls></audio></fieldset>
+<fieldset><canvas></canvas></fieldset>
+<fieldset><iframe></iframe></fieldset>
+<fieldset><input type=image src=/images/pattern.png></fieldset>
+<fieldset><object data=/images/pattern.png></object></fieldset>

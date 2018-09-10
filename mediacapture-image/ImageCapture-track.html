@@ -16,17 +16,16 @@ test(t => {
 
   let stream = canvas.captureStream();
   let videoTrack = stream.getVideoTracks()[0];
-  assert_equals(videoTrack.readyState, "live");
-  assert_true(videoTrack.enabled);
 
   let capturer = new ImageCapture(videoTrack);
   assert_true(capturer.track instanceof MediaStreamTrack);
   assert_equals(capturer.track, videoTrack);
 
-  capturer.track.enabled = false;
-  assert_true(videoTrack.enabled, "track enabled");
-  capturer.track.stop();
-  assert_equals(videoTrack.readyState, "live", "track readyState");
+  let cloneTrack = videoTrack.clone();
+  assert_not_equals(videoTrack, cloneTrack);
+
+  capturer.track = cloneTrack;
+  assert_equals(capturer.track, videoTrack);
 }, "ImageCapture track attribute is readonly")
 
 </script>

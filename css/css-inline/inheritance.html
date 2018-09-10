@@ -8,52 +8,13 @@
 <meta name="assert" content="Properties inherit or not according to the spec.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/inheritance-testcommon.js"></script>
 </head>
 <body>
 <div id="container">
 <div id="target"></div>
 </div>
 <script>
-'use strict';
-
-function assert_inherited(property, value, expected) {
-  if (expected === undefined) {
-    expected = value;
-  }
-
-  test(() => {
-    if (!getComputedStyle(target)[property])
-      return;
-    assert_not_equals(getComputedStyle(target)[property], expected);
-    container.style[property] = value;
-    assert_equals(getComputedStyle(container)[property], expected);
-    assert_equals(getComputedStyle(target)[property], expected);
-    target.style[property] = 'initial';
-    assert_not_equals(getComputedStyle(target)[property], expected);
-    container.style[property] = '';
-    target.style[property] = '';
-  }, 'Property ' + property + ' inherits');
-}
-
-function assert_not_inherited(property, value, expected) {
-  if (expected === undefined) {
-    expected = value;
-  }
-
-  test(() => {
-    if (!getComputedStyle(target)[property])
-      return;
-    assert_not_equals(getComputedStyle(target)[property], expected);
-    container.style[property] = value;
-    assert_equals(getComputedStyle(container)[property], expected);
-    assert_not_equals(getComputedStyle(target)[property], expected);
-    target.style[property] = 'inherit';
-    assert_equals(getComputedStyle(target)[property], expected);
-    container.style[property] = '';
-    target.style[property] = '';
-  }, 'Property ' + property + ' does not inherit');
-}
-
 assert_not_inherited('alignment-baseline', 'central');
 assert_not_inherited('baseline-shift', '10px');
 assert_inherited('dominant-baseline', 'central');

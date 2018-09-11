@@ -6,9 +6,8 @@
 'use strict';
 
 const srcs = [
-  "/feature-policy/experimental-features/resources/image.svg",
-  "/feature-policy/experimental-features/resources/image.jpg",
-  "/feature-policy/experimental-features/resources/image.png",
+  "/images/green.svg",
+  "/images/green.png",
 ];
 
 // Set new attribute, and wait til the media element is repainted.
@@ -19,7 +18,6 @@ function updateAttribute(e, attribute, value) {
   });
 }
 
-// Test intrinsicSize attribute with image element.
 for (var src of srcs) {
   promise_test(async() => {
     var img = document.createElement('IMG');
@@ -62,39 +60,7 @@ for (var src of srcs) {
     assert_equals(img.height, 800, 'height');
     assert_equals(img.naturalWidth, 400, 'naturalWidth');
     assert_equals(img.naturalHeight, 500, 'naturalHeight');
-  }, 'Test image with src=' + src);
+  }, 'Test intrinsicsize for html image element, src=' + src);
 }
-
-// Test intrinsicSize attribute with video element.
-promise_test(async() => {
-  var video = document.createElement('video');
-  document.body.appendChild(video);
-  video.src = "/feature-policy/experimental-features/resources/video.ogv";
-  await new Promise(resolve =>
-    video.addEventListener('canplaythrough', () => resolve(), {once: true}));
-  video.intrinsicSize = '400 x 500';
-  assert_equals(video.getBoundingClientRect().width, 400, 'width');
-  assert_equals(video.getBoundingClientRect().height, 500, 'height');
-  assert_equals(video.videoWidth, 400, 'naturalWidth');
-  assert_equals(video.videoHeight, 500, 'naturalHeight');
-
-  video.width = '800';
-  assert_equals(video.getBoundingClientRect().width, 800, 'width');
-  assert_equals(video.getBoundingClientRect().height, 1000, 'height');
-  assert_equals(video.videoWidth, 400, 'naturalWidth');
-  assert_equals(video.videoHeight, 500, 'naturalHeight');
-
-  video.style = 'height:800px;';
-  assert_equals(video.getBoundingClientRect().width, 800, 'width');
-  assert_equals(video.getBoundingClientRect().height, 800, 'height');
-  assert_equals(video.videoWidth, 400, 'naturalWidth');
-  assert_equals(video.videoHeight, 500, 'naturalHeight');
-
-  video.removeAttribute('width');
-  assert_equals(video.getBoundingClientRect().width, 640, 'width');
-  assert_equals(video.getBoundingClientRect().height, 800, 'height');
-  assert_equals(video.videoWidth, 400, 'naturalWidth');
-  assert_equals(video.videoHeight, 500, 'naturalHeight');
-}, 'Test video');
 </script>
 </body>

@@ -541,7 +541,15 @@ policies and contribution forms [3].
         var test_name = name ? name : test_environment.next_default_test_name();
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
-        test_obj.step(func, test_obj, test_obj);
+        var value = test_obj.step(func, test_obj, test_obj);
+
+        test_obj.step(function() {
+            assert(value === undefined,
+                   "test", null,
+                   "tests defined via `test` may not return a value",
+                   null);
+        });
+
         if (test_obj.phase === test_obj.phases.STARTED) {
             test_obj.done();
         }

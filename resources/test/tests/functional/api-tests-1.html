@@ -206,6 +206,9 @@
     test(function() {assert_equals(window.global, undefined)},
          "Test that cleanup handlers from previous test ran");
 
+
+    test(function() { return false; },
+        "synchronous test that suspiciously returns a non-undefined value (should FAIL)");
 </script>
 <script type="text/json" id="expected">
 {
@@ -414,6 +417,12 @@
       "status_string": "TIMEOUT",
       "name": "test should timeout (fail) with the default of 2 seconds",
       "message": "Test timed out",
+      "properties": {}
+    },
+    {
+      "status_string": "FAIL",
+      "name": "synchronous test that suspiciously returns a non-undefined value (should FAIL)",
+      "message": "test: tests defined via `test` may not return a value",
       "properties": {}
     },
     {

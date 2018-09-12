@@ -40,6 +40,10 @@ class Ruleset(object):
         self.include = []
         self.exclude = []
         for rule in rules:
+            rule = os.path.normcase(rule)
+            if os.path.sep != "/":
+                # this must be after the normcase call as that does slash normalization
+                rule = rule.replace(os.path.sep, "/")
             self.add_rule(rule)
 
     def add_rule(self, rule):
@@ -52,9 +56,10 @@ class Ruleset(object):
         target.append(re.compile("^%s" % rule))
 
     def __call__(self, path):
-        if os.path.sep != "/":
-            path = path.replace(os.path.sep, "/")
         path = os.path.normcase(path)
+        if os.path.sep != "/":
+            # this must be after the normcase call as that does slash normalization
+            path = path.replace(os.path.sep, "/")
         for item in self.exclude:
             if item.match(path):
                 return False

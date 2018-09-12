@@ -1,9 +1,3 @@
-var saw_activate_event = false
-
-self.addEventListener('activate', function() {
-    saw_activate_event = true;
-  });
-
 self.addEventListener('message', function(event) {
     var port = event.data.port;
     event.waitUntil(self.skipWaiting()
@@ -13,15 +7,9 @@ self.addEventListener('message', function(event) {
             return;
           }
 
-          if (!saw_activate_event) {
+          if (self.registration.active.state !== 'activated') {
             port.postMessage(
-                'FAIL: Promise should be resolved after activate event is dispatched');
-            return;
-          }
-
-          if (self.registration.active.state !== 'activating') {
-            port.postMessage(
-                'FAITL: Promise should be resolved before ServiceWorker#state is set to activated');
+                'FAIL: Promise should be resolved after ServiceWorker#state is set to activated');
             return;
           }
 

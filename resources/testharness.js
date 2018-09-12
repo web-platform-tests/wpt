@@ -1240,7 +1240,7 @@ policies and contribution forms [3].
     expose(assert_class_string, "assert_class_string");
 
 
-    function assert_own_property(object, property_name, description)
+    function assert_own_property(object, property_name, description) {
         assert(object.hasOwnProperty(property_name),
                "assert_own_property", description,
                "expected property ${p} missing", {p:property_name});

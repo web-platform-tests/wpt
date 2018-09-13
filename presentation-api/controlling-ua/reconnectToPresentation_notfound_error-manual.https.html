@@ -24,10 +24,10 @@
     t.add_cleanup(() => {
       if (connection1) {
         connection1.onconnect = () => { connection1.terminate(); }
-        if (connection.state === 'closed')
+        if (connection1.state === 'closed')
           request1.reconnect(connection1.id);
         else
-          connection.terminate();
+          connection1.terminate();
       }
     });
 

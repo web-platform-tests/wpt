@@ -49,7 +49,7 @@ class Ruleset(object):
         self.include = []
         self.exclude = []
         for rule in rules:
-            rule = self._path_norm(rule)
+            rule = _path_norm(rule)
             self.add_rule(rule)
 
     def add_rule(self, rule):

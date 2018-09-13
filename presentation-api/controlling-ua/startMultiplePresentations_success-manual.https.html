@@ -81,16 +81,6 @@
 
     assert_not_equals(connection1.id, connection2.id,
       'Presentation connections on distinct presentations must have different presentation IDs.');
-    connection1.close();
-    assert_equals(connection2.state, 'connected',
-      'Closing one presentation connection does not affect the state of the other.');
-    await eventWatcher1.wait_for('close');
-
-    assert_equals(connection1.state, 'closed', 'The presentation connection is successfully closed.');
-    const c = await request.reconnect(connection1.id);
-
-    assert_equals(c, connection1, 'The promise is resolved with the existing presentation connection.');
-    await eventWatcher1.wait_for('connect');
 
     assert_equals(connection1.state, 'connected', 'The presentation connection is successfully reconnected.');
     connection1.terminate();

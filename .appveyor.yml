@@ -1,0 +1,40 @@
+skip_branch_with_pr: true
+
+clone_depth: 50
+
+environment:
+  matrix:
+    - PYTHON: "C:\\Python27"
+      JOB: "tools_unittest"
+      SCRIPT: "tools\\ci\\ci_tools_unittest.ps1"
+      TOX_DIR: "tools"
+      TOXENV: "py27"
+    - PYTHON: "C:\\Python27"
+      JOB: "tools_unittest"
+      SCRIPT: "tools\\ci\\ci_tools_unittest.ps1"
+      TOX_DIR: "tools\\wptrunner"
+      TOXENV: "py27"
+    - PYTHON: "C:\\Python27"
+      JOB: "wpt_integration"
+      SCRIPT: "tools\\ci\\ci_tools_unittest.ps1"
+      TOX_DIR: "tools\\wpt"
+      TOXENV: "py27"
+    - PYTHON: "C:\\Python27"
+      JOB: "wptrunner_infrastructure"
+      SCRIPT: "tools\\ci\\ci_wptrunner_infrastructure.ps1"
+    - PYTHON: "C:\\Python36"
+      JOB: "tools_unittest"
+      SCRIPT: "tools\\ci\\ci_tools_unittest.ps1"
+      TOX_DIR: "tools"
+      TOXENV: "py36"
+
+install:
+  - ps: "tools\\ci\\install.ps1"
+
+build: off
+
+test_script:
+  - ps: ". $env:SCRIPT"
+
+cache:
+  - MANIFEST.json

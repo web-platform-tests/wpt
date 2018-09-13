@@ -548,7 +548,7 @@ policies and contribution forms [3].
                 "\" inappropriately returned a value";
 
             try {
-                if (value && value.hasOwnProperty('then')) {
+                if (value && value.hasOwnProperty("then")) {
                     msg += ", consider using `promise_test` instead";
                 }
             } catch (err) {}

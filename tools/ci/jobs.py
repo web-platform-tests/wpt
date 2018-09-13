@@ -35,15 +35,21 @@ job_path_map = {
 }
 
 
+def _path_norm(path):
+    """normalize a path for both case and slashes (to /)"""
+    path = os.path.normcase(path)
+    if os.path.sep != "/":
+        # this must be after the normcase call as that does slash normalization
+        path = path.replace(os.path.sep, "/")
+    return path
+
+
 class Ruleset(object):
     def __init__(self, rules):
         self.include = []
         self.exclude = []
         for rule in rules:
-            rule = os.path.normcase(rule)
-            if os.path.sep != "/":
-                # this must be after the normcase call as that does slash normalization
-                rule = rule.replace(os.path.sep, "/")
+            rule = self._path_norm(rule)
             self.add_rule(rule)
 
     def add_rule(self, rule):
@@ -56,10 +62,7 @@ class Ruleset(object):
         target.append(re.compile("^%s" % rule))
 
     def __call__(self, path):
-        path = os.path.normcase(path)
-        if os.path.sep != "/":
-            # this must be after the normcase call as that does slash normalization
-            path = path.replace(os.path.sep, "/")
+        path = _path_norm(path)
         for item in self.exclude:
             if item.match(path):
                 return False

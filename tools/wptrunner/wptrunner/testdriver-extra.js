@@ -3,6 +3,7 @@
 (function(){
     let pending_resolve = null;
     let pending_reject = null;
+    let payload = null
     window.addEventListener("message", function(event) {
         const data = event.data;
 
@@ -15,7 +16,8 @@
         }
 
         if (data.status === "success") {
-            pending_resolve();
+            payload = JSON.parse(data.message).value;
+            pending_resolve(payload);
         } else {
             pending_reject();
         }

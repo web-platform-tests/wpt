@@ -7,5 +7,5 @@ promise_test(async t => {
 
 promise_test(async t => {
   const response = await fetch("../../../xhr/resources/headers-www-authenticate.asis");
-  assert_equals(response.headers.get("www-athenticate"), "1, 2, 3, 4");
+  assert_equals(response.headers.get("www-authenticate"), "1, 2, 3, 4");
 }, "response.headers.get('www-authenticate')");

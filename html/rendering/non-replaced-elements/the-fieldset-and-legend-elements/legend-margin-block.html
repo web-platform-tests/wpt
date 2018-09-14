@@ -2,6 +2,7 @@
 <title>legend and margin (block-flow direction)</title>
 <link rel=match href=legend-margin-block-ref.html>
 <style>
+ body { padding-bottom:100px }
  * { margin: 0; padding: 0; }
  p { height: 50px; }
  fieldset { border: 20px solid green; background: lime; padding: 10px; }
@@ -11,18 +12,18 @@
    margin-bottom: 100px;
    background: lime;
  }
- #gradient { background: linear-gradient(to bottom, lime 0, lime 50px, red 50px, red 100px); }
+
  #behind {
    position: absolute;
    z-index: -1;
    background: red;
    left: 0;
    right: 0;
-   top: 50px;
-   height: 110px;
+   top: 150px;
+   height: 220px;
  }
 </style>
 <p>There should be no red.</p>
 <div id=behind></div>
 <fieldset><legend id=top>margin-top</legend></fieldset>
-<fieldset id=gradient><legend id=bottom>margin-bottom</legend></fieldset>
+<fieldset><legend id=bottom>margin-bottom</legend></fieldset>

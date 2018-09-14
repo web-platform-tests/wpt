@@ -251,6 +251,9 @@ class Chrome(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
+        if kwargs["browser_channel"] == "dev":
+            logger.info("Automatically turning on experimental features for Chrome Dev")
+            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
 
 class ChromeAndroid(BrowserSetup):

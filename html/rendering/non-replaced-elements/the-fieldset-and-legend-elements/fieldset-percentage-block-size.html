@@ -3,30 +3,31 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
- fieldset { block-size: 100px; }
- legend { block-size: 100%; background: lime; }
- fieldset > div { block-size: 100%; background: green; font-weight: bold; }
+ fieldset { block-size: 100px; margin: 20px; padding: 0; border: 10px solid; }
+ .rendered-legend { block-size: 80%; background: lime; padding: 0; }
+ .second-legend { block-size: 100%; background: yellow; padding: 0; }
+ fieldset > div { block-size: 100%; background: fuchsia; }
 </style>
 <div style="writing-mode: horizontal-tb">
  <fieldset>
-  <legend>rendered legend</legend>
-  <legend>second legend</legend>
+  <legend class="rendered-legend">rendered legend</legend>
+  <legend class="second-legend">second legend</legend>
   <div>div</div>
  </fieldset>
 </div>
 
 <div style="writing-mode: vertical-lr">
  <fieldset>
-  <legend>rendered legend</legend>
-  <legend>second legend</legend>
+  <legend class="rendered-legend">rendered legend</legend>
+  <legend class="second-legend">second legend</legend>
   <div>div</div>
  </fieldset>
 </div>
 
 <div style="writing-mode: vertical-rl">
  <fieldset>
-  <legend>rendered legend</legend>
-  <legend>second legend</legend>
+  <legend class="rendered-legend">rendered legend</legend>
+  <legend class="second-legend">second legend</legend>
   <div>div</div>
  </fieldset>
 </div>
@@ -35,7 +36,10 @@
  for (const div of document.querySelectorAll('div[style]')) {
    for (const el of div.firstElementChild.children) {
      test(() => {
-       assert_equals(getComputedStyle(el).blockSize, '100px');
+       const expected = el.textContent === 'rendered legend' ? '80px' : '30px';
+       // 30px because: 100px - (legend that spills outside the fieldset border upwards)
+       //                     - (legend that spills outside the fieldset border downwards)
+       assert_equals(getComputedStyle(el).blockSize, expected);
      }, `${el.textContent} (${div.getAttribute('style')})`);
    }
  }

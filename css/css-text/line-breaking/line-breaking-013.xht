@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CSS Test: atomic inlines are treated as ideographic characters for line-breaking</title>
+  <meta charset="utf-8" />
+  <link rel="author" title="Mike Bremford" href="http://bfo.com/" />
+  <link rel="help" href="https://www.w3.org/TR/css-text-3/#line-break-details" />
+  <meta name="assert" content="Atomic inlines are treated as ideographic characters for line-breaking" />
+  <link rel="match" href="reference/line-breaking-013-ref.xht" />
+  <style>
+    p {
+        margin: 2em 0 0.5em 0;
+    }
+    img { 
+        width: 1em;
+        height: 1em;
+    }
+    .ib {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        background-color: green;
+    }
+    .test {
+        margin: 0 0 1em 0;
+        line-height: 1.25;
+        vertical-align: bottom;
+    }
+    .test span {
+        background-color: #EEE;
+        font-size: 32px;
+        display: inline-block;
+        margin-right: 1em;
+        vertical-align: top;
+    }
+    .c1 span {
+        width: 3em;
+    }
+    .c2 span {
+        width: 3em;
+        word-break: keep-all;
+    }
+  </style>
+</head>
+<body>
+  <!--
+  Test rationale: section 5.1 of css-text-3 states:
+
+    "The line breaking behavior of a replaced element or other atomic inline is equivalent
+     to an ideographic character (Unicode linebreaking class ID [UAX14]), and additionally,
+     for Web-compatibility, introduces a soft wrap opportunity between itself and any
+     adjacent U+00A0 NO-BREAK SPACE character."
+
+  -->
+
+  <!-- First block - a breakpoint is normally allowed between an alphabetic character and an ideographic character -->
+  <p>Block one: test passes if the first character on line two is "d"</p>
+  <div class="test c1">
+  <span>a b c<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg=="/>d e f</span>
+  <span>a b c<div class="ib"></div>d e f</span>
+  <span>a b c国d e f</span>
+  </div>
+
+  <!-- Second block - a breakpoint is normally disallowed between a numeric prefix like "+" and an ideographic character -->
+  <p>Block two: test passes if the first character on line two is "+"</p>
+  <div class="test c1">
+  <span>a b +<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg=="/>d e</span>
+  <span>a b +<div class="ib"></div>d e</span>
+  <span>a b +国d e</span>
+  </div>
+
+  <!-- Third block: word-break: keep-all removes the break opportunity between an alphabetic and an ideographic characters -->
+  <div class="test c2">
+  <p>Block three: test passes if the first character on line two is "c"</p>
+  <span>a b c<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg=="/>d e</span>
+  <span>a b c<div class="ib"></div>d e</span>
+  <span>a b c国d e</span>
+  </div>
+
+  <!-- Fourth block: a breakpoint is explicitly allowed between an atomic inline and an NBSP, whereas it's disallowed for ideographic characters  -->
+  <div class="test c2">
+  <p>Block four: test passes if the first characters on line two<br/>
+  are "d", "d" and "c" (there may be a space before a "d")</p>
+  <span>ab c<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg=="/>&#xa0;d e</span>
+  <span>ab c<div class="ib"></div>&#xa0;d e</span>
+  <span>ab c国&#xa0;d e</span>
+  </div>
+
+</body>
+</html>

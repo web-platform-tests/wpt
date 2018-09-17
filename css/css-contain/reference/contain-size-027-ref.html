@@ -11,6 +11,9 @@
 
   div#blue-test {
     background-color: blue;
+    color: transparent;
+    font-size: 50px;
+    line-height: 1;
     padding: 50px;
     box-sizing: border-box;
   }
@@ -18,12 +21,19 @@
   div#orange-reference {
     background-color: orange;
   }
+
+  span {
+    display: block;
+  }
 </style>
 
 <p>This test passes if the painted blue area is <strong>exactly as wide as</strong> the orange square.
 
 <div>
-  <div id="blue-test" class="inline-block"><img src="../support/blue50wBy46h.png" alt="Image download support must be enabled"></div>
+  <div id="blue-test" class="inline-block">
+    <span>B</span>
+    <span>L</span>
+  </div>
 </div>
 
 <div>

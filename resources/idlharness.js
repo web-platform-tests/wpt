@@ -1256,10 +1256,29 @@ IdlInterface.prototype.is_global = function()
     });
 };
 
+/**
+ * Value of the LegacyNamespace extended attribute, if any.
+ *
+ * https://heycam.github.io/webidl/#LegacyNamespace
+ */
+IdlInterface.prototype.get_legacy_namespace = function()
+{
+    var legacyNamespace = this.extAttrs.find(function(attribute) {
+        return attribute.name === "LegacyNamespace";
+    });
+    return legacyNamespace ? legacyNamespace.rhs.value : undefined;
+};
+
+IdlInterface.prototype.get_interface_object_owner = function()
+{
+    var legacyNamespace = this.get_legacy_namespace();
+    return legacyNamespace ? self[legacyNamespace] : self;
+};
+
 IdlInterface.prototype.assert_interface_object_exists = function()
 {
-    assert_own_property(self, this.name,
-                        "self does not have own property " + format_value(this.name));
+    var owner = this.get_legacy_namespace() || "self";
+    assert_own_property(self[owner], this.name, owner + " does not have own property " + format_value(this.name));
 };
 
 IdlInterface.prototype.get_interface_object = function() {
@@ -1267,7 +1286,7 @@ IdlInterface.prototype.get_interface_object = function() {
         throw new IdlHarnessError(this.name + " has no interface object due to NoInterfaceObject");
     }
 
-    return self[this.name];
+    return this.get_interface_object_owner()[this.name];
 };
 
 IdlInterface.prototype.has_to_json_regular_operation = function() {
@@ -1451,7 +1470,7 @@ IdlInterface.prototype.test_self = function()
         // TODO: Should we test here that the property is actually writable
         // etc., or trust getOwnPropertyDescriptor?
         this.assert_interface_object_exists();
-        var desc = Object.getOwnPropertyDescriptor(self, this.name);
+        var desc = Object.getOwnPropertyDescriptor(this.get_interface_object_owner(), this.name);
         assert_false("get" in desc, "self's property " + format_value(this.name) + " should not have a getter");
         assert_false("set" in desc, "self's property " + format_value(this.name) + " should not have a setter");
         assert_true(desc.writable, "self's property " + format_value(this.name) + " should be writable");

@@ -73,9 +73,6 @@
                 testMouseOver.step(function () {
                   assert_equals(event.target.id, "blue");
                   assert_equals(getComputedStyle(event.target).backgroundColor, "rgb(255, 255, 0)");
-                  if (event.type == "mouseenter") {
-                      checkEventSequence();
-                  }
               });
             }
         </script>

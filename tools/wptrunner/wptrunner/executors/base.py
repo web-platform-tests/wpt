@@ -540,7 +540,8 @@ class CallbackHandler(object):
             except Exception:
                 self.logger.warning("Action %s failed" % action)
                 self.logger.warning(traceback.format_exc())
-                self._send_message("complete", "failure")
+                self._send_message("complete", "error")
+                raise
             else:
                 self.logger.debug("Action %s completed" % action)
                 self._send_message("complete", "success")

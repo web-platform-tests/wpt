@@ -150,7 +150,6 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def send_actions(self, actions):
-        actions = self.marionette._to_json(actions)
         self.webdriver.actions.perform(actions)
 
 

@@ -71,21 +71,16 @@ promise_test(function(t) {
       .then(function() {
           return new Promise(function(resolve, reject) {
               var w = new Worker(worker_url);
-              w.onmessage = function(e) {
-                resolve(e.data);
+              w.onmessage = function() {
+                reject(new Error('intercepted cors response to a same-origin ' +
+                                 'mode worker load should fail'));
               }
 
-              w.onerror = function(e) {
-                reject(e.message);
-              }
+              // The DOM error is expected.
+              w.onerror = resolve;
             });
         })
-      .then(function(data) {
-          assert_unreached('intercepted cors response to a same-origin mode ' +
-                           'worker load should fail');
-        }, function() {
-          assert_true(true, 'intercepted cors response to a same-origin mode ' +
-                            'worker load should fail');
+      .then(function() {
           service_worker_unregister_and_done(t, scope);
        });
   }, 'Verify worker script intercepted by cors response fails');
@@ -103,19 +98,18 @@ promise_test(function(t) {
           return new Promise(function(resolve, reject) {
               var w = new Worker(worker_url);
               w.onmessage = function(e) {
-                resolve(e.data);
+                reject(new Error('intercepted no-cors worker load should ' +
+                                 'fail'));
               }
 
-              w.onerror = function(e) {
-                reject(e);
+              // The DOM error is expected.
+              w.onerror = function() {
+                resolve();
                 return true;
               }
             });
         })
-      .then(function(data) {
-          assert_unreached('intercepted no-cors worker load should fail');
-        }, function() {
-          assert_true(true, 'intercepted no-cors worker load should fail');
+      .then(function() {
           service_worker_unregister_and_done(t, scope);
        });
   }, 'Verify worker script intercepted by no-cors cross-origin response fails');

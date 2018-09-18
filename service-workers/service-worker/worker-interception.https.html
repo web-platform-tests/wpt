@@ -83,9 +83,7 @@ promise_test(function(t) {
       .then(function(data) {
           assert_unreached('intercepted cors response to a same-origin mode ' +
                            'worker load should fail');
-          service_worker_unregister_and_done(t, scope);
-        })
-      .catch(function(e) {
+        }, function() {
           assert_true(true, 'intercepted cors response to a same-origin mode ' +
                             'worker load should fail');
           service_worker_unregister_and_done(t, scope);
@@ -116,9 +114,7 @@ promise_test(function(t) {
         })
       .then(function(data) {
           assert_unreached('intercepted no-cors worker load should fail');
-          service_worker_unregister_and_done(t, scope);
-        })
-      .catch(function(e) {
+        }, function() {
           assert_true(true, 'intercepted no-cors worker load should fail');
           service_worker_unregister_and_done(t, scope);
        });

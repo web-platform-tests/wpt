@@ -37,8 +37,7 @@
    for (const el of div.firstElementChild.children) {
      test(() => {
        const expected = el.textContent === 'rendered legend' ? '80px' : '30px';
-       // 30px because: 100px - (legend that spills outside the fieldset border upwards)
-       //                     - (legend that spills outside the fieldset border downwards)
+       // 30px because: 100px - (max(0, legend-block-size - border-block-start))
        assert_equals(getComputedStyle(el).blockSize, expected);
      }, `${el.textContent} (${div.getAttribute('style')})`);
    }

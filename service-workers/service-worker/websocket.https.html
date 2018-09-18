@@ -25,19 +25,18 @@ async_test(function(t) {
         })
       .then(function() {
           return new Promise(function(resolve, reject) {
-            function onMessage(e) {
-              for (var url in e.data.urls) {
-                assert_equals(url.indexOf(get_websocket_url()), -1,
-                              "Observed an unexpected FetchEvent for the WebSocket handshake");
-              }
-              t.done();
-            }
             var channel = new MessageChannel();
-            channel.port1.onmessage = t.step_func(onMessage);
+            channel.port1.onmessage = resolve;
+            channel.port1.onmessageerror = reject;
             frame.contentWindow.navigator.serviceWorker.controller.postMessage({port: channel.port2}, [channel.port2]);
           });
         })
-      .then(function() {
+      .then(function(e) {
+          for (var url in e.data.urls) {
+            assert_equals(url.indexOf(get_websocket_url()), -1,
+                          "Observed an unexpected FetchEvent for the WebSocket handshake");
+          }
+
           frame.remove();
           return service_worker_unregister_and_done(t, scope);
         })

@@ -561,13 +561,9 @@ class ClickAction(object):
 
     def __call__(self, payload):
         selector = payload["selector"]
-        elements = self.protocol.select.elements_by_selector(selector)
-        if len(elements) == 0:
-            raise ValueError("Selector matches no elements")
-        elif len(elements) > 1:
-            raise ValueError("Selector matches multiple elements")
+        element = self.protocol.select.element_by_selector(selector)
         self.logger.debug("Clicking element: %s" % selector)
-        self.protocol.click.element(elements[0])
+        self.protocol.click.element(element)
 
 
 class SendKeysAction(object):
@@ -578,13 +574,9 @@ class SendKeysAction(object):
     def __call__(self, payload):
         selector = payload["selector"]
         keys = payload["keys"]
-        elements = self.protocol.select.elements_by_selector(selector)
-        if len(elements) == 0:
-            raise ValueError("Selector matches no elements")
-        elif len(elements) > 1:
-            raise ValueError("Selector matches multiple elements")
+        element = self.protocol.select.element_by_selector(selector)
         self.logger.debug("Sending keys to element: %s" % selector)
-        self.protocol.send_keys.send_keys(elements[0], keys)
+        self.protocol.send_keys.send_keys(element, keys)
 
 
 class ActionSequenceAction(object):
@@ -604,9 +596,5 @@ class ActionSequenceAction(object):
         self.protocol.action_sequence.send_actions({"actions": actions})
 
     def get_element(self, selector):
-        elements = self.protocol.select.elements_by_selector(selector)
-        if len(elements) == 0:
-            raise ValueError("Selector matches no elements")
-        elif len(elements) > 1:
-            raise ValueError("Selector matches multiple elements")
-        return elements[0]
+        element = self.protocol.select.element_by_selector(selector)
+        return element

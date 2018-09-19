@@ -237,6 +237,14 @@ class SelectorProtocolPart(ProtocolPart):
 
     name = "select"
 
+    def element_by_selector(self, selector):
+        elements = self.elements_by_selector(selector)
+        if len(elements) == 0:
+            raise ValueError("Selector '%s' matches no elements" % selector)
+        elif len(elements) > 1:
+            raise ValueError("Selector '%s' matches multiple elements" % selector)
+        return elements[0]
+
     @abstractmethod
     def elements_by_selector(self, selector):
         """Select elements matching a CSS selector

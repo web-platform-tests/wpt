@@ -33,7 +33,7 @@
   var elementToRevealLeft = 500;
   var elementToRevealTop = 250;
 
-  ["scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
+  ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
     promise_test(() => {
       resetScroll(scrollingElement);
       setScrollBehavior(styledElement, "autoBehavior");

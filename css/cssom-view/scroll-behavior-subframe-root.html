@@ -39,7 +39,7 @@
     styledElement = iframeNode.contentDocument.documentElement;
     elementToReveal = iframeNode.contentDocument.getElementById("elementToReveal");
 
-    ["scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
+    ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
       promise_test(() => {
         resetScroll(scrollingElement);
         setScrollBehavior(styledElement, "autoBehavior");

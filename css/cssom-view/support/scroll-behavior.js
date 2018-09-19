@@ -47,6 +47,13 @@ function resetScroll(scrollingElement) {
   scrollingElement.scroll({left: 0, top: 0, behavior: "instant"});
 }
 
+function resetScrollForWindow(scrollingWindow) {
+  // Try various methods to ensure the element position is reset immediately.
+  scrollingWindow.document.scrollingElement.scrollLeft = 0;
+  scrollingWindow.document.scrollingElement.scrollTop = 0;
+  scrollingWindow.scroll({left: 0, top: 0, behavior: "instant"});
+}
+
 function setScrollBehavior(styledElement, className) {
   styledElement.classList.remove("autoBehavior", "smoothBehavior");
   styledElement.classList.add(className);
@@ -68,4 +75,13 @@ function scrollNode(scrollingElement, scrollFunction, behavior, elementToRevealL
       scrollingElement[scrollFunction](args);
       break;
   }
+}
+
+function scrollWindow(scrollingWindow, scrollFunction, behavior, elementToRevealLeft, elementToRevealTop) {
+  var args = {};
+  if (behavior)
+    args.behavior = behavior;
+  args.left = elementToRevealLeft;
+  args.top = elementToRevealTop;
+  scrollingWindow[scrollFunction](args);
 }

@@ -38,7 +38,7 @@
 
     add_completion_callback(() => { resetScroll(scrollingElement); });
 
-    ["scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
+    ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach((scrollFunction) => {
       promise_test(() => {
         resetScroll(scrollingElement);
         setScrollBehavior(styledElement, "autoBehavior");

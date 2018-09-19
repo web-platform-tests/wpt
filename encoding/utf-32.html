@@ -5,10 +5,10 @@
 <body>
 <script>
 
-// Since UTF-32 is not supported, such content will be interpreted
-// as the default HTML encoding (windows-1252) unless it has a
-// leading little endian BOM (FF FE 00 00), in which case it will
-// be interpreted as UTF-16LE.
+// Since UTF-32 is not supported, such content will be sniffed as
+// plain text and interpreted in the default encoding (windows-1252)
+// unless it has a leading little endian BOM (FF FE 00 00), in which
+// case it will be interpreted as UTF-16LE.
 
 const samples = [
   {file: 'resources/utf-32-big-endian-bom.html', expected: 'windows-1252'},
@@ -26,7 +26,10 @@ samples.forEach(sample => async_test(t => {
   const iframe = document.createElement('iframe');
   iframe.src = sample.file;
   iframe.onload = t.step_func(() => {
-    assert_equals(iframe.contentDocument.characterSet, sample.expected);
+    const doc = iframe.contentDocument;
+    assert_equals(doc.characterSet, sample.expected);
+    assert_not_equals(doc.documentElement.dataset['parsed'], 'yes',
+                      'Should not have parsed as (X)HTML');
     t.done();
   });
   document.body.appendChild(iframe);

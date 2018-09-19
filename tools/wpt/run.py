@@ -222,7 +222,7 @@ Consider installing certutil via your OS package manager or directly.""")
             kwargs["prefs_root"] = prefs_root
 
         # Allow WebRTC tests to call getUserMedia.
-        kwargs["binary_args"].append("--setpref=media.navigator.streams.fake=true")
+        kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
 
 
 class Fennec(BrowserSetup):

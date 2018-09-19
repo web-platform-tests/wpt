@@ -2,11 +2,11 @@ function observeScrolling(elements, callback) {
   if (!Array.isArray(elements))
       elements = [elements];
   var lastChangedFrame = 0;
-  var lastLeft = {};
-  var lastTop = {};
+  var lastLeft = new Map();
+  var lastTop = new Map();
   elements.forEach((element) => {
-    lastLeft[element] = element.scrollLeft;
-    lastTop[element] = element.scrollTop;
+    lastLeft.set(element, element.scrollLeft);
+    lastTop.set(element, element.scrollTop);
   });
   function tick(frames) {
     // We requestAnimationFrame either for 500 frames or until 20 frames with
@@ -15,13 +15,13 @@ function observeScrolling(elements, callback) {
       callback(true);
     } else {
       var scrollHappened = elements.some((element) => {
-        return element.scrollLeft != lastLeft[element] || element.scrollTop != lastTop[element];
+        return element.scrollLeft != lastLeft.get(element) || element.scrollTop != lastTop.get(element);
       });
       if (scrollHappened) {
         lastChangedFrame = frames;
         elements.forEach((element) => {
-          lastLeft[element] = element.scrollLeft;
-          lastTop[element] = element.scrollTop;
+          lastLeft.set(element, element.scrollLeft);
+          lastTop.set(element, element.scrollTop);
         });
         callback(false);
       }

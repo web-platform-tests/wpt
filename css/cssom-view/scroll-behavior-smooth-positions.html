@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Testing smooth scrolling on an element</title>
+<title>Testing scroll positions when scrolling an element with smooth behavior</title>
 <meta name="timeout" content="long"/>
 <link rel="author" title="Frédéric Wang" href="mailto:fwang@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/cssom-view/#propdef-scroll-behavior">
@@ -23,16 +23,14 @@
   </div>
 </div>
 <script>
+  // For smooth behavior, evolution of scroll positions over time is not specified by CSSOM View.
+  // This test relies on the minimal assumption that scroll position functions are monotonic.
   ["scroll", "scrollTo", "scrollBy", "scrollIntoView"].forEach(function(scrollFunction) {
     promise_test(() => {
       return new Promise(function(resolve) {
         resetScroll(overflowNode);
         var finalLeft = 500;
         var finalTop = 250;
-        // Note: exact smooth scrolling behavior is not specified by CSSOM View. This test relies on the minimal assumption that the element scrolls less than 1/4 of the total distance between two frames.
-        var maxDeltaLeft = finalLeft / 4;
-        var maxDeltaTop = finalTop / 4;
-
         var oldLeft = overflowNode.scrollLeft;
         var oldTop = overflowNode.scrollTop;
         assert_equals(oldLeft, 0);
@@ -45,9 +43,6 @@
           var newTop = overflowNode.scrollTop;
           assert_less_than_equal(oldLeft, newLeft, "ScrollLeft keeps increasing");
           assert_less_than_equal(oldTop, newTop, "ScrollTop keeps increasing");
-
-          assert_less_than(newLeft - oldLeft, maxDeltaLeft, "ScrollLeft should increase smoothly");
-          assert_less_than(newTop - oldTop, maxDeltaTop, "ScrollTop should increase smoothly");
           if (done) {
             assert_equals(newLeft, finalLeft, "ScrollLeft should reach final position");
             assert_equals(newTop, finalTop, "ScrollTop should reach final position");

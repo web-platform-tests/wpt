@@ -48,21 +48,36 @@
   </div>
 </div>
 <script>
+  // The CSSOM-View spec and implementations follow different algorithms (scrolls performed in parallel, as inner-to-outer sequence or as outer-to-inner sequence).
+  // See https://github.com/w3c/csswg-drafts/issues/3127
   promise_test(() => {
-    // CSSOM seems to suggest revealing happens from innermost to outermost but some browsers do the opposite.
-    // It is also not clear whether the order actually implies suspending the remaining scroll requests.
-    // Hence for now we only wait and check .
-    var divs = document.querySelectorAll(".scrollable");
-    divs.forEach((scrollableDiv) => {
-      resetScroll(scrollableDiv);
-    });
-    elementToReveal.scrollIntoView({inline: "start", block: "start", behavior: "auto"});
-    var notAllImmediatelyScrolled =
-      Array.from(document.querySelectorAll(".smoothBehavior")).some((scrollableDiv) => { return scrollableDiv.scrollTop < 500 });
-    assert_true(notAllImmediatelyScrolled, "Some elements should not scroll immeditaly");
-    return waitForScrollEnd(Array.from(divs)).then(() => {
+    return new Promise(function(resolve) {
+      var divs = document.querySelectorAll(".scrollable");
       divs.forEach((scrollableDiv) => {
-        assert_equals(scrollableDiv.scrollTop, 500, "Final value of scrollTop");
+        resetScroll(scrollableDiv);
+      });
+      elementToReveal.scrollIntoView({inline: "start", block: "start", behavior: "auto"});
+      var scrollTop = new Map();
+      var isSmooth = new Map();
+      divs.forEach((scrollableDiv) => {
+        scrollTop.set(scrollableDiv, scrollableDiv.scrollTop);
+        isSmooth.set(scrollableDiv, scrollableDiv.classList.contains("smoothBehavior"));
+        // If scroll operations are not performed in parallel, scroll boxes with instant behavior might also need to wait for their predecessors.
+        if (isSmooth.get(scrollableDiv))
+          assert_less_than(scrollTop.get(scrollableDiv), 500, "Element with smooth behavior should not scroll immediately");
+      });
+
+      observeScrolling(Array.from(divs), function(done) {
+        if (done)
+          requestAnimationFrame(resolve);
+        divs.forEach((scrollableDiv) => {
+          assert_less_than_equal(scrollTop.get(scrollableDiv), scrollableDiv.scrollTop, "ScrollTop keeps increasing");
+          if (!isSmooth.get(scrollableDiv))
+            assert_any(assert_equals, scrollableDiv.scrollTop, [0, 500], "Element with instant behavior should jump to the final position");
+          if (done)
+            assert_equals(scrollableDiv.scrollTop, 500, "Final value of scrollTop");
+          scrollTop.set(scrollableDiv, scrollableDiv.scrollTop);
+        });
       });
     });
   }, "scrollIntoView with nested elements with different scroll-behavior");

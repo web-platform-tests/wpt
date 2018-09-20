@@ -107,7 +107,14 @@ class HTMLItem(pytest.Item, pytest.Collector):
         elif self.type == 'unit' and self.expected:
             raise ValueError('Unit tests must not specify expected report data')
 
-        super(HTMLItem, self).__init__(name, parent)
+        # Ensure that distinct items have distinct fspath attributes.
+        # This is necessary because pytest has an internal cache keyed on it,
+        # and only the first test with any given fspath will be run.
+        #
+        # This cannot use super(HTMLItem, self).__init__(..) because only the
+        # Collector constructor takes the fspath argument.
+        pytest.Item.__init__(self, name, parent)
+        pytest.Collector.__init__(self, name, parent, fspath=filename)
 
 
     def reportinfo(self):

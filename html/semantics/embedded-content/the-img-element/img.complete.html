@@ -67,7 +67,7 @@
     //change src again, should make only one request as per 'await stable state'
     document.getElementById("imgTestTag5").srcset="/images/green-256x256.png 1.6x"
   });
-  
+
   // https://html.spec.whatwg.org/multipage/multipage/embedded-content-1.html#update-the-image-data
   // says to "await a stable state" before fetching so we use a separate <script>
   imageInstance.src = 'image-1.jpg?pipe=trickle(d1)&nocache=' + Math.random(); // make sure the image isn't in cache

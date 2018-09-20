@@ -29,6 +29,8 @@ def pytest_collect_file(path, parent):
 
 def pytest_configure(config):
     config.driver = webdriver.Firefox(firefox_binary=config.getoption("--binary"))
+    config.add_cleanup(config.driver.quit)
+
     config.server = WPTServer(WPT_ROOT)
     config.server.start()
     # Although the name of the `_create_unverified_context` method suggests
@@ -42,7 +44,6 @@ def pytest_configure(config):
     # https://docs.python.org/2/library/httplib.html#httplib.HTTPSConnection
     config.ssl_context = ssl._create_unverified_context()
     config.add_cleanup(config.server.stop)
-    config.add_cleanup(config.driver.quit)
 
 def resolve_uri(context, uri):
     if uri.startswith('/'):

@@ -15,10 +15,9 @@ function check_opaqueredirect(response_info, scope) {
   assert_equals(response_info.headers.length, 0);
 }
 
-function redirect_response_test(t, scope, expected_body, expected_urls) {
-  var script = 'resources/redirect-worker.js';
-  var registration;
-  var message_resolvers = [];
+async function redirect_response_test(t, scope, expected_body, expected_urls) {
+  const SCRIPT = 'resources/redirect-worker.js';
+  let message_resolvers = [];
   function wait_for_message(count) {
     var promises = [];
     message_resolvers = [];
@@ -32,29 +31,30 @@ function redirect_response_test(t, scope, expected_body, expected_urls) {
     if (resolve)
       resolve(e.data);
   }
-  return service_worker_unregister_and_register(t, script, scope)
-    .then(reg => {
-        registration = reg;
-        add_completion_callback(_ => registration.unregister());
-        var worker = registration.installing;
-        return wait_for_state(t, worker, 'activated');
-      })
-    .then(_ => with_iframe(scope + '&base'))
-    .then(frame => {
-        assert_equals(frame.contentDocument.body.textContent, 'OK');
-        frame.contentWindow.navigator.serviceWorker.onmessage = on_message;
-        return Promise.all(wait_for_message(expected_urls.length)
-                               .concat(with_iframe(scope)));
-      })
-    .then(results => {
-      var frame = results[expected_urls.length];
-      assert_equals(frame.contentDocument.body.textContent, expected_body);
-      for (var i = 0; i < expected_urls.length; ++i) {
-        check_opaqueredirect(results[i], expected_urls[i]);
-      }
+  const registration =
+      await service_worker_unregister_and_register(t, SCRIPT, scope);
+  const worker = registration.installing;
+  await wait_for_state(t, worker, 'activated');
+  const frame = await with_iframe(scope + '&base');
+  assert_equals(frame.contentDocument.body.textContent, 'OK');
+  frame.contentWindow.navigator.serviceWorker.onmessage = on_message;
+  const results = await Promise.all(wait_for_message(expected_urls.length)
+                    .concat(with_iframe(scope)));
+  const result = results[expected_urls.length];
+
+  add_completion_callback(async() => {
+    if (registration)
+      await registration.unregister();
+    if (frame)
       frame.remove();
-      return registration.unregister();
-    });
+    if (result)
+      result.remove();
+  })
+
+  assert_equals(result.contentDocument.body.textContent, expected_body);
+  for (var i = 0; i < expected_urls.length; ++i) {
+    check_opaqueredirect(results[i], expected_urls[i]);
+  }
 }
 
 promise_test(t => {
@@ -65,7 +65,7 @@ promise_test(t => {
         ['resources/redirect-scope.py?type=normal']);
   }, 'Navigation Preload redirect response.');
 
-promise_test(t => {
+promise_test(async t => {
     return redirect_response_test(
         t,
         'resources/redirect-scope.py?type=no-location',
@@ -73,7 +73,7 @@ promise_test(t => {
         ['resources/redirect-scope.py?type=no-location']);
   }, 'Navigation Preload no-location redirect response.');
 
-promise_test(t => {
+promise_test(async t => {
     return redirect_response_test(
         t,
         'resources/redirect-scope.py?type=no-location-with-body',
@@ -81,7 +81,7 @@ promise_test(t => {
         ['resources/redirect-scope.py?type=no-location-with-body']);
   }, 'Navigation Preload no-location redirect response with body.');
 
-promise_test(t => {
+promise_test(async t => {
     return redirect_response_test(
         t,
         'resources/redirect-scope.py?type=redirect-to-scope',

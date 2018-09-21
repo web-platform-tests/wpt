@@ -189,6 +189,30 @@ def test_run_firefox(manifest_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.remote_network
+@pytest.mark.xfail(sys.platform == "win32",
+                   reason="Tests currently don't work on Windows for path reasons")
+def test_run_firefox_binary_args(manifest_dir):
+    if is_port_8000_in_use():
+        pytest.skip("port 8000 already in use")
+
+    if sys.platform == "darwin":
+        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "nightly", "Firefox Nightly.app")
+    else:
+        fx_path = os.path.join(wpt.localpaths.repo_root, "_venv", "browsers", "nightly", "firefox")
+    if os.path.exists(fx_path):
+        shutil.rmtree(fx_path)
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["run", "--no-pause", "--install-browser", "--yes",
+                       "--metadata", manifest_dir,
+                       "--binary-arg=-headless",
+                       "firefox", "/dom/nodes/Element-tagName.html"])
+    assert os.path.exists(fx_path)
+    shutil.rmtree(fx_path)
+    assert excinfo.value.code == 0
+
+
+@pytest.mark.slow
 @pytest.mark.xfail(sys.platform == "win32",
                    reason="Tests currently don't work on Windows for path reasons")
 def test_run_chrome(manifest_dir):

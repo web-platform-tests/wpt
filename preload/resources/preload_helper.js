@@ -14,7 +14,7 @@ function verifyNumberOfDownloads(url, number)
 {
     var numDownloads = 0;
     performance.getEntriesByName(getAbsoluteURL(url)).forEach(entry => {
-        if (entry.transferSize > 0) {
+        if (entry.transferSize === undefined || entry.transferSize > 0) {
             numDownloads++;
         }
     });

@@ -1,7 +1,7 @@
 import base64
 import cgi
-import Cookie
-import StringIO
+from six.moves.http_cookies import BaseCookie
+from six import BytesIO
 import tempfile
 
 from six.moves.urllib.parse import parse_qsl, urlsplit
@@ -50,9 +50,9 @@ class InputFile(object):
         self._file_position = 0
 
         if length > self.max_buffer_size:
-            self._buf = tempfile.TemporaryFile(mode="rw+b")
+            self._buf = tempfile.TemporaryFile()
         else:
-            self._buf = StringIO.StringIO()
+            self._buf = BytesIO()
 
     @property
     def _buf_position(self):
@@ -68,22 +68,22 @@ class InputFile(object):
         bytes_remaining = min(bytes, self.length - self._buf_position)
 
         if bytes_remaining == 0:
-            return ""
+            return b""
 
         if self._buf_position != self._file_position:
             buf_bytes = min(bytes_remaining, self._file_position - self._buf_position)
             old_data = self._buf.read(buf_bytes)
             bytes_remaining -= buf_bytes
         else:
-            old_data = ""
+            old_data = b""
 
-        assert self._buf_position == self._file_position, (
+        assert bytes_remaining == 0 or self._buf_position == self._file_position, (
             "Before reading buffer position (%i) didn't match file position (%i)" %
             (self._buf_position, self._file_position))
         new_data = self._file.read(bytes_remaining)
         self._buf.write(new_data)
         self._file_position += bytes_remaining
-        assert self._buf_position == self._file_position, (
+        assert bytes_remaining == 0 or self._buf_position == self._file_position, (
             "After reading buffer position (%i) didn't match file position (%i)" %
             (self._buf_position, self._file_position))
 
@@ -106,10 +106,10 @@ class InputFile(object):
 
         if self._buf_position < self._file_position:
             data = self._buf.readline(max_bytes)
-            if data.endswith("\n") or len(data) == max_bytes:
+            if data.endswith(b"\n") or len(data) == max_bytes:
                 return data
         else:
-            data = ""
+            data = b""
 
         assert self._buf_position == self._file_position
 
@@ -121,7 +121,7 @@ class InputFile(object):
             readahead = self.read(min(2, max_bytes))
             max_bytes -= len(readahead)
             for i, c in enumerate(readahead):
-                if c == "\n":
+                if c == b"\n"[0]:
                     buf.append(readahead[:i+1])
                     found = True
                     break
@@ -129,7 +129,7 @@ class InputFile(object):
                 buf.append(readahead)
             if not readahead or not max_bytes:
                 break
-        new_data = "".join(buf)
+        new_data = b"".join(buf)
         data += new_data
         self.seek(initial_position + len(new_data))
         return data
@@ -144,12 +144,14 @@ class InputFile(object):
                 break
         return rv
 
-    def next(self):
+    def __next__(self):
         data = self.readline()
         if data:
             return data
         else:
             raise StopIteration
+
+    next = __next__
 
     def __iter__(self):
         return self
@@ -276,6 +278,7 @@ class Request(object):
 
         self.raw_input = InputFile(request_handler.rfile,
                                    int(self.headers.get("Content-Length", 0)))
+
         self._body = None
 
         self._GET = None
@@ -314,7 +317,7 @@ class Request(object):
     @property
     def cookies(self):
         if self._cookies is None:
-            parser = Cookie.BaseCookie()
+            parser = BaseCookie()
             cookie_headers = self.headers.get("cookie", "")
             parser.load(cookie_headers)
             cookies = Cookies()
@@ -343,6 +346,13 @@ class Request(object):
         if self._auth is None:
             self._auth = Authentication(self.headers)
         return self._auth
+
+
+class H2Request(Request):
+    def __init__(self, request_handler):
+        self.h2_stream_id = request_handler.h2_stream_id
+        self.frames = []
+        super(H2Request, self).__init__(request_handler)
 
 
 class RequestHeaders(dict):

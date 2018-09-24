@@ -425,11 +425,11 @@
                  loadedmetadataCalled = true;
                  e.target.removeEventListener(e.type, metadata);
               });
-              sourceBuffer.addEventListener("updateend", function updateend(e) {
+              sourceBuffer.addEventListener("updateend", test.step_func(function updateend(e) {
                  assert_true(loadedmetadataCalled);
                  assert_equals(mediaElement.readyState, mediaElement.HAVE_METADATA);
                  e.target.removeEventListener(e.type, updateend);
-              });
+              }));
               test.expectEvent(sourceBuffer, "updateend", "remainingInitSegment append ended.");
               test.expectEvent(mediaElement, "loadedmetadata", "loadedmetadata event received.");
               sourceBuffer.appendBuffer(initSegment);
@@ -444,11 +444,11 @@
                       loadeddataCalled = true;
                       e.target.removeEventListener(e.type, loadeddata);
                   });
-                  sourceBuffer.addEventListener("updateend", function updateend(e) {
+                  sourceBuffer.addEventListener("updateend", test.step_func(function updateend(e) {
                       assert_true(loadeddataCalled);
                       assert_greater_than_equal(mediaElement.readyState, mediaElement.HAVE_CURRENT_DATA);
                       e.target.removeEventListener(e.type, updateend);
-                  });
+                  }));
                   test.expectEvent(sourceBuffer, "updateend", "mediaSegment append ended.");
                   test.expectEvent(mediaElement, "loadeddata", "loadeddata fired.");
                   sourceBuffer.appendBuffer(mediaSegment);
@@ -585,6 +585,37 @@
                   "appendBuffer() throws an exception when called after removeSourceBuffer().");
               test.done();
           }, "Test appending after removeSourceBuffer().");
+
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              // Media elements using MSE should not fire the stalled event. See discussion at
+              // https://github.com/w3c/media-source/issues/88#issuecomment-374406928
+              mediaElement.addEventListener("stalled", test.unreached_func("Unexpected 'stalled' event."));
+
+              // Prime the media element with initial appends.
+              var initSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.init);
+              var mediaSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.media[0]);
+              test.expectEvent(sourceBuffer, "updateend", "initSegment append ended.");
+              sourceBuffer.appendBuffer(initSegment);
+              test.waitForExpectedEvents(function()
+              {
+                  assert_equals(mediaSource.readyState, "open", "readyState is open after init segment appended.");
+                  test.expectEvent(sourceBuffer, "updateend", "mediaSegment append ended.");
+                  sourceBuffer.appendBuffer(mediaSegment);
+              });
+
+              // Verify state and wait for the 'stalled' event.
+              test.waitForExpectedEvents(function()
+              {
+                  assert_equals(sourceBuffer.buffered.length, 1, "sourceBuffer has a buffered range");
+                  assert_equals(mediaSource.readyState, "open", "readyState is open after media segment appended.");
+
+                  // Set timeout to 4 seconds. This creates an opportunity for UAs to _improperly_ fire the stalled event.
+                  // For media elements doing progressive download (not MSE), stalled is thrown after ~3 seconds of the
+                  // download failing to progress.
+                  test.step_timeout(function() { test.done(); }, 4000);
+              });
+          }, "Test slow appending does not trigger stalled events.");
 
         </script>
     </body>

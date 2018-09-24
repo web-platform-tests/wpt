@@ -1,4 +1,5 @@
 import traceback
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -53,6 +54,10 @@ class Protocol(object):
 
             msg = "Post-connection steps failed"
             self.after_connect()
+        except IOError:
+            self.logger.warning("Timed out waiting for browser to start")
+            self.executor.runner.send_message("init_failed")
+            return
         except Exception:
             if msg is not None:
                 self.logger.warning(msg)
@@ -289,4 +294,34 @@ class TestDriverProtocolPart(ProtocolPart):
         :param str status: Either "failure" or "success" depending on whether the
                            previous command succeeded.
         :param str message: Additional data to add to the message."""
+        pass
+
+
+class AssertsProtocolPart(ProtocolPart):
+    """ProtocolPart that implements the functionality required to get a count of non-fatal
+    assertions triggered"""
+    __metaclass__ = ABCMeta
+
+    name = "asserts"
+
+    @abstractmethod
+    def get(self):
+        """Get a count of assertions since the last browser start"""
+        pass
+
+
+class CoverageProtocolPart(ProtocolPart):
+    """Protocol part for collecting per-test coverage data."""
+    __metaclass__ = ABCMeta
+
+    name = "coverage"
+
+    @abstractmethod
+    def reset(self):
+        """Reset coverage counters"""
+        pass
+
+    @abstractmethod
+    def dump(self):
+        """Dump coverage counters"""
         pass

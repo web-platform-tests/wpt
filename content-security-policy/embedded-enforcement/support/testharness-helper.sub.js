@@ -91,6 +91,10 @@ function assert_required_csp(t, url, csp, expected) {
       assert_unreached('Child iframes have unexpected csp:"' + e.data['required_csp'] + '"');
 
     expected.splice(expected.indexOf(e.data['required_csp']), 1);
+
+    if (e.data['test_header_injection'] != null)
+      assert_unreached('HTTP header injection was successful');
+
     if (expected.length == 0)
       t.done();
   }));
@@ -115,11 +119,11 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
 
   if (shouldBlock) {
     // Assert iframe does not load and is inaccessible.
-    window.onmessage = function (e) {
+    window.onmessage = t.step_func(function(e) {
       if (e.source != i.contentWindow)
           return;
-      t.assert_unreached('No message should be sent from the frame.');
-    }
+      assert_unreached('No message should be sent from the frame.');
+    });
     i.onload = t.step_func(function () {
       // Delay the check until after the postMessage has a chance to execute.
       setTimeout(t.step_func_done(function () {

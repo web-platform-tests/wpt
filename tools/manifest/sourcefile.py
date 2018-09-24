@@ -12,7 +12,7 @@ except ImportError:
 import html5lib
 
 from . import XMLParser
-from .item import Stub, ManualTest, WebdriverSpecTest, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
+from .item import Stub, ManualTest, WebDriverSpecTest, RefTestNode, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
 from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
@@ -55,7 +55,8 @@ _any_variants = {
     b"serviceworker": {"force_https": True},
     b"sharedworker": {},
     b"dedicatedworker": {"suffix": ".any.worker.html"},
-    b"worker": {"longhand": {b"dedicatedworker", b"sharedworker", b"serviceworker"}}
+    b"worker": {"longhand": {b"dedicatedworker", b"sharedworker", b"serviceworker"}},
+    b"jsshell": {"suffix": ".any.js"},
 }
 
 
@@ -100,8 +101,9 @@ def parse_variants(value):
 
 def global_suffixes(value):
     """
-    Yields the relevant filename suffixes (strings) for the variants defined by
-    the given comma-separated value.
+    Yields tuples of the relevant filename suffix (a string) and whether the
+    variant is intended to run in a JS shell, for the variants defined by the
+    given comma-separated value.
     """
     assert isinstance(value, binary_type), value
 
@@ -111,9 +113,7 @@ def global_suffixes(value):
     for global_type in global_types:
         variant = _any_variants[global_type]
         suffix = variant.get("suffix", ".any.%s.html" % global_type.decode("utf-8"))
-        if variant.get("force_https", False):
-            suffix = ".https" + suffix
-        rv.add(suffix)
+        rv.add((suffix, global_type == b"jsshell"))
 
     return rv
 
@@ -130,10 +130,20 @@ def global_variant_url(url, suffix):
     return replace_end(url, ".js", suffix)
 
 
+def _parse_xml(f):
+    try:
+        # raises ValueError with an unsupported encoding,
+        # ParseError when there's an undefined entity
+        return ElementTree.parse(f)
+    except (ValueError, ElementTree.ParseError):
+        f.seek(0)
+        return ElementTree.parse(f, XMLParser.XMLParser())
+
+
 class SourceFile(object):
-    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree"),
-               "xhtml":lambda x:ElementTree.parse(x, XMLParser.XMLParser()),
-               "svg":lambda x:ElementTree.parse(x, XMLParser.XMLParser())}
+    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree", useChardet=False),
+               "xhtml":_parse_xml,
+               "svg":_parse_xml}
 
     root_dir_non_test = set(["common"])
 
@@ -145,7 +155,7 @@ class SourceFile(object):
                          ("css", "CSS2", "archive"),
                          ("css", "common")}
 
-    def __init__(self, tests_root, rel_path, url_base, contents=None):
+    def __init__(self, tests_root, rel_path, url_base, hash=None, contents=None):
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -176,6 +186,7 @@ class SourceFile(object):
         self.meta_flags = self.name.split(".")[1:]
 
         self.items_cache = None
+        self._hash = hash
 
     def __getstate__(self):
         # Remove computed properties if we pickle this class
@@ -225,8 +236,12 @@ class SourceFile(object):
 
     @cached_property
     def hash(self):
-        with self.open() as f:
-            return hashlib.sha1(f.read()).hexdigest()
+        if not self._hash:
+            with self.open() as f:
+                content = f.read()
+            data = "".join(("blob ", str(len(content)), "\0", content))
+            self._hash = hashlib.sha1(data).hexdigest()
+        return self._hash
 
     def in_non_test_dir(self):
         if self.dir_path == "":
@@ -250,6 +265,7 @@ class SourceFile(object):
         be a non-test file"""
         return (self.is_dir() or
                 self.name_prefix("MANIFEST") or
+                self.filename == "META.yml" or
                 self.filename.startswith(".") or
                 self.type_flag == "support" or
                 self.in_non_test_dir())
@@ -605,8 +621,9 @@ class SourceFile(object):
                     break
 
             tests = [
-                TestharnessTest(self, global_variant_url(self.url, suffix) + variant, timeout=self.timeout)
-                for suffix in sorted(global_suffixes(globals))
+                TestharnessTest(self, global_variant_url(self.url, suffix) + variant, timeout=self.timeout,
+                                jsshell=jsshell)
+                for (suffix, jsshell) in sorted(global_suffixes(globals))
                 for variant in self.test_variants
             ]
             rv = TestharnessTest.item_type, tests
@@ -628,7 +645,7 @@ class SourceFile(object):
             rv = TestharnessTest.item_type, tests
 
         elif self.name_is_webdriver:
-            rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url,
+            rv = WebDriverSpecTest.item_type, [WebDriverSpecTest(self, self.url,
                                                                  timeout=self.timeout)]
 
         elif self.content_is_css_manual and not self.name_is_reference:

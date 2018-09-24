@@ -116,6 +116,7 @@ dictionary FocusOptions {
 HTMLElement includes GlobalEventHandlers;
 HTMLElement includes DocumentAndElementEventHandlers;
 HTMLElement includes ElementContentEditable;
+HTMLElement includes HTMLOrSVGElement;
 
 // Note: intentionally not [HTMLConstructor]
 interface HTMLUnknownElement : HTMLElement { };
@@ -128,8 +129,6 @@ interface mixin HTMLOrSVGElement {
   void focus(optional FocusOptions options);
   void blur();
 };
-HTMLElement includes HTMLOrSVGElement;
-SVGElement includes HTMLOrSVGElement;
 
 [Exposed=Window,
  OverrideBuiltins]
@@ -1358,9 +1357,7 @@ interface TextMetrics {
   readonly attribute double actualBoundingBoxDescent;
   readonly attribute double emHeightAscent;
   readonly attribute double emHeightDescent;
-  readonly attribute double hangingBaseline;
-  readonly attribute double alphabeticBaseline;
-  readonly attribute double ideographicBaseline;
+  Baselines getBaselines();
 };
 
 [Constructor(unsigned long sw, unsigned long sh),
@@ -1551,6 +1548,7 @@ interface Window : EventTarget {
   void cancelAnimationFrame(unsigned long handle);
 
   void postMessage(any message, USVString targetOrigin, optional sequence<object> transfer = []);
+  void postMessage(any message, optional sequence<object> transfer = [], optional WindowPostMessageOptions options);
 
   // also has obsolete members
 };
@@ -1558,6 +1556,10 @@ Window includes GlobalEventHandlers;
 Window includes WindowEventHandlers;
 
 callback FrameRequestCallback = void (DOMHighResTimeStamp time);
+
+dictionary WindowPostMessageOptions {
+  USVString targetOrigin = "/";
+};
 
 [Exposed=Window]
 interface BarProp {

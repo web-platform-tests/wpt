@@ -75,9 +75,9 @@
 
             // Single value, calc
             { value: "calc(100.5)",             isValid: true,  expectedValue: "100.5", description: "Simple calc value" },
-            { value: "calc(1001)",              isValid: false, description: "Out-of-range simple calc value" },
+            { value: "calc(1001)",              isValid: true, description: "Out-of-range simple calc value (should be clamped)" },
             { value: "calc(100.5*3 + 50.5)",    isValid: true,  expectedValue: "352", description: "Valid calc expression" },
-            { value: "calc(100.5*3 + 800)",     isValid: false, description: "Valid calc expression with out-of-range value" },
+            { value: "calc(100.5*3 + 800)",     isValid: true, description: "Valid calc expression with out-of-range value (should be clamped)" },
             { value: "calc(100.5px + 50.5px)",  isValid: false, description: "Valid calc expression with units" },
 
             // Value range
@@ -118,8 +118,8 @@
             // Single value, calc
             { value: "calc(200.5%)",            isValid: true,  expectedValue: "200.5%", description: "Simple calc value" },
             { value: "calc(50%*2 - 20%)",       isValid: true,  expectedValue: "80%", description: "Valid calc expression" },
-            { value: "calc(-100%)",             isValid: false, description: "Negative calc value" },
-            { value: "calc(50% - 50%*2)",       isValid: false, description: "Negative calc expression" },
+            { value: "calc(-100%)",             isValid: true,  description: "Negative calc value (to be clamped)" },
+            { value: "calc(50% - 50%*2)",       isValid: true,  expectedValue: "calc(-50%)", description: "Negative calc expression (to be clamped)" },
             { value: "calc(100)",               isValid: false, description: "Unit-less calc value" },
             { value: "calc(100px)",             isValid: false, description: "Calc value with units" },
 

@@ -1,15 +1,16 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import Cookie
+from six.moves.http_cookies import BaseCookie, Morsel
 import json
-import types
 import uuid
 import socket
-
-from .constants import response_codes
+from .constants import response_codes, h2_headers
 from .logger import get_logger
+from io import BytesIO
 
-from six import string_types, binary_type, text_type
+from six import binary_type, text_type, itervalues
+from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
+from hpack.struct import HeaderTuple
 
 missing = object()
 
@@ -62,7 +63,7 @@ class Response(object):
        parts. If it is an iterable, any item may be a string or a function of zero
        parameters which, when called, returns a string."""
 
-    def __init__(self, handler, request):
+    def __init__(self, handler, request, response_writer_cls=None):
         self.request = request
         self.encoding = "utf8"
 
@@ -71,13 +72,13 @@ class Response(object):
         self.explicit_flush = False
         self.close_connection = False
 
-        self.writer = ResponseWriter(handler, self)
+        self.logger = get_logger()
+        self.writer = response_writer_cls(handler, self) if response_writer_cls else ResponseWriter(handler, self)
 
         self._status = (200, None)
         self.headers = ResponseHeaders()
         self.content = []
 
-        self.logger = get_logger()
 
     @property
     def status(self):
@@ -134,7 +135,7 @@ class Response(object):
                 max_age = int(max_age.total_seconds())
             max_age = "%.0d" % max_age
 
-        m = Cookie.Morsel()
+        m = Morsel()
 
         def maybe_set(key, value):
             if value is not None and value is not False:
@@ -154,7 +155,7 @@ class Response(object):
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
         cookies = self.headers.get("Set-Cookie")
-        parser = Cookie.BaseCookie()
+        parser = BaseCookie()
         for cookie in cookies:
             parser.load(cookie)
 
@@ -182,7 +183,7 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
-        if isinstance(self.content, types.StringTypes):
+        if isinstance(self.content, (binary_type, text_type)):
             yield self.content
         elif hasattr(self.content, "read"):
             if read_file:
@@ -337,7 +338,7 @@ class ResponseHeaders(object):
         self.set(key, value)
 
     def __iter__(self):
-        for key, values in self.data.itervalues():
+        for key, values in itervalues(self.data):
             for value in values:
                 yield key, value
 
@@ -350,6 +351,253 @@ class ResponseHeaders(object):
 
     def __repr__(self):
         return repr(self.data)
+
+
+class H2Response(Response):
+
+    def __init__(self, handler, request):
+        super(H2Response, self).__init__(handler, request, response_writer_cls=H2ResponseWriter)
+
+    def write_status_headers(self):
+        self.writer.write_headers(self.headers, *self.status)
+
+    # Hacky way of detecting last item in generator
+    def write_content(self):
+        """Write out the response content"""
+        if self.request.method != "HEAD" or self.send_body_for_head_request:
+            item = None
+            item_iter = self.iter_content()
+            try:
+                item = item_iter.next()
+                while True:
+                    check_last = item_iter.next()
+                    self.writer.write_data(item, last=False)
+                    item = check_last
+            except StopIteration:
+                if item:
+                    self.writer.write_data(item, last=True)
+
+
+class H2ResponseWriter(object):
+
+    def __init__(self, handler, response):
+        self.socket = handler.request
+        self.h2conn = handler.conn
+        self._response = response
+        self._handler = handler
+        self.stream_ended = False
+        self.content_written = False
+        self.request = response.request
+        self.logger = response.logger
+
+    def write_headers(self, headers, status_code, status_message=None, stream_id=None, last=False):
+        """
+        Send a HEADER frame that is tracked by the local state machine.
+
+        Write a HEADER frame using the H2 Connection object, will only work if the stream is in a state to send
+        HEADER frames.
+
+        :param headers: List of (header, value) tuples
+        :param status_code: The HTTP status code of the response
+        :param stream_id: Id of stream to send frame on. Will use the request stream ID if None
+        :param last: Flag to signal if this is the last frame in stream.
+        """
+        formatted_headers = []
+        secondary_headers = []  # Non ':' prefixed headers are to be added afterwards
+
+        for header, value in headers:
+            if header in h2_headers:
+                header = ':' + header
+                formatted_headers.append((header, str(value)))
+            else:
+                secondary_headers.append((header, str(value)))
+
+        formatted_headers.append((':status', str(status_code)))
+        formatted_headers.extend(secondary_headers)
+
+        with self.h2conn as connection:
+            connection.send_headers(
+                stream_id=self.request.h2_stream_id if stream_id is None else stream_id,
+                headers=formatted_headers,
+                end_stream=last or self.request.method == "HEAD"
+            )
+
+            self.write(connection)
+
+    def write_data(self, item, last=False, stream_id=None):
+        """
+        Send a DATA frame that is tracked by the local state machine.
+
+        Write a DATA frame using the H2 Connection object, will only work if the stream is in a state to send
+        DATA frames. Uses flow control to split data into multiple data frames if it exceeds the size that can
+        be in a single frame.
+
+        :param item: The content of the DATA frame
+        :param last: Flag to signal if this is the last frame in stream.
+        :param stream_id: Id of stream to send frame on. Will use the request stream ID if None
+        """
+        if isinstance(item, (text_type, binary_type)):
+            data = BytesIO(self.encode(item))
+        else:
+            data = item
+
+        # Find the length of the data
+        data.seek(0, 2)
+        data_len = data.tell()
+        data.seek(0)
+
+        # If the data is longer than max payload size, need to write it in chunks
+        payload_size = self.get_max_payload_size()
+        while data_len > payload_size:
+            self.write_data_frame(data.read(payload_size), False, stream_id)
+            data_len -= payload_size
+            payload_size = self.get_max_payload_size()
+
+        self.write_data_frame(data.read(), last, stream_id)
+
+    def write_data_frame(self, data, last, stream_id=None):
+        with self.h2conn as connection:
+            connection.send_data(
+                stream_id=self.request.h2_stream_id if stream_id is None else stream_id,
+                data=data,
+                end_stream=last,
+            )
+            self.write(connection)
+        self.stream_ended = last
+
+    def write_push(self, promise_headers, push_stream_id=None, status=None, response_headers=None, response_data=None):
+        """Write a push promise, and optionally write the push content.
+
+        This will write a push promise to the request stream. If you do not provide headers and data for the response,
+        then no response will be pushed, and you should push them yourself using the ID returned from this function
+
+        :param promise_headers: A list of header tuples that matches what the client would use to
+                                request the pushed response
+        :param push_stream_id: The ID of the stream the response should be pushed to. If none given, will
+                               use the next available id.
+        :param status: The status code of the response, REQUIRED if response_headers given
+        :param response_headers: The headers of the response
+        :param response_data: The response data.
+        :return: The ID of the push stream
+        """
+        with self.h2conn as connection:
+            push_stream_id = push_stream_id if push_stream_id is not None else connection.get_next_available_stream_id()
+            connection.push_stream(self.request.h2_stream_id, push_stream_id, promise_headers)
+            self.write(connection)
+
+        has_data = response_data is not None
+        if response_headers is not None:
+            assert status is not None
+            self.write_headers(response_headers, status, stream_id=push_stream_id, last=not has_data)
+
+        if has_data:
+            self.write_data(response_data, last=True, stream_id=push_stream_id)
+
+        return push_stream_id
+
+    def end_stream(self, stream_id=None):
+        """Ends the stream with the given ID, or the one that request was made on if no ID given."""
+        with self.h2conn as connection:
+            connection.end_stream(stream_id if stream_id is not None else self.request.h2_stream_id)
+            self.write(connection)
+        self.stream_ended = True
+
+    def write_raw_header_frame(self, headers, stream_id=None, end_stream=False, end_headers=False, frame_cls=HeadersFrame):
+        """
+        Ignores the statemachine of the stream and sends a HEADER frame regardless.
+
+        Unlike `write_headers`, this does not check to see if a stream is in the correct state to have HEADER frames
+        sent through to it. It will build a HEADER frame and send it without using the H2 Connection object other than
+        to HPACK encode the headers.
+
+        :param headers: List of (header, value) tuples
+        :param stream_id: Id of stream to send frame on. Will use the request stream ID if None
+        :param end_stream: Set to True to add END_STREAM flag to frame
+        :param end_headers: Set to True to add END_HEADERS flag to frame
+        """
+        if not stream_id:
+            stream_id = self.request.h2_stream_id
+
+        header_t = []
+        for header, value in headers:
+            header_t.append(HeaderTuple(header, value))
+
+        with self.h2conn as connection:
+            frame = frame_cls(stream_id, data=connection.encoder.encode(header_t))
+
+            if end_stream:
+                self.stream_ended = True
+                frame.flags.add('END_STREAM')
+            if end_headers:
+                frame.flags.add('END_HEADERS')
+
+            data = frame.serialize()
+            self.write_raw(data)
+
+    def write_raw_data_frame(self, data, stream_id=None, end_stream=False):
+        """
+        Ignores the statemachine of the stream and sends a DATA frame regardless.
+
+        Unlike `write_data`, this does not check to see if a stream is in the correct state to have DATA frames
+        sent through to it. It will build a DATA frame and send it without using the H2 Connection object. It will
+        not perform any flow control checks.
+
+        :param data: The data to be sent in the frame
+        :param stream_id: Id of stream to send frame on. Will use the request stream ID if None
+        :param end_stream: Set to True to add END_STREAM flag to frame
+        """
+        if not stream_id:
+            stream_id = self.request.h2_stream_id
+
+        frame = DataFrame(stream_id, data=data)
+
+        if end_stream:
+            self.stream_ended = True
+            frame.flags.add('END_STREAM')
+
+        data = frame.serialize()
+        self.write_raw(data)
+
+    def write_raw_continuation_frame(self, headers, stream_id=None, end_headers=False):
+        """
+        Ignores the statemachine of the stream and sends a CONTINUATION frame regardless.
+
+        This provides the ability to create and write a CONTINUATION frame to the stream, which is not exposed by
+        `write_headers` as the h2 library handles the split between HEADER and CONTINUATION internally. Will perform
+        HPACK encoding on the headers.
+
+        :param headers: List of (header, value) tuples
+        :param stream_id: Id of stream to send frame on. Will use the request stream ID if None
+        :param end_headers: Set to True to add END_HEADERS flag to frame
+        """
+        self.write_raw_header_frame(headers, stream_id=stream_id, end_headers=end_headers, frame_cls=ContinuationFrame)
+
+
+    def get_max_payload_size(self, stream_id=None):
+        """Returns the maximum size of a payload for the given stream."""
+        stream_id = stream_id if stream_id is not None else self.request.h2_stream_id
+        with self.h2conn as connection:
+            return min(connection.remote_settings.max_frame_size, connection.local_flow_control_window(stream_id)) - 9
+
+    def write(self, connection):
+        self.content_written = True
+        data = connection.data_to_send()
+        self.socket.sendall(data)
+
+    def write_raw(self, raw_data):
+        """Used for sending raw bytes/data through the socket"""
+
+        self.content_written = True
+        self.socket.sendall(raw_data)
+
+    def encode(self, data):
+        """Convert unicode to bytes according to response.encoding."""
+        if isinstance(data, binary_type):
+            return data
+        elif isinstance(data, text_type):
+            return data.encode(self._response.encoding)
+        else:
+            raise ValueError
 
 
 class ResponseWriter(object):
@@ -365,11 +613,13 @@ class ResponseWriter(object):
         self._wfile = handler.wfile
         self._response = response
         self._handler = handler
+        self._status_written = False
         self._headers_seen = set()
         self._headers_complete = False
         self.content_written = False
         self.request = response.request
         self.file_chunk_size = 32 * 1024
+        self.default_status = 200
 
     def write_status(self, code, message=None):
         """Write out the status line of a response.
@@ -384,13 +634,18 @@ class ResponseWriter(object):
                 message = ''
         self.write("%s %d %s\r\n" %
                    (self._response.request.protocol_version, code, message))
+        self._status_written = True
 
     def write_header(self, name, value):
         """Write out a single header for the response.
 
+        If a status has not been written, a default status will be written (currently 200)
+
         :param name: Name of the header field
         :param value: Value of the header field
         """
+        if not self._status_written:
+            self.write_status(self.default_status)
         self._headers_seen.add(name.lower())
         self.write("%s: %s\r\n" % (name, value))
         if not self._response.explicit_flush:
@@ -402,7 +657,7 @@ class ResponseWriter(object):
             if name.lower() not in self._headers_seen:
                 self.write_header(name, f())
 
-        if (isinstance(self._response.content, string_types) and
+        if (isinstance(self._response.content, (binary_type, text_type)) and
             "content-length" not in self._headers_seen):
             #Would be nice to avoid double-encoding here
             self.write_header("Content-Length", len(self.encode(self._response.content)))
@@ -425,8 +680,22 @@ class ResponseWriter(object):
         self._headers_complete = True
 
     def write_content(self, data):
-        """Write the body of the response."""
-        if isinstance(data, types.StringTypes):
+        """Write the body of the response.
+
+        HTTP-mandated headers will be automatically added with status default to 200 if they have not been explicitly set."""
+        if not self._status_written:
+            self.write_status(self.default_status)
+        if not self._headers_complete:
+            self._response.content = data
+            self.end_headers()
+        self.write_raw_content(data)
+
+    def write_raw_content(self, data):
+        """Writes the data 'as is'"""
+        if data is None:
+            raise ValueError('data cannot be None')
+        if isinstance(data, (text_type, binary_type)):
+            # Deliberately allows both text and binary types. See `self.encode`.
             self.write(data)
         else:
             self.write_content_file(data)

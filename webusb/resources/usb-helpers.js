@@ -8,8 +8,31 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
+
+(() => {
+  // Load scripts needed by the test API on context creation.
+  if ('MojoInterfaceInterceptor' in self) {
+    let prefix = '/resources/chromium';
+    if ('window' in self) {
+      if (window.location.pathname.includes('/LayoutTests/')) {
+        let root = window.location.pathname.match(/.*LayoutTests/);
+        prefix = `${root}/external/wpt/resources/chromium`;
+      }
+    }
+    let scriptPath = `${prefix}/webusb-child-test.js`;
+    if (typeof document == 'undefined') {
+      importScripts(scriptPath);
+    } else {
+      let script = document.createElement('script');
+      script.src = scriptPath;
+      script.async = false;
+      document.head.appendChild(script);
+    }
+  }
+})();
+
 let loadChromiumResources = Promise.resolve().then(() => {
-  if (!MojoInterfaceInterceptor) {
+  if (!('MojoInterfaceInterceptor' in self)) {
     // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
     // not present in the global namespace.
     return;
@@ -21,9 +44,14 @@ let loadChromiumResources = Promise.resolve().then(() => {
     '/resources/chromium/string16.mojom.js',
     '/resources/chromium/device.mojom.js',
     '/resources/chromium/device_manager.mojom.js',
-    '/resources/chromium/chooser_service.mojom.js',
+    '/resources/chromium/web_usb_service.mojom.js',
     '/resources/chromium/webusb-test.js',
   ].forEach(path => {
+    // Use importScripts for workers.
+    if (typeof document === 'undefined') {
+      chain = chain.then(() => importScripts(path));
+      return;
+    }
     let script = document.createElement('script');
     script.src = path;
     script.async = false;

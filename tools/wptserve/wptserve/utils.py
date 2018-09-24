@@ -1,8 +1,9 @@
 import socket
+import sys
 
 def invert_dict(dict):
     rv = {}
-    for key, values in dict.iteritems():
+    for key, values in dict.items():
         for value in values:
             if value in rv:
                 raise ValueError
@@ -67,7 +68,8 @@ def is_bad_port(port):
         143,   # imap2
         179,   # bgp
         389,   # ldap
-        465,   # smtp+ssl
+        427,   # afp (alternate)
+        465,   # smtp (alternate)
         512,   # print / exec
         513,   # login
         514,   # shell
@@ -77,12 +79,13 @@ def is_bad_port(port):
         531,   # chat
         532,   # netnews
         540,   # uucp
+        548,   # afp
         556,   # remotefs
         563,   # nntp+ssl
-        587,   # smtp
+        587,   # smtp (outgoing)
         601,   # syslog-conn
         636,   # ldap+ssl
-        993,   # imap+ssl
+        993,   # ldap+ssl
         995,   # pop3+ssl
         2049,  # nfs
         3659,  # apple-sasl
@@ -93,9 +96,10 @@ def is_bad_port(port):
         6667,  # irc (default)
         6668,  # irc (alternate)
         6669,  # irc (alternate)
+        6697,  # irc+tls
     ]
 
-def get_port(host):
+def get_port(host=''):
     port = 0
     while True:
         free_socket = _open_socket(host, 0)
@@ -104,3 +108,10 @@ def get_port(host):
         if not is_bad_port(port):
             break
     return port
+
+def http2_compatible():
+    # Currently, the HTTP/2.0 server is only working in python 2.7.10+ and OpenSSL 1.0.2+
+    import ssl
+    ssl_v = ssl.OPENSSL_VERSION_INFO
+    return ((sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] >= 10) and
+            (ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2))))

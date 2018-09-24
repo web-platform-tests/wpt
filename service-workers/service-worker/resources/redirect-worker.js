@@ -5,20 +5,33 @@ var cacheName = 'urls-' + self.registration.scope;
 
 var waitUntilPromiseList = [];
 
-self.addEventListener('message', function(event) {
-    var urls;
-    event.waitUntil(Promise.all(waitUntilPromiseList).then(function() {
-      waitUntilPromiseList = [];
-      return caches.open(cacheName);
-    }).then(function(cache) {
-      return cache.keys();
-    }).then(function(requestList) {
-      urls = requestList.map(function(request) { return request.url; });
-      return caches.delete(cacheName);
-    }).then(function() {
-      event.data.port.postMessage({urls: urls});
-    }));
-  });
+async function getRequestInfos(event) {
+  // Wait for fetch events to finish.
+  await Promise.all(waitUntilPromiseList);
+  waitUntilPromiseList = [];
+
+  // Generate the message.
+  const cache = await caches.open(cacheName);
+  const requestList = await cache.keys();
+  const requestInfos = [];
+  for (let i = 0; i < requestList.length; i++) {
+    requestInfos[i] = {
+      url: requestList[i].url,
+    };
+  }
+  await caches.delete(cacheName);
+
+  event.data.port.postMessage({requestInfos});
+}
+
+self.addEventListener('message', async function(event) {
+  if (event.data.command == 'getRequestInfos') {
+    event.waitUntil(getRequestInfos(event));
+    return;
+  }
+
+  // TODO(falken): Add a getClientInfos command to test Clients API.
+});
 
 function get_query_params(url) {
   var search = (new URL(url)).search;
@@ -55,6 +68,8 @@ self.addEventListener('fetch', function(event) {
         return Response.redirect(params['url']);
       } else if (params['sw'] == 'fetch') {
         return fetch(event.request);
+      } else if (params['sw'] == 'fetch-url') {
+        return fetch(params['url']);
       } else if (params['sw'] == 'follow') {
         return fetch(new Request(event.request.url, {redirect: 'follow'}));
       } else if (params['sw'] == 'manual') {

@@ -16,7 +16,6 @@ def command(func):
 
         if session.session_id is None:
             session.start()
-        assert session.session_id is not None
 
         return func(self, *args, **kwargs)
 
@@ -39,7 +38,7 @@ class Timeouts(object):
 
     def _set(self, key, secs):
         body = {key: secs * 1000}
-        timeouts = self.session.send_session_command("POST", "timeouts", body)
+        self.session.send_session_command("POST", "timeouts", body)
         return None
 
     @property
@@ -234,6 +233,8 @@ class Actions(object):
 
 
 class Window(object):
+    identifier = "window-fcc6-11e5-b4f8-330a88ab9d7f"
+
     def __init__(self, session):
         self.session = session
 
@@ -283,6 +284,23 @@ class Window(object):
     @command
     def fullscreen(self):
         return self.session.send_session_command("POST", "window/fullscreen")
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Window.identifier]
+        return cls(uuid, session)
+
+
+class Frame(object):
+    identifier = "frame-075b-4da1-b6ba-e579c2d3230a"
+
+    def __init__(self, session):
+        self.session = session
+
+    @classmethod
+    def from_json(cls, json, session):
+        uuid = json[Frame.identifier]
+        return cls(uuid, session)
 
 
 class Find(object):
@@ -352,7 +370,8 @@ class Session(object):
                  extension=None):
         self.transport = transport.HTTPWireProtocol(
             host, port, url_prefix, timeout=timeout)
-        self.capabilities = capabilities
+        self.requested_capabilities = capabilities
+        self.capabilities = None
         self.session_id = None
         self.timeouts = None
         self.window = None
@@ -385,13 +404,20 @@ class Session(object):
         self.end()
 
     def start(self):
+        """Start a new WebDriver session.
+
+        :return: Dictionary with `capabilities` and `sessionId`.
+
+        :raises error.WebDriverException: If the remote end returns
+            an error.
+        """
         if self.session_id is not None:
             return
 
         body = {}
 
-        if self.capabilities is not None:
-            body["capabilities"] = self.capabilities
+        if self.requested_capabilities is not None:
+            body["capabilities"] = self.requested_capabilities
 
         value = self.send_command("POST", "session", body=body)
         self.session_id = value["sessionId"]
@@ -403,13 +429,16 @@ class Session(object):
         return value
 
     def end(self):
+        """Try to close the active session."""
         if self.session_id is None:
             return
 
-        url = "session/%s" % self.session_id
-        self.send_command("DELETE", url)
-
-        self.session_id = None
+        try:
+            self.send_command("DELETE", "session/%s" % self.session_id)
+        except error.InvalidSessionIdException:
+            pass
+        finally:
+            self.session_id = None
 
     def send_command(self, method, url, body=None):
         """
@@ -424,10 +453,10 @@ class Session(object):
             the `value` field returned after parsing the response
             body as JSON.
 
-        :raises ValueError: If the response body does not contain a
-            `value` key.
         :raises error.WebDriverException: If the remote end returns
             an error.
+        :raises ValueError: If the response body does not contain a
+            `value` key.
         """
         response = self.transport.send(
             method, url, body,
@@ -435,7 +464,13 @@ class Session(object):
             session=self)
 
         if response.status != 200:
-            raise error.from_response(response)
+            err = error.from_response(response)
+
+            if isinstance(err, error.InvalidSessionIdException):
+                # The driver could have already been deleted the session.
+                self.session_id = None
+
+            raise err
 
         if "value" in response.body:
             value = response.body["value"]
@@ -467,14 +502,9 @@ class Session(object):
         :return: `None` if the HTTP response body was empty, otherwise
             the result of parsing the body as JSON.
 
-        :raises error.SessionNotCreatedException: If there is no active
-            session.
         :raises error.WebDriverException: If the remote end returns
             an error.
         """
-        if self.session_id is None:
-            raise error.SessionNotCreatedException()
-
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
 
@@ -639,7 +669,8 @@ class Element(object):
         self.id = id
         self.session = session
 
-        assert id not in self.session._element_cache
+        if id in self.session._element_cache:
+            raise ValueError("Element already in cache: %s" % id)
         self.session._element_cache[self.id] = self
 
     def __repr__(self):
@@ -651,7 +682,6 @@ class Element(object):
 
     @classmethod
     def from_json(cls, json, session):
-        assert Element.identifier in json
         uuid = json[Element.identifier]
         if uuid in session._element_cache:
             return session._element_cache[uuid]
@@ -677,7 +707,7 @@ class Element(object):
 
     @command
     def clear(self):
-        self.send_element_command("POST", self.url("clear"), {})
+        self.send_element_command("POST", "clear", {})
 
     @command
     def send_keys(self, text):

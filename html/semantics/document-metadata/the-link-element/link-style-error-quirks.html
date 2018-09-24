@@ -1,39 +1,10 @@
-<!DOCTYPE html>
-<title>link: error events</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-link-element">
+<!DOCTYPE HTML PUBLIC "-//Sun Microsystems Corp.//DTD HotJava Strict HTML//" "">
+<title>link: error events in quirks mode</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src=/common/get-host-info.sub.js></script>
 <div id="log"></div>
-<div id="test">
 <script>
-var t404 = async_test("Should get an error event for a 404 error.")
-t404.step(function() {
-  var elt = document.createElement("link");
-  elt.onerror = t404.step_func(function() {
-    assert_true(true, "Got error event for 404 error.")
-    t404.step_timeout(function() { t404.done() }, 0);
-  })
-  elt.onload = t404.unreached_func("load event should not be fired");
-  elt.rel = "stylesheet";
-  elt.href = "nonexistent_stylesheet.css";
-  document.getElementsByTagName("head")[0].appendChild(elt);
-})
-
-var tUnsupported = async_test("Should get an error event for an unsupported URL.")
-tUnsupported.step(function() {
-  var elt = document.createElement("link");
-  elt.onerror = tUnsupported.step_func(function() {
-    assert_true(true, "Got error event for unsupported URL.")
-    tUnsupported.step_timeout(function() { tUnsupported.done() }, 0);
-  })
-  elt.onload = tUnsupported.unreached_func("load event should not be fired");
-  elt.rel = "stylesheet";
-  elt.href = "nonexistent:stylesheet.css";
-  document.getElementsByTagName("head")[0].appendChild(elt);
-});
-
 [
  ["same-origin", "resources/css.py"],
  ["cross-origin", get_host_info().HTTP_REMOTE_ORIGIN + "/html/semantics/document-metadata/the-link-element/resources/css.py"]
@@ -43,7 +14,7 @@ tUnsupported.step(function() {
       async_test(t => {
         const l = document.createElement("link");
         t.add_cleanup(() => l.remove());
-        if (nosniff === "nosniff" || contentType === "wrong Content-Type") {
+        if (nosniff === "nosniff" || (contentType === "wrong Content-Type" && originType[0] === "cross-origin")) {
           l.onerror = t.step_func_done();
           l.onload = t.unreached_func("error event should have fired");
         } else {

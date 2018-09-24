@@ -117,7 +117,6 @@ class TestRequest(TestUsingServer):
 
 
 class TestAuth(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_auth(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -127,4 +126,4 @@ class TestAuth(TestUsingServer):
         self.server.router.register(*route)
         resp = self.request(route[1], auth=("test", "PASS"))
         self.assertEqual(200, resp.getcode())
-        self.assertEqual(["test", "PASS"], resp.read().split(" "))
+        self.assertEqual([b"test", b"PASS"], resp.read().split(b" "))

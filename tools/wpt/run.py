@@ -225,6 +225,10 @@ Consider installing certutil via your OS package manager or directly.""")
             kwargs["headless"] = True
             logger.info("Running in headless mode, pass --no-headless to disable")
 
+        # Allow WebRTC tests to call getUserMedia.
+        kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
+
+
 
 class Fennec(BrowserSetup):
     name = "fennec"
@@ -258,6 +262,9 @@ class Chrome(BrowserSetup):
         if kwargs["browser_channel"] == "dev":
             logger.info("Automatically turning on experimental features for Chrome Dev")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+
+        # Allow WebRTC tests to call getUserMedia.
+        kwargs["binary_args"] += ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"]
 
 
 class ChromeAndroid(BrowserSetup):

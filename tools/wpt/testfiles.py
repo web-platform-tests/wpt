@@ -57,6 +57,10 @@ def branch_point():
         not_heads = [item for item in git("rev-parse", "--not", "--branches", "--remotes").split("\n")
                      if item != "^%s" % head]
 
+        # if we don't have any other branches, just return the HEAD commit
+        if not not_heads:
+            return head
+
         # get all commits on HEAD but not reachable from anything in not_heads
         commits = git("rev-list", "--topo-order", "--parents", "HEAD", *not_heads)
         commit_parents = OrderedDict()

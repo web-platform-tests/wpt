@@ -229,7 +229,6 @@ Consider installing certutil via your OS package manager or directly.""")
         kwargs["extra_prefs"].append("media.navigator.streams.fake=true")
 
 
-
 class Fennec(BrowserSetup):
     name = "fennec"
     browser_cls = browser.Fennec

@@ -33,7 +33,7 @@
               stringQuery += "&" + val;
             }
           });
-          const link = originType[1] + stringQuery;
+          const link = new URL(originType[1] + stringQuery, location).href;
           if (linkType === "<link>") {
             l.href = link;
           } else {

@@ -1,0 +1,21 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="runner"></iframe>
+<script>
+const runner = location.href.slice(location.href.lastIndexOf("/") + 1, location.href.length)
+                  .replace(".html", "-runner.html");
+
+async_test(function(test) {
+
+  window.verifyNavigation = test.step_func_done(function(signal) {
+    assert_equals(signal, true, "The navigation initiated in the onclick handler was cancelled by the default href navigation.");
+  });
+
+  document.querySelector("iframe").src = runner;
+
+}, "Link with onclick sets iframe location to invoke a new navigation, which is immediately canceled by the default href navigation.");
+</script>

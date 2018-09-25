@@ -1,0 +1,28 @@
+<!doctype html>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#javascript-protocol">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#the-event-handler-processing-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-get-action">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#planned-navigation">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="test" name="test"></iframe>
+<form target="test" action="javascript:parent.verifyNavigation(location.href);"></form>
+<a target="test" onclick="document.forms[0].submit();">Test</a>
+<script>
+async_test(function(test) {
+
+  window.verifyNavigation = test.step_func_done(function(locationHref) {
+    assert_equals(locationHref, "about:blank", "'javascript: url' code is expected to run in the target nested browsing context, but it ran in the top-level browsing context.");
+  });
+
+  document.querySelector("a").click();
+
+}, "Link with onclick form submit to 'javascript: url' code is executed in target nested browsing context.");
+</script>

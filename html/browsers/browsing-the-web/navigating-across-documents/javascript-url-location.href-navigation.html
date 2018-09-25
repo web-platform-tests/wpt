@@ -1,0 +1,28 @@
+<!doctype html>
+<!--/
+specs:
+  - id: browsing-the-web.html#javascript-protocol
+  - id: webappapis.html#run-a-classic-script
+    steps: [10]
+
+
+description: |
+  Creates an iframe with `src="javascript:..."` which sets `location.href`
+  and expects to navigate.
+
+/-->
+<title>javascript: url with location.href navigation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="a" src='javascript:location.href="href.html";'></iframe>
+<script>
+var test = async_test(undefined, {
+  timeout:1000
+});
+var iframe = document.querySelector("iframe");
+window.onmessage = t.step_func(function(e) {
+  assert_equals(e.data, "href");
+  test.done();
+});
+</script>

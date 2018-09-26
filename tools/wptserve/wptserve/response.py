@@ -237,18 +237,18 @@ class MultipartContent(object):
     def __init__(self, boundary=None, default_content_type=None):
         self.items = []
         if boundary is None:
-            boundary = str(uuid.uuid4())
+            boundary = text_type(uuid.uuid4())
         self.boundary = boundary
         self.default_content_type = default_content_type
 
     def __call__(self):
-        boundary = "--" + self.boundary
-        rv = ["", boundary]
+        boundary = b"--" + self.boundary.encode("ascii")
+        rv = [b"", boundary]
         for item in self.items:
-            rv.append(str(item))
+            rv.append(item.to_bytes())
             rv.append(boundary)
-        rv[-1] += "--"
-        return "\r\n".join(rv)
+        rv[-1] += b"--"
+        return b"\r\n".join(rv)
 
     def append_part(self, data, content_type=None, headers=None):
         if content_type is None:
@@ -265,6 +265,7 @@ class MultipartContent(object):
 
 class MultipartPart(object):
     def __init__(self, data, content_type=None, headers=None):
+        assert isinstance(data, binary_type), data
         self.headers = ResponseHeaders()
 
         if content_type is not None:
@@ -280,13 +281,13 @@ class MultipartPart(object):
 
         self.data = data
 
-    def __str__(self):
+    def to_bytes(self):
         rv = []
-        for item in self.headers:
-            rv.append("%s: %s" % item)
-        rv.append("")
+        for key, value in self.headers:
+            rv.append(b"%s: %s" % (key.encode("ascii"), value.encode("ascii")))
+        rv.append(b"")
         rv.append(self.data)
-        return "\r\n".join(rv)
+        return b"\r\n".join(rv)
 
 
 class ResponseHeaders(object):

@@ -20,7 +20,6 @@ class TestFileHandler(TestUsingServer):
         self.assertEqual("text/plain", resp.info()["Content-Type"])
         self.assertEqual(open(os.path.join(doc_root, "document.txt"), 'rb').read(), resp.read())
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_headers(self):
         resp = self.request("/with_headers.txt")
         self.assertEqual(200, resp.getcode())
@@ -29,7 +28,7 @@ class TestFileHandler(TestUsingServer):
         # This will fail if it isn't a valid uuid
         uuid.UUID(resp.info()["Another-Header"])
         self.assertEqual(resp.info()["Same-Value-Header"], resp.info()["Another-Header"])
-        self.assertEqual(resp.info()["Double-Header"], "PA, SS")
+        self.assert_multiple_headers(resp, "Double-Header", ["PA", "SS"])
 
 
     def test_range(self):

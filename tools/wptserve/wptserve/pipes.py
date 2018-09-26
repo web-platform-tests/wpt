@@ -471,20 +471,23 @@ def template(request, content, escape_type="html"):
             raise Exception("Undefined template variable %s" % field)
 
         while tokens:
-            ttype, field = tokens.popleft()
+            ttype, ffield = tokens.popleft()
             if ttype == "index":
-                value = value[field]
+                value = value[ffield]
             elif ttype == "arguments":
-                value = value(request, *field)
+                value = value(request, *ffield)
             else:
                 raise Exception(
-                    "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, field)
+                    "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, ffield)
                 )
 
         assert isinstance(value, (int, (binary_type, text_type))), tokens
 
         if variable is not None:
             variables[variable] = value
+
+        if field == "GET":
+            value = value.decode("utf-8")
 
         escape_func = {"html": lambda x:escape(x, quote=True),
                        "none": lambda x:x}[escape_type]

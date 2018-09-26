@@ -194,12 +194,9 @@ class FileHandler(object):
             with open(path, 'rb') as f:
                 response.status = 206
                 if len(byte_ranges) > 1:
-                    parts_content_type, content = self.set_response_multipart(response,
-                                                                              byte_ranges,
-                                                                              f)
+                    content = self.set_response_multipart(response, byte_ranges, f)
                     for byte_range in byte_ranges:
                         content.append_part(self.get_range_data(f, byte_range),
-                                            parts_content_type,
                                             [("Content-Range", byte_range.header_value())])
                     return content
                 else:
@@ -212,9 +209,9 @@ class FileHandler(object):
             parts_content_type = parts_content_type[-1]
         else:
             parts_content_type = None
-        content = MultipartContent()
+        content = MultipartContent(parts_content_type)
         response.headers.set("Content-Type", "multipart/byteranges; boundary=%s" % content.boundary)
-        return parts_content_type, content
+        return content
 
     def get_range_data(self, f, byte_range):
         f.seek(byte_range.lower)

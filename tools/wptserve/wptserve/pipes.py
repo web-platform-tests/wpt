@@ -489,6 +489,8 @@ def template(request, content, escape_type="html"):
         escape_func = {"html": lambda x:escape(x, quote=True),
                        "none": lambda x:x}[escape_type]
 
+                       
+
         #Should possibly support escaping for other contexts e.g. script
         #TODO: read the encoding of the response
         if isinstance(value, binary_type):

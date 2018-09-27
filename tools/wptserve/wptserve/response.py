@@ -234,12 +234,10 @@ class Response(object):
 
 
 class MultipartContent(object):
-    def __init__(self, boundary=None, default_content_type=None):
+    def __init__(self, content_type=None):
         self.items = []
-        if boundary is None:
-            boundary = str(uuid.uuid4())
-        self.boundary = boundary
-        self.default_content_type = default_content_type
+        self.boundary = str(uuid.uuid4())
+        self.content_type = content_type
 
     def __call__(self):
         boundary = "--" + self.boundary
@@ -250,10 +248,8 @@ class MultipartContent(object):
         rv[-1] += "--"
         return "\r\n".join(rv)
 
-    def append_part(self, data, content_type=None, headers=None):
-        if content_type is None:
-            content_type = self.default_content_type
-        self.items.append(MultipartPart(data, content_type, headers))
+    def append_part(self, data, headers):
+        self.items.append(MultipartPart(data, self.content_type, headers))
 
     def __iter__(self):
         #This is hackish; when writing the response we need an iterable

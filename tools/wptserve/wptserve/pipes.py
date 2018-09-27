@@ -471,14 +471,14 @@ def template(request, content, escape_type="html"):
             raise Exception("Undefined template variable %s" % field)
 
         while tokens:
-            ttype, ffield = tokens.popleft()
+            ttype, tfield = tokens.popleft()
             if ttype == "index":
-                value = value[ffield]
+                value = value[tfield]
             elif ttype == "arguments":
-                value = value(request, *ffield)
+                value = value(request, *tfield)
             else:
                 raise Exception(
-                    "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, ffield)
+                    "unexpected token type %s (token '%r'), expected ident or arguments" % (ttype, tfield)
                 )
 
         assert isinstance(value, (int, (binary_type, text_type))), tokens

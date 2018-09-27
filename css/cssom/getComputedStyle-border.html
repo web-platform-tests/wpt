@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSSOM: specified and resolved value of border shorthand property</title>
+<link rel="help" href="https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle">
+<link rel="help" href="https://drafts.csswg.org/cssom/#resolved-values">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div style="border: 1px solid blue">test</div>
+<script>
+const elememt = document.querySelector('div[style]');
+test(function() {
+  assert_equals(elememt.style.border, '1px solid blue');
+}, 'element.style.border');
+test(function() {
+  assert_equals(getComputedStyle(elememt).border, '1px solid rgb(0, 0, 255)');
+}, 'getComputeStyle(element).border');
+
+</script>

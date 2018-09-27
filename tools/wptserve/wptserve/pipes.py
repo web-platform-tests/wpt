@@ -486,7 +486,7 @@ def template(request, content, escape_type="html"):
         if variable is not None:
             variables[variable] = value
 
-        if field == "GET":
+        if field == "GET" and not isinstance(value, str):
             value = value.decode("utf-8")
 
         escape_func = {"html": lambda x:escape(x, quote=True),

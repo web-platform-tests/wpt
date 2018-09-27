@@ -29,7 +29,7 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
       return undefined;
     },
     "origin": function() {
-      return document.origin + "/";
+      return self.origin + "/";
     },
     "stripped-referrer": function() {
       return stripUrlForUseAsReferrer(location.toString());
@@ -72,7 +72,6 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
 
     _invokeSubresource: function(callback, test) {
       var invoker = subresourceInvoker[t._scenario.subresource];
-
       // Depending on the delivery method, extend the subresource element with
       // these attributes.
       var elementAttributesForDeliveryMethod = {

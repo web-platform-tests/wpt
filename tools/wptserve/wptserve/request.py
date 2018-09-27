@@ -1,7 +1,7 @@
 import base64
 import cgi
-import Cookie
-import StringIO
+from six.moves.http_cookies import BaseCookie
+from six import BytesIO, binary_type, text_type
 import tempfile
 
 from six.moves.urllib.parse import parse_qsl, urlsplit
@@ -50,9 +50,9 @@ class InputFile(object):
         self._file_position = 0
 
         if length > self.max_buffer_size:
-            self._buf = tempfile.TemporaryFile(mode="rw+b")
+            self._buf = tempfile.TemporaryFile()
         else:
-            self._buf = StringIO.StringIO()
+            self._buf = BytesIO()
 
     @property
     def _buf_position(self):
@@ -68,22 +68,22 @@ class InputFile(object):
         bytes_remaining = min(bytes, self.length - self._buf_position)
 
         if bytes_remaining == 0:
-            return ""
+            return b""
 
         if self._buf_position != self._file_position:
             buf_bytes = min(bytes_remaining, self._file_position - self._buf_position)
             old_data = self._buf.read(buf_bytes)
             bytes_remaining -= buf_bytes
         else:
-            old_data = ""
+            old_data = b""
 
-        assert self._buf_position == self._file_position, (
+        assert bytes_remaining == 0 or self._buf_position == self._file_position, (
             "Before reading buffer position (%i) didn't match file position (%i)" %
             (self._buf_position, self._file_position))
         new_data = self._file.read(bytes_remaining)
         self._buf.write(new_data)
         self._file_position += bytes_remaining
-        assert self._buf_position == self._file_position, (
+        assert bytes_remaining == 0 or self._buf_position == self._file_position, (
             "After reading buffer position (%i) didn't match file position (%i)" %
             (self._buf_position, self._file_position))
 
@@ -106,10 +106,10 @@ class InputFile(object):
 
         if self._buf_position < self._file_position:
             data = self._buf.readline(max_bytes)
-            if data.endswith("\n") or len(data) == max_bytes:
+            if data.endswith(b"\n") or len(data) == max_bytes:
                 return data
         else:
-            data = ""
+            data = b""
 
         assert self._buf_position == self._file_position
 
@@ -121,7 +121,7 @@ class InputFile(object):
             readahead = self.read(min(2, max_bytes))
             max_bytes -= len(readahead)
             for i, c in enumerate(readahead):
-                if c == "\n":
+                if c == b"\n"[0]:
                     buf.append(readahead[:i+1])
                     found = True
                     break
@@ -129,7 +129,7 @@ class InputFile(object):
                 buf.append(readahead)
             if not readahead or not max_bytes:
                 break
-        new_data = "".join(buf)
+        new_data = b"".join(buf)
         data += new_data
         self.seek(initial_position + len(new_data))
         return data
@@ -144,12 +144,14 @@ class InputFile(object):
                 break
         return rv
 
-    def next(self):
+    def __next__(self):
         data = self.readline()
         if data:
             return data
         else:
             raise StopIteration
+
+    next = __next__
 
     def __iter__(self):
         return self
@@ -276,6 +278,7 @@ class Request(object):
 
         self.raw_input = InputFile(request_handler.rfile,
                                    int(self.headers.get("Content-Length", 0)))
+
         self._body = None
 
         self._GET = None
@@ -314,9 +317,9 @@ class Request(object):
     @property
     def cookies(self):
         if self._cookies is None:
-            parser = Cookie.BaseCookie()
-            cookie_headers = self.headers.get("cookie", "")
-            parser.load(cookie_headers)
+            parser = BaseCookie()
+            cookie_headers = self.headers.get("cookie", u"")
+            parser.load(cookie_headers.encode("utf-8"))
             cookies = Cookies()
             for key, value in parser.iteritems():
                 cookies[key] = CookieValue(value)
@@ -345,19 +348,48 @@ class Request(object):
         return self._auth
 
 
+class H2Request(Request):
+    def __init__(self, request_handler):
+        self.h2_stream_id = request_handler.h2_stream_id
+        self.frames = []
+        super(H2Request, self).__init__(request_handler)
+
+
+def maybedecode(s):
+    if isinstance(s, text_type):
+        return s
+
+    if isinstance(s, binary_type):
+        return s.decode("ascii")
+
+    raise TypeError("Unexpected value in RequestHeaders: %r" % s)
+
+
 class RequestHeaders(dict):
     """Dictionary-like API for accessing request headers."""
     def __init__(self, items):
-        for key, value in zip(items.keys(), items.values()):
-            key = key.lower()
-            if key in self:
-                self[key].append(value)
+        for header in items.keys():
+            key = header.lower()
+            # get all headers with the same name
+            values = items.getallmatchingheaders(header)
+            if len(values) > 1:
+                # collect the multiple variations of the current header
+                multiples = []
+                # loop through the values from getallmatchingheaders
+                for value in values:
+                    # getallmatchingheaders returns raw header lines, so
+                    # split to get name, value
+                    multiples.append(maybedecode(value).split(':', 1)[1].strip())
+                headers = multiples
             else:
-                dict.__setitem__(self, key, [value])
+                headers = [maybedecode(items[header])]
+            dict.__setitem__(self, maybedecode(key), headers)
+
 
     def __getitem__(self, key):
         """Get all headers of a certain (case-insensitive) name. If there is
         more than one, the values are returned comma separated"""
+        key = maybedecode(key)
         values = dict.__getitem__(self, key.lower())
         if len(values) == 1:
             return values[0]
@@ -383,6 +415,7 @@ class RequestHeaders(dict):
     def get_list(self, key, default=missing):
         """Get all the header values for a particular field name as
         a list"""
+        key = maybedecode(key)
         try:
             return dict.__getitem__(self, key.lower())
         except KeyError:
@@ -392,6 +425,7 @@ class RequestHeaders(dict):
                 raise
 
     def __contains__(self, key):
+        key = maybedecode(key)
         return dict.__contains__(self, key.lower())
 
     def iteritems(self):
@@ -579,6 +613,7 @@ class Authentication(object):
 
         if "authorization" in headers:
             header = headers.get("authorization")
+            assert isinstance(header, text_type)
             auth_type, data = header.split(" ", 1)
             if auth_type in auth_schemes:
                 self.username, self.password = auth_schemes[auth_type](data)
@@ -586,5 +621,6 @@ class Authentication(object):
                 raise HTTPException(400, "Unsupported authentication scheme %s" % auth_type)
 
     def decode_basic(self, data):
-        decoded_data = base64.decodestring(data)
-        return decoded_data.split(":", 1)
+        assert isinstance(data, text_type)
+        decoded_data = base64.decodestring(data.encode("utf-8"))
+        return decoded_data.decode("utf-8").split(":", 1)

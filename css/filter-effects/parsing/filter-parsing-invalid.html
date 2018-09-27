@@ -8,7 +8,7 @@
 <meta name="assert" content="filter supports only the grammar 'none | <filter-function-list>'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/parsing-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
 </head>
 <body>
 <script>
@@ -34,8 +34,6 @@ test_invalid_value("filter", "drop-shadow(10% 20%)");
 test_invalid_value("filter", "drop-shadow(1px)");
 test_invalid_value("filter", "drop-shadow(1px 2px 3px 4px)");
 test_invalid_value("filter", "drop-shadow(rgb(4, 5, 6))");
-// https://github.com/w3c/fxtf-drafts/issues/231
-test_invalid_value("filter", "drop-shadow(rgb(4, 5, 6) 1px 2px)"); // Fails in Blink/WebKit "drop-shadow(rgb(4, 5, 6) 1px 2px)" and Firefox "drop-shadow(1px 2px rgb(4, 5, 6))".
 test_invalid_value("filter", "drop-shadow()");
 
 test_invalid_value("filter", "grayscale(-20)");

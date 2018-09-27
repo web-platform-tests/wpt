@@ -41,3 +41,6 @@ exclude:
   - vendor/bundle/
   - .bundle/
   - OWNERS
+  - META.yml
+sass:
+    sass_dir: assets/

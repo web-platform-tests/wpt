@@ -129,6 +129,22 @@ function handleKeepalive(event) {
   event.respondWith(new Response(event.request.keepalive));
 }
 
+function handleIsReloadNavigation(event) {
+  const request = event.request;
+  const body =
+    `method = ${request.method}, ` +
+    `isReloadNavigation = ${request.isReloadNavigation}`;
+  event.respondWith(new Response(body));
+}
+
+function handleIsHistoryNavigation(event) {
+  const request = event.request;
+  const body =
+    `method = ${request.method}, ` +
+    `isHistoryNavigation = ${request.isHistoryNavigation}`;
+  event.respondWith(new Response(body));
+}
+
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
     var handlers = [
@@ -151,6 +167,8 @@ self.addEventListener('fetch', function(event) {
       { pattern: '?integrity', fn: handleIntegrity },
       { pattern: '?request-body', fn: handleRequestBody },
       { pattern: '?keepalive', fn: handleKeepalive },
+      { pattern: '?isReloadNavigation', fn: handleIsReloadNavigation },
+      { pattern: '?isHistoryNavigation', fn: handleIsHistoryNavigation },
     ];
 
     var handler = null;

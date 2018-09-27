@@ -11,13 +11,15 @@
                 "inherit": false,
                 "readonly": true,
                 "idlType": {
-                    "sequence": false,
+                    "type": "attribute-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Crypto"
+                    "idlType": "Crypto",
+                    "extAttrs": []
                 },
                 "name": "crypto",
+                "escapedName": "crypto",
                 "extAttrs": []
             }
         ],
@@ -47,13 +49,15 @@
                 "inherit": false,
                 "readonly": true,
                 "idlType": {
-                    "sequence": false,
+                    "type": "attribute-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Crypto"
+                    "idlType": "Crypto",
+                    "extAttrs": []
                 },
                 "name": "crypto",
+                "escapedName": "crypto",
                 "extAttrs": []
             }
         ],

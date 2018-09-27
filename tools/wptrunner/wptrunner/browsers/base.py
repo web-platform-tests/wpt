@@ -2,10 +2,30 @@ import os
 import platform
 import socket
 from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 
-from ..wptcommandline import require_arg
+from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.split(__file__)[0]
+
+
+def inherit(super_module, child_globals, product_name):
+    super_wptrunner = super_module.__wptrunner__
+    child_globals["__wptrunner__"] = child_wptrunner = deepcopy(super_wptrunner)
+
+    child_wptrunner["product"] = product_name
+
+    for k in ("check_args", "browser", "browser_kwargs", "executor_kwargs",
+              "env_extras", "env_options"):
+        attr = super_wptrunner[k]
+        child_globals[attr] = getattr(super_module, attr)
+
+    for v in super_module.__wptrunner__["executor"].values():
+        child_globals[v] = getattr(super_module, v)
+
+    if "run_info_extras" in super_wptrunner:
+        attr = super_wptrunner["run_info_extras"]
+        child_globals[attr] = getattr(super_module, attr)
 
 
 def cmd_arg(name, value=None):
@@ -87,7 +107,7 @@ class Browser(object):
         return {}
 
     @abstractmethod
-    def start(self, **kwargs):
+    def start(self, group_metadata, **kwargs):
         """Launch the browser object and get it into a state where is is ready to run tests"""
         pass
 

@@ -15,7 +15,7 @@ async function setInstrumentsAndRunTests(registration) {
     icons: [
       {src: '/images/rgrg-256x256.png', sizes: '256x256', type: 'image/png'},
     ],
-    enabledMethods: ['basic-card'],
+    method: 'basic-card',
     capabilities: {supportedNetworks: ['mir'], supportedTypes: ['prepaid']},
   });
   runTests();
@@ -81,7 +81,6 @@ function runTests() {
     assert_equals(response.details.billingAddress.city, 'Reston');
     assert_equals(response.details.billingAddress.country, 'US');
     assert_equals(response.details.billingAddress.dependentLocality, '');
-    assert_equals(response.details.billingAddress.languageCode, '');
     assert_equals(response.details.billingAddress.organization, 'Google');
     assert_equals(response.details.billingAddress.phone, '+15555555555');
     assert_equals(response.details.billingAddress.postalCode, '20190');

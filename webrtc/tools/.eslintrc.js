@@ -26,7 +26,7 @@ module.exports = {
     assert_unreached: true,
     assert_throws: true,
     assert_idl_attribute: true,
-    assert_exists: true,
+    assert_own_property: true,
     assert_greater_than: true,
     assert_less_than: true,
     assert_greater_than_equal: true,
@@ -72,7 +72,7 @@ module.exports = {
     assert_optional_dict_field: true,
     assert_optional_enum_field: true,
 
-    // identity-helper.js
+    // identity-helper.sub.js
     parseAssertionResult: true,
     getIdpDomains: true,
     assert_rtcerror_rejection: true,

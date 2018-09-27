@@ -111,62 +111,60 @@ promise_test(() => {
   );
 }, 'closed and ready on a released writer');
 
-promise_test(() => {
-  const promises = {};
-  const resolvers = {};
-  for (const methodName of ['start', 'write', 'close', 'abort']) {
-    promises[methodName] = new Promise(resolve => {
-      resolvers[methodName] = resolve;
-    });
-  }
-
+promise_test(t => {
+  let thisObject = null;
   // Calls to Sink methods after the first are implicitly ignored. Only the first value that is passed to the resolver
   // is used.
   class Sink {
     start() {
       // Called twice
-      resolvers.start(this);
+      t.step(() => {
+        assert_equals(this, thisObject, 'start should be called as a method');
+      });
     }
 
     write() {
-      resolvers.write(this);
+      t.step(() => {
+        assert_equals(this, thisObject, 'write should be called as a method');
+      });
     }
 
     close() {
-      resolvers.close(this);
+      t.step(() => {
+        assert_equals(this, thisObject, 'close should be called as a method');
+      });
     }
 
     abort() {
-      resolvers.abort(this);
+      t.step(() => {
+        assert_equals(this, thisObject, 'abort should be called as a method');
+      });
     }
   }
 
   const theSink = new Sink();
+  thisObject = theSink;
   const ws = new WritableStream(theSink);
 
   const writer = ws.getWriter();
 
   writer.write('a');
-  writer.close();
+  const closePromise = writer.close();
 
   const ws2 = new WritableStream(theSink);
   const writer2 = ws2.getWriter();
-  writer2.abort();
+  const abortPromise = writer2.abort();
 
-  return promises.start
-      .then(thisValue => assert_equals(thisValue, theSink, 'start should be called as a method'))
-      .then(() => promises.write)
-      .then(thisValue => assert_equals(thisValue, theSink, 'write should be called as a method'))
-      .then(() => promises.close)
-      .then(thisValue => assert_equals(thisValue, theSink, 'close should be called as a method'))
-      .then(() => promises.abort)
-      .then(thisValue => assert_equals(thisValue, theSink, 'abort should be called as a method'));
+  return Promise.all([
+    closePromise,
+    abortPromise
+  ]);
 }, 'WritableStream should call underlying sink methods as methods');
 
 promise_test(t => {
   function functionWithOverloads() {}
-  functionWithOverloads.apply = () => assert_unreached('apply() should not be called');
-  functionWithOverloads.call = () => assert_unreached('call() should not be called');
+  functionWithOverloads.apply = t.unreached_func('apply() should not be called');
+  functionWithOverloads.call = t.unreached_func('call() should not be called');
   const underlyingSink = {
     start: functionWithOverloads,
     write: functionWithOverloads,
@@ -180,9 +178,12 @@ promise_test(t => {
   writer1.close();
 
   // Test abort().
+  const abortError = new Error();
+  abortError.name = 'abort error';
+
   const ws2 = new WritableStream(underlyingSink);
   const writer2 = ws2.getWriter();
-  writer2.abort();
+  writer2.abort(abortError);
 
   // Test abort() with a close underlying sink method present. (Historical; see
   // https://github.com/whatwg/streams/issues/620#issuecomment-263483953 for what used to be
@@ -193,11 +194,11 @@ promise_test(t => {
     close: functionWithOverloads
   });
   const writer3 = ws3.getWriter();
-  writer3.abort();
+  writer3.abort(abortError);
 
   return writer1.closed
-      .then(() => promise_rejects(t, new TypeError(), writer2.closed, 'writer2.closed should be rejected'))
-      .then(() => promise_rejects(t, new TypeError(), writer3.closed, 'writer3.closed should be rejected'));
+      .then(() => promise_rejects(t, abortError, writer2.closed, 'writer2.closed should be rejected'))
+      .then(() => promise_rejects(t, abortError, writer3.closed, 'writer3.closed should be rejected'));
 }, 'methods should not not have .apply() or .call() called');
 
 promise_test(() => {

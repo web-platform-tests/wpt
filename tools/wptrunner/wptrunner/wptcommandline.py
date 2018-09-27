@@ -1,9 +1,9 @@
 import argparse
-import ast
 import os
 import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
+from datetime import timedelta
 
 import config
 import wpttest
@@ -47,7 +47,7 @@ def create_parser(product_choices=None):
 
 TEST is either the full path to a test file to run, or the URL of a test excluding
 scheme host and port.""")
-    parser.add_argument("--manifest-update", action="store_true", default=None,
+    parser.add_argument("--manifest-update", action="store_true", default=True,
                         help="Regenerate the test manifest.")
     parser.add_argument("--no-manifest-update", action="store_false", dest="manifest_update",
                         help="Prevent regeneration of the test manifest.")
@@ -65,6 +65,10 @@ scheme host and port.""")
 
     parser.add_argument("--no-capture-stdio", action="store_true", default=False,
                         help="Don't capture stdio and write to logging")
+    parser.add_argument("--no-fail-on-unexpected", action="store_false",
+                        default=True,
+                        dest="fail_on_unexpected",
+                        help="Exit with status code 0 when test expectations are violated")
 
     mode_group = parser.add_argument_group("Mode")
     mode_group.add_argument("--list-test-groups", action="store_true",
@@ -76,12 +80,46 @@ scheme host and port.""")
     mode_group.add_argument("--list-tests", action="store_true",
                             default=False,
                             help="List all tests that will run")
-    mode_group.add_argument("--verify", action="store_true",
-                            default=False,
-                            help="Run a stability check on the selected tests")
+    stability_group = mode_group.add_mutually_exclusive_group()
+    stability_group.add_argument("--verify", action="store_true",
+                                 default=False,
+                                 help="Run a stability check on the selected tests")
+    stability_group.add_argument("--stability", action="store_true",
+                                 default=False,
+                                 help=argparse.SUPPRESS)
     mode_group.add_argument("--verify-log-full", action="store_true",
                             default=False,
                             help="Output per-iteration test results when running verify")
+    mode_group.add_argument("--verify-repeat-loop", action="store",
+                            default=10,
+                            help="Number of iterations for a run that reloads each test without restart.",
+                            type=int)
+    mode_group.add_argument("--verify-repeat-restart", action="store",
+                            default=5,
+                            help="Number of iterations, for a run that restarts the runner between each iteration",
+                            type=int)
+    chaos_mode_group = mode_group.add_mutually_exclusive_group()
+    chaos_mode_group.add_argument("--verify-no-chaos-mode", action="store_false",
+                                  default=True,
+                                  dest="verify_chaos_mode",
+                                  help="Disable chaos mode when running on Firefox")
+    chaos_mode_group.add_argument("--verify-chaos-mode", action="store_true",
+                                  default=True,
+                                  dest="verify_chaos_mode",
+                                  help="Enable chaos mode when running on Firefox")
+    mode_group.add_argument("--verify-max-time", action="store",
+                            default=None,
+                            help="The maximum number of minutes for the job to run",
+                            type=lambda x: timedelta(minutes=float(x)))
+    output_results_group = mode_group.add_mutually_exclusive_group()
+    output_results_group.add_argument("--verify-no-output-results", action="store_false",
+                                      dest="verify_output_results",
+                                      default=True,
+                                      help="Prints individuals test results and messages")
+    output_results_group.add_argument("--verify-output-results", action="store_true",
+                                      dest="verify_output_results",
+                                      default=True,
+                                      help="Disable printing individuals test results and messages")
 
     test_selection_group = parser.add_argument_group("Test Selection")
     test_selection_group.add_argument("--test-types", action="store",
@@ -131,7 +169,7 @@ scheme host and port.""")
 
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
-                              type=abs_path, help="Binary to run tests against")
+                              type=abs_path, help="Desktop binary to run tests against")
     config_group.add_argument('--binary-arg',
                               default=[], action="append", dest="binary_args",
                               help="Extra argument for the binary")
@@ -140,7 +178,10 @@ scheme host and port.""")
     config_group.add_argument('--webdriver-arg',
                               default=[], action="append", dest="webdriver_args",
                               help="Extra argument for the WebDriver binary")
-
+    config_group.add_argument("--package-name", action="store",
+                              help="Android package name to run tests against")
+    config_group.add_argument("--device-serial", action="store",
+                              help="Running Android instance to connect to, if not emulator-5554")
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata"),
     config_group.add_argument("--tests", action="store", type=abs_path, dest="tests_root",
@@ -151,6 +192,12 @@ scheme host and port.""")
                               help="Path to directory containing extra json files to add to run info")
     config_group.add_argument("--product", action="store", choices=product_choices,
                               default=None, help="Browser against which to run tests")
+    config_group.add_argument("--browser-version", action="store",
+                              default=None, help="Informative string detailing the browser "
+                              "release version. This is included in the run_info data.")
+    config_group.add_argument("--browser-channel", action="store",
+                              default=None, help="Informative string detailing the browser "
+                              "release channel. This is included in the run_info data.")
     config_group.add_argument("--config", action="store", type=abs_path, dest="config",
                               help="Path to config file")
     config_group.add_argument("--install-fonts", action="store_true",
@@ -158,6 +205,10 @@ scheme host and port.""")
                               help="Allow the wptrunner to install fonts on your system")
     config_group.add_argument("--font-dir", action="store", type=abs_path, dest="font_dir",
                               help="Path to local font installation directory", default=None)
+    config_group.add_argument("--headless", action="store_true",
+                              help="Run browser in headless mode", default=None)
+    config_group.add_argument("--no-headless", action="store_false", dest="headless",
+                              help="Don't run browser in headless mode")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",
@@ -246,6 +297,15 @@ scheme host and port.""")
     sauce_group.add_argument("--sauce-connect-binary",
                              dest="sauce_connect_binary",
                              help="Path to Sauce Connect binary")
+    sauce_group.add_argument("--sauce-init-timeout", action="store",
+                             type=int, default=30,
+                             help="Number of seconds to wait for Sauce "
+                                  "Connect tunnel to be available before "
+                                  "aborting")
+
+    webkit_group = parser.add_argument_group("WebKit-specific")
+    webkit_group.add_argument("--webkit-port", dest="webkit_port",
+                             help="WebKit port")
 
     parser.add_argument("test_list", nargs="*",
                         help="List of URLs for tests to run, or paths including tests to run. "
@@ -299,12 +359,15 @@ def set_from_config(kwargs):
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
 
-    if kwargs["manifest_path"]:
+    if kwargs.get("manifest_path"):
         if "/" not in kwargs["test_paths"]:
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["manifest_path"] = kwargs["manifest_path"]
 
     kwargs["suite_name"] = kwargs["config"].get("web-platform-tests", {}).get("name", "web-platform-tests")
+
+
+    check_paths(kwargs)
 
 
 def get_test_paths(config):
@@ -364,8 +427,6 @@ def check_paths(kwargs):
 
 def check_args(kwargs):
     set_from_config(kwargs)
-
-    check_paths(kwargs)
 
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
@@ -458,8 +519,6 @@ def check_args(kwargs):
 def check_args_update(kwargs):
     set_from_config(kwargs)
 
-    check_paths(kwargs)
-
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
     if kwargs["patch"] is None:
@@ -511,8 +570,14 @@ def create_parser_update(product_choices=None):
     parser.add_argument("--stability", nargs="?", action="store", const="unstable", default=None,
         help=("Reason for disabling tests. When updating test results, disable tests that have "
               "inconsistent results across many runs with the given reason."))
-    parser.add_argument("--continue", action="store_true", help="Continue a previously started run of the update script")
-    parser.add_argument("--abort", action="store_true", help="Clear state from a previous incomplete run of the update script")
+    parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
+                        help=("Don't remove metadata files that no longer correspond to a test file"))
+    parser.add_argument("--no-store-state", action="store_false", dest="store_state",
+                        help="Store state so that steps can be resumed after failure")
+    parser.add_argument("--continue", action="store_true",
+                        help="Continue a previously started run of the update script")
+    parser.add_argument("--abort", action="store_true",
+                        help="Clear state from a previous incomplete run of the update script")
     parser.add_argument("--exclude", action="store", nargs="*",
                         help="List of glob-style paths to exclude when syncing tests")
     parser.add_argument("--include", action="store", nargs="*",

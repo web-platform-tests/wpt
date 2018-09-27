@@ -196,7 +196,7 @@ promise_test(async t => {
 }, 'Finishing an animation resolves the finished promise synchronously');
 
 promise_test(async t => {
-  const effect = new KeyframeEffectReadOnly(null, null, 100 * MS_PER_SEC);
+  const effect = new KeyframeEffect(null, null, 100 * MS_PER_SEC);
   const animation = new Animation(effect, document.timeline);
   let resolvedFinished = false;
   animation.finished.then(() => {
@@ -283,6 +283,21 @@ promise_test(async t => {
   // Should not have thrown
 }, 'An exception is NOT thrown when finishing if the effective playback rate'
    + ' is negative and the target effect end is infinity');
+
+promise_test(async t => {
+  const div = createDiv(t);
+  const animation = div.animate({}, 100 * MS_PER_SEC);
+  div.remove();
+
+  const eventWatcher = new EventWatcher(t, animation, 'finish');
+
+  await animation.ready;
+  animation.finish();
+
+  await eventWatcher.wait_for('finish');
+  assert_equals(animation.effect.target.parentNode, null,
+    'finish event should be fired for the animation on an orphaned element');
+}, 'Finishing an animation fires finish event on orphaned element');
 
 </script>
 </body>

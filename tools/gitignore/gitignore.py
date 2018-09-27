@@ -1,4 +1,3 @@
-import itertools
 import re
 import os
 
@@ -17,6 +16,12 @@ def fnmatch_translate(pat, path_name=False):
     else:
         any_char = "."
         parts.append("^(?:.*/)?")
+    if pat[-1] == "/":
+        # If the last character is / match this directory or any subdirectory
+        pat = pat[:-1]
+        suffix = "(?:/|$)"
+    else:
+        suffix = "$"
     while i < len(pat):
         c = pat[i]
         if c == "\\":
@@ -63,7 +68,7 @@ def fnmatch_translate(pat, path_name=False):
 
     if seq:
         raise ValueError
-    parts.append("$")
+    parts.append(suffix)
     try:
         return re.compile("".join(parts))
     except Exception:
@@ -84,7 +89,7 @@ def parse_line(line):
     if dir_only:
         line = line[:-1]
 
-    return invert, dir_only, fnmatch_translate(line, "/" in line)
+    return invert, dir_only, fnmatch_translate(line, dir_only)
 
 
 class PathFilter(object):

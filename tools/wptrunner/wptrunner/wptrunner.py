@@ -4,6 +4,8 @@ import json
 import os
 import sys
 
+from wptserve import sslutils
+
 import environment as env
 import products
 import testloader
@@ -39,11 +41,14 @@ def setup_logging(*args, **kwargs):
     logger = wptlogging.setup(*args, **kwargs)
 
 
-def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, **kwargs):
+def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
-    run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=debug,
+    run_info = wpttest.get_run_info(kwargs["run_info"], product,
+                                    browser_version=kwargs.get("browser_version"),
+                                    browser_channel=kwargs.get("browser_channel"),
+                                    debug=debug,
                                     extras=run_info_extras)
 
     test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"],
@@ -60,6 +65,7 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
     if kwargs["tags"]:
         meta_filters.append(testloader.TagFilter(tags=kwargs["tags"]))
 
+    ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         run_info,
@@ -68,7 +74,7 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
                                         chunk_type=kwargs["chunk_type"],
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
-                                        include_https=ssl_env.ssl_enabled,
+                                        include_https=ssl_enabled,
                                         skip_timeout=kwargs["skip_timeout"])
     return run_info, test_loader
 
@@ -76,11 +82,9 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    ssl_env = env.ssl_env(logger, **kwargs)
-
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
@@ -94,9 +98,7 @@ def list_disabled(test_paths, product, **kwargs):
 
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    ssl_env = env.ssl_env(logger, **kwargs)
-
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.iteritems():
@@ -108,13 +110,9 @@ def list_disabled(test_paths, product, **kwargs):
 def list_tests(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    rv = []
-
-    ssl_env = env.ssl_env(logger, **kwargs)
-
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test in test_loader.test_ids:
@@ -125,6 +123,8 @@ def get_pause_after_test(test_loader, **kwargs):
     total_tests = sum(len(item) for item in test_loader.tests.itervalues())
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
+            return False
+        if kwargs["headless"]:
             return False
         if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and total_tests == 1:
             return True
@@ -141,7 +141,6 @@ def run_tests(config, test_paths, product, **kwargs):
          executor_classes, get_executor_kwargs,
          env_options, get_env_extras, run_info_extras) = products.load_product(config, product)
 
-        ssl_env = env.ssl_env(logger, **kwargs)
         env_extras = get_env_extras(**kwargs)
 
         check_args(**kwargs)
@@ -152,16 +151,10 @@ def run_tests(config, test_paths, product, **kwargs):
                 ahem=os.path.join(kwargs["tests_root"], "fonts/Ahem.ttf")
             ))
 
-        if "test_loader" in kwargs:
-            run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=None,
-                                            extras=run_info_extras(**kwargs))
-            test_loader = kwargs["test_loader"]
-        else:
-            run_info, test_loader = get_loader(test_paths,
-                                               product,
-                                               ssl_env,
-                                               run_info_extras=run_info_extras(**kwargs),
-                                               **kwargs)
+        run_info, test_loader = get_loader(test_paths,
+                                           product,
+                                           run_info_extras=run_info_extras(**kwargs),
+                                           **kwargs)
 
         test_source_kwargs = {"processes": kwargs["processes"]}
         if kwargs["run_by_dir"] is False:
@@ -173,15 +166,23 @@ def run_tests(config, test_paths, product, **kwargs):
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
+        skipped_tests = 0
+        test_total = 0
         unexpected_total = 0
 
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
+        ssl_config = {"type": kwargs["ssl_type"],
+                      "openssl": {"openssl_binary": kwargs["openssl_binary"]},
+                      "pregenerated": {"host_key_path": kwargs["host_key_path"],
+                                       "host_cert_path": kwargs["host_cert_path"],
+                                       "ca_cert_path": kwargs["ca_cert_path"]}}
+
         with env.TestEnvironment(test_paths,
-                                 ssl_env,
                                  kwargs["pause_after_test"],
                                  kwargs["debug_info"],
                                  env_options,
+                                 ssl_config,
                                  env_extras) as test_environment:
             try:
                 test_environment.ensure_started()
@@ -200,8 +201,10 @@ def run_tests(config, test_paths, product, **kwargs):
                 elif repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count, repeat))
 
+                test_count = 0
                 unexpected_count = 0
-                logger.suite_start(test_loader.test_ids, name='web-platform-test', run_info=run_info)
+                logger.suite_start(test_loader.test_ids, name='web-platform-test', run_info=run_info,
+                                   extra={"run_by_dir": kwargs["run_by_dir"]})
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
 
@@ -217,7 +220,6 @@ def run_tests(config, test_paths, product, **kwargs):
 
                     browser_kwargs = get_browser_kwargs(test_type,
                                                         run_info,
-                                                        ssl_env=ssl_env,
                                                         config=test_environment.config,
                                                         **kwargs)
 
@@ -236,13 +238,16 @@ def run_tests(config, test_paths, product, **kwargs):
                     for test in test_loader.disabled_tests[test_type]:
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
+                        skipped_tests += 1
 
                     if test_type == "testharness":
                         run_tests = {"testharness": []}
                         for test in test_loader.tests["testharness"]:
-                            if test.testdriver and not executor_cls.supports_testdriver:
+                            if (test.testdriver and not executor_cls.supports_testdriver) or (
+                                    test.jsshell and not executor_cls.supports_jsshell):
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
+                                skipped_tests += 1
                             else:
                                 run_tests["testharness"].append(test)
                     else:
@@ -267,19 +272,47 @@ def run_tests(config, test_paths, product, **kwargs):
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
+                    test_count += manager_group.test_count()
                     unexpected_count += manager_group.unexpected_count()
 
+                test_total += test_count
                 unexpected_total += unexpected_count
                 logger.info("Got %i unexpected results" % unexpected_count)
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
                 logger.suite_end()
+
+    if test_total == 0:
+        if skipped_tests > 0:
+            logger.warning("All requested tests were skipped")
+        else:
+            logger.error("No tests ran")
+            return False
+
+    if unexpected_total and not kwargs["fail_on_unexpected"]:
+        logger.info("Tolerating %s unexpected results" % unexpected_total)
+        return True
+
     return unexpected_total == 0
 
 
 def check_stability(**kwargs):
     import stability
-    return stability.check_stability(logger, **kwargs)
+    if kwargs["stability"]:
+        logger.warning("--stability is deprecated; please use --verify instead!")
+        kwargs['verify_max_time'] = None
+        kwargs['verify_chaos_mode'] = False
+        kwargs['verify_repeat_loop'] = 0
+        kwargs['verify_repeat_restart'] = 10 if kwargs['repeat'] == 1 else kwargs['repeat']
+        kwargs['verify_output_results'] = True
+
+    return stability.check_stability(logger,
+                                     max_time=kwargs['verify_max_time'],
+                                     chaos_mode=kwargs['verify_chaos_mode'],
+                                     repeat_loop=kwargs['verify_repeat_loop'],
+                                     repeat_restart=kwargs['verify_repeat_restart'],
+                                     output_results=kwargs['verify_output_results'],
+                                     **kwargs)
 
 
 def start(**kwargs):
@@ -289,8 +322,8 @@ def start(**kwargs):
         list_disabled(**kwargs)
     elif kwargs["list_tests"]:
         list_tests(**kwargs)
-    elif kwargs["verify"]:
-        check_stability(**kwargs)
+    elif kwargs["verify"] or kwargs["stability"]:
+        return check_stability(**kwargs)
     else:
         return not run_tests(**kwargs)
 

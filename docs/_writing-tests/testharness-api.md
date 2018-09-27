@@ -161,9 +161,9 @@ Test is finished.
 promise_test(test_function, name, properties)
 ```
 
-`test_function` is a function that receives a test as an argument and returns a
-promise. The test completes when the returned promise resolves. The test fails
-if the returned promise rejects.
+`test_function` is a function that receives a test as an argument. It must
+return a promise. The test completes when the returned promise resolves. The
+test fails if the returned promise rejects.
 
 E.g.:
 
@@ -185,7 +185,7 @@ In the example above, `foo()` returns a Promise that resolves with the string
 a resolve reaction that verifies the returned value.
 
 Note that in the promise chain constructed in `test_function` assertions don't
-need to wrapped in `step` or `step_func` calls.
+need to be wrapped in `step` or `step_func` calls.
 
 Unlike Asynchronous Tests, Promise Tests don't start running until after the
 previous Promise Test finishes.
@@ -317,6 +317,16 @@ the test result is known. For example:
     assert_equals(document.getElementById(null), element);
   }, "Calling document.getElementById with a null argument.");
 ```
+
+If the test was created using the `promise_test` API, then cleanup functions
+may optionally return a "thenable" value (i.e. an object which defines a `then`
+method). `testharness.js` will assume that such values conform to [the
+ECMAScript standard for
+Promises](https://tc39.github.io/ecma262/#sec-promise-objects) and delay the
+completion of the test until all "thenables" provided in this way have settled.
+All callbacks will be invoked synchronously; tests that require more complex
+cleanup behavior should manage execution order explicitly. If any of the
+eventual values are rejected, the test runner will report an error.
 
 ## Timeouts in Tests ##
 
@@ -668,6 +678,17 @@ or a [`ServiceWorker`](https://slightlyoff.github.io/ServiceWorker/spec/service_
 Once called, the containing document fetches all the tests from the worker and
 behaves as if those tests were running in the containing document itself.
 
+`fetch_tests_from_worker` returns a promise that resolves once all the remote
+tests have completed. This is useful if you're importing tests from multiple
+workers and want to ensure they run in series:
+
+```js
+(async function() {
+  await fetch_tests_from_worker(new Worker("worker-1.js"));
+  await fetch_tests_from_worker(new Worker("worker-2.js"));
+})();
+```
+
 ## List of Assertions ##
 
 ### `assert_true(actual, description)`
@@ -688,6 +709,11 @@ Relies on `===`, distinguishes between `-0` and `+0`, and has a specific check f
 ### `assert_in_array(actual, expected, description)`
 asserts that `expected` is an Array, and `actual` is equal to one of the
 members i.e. `expected.indexOf(actual) != -1`
+
+### `assert_object_equals(actual, expected, description)`
+asserts that `actual` is an object and not null and that all enumerable
+properties on `actual` are own properties on `expected` with the same values,
+recursing if the value is an object and not null.
 
 ### `assert_array_equals(actual, expected, description)`
 asserts that `actual` and `expected` have the same
@@ -766,14 +792,6 @@ asserts that one `assert_func(actual, expected_array_N, extra_arg1, ..., extra_a
   with multiple allowed pass conditions are bad practice unless the spec specifically
   allows multiple behaviours. Test authors should not use this method simply to hide
   UA bugs.
-
-### `assert_exists(object, property_name, description)`
-**deprecated**
-asserts that object has an own property `property_name`
-
-### `assert_not_exists(object, property_name, description)`
-**deprecated**
-assert that object does not have own property `property_name`
 
 ## Metadata ##
 

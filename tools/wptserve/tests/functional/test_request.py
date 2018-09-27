@@ -1,5 +1,4 @@
-import sys
-
+# -*- coding: utf-8 -*-
 import pytest
 
 wptserve = pytest.importorskip("wptserve")
@@ -114,6 +113,25 @@ class TestRequest(TestUsingServer):
         self.server.router.register(*route)
         resp = self.request("/test/some_route")
         self.assertEqual(b"some route", resp.read())
+
+    def test_non_ascii_in_headers(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            return request.headers["foo"]
+
+        route = ("GET", "/test/test_unicode_in_headers", handler)
+        self.server.router.register(*route)
+
+        # Try some non-ASCII characters and the server shouldn't crash.
+        encoded_text = u"你好".encode("utf-8")
+        resp = self.request(route[1], headers={"foo": encoded_text})
+        self.assertEqual(encoded_text, resp.read())
+
+        # Try a different encoding from utf-8 to make sure the binary value is
+        # returned in verbatim.
+        encoded_text = u"どうも".encode("shift-jis")
+        resp = self.request(route[1], headers={"foo": encoded_text})
+        self.assertEqual(encoded_text, resp.read())
 
 
 class TestAuth(TestUsingServer):

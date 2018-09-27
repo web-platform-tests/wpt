@@ -7,6 +7,7 @@
 <iframe allowfullscreen></iframe>
 <iframe allowfullscreen></iframe>
 <script>
+// wait for load event to avoid https://bugzil.la/1493878
 window.onload = function() {
   async_test(function(t) {
       var iframes = document.getElementsByTagName("iframe");

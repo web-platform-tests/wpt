@@ -115,7 +115,6 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
     def test_sub_var(self):
         resp = self.request("/sub_var.sub.txt")
         port = self.server.port
-        print(port, type(port))
         expected = b"localhost %d A %d B localhost C" % (port, port)
         self.assertEqual(resp.read().rstrip(), expected)
 

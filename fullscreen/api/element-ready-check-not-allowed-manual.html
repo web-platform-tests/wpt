@@ -6,6 +6,7 @@
 <div id="log"></div>
 <iframe></iframe>
 <script>
+// wait for load event to avoid https://bugzil.la/1493878
 window.onload = function() {
   async_test(function(t) {
       var iframe = document.querySelector("iframe");

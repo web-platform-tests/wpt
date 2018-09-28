@@ -308,7 +308,10 @@ class Request(object):
             self.raw_input.seek(0)
             fs = cgi.FieldStorage(fp=self.raw_input,
                                   environ={"REQUEST_METHOD": self.method},
-                                  headers=self.headers,
+                                  headers={
+                                      k.decode("utf-8"): v.decode("utf-8")
+                                      for k, v in self.headers.iteritems()
+                                  },
                                   keep_blank_values=True)
             self._POST = MultiDict.from_field_storage(fs)
             self.raw_input.seek(pos)
@@ -355,12 +358,12 @@ class H2Request(Request):
         super(H2Request, self).__init__(request_handler)
 
 
-def maybedecode(s):
+def maybe_encode(s):
     if isinstance(s, text_type):
-        return s
+        return s.encode("utf-8")
 
     if isinstance(s, binary_type):
-        return s.decode("ascii")
+        return s
 
     raise TypeError("Unexpected value in RequestHeaders: %r" % s)
 
@@ -379,17 +382,17 @@ class RequestHeaders(dict):
                 for value in values:
                     # getallmatchingheaders returns raw header lines, so
                     # split to get name, value
-                    multiples.append(maybedecode(value).split(':', 1)[1].strip())
+                    multiples.append(maybe_encode(value).split(':', 1)[1].strip())
                 headers = multiples
             else:
-                headers = [maybedecode(items[header])]
-            dict.__setitem__(self, maybedecode(key), headers)
+                headers = [maybe_encode(items[header])]
+            dict.__setitem__(self, maybe_encode(key), headers)
 
 
     def __getitem__(self, key):
         """Get all headers of a certain (case-insensitive) name. If there is
         more than one, the values are returned comma separated"""
-        key = maybedecode(key)
+        key = maybe_encode(key)
         values = dict.__getitem__(self, key.lower())
         if len(values) == 1:
             return values[0]
@@ -415,7 +418,7 @@ class RequestHeaders(dict):
     def get_list(self, key, default=missing):
         """Get all the header values for a particular field name as
         a list"""
-        key = maybedecode(key)
+        key = maybe_encode(key)
         try:
             return dict.__getitem__(self, key.lower())
         except KeyError:
@@ -425,7 +428,7 @@ class RequestHeaders(dict):
                 raise
 
     def __contains__(self, key):
-        key = maybedecode(key)
+        key = maybe_encode(key)
         return dict.__contains__(self, key.lower())
 
     def iteritems(self):
@@ -609,18 +612,18 @@ class Authentication(object):
         self.username = None
         self.password = None
 
-        auth_schemes = {"Basic": self.decode_basic}
+        auth_schemes = {b"Basic": self.decode_basic}
 
         if "authorization" in headers:
             header = headers.get("authorization")
-            assert isinstance(header, text_type)
-            auth_type, data = header.split(" ", 1)
+            assert isinstance(header, binary_type)
+            auth_type, data = header.split(b" ", 1)
             if auth_type in auth_schemes:
                 self.username, self.password = auth_schemes[auth_type](data)
             else:
                 raise HTTPException(400, "Unsupported authentication scheme %s" % auth_type)
 
     def decode_basic(self, data):
-        assert isinstance(data, text_type)
-        decoded_data = base64.decodestring(data.encode("utf-8"))
+        assert isinstance(data, binary_type)
+        decoded_data = base64.decodestring(data)
         return decoded_data.decode("utf-8").split(":", 1)

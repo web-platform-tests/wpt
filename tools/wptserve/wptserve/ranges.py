@@ -3,19 +3,19 @@ from .utils import HTTPException
 
 class RangeParser(object):
     def __call__(self, header, file_size):
-        prefix = "bytes="
+        prefix = b"bytes="
         if not header.startswith(prefix):
             raise HTTPException(416, message="Unrecognised range type %s" % (header,))
 
-        parts = header[len(prefix):].split(",")
+        parts = header[len(prefix):].split(b",")
         ranges = []
         for item in parts:
-            components = item.split("-")
+            components = item.split(b"-")
             if len(components) != 2:
                 raise HTTPException(416, "Bad range specifier %s" % (item))
             data = []
             for component in components:
-                if component == "":
+                if component == b"":
                     data.append(None)
                 else:
                     try:

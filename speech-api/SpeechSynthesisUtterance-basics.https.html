@@ -37,7 +37,8 @@ test(function() {
 
 test(function() {
   const utt = new SpeechSynthesisUtterance(undefined);
-  assert_equals(utt.text, 'undefined');
+  // See https://github.com/w3c/speech-api/pull/48.
+  assert_equals(utt.text, '');
 }, 'new SpeechSynthesisUtterance(undefined)');
 
 test(function() {

@@ -15,7 +15,6 @@
       var t3 = async_test("The absolute property must be set to true.");
       var run = false;
       if (window.ondeviceorientationabsolute === undefined) {
-        console.log("it's undefined");
         t1.step(t1.unreached_func("ondeviceorientationabsolute not supported"));
         t2.step(t2.unreached_func("ondeviceorientationabsolute not supported"));
         t3.step(t3.unreached_func("ondeviceorientationabsolute not supported"));

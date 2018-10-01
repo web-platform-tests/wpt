@@ -169,13 +169,13 @@ interface PaymentResponse : EventTarget {
 };
 
 dictionary PaymentValidationErrors {
-  PayerErrorFields payer;
+  PayerErrors payer;
   AddressErrors shippingAddress;
   DOMString error;
   object paymentMethod;
 };
 
-dictionary PayerErrorFields {
+dictionary PayerErrors {
   DOMString email;
   DOMString name;
   DOMString phone;

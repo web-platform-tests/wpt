@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Text Test: max-content sizing and overflow-wrap with break-spaces</title>
+<title>CSS Text Test: max-content sizing and white-space:break-spaces</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
-<link rel="help" href="https://drafts.csswg.org/css-text-3/#propdef-overflow-wrap">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#propdef-white-space">
 <link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-phase-2">
 <meta name="flags" content="">
-<link rel="match" href="reference/overflow-wrap-intrinsic-size-002-ref.html">
-<meta name="assert" content="When overflow-wrap includes break-spaces, preserved spaces at the end of the line do affect the intrinsic max-content size">
+<link rel="match" href="reference/white-space-intrinsic-size-002-ref.html">
+<meta name="assert" content="If white-space is break-spaces, preserved spaces at the end of the line do affect the intrinsic max-content size. The value of overflow-wrap makes no difference.">
 <style>
 aside {
   float: left;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   background: blue;
 }
 aside:last-of-type {
   float:right;
+  overflow-wrap: break-word;
 }
 div {
   color: transparent;
@@ -28,12 +29,11 @@ div {
      If the spaces are not taken into account for min-content sizing,
      the floats will leave a gap between them */
 }
-.owbs { overflow-wrap: break-spaces; }
-.owbwbs { overflow-wrap: break-word break-spaces; }
+.owbw { overflow-wrap: break-word; }
 </style>
 
 <p>Test passes if there is a single blue rectangle below.
 <div>
-  <aside class=owbs>X  </aside>
-  <aside class=owbwbs>X  </aside>
+  <aside>X  </aside>
+  <aside>X  </aside>
 </div>

@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Text Test: min-content sizing and overflow-wrap:break-spaces</title>
+<title>CSS Text Test: min-content sizing and white-space: break-spaces</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
-<link rel="help" href="https://drafts.csswg.org/css-text-3/#propdef-overflow-wrap">
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#propdef-white-space">
 <link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-phase-2">
 <meta name="flags" content="">
-<link rel="match" href="reference/overflow-wrap-intrinsic-size-001-ref.html">
-<meta name="assert" content="When overflow-wrap includes break-spaces, preserved spaces at the end of the line do affect the intrinsic min-content size">
+<link rel="match" href="reference/white-space-intrinsic-size-001-ref.html">
+<meta name="assert" content="When white-space is break-spaces, preserved spaces at the end of the line do affect the intrinsic min-content size. Overflow-wrap makes no difference.">
 <style>
 aside {
   float: left;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   background: green;
-  overflow-wrap: break-spaces;
 }
-.bwbs { overflow-wrap: break-word break-spaces; }
+aside:last-of-type { overflow-wrap: break-word; }
 div {
   font-family: monospace;
   color: transparent;
@@ -34,7 +33,7 @@ div {
 <div id=red>XS<br>S<br>XS<br>S</div>
 <div>
   <aside>X  </aside>
-  <aside class=bwbs>X  </aside>
+  <aside>X  </aside>
 </div>
 <!-- Note: the space immediately following the X does not get wrapped,
 even under break-spaces+break-word:

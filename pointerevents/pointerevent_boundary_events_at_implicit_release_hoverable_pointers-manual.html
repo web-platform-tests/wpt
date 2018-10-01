@@ -42,12 +42,10 @@
             detected_pointertypes[event.pointerType] = true;
             event_log.push(event.type + '@' + event.target.id);
             if (event.type == 'lostpointercapture') {
-              setTimeout(function() {
-                test_pointer_event.step(function () {
-                  var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
-                  assert_equals(event_log.join(", "), "pointerout@target, pointerleave@target, pointerover@capture-target, pointerenter@capture-target, gotpointercapture@capture-target, pointerup@capture-target, lostpointercapture@capture-target, pointerout@capture-target, pointerleave@capture-target, pointerover@target, pointerenter@target");
-                });
-                test_pointer_event.done();
+              test_pointer_event.step_timeout(function () {
+                var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
+                assert_equals(event_log.join(", "), "pointerout@target, pointerleave@target, pointerover@capture-target, pointerenter@capture-target, gotpointercapture@capture-target, pointerup@capture-target, lostpointercapture@capture-target, pointerout@capture-target, pointerleave@capture-target, pointerover@target, pointerenter@target");
+                done();
               }, 200);
             }
           });

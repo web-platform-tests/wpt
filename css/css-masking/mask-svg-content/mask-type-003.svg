@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-masks"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-mask-type"/>
-	<html:link rel="match" href="reference/mask-text-001-ref.svg"/>
+	<html:link rel="match" href="reference/mask-green-square-001-ref.svg"/>
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">No mask type was specified the mask element should
 	take the luminocity of the content to mask. You should see a green square.

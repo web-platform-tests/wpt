@@ -247,7 +247,7 @@ class WebDriverRun(object):
                 # workaround for https://bugs.chromium.org/p/chromedriver/issues/detail?id=2001
                 self.result = False, ("EXTERNAL-TIMEOUT", None)
             else:
-                message = getattr(e, "message", "")
+                message = str(getattr(e, "message", ""))
                 if message:
                     message += "\n"
                 message += traceback.format_exc(e)

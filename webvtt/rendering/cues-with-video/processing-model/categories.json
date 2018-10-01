@@ -1,0 +1,31 @@
+{
+    ":categories": [
+        ["::cue"],
+        ["::cue()"],
+        ["::cue-region"],
+        ["::cue-region()"],
+        [":past"],
+        [":future"]
+    ],
+    ":subcategories": [
+        "selectors/categories.json",
+        "regions/categories.json",
+        "evil/categories.json",
+        "bidi/categories.json"
+    ],
+    "2_cues_*.html": "cues",
+    "3_tracks*.html": "cues",
+    "align*.html": "cues",
+    "basic.html": "cues",
+    "cue_too_long.html": "cues",
+    "decode_*.html": "cues",
+    "dom_override*.html": "cues",
+    "enable_controler_reposition.html": "cues",
+    "line_*.html": "cues",
+    "media_*.html": "cues",
+    "navigate_cue_*.html": "cues",
+    "one_line_plus_wrapped_cue.html": "cues",
+    "repaint.html": "cues",
+    "size_*.html": "cues",
+    "too_many_*.html": "cues"
+}

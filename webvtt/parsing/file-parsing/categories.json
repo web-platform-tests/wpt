@@ -1,6 +1,13 @@
 {
     ":categories": [
-        ["file-parsing", "cue-text-parsing"]
+        ["region-settings-parsing"],
+        ["cue-settings-parsing"]
     ],
-    ":subcategories": ["tests/categories.json"]
+    "tests/arrows.html": "cues",
+    "tests/ids.html": ["cues", "cue-settings-parsing"],
+    "tests/settings-*.html": ["cues", "cue-settings-parsing"],
+    "tests/signature-timings.html": ["cues", "cue-settings-parsing"],
+    "tests/timings-*.html": ["cues", "cue-settings-parsing"],
+    "tests/regions-*.html": ["regions", "region-settings-parsing"],
+    "tests/stylesheets.html": "stylesheets"
 }

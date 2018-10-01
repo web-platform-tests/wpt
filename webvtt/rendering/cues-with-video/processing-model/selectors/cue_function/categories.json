@@ -1,0 +1,5 @@
+{
+    "*_timestamp_future.html": ":future",
+    "*_timestamp_past.html": ":past",
+    "*_with_timestamp.html": ":past"
+}

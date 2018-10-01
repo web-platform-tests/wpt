@@ -5,7 +5,11 @@
         ["regions"],
         ["stylesheets"]
     ],
-    ":subcategories": ["api/categories.json", "parsing/categories.json"],
+    ":subcategories": [
+        "api/categories.json",
+        "parsing/categories.json",
+        "rendering/cues-with-video/processing-model/categories.json"
+    ],
     "api/*": "api",
     "parsing/*": "parsing",
     "rendering/*": "rendering"

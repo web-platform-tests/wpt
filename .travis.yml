@@ -20,7 +20,7 @@ install:
 matrix:
   fast_finish: true
   include:
-    - name: "manifest upload"
+    - name: "manifest upload (no-op for PR)"
       os: linux
       python: "2.7"
       env:

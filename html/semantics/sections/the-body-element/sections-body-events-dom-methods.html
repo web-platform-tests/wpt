@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+        // Verify that all body's IDL event handlers actually do react to those events
+
+        setup({ explicit_done: true, allow_uncaught_exception: true });
+
+        var windowEvents = [
+            // Table 2.
+            "blur",
+            "error",
+            "focus",
+            "load",
+            "resize",
+            "scroll",
+
+            // Table 3.
+            "afterprint",
+            "beforeprint",
+            "beforeunload",
+            "hashchange",
+            "languagechange",
+            "message",
+            "offline",
+            "online",
+            "pagehide",
+            "pageshow",
+            "popstate",
+            "storage",
+            "unload",
+        ];
+        windowEvents.forEach(function(type) {
+            test(function() {
+                var triggered = false;
+                document.body["on" + type] = function() { triggered = true };
+                window.dispatchEvent(new Event(type));
+                assert_true(triggered,
+                            "Event handler should have been triggered");
+            }, "Body.on" + type + " (fired on window)");
+
+            test(function() {
+                var triggered = false;
+                document.body["on" + type] = function() { triggered = true };
+                document.body.dispatchEvent(new Event(type));
+                assert_false(triggered,
+                             "Event handler should not have been triggered");
+            }, "Body.on" + type + " (fired on body)");
+        });
+        done();
+    </script>
+
+</body>
+

@@ -76,7 +76,7 @@ matrix:
       os: linux
       python: "2.7"
       env: JOB=resources_unittest TOXENV=py27 SCRIPT=tools/ci/ci_resources_unittest.sh
-    - name: "flake8"
+    - name: "tools/wpt/ unittests"
       os: linux
       python: "2.7"
       addons:

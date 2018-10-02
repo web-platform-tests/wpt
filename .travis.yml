@@ -72,7 +72,7 @@ matrix:
       os: linux
       python: "3.6"
       env: JOB=tools_unittest TOXENV=py36 HYPOTHESIS_PROFILE=ci SCRIPT=tools/ci/ci_tools_unittest.sh
-    - name: "resources/ unittests"
+    - name: "resources/ tests"
       os: linux
       python: "2.7"
       env: JOB=resources_unittest TOXENV=py27 SCRIPT=tools/ci/ci_resources_unittest.sh

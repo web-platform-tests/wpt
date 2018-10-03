@@ -31,27 +31,20 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
 
 
 def capabilities_for_port(server_config, **kwargs):
-    from selenium.webdriver import DesiredCapabilities
-
     if kwargs["webkit_port"] == "gtk":
-        capabilities = dict(DesiredCapabilities.WEBKITGTK.copy())
-        capabilities["webkitgtk:browserOptions"] = {
-            "binary": kwargs["binary"],
-            "args": kwargs.get("binary_args", []),
-            "certificates": [
-                {"host": server_config["browser_host"],
-                 "certificateFile": kwargs["host_cert_path"]}
-            ]
+        capabilities = {
+            "browserName": "MiniBrowser",
+            "browserVersion": "2.20",
+            "platformName": "ANY",
+            "webkitgtk:browserOptions": {
+                "binary": kwargs["binary"],
+                "args": kwargs.get("binary_args", []),
+                "certificates": [
+                    {"host": server_config["browser_host"],
+                     "certificateFile": kwargs["host_cert_path"]}
+                ]
+            }
         }
-
-        # Manually map Selenium's key names to the corresponding W3C versions.
-        if capabilities.has_key("platform"):
-            capabilities["platformName"] = capabilities.pop("platform")
-        if capabilities.has_key("version"):
-            capabilities["browserVersion"] = capabilities.pop("version")
-
-        # Force the 2.20 release series to be used as the required version.
-        capabilities["browserVersion"] = "2.20"
 
         return capabilities
 

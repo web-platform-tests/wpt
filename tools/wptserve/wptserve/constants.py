@@ -2,6 +2,7 @@ from . import utils
 
 content_types = utils.invert_dict({
     "application/json": ["json"],
+    "application/wasm": ["wasm"],
     "application/xhtml+xml": ["xht", "xhtm", "xhtml"],
     "application/xml": ["xml"],
     "application/x-xpinstall": ["xpi"],

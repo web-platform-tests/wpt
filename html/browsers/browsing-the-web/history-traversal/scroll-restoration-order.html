@@ -6,7 +6,7 @@
 
 <style>
   body {
-    height: 200vw;
+    height: 200vh;
     width: 200vw;
   }
 </style>
@@ -49,7 +49,6 @@
       else
         setTimeout(t.step_func(function(){ window.history.back(); }), 0);
     }));
-
 
     window.addEventListener('hashchange', t.step_func(function() {
       // Verify that scroll position is restored before hashchange.

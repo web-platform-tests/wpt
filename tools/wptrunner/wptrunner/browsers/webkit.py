@@ -50,8 +50,8 @@ def capabilities_for_port(server_config, **kwargs):
         if capabilities.has_key("version"):
             capabilities["browserVersion"] = capabilities.pop("version")
 
-        # Force the 2.x release series to be used as the required version.
-        capabilities["browserVersion"] = "2.0.0"
+        # Force the 2.20 release series to be used as the required version.
+        capabilities["browserVersion"] = "2.20"
 
         return capabilities
 

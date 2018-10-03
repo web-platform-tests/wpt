@@ -9,10 +9,10 @@
   <style type="text/css"><![CDATA[
    ul {
      margin: 1em 5em; border: solid black; padding: 0; width: 6em;
-     font: 15px/1 Ahem; color: lime; background: red url(support/css1test566a.png) no-repeat;
+     font: 15px/1 Ahem; color: lime; background: yellow url(support/css1test566a.png) no-repeat;
      list-style: upper-alpha inside;
    }
-   li { margin: 0; padding: 0; }
+   li { margin:0; padding: 0; }
   ]]></style>
  </head>
  <body>

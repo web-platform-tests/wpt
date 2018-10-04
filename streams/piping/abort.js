@@ -14,10 +14,10 @@ const error2 = new Error('error2');
 error2.name = 'error2';
 
 const errorOnPull = {
-    pull(controller) {
-      // This will cause the test to error if pipeTo abort is not implemented.
-      controller.error('failed to abort');
-    }
+  pull(controller) {
+    // This will cause the test to error if pipeTo abort is not implemented.
+    controller.error('failed to abort');
+  }
 };
 
 // To stop pull() being called immediately when the stream is created, we need to set highWaterMark to 0.
@@ -53,7 +53,7 @@ promise_test(t => {
       });
 }, 'an aborted signal should cause the writable stream to reject with an AbortError');
 
-promise_test(t => {
+promise_test(() => {
   let error;
   const rs = recordingReadableStream(errorOnPull, hwm0);
   const ws = new WritableStream();
@@ -73,7 +73,7 @@ promise_test(t => {
   .then(() => {
     assert_equals(rs.events.length, 2, 'cancel should have been called');
     assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
-    assert_equals(rs.events[1], error, 'the readable should be canceled with the same object')
+    assert_equals(rs.events[1], error, 'the readable should be canceled with the same object');
   });
 }, 'all the AbortError objects should be the same object');
 

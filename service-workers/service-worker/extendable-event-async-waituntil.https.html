@@ -57,7 +57,7 @@ async_test(msg_event_test.bind(this, 'no-current-extension-different-task'),
   'Test calling waitUntil in a different task without an existing extension throws');
 
 async_test(msg_event_test.bind(this, 'no-current-extension-different-microtask'),
-  'Test calling waitUntil in a different microtask without an existing extension throws');
+  'Test calling waitUntil in a different microtask without an existing extension succeeds');
 
 async_test(msg_event_test.bind(this, 'current-extension-different-task'),
   'Test calling waitUntil in a different task with an existing extension succeeds');
@@ -68,13 +68,16 @@ async_test(msg_event_test.bind(this, 'current-extension-expired-same-microtask-t
 // The promise handler will queue a new microtask after the check for new
 // extensions was performed.
 async_test(msg_event_test.bind(this, 'current-extension-expired-same-microtask-turn-extra'),
-  'Test calling waitUntil at the end of the microtask turn throws');
+  'Test calling waitUntil at the end of the microtask turn succeeds');
 
 async_test(msg_event_test.bind(this, 'current-extension-expired-different-task'),
   'Test calling waitUntil after the current extension expired in a different task fails');
 
 async_test(msg_event_test.bind(this, 'script-extendable-event'),
   'Test calling waitUntil on a script constructed ExtendableEvent throws exception');
+
+async_test(msg_event_test.bind(this, 'no-current-extension-different-microtask-after-dispatch-flag-unset'),
+  'Test calling waitUntil in the same microtask checkpoint after all promises settle succeeds');
 
 async_test(function(t) {
     var testBody = function(worker) {

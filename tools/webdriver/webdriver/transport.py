@@ -42,6 +42,7 @@ class Response(object):
             raise ValueError("Failed to decode response body as JSON:\n" +
                 http_response.read())
 
+        print body
         return cls(http_response.status, body)
 
 
@@ -146,7 +147,7 @@ class HTTPWireProtocol(object):
 
         if headers is None:
             headers = {}
-        headers.update({'Connection': 'keep-alive'})
+        # headers.update({'Connection': 'keep-alive'})
 
         url = self.url(uri)
 
@@ -156,6 +157,7 @@ class HTTPWireProtocol(object):
 
         conn = httplib.HTTPConnection(
             self.host, self.port, strict=True, **conn_kwargs)
+        print "%s %s %r %r" % (method, url, payload, headers)
         conn.request(method, url, payload, headers)
 
         try:

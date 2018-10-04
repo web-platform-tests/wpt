@@ -47,11 +47,13 @@
 
             selector = segments.join(" > ");
         }
-
+        console.log(selector);
+        console.log(document.querySelector(selector));
         return selector;
     };
 
     window.test_driver_internal.click = function(element) {
+        console.log("click " + element.id);
         const selector = get_selector(element);
         const pending_promise = new Promise(function(resolve, reject) {
             pending_resolve = resolve;

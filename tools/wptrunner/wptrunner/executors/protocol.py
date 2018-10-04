@@ -238,6 +238,17 @@ class SelectorProtocolPart(ProtocolPart):
     name = "select"
 
     def element_by_selector(self, selector):
+        print selector
+        if selector[0] == "#":
+            decoded = "#"
+            parts = selector[1:].split(" ")
+            for part in parts:
+                if not part:
+                    continue
+                assert len(part) == 3
+                assert part[0] == "\\"
+                decoded += chr(int(part[1:], 16))
+            print decoded
         elements = self.elements_by_selector(selector)
         if len(elements) == 0:
             raise ValueError("Selector '%s' matches no elements" % selector)

@@ -63,6 +63,7 @@
          *                    function throws an error
          */
         bless: function(intent, action) {
+            console.log("bless " + idCounter);
             var button = document.createElement("button");
             button.innerHTML = "This test requires user interaction.<br />" +
                 "Please click here to allow " + intent + ".";
@@ -72,7 +73,7 @@
 
             return new Promise(function(resolve, reject) {
                     button.addEventListener("click", resolve);
-
+                console.log("click");
                     test_driver.click(button).catch(reject);
                 }).then(function() {
                     button.remove();

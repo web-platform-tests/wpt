@@ -54,7 +54,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         while True:
             try:
                 self.webdriver.execute_async_script("")
-            except client.TimeoutException:
+            except (client.TimeoutException, client.ScriptTimeoutException):
                 pass
             except (socket.timeout, client.NoSuchWindowException,
                     client.UnknownErrorException, IOError):
@@ -74,7 +74,61 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.logger.debug("Loading %s" % url)
 
         self.webdriver.url = url
-        self.webdriver.execute_script("document.title = '%s'" %
+        script = """
+document.title = '%s'
+
+window.addEventListener(
+  "message",
+  function(event) {
+    console.log("pushing");
+    console.log(event);
+    window.message_queue.push(event);
+    window.process_next_event();
+  },
+  false
+);
+
+
+window.process_next_event = function() {
+  if(!window.testdriver_callback) {
+    return;
+  }
+  var event = window.message_queue.shift();
+  if (!event) {
+    return;
+  }
+  var data = event.data;
+  console.log("processing");
+  console.log(event);
+
+  var payload = undefined;
+
+  switch(data.type) {
+  case "complete":
+    var tests = event.data.tests;
+    var status = event.data.status;
+
+    var subtest_results = tests.map(function(x) {
+      return [x.name, x.status, x.message, x.stack];
+    });
+    payload = [status.status,
+               status.message,
+               status.stack,
+               subtest_results];
+    clearTimeout(window.timer);
+    break;
+  case "action":
+    payload = data;
+    break;
+  default:
+    return;
+  }
+  var callback = window.testdriver_callback;
+  window.testdriver_callback = null;
+  callback([window.url, data.type, payload]);
+}
+"""
+        self.webdriver.execute_script(script %
                                       threading.current_thread().name.replace("'", '"'))
 
     def close_old_windows(self):
@@ -127,6 +181,7 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
         self.webdriver = self.parent.webdriver
 
     def element(self, element):
+        self.logger.info("click " + repr(element))
         return element.click()
 
 

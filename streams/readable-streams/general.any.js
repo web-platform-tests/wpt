@@ -39,7 +39,7 @@ test(() => {
 
 test(() => {
 
-  const methods = ['cancel', 'constructor', 'getReader', 'pipeThrough', 'pipeTo', 'tee'];
+  const methods = ['cancel', 'constructor', 'getReader', 'pipeThrough', 'pipeTo', 'tee', 'getIterator'];
   const properties = methods.concat(['locked']).sort();
 
   const rs = new ReadableStream();
@@ -70,6 +70,7 @@ test(() => {
   assert_equals(rs.pipeThrough.length, 1, 'pipeThrough should have 1 parameters');
   assert_equals(rs.pipeTo.length, 1, 'pipeTo should have 1 parameter');
   assert_equals(rs.tee.length, 0, 'tee should have no parameters');
+  assert_equals(rs.getIterator.length, 0, 'getIterator should have no required parameters');
 
 }, 'ReadableStream instances should have the correct list of properties');
 

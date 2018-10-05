@@ -22,7 +22,7 @@ window.process_next_event = function() {
      will be run until it is reset, which wptrunner does after it has
      completed handling the current action.
    */
-  if(!window.testdriver_callback) {
+  if (!window.testdriver_callback) {
     return;
   }
   var event = window.message_queue.shift();

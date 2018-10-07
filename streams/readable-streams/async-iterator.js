@@ -11,7 +11,7 @@ test(() => {
 }, '@@asyncIterator() method is === to getIterator() method');
 
 promise_test(async () => {
-  const s = recordingReadableStream({
+  const s = new ReadableStream({
     start(c) {
       c.enqueue(1);
       c.enqueue(2);
@@ -29,7 +29,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   let i = 1;
-  const s = recordingReadableStream({
+  const s = new ReadableStream({
     pull(c) {
       c.enqueue(i);
       if (i >= 3) {
@@ -55,7 +55,7 @@ promise_test(async () => {
 
   try {
     for await (const chunk of s) {}
-    assert(false);
+    assert_unreached();
   } catch (e) {
     assert_equals(e, 'e');
   }
@@ -63,13 +63,13 @@ promise_test(async () => {
 
 promise_test(async () => {
   const s = new ReadableStream({
-    start(s) {
-      s.close();
+    start(c) {
+      c.close();
     }
   });
 
   for await (const chunk of s) {
-    assert(false);
+    assert_unreached();
   }
 }, 'Async-iterating a closed stream never executes the loop body, but works fine');
 
@@ -88,7 +88,7 @@ promise_test(async () => {
     await (async () => {
       for await (const c of s.getIterator({ preventCancel })) {
         if (type === 'throw') {
-          throw 'e';
+          throw new Error();
         } else if (type === 'break') {
           break;
         } else if (type === 'return') {
@@ -97,7 +97,11 @@ promise_test(async () => {
       }
     })().catch(() => 0);
 
-    assert_equals(s.locked, preventCancel);
+    if (preventCancel) {
+      assert_array_equals(s.events, [], `cancel() should not be called when type = '${type}' and preventCancel is true`);
+    } else {
+      assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
+    }
   };
 
   for (const t of ['throw', 'break', 'return']) {
@@ -108,12 +112,12 @@ promise_test(async () => {
 
 promise_test(async () => {
   {
-    const s = new ReadableStream({});
+    const s = new ReadableStream();
     const it = s[Symbol.asyncIterator]();
     await it.return();
     try {
       await it.return();
-      assert(false);
+      assert_unreached();
     } catch (e) {}
   }
 

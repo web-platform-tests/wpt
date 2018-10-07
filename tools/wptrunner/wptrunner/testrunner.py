@@ -304,7 +304,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_runner_proc = None
 
-        threading.Thread.__init__(self, name="Thread-TestrunnerManager-%i" % self.manager_number)
+        threading.Thread.__init__(self, name="Thread-TestRunnerManager-%i" % self.manager_number)
         # This is started in the actual new thread
         self.logger = None
 
@@ -674,7 +674,7 @@ class TestRunnerManager(threading.Thread):
             self.cleanup()
 
     def teardown(self):
-        self.logger.debug("teardown in testrunnermanager")
+        self.logger.debug("TestRunnerManager teardown")
         self.test_runner_proc = None
         self.command_queue.close()
         self.remote_queue.close()
@@ -695,7 +695,7 @@ class TestRunnerManager(threading.Thread):
             self.test_runner_proc.terminate()
             self.test_runner_proc.join(10)
         else:
-            self.logger.debug("Testrunner exited with code %i" % self.test_runner_proc.exitcode)
+            self.logger.debug("Runner process exited with code %i" % self.test_runner_proc.exitcode)
 
     def runner_teardown(self):
         self.ensure_runner_stopped()

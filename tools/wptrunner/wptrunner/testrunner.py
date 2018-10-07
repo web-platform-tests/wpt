@@ -304,7 +304,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_runner_proc = None
 
-        threading.Thread.__init__(self, name="Thread-TestRunnerManager-%i" % self.manager_number)
+        threading.Thread.__init__(self, name="TestRunnerManager-%i" % self.manager_number)
         # This is started in the actual new thread
         self.logger = None
 
@@ -490,7 +490,7 @@ class TestRunnerManager(threading.Thread):
                 self.child_stop_flag)
         self.test_runner_proc = Process(target=start_runner,
                                         args=args,
-                                        name="Process-TestRunner-%i" % self.manager_number)
+                                        name="TestRunner-%i" % self.manager_number)
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event

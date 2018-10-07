@@ -52,7 +52,7 @@ class TestRunner(object):
         :param command_queue: subprocess.Queue used to send commands to the
                               process
         :param result_queue: subprocess.Queue used to send results to the
-                             parent TestManager process
+                             parent TestRunnerManager process
         :param executor: TestExecutor object that will actually run a test.
         """
         self.command_queue = command_queue
@@ -321,9 +321,9 @@ class TestRunnerManager(threading.Thread):
         self.capture_stdio = capture_stdio
 
     def run(self):
-        """Main loop for the TestManager.
+        """Main loop for the TestRunnerManager.
 
-        TestManagers generally receive commands from their
+        TestRunnerManagers generally receive commands from their
         TestRunner updating them on the status of a test. They
         may also have a stop flag set by the main thread indicating
         that the manager should shut down the next time the event loop
@@ -705,7 +705,7 @@ class TestRunnerManager(threading.Thread):
         self.remote_queue.put((command, args))
 
     def cleanup(self):
-        self.logger.debug("TestManager cleanup")
+        self.logger.debug("TestRunnerManager cleanup")
         if self.browser:
             self.browser.cleanup()
         while True:
@@ -747,7 +747,7 @@ class ManagerGroup(object):
                  restart_on_unexpected=True,
                  debug_info=None,
                  capture_stdio=True):
-        """Main thread object that owns all the TestManager threads."""
+        """Main thread object that owns all the TestRunnerManager threads."""
         self.suite_name = suite_name
         self.size = size
         self.test_source_cls = test_source_cls

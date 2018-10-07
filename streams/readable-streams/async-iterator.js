@@ -98,9 +98,9 @@ promise_test(async () => {
     })().catch(() => 0);
 
     if (preventCancel) {
-      assert_array_equals(s.events, [], `cancel() should not be called when type = '${type}' and preventCancel is true`);
+      assert_array_equals(s.events, ['pull'], `cancel() should not be called when type = '${type}' and preventCancel is true`);
     } else {
-      assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
+      assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
     }
   };
 
@@ -130,7 +130,7 @@ promise_test(async () => {
     });
     const it = s[Symbol.asyncIterator]();
     const next = await it.next();
-    // assert_equals(Object.getPrototypeOf(next), Object.prototype);
+    assert_equals(Object.getPrototypeOf(next), Object.prototype);
     assert_array_equals(Object.keys(next), ['value', 'done']);
   }
 }, 'manual manipulation');
@@ -143,7 +143,8 @@ test(() => {
     },
   });
   const it = s.getIterator();
-  assert_throws(() => {
-    const it2 = s.getIterator();
-  });
+  try {
+    s.getIterator();
+    assert_unreached();
+  } catch (e) {}
 }, 'getIterator throws if there\'s already a lock');

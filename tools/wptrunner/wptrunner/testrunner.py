@@ -717,11 +717,11 @@ class TestRunnerManager(threading.Thread):
                 if cmd == "log":
                     self.log(*data)
                 else:
-                    self.logger.warning("%r: %r" % (cmd, data))
+                    self.logger.warning("Command left in command_queue during cleanup: %r, %r" % (cmd, data))
         while True:
             try:
                 cmd, data = self.remote_queue.get_nowait()
-                self.logger.warning("%r: %r" % (cmd, data))
+                self.logger.warning("Command left in remote_queue during cleanup: %r, %r" % (cmd, data))
             except Empty:
                 break
 

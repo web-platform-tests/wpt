@@ -75,7 +75,6 @@ class TestRunner(object):
 
     def teardown(self):
         self.executor.teardown()
-        self.send_message("runner_teardown")
         self.result_queue = None
         self.command_queue = None
         self.browser = None
@@ -395,7 +394,6 @@ class TestRunnerManager(threading.Thread):
             RunnerManagerState.error: {},
             RunnerManagerState.stop: {},
             None: {
-                "runner_teardown": self.runner_teardown,
                 "log": self.log,
                 "error": self.error
             }
@@ -697,10 +695,6 @@ class TestRunnerManager(threading.Thread):
         else:
             self.logger.debug("Runner process exited with code %i" % self.test_runner_proc.exitcode)
 
-    def runner_teardown(self):
-        self.ensure_runner_stopped()
-        return RunnerManagerState.stop()
-
     def send_message(self, command, *args):
         self.remote_queue.put((command, args))
 
@@ -716,11 +710,6 @@ class TestRunnerManager(threading.Thread):
             else:
                 if cmd == "log":
                     self.log(*data)
-                elif cmd == "runner_teardown":
-                    # It's OK for the "runner_teardown" message to be left in
-                    # the queue during cleanup, as we will already have tried
-                    # to stop the TestRunner in `stop_runner`.
-                    pass
                 else:
                     self.logger.warning("Command left in command_queue during cleanup: %r, %r" % (cmd, data))
         while True:

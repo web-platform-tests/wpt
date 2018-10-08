@@ -1,17 +1,8 @@
 dist: trusty
-sudo: required
 language: python
 branches:
   only:
     - master
-addons:
-  hosts:
-    - web-platform.test
-    - www.web-platform.test
-    - www1.web-platform.test
-    - www2.web-platform.test
-    - xn--n8j6ds53lwwkrqhv28a.web-platform.test
-    - xn--lve-6lad.web-platform.test
 before_install:
   # This needs be sourced as it sets various env vars
   - . ./tools/ci/before_install.sh
@@ -86,6 +77,7 @@ matrix:
     - name: "tools/wpt/ unittests"
       if: type = pull_request
       os: linux
+      sudo: required
       python: "2.7"
       addons:
         apt:
@@ -95,11 +87,13 @@ matrix:
     - name: "resources/ tests"
       if: type = pull_request
       os: linux
+      sudo: required
       python: "2.7"
       env: JOB=resources_unittest TOXENV=py27 SCRIPT=tools/ci/ci_resources_unittest.sh
     - name: "infrastructure/ tests"
       if: type = pull_request
       os: linux
+      sudo: required
       python: "2.7"
       env: JOB=wptrunner_infrastructure SCRIPT=tools/ci/ci_wptrunner_infrastructure.sh
       addons:

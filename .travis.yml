@@ -15,7 +15,7 @@ matrix:
   fast_finish: true
   include:
     - name: "tag master + upload manifest"
-      if: type = push AND branch = master
+      if: type = pull_request
       os: linux
       python: "2.7"
       env:

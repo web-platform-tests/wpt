@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Inheritance of CSS Rhythmic Sizing properties</title>
+<link rel="help" href="https://drafts.csswg.org/css-rhythm/#property-index">
+<meta name="assert" content="Properties do not inherit.">
+<meta name="assert" content="Properties have initial values according to the spec.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/inheritance-testcommon.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="target"></div>
+</div>
+<script>
+assert_not_inherited('block-step-align', 'auto', 'center');
+assert_not_inherited('block-step-insert', 'margin', 'padding');
+assert_not_inherited('block-step-round', 'up', 'nearest');
+assert_not_inherited('block-step-size', 'none', '10px');
+assert_not_inherited('line-height-step', '0', '10px');
+</script>
+</body>
+</html>

@@ -90,31 +90,7 @@ def get_paths(**kwargs):
 
 
 def get_jobs(paths, **kwargs):
-    jobs = set()
-
-    rules = {}
-    includes = kwargs.get("includes")
-    if includes is not None:
-        includes = set(includes)
-    for key, value in iteritems(job_path_map):
-        if includes is None or key in includes:
-            rules[key] = Ruleset(value)
-
-    for path in paths:
-        for job in list(rules.keys()):
-            ruleset = rules[job]
-            if ruleset(path):
-                rules.pop(job)
-                jobs.add(job)
-        if not rules:
-            break
-
-    # Default jobs shuld run even if there were no changes
-    if not paths:
-        for job, path_re in iteritems(job_path_map):
-            if ".*" in path_re:
-                jobs.add(job)
-
+    jobs = set(job_path_map.keys())
     return jobs
 
 

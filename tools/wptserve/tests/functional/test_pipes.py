@@ -62,8 +62,6 @@ class TestSub(TestUsingServer):
         expected = b"localhost localhost %i" % self.server.port
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_file_hash(self):
         resp = self.request("/sub_file_hash.sub.txt")
         expected = b"""
@@ -84,8 +82,6 @@ sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dX
         expected = b"PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
-    @pytest.mark.xfail(sys.platform == "win32",
-                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_location(self):
         resp = self.request("/sub_location.sub.txt?query_string")
         expected = """

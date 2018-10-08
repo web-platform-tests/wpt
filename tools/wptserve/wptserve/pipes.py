@@ -490,6 +490,8 @@ def template(request, content, escape_type="html"):
         escape_func = {"html": lambda x:escape(x, quote=True),
                        "none": lambda x:x}[escape_type]
 
+                       
+
         #Should possibly support escaping for other contexts e.g. script
         #TODO: read the encoding of the response
         return escape_func(text_type(value)).encode("utf-8")

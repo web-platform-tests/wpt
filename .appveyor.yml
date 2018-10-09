@@ -28,6 +28,10 @@ environment:
       TOX_DIR: "tools"
       TOXENV: "py36"
 
+only_commits:
+  files:
+    - "tools\\**\\*"
+
 install:
   - ps: "tools\\ci\\install.ps1"
 

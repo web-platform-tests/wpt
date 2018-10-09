@@ -1,0 +1,47 @@
+<!doctype html>
+<title>All -webkit-appearance values on all HTML elements</title>
+<script src=values.js></script>
+<style>
+ table { border-collapse: collapse; }
+ thead > tr > th + th { position: sticky; top: 0; background: #eee; }
+ thead > tr > th, tbody > tr > td { border: thin solid gray; white-space: nowrap; }
+ thead > tr > :first-child, tbody > tr > :first-child { position: sticky; left: 0; background: #eee; z-index: 1; }
+</style>
+<body>
+<table><thead><tr><th>Element<tbody></table>
+<script>
+// header row
+const header_row = document.querySelector('tr');
+for (const value of supported_appearance_values) {
+  const cell = document.createElement('th');
+  cell.textContent = value;
+  header_row.appendChild(cell);
+}
+// table body
+const tbody = document.querySelector('tbody');
+for (const el_desc of html_elements) {
+  const row = document.createElement('tr');
+  const el_cell = document.createElement('td');
+  el_cell.textContent = el_desc[0];
+  if (el_desc[1]) {
+    for (const attr in el_desc[1]) {
+      el_cell.textContent += ` ${attr}=${el_desc[1][attr]}`;
+    }
+  }
+  row.appendChild(el_cell);
+  for (const value of supported_appearance_values) {
+    const cell = document.createElement('td');
+    row.appendChild(cell);
+    const el = document.createElement(el_desc[0]);
+    for (const attr in el_desc[1]) {
+      el[attr] = el_desc[1][attr];
+    }
+    el.style.WebkitAppearance = value;
+    if (el_desc[0] !== 'script') {
+      el.textContent = 'x';
+    }
+    cell.appendChild(el);
+  }
+  tbody.appendChild(row);
+}
+</script>

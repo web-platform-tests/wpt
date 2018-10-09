@@ -16,7 +16,7 @@ function bcLessLocation() {
 
 [
   ["href", "about:blank", "https://example.com/", "/", "http://test:test/", "test test", "test:test", "chrome:fail"],
-  ["protocol", "about", "http", "about", "test"],
+  ["protocol", "about:", "http", "about", "test"],
   ["host", "", "example.com", "test test", "()"],
   ["hostname", "", "example.com"],
   ["port", "", "80", "", "443", "notaport"],

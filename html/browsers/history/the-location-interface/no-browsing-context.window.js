@@ -49,3 +49,8 @@ test(() => {
     }, "Invoking `" + method + "` with `" + value + "` on a `Location` object sans browsing context is a no-op");
   });
 });
+
+test(() => {
+  const loc = bcLessLocation();
+  assert_array_equals(loc.ancestorOrigins, []);
+}, "Getting `ancestorOrigins` of a `Location` object sans browsing context should be []");

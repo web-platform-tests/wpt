@@ -46,7 +46,7 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         return NotImplemented
 
@@ -366,8 +366,7 @@ class Firefox(Browser):
             os.unlink(package_path)
 
         return path
-
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         version_string = call(binary, "--version").strip()
         m = re.match(r"Mozilla Firefox (.*)", version_string)
@@ -394,7 +393,7 @@ class Fennec(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -458,7 +457,7 @@ class Chrome(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         binary = binary or self.binary
         if uname[0] != "Windows":
             try:
@@ -497,7 +496,7 @@ class ChromeAndroid(Browser):
         chrome = Chrome()
         return chrome.install_webdriver(dest, channel)
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 class Opera(Browser):
@@ -562,7 +561,7 @@ class Opera(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         binary = binary or self.binary
         try:
@@ -593,7 +592,7 @@ class Edge(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -619,7 +618,7 @@ class InternetExplorer(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -647,9 +646,20 @@ class Safari(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
+        if webdriver_binary is not None:
+            try:
+                output = call(webdriver_binary, "--version").strip()
+                # TODO: explain
+                if output.startswith('Included with '):
+                    output = output[14:]
+                return output
+            except subprocess.CalledProcessError:
+                # TODO stderr gets printed :'(
+                pass
+        # TODO: this message doesn't show up anywhere
+        logger.warn("Unable to determine Safari version.")
         return None
-
 
 class SafariWebDriver(Safari):
     product = "safari_webdriver"
@@ -707,7 +717,7 @@ class Servo(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         output = call(binary, "--version")
         m = re.search(r"Servo ([0-9\.]+-[a-f0-9]+)?(-dirty)?$", output.strip())
@@ -737,7 +747,7 @@ class Sauce(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -759,5 +769,5 @@ class WebKit(Browser):
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None

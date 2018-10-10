@@ -699,8 +699,9 @@ class TestRunnerManager(threading.Thread):
             # forced termination, the queue is no longer in a usable state
             # (subsequent attempts to retrieve items may block indefinitely).
             # Discard the potentially-corrupted queue and create a new one.
-            self.teardown()
+            self.command_queue.close()
             self.command_queue = Queue()
+            self.remote_queue.close()
             self.remote_queue = Queue()
         else:
             self.logger.debug("Testrunner exited with code %i" % self.test_runner_proc.exitcode)

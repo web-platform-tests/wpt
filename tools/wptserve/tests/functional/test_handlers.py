@@ -236,12 +236,11 @@ class TestJSONHandler(TestUsingServer):
 
 
 class TestPythonHandler(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_string(self):
         resp = self.request("/test_string.py")
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/plain", resp.info()["Content-Type"])
-        self.assertEqual("PASS", resp.read())
+        self.assertEqual(b"PASS", resp.read())
 
     def test_tuple_2(self):
         resp = self.request("/test_tuple_2.py")

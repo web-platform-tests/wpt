@@ -25,13 +25,13 @@ const hwm0 = { highWaterMark: 0 };
 
 for (const invalidSignal of [null, 'AbortSignal', true, -1, Object.create(AbortSignal.prototype)]) {
   promise_test(t => {
-    const rs = new ReadableStream({
-      start(controller) {
-        controller.close();
-      }
-    });
-    const ws = new WritableStream();
-    return promise_rejects(t, new TypeError(), rs.pipeTo(ws, { signal: invalidSignal }), 'pipeTo should reject');
+    const rs = recordingReadableStream(errorOnPull, hwm0);
+    const ws = recordingWritableStream();
+    return promise_rejects(t, new TypeError(), rs.pipeTo(ws, { signal: invalidSignal }), 'pipeTo should reject')
+        .then(() => {
+          assert_equals(rs.events.length, 0, 'no ReadableStream methods should have been called');
+          assert_equals(ws.events.length, 0, 'no WritableStream methods should have been called');
+        });
   }, `a signal argument '${invalidSignal}' should cause pipeTo() to reject`);
 }
 
@@ -50,6 +50,8 @@ promise_test(t => {
         assert_equals(rs.events.length, 2, 'cancel should have been called');
         assert_equals(rs.events[0], 'cancel', 'first event should be cancel');
         assert_equals(rs.events[1].name, 'AbortError', 'the argument to cancel should be an AbortError');
+        assert_equals(rs.events[1].constructor.name, 'DOMException',
+                      'the argument to cancel should be a DOMException');
       });
 }, 'an aborted signal should cause the writable stream to reject with an AbortError');
 

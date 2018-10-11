@@ -40,4 +40,14 @@ async_test(t => {
   client.open("GET", "resources/headers-www-authenticate.asis");
   client.send();
 });
+
+async_test(t => {
+  const client = new XMLHttpRequest();
+  client.onload = t.step_func_done(() => {
+    assert_equals(client.getAllResponseHeaders(), "heya: 1, 2\r\n");
+  });
+  client.onerror = t.unreached_func("unexpected error");
+  client.open("GET", "resources/headers-some-are-empty.asis");
+  client.send();
+})
 </script>

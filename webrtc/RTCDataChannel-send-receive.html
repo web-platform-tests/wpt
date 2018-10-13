@@ -496,6 +496,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   // Test sending 3 messages with different types on one channel:
   // helloBuffer, unicodeString, helloBlob
   promise_test(async (t) =>{
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -512,7 +513,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         assert_equals(receivedMessages[1], unicodeString);
         assert_equals_typed_array(receivedMessages[2], helloBuffer);
 
-        t.done();
+        resolver.resolve();
       }
     });
 
@@ -524,7 +525,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     dc1.send(unicodeString);
     dc1.send(helloBlob);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending multiple messages with different types should succeed`, {
     timeout: 5000
   });
@@ -532,6 +533,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   // Test receiving 4 messages with different types on one channel:
   // Blob, DOMString, ArrayBuffer, Blob
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -559,7 +561,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
           assert_equals_typed_array(receivedMessages[2], helloBuffer);
           assert_equals_typed_array(receivedMessages[3], helloBuffer);
 
-          t.done();
+          resolver.resolve();
         }).catch(t.step_func(err =>
           assert_unreached(`Unexpected promise rejection: ${err}`)));
       }
@@ -570,7 +572,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     dc1.send(helloBlob);
     dc1.send(helloBlob);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Receiving multiple messages with different types should succeed`, {
     timeout: 5000
   });
@@ -606,6 +608,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   ];
   for (const [messageLength, timeout] of messageLengthsAndTimeout) {
     promise_test(async (t) => {
+      const resolver = new Resolver();
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -632,7 +635,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
         const { data } = event;
         assert_equals_typed_array(data, message,
           'Send data should equal receive data');
-        t.done();
+        resolver.resolve();
       });
 
       // Send or fail with TypeError
@@ -641,16 +644,17 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       } catch (e) {
         assert_equals(e.name, 'TypeError',
           'Should throw TypeError in case the message is too large');
-        t.done();
+        resolver.resolve();
       }
 
-      await t.done_promise;
+      await resolver;
     }, `${description}: Sending and receiving ${messageLength} bytes should succeed or raise
     TypeError`, {
       timeout: timeout
     });
 
     promise_test(async (t) => {
+      const resolver = new Resolver();
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -702,13 +706,14 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       // Note: Tested that in Chrome and it really needs the long timeout
       t.step_timeout(t.step_func_done(), Math.min(timeout, 10000));
 
-      await t.done_promise;
+      await resolver;
     }, `${description}: Sending and receiving ${messageLength} +1 bytes should raise TypeError`, {
       timeout: timeout
     });
   }
 
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -728,7 +733,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_equals_typed_array(data, message,
         'Received data should be equal to sent data');
       if (++nMessagesReceived === nMessages) {
-        t.done();
+        resolver.resolve();
       }
     });
 
@@ -740,12 +745,13 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Data should have been received by now (timeout reached)');
     }, 4000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending and receiving 16 KiB x64 should succeed`, {
     timeout: 7000
   });
 
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -763,7 +769,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
 
     const maybeDone = () => {
       if (nMessagesReceived1 === nMessages && nMessagesReceived2 === nMessages) {
-        t.done();
+        resolver.resolve();
       }
     };
 
@@ -792,7 +798,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Data should have been received by now (timeout reached)');
     }, 25000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending and receiving 16 KiB x256 on both peer simultaneously should
   succeed`, {
     timeout: 28000
@@ -801,6 +807,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   // Note: This test isn't particularly useful as both peers are on the same machine...
   //       but who knows.
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -819,7 +826,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_equals(data, messages[nMessagesReceived],
         'Received data should be equal to sent data');
       if (++nMessagesReceived === messages.length) {
-        t.done();
+        resolver.resolve();
       }
     });
 
@@ -831,13 +838,14 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Data should have been received by now (timeout reached)');
     }, 5000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending and receiving 2048 messages should succeed and keep order`, {
     timeout: 7000
   });
 
   // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1413198
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -857,7 +865,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     dc2.onclose = t.step_func(() => {
       assert_equals(nMessagesReceived, nMessages,
         'Remote channel should have received all messages before becoming closed');
-      t.done();
+      resolver.resolve();
     });
 
     // Ensure the data reaches dc2
@@ -877,7 +885,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Channel should have been closed by now (timeout reached)');
     }, 4000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Closing a channel (local) with pending data should transfer that data
   before becoming closed`, {
     timeout: 7000
@@ -899,6 +907,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   });
 
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -907,7 +916,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     const [dc1, dc2] = await createDataChannelPair(pc1, pc2, { channelOptions: channelOptions });
     dc1.onclose = t.step_func(() => {
       assert_throws('InvalidStateError', () => dc1.send(helloString));
-      t.done();
+      resolver.resolve();
     });
 
     dc2.close();
@@ -915,7 +924,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Channel should have been closed by now (timeout reached)');
     }, 3000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending after the channel has been closed (remote) should raise
   InvalidStateError`, {
     timeout: 5000
@@ -937,6 +946,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
   });
 
   promise_test(async (t) =>{
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -945,7 +955,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
     const [dc1] = await createDataChannelPair(pc1, pc2, { channelOptions: channelOptions });
     dc1.onclose = t.step_func(() => {
       assert_throws('InvalidStateError', () => dc1.send(helloString));
-      t.done();
+      resolver.resolve();
     });
 
     pc2.close();
@@ -953,7 +963,7 @@ for (const [description, channelOptions] of channelOptionsVariants) {
       assert_unreached('Channel should have been closed by now (timeout reached)');
     }, 3000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: Sending after the peer connection has been closed (remote) should raise
   InvalidStateError`, {
     timeout: 5000

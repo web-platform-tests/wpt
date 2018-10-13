@@ -72,6 +72,7 @@ promise_test(async (t) => {
        4. Fire a simple event named close at channel.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -94,7 +95,7 @@ promise_test(async (t) => {
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
       if (nCloses === nChannels - 1) {
-        t.done();
+        resolver.resolve();
       }
     });
   }
@@ -103,13 +104,14 @@ promise_test(async (t) => {
     dc1.close();
   }
 
-  await t.done_promise;
+  await resolver;
 }, `In-band data channels x${nChannels} closing on local side should be synchronized across
  peers`, {
   timeout: 5000
 });
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -132,7 +134,7 @@ promise_test(async (t) => {
         'dc1 should be closed after onclose has been raised');
       ++nCloses;
       if (nCloses === nChannels - 1) {
-        t.done();
+        resolver.resolve();
       }
     });
   }
@@ -141,13 +143,14 @@ promise_test(async (t) => {
     dc2.close();
   }
 
-  await t.done_promise;
+  await resolver;
 }, `In-band data channels x${nChannels} closing on remote side should be synchronized across
  peers`, {
   timeout: 5000
 });
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -175,20 +178,21 @@ promise_test(async (t) => {
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
       if (nCloses === nChannels - 1) {
-        t.done();
+        resolver.resolve();
       }
     });
   }
 
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
-  await t.done_promise;
+  await resolver;
 }, `Negotiated data channels x${nChannels} closing should be synchronized across peers`, {
   timeout: 5000
 });
 
 // Based on https://bugs.chromium.org/p/webrtc/issues/detail?id=6881
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -223,14 +227,14 @@ promise_test(async (t) => {
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
       if (nCloses === nChannels - 1) {
-        t.done();
+        resolver.resolve();
       }
     });
   }
 
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
-  await t.done_promise;
+  await resolver;
 }, `Closing peer connection locally should close all ${nChannels} channels for the remote peer`, {
   timeout: 5000
 });

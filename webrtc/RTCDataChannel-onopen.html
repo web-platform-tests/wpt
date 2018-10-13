@@ -24,6 +24,7 @@ setup({ explicit_timeout: true });
  */
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -35,16 +36,17 @@ promise_test(async (t) => {
   const dc = pc1.createDataChannel('onopen');
   dc.onopen = t.step_func(() => {
     assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
-    t.done();
+    resolver.resolve();
   });
 
   await doSignalingHandshake(pc1, pc2);
-  await t.done_promise;
+  await resolver;
 }, 'In-band channel: Open event should be fired (local) when the data channel opens', {
   timeout: 5000
 });
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -60,17 +62,18 @@ promise_test(async (t) => {
     const dc = event.channel;
     dc.onopen = t.step_func(() => {
       assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
-      t.done();
+      resolver.resolve();
     });
   });
 
   await doSignalingHandshake(pc1, pc2);
-  await t.done_promise;
+  await resolver;
 }, 'In-band channel: Open event should be fired (remote) when the data channel opens', {
   timeout: 5000
 });
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -92,13 +95,13 @@ promise_test(async (t) => {
     dc.onopen = t.step_func(() => {
       assert_equals(dc.readyState, 'open', 'Channel should be open after onopen has fired');
       if (++nOpen === 2) {
-        t.done();
+        resolver.resolve();
       }
     });
   }
 
   await doSignalingHandshake(pc1, pc2);
-  await t.done_promise;
+  await resolver;
 }, 'Negotiated channel: Open event should be fired when the channels open', {
   timeout: 5000
 });

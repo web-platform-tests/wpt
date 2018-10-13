@@ -34,6 +34,7 @@ const messages = [
 
 for (const [message, length, description] of messages) {
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -51,7 +52,7 @@ for (const [message, length, description] of messages) {
       'bufferedAmountLowThreshold should be 0 by default');
     dc.onbufferedamountlow = t.step_func(() => {
       assert_equals(dc.bufferedAmount, 0, 'bufferedAmount should be 0 once the event has fired');
-      t.done();
+      resolver.resolve();
     });
 
     exchangeIceCandidates(pc1, pc2);
@@ -59,7 +60,7 @@ for (const [message, length, description] of messages) {
 
     t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: bufferedamountlow event should fire once bufferedAmount <= 0 (default)`, {
     timeout: 5000
   });
@@ -72,6 +73,7 @@ for (const [message, length, description] of messages) {
 
   for (const threshold of thresholds) {
     promise_test(async (t) => {
+      const resolver = new Resolver();
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -91,7 +93,7 @@ for (const [message, length, description] of messages) {
       dc.onbufferedamountlow = t.step_func(() => {
         assert_less_than_equal(dc.bufferedAmount, threshold,
           `bufferedAmount should be <= ${threshold} once the event has fired`);
-        t.done();
+        resolver.resolve();
       });
 
       exchangeIceCandidates(pc1, pc2);
@@ -99,7 +101,7 @@ for (const [message, length, description] of messages) {
 
       t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
 
-      await t.done_promise;
+      await resolver;
     }, `${description}: bufferedamountlow event should fire once bufferedAmount <=
   ${threshold} (custom)`, {
       timeout: 5000
@@ -108,6 +110,7 @@ for (const [message, length, description] of messages) {
 
   for (const threshold of thresholds) {
     promise_test(async (t) => {
+      const resolver = new Resolver();
       const pc1 = new RTCPeerConnection();
       const pc2 = new RTCPeerConnection();
       t.add_cleanup(() => pc1.close());
@@ -129,7 +132,7 @@ for (const [message, length, description] of messages) {
       dc.onbufferedamountlow = t.step_func(() => {
         assert_less_than_equal(dc.bufferedAmount, threshold,
           `bufferedAmount should be <= ${threshold} once the event has fired`);
-        t.done();
+        resolver.resolve();
       });
 
       exchangeIceCandidates(pc1, pc2);
@@ -137,7 +140,7 @@ for (const [message, length, description] of messages) {
 
       t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
 
-      await t.done_promise;
+      await resolver;
     }, `${description} x 10: bufferedamountlow event should fire once bufferedAmount <=
   ${threshold} (custom)`, {
       timeout: 5000
@@ -145,6 +148,7 @@ for (const [message, length, description] of messages) {
   }
 
   promise_test(async (t) => {
+    const resolver = new Resolver();
     const pc1 = new RTCPeerConnection();
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
@@ -172,7 +176,7 @@ for (const [message, length, description] of messages) {
 
     t.step_timeout(() => assert_unreached('bufferedamountlow event did not fire in time'), 2000);
 
-    await t.done_promise;
+    await resolver;
   }, `${description}: bufferedamountlow event should not fire on other channels`, {
     timeout: 5000
   });

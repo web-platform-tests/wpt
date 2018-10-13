@@ -94,6 +94,7 @@ promise_test(async (t) => {
   is now a spec violation).
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -119,7 +120,7 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
 
   t.step_timeout(t.step_func_done(), 2000);
-  await t.done_promise;
+  await resolver;
 }, 'In-band negotiation with a specific ID should not be allowed', {
   timeout: 5000
 });
@@ -317,6 +318,7 @@ promise_test(async (t) => {
   See: https://bugs.chromium.org/p/chromium/issues/detail?id=559394
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -332,7 +334,7 @@ promise_test(async (t) => {
     // Give pc1 a chance to create the new data channel.
     t.step_timeout(() => {
       assert_true(done, 'pc1 should be done creating the new data channel by now');
-      t.done();
+      resolver.resolve();
     }, 1000);
   });
 
@@ -348,7 +350,7 @@ promise_test(async (t) => {
   });
   done = true;
 
-  await t.done_promise;
+  await resolver;
 }, 'ID reuse should not be possible before the former channel with the same ID closed', {
   timeout: 5000
 });
@@ -357,6 +359,7 @@ promise_test(async (t) => {
   Ensure an ID can be reused once the former channel with the same ID has been closed.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -373,14 +376,14 @@ promise_test(async (t) => {
       negotiated: true,
       id: id
     });
-    dc.onopen = t.step_func(() => t.done());
+    dc.onopen = t.step_func(() => resolver.resolve());
     assert_equals(dc.id, id, "Expect dc.id to match former channel's dc1.id");
     t.step_timeout(() => assert_unreached('dc did not open in time'), 3000);
   });
 
   dc1.close();
 
-  await t.done_promise;
+  await resolver;
 }, 'ID reuse should be possible once the former channel with the same ID closed', {
   timeout: 5000
 });
@@ -541,6 +544,7 @@ promise_test(async (t) => {
       4.    Fire a simple event named close at channel.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   // Takes the DTLS server role
   const pc1 = new RTCPeerConnection();
   // Takes the DTLS client role
@@ -557,7 +561,7 @@ promise_test(async (t) => {
 
   const maybeDone = t.step_func(() => {
     if (nExpected === nActualCloses && nExpected === nActualErrors) {
-      t.done();
+      resolver.resolve();
     }
   });
 
@@ -629,7 +633,7 @@ promise_test(async (t) => {
     pc2.createDataChannel('this is too exhausting!'));
 
   maybeDone();
-  await t.done_promise;
+  await resolver;
 }, 'Channel ID exhaustion handling (before and after connection establishment)', {
   timeout: 20000
 });

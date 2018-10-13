@@ -39,6 +39,7 @@ setup({ explicit_timeout: true });
     };
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -66,7 +67,7 @@ promise_test(async (t) => {
     assert_equals(dc.readyState, 'open',
       'Expect channel ready state to be open');
 
-    t.done();
+    resolver.resolve();
   });
 
   pc1.createDataChannel('fire-me!');
@@ -77,7 +78,7 @@ promise_test(async (t) => {
     assert_unreached('datachannel event should have been raised by now (timeout reached)');
   }, 3000);
 
-  await t.done_promise;
+  await resolver;
 }, 'Data channel event should fire when new data channel is announced to the remote peer', {
   timeout: 5000
 });
@@ -87,6 +88,7 @@ promise_test(async (t) => {
   we should be able to send data in the event handler.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -104,7 +106,7 @@ promise_test(async (t) => {
     assert_equals(event.data, message,
       'Received data should be equal to sent data');
 
-    t.done();
+    resolver.resolve();
   });
 
   exchangeIceCandidates(pc1, pc2);
@@ -113,7 +115,7 @@ promise_test(async (t) => {
     assert_unreached('Data should have been received by now (timeout reached)');
   }, 3000);
 
-  await t.done_promise;
+  await resolver;
 }, 'Should be able to send data in a datachannel event handler', {
   timeout: 5000
 });
@@ -127,6 +129,7 @@ promise_test(async (t) => {
       9. If the channel's [[ReadyState]] is still open, announce the data channel as open.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -149,7 +152,7 @@ promise_test(async (t) => {
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
-  await t.done_promise;
+  await resolver;
 }, 'Open event should not be raised when closing the channel in the datachannel event', {
   timeout: 5000
 });
@@ -157,6 +160,7 @@ promise_test(async (t) => {
 // Added this test as a result of the discussion in
 // https://github.com/w3c/webrtc-pc/pull/1851#discussion_r185976747
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -165,7 +169,7 @@ promise_test(async (t) => {
   pc2.ondatachannel = t.step_func((event) => {
     const dc = event.channel;
     dc.onopen = t.step_func((event) => {
-      t.done();
+      resolver.resolve();
     });
     
     // This should NOT prevent triggering the 'open' event since it enqueues at least two tasks
@@ -184,7 +188,7 @@ promise_test(async (t) => {
     assert_unreached('datachannel event should have been raised by now (timeout reached)');
   }, 3000);
 
-  await t.done_promise;
+  await resolver;
 }, 'Open event should be raised when closing the channel in the datachannel event after ' +
   'enqueuing a task', {
   timeout: 5000
@@ -195,6 +199,7 @@ promise_test(async (t) => {
   Combination of the two tests above (send and close).
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -220,7 +225,7 @@ promise_test(async (t) => {
     assert_equals(event.data, message,
       'Received data should be equal to sent data');
 
-    t.done();
+    resolver.resolve();
   });
 
   exchangeIceCandidates(pc1, pc2);
@@ -229,7 +234,7 @@ promise_test(async (t) => {
     assert_unreached('Data should have been received by now (timeout reached)');
   }, 3000);
 
-  await t.done_promise;
+  await resolver;
 }, 'Open event should not be raised when sending and immediately closing the channel in the ' +
   'datachannel event', {
   timeout: 5000
@@ -271,6 +276,7 @@ promise_test(async (t) => {
  */
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -305,19 +311,20 @@ promise_test(async (t) => {
     assert_equals(dc2.id, dc1.id);
     assert_equals(dc2.priority, 'high');
 
-    t.done();
+    resolver.resolve();
   });
 
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
-  await t.done_promise;
+  await resolver;
 }, 'In-band negotiated channel created on remote peer should match the same configuration as local ' +
   'peer', {
   timeout: 5000
 });
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -347,13 +354,13 @@ promise_test(async (t) => {
     assert_equals(dc2.id, dc1.id);
     assert_equals(dc2.priority, 'low');
 
-    t.done();
+    resolver.resolve();
   });
 
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
-  await t.done_promise;
+  await resolver;
 }, 'In-band negotiated channel created on remote peer should match the same (default) ' +
   'configuration as local peer', {
   timeout: 5000
@@ -370,6 +377,7 @@ promise_test(async (t) => {
         same id at the other peer.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -385,7 +393,7 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
 
   t.step_timeout(t.step_func_done(), 2000);
-  await t.done_promise;
+  await resolver;
 }, 'Negotiated channel should not fire datachannel event on remote peer', {
   timeout: 5000
 });

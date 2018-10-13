@@ -164,6 +164,7 @@ promise_test(async (t) => {
 
 // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -176,7 +177,7 @@ promise_test(async (t) => {
     if (++messageCount === 3) {
       assert_equals(dc1.bufferedAmount, 0,
         'Expect sender bufferedAmount to be reduced after message is sent');
-      t.done();
+      resolver.resolve();
     }
   });
 
@@ -196,7 +197,7 @@ promise_test(async (t) => {
     helloString.length*2 + unicodeBuffer.byteLength,
     'Expect bufferedAmount to be the total length of all messages queued to send');
 
-  await t.done_promise;
+  await resolver;
 }, 'bufferedAmount should increase by byte length for each message sent', {
   timeout: 5000
 });

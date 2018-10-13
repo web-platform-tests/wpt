@@ -58,6 +58,7 @@ const channelOptionsVariants = [
   Will transmit ~242 MiB on each peer.
  */
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -151,7 +152,7 @@ promise_test(async (t) => {
         // Done if all messages on all channels on both peers have been received
         if (index === messages.length - 1
             && indexesArray.every((indexes) => indexes.size === messages.length)) {
-          t.done();
+          resolver.resolve();
         }
       });
     }
@@ -169,7 +170,7 @@ promise_test(async (t) => {
     }
   }
 
-  await t.done_promise;
+  await resolver;
 }, 'Stress-test with multiple channels sending and receiving using various data sources', {
   timeout: 420000 // yep, 7m to be safe
 });

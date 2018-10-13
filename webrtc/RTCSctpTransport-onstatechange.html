@@ -20,6 +20,7 @@ setup({ explicit_timeout: true });
  */
 
 promise_test(async (t) => {
+  const resolver = new Resolver();
   const pc1 = new RTCPeerConnection();
   const pc2 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
@@ -40,14 +41,14 @@ promise_test(async (t) => {
     // Triggered after the peers connected
     pc.sctp.onstatechange = t.step_func(() => {
       assert_equals(pc.sctp.state, 'connected');
-      t.done();
+      resolver.resolve();
     });
   }
 
   // Let the peers connect
   exchangeIceCandidates(pc1Queue, pc2Queue);
 
-  await t.done_promise;
+  await resolver;
 }, 'RTCSctpTransport.onstatechange should fire when the state changes', {
   timeout: 5000
 });

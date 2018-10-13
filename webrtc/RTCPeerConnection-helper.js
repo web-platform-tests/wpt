@@ -643,18 +643,42 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
   return ontrackPromise;
 }
 
-// The resolver has a |promise| that can be resolved or rejected using |resolve|
+// The resolver extends a |promise| that can be resolved or rejected using |resolve|
 // or |reject|.
-class Resolver {
-  constructor() {
-    let promiseResolve;
-    let promiseReject;
-    this.promise = new Promise(function(resolve, reject) {
-      promiseResolve = resolve;
-      promiseReject = reject;
+class Resolver extends Promise {
+  constructor(executor) {
+    let resolve, reject;
+    super((resolve_, reject_) => {
+      resolve = resolve_;
+      reject = reject_;
+      if (executor) {
+        return executor(resolve_, reject_);
+      }
     });
-    this.resolve = promiseResolve;
-    this.reject = promiseReject;
+
+    this._done = false;
+    this._resolve = resolve;
+    this._reject = reject;
+  }
+  /**
+   * Return whether the promise is done (resolved or rejected).
+   */
+  get done() {
+    return this._done;
+  }
+  /**
+   * Resolve the promise.
+   */
+  resolve(...args) {
+    this._done = true;
+    return this._resolve(...args);
+  }
+  /**
+   * Reject the promise.
+   */
+  reject(...args) {
+    this._done = true;
+    return this._reject(...args);
   }
 }
 

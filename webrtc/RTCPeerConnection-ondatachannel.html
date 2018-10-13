@@ -171,7 +171,7 @@ promise_test(async (t) => {
     dc.onopen = t.step_func((event) => {
       resolver.resolve();
     });
-    
+
     // This should NOT prevent triggering the 'open' event since it enqueues at least two tasks
     t.step_timeout(() => {
       t.step_timeout(() => {

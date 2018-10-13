@@ -526,7 +526,7 @@ test((t) => {
 }, 'createDataChannel with negotiated false should succeed', {
   timeout: 1000
 });
- 
+
 test((t) => {
   const pc = new RTCPeerConnection;
   t.add_cleanup(() => pc.close());
@@ -556,7 +556,7 @@ test((t) => {
 }, 'createDataChannel with negotiated true and id not defined should throw TypeError', {
   timeout: 1000
 });
- 
+
 test((t) => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());

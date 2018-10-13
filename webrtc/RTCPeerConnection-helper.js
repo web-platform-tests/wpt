@@ -660,12 +660,14 @@ class Resolver extends Promise {
     this._resolve = resolve;
     this._reject = reject;
   }
+
   /**
    * Return whether the promise is done (resolved or rejected).
    */
   get done() {
     return this._done;
   }
+
   /**
    * Resolve the promise.
    */
@@ -673,6 +675,7 @@ class Resolver extends Promise {
     this._done = true;
     return this._resolve(...args);
   }
+
   /**
    * Reject the promise.
    */

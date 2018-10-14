@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <script>
+let client = new XMLHttpRequest, 
+    url = '{{location[scheme]}}://{{host]}}:{{ports[http][1]}}/resource-timing/resources/TAOResponse.py?tao=origin';
+    client.open('GET', url);
+    client.onload =(()=>{
+        setTimeout(()=>{
+            let entry = performance.getEntriesByType('resource')[0];
+            console.log(entry);
+            let result = (entry && (entry.redirectStart + entry.redirectEnd + entry.domainLookupStart + entry.domainLookupEnd + entry.connectStart + entry.connectEnd + entry.secureConnectionStart + entry.requestStart + entry.responseStart) == 0) ? 'PASS' : 'FAIL';
+            window.parent.postMessage(result, '*');
+        }, 0)}); 
+   client.send(null); 
+        </script> 
+    </body>
+</html>
+
+

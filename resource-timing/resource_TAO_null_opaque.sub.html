@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing TAO - "null" and opaque origin</title>
+<link rel="author" title="Google" href="http://www.google.com/" />
+<link rel="help" href="https://www.w3.org/TR/resource-timing-2/#timing-allow-origin"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+window.addEventListener("message", e=>{
+    test(()=> {
+        assert_equals(e.data, "PASS");
+    }, "Makes sure that the iframe passed the test and had an entry which passed the timing allow check");
+});
+</script>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test validates that for a cross origin resource, the timing allow check algorithm will succeed when the value of Timing-Allow-Origin is null and the origin is an opaque origin.</p>
+<div id="log"></div>
+<iframe id="frameContext" 
+        src="data:text/html;utf8,<body><script> let client = new XMLHttpRequest, url = '{{location[scheme]}}://{{hosts[][www]}}:{{ports[http][0]}}/resource-timing/resources/TAOResponse.py?tao=null'; client.open('GET', url); client.onload =(()=>{setTimeout(()=>{let entry = performance.getEntriesByType('resource')[0]; let result = (entry && (entry.redirectStart + entry.redirectEnd + entry.domainLookupStart + entry.domainLookupEnd + entry.connectStart + entry.connectEnd + entry.secureConnectionStart + entry.requestStart + entry.responseStart) != 0) ? 'PASS' : 'FAIL'; window.parent.postMessage(result, '*');}, 0)}); client.send(null); </script> </body>"> </iframe>
+</body>
+</html>

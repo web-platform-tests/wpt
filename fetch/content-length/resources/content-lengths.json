@@ -36,6 +36,22 @@
     "output": null
   },
   {
+    "input": "Content-Length: 42,",
+    "output": null
+  },
+  {
+    "input": "Content-Length: ,42",
+    "output": null
+  },
+  {
+    "input": "Content-Length: 42\r\nContent-Length: \t",
+    "output": null
+  },
+  {
+    "input": "Content-Length: \r\nContent-Length: 42",
+    "output": null
+  },
+  {
     "input": "Content-Length: aaaah\r\nContent-Length: nah",
     "output": null
   },
@@ -57,6 +73,10 @@
   },
   {
     "input": "Content-Length: 42s",
+    "output": 42
+  },
+  {
+    "input": "Content-Length: 30s",
     "output": 42
   },
   {

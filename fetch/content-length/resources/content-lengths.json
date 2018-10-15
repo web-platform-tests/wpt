@@ -94,5 +94,21 @@
   {
     "input": "Content-Length: -1",
     "output": 42
+  },
+  {
+    "input": "Content-Length: 0x20",
+    "output": 42
+  },
+  {
+    "input": "Content-Length: 030",
+    "output": 30
+  },
+  {
+    "input": "Content-Length: 030\r\nContent-Length: 30",
+    "output": null
+  },
+  {
+    "input": "Content-Length: 030, 30",
+    "output": null
   }
 ]

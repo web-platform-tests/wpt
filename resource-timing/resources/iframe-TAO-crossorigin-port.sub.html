@@ -8,7 +8,6 @@ let client = new XMLHttpRequest,
     client.onload =(()=>{
         setTimeout(()=>{
             let entry = performance.getEntriesByType('resource')[0];
-            console.log(entry);
             let result = (entry && (entry.redirectStart + entry.redirectEnd + entry.domainLookupStart + entry.domainLookupEnd + entry.connectStart + entry.connectEnd + entry.secureConnectionStart + entry.requestStart + entry.responseStart) == 0) ? 'PASS' : 'FAIL';
             window.parent.postMessage(result, '*');
         }, 0)});

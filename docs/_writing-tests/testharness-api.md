@@ -66,7 +66,7 @@ The function passed in is run in the `test()` call.
 test. Currently it is only used to provide test-specific
 metadata, as described in the [metadata](#metadata) section below.
 
-## Asynchronous Tests ##
+## **DEPRECATED** Asynchronous Tests ##
 
 Testing asynchronous features is somewhat more complex since the result of
 a test may depend on one or more events or other callbacks. The API provided
@@ -152,6 +152,11 @@ document.documentElement.addEventListener("DOMContentLoaded",
 
 Keep in mind that other tests could start executing before an Asynchronous
 Test is finished.
+
+This is deprecated because the `step`-based API introduces overhead which is
+difficult to maintain. New asynchronous tests should be defined using
+`promise_test` instead (see also the `EventWatcher` interface for succinctly
+testing evented APIs with promises).
 
 ## Promise Tests ##
 

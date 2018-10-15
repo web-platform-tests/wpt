@@ -20,6 +20,18 @@
     "output": 30
   },
   {
+    "input": "Content-Length: 30,30",
+    "output": 30
+  },
+  {
+    "input": "Content-Length: 30\r\nContent-Length: 30",
+    "output": 30
+  },
+  {
+    "input": "Content-Length: 30\r\nContent-Length: 30,30",
+    "output": 30
+  },
+  {
     "input": "Content-Length: 42,30",
     "output": null
   },
@@ -36,19 +48,19 @@
     "output": null
   },
   {
-    "input": "Content-Length: 42,",
+    "input": "Content-Length: 30,",
     "output": null
   },
   {
-    "input": "Content-Length: ,42",
+    "input": "Content-Length: ,30",
     "output": null
   },
   {
-    "input": "Content-Length: 42\r\nContent-Length: \t",
+    "input": "Content-Length: 30\r\nContent-Length: \t",
     "output": null
   },
   {
-    "input": "Content-Length: \r\nContent-Length: 42",
+    "input": "Content-Length: \r\nContent-Length: 30",
     "output": null
   },
   {

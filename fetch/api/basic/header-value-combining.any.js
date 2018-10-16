@@ -2,9 +2,9 @@
 
 [
   ["content-length", "0", "header-content-length"],
-  ["double-trouble", "", "headers-double-empty"],
+  ["double-trouble", ", ", "headers-double-empty"],
   ["foo-test", "1, 2, 3", "headers-basic"],
-  ["heya", "1, 2", "headers-some-are-empty"],
+  ["heya", ", 1, , , 2", "headers-some-are-empty"],
   ["www-authenticate", "1, 2, 3, 4", "headers-www-authenticate"],
 ].forEach(testValues => {
   promise_test(async t => {

@@ -716,6 +716,10 @@ class Servo(Browser):
             return m.group(0)
 
 
+class ServoWebDriver(Servo):
+    product = "servodriver"
+
+
 class Sauce(Browser):
     """Sauce-specific interface."""
 

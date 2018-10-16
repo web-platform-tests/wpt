@@ -45,9 +45,10 @@
   var onOfferCreated = test.step_func(function(offer) {
     gFirstConnection.setLocalDescription(offer);
 
-    // remove all a=ssrc: lines and msid-semantic line.
+    // remove all a=ssrc: lines, the msid-semantic line and any a=msid:.
     var sdp = offer.sdp.replace(/^a=ssrc:.*$\r\n/gm, '')
-      .replace(/^a=msid-semantic.*$\r\n/gm, '');
+      .replace(/^a=msid-semantic.*$\r\n/gm, '')
+      .replace(/^a=msid:.*$\r\n/gm, '');
 
     // This would normally go across the application's signaling solution.
     // In our case, the "signaling" is to call this function.
@@ -70,7 +71,11 @@
   var onAnswerCreated = test.step_func(function(answer) {
     gSecondConnection.setLocalDescription(answer);
 
-    var sdp = answer.sdp.replace(/^a=ssrc:.*$\r\n/gm, '');
+    // remove all a=ssrc: lines, the msid-semantic line and any a=msid:.
+    var sdp = answer.sdp.replace(/^a=ssrc:.*$\r\n/gm, '')
+      .replace(/^a=msid-semantic.*$\r\n/gm, '')
+      .replace(/^a=msid:.*$\r\n/gm, '');
+
     // Similarly, this would go over the application's signaling solution.
     handleAnswer(sdp);
   });

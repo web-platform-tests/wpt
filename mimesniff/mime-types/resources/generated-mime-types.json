@@ -9,15 +9,15 @@
   },
   {
     "input": "x/x;\u0000=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0000;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0000\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0001/x",
@@ -29,15 +29,15 @@
   },
   {
     "input": "x/x;\u0001=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0001;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0001\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0002/x",
@@ -49,15 +49,15 @@
   },
   {
     "input": "x/x;\u0002=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0002;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0002\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0003/x",
@@ -69,15 +69,15 @@
   },
   {
     "input": "x/x;\u0003=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0003;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0003\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0004/x",
@@ -89,15 +89,15 @@
   },
   {
     "input": "x/x;\u0004=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0004;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0004\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0005/x",
@@ -109,15 +109,15 @@
   },
   {
     "input": "x/x;\u0005=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0005;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0005\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0006/x",
@@ -129,15 +129,15 @@
   },
   {
     "input": "x/x;\u0006=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0006;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0006\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0007/x",
@@ -149,15 +149,15 @@
   },
   {
     "input": "x/x;\u0007=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0007;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0007\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\b/x",
@@ -169,15 +169,15 @@
   },
   {
     "input": "x/x;\b=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\b;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\b\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\t/x",
@@ -189,7 +189,7 @@
   },
   {
     "input": "x/x;\t=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\n/x",
@@ -201,15 +201,15 @@
   },
   {
     "input": "x/x;\n=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\n;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\n\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u000b/x",
@@ -221,15 +221,15 @@
   },
   {
     "input": "x/x;\u000b=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u000b;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u000b\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\f/x",
@@ -241,15 +241,15 @@
   },
   {
     "input": "x/x;\f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\f;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\f\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\r/x",
@@ -261,15 +261,15 @@
   },
   {
     "input": "x/x;\r=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\r;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\r\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u000e/x",
@@ -281,15 +281,15 @@
   },
   {
     "input": "x/x;\u000e=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u000e;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u000e\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u000f/x",
@@ -301,15 +301,15 @@
   },
   {
     "input": "x/x;\u000f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u000f;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u000f\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0010/x",
@@ -321,15 +321,15 @@
   },
   {
     "input": "x/x;\u0010=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0010;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0010\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0011/x",
@@ -341,15 +341,15 @@
   },
   {
     "input": "x/x;\u0011=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0011;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0011\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0012/x",
@@ -361,15 +361,15 @@
   },
   {
     "input": "x/x;\u0012=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0012;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0012\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0013/x",
@@ -381,15 +381,15 @@
   },
   {
     "input": "x/x;\u0013=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0013;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0013\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0014/x",
@@ -401,15 +401,15 @@
   },
   {
     "input": "x/x;\u0014=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0014;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0014\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0015/x",
@@ -421,15 +421,15 @@
   },
   {
     "input": "x/x;\u0015=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0015;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0015\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0016/x",
@@ -441,15 +441,15 @@
   },
   {
     "input": "x/x;\u0016=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0016;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0016\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0017/x",
@@ -461,15 +461,15 @@
   },
   {
     "input": "x/x;\u0017=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0017;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0017\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0018/x",
@@ -481,15 +481,15 @@
   },
   {
     "input": "x/x;\u0018=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0018;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0018\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0019/x",
@@ -501,15 +501,15 @@
   },
   {
     "input": "x/x;\u0019=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0019;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0019\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001a/x",
@@ -521,15 +521,15 @@
   },
   {
     "input": "x/x;\u001a=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001a;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001a\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001b/x",
@@ -541,15 +541,15 @@
   },
   {
     "input": "x/x;\u001b=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001b;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001b\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001c/x",
@@ -561,15 +561,15 @@
   },
   {
     "input": "x/x;\u001c=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001c;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001c\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001d/x",
@@ -581,15 +581,15 @@
   },
   {
     "input": "x/x;\u001d=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001d;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001d\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001e/x",
@@ -601,15 +601,15 @@
   },
   {
     "input": "x/x;\u001e=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001e;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001e\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u001f/x",
@@ -621,15 +621,15 @@
   },
   {
     "input": "x/x;\u001f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u001f;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u001f\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": " /x",
@@ -641,7 +641,7 @@
   },
   {
     "input": "x/x; =x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\"/x",
@@ -653,7 +653,7 @@
   },
   {
     "input": "x/x;\"=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "(/x",
@@ -665,15 +665,15 @@
   },
   {
     "input": "x/x;(=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=(;bonus=x",
-    "output": "x/x;x=\"(\";bonus=x"
+    "output": "x/x; x=\"(\"; bonus=x"
   },
   {
     "input": "x/x;x=\"(\";bonus=x",
-    "output": "x/x;x=\"(\";bonus=x"
+    "output": "x/x; x=\"(\"; bonus=x"
   },
   {
     "input": ")/x",
@@ -685,15 +685,15 @@
   },
   {
     "input": "x/x;)=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=);bonus=x",
-    "output": "x/x;x=\")\";bonus=x"
+    "output": "x/x; x=\")\"; bonus=x"
   },
   {
     "input": "x/x;x=\")\";bonus=x",
-    "output": "x/x;x=\")\";bonus=x"
+    "output": "x/x; x=\")\"; bonus=x"
   },
   {
     "input": ",/x",
@@ -705,27 +705,27 @@
   },
   {
     "input": "x/x;,=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=,;bonus=x",
-    "output": "x/x;x=\",\";bonus=x"
+    "output": "x/x; x=\",\"; bonus=x"
   },
   {
     "input": "x/x;x=\",\";bonus=x",
-    "output": "x/x;x=\",\";bonus=x"
+    "output": "x/x; x=\",\"; bonus=x"
   },
   {
     "input": "x/x;/=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=/;bonus=x",
-    "output": "x/x;x=\"/\";bonus=x"
+    "output": "x/x; x=\"/\"; bonus=x"
   },
   {
     "input": "x/x;x=\"/\";bonus=x",
-    "output": "x/x;x=\"/\";bonus=x"
+    "output": "x/x; x=\"/\"; bonus=x"
   },
   {
     "input": ":/x",
@@ -737,15 +737,15 @@
   },
   {
     "input": "x/x;:=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=:;bonus=x",
-    "output": "x/x;x=\":\";bonus=x"
+    "output": "x/x; x=\":\"; bonus=x"
   },
   {
     "input": "x/x;x=\":\";bonus=x",
-    "output": "x/x;x=\":\";bonus=x"
+    "output": "x/x; x=\":\"; bonus=x"
   },
   {
     "input": ";/x",
@@ -765,15 +765,15 @@
   },
   {
     "input": "x/x;<=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=<;bonus=x",
-    "output": "x/x;x=\"<\";bonus=x"
+    "output": "x/x; x=\"<\"; bonus=x"
   },
   {
     "input": "x/x;x=\"<\";bonus=x",
-    "output": "x/x;x=\"<\";bonus=x"
+    "output": "x/x; x=\"<\"; bonus=x"
   },
   {
     "input": "=/x",
@@ -785,11 +785,11 @@
   },
   {
     "input": "x/x;x==;bonus=x",
-    "output": "x/x;x=\"=\";bonus=x"
+    "output": "x/x; x=\"=\"; bonus=x"
   },
   {
     "input": "x/x;x=\"=\";bonus=x",
-    "output": "x/x;x=\"=\";bonus=x"
+    "output": "x/x; x=\"=\"; bonus=x"
   },
   {
     "input": ">/x",
@@ -801,15 +801,15 @@
   },
   {
     "input": "x/x;>=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=>;bonus=x",
-    "output": "x/x;x=\">\";bonus=x"
+    "output": "x/x; x=\">\"; bonus=x"
   },
   {
     "input": "x/x;x=\">\";bonus=x",
-    "output": "x/x;x=\">\";bonus=x"
+    "output": "x/x; x=\">\"; bonus=x"
   },
   {
     "input": "?/x",
@@ -821,15 +821,15 @@
   },
   {
     "input": "x/x;?=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=?;bonus=x",
-    "output": "x/x;x=\"?\";bonus=x"
+    "output": "x/x; x=\"?\"; bonus=x"
   },
   {
     "input": "x/x;x=\"?\";bonus=x",
-    "output": "x/x;x=\"?\";bonus=x"
+    "output": "x/x; x=\"?\"; bonus=x"
   },
   {
     "input": "@/x",
@@ -841,15 +841,15 @@
   },
   {
     "input": "x/x;@=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=@;bonus=x",
-    "output": "x/x;x=\"@\";bonus=x"
+    "output": "x/x; x=\"@\"; bonus=x"
   },
   {
     "input": "x/x;x=\"@\";bonus=x",
-    "output": "x/x;x=\"@\";bonus=x"
+    "output": "x/x; x=\"@\"; bonus=x"
   },
   {
     "input": "[/x",
@@ -861,15 +861,15 @@
   },
   {
     "input": "x/x;[=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=[;bonus=x",
-    "output": "x/x;x=\"[\";bonus=x"
+    "output": "x/x; x=\"[\"; bonus=x"
   },
   {
     "input": "x/x;x=\"[\";bonus=x",
-    "output": "x/x;x=\"[\";bonus=x"
+    "output": "x/x; x=\"[\"; bonus=x"
   },
   {
     "input": "\\/x",
@@ -881,7 +881,7 @@
   },
   {
     "input": "x/x;\\=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "]/x",
@@ -893,15 +893,15 @@
   },
   {
     "input": "x/x;]=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=];bonus=x",
-    "output": "x/x;x=\"]\";bonus=x"
+    "output": "x/x; x=\"]\"; bonus=x"
   },
   {
     "input": "x/x;x=\"]\";bonus=x",
-    "output": "x/x;x=\"]\";bonus=x"
+    "output": "x/x; x=\"]\"; bonus=x"
   },
   {
     "input": "{/x",
@@ -913,15 +913,15 @@
   },
   {
     "input": "x/x;{=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x={;bonus=x",
-    "output": "x/x;x=\"{\";bonus=x"
+    "output": "x/x; x=\"{\"; bonus=x"
   },
   {
     "input": "x/x;x=\"{\";bonus=x",
-    "output": "x/x;x=\"{\";bonus=x"
+    "output": "x/x; x=\"{\"; bonus=x"
   },
   {
     "input": "}/x",
@@ -933,15 +933,15 @@
   },
   {
     "input": "x/x;}=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=};bonus=x",
-    "output": "x/x;x=\"}\";bonus=x"
+    "output": "x/x; x=\"}\"; bonus=x"
   },
   {
     "input": "x/x;x=\"}\";bonus=x",
-    "output": "x/x;x=\"}\";bonus=x"
+    "output": "x/x; x=\"}\"; bonus=x"
   },
   {
     "input": "\u007f/x",
@@ -953,15 +953,15 @@
   },
   {
     "input": "x/x;\u007f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u007f;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\"\u007f\";bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "\u0080/x",
@@ -973,15 +973,15 @@
   },
   {
     "input": "x/x;\u0080=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0080;bonus=x",
-    "output": "x/x;x=\"\u0080\";bonus=x"
+    "output": "x/x; x=\"\u0080\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0080\";bonus=x",
-    "output": "x/x;x=\"\u0080\";bonus=x"
+    "output": "x/x; x=\"\u0080\"; bonus=x"
   },
   {
     "input": "\u0081/x",
@@ -993,15 +993,15 @@
   },
   {
     "input": "x/x;\u0081=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0081;bonus=x",
-    "output": "x/x;x=\"\u0081\";bonus=x"
+    "output": "x/x; x=\"\u0081\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0081\";bonus=x",
-    "output": "x/x;x=\"\u0081\";bonus=x"
+    "output": "x/x; x=\"\u0081\"; bonus=x"
   },
   {
     "input": "\u0082/x",
@@ -1013,15 +1013,15 @@
   },
   {
     "input": "x/x;\u0082=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0082;bonus=x",
-    "output": "x/x;x=\"\u0082\";bonus=x"
+    "output": "x/x; x=\"\u0082\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0082\";bonus=x",
-    "output": "x/x;x=\"\u0082\";bonus=x"
+    "output": "x/x; x=\"\u0082\"; bonus=x"
   },
   {
     "input": "\u0083/x",
@@ -1033,15 +1033,15 @@
   },
   {
     "input": "x/x;\u0083=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0083;bonus=x",
-    "output": "x/x;x=\"\u0083\";bonus=x"
+    "output": "x/x; x=\"\u0083\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0083\";bonus=x",
-    "output": "x/x;x=\"\u0083\";bonus=x"
+    "output": "x/x; x=\"\u0083\"; bonus=x"
   },
   {
     "input": "\u0084/x",
@@ -1053,15 +1053,15 @@
   },
   {
     "input": "x/x;\u0084=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0084;bonus=x",
-    "output": "x/x;x=\"\u0084\";bonus=x"
+    "output": "x/x; x=\"\u0084\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0084\";bonus=x",
-    "output": "x/x;x=\"\u0084\";bonus=x"
+    "output": "x/x; x=\"\u0084\"; bonus=x"
   },
   {
     "input": "\u0085/x",
@@ -1073,15 +1073,15 @@
   },
   {
     "input": "x/x;\u0085=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0085;bonus=x",
-    "output": "x/x;x=\"\u0085\";bonus=x"
+    "output": "x/x; x=\"\u0085\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0085\";bonus=x",
-    "output": "x/x;x=\"\u0085\";bonus=x"
+    "output": "x/x; x=\"\u0085\"; bonus=x"
   },
   {
     "input": "\u0086/x",
@@ -1093,15 +1093,15 @@
   },
   {
     "input": "x/x;\u0086=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0086;bonus=x",
-    "output": "x/x;x=\"\u0086\";bonus=x"
+    "output": "x/x; x=\"\u0086\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0086\";bonus=x",
-    "output": "x/x;x=\"\u0086\";bonus=x"
+    "output": "x/x; x=\"\u0086\"; bonus=x"
   },
   {
     "input": "\u0087/x",
@@ -1113,15 +1113,15 @@
   },
   {
     "input": "x/x;\u0087=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0087;bonus=x",
-    "output": "x/x;x=\"\u0087\";bonus=x"
+    "output": "x/x; x=\"\u0087\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0087\";bonus=x",
-    "output": "x/x;x=\"\u0087\";bonus=x"
+    "output": "x/x; x=\"\u0087\"; bonus=x"
   },
   {
     "input": "\u0088/x",
@@ -1133,15 +1133,15 @@
   },
   {
     "input": "x/x;\u0088=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0088;bonus=x",
-    "output": "x/x;x=\"\u0088\";bonus=x"
+    "output": "x/x; x=\"\u0088\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0088\";bonus=x",
-    "output": "x/x;x=\"\u0088\";bonus=x"
+    "output": "x/x; x=\"\u0088\"; bonus=x"
   },
   {
     "input": "\u0089/x",
@@ -1153,15 +1153,15 @@
   },
   {
     "input": "x/x;\u0089=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0089;bonus=x",
-    "output": "x/x;x=\"\u0089\";bonus=x"
+    "output": "x/x; x=\"\u0089\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0089\";bonus=x",
-    "output": "x/x;x=\"\u0089\";bonus=x"
+    "output": "x/x; x=\"\u0089\"; bonus=x"
   },
   {
     "input": "\u008a/x",
@@ -1173,15 +1173,15 @@
   },
   {
     "input": "x/x;\u008a=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008a;bonus=x",
-    "output": "x/x;x=\"\u008a\";bonus=x"
+    "output": "x/x; x=\"\u008a\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008a\";bonus=x",
-    "output": "x/x;x=\"\u008a\";bonus=x"
+    "output": "x/x; x=\"\u008a\"; bonus=x"
   },
   {
     "input": "\u008b/x",
@@ -1193,15 +1193,15 @@
   },
   {
     "input": "x/x;\u008b=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008b;bonus=x",
-    "output": "x/x;x=\"\u008b\";bonus=x"
+    "output": "x/x; x=\"\u008b\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008b\";bonus=x",
-    "output": "x/x;x=\"\u008b\";bonus=x"
+    "output": "x/x; x=\"\u008b\"; bonus=x"
   },
   {
     "input": "\u008c/x",
@@ -1213,15 +1213,15 @@
   },
   {
     "input": "x/x;\u008c=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008c;bonus=x",
-    "output": "x/x;x=\"\u008c\";bonus=x"
+    "output": "x/x; x=\"\u008c\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008c\";bonus=x",
-    "output": "x/x;x=\"\u008c\";bonus=x"
+    "output": "x/x; x=\"\u008c\"; bonus=x"
   },
   {
     "input": "\u008d/x",
@@ -1233,15 +1233,15 @@
   },
   {
     "input": "x/x;\u008d=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008d;bonus=x",
-    "output": "x/x;x=\"\u008d\";bonus=x"
+    "output": "x/x; x=\"\u008d\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008d\";bonus=x",
-    "output": "x/x;x=\"\u008d\";bonus=x"
+    "output": "x/x; x=\"\u008d\"; bonus=x"
   },
   {
     "input": "\u008e/x",
@@ -1253,15 +1253,15 @@
   },
   {
     "input": "x/x;\u008e=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008e;bonus=x",
-    "output": "x/x;x=\"\u008e\";bonus=x"
+    "output": "x/x; x=\"\u008e\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008e\";bonus=x",
-    "output": "x/x;x=\"\u008e\";bonus=x"
+    "output": "x/x; x=\"\u008e\"; bonus=x"
   },
   {
     "input": "\u008f/x",
@@ -1273,15 +1273,15 @@
   },
   {
     "input": "x/x;\u008f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u008f;bonus=x",
-    "output": "x/x;x=\"\u008f\";bonus=x"
+    "output": "x/x; x=\"\u008f\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u008f\";bonus=x",
-    "output": "x/x;x=\"\u008f\";bonus=x"
+    "output": "x/x; x=\"\u008f\"; bonus=x"
   },
   {
     "input": "\u0090/x",
@@ -1293,15 +1293,15 @@
   },
   {
     "input": "x/x;\u0090=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0090;bonus=x",
-    "output": "x/x;x=\"\u0090\";bonus=x"
+    "output": "x/x; x=\"\u0090\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0090\";bonus=x",
-    "output": "x/x;x=\"\u0090\";bonus=x"
+    "output": "x/x; x=\"\u0090\"; bonus=x"
   },
   {
     "input": "\u0091/x",
@@ -1313,15 +1313,15 @@
   },
   {
     "input": "x/x;\u0091=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0091;bonus=x",
-    "output": "x/x;x=\"\u0091\";bonus=x"
+    "output": "x/x; x=\"\u0091\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0091\";bonus=x",
-    "output": "x/x;x=\"\u0091\";bonus=x"
+    "output": "x/x; x=\"\u0091\"; bonus=x"
   },
   {
     "input": "\u0092/x",
@@ -1333,15 +1333,15 @@
   },
   {
     "input": "x/x;\u0092=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0092;bonus=x",
-    "output": "x/x;x=\"\u0092\";bonus=x"
+    "output": "x/x; x=\"\u0092\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0092\";bonus=x",
-    "output": "x/x;x=\"\u0092\";bonus=x"
+    "output": "x/x; x=\"\u0092\"; bonus=x"
   },
   {
     "input": "\u0093/x",
@@ -1353,15 +1353,15 @@
   },
   {
     "input": "x/x;\u0093=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0093;bonus=x",
-    "output": "x/x;x=\"\u0093\";bonus=x"
+    "output": "x/x; x=\"\u0093\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0093\";bonus=x",
-    "output": "x/x;x=\"\u0093\";bonus=x"
+    "output": "x/x; x=\"\u0093\"; bonus=x"
   },
   {
     "input": "\u0094/x",
@@ -1373,15 +1373,15 @@
   },
   {
     "input": "x/x;\u0094=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0094;bonus=x",
-    "output": "x/x;x=\"\u0094\";bonus=x"
+    "output": "x/x; x=\"\u0094\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0094\";bonus=x",
-    "output": "x/x;x=\"\u0094\";bonus=x"
+    "output": "x/x; x=\"\u0094\"; bonus=x"
   },
   {
     "input": "\u0095/x",
@@ -1393,15 +1393,15 @@
   },
   {
     "input": "x/x;\u0095=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0095;bonus=x",
-    "output": "x/x;x=\"\u0095\";bonus=x"
+    "output": "x/x; x=\"\u0095\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0095\";bonus=x",
-    "output": "x/x;x=\"\u0095\";bonus=x"
+    "output": "x/x; x=\"\u0095\"; bonus=x"
   },
   {
     "input": "\u0096/x",
@@ -1413,15 +1413,15 @@
   },
   {
     "input": "x/x;\u0096=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0096;bonus=x",
-    "output": "x/x;x=\"\u0096\";bonus=x"
+    "output": "x/x; x=\"\u0096\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0096\";bonus=x",
-    "output": "x/x;x=\"\u0096\";bonus=x"
+    "output": "x/x; x=\"\u0096\"; bonus=x"
   },
   {
     "input": "\u0097/x",
@@ -1433,15 +1433,15 @@
   },
   {
     "input": "x/x;\u0097=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0097;bonus=x",
-    "output": "x/x;x=\"\u0097\";bonus=x"
+    "output": "x/x; x=\"\u0097\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0097\";bonus=x",
-    "output": "x/x;x=\"\u0097\";bonus=x"
+    "output": "x/x; x=\"\u0097\"; bonus=x"
   },
   {
     "input": "\u0098/x",
@@ -1453,15 +1453,15 @@
   },
   {
     "input": "x/x;\u0098=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0098;bonus=x",
-    "output": "x/x;x=\"\u0098\";bonus=x"
+    "output": "x/x; x=\"\u0098\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0098\";bonus=x",
-    "output": "x/x;x=\"\u0098\";bonus=x"
+    "output": "x/x; x=\"\u0098\"; bonus=x"
   },
   {
     "input": "\u0099/x",
@@ -1473,15 +1473,15 @@
   },
   {
     "input": "x/x;\u0099=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u0099;bonus=x",
-    "output": "x/x;x=\"\u0099\";bonus=x"
+    "output": "x/x; x=\"\u0099\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u0099\";bonus=x",
-    "output": "x/x;x=\"\u0099\";bonus=x"
+    "output": "x/x; x=\"\u0099\"; bonus=x"
   },
   {
     "input": "\u009a/x",
@@ -1493,15 +1493,15 @@
   },
   {
     "input": "x/x;\u009a=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009a;bonus=x",
-    "output": "x/x;x=\"\u009a\";bonus=x"
+    "output": "x/x; x=\"\u009a\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009a\";bonus=x",
-    "output": "x/x;x=\"\u009a\";bonus=x"
+    "output": "x/x; x=\"\u009a\"; bonus=x"
   },
   {
     "input": "\u009b/x",
@@ -1513,15 +1513,15 @@
   },
   {
     "input": "x/x;\u009b=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009b;bonus=x",
-    "output": "x/x;x=\"\u009b\";bonus=x"
+    "output": "x/x; x=\"\u009b\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009b\";bonus=x",
-    "output": "x/x;x=\"\u009b\";bonus=x"
+    "output": "x/x; x=\"\u009b\"; bonus=x"
   },
   {
     "input": "\u009c/x",
@@ -1533,15 +1533,15 @@
   },
   {
     "input": "x/x;\u009c=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009c;bonus=x",
-    "output": "x/x;x=\"\u009c\";bonus=x"
+    "output": "x/x; x=\"\u009c\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009c\";bonus=x",
-    "output": "x/x;x=\"\u009c\";bonus=x"
+    "output": "x/x; x=\"\u009c\"; bonus=x"
   },
   {
     "input": "\u009d/x",
@@ -1553,15 +1553,15 @@
   },
   {
     "input": "x/x;\u009d=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009d;bonus=x",
-    "output": "x/x;x=\"\u009d\";bonus=x"
+    "output": "x/x; x=\"\u009d\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009d\";bonus=x",
-    "output": "x/x;x=\"\u009d\";bonus=x"
+    "output": "x/x; x=\"\u009d\"; bonus=x"
   },
   {
     "input": "\u009e/x",
@@ -1573,15 +1573,15 @@
   },
   {
     "input": "x/x;\u009e=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009e;bonus=x",
-    "output": "x/x;x=\"\u009e\";bonus=x"
+    "output": "x/x; x=\"\u009e\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009e\";bonus=x",
-    "output": "x/x;x=\"\u009e\";bonus=x"
+    "output": "x/x; x=\"\u009e\"; bonus=x"
   },
   {
     "input": "\u009f/x",
@@ -1593,15 +1593,15 @@
   },
   {
     "input": "x/x;\u009f=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u009f;bonus=x",
-    "output": "x/x;x=\"\u009f\";bonus=x"
+    "output": "x/x; x=\"\u009f\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u009f\";bonus=x",
-    "output": "x/x;x=\"\u009f\";bonus=x"
+    "output": "x/x; x=\"\u009f\"; bonus=x"
   },
   {
     "input": "\u00a0/x",
@@ -1613,15 +1613,15 @@
   },
   {
     "input": "x/x;\u00a0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a0;bonus=x",
-    "output": "x/x;x=\"\u00a0\";bonus=x"
+    "output": "x/x; x=\"\u00a0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a0\";bonus=x",
-    "output": "x/x;x=\"\u00a0\";bonus=x"
+    "output": "x/x; x=\"\u00a0\"; bonus=x"
   },
   {
     "input": "\u00a1/x",
@@ -1633,15 +1633,15 @@
   },
   {
     "input": "x/x;\u00a1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a1;bonus=x",
-    "output": "x/x;x=\"\u00a1\";bonus=x"
+    "output": "x/x; x=\"\u00a1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a1\";bonus=x",
-    "output": "x/x;x=\"\u00a1\";bonus=x"
+    "output": "x/x; x=\"\u00a1\"; bonus=x"
   },
   {
     "input": "\u00a2/x",
@@ -1653,15 +1653,15 @@
   },
   {
     "input": "x/x;\u00a2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a2;bonus=x",
-    "output": "x/x;x=\"\u00a2\";bonus=x"
+    "output": "x/x; x=\"\u00a2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a2\";bonus=x",
-    "output": "x/x;x=\"\u00a2\";bonus=x"
+    "output": "x/x; x=\"\u00a2\"; bonus=x"
   },
   {
     "input": "\u00a3/x",
@@ -1673,15 +1673,15 @@
   },
   {
     "input": "x/x;\u00a3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a3;bonus=x",
-    "output": "x/x;x=\"\u00a3\";bonus=x"
+    "output": "x/x; x=\"\u00a3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a3\";bonus=x",
-    "output": "x/x;x=\"\u00a3\";bonus=x"
+    "output": "x/x; x=\"\u00a3\"; bonus=x"
   },
   {
     "input": "\u00a4/x",
@@ -1693,15 +1693,15 @@
   },
   {
     "input": "x/x;\u00a4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a4;bonus=x",
-    "output": "x/x;x=\"\u00a4\";bonus=x"
+    "output": "x/x; x=\"\u00a4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a4\";bonus=x",
-    "output": "x/x;x=\"\u00a4\";bonus=x"
+    "output": "x/x; x=\"\u00a4\"; bonus=x"
   },
   {
     "input": "\u00a5/x",
@@ -1713,15 +1713,15 @@
   },
   {
     "input": "x/x;\u00a5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a5;bonus=x",
-    "output": "x/x;x=\"\u00a5\";bonus=x"
+    "output": "x/x; x=\"\u00a5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a5\";bonus=x",
-    "output": "x/x;x=\"\u00a5\";bonus=x"
+    "output": "x/x; x=\"\u00a5\"; bonus=x"
   },
   {
     "input": "\u00a6/x",
@@ -1733,15 +1733,15 @@
   },
   {
     "input": "x/x;\u00a6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a6;bonus=x",
-    "output": "x/x;x=\"\u00a6\";bonus=x"
+    "output": "x/x; x=\"\u00a6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a6\";bonus=x",
-    "output": "x/x;x=\"\u00a6\";bonus=x"
+    "output": "x/x; x=\"\u00a6\"; bonus=x"
   },
   {
     "input": "\u00a7/x",
@@ -1753,15 +1753,15 @@
   },
   {
     "input": "x/x;\u00a7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a7;bonus=x",
-    "output": "x/x;x=\"\u00a7\";bonus=x"
+    "output": "x/x; x=\"\u00a7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a7\";bonus=x",
-    "output": "x/x;x=\"\u00a7\";bonus=x"
+    "output": "x/x; x=\"\u00a7\"; bonus=x"
   },
   {
     "input": "\u00a8/x",
@@ -1773,15 +1773,15 @@
   },
   {
     "input": "x/x;\u00a8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a8;bonus=x",
-    "output": "x/x;x=\"\u00a8\";bonus=x"
+    "output": "x/x; x=\"\u00a8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a8\";bonus=x",
-    "output": "x/x;x=\"\u00a8\";bonus=x"
+    "output": "x/x; x=\"\u00a8\"; bonus=x"
   },
   {
     "input": "\u00a9/x",
@@ -1793,15 +1793,15 @@
   },
   {
     "input": "x/x;\u00a9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00a9;bonus=x",
-    "output": "x/x;x=\"\u00a9\";bonus=x"
+    "output": "x/x; x=\"\u00a9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00a9\";bonus=x",
-    "output": "x/x;x=\"\u00a9\";bonus=x"
+    "output": "x/x; x=\"\u00a9\"; bonus=x"
   },
   {
     "input": "\u00aa/x",
@@ -1813,15 +1813,15 @@
   },
   {
     "input": "x/x;\u00aa=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00aa;bonus=x",
-    "output": "x/x;x=\"\u00aa\";bonus=x"
+    "output": "x/x; x=\"\u00aa\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00aa\";bonus=x",
-    "output": "x/x;x=\"\u00aa\";bonus=x"
+    "output": "x/x; x=\"\u00aa\"; bonus=x"
   },
   {
     "input": "\u00ab/x",
@@ -1833,15 +1833,15 @@
   },
   {
     "input": "x/x;\u00ab=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ab;bonus=x",
-    "output": "x/x;x=\"\u00ab\";bonus=x"
+    "output": "x/x; x=\"\u00ab\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ab\";bonus=x",
-    "output": "x/x;x=\"\u00ab\";bonus=x"
+    "output": "x/x; x=\"\u00ab\"; bonus=x"
   },
   {
     "input": "\u00ac/x",
@@ -1853,15 +1853,15 @@
   },
   {
     "input": "x/x;\u00ac=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ac;bonus=x",
-    "output": "x/x;x=\"\u00ac\";bonus=x"
+    "output": "x/x; x=\"\u00ac\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ac\";bonus=x",
-    "output": "x/x;x=\"\u00ac\";bonus=x"
+    "output": "x/x; x=\"\u00ac\"; bonus=x"
   },
   {
     "input": "\u00ad/x",
@@ -1873,15 +1873,15 @@
   },
   {
     "input": "x/x;\u00ad=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ad;bonus=x",
-    "output": "x/x;x=\"\u00ad\";bonus=x"
+    "output": "x/x; x=\"\u00ad\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ad\";bonus=x",
-    "output": "x/x;x=\"\u00ad\";bonus=x"
+    "output": "x/x; x=\"\u00ad\"; bonus=x"
   },
   {
     "input": "\u00ae/x",
@@ -1893,15 +1893,15 @@
   },
   {
     "input": "x/x;\u00ae=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ae;bonus=x",
-    "output": "x/x;x=\"\u00ae\";bonus=x"
+    "output": "x/x; x=\"\u00ae\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ae\";bonus=x",
-    "output": "x/x;x=\"\u00ae\";bonus=x"
+    "output": "x/x; x=\"\u00ae\"; bonus=x"
   },
   {
     "input": "\u00af/x",
@@ -1913,15 +1913,15 @@
   },
   {
     "input": "x/x;\u00af=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00af;bonus=x",
-    "output": "x/x;x=\"\u00af\";bonus=x"
+    "output": "x/x; x=\"\u00af\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00af\";bonus=x",
-    "output": "x/x;x=\"\u00af\";bonus=x"
+    "output": "x/x; x=\"\u00af\"; bonus=x"
   },
   {
     "input": "\u00b0/x",
@@ -1933,15 +1933,15 @@
   },
   {
     "input": "x/x;\u00b0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b0;bonus=x",
-    "output": "x/x;x=\"\u00b0\";bonus=x"
+    "output": "x/x; x=\"\u00b0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b0\";bonus=x",
-    "output": "x/x;x=\"\u00b0\";bonus=x"
+    "output": "x/x; x=\"\u00b0\"; bonus=x"
   },
   {
     "input": "\u00b1/x",
@@ -1953,15 +1953,15 @@
   },
   {
     "input": "x/x;\u00b1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b1;bonus=x",
-    "output": "x/x;x=\"\u00b1\";bonus=x"
+    "output": "x/x; x=\"\u00b1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b1\";bonus=x",
-    "output": "x/x;x=\"\u00b1\";bonus=x"
+    "output": "x/x; x=\"\u00b1\"; bonus=x"
   },
   {
     "input": "\u00b2/x",
@@ -1973,15 +1973,15 @@
   },
   {
     "input": "x/x;\u00b2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b2;bonus=x",
-    "output": "x/x;x=\"\u00b2\";bonus=x"
+    "output": "x/x; x=\"\u00b2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b2\";bonus=x",
-    "output": "x/x;x=\"\u00b2\";bonus=x"
+    "output": "x/x; x=\"\u00b2\"; bonus=x"
   },
   {
     "input": "\u00b3/x",
@@ -1993,15 +1993,15 @@
   },
   {
     "input": "x/x;\u00b3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b3;bonus=x",
-    "output": "x/x;x=\"\u00b3\";bonus=x"
+    "output": "x/x; x=\"\u00b3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b3\";bonus=x",
-    "output": "x/x;x=\"\u00b3\";bonus=x"
+    "output": "x/x; x=\"\u00b3\"; bonus=x"
   },
   {
     "input": "\u00b4/x",
@@ -2013,15 +2013,15 @@
   },
   {
     "input": "x/x;\u00b4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b4;bonus=x",
-    "output": "x/x;x=\"\u00b4\";bonus=x"
+    "output": "x/x; x=\"\u00b4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b4\";bonus=x",
-    "output": "x/x;x=\"\u00b4\";bonus=x"
+    "output": "x/x; x=\"\u00b4\"; bonus=x"
   },
   {
     "input": "\u00b5/x",
@@ -2033,15 +2033,15 @@
   },
   {
     "input": "x/x;\u00b5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b5;bonus=x",
-    "output": "x/x;x=\"\u00b5\";bonus=x"
+    "output": "x/x; x=\"\u00b5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b5\";bonus=x",
-    "output": "x/x;x=\"\u00b5\";bonus=x"
+    "output": "x/x; x=\"\u00b5\"; bonus=x"
   },
   {
     "input": "\u00b6/x",
@@ -2053,15 +2053,15 @@
   },
   {
     "input": "x/x;\u00b6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b6;bonus=x",
-    "output": "x/x;x=\"\u00b6\";bonus=x"
+    "output": "x/x; x=\"\u00b6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b6\";bonus=x",
-    "output": "x/x;x=\"\u00b6\";bonus=x"
+    "output": "x/x; x=\"\u00b6\"; bonus=x"
   },
   {
     "input": "\u00b7/x",
@@ -2073,15 +2073,15 @@
   },
   {
     "input": "x/x;\u00b7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b7;bonus=x",
-    "output": "x/x;x=\"\u00b7\";bonus=x"
+    "output": "x/x; x=\"\u00b7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b7\";bonus=x",
-    "output": "x/x;x=\"\u00b7\";bonus=x"
+    "output": "x/x; x=\"\u00b7\"; bonus=x"
   },
   {
     "input": "\u00b8/x",
@@ -2093,15 +2093,15 @@
   },
   {
     "input": "x/x;\u00b8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b8;bonus=x",
-    "output": "x/x;x=\"\u00b8\";bonus=x"
+    "output": "x/x; x=\"\u00b8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b8\";bonus=x",
-    "output": "x/x;x=\"\u00b8\";bonus=x"
+    "output": "x/x; x=\"\u00b8\"; bonus=x"
   },
   {
     "input": "\u00b9/x",
@@ -2113,15 +2113,15 @@
   },
   {
     "input": "x/x;\u00b9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00b9;bonus=x",
-    "output": "x/x;x=\"\u00b9\";bonus=x"
+    "output": "x/x; x=\"\u00b9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00b9\";bonus=x",
-    "output": "x/x;x=\"\u00b9\";bonus=x"
+    "output": "x/x; x=\"\u00b9\"; bonus=x"
   },
   {
     "input": "\u00ba/x",
@@ -2133,15 +2133,15 @@
   },
   {
     "input": "x/x;\u00ba=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ba;bonus=x",
-    "output": "x/x;x=\"\u00ba\";bonus=x"
+    "output": "x/x; x=\"\u00ba\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ba\";bonus=x",
-    "output": "x/x;x=\"\u00ba\";bonus=x"
+    "output": "x/x; x=\"\u00ba\"; bonus=x"
   },
   {
     "input": "\u00bb/x",
@@ -2153,15 +2153,15 @@
   },
   {
     "input": "x/x;\u00bb=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00bb;bonus=x",
-    "output": "x/x;x=\"\u00bb\";bonus=x"
+    "output": "x/x; x=\"\u00bb\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00bb\";bonus=x",
-    "output": "x/x;x=\"\u00bb\";bonus=x"
+    "output": "x/x; x=\"\u00bb\"; bonus=x"
   },
   {
     "input": "\u00bc/x",
@@ -2173,15 +2173,15 @@
   },
   {
     "input": "x/x;\u00bc=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00bc;bonus=x",
-    "output": "x/x;x=\"\u00bc\";bonus=x"
+    "output": "x/x; x=\"\u00bc\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00bc\";bonus=x",
-    "output": "x/x;x=\"\u00bc\";bonus=x"
+    "output": "x/x; x=\"\u00bc\"; bonus=x"
   },
   {
     "input": "\u00bd/x",
@@ -2193,15 +2193,15 @@
   },
   {
     "input": "x/x;\u00bd=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00bd;bonus=x",
-    "output": "x/x;x=\"\u00bd\";bonus=x"
+    "output": "x/x; x=\"\u00bd\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00bd\";bonus=x",
-    "output": "x/x;x=\"\u00bd\";bonus=x"
+    "output": "x/x; x=\"\u00bd\"; bonus=x"
   },
   {
     "input": "\u00be/x",
@@ -2213,15 +2213,15 @@
   },
   {
     "input": "x/x;\u00be=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00be;bonus=x",
-    "output": "x/x;x=\"\u00be\";bonus=x"
+    "output": "x/x; x=\"\u00be\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00be\";bonus=x",
-    "output": "x/x;x=\"\u00be\";bonus=x"
+    "output": "x/x; x=\"\u00be\"; bonus=x"
   },
   {
     "input": "\u00bf/x",
@@ -2233,15 +2233,15 @@
   },
   {
     "input": "x/x;\u00bf=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00bf;bonus=x",
-    "output": "x/x;x=\"\u00bf\";bonus=x"
+    "output": "x/x; x=\"\u00bf\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00bf\";bonus=x",
-    "output": "x/x;x=\"\u00bf\";bonus=x"
+    "output": "x/x; x=\"\u00bf\"; bonus=x"
   },
   {
     "input": "\u00c0/x",
@@ -2253,15 +2253,15 @@
   },
   {
     "input": "x/x;\u00c0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c0;bonus=x",
-    "output": "x/x;x=\"\u00c0\";bonus=x"
+    "output": "x/x; x=\"\u00c0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c0\";bonus=x",
-    "output": "x/x;x=\"\u00c0\";bonus=x"
+    "output": "x/x; x=\"\u00c0\"; bonus=x"
   },
   {
     "input": "\u00c1/x",
@@ -2273,15 +2273,15 @@
   },
   {
     "input": "x/x;\u00c1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c1;bonus=x",
-    "output": "x/x;x=\"\u00c1\";bonus=x"
+    "output": "x/x; x=\"\u00c1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c1\";bonus=x",
-    "output": "x/x;x=\"\u00c1\";bonus=x"
+    "output": "x/x; x=\"\u00c1\"; bonus=x"
   },
   {
     "input": "\u00c2/x",
@@ -2293,15 +2293,15 @@
   },
   {
     "input": "x/x;\u00c2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c2;bonus=x",
-    "output": "x/x;x=\"\u00c2\";bonus=x"
+    "output": "x/x; x=\"\u00c2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c2\";bonus=x",
-    "output": "x/x;x=\"\u00c2\";bonus=x"
+    "output": "x/x; x=\"\u00c2\"; bonus=x"
   },
   {
     "input": "\u00c3/x",
@@ -2313,15 +2313,15 @@
   },
   {
     "input": "x/x;\u00c3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c3;bonus=x",
-    "output": "x/x;x=\"\u00c3\";bonus=x"
+    "output": "x/x; x=\"\u00c3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c3\";bonus=x",
-    "output": "x/x;x=\"\u00c3\";bonus=x"
+    "output": "x/x; x=\"\u00c3\"; bonus=x"
   },
   {
     "input": "\u00c4/x",
@@ -2333,15 +2333,15 @@
   },
   {
     "input": "x/x;\u00c4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c4;bonus=x",
-    "output": "x/x;x=\"\u00c4\";bonus=x"
+    "output": "x/x; x=\"\u00c4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c4\";bonus=x",
-    "output": "x/x;x=\"\u00c4\";bonus=x"
+    "output": "x/x; x=\"\u00c4\"; bonus=x"
   },
   {
     "input": "\u00c5/x",
@@ -2353,15 +2353,15 @@
   },
   {
     "input": "x/x;\u00c5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c5;bonus=x",
-    "output": "x/x;x=\"\u00c5\";bonus=x"
+    "output": "x/x; x=\"\u00c5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c5\";bonus=x",
-    "output": "x/x;x=\"\u00c5\";bonus=x"
+    "output": "x/x; x=\"\u00c5\"; bonus=x"
   },
   {
     "input": "\u00c6/x",
@@ -2373,15 +2373,15 @@
   },
   {
     "input": "x/x;\u00c6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c6;bonus=x",
-    "output": "x/x;x=\"\u00c6\";bonus=x"
+    "output": "x/x; x=\"\u00c6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c6\";bonus=x",
-    "output": "x/x;x=\"\u00c6\";bonus=x"
+    "output": "x/x; x=\"\u00c6\"; bonus=x"
   },
   {
     "input": "\u00c7/x",
@@ -2393,15 +2393,15 @@
   },
   {
     "input": "x/x;\u00c7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c7;bonus=x",
-    "output": "x/x;x=\"\u00c7\";bonus=x"
+    "output": "x/x; x=\"\u00c7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c7\";bonus=x",
-    "output": "x/x;x=\"\u00c7\";bonus=x"
+    "output": "x/x; x=\"\u00c7\"; bonus=x"
   },
   {
     "input": "\u00c8/x",
@@ -2413,15 +2413,15 @@
   },
   {
     "input": "x/x;\u00c8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c8;bonus=x",
-    "output": "x/x;x=\"\u00c8\";bonus=x"
+    "output": "x/x; x=\"\u00c8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c8\";bonus=x",
-    "output": "x/x;x=\"\u00c8\";bonus=x"
+    "output": "x/x; x=\"\u00c8\"; bonus=x"
   },
   {
     "input": "\u00c9/x",
@@ -2433,15 +2433,15 @@
   },
   {
     "input": "x/x;\u00c9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00c9;bonus=x",
-    "output": "x/x;x=\"\u00c9\";bonus=x"
+    "output": "x/x; x=\"\u00c9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00c9\";bonus=x",
-    "output": "x/x;x=\"\u00c9\";bonus=x"
+    "output": "x/x; x=\"\u00c9\"; bonus=x"
   },
   {
     "input": "\u00ca/x",
@@ -2453,15 +2453,15 @@
   },
   {
     "input": "x/x;\u00ca=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ca;bonus=x",
-    "output": "x/x;x=\"\u00ca\";bonus=x"
+    "output": "x/x; x=\"\u00ca\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ca\";bonus=x",
-    "output": "x/x;x=\"\u00ca\";bonus=x"
+    "output": "x/x; x=\"\u00ca\"; bonus=x"
   },
   {
     "input": "\u00cb/x",
@@ -2473,15 +2473,15 @@
   },
   {
     "input": "x/x;\u00cb=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00cb;bonus=x",
-    "output": "x/x;x=\"\u00cb\";bonus=x"
+    "output": "x/x; x=\"\u00cb\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00cb\";bonus=x",
-    "output": "x/x;x=\"\u00cb\";bonus=x"
+    "output": "x/x; x=\"\u00cb\"; bonus=x"
   },
   {
     "input": "\u00cc/x",
@@ -2493,15 +2493,15 @@
   },
   {
     "input": "x/x;\u00cc=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00cc;bonus=x",
-    "output": "x/x;x=\"\u00cc\";bonus=x"
+    "output": "x/x; x=\"\u00cc\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00cc\";bonus=x",
-    "output": "x/x;x=\"\u00cc\";bonus=x"
+    "output": "x/x; x=\"\u00cc\"; bonus=x"
   },
   {
     "input": "\u00cd/x",
@@ -2513,15 +2513,15 @@
   },
   {
     "input": "x/x;\u00cd=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00cd;bonus=x",
-    "output": "x/x;x=\"\u00cd\";bonus=x"
+    "output": "x/x; x=\"\u00cd\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00cd\";bonus=x",
-    "output": "x/x;x=\"\u00cd\";bonus=x"
+    "output": "x/x; x=\"\u00cd\"; bonus=x"
   },
   {
     "input": "\u00ce/x",
@@ -2533,15 +2533,15 @@
   },
   {
     "input": "x/x;\u00ce=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ce;bonus=x",
-    "output": "x/x;x=\"\u00ce\";bonus=x"
+    "output": "x/x; x=\"\u00ce\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ce\";bonus=x",
-    "output": "x/x;x=\"\u00ce\";bonus=x"
+    "output": "x/x; x=\"\u00ce\"; bonus=x"
   },
   {
     "input": "\u00cf/x",
@@ -2553,15 +2553,15 @@
   },
   {
     "input": "x/x;\u00cf=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00cf;bonus=x",
-    "output": "x/x;x=\"\u00cf\";bonus=x"
+    "output": "x/x; x=\"\u00cf\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00cf\";bonus=x",
-    "output": "x/x;x=\"\u00cf\";bonus=x"
+    "output": "x/x; x=\"\u00cf\"; bonus=x"
   },
   {
     "input": "\u00d0/x",
@@ -2573,15 +2573,15 @@
   },
   {
     "input": "x/x;\u00d0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d0;bonus=x",
-    "output": "x/x;x=\"\u00d0\";bonus=x"
+    "output": "x/x; x=\"\u00d0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d0\";bonus=x",
-    "output": "x/x;x=\"\u00d0\";bonus=x"
+    "output": "x/x; x=\"\u00d0\"; bonus=x"
   },
   {
     "input": "\u00d1/x",
@@ -2593,15 +2593,15 @@
   },
   {
     "input": "x/x;\u00d1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d1;bonus=x",
-    "output": "x/x;x=\"\u00d1\";bonus=x"
+    "output": "x/x; x=\"\u00d1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d1\";bonus=x",
-    "output": "x/x;x=\"\u00d1\";bonus=x"
+    "output": "x/x; x=\"\u00d1\"; bonus=x"
   },
   {
     "input": "\u00d2/x",
@@ -2613,15 +2613,15 @@
   },
   {
     "input": "x/x;\u00d2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d2;bonus=x",
-    "output": "x/x;x=\"\u00d2\";bonus=x"
+    "output": "x/x; x=\"\u00d2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d2\";bonus=x",
-    "output": "x/x;x=\"\u00d2\";bonus=x"
+    "output": "x/x; x=\"\u00d2\"; bonus=x"
   },
   {
     "input": "\u00d3/x",
@@ -2633,15 +2633,15 @@
   },
   {
     "input": "x/x;\u00d3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d3;bonus=x",
-    "output": "x/x;x=\"\u00d3\";bonus=x"
+    "output": "x/x; x=\"\u00d3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d3\";bonus=x",
-    "output": "x/x;x=\"\u00d3\";bonus=x"
+    "output": "x/x; x=\"\u00d3\"; bonus=x"
   },
   {
     "input": "\u00d4/x",
@@ -2653,15 +2653,15 @@
   },
   {
     "input": "x/x;\u00d4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d4;bonus=x",
-    "output": "x/x;x=\"\u00d4\";bonus=x"
+    "output": "x/x; x=\"\u00d4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d4\";bonus=x",
-    "output": "x/x;x=\"\u00d4\";bonus=x"
+    "output": "x/x; x=\"\u00d4\"; bonus=x"
   },
   {
     "input": "\u00d5/x",
@@ -2673,15 +2673,15 @@
   },
   {
     "input": "x/x;\u00d5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d5;bonus=x",
-    "output": "x/x;x=\"\u00d5\";bonus=x"
+    "output": "x/x; x=\"\u00d5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d5\";bonus=x",
-    "output": "x/x;x=\"\u00d5\";bonus=x"
+    "output": "x/x; x=\"\u00d5\"; bonus=x"
   },
   {
     "input": "\u00d6/x",
@@ -2693,15 +2693,15 @@
   },
   {
     "input": "x/x;\u00d6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d6;bonus=x",
-    "output": "x/x;x=\"\u00d6\";bonus=x"
+    "output": "x/x; x=\"\u00d6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d6\";bonus=x",
-    "output": "x/x;x=\"\u00d6\";bonus=x"
+    "output": "x/x; x=\"\u00d6\"; bonus=x"
   },
   {
     "input": "\u00d7/x",
@@ -2713,15 +2713,15 @@
   },
   {
     "input": "x/x;\u00d7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d7;bonus=x",
-    "output": "x/x;x=\"\u00d7\";bonus=x"
+    "output": "x/x; x=\"\u00d7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d7\";bonus=x",
-    "output": "x/x;x=\"\u00d7\";bonus=x"
+    "output": "x/x; x=\"\u00d7\"; bonus=x"
   },
   {
     "input": "\u00d8/x",
@@ -2733,15 +2733,15 @@
   },
   {
     "input": "x/x;\u00d8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d8;bonus=x",
-    "output": "x/x;x=\"\u00d8\";bonus=x"
+    "output": "x/x; x=\"\u00d8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d8\";bonus=x",
-    "output": "x/x;x=\"\u00d8\";bonus=x"
+    "output": "x/x; x=\"\u00d8\"; bonus=x"
   },
   {
     "input": "\u00d9/x",
@@ -2753,15 +2753,15 @@
   },
   {
     "input": "x/x;\u00d9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00d9;bonus=x",
-    "output": "x/x;x=\"\u00d9\";bonus=x"
+    "output": "x/x; x=\"\u00d9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00d9\";bonus=x",
-    "output": "x/x;x=\"\u00d9\";bonus=x"
+    "output": "x/x; x=\"\u00d9\"; bonus=x"
   },
   {
     "input": "\u00da/x",
@@ -2773,15 +2773,15 @@
   },
   {
     "input": "x/x;\u00da=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00da;bonus=x",
-    "output": "x/x;x=\"\u00da\";bonus=x"
+    "output": "x/x; x=\"\u00da\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00da\";bonus=x",
-    "output": "x/x;x=\"\u00da\";bonus=x"
+    "output": "x/x; x=\"\u00da\"; bonus=x"
   },
   {
     "input": "\u00db/x",
@@ -2793,15 +2793,15 @@
   },
   {
     "input": "x/x;\u00db=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00db;bonus=x",
-    "output": "x/x;x=\"\u00db\";bonus=x"
+    "output": "x/x; x=\"\u00db\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00db\";bonus=x",
-    "output": "x/x;x=\"\u00db\";bonus=x"
+    "output": "x/x; x=\"\u00db\"; bonus=x"
   },
   {
     "input": "\u00dc/x",
@@ -2813,15 +2813,15 @@
   },
   {
     "input": "x/x;\u00dc=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00dc;bonus=x",
-    "output": "x/x;x=\"\u00dc\";bonus=x"
+    "output": "x/x; x=\"\u00dc\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00dc\";bonus=x",
-    "output": "x/x;x=\"\u00dc\";bonus=x"
+    "output": "x/x; x=\"\u00dc\"; bonus=x"
   },
   {
     "input": "\u00dd/x",
@@ -2833,15 +2833,15 @@
   },
   {
     "input": "x/x;\u00dd=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00dd;bonus=x",
-    "output": "x/x;x=\"\u00dd\";bonus=x"
+    "output": "x/x; x=\"\u00dd\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00dd\";bonus=x",
-    "output": "x/x;x=\"\u00dd\";bonus=x"
+    "output": "x/x; x=\"\u00dd\"; bonus=x"
   },
   {
     "input": "\u00de/x",
@@ -2853,15 +2853,15 @@
   },
   {
     "input": "x/x;\u00de=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00de;bonus=x",
-    "output": "x/x;x=\"\u00de\";bonus=x"
+    "output": "x/x; x=\"\u00de\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00de\";bonus=x",
-    "output": "x/x;x=\"\u00de\";bonus=x"
+    "output": "x/x; x=\"\u00de\"; bonus=x"
   },
   {
     "input": "\u00df/x",
@@ -2873,15 +2873,15 @@
   },
   {
     "input": "x/x;\u00df=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00df;bonus=x",
-    "output": "x/x;x=\"\u00df\";bonus=x"
+    "output": "x/x; x=\"\u00df\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00df\";bonus=x",
-    "output": "x/x;x=\"\u00df\";bonus=x"
+    "output": "x/x; x=\"\u00df\"; bonus=x"
   },
   {
     "input": "\u00e0/x",
@@ -2893,15 +2893,15 @@
   },
   {
     "input": "x/x;\u00e0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e0;bonus=x",
-    "output": "x/x;x=\"\u00e0\";bonus=x"
+    "output": "x/x; x=\"\u00e0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e0\";bonus=x",
-    "output": "x/x;x=\"\u00e0\";bonus=x"
+    "output": "x/x; x=\"\u00e0\"; bonus=x"
   },
   {
     "input": "\u00e1/x",
@@ -2913,15 +2913,15 @@
   },
   {
     "input": "x/x;\u00e1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e1;bonus=x",
-    "output": "x/x;x=\"\u00e1\";bonus=x"
+    "output": "x/x; x=\"\u00e1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e1\";bonus=x",
-    "output": "x/x;x=\"\u00e1\";bonus=x"
+    "output": "x/x; x=\"\u00e1\"; bonus=x"
   },
   {
     "input": "\u00e2/x",
@@ -2933,15 +2933,15 @@
   },
   {
     "input": "x/x;\u00e2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e2;bonus=x",
-    "output": "x/x;x=\"\u00e2\";bonus=x"
+    "output": "x/x; x=\"\u00e2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e2\";bonus=x",
-    "output": "x/x;x=\"\u00e2\";bonus=x"
+    "output": "x/x; x=\"\u00e2\"; bonus=x"
   },
   {
     "input": "\u00e3/x",
@@ -2953,15 +2953,15 @@
   },
   {
     "input": "x/x;\u00e3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e3;bonus=x",
-    "output": "x/x;x=\"\u00e3\";bonus=x"
+    "output": "x/x; x=\"\u00e3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e3\";bonus=x",
-    "output": "x/x;x=\"\u00e3\";bonus=x"
+    "output": "x/x; x=\"\u00e3\"; bonus=x"
   },
   {
     "input": "\u00e4/x",
@@ -2973,15 +2973,15 @@
   },
   {
     "input": "x/x;\u00e4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e4;bonus=x",
-    "output": "x/x;x=\"\u00e4\";bonus=x"
+    "output": "x/x; x=\"\u00e4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e4\";bonus=x",
-    "output": "x/x;x=\"\u00e4\";bonus=x"
+    "output": "x/x; x=\"\u00e4\"; bonus=x"
   },
   {
     "input": "\u00e5/x",
@@ -2993,15 +2993,15 @@
   },
   {
     "input": "x/x;\u00e5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e5;bonus=x",
-    "output": "x/x;x=\"\u00e5\";bonus=x"
+    "output": "x/x; x=\"\u00e5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e5\";bonus=x",
-    "output": "x/x;x=\"\u00e5\";bonus=x"
+    "output": "x/x; x=\"\u00e5\"; bonus=x"
   },
   {
     "input": "\u00e6/x",
@@ -3013,15 +3013,15 @@
   },
   {
     "input": "x/x;\u00e6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e6;bonus=x",
-    "output": "x/x;x=\"\u00e6\";bonus=x"
+    "output": "x/x; x=\"\u00e6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e6\";bonus=x",
-    "output": "x/x;x=\"\u00e6\";bonus=x"
+    "output": "x/x; x=\"\u00e6\"; bonus=x"
   },
   {
     "input": "\u00e7/x",
@@ -3033,15 +3033,15 @@
   },
   {
     "input": "x/x;\u00e7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e7;bonus=x",
-    "output": "x/x;x=\"\u00e7\";bonus=x"
+    "output": "x/x; x=\"\u00e7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e7\";bonus=x",
-    "output": "x/x;x=\"\u00e7\";bonus=x"
+    "output": "x/x; x=\"\u00e7\"; bonus=x"
   },
   {
     "input": "\u00e8/x",
@@ -3053,15 +3053,15 @@
   },
   {
     "input": "x/x;\u00e8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e8;bonus=x",
-    "output": "x/x;x=\"\u00e8\";bonus=x"
+    "output": "x/x; x=\"\u00e8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e8\";bonus=x",
-    "output": "x/x;x=\"\u00e8\";bonus=x"
+    "output": "x/x; x=\"\u00e8\"; bonus=x"
   },
   {
     "input": "\u00e9/x",
@@ -3073,15 +3073,15 @@
   },
   {
     "input": "x/x;\u00e9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00e9;bonus=x",
-    "output": "x/x;x=\"\u00e9\";bonus=x"
+    "output": "x/x; x=\"\u00e9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00e9\";bonus=x",
-    "output": "x/x;x=\"\u00e9\";bonus=x"
+    "output": "x/x; x=\"\u00e9\"; bonus=x"
   },
   {
     "input": "\u00ea/x",
@@ -3093,15 +3093,15 @@
   },
   {
     "input": "x/x;\u00ea=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ea;bonus=x",
-    "output": "x/x;x=\"\u00ea\";bonus=x"
+    "output": "x/x; x=\"\u00ea\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ea\";bonus=x",
-    "output": "x/x;x=\"\u00ea\";bonus=x"
+    "output": "x/x; x=\"\u00ea\"; bonus=x"
   },
   {
     "input": "\u00eb/x",
@@ -3113,15 +3113,15 @@
   },
   {
     "input": "x/x;\u00eb=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00eb;bonus=x",
-    "output": "x/x;x=\"\u00eb\";bonus=x"
+    "output": "x/x; x=\"\u00eb\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00eb\";bonus=x",
-    "output": "x/x;x=\"\u00eb\";bonus=x"
+    "output": "x/x; x=\"\u00eb\"; bonus=x"
   },
   {
     "input": "\u00ec/x",
@@ -3133,15 +3133,15 @@
   },
   {
     "input": "x/x;\u00ec=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ec;bonus=x",
-    "output": "x/x;x=\"\u00ec\";bonus=x"
+    "output": "x/x; x=\"\u00ec\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ec\";bonus=x",
-    "output": "x/x;x=\"\u00ec\";bonus=x"
+    "output": "x/x; x=\"\u00ec\"; bonus=x"
   },
   {
     "input": "\u00ed/x",
@@ -3153,15 +3153,15 @@
   },
   {
     "input": "x/x;\u00ed=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ed;bonus=x",
-    "output": "x/x;x=\"\u00ed\";bonus=x"
+    "output": "x/x; x=\"\u00ed\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ed\";bonus=x",
-    "output": "x/x;x=\"\u00ed\";bonus=x"
+    "output": "x/x; x=\"\u00ed\"; bonus=x"
   },
   {
     "input": "\u00ee/x",
@@ -3173,15 +3173,15 @@
   },
   {
     "input": "x/x;\u00ee=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ee;bonus=x",
-    "output": "x/x;x=\"\u00ee\";bonus=x"
+    "output": "x/x; x=\"\u00ee\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ee\";bonus=x",
-    "output": "x/x;x=\"\u00ee\";bonus=x"
+    "output": "x/x; x=\"\u00ee\"; bonus=x"
   },
   {
     "input": "\u00ef/x",
@@ -3193,15 +3193,15 @@
   },
   {
     "input": "x/x;\u00ef=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ef;bonus=x",
-    "output": "x/x;x=\"\u00ef\";bonus=x"
+    "output": "x/x; x=\"\u00ef\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ef\";bonus=x",
-    "output": "x/x;x=\"\u00ef\";bonus=x"
+    "output": "x/x; x=\"\u00ef\"; bonus=x"
   },
   {
     "input": "\u00f0/x",
@@ -3213,15 +3213,15 @@
   },
   {
     "input": "x/x;\u00f0=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f0;bonus=x",
-    "output": "x/x;x=\"\u00f0\";bonus=x"
+    "output": "x/x; x=\"\u00f0\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f0\";bonus=x",
-    "output": "x/x;x=\"\u00f0\";bonus=x"
+    "output": "x/x; x=\"\u00f0\"; bonus=x"
   },
   {
     "input": "\u00f1/x",
@@ -3233,15 +3233,15 @@
   },
   {
     "input": "x/x;\u00f1=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f1;bonus=x",
-    "output": "x/x;x=\"\u00f1\";bonus=x"
+    "output": "x/x; x=\"\u00f1\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f1\";bonus=x",
-    "output": "x/x;x=\"\u00f1\";bonus=x"
+    "output": "x/x; x=\"\u00f1\"; bonus=x"
   },
   {
     "input": "\u00f2/x",
@@ -3253,15 +3253,15 @@
   },
   {
     "input": "x/x;\u00f2=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f2;bonus=x",
-    "output": "x/x;x=\"\u00f2\";bonus=x"
+    "output": "x/x; x=\"\u00f2\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f2\";bonus=x",
-    "output": "x/x;x=\"\u00f2\";bonus=x"
+    "output": "x/x; x=\"\u00f2\"; bonus=x"
   },
   {
     "input": "\u00f3/x",
@@ -3273,15 +3273,15 @@
   },
   {
     "input": "x/x;\u00f3=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f3;bonus=x",
-    "output": "x/x;x=\"\u00f3\";bonus=x"
+    "output": "x/x; x=\"\u00f3\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f3\";bonus=x",
-    "output": "x/x;x=\"\u00f3\";bonus=x"
+    "output": "x/x; x=\"\u00f3\"; bonus=x"
   },
   {
     "input": "\u00f4/x",
@@ -3293,15 +3293,15 @@
   },
   {
     "input": "x/x;\u00f4=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f4;bonus=x",
-    "output": "x/x;x=\"\u00f4\";bonus=x"
+    "output": "x/x; x=\"\u00f4\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f4\";bonus=x",
-    "output": "x/x;x=\"\u00f4\";bonus=x"
+    "output": "x/x; x=\"\u00f4\"; bonus=x"
   },
   {
     "input": "\u00f5/x",
@@ -3313,15 +3313,15 @@
   },
   {
     "input": "x/x;\u00f5=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f5;bonus=x",
-    "output": "x/x;x=\"\u00f5\";bonus=x"
+    "output": "x/x; x=\"\u00f5\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f5\";bonus=x",
-    "output": "x/x;x=\"\u00f5\";bonus=x"
+    "output": "x/x; x=\"\u00f5\"; bonus=x"
   },
   {
     "input": "\u00f6/x",
@@ -3333,15 +3333,15 @@
   },
   {
     "input": "x/x;\u00f6=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f6;bonus=x",
-    "output": "x/x;x=\"\u00f6\";bonus=x"
+    "output": "x/x; x=\"\u00f6\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f6\";bonus=x",
-    "output": "x/x;x=\"\u00f6\";bonus=x"
+    "output": "x/x; x=\"\u00f6\"; bonus=x"
   },
   {
     "input": "\u00f7/x",
@@ -3353,15 +3353,15 @@
   },
   {
     "input": "x/x;\u00f7=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f7;bonus=x",
-    "output": "x/x;x=\"\u00f7\";bonus=x"
+    "output": "x/x; x=\"\u00f7\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f7\";bonus=x",
-    "output": "x/x;x=\"\u00f7\";bonus=x"
+    "output": "x/x; x=\"\u00f7\"; bonus=x"
   },
   {
     "input": "\u00f8/x",
@@ -3373,15 +3373,15 @@
   },
   {
     "input": "x/x;\u00f8=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f8;bonus=x",
-    "output": "x/x;x=\"\u00f8\";bonus=x"
+    "output": "x/x; x=\"\u00f8\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f8\";bonus=x",
-    "output": "x/x;x=\"\u00f8\";bonus=x"
+    "output": "x/x; x=\"\u00f8\"; bonus=x"
   },
   {
     "input": "\u00f9/x",
@@ -3393,15 +3393,15 @@
   },
   {
     "input": "x/x;\u00f9=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00f9;bonus=x",
-    "output": "x/x;x=\"\u00f9\";bonus=x"
+    "output": "x/x; x=\"\u00f9\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00f9\";bonus=x",
-    "output": "x/x;x=\"\u00f9\";bonus=x"
+    "output": "x/x; x=\"\u00f9\"; bonus=x"
   },
   {
     "input": "\u00fa/x",
@@ -3413,15 +3413,15 @@
   },
   {
     "input": "x/x;\u00fa=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00fa;bonus=x",
-    "output": "x/x;x=\"\u00fa\";bonus=x"
+    "output": "x/x; x=\"\u00fa\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00fa\";bonus=x",
-    "output": "x/x;x=\"\u00fa\";bonus=x"
+    "output": "x/x; x=\"\u00fa\"; bonus=x"
   },
   {
     "input": "\u00fb/x",
@@ -3433,15 +3433,15 @@
   },
   {
     "input": "x/x;\u00fb=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00fb;bonus=x",
-    "output": "x/x;x=\"\u00fb\";bonus=x"
+    "output": "x/x; x=\"\u00fb\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00fb\";bonus=x",
-    "output": "x/x;x=\"\u00fb\";bonus=x"
+    "output": "x/x; x=\"\u00fb\"; bonus=x"
   },
   {
     "input": "\u00fc/x",
@@ -3453,15 +3453,15 @@
   },
   {
     "input": "x/x;\u00fc=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00fc;bonus=x",
-    "output": "x/x;x=\"\u00fc\";bonus=x"
+    "output": "x/x; x=\"\u00fc\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00fc\";bonus=x",
-    "output": "x/x;x=\"\u00fc\";bonus=x"
+    "output": "x/x; x=\"\u00fc\"; bonus=x"
   },
   {
     "input": "\u00fd/x",
@@ -3473,15 +3473,15 @@
   },
   {
     "input": "x/x;\u00fd=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00fd;bonus=x",
-    "output": "x/x;x=\"\u00fd\";bonus=x"
+    "output": "x/x; x=\"\u00fd\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00fd\";bonus=x",
-    "output": "x/x;x=\"\u00fd\";bonus=x"
+    "output": "x/x; x=\"\u00fd\"; bonus=x"
   },
   {
     "input": "\u00fe/x",
@@ -3493,15 +3493,15 @@
   },
   {
     "input": "x/x;\u00fe=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00fe;bonus=x",
-    "output": "x/x;x=\"\u00fe\";bonus=x"
+    "output": "x/x; x=\"\u00fe\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00fe\";bonus=x",
-    "output": "x/x;x=\"\u00fe\";bonus=x"
+    "output": "x/x; x=\"\u00fe\"; bonus=x"
   },
   {
     "input": "\u00ff/x",
@@ -3513,14 +3513,14 @@
   },
   {
     "input": "x/x;\u00ff=x;bonus=x",
-    "output": "x/x;bonus=x"
+    "output": "x/x; bonus=x"
   },
   {
     "input": "x/x;x=\u00ff;bonus=x",
-    "output": "x/x;x=\"\u00ff\";bonus=x"
+    "output": "x/x; x=\"\u00ff\"; bonus=x"
   },
   {
     "input": "x/x;x=\"\u00ff\";bonus=x",
-    "output": "x/x;x=\"\u00ff\";bonus=x"
+    "output": "x/x; x=\"\u00ff\"; bonus=x"
   }
 ]

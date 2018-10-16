@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from collections import OrderedDict, Iterable
 from datetime import datetime, timedelta
 from six.moves.http_cookies import BaseCookie, Morsel
 import json
@@ -183,6 +183,9 @@ class Response(object):
         True, the entire content of the file will be returned as a string facilitating
         non-streaming operations like template substitution.
         """
+        if not isinstance(self.content, Iterable) and not hasattr(self.content, "read"):
+            raise TypeError("Response content must be an iterable or file-like object!")
+
         if isinstance(self.content, binary_type):
             yield self.content
         elif isinstance(self.content, text_type):

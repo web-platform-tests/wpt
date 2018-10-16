@@ -193,6 +193,17 @@ class TestFunctionHandler(TestUsingServer):
         assert "Content-Length" not in resp.info()
         assert resp.read() == b""
 
+    def test_non_iterable_content(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            response.content = 1234
+            return response
+
+        route = ("GET", "/non_iterable_rv", handler)
+        self.server.router.register(*route)
+        resp = self.request(route[1])
+        self.assertEqual(500, resp.getcode())
+
 
 @pytest.mark.xfail((3,) <= sys.version_info < (3, 6), reason="wptserve only works on Py2")
 class TestJSONHandler(TestUsingServer):

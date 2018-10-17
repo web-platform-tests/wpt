@@ -2,27 +2,27 @@
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
 <script>
-  var fails = ["first", "uppercase"],
-      passes = ["last", "quoted", "quoted-single", "no-x"]
+  const fails = ["first", "uppercase", "weird-tokens"],
+        passes = ["last", "quoted", "quoted-single", "no-x", "first-empty", "first-empty-double"];
 
   fails.forEach(function(urlpart) {
     async_test(function(t) {
       var script = document.createElement("script")
-      script.onerror = t.step_func_done(function(){})
+      script.onerror = t.step_func_done()
       script.onload = t.unreached_func("Unexpected load event")
       script.src = "resources/nosniff-" + urlpart + ".asis"
       document.body.appendChild(script)
-    }, "URL query: " + urlpart)
+    }, "nosniff parsing (success): " + urlpart)
   })
 
   passes.forEach(function(urlpart) {
     async_test(function(t) {
       var script = document.createElement("script")
       script.onerror = t.unreached_func("Unexpected error event")
-      script.onload = t.step_func_done(function(){})
+      script.onload = t.step_func_done()
       script.src = "resources/nosniff-" + urlpart + ".asis"
       document.body.appendChild(script)
-    }, "URL query: " + urlpart)
+    }, "nosniff parsing (failure): " + urlpart)
   })
 
 </script>

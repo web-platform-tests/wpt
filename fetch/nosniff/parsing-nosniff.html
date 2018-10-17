@@ -2,8 +2,8 @@
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
 <script>
-  const fails = ["first", "uppercase", "weird-tokens"],
-        passes = ["last", "quoted", "quoted-single", "no-x", "first-empty", "first-empty-double", "form-feed"];
+  const fails = ["first", "uppercase", "weird-tokens", "form-feed"],
+        passes = ["last", "quoted", "quoted-single", "no-x", "first-empty", "first-empty-double"];
 
   fails.forEach(function(urlpart) {
     async_test(function(t) {

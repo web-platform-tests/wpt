@@ -3,7 +3,7 @@
 <div id=log></div>
 <script>
   const fails = ["first", "uppercase", "weird-tokens"],
-        passes = ["last", "quoted", "quoted-single", "no-x", "first-empty", "first-empty-double"];
+        passes = ["last", "quoted", "quoted-single", "no-x", "first-empty", "first-empty-double", "form-feed"];
 
   fails.forEach(function(urlpart) {
     async_test(function(t) {

@@ -1,5 +1,6 @@
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
 // META: script=resources/utils.js
+
 'use strict';
 
 // Covers basic functionality provided by BackgroundFetchManager.fetch().
@@ -282,3 +283,36 @@ backgroundFetchTest(async (test, backgroundFetch) => {
   assert_equals(nullResponse, null);
 
 }, 'Fetches with mixed content should fail.');
+
+backgroundFetchTest(async (test, backgroundFetch) => {
+  const registration = await backgroundFetch.fetch(
+      uniqueId(),
+      ['resources/feature-name.txt', '/serviceworker/resources/slow-response.php']);
+
+  await new Promise(resolve => {
+    const expectedResultText = 'Background Fetch';
+
+    registration.onprogress = async event => {
+      if (event.target.downloaded < expectedResultText.length)
+        return;
+
+      const records = await registration.matchAll();
+      assert_equals(records.length, 2);
+
+      const response0 = await records[0].responseReady.catch(() => null);
+      const response1 = await records[1].responseReady.catch(() => null);
+
+      // It's possible that neither result has been persisted yet.
+      if(!response0 && !response1)
+        return;
+
+      const completedResponse = response0 ? response0 : response1;
+      assert_true(completedResponse.url.includes('resources/feature-name.txt'));
+      const completedResponseText = await completedResponse.text();
+      assert_equals(completedResponseText, expectedResultText);
+
+      resolve();
+    };
+  });
+
+}, 'Access to active fetches is supported.');

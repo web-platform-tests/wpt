@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Newline normalization in simple dialogs</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#concept-dialog-newline-normalization">
+
+<p>The dialogs should all contain text looking like:</p>
+
+<pre>First line
+Second line</pre>
+
+<p>or:</p>
+
+<pre>First paragraph
+
+Second paragraph</pre>
+
+<script>
+"use strict";
+
+alert('First line\nSecond line');
+alert('First line\rSecond line');
+alert('First line\r\nSecond line');
+alert('First paragraph\n\rSecond paragraph');
+
+confirm('First line\nSecond line');
+confirm('First line\rSecond line');
+confirm('First line\r\nSecond line');
+confirm('First paragraph\n\rSecond paragraph');
+
+prompt('First line\nSecond line');
+prompt('First line\rSecond line');
+prompt('First line\r\nSecond line');
+prompt('First paragraph\n\rSecond paragraph');
+</script>

@@ -57,7 +57,7 @@ themselves precede any test type flag, but are otherwise unordered.
 `.optional`
  : Indicates that a test makes assertions about optional behavior in a
    specification, typically marked by the [RFC 2119] "MAY" or "OPTIONAL"
-   keywords. This flag should not be used for "SHOULD", such requirements
+   keywords. This flag should not be used for "SHOULD"; such requirements
    can be tested with regular tests, like "MUST".
 
 `.tentative`

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#white-space-rules">
+<link rel="match" href="reference/white-space-empty-text-sibling-ref.html">
+<p>There should be a space between "Two" and "words".</p>
+<div id="block"></div>
+<script>
+  const t1 = block.appendChild(new Text(""));
+  block.appendChild(new Text(""));
+  const t2 = block.appendChild(new Text(""));
+  const t3 = block.appendChild(new Text(""));
+
+  block.offsetTop;
+
+  t1.data = "Two";
+  t2.data = " ";
+  t3.data = "words";
+</script>

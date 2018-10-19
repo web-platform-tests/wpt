@@ -8,7 +8,7 @@ from .constants import response_codes, h2_headers
 from .logger import get_logger
 from io import BytesIO
 
-from six import binary_type, text_type, itervalues
+from six import binary_type, text_type, integer_types, itervalues, PY3
 from hyperframe.frame import HeadersFrame, DataFrame, ContinuationFrame
 from hpack.struct import HeaderTuple
 
@@ -157,6 +157,8 @@ class Response(object):
         cookies = self.headers.get("Set-Cookie")
         parser = BaseCookie()
         for cookie in cookies:
+            if PY3:
+                cookie = cookie.decode("iso-8859-1")
             parser.load(cookie)
 
         if name in parser.keys():
@@ -273,7 +275,7 @@ class MultipartPart(object):
 
         if headers is not None:
             for name, value in headers:
-                if name.lower() == "content-type":
+                if name.lower() == b"content-type":
                     func = self.headers.set
                 else:
                     func = self.headers.append
@@ -284,10 +286,33 @@ class MultipartPart(object):
     def to_bytes(self):
         rv = []
         for key, value in self.headers:
-            rv.append(b"%s: %s" % (key.encode("ascii"), value.encode("ascii")))
+            assert isinstance(key, binary_type)
+            assert isinstance(value, binary_type)
+            rv.append(b"%s: %s" % (key, value))
         rv.append(b"")
         rv.append(self.data)
         return b"\r\n".join(rv)
+
+
+def _maybe_encode(s):
+    """Encodes a text-type string into binary data using iso-8859-1.
+
+    Returns `str` in Python 2 and `bytes` in Python 3. The function is a no-op
+    if the argument already has a binary type.
+    """
+    if isinstance(s, binary_type):
+        return s
+
+    # Python 3 assumes iso-8859-1 when parsing headers, which will garble text
+    # with non ASCII characters. We try to encode the text back to binary.
+    # https://github.com/python/cpython/blob/273fc220b25933e443c82af6888eb1871d032fb8/Lib/http/client.py#L213
+    if isinstance(s, text_type):
+        return s.encode("iso-8859-1")
+
+    if isinstance(s, integer_types):
+        return b"%i" % (s,)
+
+    raise TypeError("Unexpected value in ResponseHeaders: %r" % s)
 
 
 class ResponseHeaders(object):
@@ -302,6 +327,8 @@ class ResponseHeaders(object):
         :param key: Name of the header to set
         :param value: Value to set the header to
         """
+        key = _maybe_encode(key)
+        value = _maybe_encode(value)
         self.data[key.lower()] = (key, [value])
 
     def append(self, key, value):
@@ -311,6 +338,8 @@ class ResponseHeaders(object):
         :param key: Name of the header to add
         :param value: Value to set for the header
         """
+        key = _maybe_encode(key)
+        value = _maybe_encode(value)
         if key.lower() in self.data:
             self.data[key.lower()][1].append(value)
         else:
@@ -318,6 +347,7 @@ class ResponseHeaders(object):
 
     def get(self, key, default=missing):
         """Get the set values for a particular header."""
+        key = _maybe_encode(key)
         try:
             return self[key]
         except KeyError:
@@ -329,12 +359,15 @@ class ResponseHeaders(object):
         """Get a list of values for a particular header
 
         """
+        key = _maybe_encode(key)
         return self.data[key.lower()][1]
 
     def __delitem__(self, key):
+        key = _maybe_encode(key)
         del self.data[key.lower()]
 
     def __contains__(self, key):
+        key = _maybe_encode(key)
         return key.lower() in self.data
 
     def __setitem__(self, key, value):

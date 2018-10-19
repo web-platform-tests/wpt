@@ -64,17 +64,18 @@ handler returns, or for directly writing to the output stream.
 
 
 class RequestRewriter(object):
-    def __init__(self, rules):
+    def __init__(self, rules, logger=None):
         """Object for rewriting the request path.
 
         :param rules: Initial rules to add; a list of three item tuples
                       (method, input_path, output_path), defined as for
                       register()
+        :param logger: An instance of the standard library logging API
         """
         self.rules = {}
         for rule in reversed(rules):
             self.register(*rule)
-        self.logger = get_logger()
+        self.logger = logger or get_logger()
 
     def register(self, methods, input_path, output_path):
         """Register a rewrite rule.
@@ -161,7 +162,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
         self.rewriter = rewriter
 
         self.scheme = "http2" if http2 else "https" if use_ssl else "http"
-        self.logger = get_logger()
+        self.logger = get_logger().getChild(self.scheme)
 
         self.latency = latency
 
@@ -219,7 +220,8 @@ class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
     def __init__(self, *args, **kwargs):
-        self.logger = get_logger()
+        server = args[2]
+        self.logger = get_logger().getChild(server.scheme)
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
     def finish_handling_h1(self, request_line_is_valid):
@@ -636,12 +638,14 @@ class WebTestHttpd(object):
 
         self.host = host
 
-        self.router = router_cls(doc_root, routes)
-        self.rewriter = rewriter_cls(rewrites if rewrites is not None else [])
-
         self.use_ssl = use_ssl
         self.http2 = http2
-        self.logger = get_logger()
+        self.scheme = "http2" if http2 else "https" if use_ssl else "http"
+        self.logger = get_logger().getChild(self.scheme)
+
+        self.router = router_cls(doc_root, routes, logger=self.logger)
+        self.rewriter = rewriter_cls(rewrites if rewrites is not None else [],
+                                     logger=self.logger)
 
         if server_cls is None:
             server_cls = WebTestServer
@@ -678,8 +682,7 @@ class WebTestHttpd(object):
 
         :param block: True to run the server on the current thread, blocking,
                       False to run on a separate thread."""
-        http_type = "http2" if self.http2 else "https" if self.use_ssl else "http"
-        self.logger.info("Starting %s server on %s:%s" % (http_type, self.host, self.port))
+        self.logger.info("Starting server on %s:%s" % (self.host, self.port))
         self.started = True
         if block:
             self.httpd.serve_forever()

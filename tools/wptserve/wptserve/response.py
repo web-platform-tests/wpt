@@ -624,6 +624,9 @@ class ResponseWriter(object):
         self.file_chunk_size = 32 * 1024
         self.default_status = 200
 
+    def _seen_header(self, name):
+        return self.encode(name.lower()) in self._headers_seen
+
     def write_status(self, code, message=None):
         """Write out the status line of a response.
 
@@ -649,19 +652,25 @@ class ResponseWriter(object):
         """
         if not self._status_written:
             self.write_status(self.default_status)
-        self._headers_seen.add(name.lower())
-        self.write("%s: %s\r\n" % (name, value))
+        self._headers_seen.add(self.encode(name.lower()))
+        self.write(name)
+        self.write(b": ")
+        if isinstance(value, int):
+            self.write(text_type(value))
+        else:
+            self.write(value)
+        self.write(b"\r\n")
         if not self._response.explicit_flush:
             self.flush()
 
     def write_default_headers(self):
         for name, f in [("Server", self._handler.version_string),
                         ("Date", self._handler.date_time_string)]:
-            if name.lower() not in self._headers_seen:
+            if not self._seen_header(name):
                 self.write_header(name, f())
 
         if (isinstance(self._response.content, (binary_type, text_type)) and
-            "content-length" not in self._headers_seen):
+            not self._seen_header("content-length")):
             #Would be nice to avoid double-encoding here
             self.write_header("Content-Length", len(self.encode(self._response.content)))
 
@@ -676,7 +685,7 @@ class ResponseWriter(object):
             self.write_default_headers()
 
         self.write("\r\n")
-        if "content-length" not in self._headers_seen:
+        if not self._seen_header("content-length"):
             self._response.close_connection = True
         if not self._response.explicit_flush:
             self.flush()
@@ -736,7 +745,7 @@ class ResponseWriter(object):
         elif isinstance(data, text_type):
             return data.encode(self._response.encoding)
         else:
-            raise ValueError
+            raise ValueError("data %r should be text or binary, but is %s" % (data, type(data)))
 
     def flush(self):
         """Flush the output. Returns False if the flush failed due to

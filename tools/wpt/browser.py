@@ -544,6 +544,16 @@ class ChromeAndroid(Browser):
         return None
 
 
+class ChromeCDP(Chrome):
+    """Chrome-specific interface tailored for use with Chrome DevTools protocol.
+
+    Includes wptrunner setup methods.
+    """
+
+    product = "chrome_cdp"
+    requirements = "requirements_chrome_cdp.txt"
+
+
 class Opera(Browser):
     """Opera-specific interface.
 

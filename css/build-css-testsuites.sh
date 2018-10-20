@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -ex
 
-WPT_ROOT=$(cd $(dirname "$0")/.. && pwd -P)
+SCRIPT_DIR=$(cd $(dirname "$0") && pwd -P)
+WPT_ROOT=$SCRIPT_DIR/..
 cd $WPT_ROOT
 
 main() {

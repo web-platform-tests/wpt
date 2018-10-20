@@ -1,2 +1,2 @@
 mozprocess==1.0.0
-selenium==3.141.0
+lomond==0.3.3

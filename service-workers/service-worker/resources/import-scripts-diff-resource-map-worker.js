@@ -1,12 +1,8 @@
 importScripts('/resources/testharness.js');
 
-let version = null,
-    echo_output = null;
-importScripts('import-scripts-version.py');
-// Once imported, the stored script should be loaded for subsequent importScripts.
-const expected_version = version;
+let echo1 = null;
+    echo2 = null;
 
-version = null;
-importScripts('import-scripts-version.py', 'import-scripts-echo.py?msg=test');
-assert_equals(expected_version, version, 'import version');
-assert_equals(echo_output, 'test', 'import echo');
+importScripts('import-scripts-echo.py?output=echo1&msg=test1', 'import-scripts-echo.py?output=echo2&msg=test2');
+assert_equals(echo1, 'test1');
+assert_equals(echo2, 'test2');

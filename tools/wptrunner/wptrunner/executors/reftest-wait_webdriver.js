@@ -1,6 +1,11 @@
 var callback = arguments[arguments.length - 1];
 
 function root_wait() {
+  if (document.readyState != "complete") {
+    setTimeout(root_wait, 10);
+    return;
+  }
+
   if (!root.classList.contains("reftest-wait")) {
     observer.disconnect();
 

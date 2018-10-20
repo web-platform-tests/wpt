@@ -1,8 +1,15 @@
 import json
+import lomond
+from lomond.persist import persist
 import os
+import Queue
+import shutil
 import socket
+import subprocess
+import tempfile
 import threading
 import traceback
+import urllib2
 import urlparse
 import uuid
 
@@ -27,9 +34,65 @@ import webdriver as client
 here = os.path.join(os.path.split(__file__)[0])
 
 
+class Client(object):
+    def __init__(self, url):
+        self._websocket = lomond.WebSocket(url)
+        self._id = 0
+        self._messages = Queue.Queue()
+        self._locks = {}
+        self._results = {}
+        self._exit_event = threading.Event()
+
+    def connect(self):
+        is_ready = False
+
+        options = {
+            'exit_event': self._exit_event,
+            'poll': 0.1,
+            'ping_rate': 0
+        }
+
+        for event in persist(self._websocket, **options):
+            print event.name
+            if is_ready:
+                try:
+                    message = self._messages.get(False)
+                    self._websocket.send_text(
+                        unicode(json.dumps(message), 'utf-8')
+                    )
+                except Queue.Empty:
+                    pass
+
+            if event.name == 'ready':
+                is_ready = True
+            if event.name == 'text':
+                body = json.loads(event.text)
+                if 'id' in body:
+                    self._results[body['id']] = body
+                    self._locks.pop(body['id']).release()
+
+    def send(self, method, params):
+        self._id += 1
+        message_id = self._id
+        lock = threading.Lock()
+        self._locks[message_id] = lock
+        lock.acquire()
+        self._messages.put({
+            'id': message_id,
+            'method': method,
+            'params': params
+        })
+        lock.acquire()
+        result = self._results.get(message_id)
+        return self._results.pop(message_id)
+
+    def close(self):
+        self._exit_event.set()
+
+
 class WebDriverBaseProtocolPart(BaseProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def execute_script(self, script, async=False):
         method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
@@ -66,7 +129,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
@@ -78,7 +141,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
 
-        self.webdriver.url = url
+        self.client.send('Page.navigate', {'url': url})
         self.runner_handle = self.webdriver.window_handle
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
         self.parent.base.execute_script(self.runner_script % format_map)
@@ -121,7 +184,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
@@ -129,7 +192,7 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def element(self, element):
         self.logger.info("click " + repr(element))
@@ -138,7 +201,7 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def send_keys(self, element, keys):
         try:
@@ -153,7 +216,7 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
 
 class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
@@ -161,7 +224,7 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
+        self.client = self.parent.client
 
     def send_message(self, message_type, status, message=None):
         obj = {
@@ -184,39 +247,85 @@ class WebDriverProtocol(Protocol):
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)
-        self.capabilities = capabilities
-        self.url = browser.webdriver_url
-        self.webdriver = None
+        self.binary = browser.binary or 'google-chrome'
+        self.args = capabilities['goog:chromeOptions']['args']
+        self.client = None
+        self.browser_process = None
+        self.profile_dir = None
 
     def connect(self):
-        """Connect to browser via WebDriver."""
-        self.logger.debug("Connecting to WebDriver on URL: %s" % self.url)
+        """Connect to browser via CDP."""
+        self.logger.debug("Connecting to CDP")
 
-        host, port = self.url.split(":")[1].strip("/"), self.url.split(':')[-1].strip("/")
+        self.profile_dir = tempfile.mkdtemp()
+        self.brower_process = subprocess.Popen([
+                self.binary,
+                '--user-data-dir=%s' % self.profile_dir,
+                '--remote-debugging-port=0',
+                'data:text/html,CDP Executor'
+                ],
+            stderr=open(os.devnull, 'w')
+        )
 
-        capabilities = {"alwaysMatch": self.capabilities}
-        self.webdriver = client.Session(host, port, capabilities=capabilities)
-        self.webdriver.start()
+        # > How do I access the browser target?
+        # >
+        # > The endpoint is exposed as `webSocketDebuggerUrl` in
+        # > `/json/version`. Note the `browser` in the URL, rather than `page`.
+        # > If Chrome was launched with `--remote-debugging-port=0` and chose
+        # > an open port, the browser endpoint is written to both stderr and
+        # > the `DevToolsActivePort` file in browser profile folder.
+        #
+        # https://chromedevtools.github.io/devtools-protocol/
+        self.logger.debug('inferring browser port')
+        port = None
+        while port is None:
+            try:
+                with open('%s/DevToolsActivePort' % self.profile_dir) as handle:
+                    contents = handle.read().strip()
+                    port, path = contents.split('\n')
+            except IOError:
+                pass
 
+        debugger_url = 'http://localhost:%s%s' % (port, path)
+        self.logger.debug('got it also %s' % debugger_url)
+
+        self.client = Client(debugger_url)
+        handler = threading.Thread(target=lambda: self.client.connect())
+        handler.start()
 
     def after_conect(self):
         pass
 
     def teardown(self):
-        self.logger.debug("Hanging up on WebDriver session")
+        self.logger.debug("Hanging up on CDP session")
+
         try:
-            self.webdriver.quit()
+            self.client.close()
+        except:
+            pass
+
+        self.client = None
+
+        try:
+            self.browser_process.kill()
         except Exception:
             pass
-        del self.webdriver
+
+        self.browser_process = None
+
+        try:
+            shutil.rmtree(self.profile_dir)
+        except:
+            pass
+
+        self.profile_dir = None
 
     def is_alive(self):
-        try:
-            # Get a simple property over the connection
-            self.webdriver.window_handle
-        except (socket.timeout, client.UnknownErrorException):
+        if self.browser_process is None:
             return False
-        return True
+
+        self.browser_process.poll()
+        return self.browser_process.returncode is None
 
     def after_connect(self):
         self.testharness.load_runner(self.executor.last_environment["protocol"])

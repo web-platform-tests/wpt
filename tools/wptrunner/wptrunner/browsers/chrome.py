@@ -76,8 +76,8 @@ def env_options():
 
 
 class ChromeBrowser(Browser):
-    """Chrome is backed by chromedriver, which is supplied through
-    ``wptrunner.webdriver.ChromeDriverServer``.
+    """Chrome is backed by the Chrome Debugger Protocol, which is supplied
+    through ``wptrunner.webdriver.ChromeDriverServer``.
     """
 
     def __init__(self, logger, binary, webdriver_binary="chromedriver",
@@ -86,27 +86,22 @@ class ChromeBrowser(Browser):
         the browser binary to use for testing."""
         Browser.__init__(self, logger)
         self.binary = binary
-        self.server = ChromeDriverServer(self.logger,
-                                         binary=webdriver_binary,
-                                         args=webdriver_args)
+        self._expected_alive = False
 
     def start(self, **kwargs):
-        self.server.start(block=False)
+        self._expected_alive = True
 
     def stop(self, force=False):
-        self.server.stop(force=force)
+        self._expected_alive = False
 
     def pid(self):
-        return self.server.pid
+        return 0
 
     def is_alive(self):
-        # TODO(ato): This only indicates the driver is alive,
-        # and doesn't say anything about whether a browser session
-        # is active.
-        return self.server.is_alive()
+        return self._expected_alive
 
     def cleanup(self):
         self.stop()
 
     def executor_browser(self):
-        return ExecutorBrowser, {"webdriver_url": self.server.url}
+        return ExecutorBrowser, {"binary": self.binary}

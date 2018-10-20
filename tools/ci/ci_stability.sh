@@ -1,8 +1,7 @@
 #!/bin/bash
 set -ex
 
-SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-WPT_ROOT=$(readlink -f $SCRIPT_DIR/../..)
+WPT_ROOT=$(cd $(dirname "$0")/../.. && pwd -P)
 cd $WPT_ROOT
 
 source tools/ci/lib.sh

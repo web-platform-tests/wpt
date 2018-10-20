@@ -1,9 +1,14 @@
 import json
+import logging
 import os
+import shutil
 import socket
+import subprocess
+import tempfile
 import threading
-import time
 import traceback
+import urllib
+import urllib2
 import urlparse
 import uuid
 
@@ -24,26 +29,32 @@ from .protocol import (BaseProtocolPart,
                        GenerateTestReportProtocolPart)
 from ..testrunner import Stop
 
+import pyppeteer
 import webdriver as client
 
 here = os.path.join(os.path.split(__file__)[0])
 
+class MozLogHandler(logging.Handler):
+    def __init__(self, mozlog_logger):
+        super(MozLogHandler, self).__init__()
+        self.mozlog_logger = mozlog_logger
+
+    def emit(self, record):
+        method = getattr(self.mozlog_logger, record.levelname.lower())
+
+        method(self.format(record))
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def execute_script(self, script, async=False):
-        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
-        return method(script)
+        method = 'execute_async_script' if async else 'execute_script'
+        return getattr(self.session, method)(script)
 
     def set_timeout(self, timeout):
-        try:
-            self.webdriver.timeouts.script = timeout
-        except client.WebDriverException:
-            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2057
-            body = {"type": "script", "ms": timeout * 1000}
-            self.webdriver.send_session_command("POST", "timeouts", body)
+        self.session.set_script_timeout(timeout * 1000)
 
     @property
     def current_window(self):
@@ -55,7 +66,9 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def wait(self):
         while True:
             try:
-                self.webdriver.execute_async_script("")
+                self.session.execute_async_script("")
+            except pyppeteer.ConnectionError:
+                break
             except (client.TimeoutException, client.ScriptTimeoutException):
                 pass
             except (socket.timeout, client.NoSuchWindowException,
@@ -68,10 +81,13 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
-        self.webdriver = self.parent.webdriver
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
+
+    @property
+    def session(self):
+        return self.parent.session
 
     def load_runner(self, url_protocol):
         if self.runner_handle:
@@ -80,72 +96,56 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
 
-        self.webdriver.url = url
-        self.runner_handle = self.webdriver.window_handle
+        self.session.navigate(url)
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
-        self.parent.base.execute_script(self.runner_script % format_map)
+        self.session.execute_script(self.runner_script % format_map)
 
     def close_old_windows(self):
-        handles = [item for item in self.webdriver.handles if item != self.runner_handle]
-        for handle in handles:
-            try:
-                self.webdriver.window_handle = handle
-                self.webdriver.close()
-            except client.NoSuchWindowException:
-                pass
-        self.webdriver.window_handle = self.runner_handle
-        return self.runner_handle
+        for target in self.session.targets():
+            if target['type'] != 'page':
+                continue
+            if target['targetId'] == self.session.target_id:
+                continue
+
+            # The `Target.closeTarget` method appears to be the canonical way
+            # to close targets of all types. However, existing references to
+            # windows closed in this way exhibit behavior which interferes with
+            # the test scheduling.
+            # TODO(jugglinmike): determine exactly how the semantics of
+            # `Target.closeTarget` differ from WebDriver's "Close Window"
+            # command and HTML's `close` function.
+            page = self.session.connection.create_session(target['targetId'])
+            page.evaluate('close();')
+
+        return self.session
 
     def get_test_window(self, window_id, parent, timeout=5):
-        """Find the test window amongst all the open windows.
-        This is assumed to be either the named window or the one after the parent in the list of
-        window handles
+        for target in self.session.targets():
+            if target['type'] != 'page':
+                continue
 
-        :param window_id: The DOM name of the Window
-        :param parent: The handle of the runner window
-        :param timeout: The time in seconds to wait for the window to appear. This is because in
-                        some implementations there's a race between calling window.open and the
-                        window being added to the list of WebDriver accessible windows."""
-        test_window = None
-        end_time = time.time() + timeout
-        while time.time() < end_time:
-            try:
-                # Try using the JSON serialization of the WindowProxy object,
-                # it's in Level 1 but nothing supports it yet
-                win_s = self.webdriver.execute_script("return window['%s'];" % window_id)
-                win_obj = json.loads(win_s)
-                test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
-            except Exception:
-                pass
+            # `openerId` is an optional attribute of TargetInfo objects
+            if target.get('openerId') == parent.target_id:
+                return self.session.connection.create_session(
+                    target['targetId']
+                )
 
-            if test_window is None:
-                after = self.webdriver.handles
-                if len(after) == 2:
-                    test_window = next(iter(set(after) - set([parent])))
-                elif after[0] == parent and len(after) > 2:
-                    # Hope the first one here is the test window
-                    test_window = after[1]
-
-            if test_window is not None:
-                assert test_window != parent
-                return test_window
-
-            time.sleep(0.1)
-
-        raise Exception("unable to find test window")
+        raise Exception('Could not locate test window')
 
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def elements_by_selector(self, selector):
-        return self.webdriver.find.css(selector)
+        return self.session.query_selector_all(selector)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def element(self, element):
         self.logger.info("click " + repr(element))
@@ -153,8 +153,9 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
 
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def send_keys(self, element, keys):
         try:
@@ -168,16 +169,18 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
 
 
 class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def send_actions(self, actions):
-        self.webdriver.actions.perform(actions['actions'])
+        self.session.perform(actions)
 
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
+    @property
+    def session(self):
+        return self.parent.session
 
     def send_message(self, message_type, status, message=None):
         obj = {
@@ -186,7 +189,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         }
         if message:
             obj["message"] = str(message)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+        self.session.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
 
 class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
@@ -210,36 +213,96 @@ class WebDriverProtocol(Protocol):
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)
+        self.binary = browser.binary or 'google-chrome'
+        self.args = capabilities['goog:chromeOptions']['args'] or []
+        self.session = None
+        self.browser_process = None
+        self.profile_dir = None
         self.capabilities = capabilities
-        self.url = browser.webdriver_url
-        self.webdriver = None
 
     def connect(self):
-        """Connect to browser via WebDriver."""
-        self.logger.debug("Connecting to WebDriver on URL: %s" % self.url)
+        """Connect to browser via CDP."""
+        self.logger.debug("Connecting to CDP")
 
-        host, port = self.url.split(":")[1].strip("/"), self.url.split(':')[-1].strip("/")
+        self.profile_dir = tempfile.mkdtemp()
+        identifier = 'cdp-executor-%s' % urllib.quote(self.profile_dir)
+        self.browser_process = subprocess.Popen(
+            [
+                self.binary,
+                '--user-data-dir=%s' % self.profile_dir,
+                '--remote-debugging-port=0',
+                'data:text/html,%s' % identifier
+            ] + self.args,
+            stderr=open(os.devnull, 'w')
+        )
 
-        capabilities = {"alwaysMatch": self.capabilities}
-        self.webdriver = client.Session(host, port, capabilities=capabilities)
-        self.webdriver.start()
+        # > How do I access the browser target?
+        # >
+        # > The endpoint is exposed as `webSocketDebuggerUrl` in
+        # > `/json/version`. Note the `browser` in the URL, rather than `page`.
+        # > If Chrome was launched with `--remote-debugging-port=0` and chose
+        # > an open port, the browser endpoint is written to both stderr and
+        # > the `DevToolsActivePort` file in browser profile folder.
+        #
+        # https://chromedevtools.github.io/devtools-protocol/
+        self.logger.debug('inferring browser port')
+        port = None
+        while port is None and self.browser_process.returncode is None:
+            try:
+                with open('%s/DevToolsActivePort' % self.profile_dir) as handle:
+                    contents = handle.read().strip()
+                    port = contents.split('\n')[0]
+            except IOError:
+                pass
 
+        targets_url = 'http://localhost:%s/json' % port
+        candidates = json.loads(urllib2.urlopen(targets_url).read())
+        for candidate in candidates:
+            if identifier in candidate['url']:
+                target = candidate
+                break
+        else:
+            raise Exception('Could not locate browser process')
+
+        handler = MozLogHandler(self.logger)
+        handler.setFormatter(logging.Formatter('%(name)s:%(message)s'))
+        pyppeteer.logging.addHandler(handler)
+        pyppeteer.logging.setLevel(logging.DEBUG)
+
+        self.connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
+        self.connection.open()
+        self.session = self.connection.create_session(target['id'])
 
     def teardown(self):
-        self.logger.debug("Hanging up on WebDriver session")
+        self.logger.debug("Hanging up on CDP session")
+
         try:
-            self.webdriver.quit()
+            self.connection.close()
         except Exception:
             pass
-        del self.webdriver
+
+        self.session = None
+
+        try:
+            self.browser_process.kill()
+        except Exception:
+            pass
+
+        self.browser_process = None
+
+        try:
+            shutil.rmtree(self.profile_dir)
+        except Exception:
+            pass
+
+        self.profile_dir = None
 
     def is_alive(self):
-        try:
-            # Get a simple property over the connection
-            self.webdriver.window_handle
-        except (socket.timeout, client.UnknownErrorException):
+        if self.browser_process is None:
             return False
-        return True
+
+        self.browser_process.poll()
+        return self.browser_process.returncode is None
 
     def after_connect(self):
         self.testharness.load_runner(self.executor.last_environment["protocol"])
@@ -343,22 +406,22 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         parent_window = protocol.testharness.close_old_windows()
         # Now start the test harness
         protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
-        test_window = protocol.testharness.get_test_window(self.window_id,
-                                                           parent_window,
-                                                           timeout=5*self.timeout_multiplier)
-        self.protocol.base.set_window(test_window)
+        test_window = protocol.testharness.get_test_window(self.window_id, parent_window)
+        self.protocol.session = test_window
         handler = CallbackHandler(self.logger, protocol, test_window)
-        protocol.webdriver.url = url
+        protocol.session.navigate(url)
 
         if not self.supports_eager_pageload:
             self.wait_for_load(protocol)
 
         while True:
+            self.protocol.session = test_window
             result = protocol.base.execute_script(
                 self.script_resume % format_map, async=True)
             done, rv = handler(result)
             if done:
                 break
+        self.protocol.session = parent_window
         return rv
 
     def wait_for_load(self, protocol):
@@ -412,16 +475,17 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
-        width_offset, height_offset = self.protocol.webdriver.execute_script(
+        width_offset, height_offset = self.protocol.session.execute_script(
             """return [window.outerWidth - window.innerWidth,
                        window.outerHeight - window.innerHeight];"""
         )
-        try:
-            self.protocol.webdriver.window.position = (0, 0)
-        except client.InvalidArgumentException:
-            # Safari 12 throws with 0 or 1, treating them as bools; fixed in STP
-            self.protocol.webdriver.window.position = (2, 2)
-        self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
+
+        self.protocol.session.set_window_bounds({
+            'left': 0,
+            'top': 0,
+            'width': 800 + width_offset,
+            'height': 600 + height_offset
+        })
 
         result = self.implementation.run_test(test)
 
@@ -438,12 +502,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
                            test.timeout).run()
 
     def _screenshot(self, protocol, url, timeout):
-        webdriver = protocol.webdriver
-        webdriver.url = url
+        protocol.session.navigate(url)
 
-        webdriver.execute_async_script(self.wait_script)
+        protocol.session.execute_async_script(self.wait_script)
 
-        screenshot = webdriver.screenshot()
+        screenshot = protocol.session.screenshot()['data']
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import threading
 import traceback
+import urllib
 import urllib2
 import urlparse
 import uuid
@@ -35,13 +36,16 @@ here = os.path.join(os.path.split(__file__)[0])
 
 
 class Client(object):
-    def __init__(self, url):
+    def __init__(self, target_id, url):
         self._websocket = lomond.WebSocket(url)
-        self._id = 0
+        self._message_id = 0
         self._messages = Queue.Queue()
         self._locks = {}
         self._results = {}
         self._exit_event = threading.Event()
+
+        # TODO: Decide if this value needs to be dynamic
+        self.target_id = target_id
 
     def connect(self):
         is_ready = False
@@ -62,9 +66,9 @@ class Client(object):
                     )
                 except Queue.Empty:
                     pass
-
-            if event.name == 'ready':
+            elif event.name == 'ready':
                 is_ready = True
+
             if event.name == 'text':
                 body = json.loads(event.text)
                 if 'id' in body:
@@ -72,8 +76,8 @@ class Client(object):
                     self._locks.pop(body['id']).release()
 
     def send(self, method, params):
-        self._id += 1
-        message_id = self._id
+        self._message_id += 1
+        message_id = self._message_id
         lock = threading.Lock()
         self._locks[message_id] = lock
         lock.acquire()
@@ -84,7 +88,9 @@ class Client(object):
         })
         lock.acquire()
         result = self._results.get(message_id)
-        return self._results.pop(message_id)
+        if 'error' in result:
+            raise Exception('%s - %s - %s' % (method, result['error']['message'], result['error']['data']))
+        return self._results.pop(message_id)['result']
 
     def close(self):
         self._exit_event.set()
@@ -142,9 +148,10 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.logger.debug("Loading %s" % url)
 
         self.client.send('Page.navigate', {'url': url})
-        self.runner_handle = self.webdriver.window_handle
+        #self.runner_handle = self.webdriver.window_handle
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
-        self.parent.base.execute_script(self.runner_script % format_map)
+        #self.parent.base.execute_script(self.runner_script % format_map)
+        self.client.send('Runtime.evaluate', {'expression': self.runner_script % format_map})
 
     def close_old_windows(self):
         handles = [item for item in self.webdriver.handles if item != self.runner_handle]
@@ -258,11 +265,12 @@ class WebDriverProtocol(Protocol):
         self.logger.debug("Connecting to CDP")
 
         self.profile_dir = tempfile.mkdtemp()
+        identifier = 'cdp-executor-%s' % urllib.quote(self.profile_dir)
         self.brower_process = subprocess.Popen([
                 self.binary,
                 '--user-data-dir=%s' % self.profile_dir,
                 '--remote-debugging-port=0',
-                'data:text/html,CDP Executor'
+                'data:text/html,%s' % identifier
                 ],
             stderr=open(os.devnull, 'w')
         )
@@ -282,14 +290,22 @@ class WebDriverProtocol(Protocol):
             try:
                 with open('%s/DevToolsActivePort' % self.profile_dir) as handle:
                     contents = handle.read().strip()
-                    port, path = contents.split('\n')
+                    port = contents.split('\n')[0]
             except IOError:
                 pass
 
-        debugger_url = 'http://localhost:%s%s' % (port, path)
+        listing_url = 'http://localhost:%s/json' % port
+        for instance in json.loads(urllib2.urlopen(listing_url).read()):
+            if identifier in instance['url']:
+                debugger_url = instance['webSocketDebuggerUrl']
+                target_id = instance['id']
+                break
+        else:
+            raise Exception('Could not locate browser process')
+
         self.logger.debug('got it also %s' % debugger_url)
 
-        self.client = Client(debugger_url)
+        self.client = Client(target_id, debugger_url)
         handler = threading.Thread(target=lambda: self.client.connect())
         handler.start()
 
@@ -473,7 +489,8 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
-        self.protocol.webdriver.window.size = (600, 600)
+        result = self.protocol.client.send('Browser.getWindowForTarget', {'targetId': self.protocol.client.target_id})
+        self.protocol.client.send('Browser.setWindowBounds', {'windowId': result['windowId'], 'bounds': {'width': 600, 'height': 600}})
 
         result = self.implementation.run_test(test)
 

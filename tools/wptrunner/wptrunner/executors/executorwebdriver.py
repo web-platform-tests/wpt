@@ -41,12 +41,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         return method(script)
 
     def set_timeout(self, timeout):
-        try:
-            self.webdriver.timeouts.script = timeout
-        except client.WebDriverException:
-            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2057
-            body = {"type": "script", "ms": timeout * 1000}
-            self.webdriver.send_session_command("POST", "timeouts", body)
+        self.client.set_script_timeout(timeout * 1000)
 
     @property
     def current_window(self):
@@ -83,10 +78,8 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
 
-        self.client.send('Page.navigate', {'url': url})
-        #self.runner_handle = self.webdriver.window_handle
+        self.client.navigate(url)
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
-        #self.parent.base.execute_script(self.runner_script % format_map)
         self.client.send('Runtime.evaluate', {'expression': self.runner_script % format_map})
 
     def close_old_windows(self):
@@ -202,7 +195,7 @@ class WebDriverProtocol(Protocol):
 
         self.profile_dir = tempfile.mkdtemp()
         identifier = 'cdp-executor-%s' % urllib.quote(self.profile_dir)
-        self.brower_process = subprocess.Popen([
+        self.browser_process = subprocess.Popen([
                 self.binary,
                 '--user-data-dir=%s' % self.profile_dir,
                 '--remote-debugging-port=0',
@@ -443,12 +436,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
                            test.timeout).run()
 
     def _screenshot(self, protocol, url, timeout):
-        webdriver = protocol.webdriver
-        webdriver.url = url
+        protocol.client.navigate(url)
 
-        webdriver.execute_async_script(self.wait_script)
+        protocol.client.execute_async_script(self.wait_script)
 
-        screenshot = webdriver.screenshot()
+        screenshot = protocol.client.screenshot()['data']
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

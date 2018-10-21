@@ -13,9 +13,13 @@ class Client(object):
         self._locks = {}
         self._results = {}
         self._exit_event = threading.Event()
+        self._timeout = float('inf')
 
         # TODO: Decide if this value needs to be dynamic
         self.target_id = target_id
+
+    def close(self):
+        self._exit_event.set()
 
     def connect(self):
         is_ready = False
@@ -45,6 +49,53 @@ class Client(object):
                     self._results[body['id']] = body
                     self._locks.pop(body['id']).release()
 
+    def execute_async_script(self, source):
+        '''Execute a string as JavaScript, waiting for the returned Promise (if
+        any) to settle and honoring any previously-set "timeout" value.
+
+        This method approximates the W3C Webdriver "Execute Async Script"
+        command [1] using the Chrome Debugger protocol's "Runtime.evaluate"
+        method [2]
+
+        [1] https://w3c.github.io/webdriver/#execute-async-script
+        [2] https://chromedevtools.github.io/devtools-protocol/tot/Runtime#method-evaluate'''
+
+        as_expression = '''(function() {{
+          return new Promise(function() {{
+              {source}
+            }});
+        }}())'''.format(source=source)
+
+        return self.send('Runtime.evaluate', {
+            'expression': source,
+            'awaitPromise': True,
+            'timeout': self._timeout
+        })
+
+    def execute_script(self, source):
+        '''Execute a string as JavaScript, waiting for the returned Promise (if
+        any) to settle and honoring any previously-set "timeout" value.
+
+        This method approximates the W3C Webdriver "Execute Script" command [1]
+        using the Chrome Debugger protocol's "Runtime.evaluate" method [2]
+
+        [1] https://w3c.github.io/webdriver/#execute-script
+        [2] https://chromedevtools.github.io/devtools-protocol/tot/Runtime#method-evaluate'''
+
+        as_expression = '''(function() {{ {source} }}())'''.format(source=source)
+
+        return self.send('Runtime.evaluate', {
+            'expression': as_expression,
+            # This parameter is set to `true` in all cases to mimic the
+            # behavior of the "Execute Script" command in WebDriver
+            # https://w3c.github.io/webdriver/#execute-script
+            'awaitPromise': True,
+            'timeout': self._timeout
+        })
+
+    def navigate(self, url):
+        return self.send('Page.navigate', {'url': url})
+
     def send(self, method, params):
         self._message_id += 1
         message_id = self._message_id
@@ -62,5 +113,11 @@ class Client(object):
             raise Exception('%s - %s - %s' % (method, result['error']['message'], result['error']['data']))
         return self._results.pop(message_id)['result']
 
-    def close(self):
-        self._exit_event.set()
+    def screenshot(self):
+        return self.send('Page.captureScreenshot', {})
+
+    def set_script_timeout(self, value):
+        '''Define a duration to wait before considering an expression failed
+
+        :param value: duration in milliseconds'''
+        self._timeout = value

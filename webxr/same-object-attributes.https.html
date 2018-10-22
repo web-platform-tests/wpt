@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test for [SameObject] attributes</title>
+<link rel="help" href="https://immersive-web.github.io/webxr/#xrinputsource-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  'use strict';
+
+  test(t => {
+    assert_equals(navigator.xr, navigator.xr);
+  });
+</script>

@@ -32,16 +32,23 @@ import webdriver as client
 
 here = os.path.join(os.path.split(__file__)[0])
 
+import logging
+import sys
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(name)s:%(message)s'))
+pyppeteer.logging.addHandler(handler)
+pyppeteer.logging.setLevel(logging.DEBUG)
+
 class WebDriverBaseProtocolPart(BaseProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def execute_script(self, script, async=False):
-        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
-        return method(script)
+        method = 'execute_async_script' if async else 'execute_script'
+        return getattr(self.session, method)(script)
 
     def set_timeout(self, timeout):
-        self.client.set_script_timeout(timeout * 1000)
+        self.session.set_script_timeout(timeout * 1000)
 
     @property
     def current_window(self):
@@ -66,7 +73,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
@@ -78,49 +85,35 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
 
-        self.client.navigate(url)
+        self.session.navigate(url)
         format_map = {"title": threading.current_thread().name.replace("'", '"')}
-        self.client.send('Runtime.evaluate', {'expression': self.runner_script % format_map})
+        self.session.execute_script(self.runner_script % format_map)
 
     def close_old_windows(self):
-        handles = [item for item in self.webdriver.handles if item != self.runner_handle]
-        for handle in handles:
-            try:
-                self.webdriver.window_handle = handle
-                self.webdriver.close()
-            except client.NoSuchWindowException:
-                pass
-        self.webdriver.window_handle = self.runner_handle
-        return self.runner_handle
+        targets = [target for target in self.session.targets() if target['targetId'] != self.session.target_id]
+        for target in targets:
+            self.session.close_target(target['targetId'])
 
     def get_test_window(self, window_id, parent):
-        test_window = None
-        try:
-            # Try using the JSON serialization of the WindowProxy object,
-            # it's in Level 1 but nothing supports it yet
-            win_s = self.webdriver.execute_script("return window['%s'];" % window_id)
-            win_obj = json.loads(win_s)
-            test_window = win_obj["window-fcc6-11e5-b4f8-330a88ab9d7f"]
-        except Exception:
-            pass
+        for target in self.session.targets():
+            if target['type'] != 'page':
+                continue
 
-        if test_window is None:
-            after = self.webdriver.handles
-            if len(after) == 2:
-                test_window = next(iter(set(after) - set([parent])))
-            elif after[0] == parent and len(after) > 2:
-                # Hope the first one here is the test window
-                test_window = after[1]
-            else:
-                raise Exception("unable to find test window")
+            session = self.session.connection.create_session(
+                target['targetId']
+            )
 
-        assert test_window != parent
-        return test_window
+            result = session.execute_script('return !!window.opener;')
+
+            if 'result' in result and result['result']['value']:
+                break
+
+        #self.session.connection.create_session()
 
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
@@ -128,7 +121,7 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def element(self, element):
         self.logger.info("click " + repr(element))
@@ -137,7 +130,7 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def send_keys(self, element, keys):
         try:
@@ -152,7 +145,7 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
 
 class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
@@ -160,7 +153,7 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
-        self.client = self.parent.client
+        self.session = self.parent.session
 
     def send_message(self, message_type, status, message=None):
         obj = {
@@ -184,10 +177,11 @@ class WebDriverProtocol(Protocol):
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)
         self.binary = browser.binary or 'google-chrome'
-        self.args = capabilities['goog:chromeOptions']['args']
-        self.client = None
+        self.args = capabilities['goog:chromeOptions']['args'] or []
+        self.session = None
         self.browser_process = None
         self.profile_dir = None
+        self.capabilities = capabilities
 
     def connect(self):
         """Connect to browser via CDP."""
@@ -200,7 +194,7 @@ class WebDriverProtocol(Protocol):
                 '--user-data-dir=%s' % self.profile_dir,
                 '--remote-debugging-port=0',
                 'data:text/html,%s' % identifier
-                ],
+                ] + self.args,
             stderr=open(os.devnull, 'w')
         )
 
@@ -223,20 +217,19 @@ class WebDriverProtocol(Protocol):
             except IOError:
                 pass
 
-        listing_url = 'http://localhost:%s/json' % port
-        for instance in json.loads(urllib2.urlopen(listing_url).read()):
-            if identifier in instance['url']:
-                debugger_url = instance['webSocketDebuggerUrl']
-                target_id = instance['id']
+        targets_url = 'http://localhost:%s/json' % port
+        candidates = json.loads(urllib2.urlopen(targets_url).read())
+        for candidate in candidates:
+            if identifier in candidate['url']:
+                target = candidate
                 break
         else:
             raise Exception('Could not locate browser process')
 
-        self.logger.debug('got it also %s' % debugger_url)
-
-        self.client = pyppeteer.Client(target_id, debugger_url)
-        handler = threading.Thread(target=lambda: self.client.connect())
+        connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
+        handler = threading.Thread(target=lambda: connection.connect())
         handler.start()
+        self.session = connection.create_session(target['id'])
 
     def after_conect(self):
         pass
@@ -245,11 +238,11 @@ class WebDriverProtocol(Protocol):
         self.logger.debug("Hanging up on CDP session")
 
         try:
-            self.client.close()
+            self.session.close()
         except:
             pass
 
-        self.client = None
+        self.session = None
 
         try:
             self.browser_process.kill()
@@ -380,10 +373,11 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # Now start the test harness
         protocol.base.execute_script(self.script % format_map, async=True)
         test_window = protocol.testharness.get_test_window(self.window_id, parent_window)
+        test_window = None
 
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
-            self.protocol.base.set_window(test_window)
+            #self.protocol.base.set_window(test_window)
             result = protocol.base.execute_script(
                 self.script_resume % format_map, async=True)
             done, rv = handler(result)
@@ -418,8 +412,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.protocol.is_alive()
 
     def do_test(self, test):
-        result = self.protocol.client.send('Browser.getWindowForTarget', {'targetId': self.protocol.client.target_id})
-        self.protocol.client.send('Browser.setWindowBounds', {'windowId': result['windowId'], 'bounds': {'width': 600, 'height': 600}})
+        self.protocol.session.set_window_bounds({'width': 600, 'height': 600})
 
         result = self.implementation.run_test(test)
 
@@ -436,11 +429,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
                            test.timeout).run()
 
     def _screenshot(self, protocol, url, timeout):
-        protocol.client.navigate(url)
+        protocol.session.navigate(url)
 
-        protocol.client.execute_async_script(self.wait_script)
+        protocol.session.execute_async_script(self.wait_script)
 
-        screenshot = protocol.client.screenshot()['data']
+        screenshot = protocol.session.screenshot()['data']
 
         # strip off the data:img/png, part of the url
         if screenshot.startswith("data:image/png;base64,"):

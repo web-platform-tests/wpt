@@ -127,6 +127,39 @@ promise_test(t => {
 }, 'abort should prevent further reads');
 
 promise_test(t => {
+  let readController;
+  const rs = new ReadableStream({
+    start(c) {
+      readController = c;
+      c.enqueue('a');
+      c.enqueue('b');
+    }
+  });
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
+  const ws = recordingWritableStream({
+    write() {
+      return writePromise;
+    }
+  }, new CountQueuingStrategy({ highWaterMark: Infinity }));
+  const pipeToPromise = rs.pipeTo(ws, { signal });
+  return delay(0).then(() => {
+    abortController.abort();
+    readController.close(); // Make sure the test terminates when signal is not implemented.
+    resolveWrite();
+    return promise_rejects(t, 'AbortError', pipeToPromise, 'pipeTo should reject');
+  }).then(() => {
+    assert_equals(ws.events.length, 6, 'chunks "a" and "b" should have been written');
+    assert_array_equals(ws.events.slice(0, 5), ['write', 'a', 'write', 'b', 'abort'], 'events should match');
+    assert_equals(ws.events[5].name, 'AbortError', 'abort reason should be an AbortError');
+  });
+}, 'all pending writes should complete on abort');
+
+promise_test(t => {
   const rs = new ReadableStream({
     pull(controller) {
       controller.error('failed to abort');
@@ -239,7 +272,7 @@ promise_test(t => {
   return promise_rejects(t, 'AbortError', rs.pipeTo(ws, { signal }), 'pipeTo should reject');
 }, 'abort signal takes priority over errored writable');
 
-promise_test(t => {
+promise_test(() => {
   let readController;
   const rs = new ReadableStream({
     start(c) {

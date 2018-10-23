@@ -85,15 +85,21 @@ class Session(object):
         [1] https://w3c.github.io/webdriver/#execute-async-script
         [2] https://chromedevtools.github.io/devtools-protocol/tot/Runtime#method-evaluate'''
 
+        # A wrapper between the Promise executor and the evaluated code is
+        # necessary to ensure that the length of the `arguments` object is `1`
+        # as guaranteed by WebDriver.
         as_expression = '''(function() {{
-          return new Promise(function() {{
-              {source}
+          return new Promise(function(resolve) {{
+              return (function() {{
+                  {source}
+                }}(resolve));
             }});
         }}())'''.format(source=source)
 
         return self._send('Runtime.evaluate', {
             'expression': as_expression,
             'awaitPromise': True,
+            'returnByValue': True,
             'timeout': self._timeout
         })
 
@@ -120,6 +126,7 @@ class Session(object):
             # behavior of the "Execute Script" command in WebDriver
             # https://w3c.github.io/webdriver/#execute-script
             'awaitPromise': True,
+            'returnByValue': True,
             'timeout': self._timeout
         })
 

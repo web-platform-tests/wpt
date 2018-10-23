@@ -40,8 +40,9 @@ pyppeteer.logging.addHandler(handler)
 pyppeteer.logging.setLevel(logging.DEBUG)
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
 
     def execute_script(self, script, async=False):
         method = 'execute_async_script' if async else 'execute_script'
@@ -73,10 +74,13 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
 
 class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
-        self.session = self.parent.session
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
+
+    @property
+    def session(self):
+        return self.parent.session
 
     def load_runner(self, url_protocol):
         if self.runner_handle:
@@ -94,6 +98,8 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         for target in targets:
             self.session.close_target(target['targetId'])
 
+        return self.session
+
     def get_test_window(self, window_id, parent):
         for target in self.session.targets():
             if target['type'] != 'page':
@@ -108,20 +114,27 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             if 'result' in result and result['result']['value']:
                 break
 
-        #self.session.connection.create_session()
+        else:
+            raise Exception('Could not locate test window')
+
+        return session
 
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
+
 
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
+
 
     def element(self, element):
         self.logger.info("click " + repr(element))
@@ -129,8 +142,10 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
 
 
 class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
+
 
     def send_keys(self, element, keys):
         try:
@@ -144,16 +159,18 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
 
 
 class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
 
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
 
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
-    def setup(self):
-        self.session = self.parent.session
+    @property
+    def session(self):
+        return self.parent.session
 
     def send_message(self, message_type, status, message=None):
         obj = {
@@ -373,16 +390,15 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         # Now start the test harness
         protocol.base.execute_script(self.script % format_map, async=True)
         test_window = protocol.testharness.get_test_window(self.window_id, parent_window)
-        test_window = None
-
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
-            #self.protocol.base.set_window(test_window)
+            self.protocol.session = test_window
             result = protocol.base.execute_script(
                 self.script_resume % format_map, async=True)
-            done, rv = handler(result)
+            done, rv = handler(result['result']['value'])
             if done:
                 break
+        self.protocol.session = parent_window
         return rv
 
 

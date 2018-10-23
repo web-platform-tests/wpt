@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import shutil
 import socket
@@ -32,12 +33,15 @@ import webdriver as client
 
 here = os.path.join(os.path.split(__file__)[0])
 
-import logging
-import sys
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter('%(name)s:%(message)s'))
-pyppeteer.logging.addHandler(handler)
-pyppeteer.logging.setLevel(logging.DEBUG)
+class MozLogHandler(logging.Handler):
+    def __init__(self, mozlog_logger):
+        super(MozLogHandler, self).__init__()
+        self.mozlog_logger = mozlog_logger
+
+    def emit(self, record):
+        method = getattr(self.mozlog_logger, record.levelname.lower())
+
+        method(self.format(record))
 
 class WebDriverBaseProtocolPart(BaseProtocolPart):
     @property
@@ -240,6 +244,11 @@ class WebDriverProtocol(Protocol):
                 break
         else:
             raise Exception('Could not locate browser process')
+
+        handler = MozLogHandler(self.logger)
+        handler.setFormatter(logging.Formatter('%(name)s:%(message)s'))
+        pyppeteer.logging.addHandler(handler)
+        pyppeteer.logging.setLevel(logging.DEBUG)
 
         connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
         handler = threading.Thread(target=lambda: connection.connect())

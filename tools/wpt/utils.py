@@ -49,6 +49,16 @@ def call(*args):
         raise
 
 
+def seekable(fileobj):
+    """Attempt to use file.seek on given file, with fallbacks."""
+    try:
+        fileobj.seek(fileobj.tell())
+    except Exception:
+        return BytesIO(fileobj.read())
+    else:
+        return fileobj
+
+
 def untar(fileobj, dest="."):
     """Extract tar archive."""
     logger.debug("untar")

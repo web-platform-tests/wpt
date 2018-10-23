@@ -11,6 +11,7 @@ async_test(function(t) {
       assert_true(e instanceof Event);
     });
   } catch (e) {
+    assert_throws("SecurityError", () => {throw e}, "DOMExceptions thrown on cross-origin worker construction must be SecurityErrors");
     t.done();
   }
 }, "Cross-origin classic workers should fail to fetch");
@@ -22,6 +23,7 @@ async_test(function(t) {
       assert_true(e instanceof Event);
     });
   } catch (e) {
+    assert_throws("SecurityError", () => {throw e}, "DOMExceptions thrown on cross-origin module worker construction must be SecurityErrors");
     t.done();
   }
 }, "Cross-origin module workers should fail to fetch");

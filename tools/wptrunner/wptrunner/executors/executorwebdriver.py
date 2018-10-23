@@ -109,9 +109,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                 target['targetId']
             )
 
-            result = session.execute_script('return !!window.opener;')
-
-            if 'result' in result and result['result']['value']:
+            if session.execute_script('return !!window.opener;'):
                 break
 
         else:
@@ -395,7 +393,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             self.protocol.session = test_window
             result = protocol.base.execute_script(
                 self.script_resume % format_map, async=True)
-            done, rv = handler(result['result']['value'])
+            done, rv = handler(result)
             if done:
                 break
         self.protocol.session = parent_window

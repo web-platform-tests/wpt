@@ -9,6 +9,20 @@ from . import logging
 
 _DEFAULT_TIMEOUT = 10 * 1000
 
+# https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
+def unpack_remote_object(result):
+    if result['type'] == 'undefined':
+        return None
+
+    return result['value']
+
+# https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
+class ScriptError(Exception):
+    def __init__(self, exception_details):
+        super(ScriptError, self).__init__(
+            '{lineNumber}:{columnNumber} {text}'.format(**exception_details)
+        )
+
 class SessionError(Exception):
     def __init__(self, method, error_details):
         message = error_details['message']
@@ -96,12 +110,17 @@ class Session(object):
             }});
         }}())'''.format(source=source)
 
-        return self._send('Runtime.evaluate', {
+        result = self._send('Runtime.evaluate', {
             'expression': as_expression,
             'awaitPromise': True,
             'returnByValue': True,
             'timeout': self._timeout
         })
+
+        if 'exceptionDetails' in result:
+            raise ScriptError(result['exceptionDetails'])
+
+        return unpack_remote_object(result['result'])
 
     def execute_script(self, source):
         '''Execute a string as JavaScript, waiting for the returned Promise (if
@@ -120,7 +139,7 @@ class Session(object):
               }});
         }}())'''.format(source=source)
 
-        return self._send('Runtime.evaluate', {
+        result = self._send('Runtime.evaluate', {
             'expression': as_expression,
             # This parameter is set to `true` in all cases to mimic the
             # behavior of the "Execute Script" command in WebDriver
@@ -129,6 +148,11 @@ class Session(object):
             'returnByValue': True,
             'timeout': self._timeout
         })
+
+        if 'exceptionDetails' in result:
+            raise ScriptError(result['exceptionDetails'])
+
+        return unpack_remote_object(result['result'])
 
     def targets(self):
         return self._send('Target.getTargets')['targetInfos']

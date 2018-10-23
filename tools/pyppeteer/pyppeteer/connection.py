@@ -38,9 +38,12 @@ class Connection(object):
         self._locks.pop(message['id']).release()
 
     def close(self):
+        self.logger.info('closing')
+        self._sessions.clear()
         self._exit_event.set()
 
-    def connect(self):
+    def open(self):
+        self.logger.info('opening')
         is_ready = False
 
         options = {
@@ -60,6 +63,7 @@ class Connection(object):
                 except Queue.Empty:
                     pass
             elif socket_event.name == 'ready':
+                self.logger.info('opened')
                 is_ready = True
 
             if socket_event.name == 'text':
@@ -71,6 +75,8 @@ class Connection(object):
                     self._handle_method_result(message)
                 elif message.get('method') == 'Target.receivedMessageFromTarget':
                     self._handle_event(message)
+
+        self.logger.info('closed')
 
     def create_session(self, target_id):
         if target_id not in self._sessions:

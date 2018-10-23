@@ -41,7 +41,6 @@ class Session(object):
         self._messages = Queue.Queue()
         self._locks = {}
         self._results = {}
-        self._exit_event = threading.Event()
         self._timeout = _DEFAULT_TIMEOUT
 
         self.logger = logging.getChild('session')
@@ -81,9 +80,6 @@ class Session(object):
             raise SessionError(method, result['error'])
 
         return result['result']
-
-    def close(self):
-        self._exit_event.set()
 
     def close_target(self, target_id):
         return self._send('Target.closeTarget', {'targetId': target_id})

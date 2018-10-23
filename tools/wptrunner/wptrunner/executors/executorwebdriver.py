@@ -247,10 +247,10 @@ class WebDriverProtocol(Protocol):
         pyppeteer.logging.addHandler(handler)
         pyppeteer.logging.setLevel(logging.DEBUG)
 
-        connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
-        handler = threading.Thread(target=lambda: connection.connect())
+        self.connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
+        handler = threading.Thread(target=lambda: self.connection.open())
         handler.start()
-        self.session = connection.create_session(target['id'])
+        self.session = self.connection.create_session(target['id'])
 
     def after_conect(self):
         pass
@@ -259,7 +259,7 @@ class WebDriverProtocol(Protocol):
         self.logger.debug("Hanging up on CDP session")
 
         try:
-            self.session.close()
+            self.connection.close()
         except:
             pass
 

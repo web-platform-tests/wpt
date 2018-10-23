@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>setSinkId and detached contexts</title>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<iframe srcdoc="<audio></audio>"></iframe>
+<script>
+'use strict';
+
+promise_test(async t => {
+  let watcher = new EventWatcher(t, window, 'load');
+  await watcher.wait_for('load');
+  let audio = window[0].document.querySelector('audio');
+  let promise = audio.setSinkId('unimportant')
+  document.querySelector('iframe').remove();
+  return promise_rejects(t, 'SecurityError', promise);
+});
+
+</script>

@@ -23,7 +23,9 @@ class Connection(object):
         self._messages = Queue.Queue()
         self._locks = {}
         self._results = {}
+        self._open_event = threading.Event()
         self._exit_event = threading.Event()
+        self._polling_thread = None
         # A mapping from "targetId" to pyppeteer.Session instances
         self._sessions = {}
 
@@ -37,13 +39,7 @@ class Connection(object):
         self._results[message['id']] = message
         self._locks.pop(message['id']).release()
 
-    def close(self):
-        self.logger.info('closing')
-        self._sessions.clear()
-        self._exit_event.set()
-
-    def open(self):
-        self.logger.info('opening')
+    def _poll(self):
         is_ready = False
 
         options = {
@@ -63,7 +59,7 @@ class Connection(object):
                 except Queue.Empty:
                     pass
             elif socket_event.name == 'ready':
-                self.logger.info('opened')
+                self._open_event.set()
                 is_ready = True
 
             if socket_event.name == 'text':
@@ -76,7 +72,29 @@ class Connection(object):
                 elif message.get('method') == 'Target.receivedMessageFromTarget':
                     self._handle_event(message)
 
+        self._open_event.clear()
+
+    def close(self):
+        if self._polling_thread is None:
+            raise Exception('Connection is not open')
+
+        self.logger.info('closing')
+        self._sessions.clear()
+        self._exit_event.set()
+        self._websocket.close()
+        self._polling_thread.join()
+        self._polling_thread = None
         self.logger.info('closed')
+
+    def open(self):
+        if self._polling_thread:
+            raise Exception('Connection is already open')
+
+        self.logger.info('opening')
+        self._polling_thread = threading.Thread(target=lambda: self._poll())
+        self._polling_thread.start()
+        self._open_event.wait()
+        self.logger.info('opened')
 
     def create_session(self, target_id):
         if target_id not in self._sessions:

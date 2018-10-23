@@ -248,8 +248,7 @@ class WebDriverProtocol(Protocol):
         pyppeteer.logging.setLevel(logging.DEBUG)
 
         self.connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
-        handler = threading.Thread(target=lambda: self.connection.open())
-        handler.start()
+        self.connection.open()
         self.session = self.connection.create_session(target['id'])
 
     def after_conect(self):

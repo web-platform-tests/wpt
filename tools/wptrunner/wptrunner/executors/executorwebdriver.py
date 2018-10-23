@@ -127,7 +127,6 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
     def session(self):
         return self.parent.session
 
-
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
 
@@ -136,7 +135,6 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
     @property
     def session(self):
         return self.parent.session
-
 
     def element(self, element):
         self.logger.info("click " + repr(element))
@@ -147,7 +145,6 @@ class WebDriverSendKeysProtocolPart(SendKeysProtocolPart):
     @property
     def session(self):
         return self.parent.session
-
 
     def send_keys(self, element, keys):
         try:

@@ -190,7 +190,6 @@ class Session(object):
         document_object = self.evaluate(
             'Array.from(document.querySelectorAll(%s))' % json.dumps(selector)
         )
-        self.logger.info('%s' % document_object)
         props = self._send('Runtime.getProperties', {
             'objectId': document_object['objectId'],
             'ownProperties': True
@@ -198,14 +197,13 @@ class Session(object):
         self._send('Runtime.releaseObject', {
             'objectId': document_object['objectId']
         })
+
         by_name = {}
-        self.logger.info('%s' % [prop['name'] for prop in props])
         for prop in props:
             by_name[prop['name']] = prop
         node_ids = [None] * by_name['length']['value']['value']
         for index in xrange(len(node_ids)):
             node_ids[index] = by_name[str(index)]['value']['objectId']
-        print node_ids
 
         return [Element(self, node_id) for node_id in node_ids]
 

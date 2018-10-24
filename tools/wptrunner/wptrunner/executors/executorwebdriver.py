@@ -128,7 +128,7 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
         return self.parent.session
 
     def elements_by_selector(self, selector):
-        return self.webdriver.find.css(selector)
+        return self.session.query_selector_all(selector)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
@@ -178,7 +178,7 @@ class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
         }
         if message:
             obj["message"] = str(message)
-        self.webdriver.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
+        self.session.execute_script("window.postMessage(%s, '*')" % json.dumps(obj))
 
 
 class WebDriverProtocol(Protocol):

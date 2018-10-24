@@ -30,7 +30,7 @@
             selector = "#";
             // escape everything, because it's easy to implement
             for (let i = 0, len = id.length; i < len; i++) {
-                selector += '\\' + id.charCodeAt(i).toString(16) + ' ';
+                selector += '\\' + id.charCodeAt(i).toString(8) + '';
             }
         } else {
             // push and then reverse to avoid O(n) unshift in the loop

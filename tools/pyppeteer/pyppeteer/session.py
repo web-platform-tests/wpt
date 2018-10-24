@@ -5,7 +5,7 @@ import threading
 import lomond
 from lomond.persist import persist
 
-from . import logging
+from . import logging, Element
 
 _DEFAULT_TIMEOUT = 10 * 1000
 
@@ -19,8 +19,10 @@ def unpack_remote_object(result):
 # https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
 class ScriptError(Exception):
     def __init__(self, exception_details):
-        super(ScriptError, self).__init__(
-            '{lineNumber}:{columnNumber} {text}'.format(**exception_details)
+        super(ScriptError, self).__init__((
+            '{lineNumber}:{columnNumber} ' +
+            '{exception[className]} {exception[description]}'
+            ).format(**exception_details)
         )
 
 class SessionError(Exception):
@@ -84,6 +86,22 @@ class Session(object):
     def close_target(self, target_id):
         return self._send('Target.closeTarget', {'targetId': target_id})
 
+    def evaluate(self, source):
+        result = self._send('Runtime.evaluate', {
+            'expression': source
+        })
+
+        if 'exceptionDetails' in result:
+            details = result['exceptionDetails']
+            try:
+                self._send('Runtime.releaseObject', {
+                    'objectId': details['exception']['objectId']
+                })
+            finally:
+                raise ScriptError(details)
+
+        return result['result']
+
     def execute_async_script(self, source):
         '''Execute a string as JavaScript, waiting for the returned Promise (if
         any) to settle and honoring any previously-set "timeout" value.
@@ -114,7 +132,13 @@ class Session(object):
         })
 
         if 'exceptionDetails' in result:
-            raise ScriptError(result['exceptionDetails'])
+            details = result['exceptionDetails']
+            try:
+                self._send('Runtime.releaseObject', {
+                    'objectId': details['exception']['objectId']
+                })
+            finally:
+                raise ScriptError(details)
 
         return unpack_remote_object(result['result'])
 
@@ -146,7 +170,13 @@ class Session(object):
         })
 
         if 'exceptionDetails' in result:
-            raise ScriptError(result['exceptionDetails'])
+            details = result['exceptionDetails']
+            try:
+                self._send('Runtime.releaseObject', {
+                    'objectId': details['exception']['objectId']
+                })
+            finally:
+                raise ScriptError(details)
 
         return unpack_remote_object(result['result'])
 
@@ -155,6 +185,29 @@ class Session(object):
 
     def navigate(self, url):
         return self._send('Page.navigate', {'url': url})
+
+    def query_selector_all(self, selector):
+        document_object = self.evaluate(
+            'Array.from(document.querySelectorAll("%s"))' % selector
+        )
+        self.logger.info('%s' % document_object)
+        props = self._send('Runtime.getProperties', {
+            'objectId': document_object['objectId'],
+            'ownProperties': True
+        })['result']
+        self._send('Runtime.releaseObject', {
+            'objectId': document_object['objectId']
+        })
+        by_name = {}
+        self.logger.info('%s' % [prop['name'] for prop in props])
+        for prop in props:
+            by_name[prop['name']] = prop
+        node_ids = [None] * by_name['length']['value']['value']
+        for index in xrange(len(node_ids)):
+            node_ids[index] = by_name[str(index)]['value']['objectId']
+        print node_ids
+
+        return [Element(self, node_id) for node_id in node_ids]
 
     def screenshot(self):
         return self._send('Page.captureScreenshot', {})

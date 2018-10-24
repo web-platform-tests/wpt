@@ -35,6 +35,11 @@ main() {
             exit 1
         fi
 
+        if [ `$PYTHON -c 'import sys; print(sys.maxunicode)'` != "1114111" ]; then
+            echo "UCS-4 support for Python is required"
+            exit 1
+        fi
+
         virtualenv -p $PYTHON $VENV || { echo "Please ensure virtualenv is installed"; exit 2; }
     fi
 

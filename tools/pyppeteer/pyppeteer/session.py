@@ -188,7 +188,7 @@ class Session(object):
 
     def query_selector_all(self, selector):
         document_object = self.evaluate(
-            'Array.from(document.querySelectorAll("%s"))' % selector
+            'Array.from(document.querySelectorAll(%s))' % json.dumps(selector)
         )
         self.logger.info('%s' % document_object)
         props = self._send('Runtime.getProperties', {

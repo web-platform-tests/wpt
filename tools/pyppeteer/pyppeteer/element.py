@@ -34,3 +34,17 @@ class Element(object):
           'x': center['x'],
           'y': center['y']
         })
+
+    def send_keys(self, text):
+        self._session._send('DOM.focus', {
+            'objectId': self._remote_object_id
+        })
+
+        for char in text:
+            self._session._send('Input.dispatchKeyEvent', {
+                'type': 'keyDown',
+                'text': char
+            })
+            self._session._send('Input.dispatchKeyEvent', {
+                'type': 'keyUp'
+            })

@@ -279,8 +279,6 @@ class Chrome(BrowserSetup):
             # TODO(foolip): remove after unified plan is enabled on Chrome stable
             kwargs["binary_args"].append("--enable-features=RTCUnifiedPlanByDefault")
 
-        kwargs["binary_args"].append("--disable-popup-blocking")
-
         # Allow audio autoplay without a user gesture.
         kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")
 

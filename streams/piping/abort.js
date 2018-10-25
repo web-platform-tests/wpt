@@ -282,12 +282,12 @@ promise_test(() => {
   const ws = new WritableStream();
   const abortController = new AbortController();
   const signal = abortController.signal;
-  const pipeToPromise = rs.pipeTo(ws, { signal });
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventClose: true });
   readController.close();
   return Promise.resolve().then(() => {
     abortController.abort();
     return pipeToPromise;
-  });
+  }).then(() => ws.getWriter().write('this should succeed'));
 }, 'abort should do nothing after the readable is closed');
 
 promise_test(t => {
@@ -300,12 +300,12 @@ promise_test(t => {
   const ws = new WritableStream();
   const abortController = new AbortController();
   const signal = abortController.signal;
-  const pipeToPromise = rs.pipeTo(ws, { signal });
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventAbort: true });
   readController.error(error1);
   return Promise.resolve().then(() => {
     abortController.abort();
     return promise_rejects(t, error1, pipeToPromise, 'pipeTo should reject');
-  });
+  }).then(() => ws.getWriter().write('this should succeed'));
 }, 'abort should do nothing after the readable is errored');
 
 promise_test(t => {
@@ -316,30 +316,30 @@ promise_test(t => {
     }
   });
   let resolveWrite;
+  const writePromise = new Promise(resolve => {
+    resolveWrite = resolve;
+  });
   const ws = new WritableStream({
     write() {
       readController.error(error1);
-      return new Promise(resolve => {
-        resolveWrite = resolve;
-      });
+      return writePromise;
     }
   });
   const abortController = new AbortController();
   const signal = abortController.signal;
-  const pipeToPromise = rs.pipeTo(ws, { signal });
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventAbort: true });
   readController.enqueue('a');
   return delay(0).then(() => {
     abortController.abort();
     resolveWrite();
     return promise_rejects(t, error1, pipeToPromise, 'pipeTo should reject');
-  });
+  }).then(() => ws.getWriter().write('this should succeed'));
 }, 'abort should do nothing after the readable is errored, even with pending writes');
 
 promise_test(t => {
-  const rs = new ReadableStream({
-    start(controller) {
-      controller.enqueue('a');
-      controller.close();
+  const rs = recordingReadableStream({
+    pull(controller) {
+      return delay(0).then(() => controller.close());
     }
   });
   let writeController;
@@ -350,13 +350,15 @@ promise_test(t => {
   });
   const abortController = new AbortController();
   const signal = abortController.signal;
-  const pipeToPromise = rs.pipeTo(ws, { signal });
+  const pipeToPromise = rs.pipeTo(ws, { signal, preventCancel: true });
   return Promise.resolve().then(() => {
     writeController.error(error1);
     return Promise.resolve();
   }).then(() => {
     abortController.abort();
     return promise_rejects(t, error1, pipeToPromise, 'pipeTo should reject');
+  }).then(() => {
+    assert_array_equals(rs.events, ['pull'], 'cancel should not have been called');
   });
 }, 'abort should do nothing after the writable is errored');
 

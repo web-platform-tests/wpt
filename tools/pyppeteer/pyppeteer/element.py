@@ -3,18 +3,28 @@ class Element(object):
         self._session = session
         self._remote_object_id = remote_object_id
 
-    def _center(self):
+    # In-view center point
+    # https://w3c.github.io/webdriver/#dfn-center-point
+    def in_view_center(self):
+        inner_width, inner_height = self._session.execute_script(
+            'return [innerWidth, innerHeight];'
+        )
         quads = self._session._send('DOM.getBoxModel', {
             'objectId': self._remote_object_id
         })['model']['margin']
 
+        left = max(0, min(quads[0], quads[2]))
+        right = min(inner_width, max(quads[0], quads[2]))
+        top = max(0, min(quads[1], quads[5]))
+        bottom = min(inner_height, max(quads[1], quads[5]))
+
         return {
-          'x': float(quads[0] + quads[2]) / 2,
-          'y': float(quads[1] + quads[5]) / 2
+          'x': int((left + right) / 2),
+          'y': int((top + bottom) / 2)
         }
 
     def click(self):
-        center = self._center()
+        center = self.in_view_center()
         self._session._send('Input.dispatchMouseEvent', {
           'type': 'mouseMoved',
           'x': center['x'],

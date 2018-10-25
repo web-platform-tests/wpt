@@ -6,6 +6,7 @@ import lomond
 from lomond.persist import persist
 
 from . import logging, Element
+import action_handlers
 
 _DEFAULT_TIMEOUT = 10 * 1000
 
@@ -48,6 +49,18 @@ class Session(object):
         self.logger = logging.getChild('session')
 
         self.connection = connection
+        self.mouse_position = {'x': 0, 'y': 0}
+
+    def _on_mouse_move(self, params):
+        '''The WebDriver Actions API allows mouse events to be issued relative
+        to the current position of the mouse. Neither the DOM nor the Chrome
+        Debugger protocol offer a method to retrieve the current mouse
+        position. This class observes all commands which alter the mouse
+        position and assumes that the mouse is located at the coordinates
+        defined by the most recent such command.'''
+
+        self.mouse_position['x'] = params['x']
+        self.mouse_position['y'] = params['y']
 
     def on_event(self, message_text):
         message = json.loads(message_text)
@@ -80,6 +93,9 @@ class Session(object):
 
         if 'error' in result:
             raise SessionError(method, result['error'])
+
+        if method == 'Input.dispatchMouseEvent':
+            self._on_mouse_move(params)
 
         return result['result']
 
@@ -185,6 +201,52 @@ class Session(object):
 
     def navigate(self, url):
         return self._send('Page.navigate', {'url': url})
+
+    def perform(self, actions):
+        # Restructure the WebDriver actions object into a two-dimensional list.
+        # Each element is a list of actions for a given device.
+        two_dimensional = [
+            [
+                {
+                    'type': track['type'],
+                    'parameters': track.get('parameters'),
+                    'action': action
+                } for action in track['actions']
+            ] for track in actions['actions']
+        ]
+
+        # Transpose the actions. Each element is a list of actions for a
+        # distinct "tick."
+        ticks = list(zip(*two_dimensional))
+
+        exceptions = Queue.Queue()
+
+        def create_thread(action, exceptions):
+            handler = getattr(action_handlers, action['type'])
+            def target():
+                try:
+                    handler(self, action)
+                except Exception as e:
+                    exceptions.put(e)
+
+            return threading.Thread(target=target)
+
+        for tick in ticks:
+            threads = [
+                create_thread(action['action'], exceptions) for action in tick
+            ]
+
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+            try:
+                thread_exception = exceptions.get(block=False)
+            except Queue.Empty:
+                pass
+            else:
+                raise thread_exception
 
     def query_selector_all(self, selector):
         document_object = self.evaluate(

@@ -96,6 +96,10 @@ class Connection(object):
         self._open_event.wait()
         self.logger.info('opened')
 
+        self.send('Security.setIgnoreCertificateErrors', {
+            'ignore': True
+        })
+
     def create_session(self, target_id):
         if target_id not in self._sessions:
             result = self.send(

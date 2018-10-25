@@ -17,6 +17,16 @@ This is a work in progress. Please avert your eyes.
     '---------'     |     '------------'           '---------' |
                     '------------------------------------------'
 
+## Stability
+
+The Chrome Debugger Protocol is under active development, and not all of its
+current functionality is considered stable by the maintainers. The stability of
+each feature is clearly documented by that project, and this module avoids
+unstable features whenever possible.
+
+All usages of unstable features are annotated in the source code with an
+in-line code comment, `# EXPERIMENTAL`.
+
 ## WebSocket Clients in Python
 
 Python lacks a standard library implementation of a WebSocket client. This

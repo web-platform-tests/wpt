@@ -96,7 +96,7 @@ class Connection(object):
         self._open_event.wait()
         self.logger.info('opened')
 
-        self.send('Security.setIgnoreCertificateErrors', {
+        self.send('Security.setIgnoreCertificateErrors', { # EXPERIMENTAL
             'ignore': True
         })
 

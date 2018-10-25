@@ -274,11 +274,11 @@ class Session(object):
 
     def set_window_bounds(self, bounds):
         result = self._send(
-            'Browser.getWindowForTarget',
+            'Browser.getWindowForTarget', # EXPERIMENTAL
             {'targetId': self.target_id}
         )
         return self._send(
-            'Browser.setWindowBounds',
+            'Browser.setWindowBounds', # EXPERIMENTAL
             {
                 'windowId': result['windowId'],
                 'bounds': bounds

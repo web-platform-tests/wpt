@@ -636,7 +636,7 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
         // Hard-coded special case
         defaultVal = domObj.ownerDocument.URL;
     }
-    if (defaultVal !== null || data.isNullable) {
+    if ((defaultVal !== null || data.isNullable) && data.customGetter !== true) {
         ReflectionHarness.test(function() {
             ReflectionHarness.assertEquals(idlObj[idlName], defaultVal);
         }, "IDL get with DOM attribute unset");

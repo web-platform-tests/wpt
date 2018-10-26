@@ -56,7 +56,7 @@
         var m = meters[i];
         test(function() {
           var meter = document.createElement("meter");
-          meter.value = m.value;
+          if (m.value) meter.value = m.value;
           if (m.min) meter.min= m.min;
           if (m.max) meter.max = m.max;
           if (m.low) meter.low = m.low;
@@ -79,6 +79,31 @@
           assert_throws(new TypeError(), function() { meter.high = "foobar"; }, "high attribute");
           assert_throws(new TypeError(), function() { meter.optimum = "foobar"; }, "optimum attribute");
       }, "Invalid floating-point number values");
+      test(function() {
+          var meter = document.createElement("meter");
+          meter.value = 37.5;
+          meter.min= 10;
+          meter.max = 100;
+          meter.low = 10;
+          meter.high = 100;
+          meter.optimum = 55;
+          assert_equals(meter.value, 37.5, "meter value");
+          assert_equals(meter.min, 10, "min value");
+          assert_equals(meter.max, 100, "max value");
+          assert_equals(meter.low, 10, "low value");
+          assert_equals(meter.high, 100, "high value");
+          assert_equals(meter.optimum, 55, "optimum value");
+          meter.removeAttribute("min");
+          assert_equals(meter.min, 0.0, "unset min attribute");
+          meter.removeAttribute("max");
+          assert_equals(meter.max, 1.0, "unset max attribute");
+          meter.removeAttribute("low");
+          assert_equals(meter.low, 0.0, "unset low attribute");
+          meter.removeAttribute("high");
+          assert_equals(meter.high, 1.0, "unset high attribute");
+          meter.removeAttribute("optimum");
+          assert_equals(meter.optimum, 0.5, "unset optimum attibute");
+      }, "Unset attributes test");
 
     </script>
     <script type="text/javascript">

@@ -84,7 +84,7 @@ class Session(object):
         }
         self.logger.debug('SEND %s' % (message,))
         self.connection.send(
-            'Target.sendMessageToTarget',
+            'Target.sendMessageToTarget', # API status: stable
             {'sessionId': self._id, 'message': json.dumps(message)}
         )
 
@@ -100,17 +100,20 @@ class Session(object):
         return result['result']
 
     def close_target(self, target_id):
-        return self._send('Target.closeTarget', {'targetId': target_id})
+        return self._send(
+            'Target.closeTarget', # API status: stable
+            {'targetId': target_id}
+        )
 
     def evaluate(self, source):
-        result = self._send('Runtime.evaluate', {
+        result = self._send('Runtime.evaluate', { # API status: stable
             'expression': source
         })
 
         if 'exceptionDetails' in result:
             details = result['exceptionDetails']
             try:
-                self._send('Runtime.releaseObject', {
+                self._send('Runtime.releaseObject', { # API status: stable
                     'objectId': details['exception']['objectId']
                 })
             finally:
@@ -140,7 +143,7 @@ class Session(object):
             }});
         }}())'''.format(source=source)
 
-        result = self._send('Runtime.evaluate', {
+        result = self._send('Runtime.evaluate', { # API status: stable
             'expression': as_expression,
             'awaitPromise': True,
             'returnByValue': True,
@@ -150,7 +153,7 @@ class Session(object):
         if 'exceptionDetails' in result:
             details = result['exceptionDetails']
             try:
-                self._send('Runtime.releaseObject', {
+                self._send('Runtime.releaseObject', { # API status: stable
                     'objectId': details['exception']['objectId']
                 })
             finally:
@@ -175,7 +178,7 @@ class Session(object):
               }});
         }}())'''.format(source=source)
 
-        result = self._send('Runtime.evaluate', {
+        result = self._send('Runtime.evaluate', { # API status: stable
             'expression': as_expression,
             # This parameter is set to `true` in all cases to mimic the
             # behavior of the "Execute Script" command in WebDriver
@@ -188,7 +191,7 @@ class Session(object):
         if 'exceptionDetails' in result:
             details = result['exceptionDetails']
             try:
-                self._send('Runtime.releaseObject', {
+                self._send('Runtime.releaseObject', { # API status: stable
                     'objectId': details['exception']['objectId']
                 })
             finally:
@@ -197,10 +200,10 @@ class Session(object):
         return unpack_remote_object(result['result'])
 
     def targets(self):
-        return self._send('Target.getTargets')['targetInfos']
+        return self._send('Target.getTargets')['targetInfos'] # API status: stable
 
     def navigate(self, url):
-        return self._send('Page.navigate', {'url': url})
+        return self._send('Page.navigate', {'url': url}) # API status: stable
 
     def perform(self, actions):
         # Restructure the WebDriver actions object into a two-dimensional list.
@@ -252,11 +255,11 @@ class Session(object):
         document_object = self.evaluate(
             'Array.from(document.querySelectorAll(%s))' % json.dumps(selector)
         )
-        props = self._send('Runtime.getProperties', {
+        props = self._send('Runtime.getProperties', { # API status: stable
             'objectId': document_object['objectId'],
             'ownProperties': True
         })['result']
-        self._send('Runtime.releaseObject', {
+        self._send('Runtime.releaseObject', { # API status: stable
             'objectId': document_object['objectId']
         })
 
@@ -270,15 +273,15 @@ class Session(object):
         return [Element(self, node_id) for node_id in node_ids]
 
     def screenshot(self):
-        return self._send('Page.captureScreenshot', {})
+        return self._send('Page.captureScreenshot', {}) # API status: stable
 
     def set_window_bounds(self, bounds):
         result = self._send(
-            'Browser.getWindowForTarget', # EXPERIMENTAL
+            'Browser.getWindowForTarget', # API status: experimental
             {'targetId': self.target_id}
         )
         return self._send(
-            'Browser.setWindowBounds', # EXPERIMENTAL
+            'Browser.setWindowBounds', # API status: experimental
             {
                 'windowId': result['windowId'],
                 'bounds': bounds

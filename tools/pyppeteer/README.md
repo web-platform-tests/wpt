@@ -24,8 +24,8 @@ current functionality is considered stable by the maintainers. The stability of
 each feature is clearly documented by that project, and this module avoids
 unstable features whenever possible.
 
-All usages of unstable features are annotated in the source code with an
-in-line code comment, `# EXPERIMENTAL`.
+The stability of all features are annotated in the source code with an in-line
+code comment--one of `# API status: stable` or `# API status: experimental`.
 
 ## WebSocket Clients in Python
 

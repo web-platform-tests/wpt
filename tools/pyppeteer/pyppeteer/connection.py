@@ -96,14 +96,15 @@ class Connection(object):
         self._open_event.wait()
         self.logger.info('opened')
 
-        self.send('Security.setIgnoreCertificateErrors', { # EXPERIMENTAL
-            'ignore': True
-        })
+        self.send(
+            'Security.setIgnoreCertificateErrors', # API status: experimental
+            {'ignore': True}
+        )
 
     def create_session(self, target_id):
         if target_id not in self._sessions:
             result = self.send(
-                'Target.attachToTarget',
+                'Target.attachToTarget', # API status: stable
                 {'targetId': target_id}
             )
 

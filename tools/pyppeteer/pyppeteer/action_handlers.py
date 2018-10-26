@@ -6,7 +6,7 @@ def pause(session, action):
 def keyDown(session, action):
     assert 'value' in action
 
-    session._send('Input.dispatchKeyEvent', {
+    session._send('Input.dispatchKeyEvent', { # API status: stable
         'type': 'keyDown',
         'text': action['value']
     })
@@ -14,7 +14,7 @@ def keyDown(session, action):
 def keyUp(session, action):
     assert 'value' in action
 
-    session._send('Input.dispatchKeyEvent', {
+    session._send('Input.dispatchKeyEvent', { # API status: stable
         'type': 'keyUp',
         'text': action['value']
     })
@@ -39,7 +39,7 @@ def pointerMove(session, action):
     else:
         raise Exception('Faulty origin: %s' % action['origin'])
 
-    session._send('Input.dispatchMouseEvent', {
+    session._send('Input.dispatchMouseEvent', { # API status: stable
         'type': 'mouseMoved',
         'x': destination['x'],
         'y': destination['y']
@@ -63,7 +63,7 @@ def _pointer_vertical(session, action, event_type):
             'Inaddressable button ID: %s' % action['button']
         )
 
-    session._send('Input.dispatchMouseEvent', {
+    session._send('Input.dispatchMouseEvent', { # API status: stable
         'type': event_type,
         'button': button,
         'clickCount': 1,

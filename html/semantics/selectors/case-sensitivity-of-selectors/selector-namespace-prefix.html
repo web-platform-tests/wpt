@@ -1,0 +1,39 @@
+<!doctype html>
+<title>Test whether namespace prefixes are lowercased</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+@namespace xhtml "http://www.w3.org/1999/xhtml";
+
+xhtml|span {
+    color: rgb(0, 128, 128);
+}
+
+XHTML|span {
+    color: rgb(255, 165, 0);
+}
+
+[xhtml|data-foo] {
+    color: rgb(255, 255, 0);
+}
+
+[XHTML|data-foo] {
+    color: rgb(128, 0, 128);
+}
+</style>
+<span></span>
+<div></div>
+<script>
+test(function() {
+  let span = document.querySelector("span");
+  let cs = window.getComputedStyle(span);
+  assert_equals(cs.color, "rgb(0, 128, 128)");
+}, "element selector");
+
+test(function() {
+  let div = document.querySelector("div");
+  div.setAttributeNS("http://www.w3.org/1999/xhtml", "data-foo", "bar");
+  let cs = window.getComputedStyle(div);
+  assert_equals(cs.color, "rgb(255, 255, 0)");
+}, "attribute selector");
+</script>

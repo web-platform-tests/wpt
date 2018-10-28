@@ -15,7 +15,7 @@
   <div id="target"></div>
 </div>
 <script>
-assert_inherited('color-interpolation-filters', 'auto', 'srgb'); // SVG 1.1 had linearrgb as initial value.
+assert_inherited('color-interpolation-filters', 'linearrgb', 'srgb');
 assert_not_inherited('filter', 'none', 'blur(10px)');
 assert_not_inherited('flood-color', 'rgb(0, 0, 0)', 'rgb(42, 53, 64)');
 assert_not_inherited('flood-opacity', '1', '0.5');

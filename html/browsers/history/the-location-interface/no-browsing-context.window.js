@@ -15,23 +15,53 @@ function bcLessLocation() {
 }
 
 [
-  ["href", "about:blank", "https://example.com/", "/", "http://test:test/", "test test", "test:test", "chrome:fail"],
-  ["protocol", "about:", "http", "about", "test"],
-  ["host", "", "example.com", "test test", "()"],
-  ["hostname", "", "example.com"],
-  ["port", "", "80", "", "443", "notaport"],
-  ["pathname", "", "/", "x"],
-  ["search", "", "test"],
-  ["hash", "", "test", "#"]
+  {
+    "property": "href",
+    "expected": "about:blank",
+    "values": ["https://example.com/", "/", "http://test:test/", "test test", "test:test", "chrome:fail"]
+  },
+  {
+    "property": "protocol",
+    "expected": "about:",
+    "values": ["http", "about", "test"]
+  },
+  {
+    "property": "host",
+    "expected": "",
+    "values": ["example.com", "test test", "()"]
+  },
+  {
+    "property": "hostname",
+    "expected": "",
+    "values": ["example.com"]
+  },
+  {
+    "property": "port",
+    "expected": "",
+    "values": ["80", "", "443", "notaport"]
+  },
+  {
+    "property": "pathname",
+    "expected": "",
+    "values": ["/", "x"]
+  },
+  {
+    "property": "search",
+    "expected": "",
+    "values": ["test"]
+  },
+  {
+    "property": "hash",
+    "expected": "",
+    "values": ["test", "#"]
+  }
 ].forEach(testSetup => {
-  const prop = testSetup.shift(),
-        expected = testSetup.shift();
-  testSetup.forEach(value => {
+  testSetup.values.forEach(value => {
   	test(() => {
   	  const loc = bcLessLocation();
-  	  loc[prop] = value;
-  	  assert_equals(loc[prop], expected);
-  	}, "Setting `" + prop + "` to `" + value + "` of a `Location` object sans browsing context is a no-op");
+  	  loc[testSetup.property] = value;
+  	  assert_equals(loc[testSetup.property], testSetup.expected);
+  	}, "Setting `" + testSetup.property + "` to `" + value + "` of a `Location` object sans browsing context is a no-op");
   });
 });
 

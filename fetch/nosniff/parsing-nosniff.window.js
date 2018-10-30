@@ -7,6 +7,9 @@ function runTests(allTestData) {
     async_test(t => {
       const script = document.createElement("script");
       t.add_cleanup(() => script.remove());
+      // A <script> element loading a classic script does not care about the MIME type, unless
+      // X-Content-Type-Options: nosniff is specified, in which case a JavaScript MIME type is
+      // enforced, which x/x is not.
       if (testData.nosniff) {
         script.onerror = t.step_func_done();
         script.onload = t.unreached_func("Script should not have loaded");

@@ -46,6 +46,6 @@ function test_entries(actualEntries, expectedEntries) {
 function delayedLoadListener(callback) {
   window.addEventListener('load', function() {
     // TODO(cvazac) Remove this setTimeout when spec enforces sync entries
-    setTimeout(callback, 0)
+    step_timeout(callback, 0)
   })
 }

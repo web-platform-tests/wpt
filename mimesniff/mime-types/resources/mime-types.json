@@ -92,7 +92,7 @@
     "input": "text/html;\u000Ccharset=gbk",
     "output": "text/html;charset=gbk",
     "navigable": true,
-    "encoding": "GBK"
+    "encoding": "UTF-8"
   },
   "Single quotes are a token, not a delimiter",
   {

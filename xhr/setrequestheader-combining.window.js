@@ -4,8 +4,9 @@ test(() => {
   client.setRequestHeader("test-me", "");
   client.setRequestHeader("test-me", "");
   client.setRequestHeader("test-me", " ");
+  client.setRequestHeader("test-me", "\t");
   client.setRequestHeader("test-me", "x\tx");
   client.setRequestHeader("test-me", "");
   client.send();
-  assert_equals(client.responseText, "test-me: , , , x\tx, \n");
+  assert_equals(client.responseText, "test-me: , , , , x\tx, \n");
 }, "setRequestHeader() combining header values");

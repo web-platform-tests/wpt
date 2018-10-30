@@ -16,9 +16,10 @@ async_test((t) => {
 
 [
   ["content-length", "0", "header-content-length"],
+  ["content-length", "0, 0", "header-content-length-twice"],
   ["double-trouble", ", ", "headers-double-empty"],
   ["foo-test", "1, 2, 3", "headers-basic"],
-  ["heya", ", 1, , , 2", "headers-some-are-empty"],
+  ["heya", ", \u000B\u000C, 1, , , 2", "headers-some-are-empty"],
   ["www-authenticate", "1, 2, 3, 4", "headers-www-authenticate"],
 ].forEach(testValues => {
   async_test(t => {

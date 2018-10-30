@@ -1,12 +1,12 @@
 // Registration tests that mostly exercise the service worker script contents or
 // response.
-function registration_tests_script(register_method, check_error_types) {
+function registration_tests_script(register_method, check_error_types, script_type) {
   promise_test(function(t) {
       var script = 'resources/invalid-chunked-encoding.py';
       var scope = 'resources/scope/invalid-chunked-encoding/';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of invalid chunked encoding script should fail.');
     }, 'Registering invalid chunked encoding script');
 
@@ -15,7 +15,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/invalid-chunked-encoding-with-flush/';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of invalid chunked encoding script should fail.');
     }, 'Registering invalid chunked encoding script with flush');
 
@@ -24,7 +24,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/parse-error';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of script including parse error should fail.');
     }, 'Registering script including parse error');
 
@@ -33,7 +33,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/undefined-error';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of script including undefined error should fail.');
     }, 'Registering script including undefined error');
 
@@ -42,7 +42,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/uncaught-exception';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of script including uncaught exception should fail.');
     }, 'Registering script including uncaught exception');
 
@@ -51,7 +51,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/import-malformed-script';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of script importing malformed script should fail.');
     }, 'Registering script importing malformed script');
 
@@ -60,7 +60,7 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/no-such-worker';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of non-existent script should fail.');
     }, 'Registering non-existent script');
 
@@ -69,14 +69,14 @@ function registration_tests_script(register_method, check_error_types) {
       var scope = 'resources/scope/import-no-such-script';
       return promise_rejects(t,
           check_error_types ? new TypeError : null,
-          register_method(script, {scope: scope}),
+          register_method(script, {scope: scope, type: script_type}),
           'Registration of script importing non-existent script should fail.');
     }, 'Registering script importing non-existent script');
 
   promise_test(function(t) {
       var script = 'resources/malformed-worker.py?caught-exception';
       var scope = 'resources/scope/caught-exception';
-      return register_method(script, {scope: scope})
+      return register_method(script, {scope: scope, type: script_type})
         .then(function(registration) {
             assert_true(
               registration instanceof ServiceWorkerRegistration,

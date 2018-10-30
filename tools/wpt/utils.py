@@ -1,7 +1,6 @@
 import logging
 import os
 import subprocess
-import sys
 import tarfile
 import zipfile
 from io import BytesIO

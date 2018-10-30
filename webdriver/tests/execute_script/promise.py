@@ -1,5 +1,3 @@
-# META: timeout=long
-
 import pytest
 
 from tests.support.asserts import assert_dialog_handled, assert_error, assert_success
@@ -16,44 +14,67 @@ def execute_script(session, script, args=None):
         body)
 
 
-def set_timeouts(session, timeouts):
-    return session.transport.send(
-        "POST", "session/{session_id}/timeouts".format(**vars(session)),
-        timeouts)
-
-
 def test_promise_resolve(session):
     response = execute_script(session, """
-        return new Promise(
-            (resolve) => setTimeout(
-                () => resolve('foobar'),
-                1
-            )
-        );
+        return Promise.resolve('foobar');
         """)
     assert_success(response, "foobar")
 
 
-def test_promise_reject(session):
-    response = execute_script(session, """
-        return new Promise(
-            (resolve, reject) => setTimeout(
-                () => reject('some_error'),
-                1
-            )
-        );
-        """)
-    assert_error(response, "some_error")
-
-
-def test_promise_timeout(session):
-    response = set_timeouts(session, {"script": 100})
+def test_promise_resolve_delayed(session):
     response = execute_script(session, """
         return new Promise(
             (resolve) => setTimeout(
-                () => resolve('timeout_error'),
-                200
+                () => resolve('foobar'),
+                50
             )
         );
         """)
-    assert_error(response, "timeout_error")
+    assert_success(response, "foobar") 
+
+
+def test_promise_reject(session):
+    response = execute_script(session, """
+        return Promise.reject(new Error('my error'));
+        """)
+    assert_error(response, "unknown error")
+    assert response.body["value"]["message"] == "Error: my error"
+
+
+def test_promise_reject_delayed(session):
+    response = execute_script(session, """
+        return new Promise(
+            (resolve, reject) => setTimeout(
+                () => reject(new Error('my error')),
+                50
+            )
+        );
+        """)
+    assert_error(response, "unknown error")
+    assert response.body["value"]["message"] == "Error: my error" 
+
+
+def test_promise_resolve_timeout(session):
+    session.timeouts.script = .1
+    response = execute_script(session, """
+        return new Promise(
+            (resolve) => setTimeout(
+                () => resolve('success'),
+                1000
+            )
+        );
+        """)
+    assert_error(response, "timeout error")
+
+
+def test_promise_reject_timeout(session):
+    session.timeouts.script = .1
+    response = execute_script(session, """
+        return new Promise(
+            (resolve, reject) => setTimeout(
+                () => reject(new Error('my error')),
+                1000
+            )
+        );
+        """)
+    assert_error(response, "timeout error")

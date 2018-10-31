@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing embed reload - back button navigation</title>
+<script>
+    function verify_iframe_reload_not_observable() {
+        let entries = performance.getEntriesByType("resource");
+        let found_first_iframe = false;
+        console.log(entries);
+        for (entry of entries) {
+            if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-reloads.html") {
+                found_first_iframe = true;
+            }
+            if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/reloaded_iframe.html") {
+                opener.postMessage("FAIL - reloaded iframe exposed", "*");
+                return;
+            }
+        }
+        if (found_first_iframe) {
+            opener.postMessage("FAIL - first iframe exposed", "*");
+            return;
+        }
+        opener.postMessage("PASS", "*");
+    }
+    window.addEventListener("message", e=>{
+        if (e.data == "reloaded") {
+            if (sessionStorage.navigated) {
+                delete sessionStorage.navigated;
+                verify_iframe_reload_not_observable();
+            } else {
+                sessionStorage.navigated = true;
+                setTimeout(() => {
+                    history.pushState({}, "", "embed-reload-back.sub.html");
+                    location.href="navigate_back.html";
+                }, 0);
+            }
+        }
+    });
+</script>
+<embed type="text/html" src="{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-reloads.html">

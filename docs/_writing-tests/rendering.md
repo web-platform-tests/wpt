@@ -84,8 +84,14 @@ Obviously, none of this can be taken as absolute rules, as testing of
 color-related functionality will necessitate using some of these
 colors!
 
+## Self Describing
+
+Tests should described the situations when they and when they fail. Read more about it [here][].
+
 
 [ahem]: {{ site.baseurl }}{% link _writing-tests/ahem.md %}
 [visual]: {{ site.baseurl }}{% link _writing-tests/visual.md %}
 
 [ref-filled-green-100px-square]: https://github.com/w3c/csswg-test/blob/master/reference/ref-filled-green-100px-square.xht
+
+[here]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md#be-self-describing %}

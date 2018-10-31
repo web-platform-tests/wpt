@@ -30,6 +30,11 @@ jobs:
     condition: variables.run_wptrunner_infrastructure
 
   - script: |
+      sudo cp fonts/Ahem.ttf /Library/Fonts
+    displayName: 'Install Ahem font'
+    condition: variables.run_wptrunner_infrastructure
+
+  - script: |
       # https://github.com/web-platform-tests/results-collection/blob/master/src/scripts/trust-root-ca.sh
       sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain tools/certs/cacert.pem
     displayName: 'Install web-platform.test certificate'
@@ -51,6 +56,6 @@ jobs:
     condition: variables.run_wptrunner_infrastructure
 
   - script: |
-      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --install-fonts --channel=preview safari_webdriver infrastructure/
+      no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests'
     condition: variables.run_wptrunner_infrastructure

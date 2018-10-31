@@ -90,7 +90,7 @@ def test_promise_resolve_timeout(session):
     response = execute_script(session, """
         return new Promise(
             (resolve) => setTimeout(
-                () => resolve('success'),
+                () => resolve(),
                 1000
             )
         );

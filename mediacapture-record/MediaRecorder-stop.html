@@ -29,7 +29,7 @@
         recorder.start();
         assert_equals(recorder.state, "recording", "MediaRecorder has been started successfully");
         video.getVideoTracks()[0].stop();
-    }, "MediaRecorder will stop recording and fire a stop event when all tracks are ended", { timeout: 10000 });
+    }, "MediaRecorder will stop recording and fire a stop event when all tracks are ended");
 </script>
 </body>
 </html>

@@ -7,7 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
     let t = async_test("Test that object reloads are not observable by the parent, even after history navigations");
-    window.open("resources/object-reload-back.sub.html"); 
+    window.open("resources/object-reload-back.sub.html");
     addEventListener("message", t.step_func(e => {
         assert_equals(e.data, "PASS");
         t.done();

@@ -14,7 +14,7 @@
             if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-reloads.html") {
                 found_first_iframe = true;
             }
-            assert_not_equals(entry.name, "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/reloaded_iframe.html", "Reloaded iframe should not be observable");
+            assert_not_equals(entry.name, "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/reloaded_iframe.html", "Reloaded iframe should not be observable.");
         }
         assert_true(found_first_iframe, "Initial iframe should be observable");
         t.done();

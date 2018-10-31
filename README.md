@@ -329,6 +329,16 @@ In the vast majority of cases the **only** upstream branch that you
 should need to care about is `master`. If you see other branches in
 the repository, you can generally safely ignore them.
 
+Pulling Pull request branches
+=============================
+
+You can pull the PR branches locally by this method:
+
+```
+[remote "origin"]
+fetch = +refs/pull//head:refs/remotes/origin/pr/
+```
+
 Contributing
 ============
 

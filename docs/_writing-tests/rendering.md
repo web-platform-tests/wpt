@@ -13,7 +13,6 @@ given test passed or not.
 
 Tests should make it obvious when they pass and when they fail. It shouldn't be necessary to consult the specification to figure out whether a test has passed of failed.
 
-
 ## Indicating success
 
 Success is largely indicated by the color green; typically in one of

@@ -93,4 +93,3 @@ colors!
 [visual]: {{ site.baseurl }}{% link _writing-tests/visual.md %}
 
 [ref-filled-green-100px-square]: https://github.com/w3c/csswg-test/blob/master/reference/ref-filled-green-100px-square.xht
-

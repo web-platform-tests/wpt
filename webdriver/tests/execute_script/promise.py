@@ -33,12 +33,29 @@ def test_promise_resolve_delayed(session):
     assert_success(response, "foobar") 
 
 
+def test_promise_all_resolve(session):
+    response = execute_script(session, """
+        return Promise.all([
+            Promise.resolve(1),
+            Promise.resolve(2)
+        ]);
+        """)
+    assert_success(response, [1, 2])
+
+
+def test_await_promise_resolve(session):
+    response = execute_script(session, """
+        const res = await Promise.resolve('foobar');
+        return res;
+        """)
+    assert_success(response, "foobar")
+
+
 def test_promise_reject(session):
     response = execute_script(session, """
         return Promise.reject(new Error('my error'));
         """)
-    assert_error(response, "unknown error")
-    assert response.body["value"]["message"] == "Error: my error"
+    assert_error(response, "javascript error")
 
 
 def test_promise_reject_delayed(session):
@@ -50,8 +67,22 @@ def test_promise_reject_delayed(session):
             )
         );
         """)
-    assert_error(response, "unknown error")
-    assert response.body["value"]["message"] == "Error: my error" 
+    assert_error(response, "javascript error")
+
+def test_promise_all_reject(session):
+    response = execute_script(session, """
+        return Promise.all([
+            Promise.resolve(1),
+            Promise.reject(new Error('error'))
+        ]);
+        """)
+    assert_error(response, "javascript error")
+
+def test_await_promise_reject(session):
+    response = execute_script(session, """
+        await Promise.reject(new Error('my error'));
+        """)
+    assert_error(response, "javascript error")
 
 
 def test_promise_resolve_timeout(session):

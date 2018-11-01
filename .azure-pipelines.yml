@@ -55,10 +55,6 @@ jobs:
     displayName: 'Update /etc/hosts'
     condition: variables.run_wptrunner_infrastructure
 
-  - script: ./wpt manifest
-    displayName: 'Update manifest'
-    condition: variables.run_wptrunner_infrastructure
-
-  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
+  - script: no_proxy='*' ./wpt run --yes --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run infrastructure/ tests'
     condition: variables.run_wptrunner_infrastructure

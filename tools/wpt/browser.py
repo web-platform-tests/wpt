@@ -647,19 +647,24 @@ class Safari(Browser):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
-        if webdriver_binary is not None:
-            try:
-                output = call(webdriver_binary, "--version").strip()
-                # TODO: explain
-                if output.startswith('Included with '):
-                    output = output[14:]
-                return output
-            except subprocess.CalledProcessError:
-                # TODO stderr gets printed :'(
-                pass
-        # TODO: this message doesn't show up anywhere
-        logger.warn("Unable to determine Safari version.")
-        return None
+        if webdriver_binary is None:
+            logger.warn("Cannot find Safari version without safaridriver")
+            return None
+        # Use `safaridriver --version` to get the version. Example output:
+        # "Included with Safari 12.1 (14607.1.11)"
+        # "Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)"
+        # The `--version` flag was added in STP 67, so allow the call to fail.
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s --version", webdriver_binary)
+            return None
+        m = re.match(r"Included with Safari (.*)", version_string)
+        if not m:
+            logger.warn("Failed to extract version from: s%", version_string)
+            return None
+        return m.group(1)
+
 
 class SafariWebDriver(Safari):
     product = "safari_webdriver"

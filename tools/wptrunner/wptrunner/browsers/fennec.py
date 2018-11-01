@@ -111,7 +111,8 @@ def env_extras(**kwargs):
 
 def run_info_extras(**kwargs):
     return {"e10s": False,
-            "headless": False}
+            "headless": False,
+            "sw-e10s": False}
 
 
 def env_options():
@@ -227,8 +228,9 @@ class FennecBrowser(FirefoxBrowser):
         if self.runner is not None:
             try:
                 if self.runner.device.connected:
-                    self.runner.device.device.remove_forwards(
-                        "tcp:{}".format(self.marionette_port))
+                    if len(self.runner.device.device.list_forwards()) > 0:
+                        self.runner.device.device.remove_forwards(
+                            "tcp:{}".format(self.marionette_port))
             except Exception:
                 traceback.print_exception(*sys.exc_info())
             # We assume that stopping the runner prompts the

@@ -262,7 +262,9 @@ class Firefox(Browser):
         if dest is None:
             dest = os.pwd
 
-        dest = os.path.join(dest, "profiles", channel, version)
+        dest = os.path.join(dest, "profiles", channel)
+        if version:
+            dest = os.path.join(dest, version)
         have_cache = False
         if os.path.exists(dest):
             if channel != "nightly":
@@ -365,9 +367,8 @@ class Firefox(Browser):
 
         return path
 
-    def version(self, binary=None, channel=None):
+    def version(self, binary=None):
         """Retrieve the release version of the installed browser."""
-        binary = binary or self.find_binary(channel)
         version_string = call(binary, "--version").strip()
         m = re.match(r"Mozilla Firefox (.*)", version_string)
         if not m:
@@ -569,7 +570,9 @@ class Opera(Browser):
         except subprocess.CalledProcessError:
             logger.warn("Failed to call %s", binary)
             return None
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+        m = re.search(r"[0-9\.]+( [a-z]+)?$", output.strip())
+        if m:
+            return m.group(0)
 
 
 class Edge(Browser):
@@ -707,7 +710,13 @@ class Servo(Browser):
     def version(self, binary):
         """Retrieve the release version of the installed browser."""
         output = call(binary, "--version")
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+        m = re.search(r"Servo ([0-9\.]+-[a-f0-9]+)?(-dirty)?$", output.strip())
+        if m:
+            return m.group(0)
+
+
+class ServoWebDriver(Servo):
+    product = "servodriver"
 
 
 class Sauce(Browser):

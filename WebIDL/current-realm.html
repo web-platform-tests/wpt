@@ -50,6 +50,9 @@
 
        const cloneObj = obj.clone();
        assert_global(cloneObj);
+
+       const involvedCloneObj = self[val].prototype["clone"].call(cloneObj);
+       assert_global(cloneObj);
      }, val)
    })
 

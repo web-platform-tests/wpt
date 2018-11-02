@@ -1,30 +1,53 @@
 <!DOCTYPE html>
 <title>document wg color</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-fgcolor">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-linkcolor">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-vlinkcolor">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-alinkcolor">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-bgcolor">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<body>
+<body text="red" linkColor="green" vlink="blue" alink="orange" bgColor="yellow">
 <script>
 test(function() {
-var body = document.createElement("body");
-document.documentElement.appendChild(body);
-document.fgColor = "red";
-assert_equals(document.fgColor,"");
+  assert_equals(document.fgColor, document.body.text);
 
-document.bgColor = "red";
-assert_equals(document.bgColor,"");
+  assert_equals(document.linkColor, document.body.link);
 
-document.linkColor = "red";
-assert_equals(document.linkColor,"");
+  assert_equals(document.vlinkColor, document.body.vLink);
 
-document.vlinkColor = "red";
-assert_equals(document.vlinkColor,"");
+  assert_equals(document.alinkColor, document.body.aLink);
 
-document.alinkColor = "red";
-assert_equals(document.alinkColor,"");
+  assert_equals(document.bgColor, document.body.bgColor);
+})
+test(function() {
+  document.body.text = red;
 
-document.documentElement.removeChild(body);
-});
+  assert_equals(document.fgColor, "red");
+}, "document's fgColor IDL attribute reflects the body's text content attribute");
+
+test(function() {
+  document.body.link = green;
+
+  assert_equals(document.linkColor, "green");
+}, "document's linkColor IDL attribute reflects the body's link content attribute");
+
+test(function() {
+  document.body.vLink = blue;
+
+  assert_equals(document.vlinkColor, "blue");
+}, "document's vlinkColor IDL attribute reflects the body's vLink content attribute");
+
+test(function() {
+  document.body.aLink = orange;
+
+  assert_equals(document.alinkColor, "orange");
+}, "document's alinkColor IDL attribute reflects the body's aLink content attribute");
+
+test(function() {
+  document.body.bgColor = yellow;
+
+  assert_equals(document.bgColor, "yellow");
+}, "document's bgColor IDL attribute reflects the body's bgColor content attribute");
 </script>
-</body>

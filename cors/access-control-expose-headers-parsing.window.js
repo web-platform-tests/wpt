@@ -2,7 +2,7 @@ promise_test(() => fetch("resources/access-control-expose-headers.json").then(re
 
 function runTests(allTestData) {
   allTestData.forEach(testData => {
-  	const encodedInput = encodeURIComponent(testData.input)
+    const encodedInput = encodeURIComponent(testData.input);
     promise_test(() => {
       const relativeURL = "resources/expose-headers.py?expose=" + encodedInput,
             url = new URL(relativeURL, location.href).href.replace("://", "://élève.");

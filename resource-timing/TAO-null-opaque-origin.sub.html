@@ -9,11 +9,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
-window.addEventListener("message", e=>{
-    test(()=> {
-        assert_equals(e.data, "PASS");
-    }, "Makes sure that the iframe passed the test and had an entry which passed the timing allow check");
-});
+const t = async_test("Test null TAO value with opaque origins");
+window.addEventListener("message", t.step_func_done(e=>{
+    assert_equals(e.data, "PASS");
+}));
 </script>
 </head>
 <body>

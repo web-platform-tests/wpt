@@ -7,22 +7,27 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
     let t = async_test("Test that object refreshes are not observable by the parent");
-    function verify_iframe_refresh_not_observable() {
+    const pre_refresh_url = new URL("resources/document-that-refreshes.html", location).href;
+    const post_refresh_url = new URL("resources/document-refreshed.html", location).href;
+    function verify_object_refresh_not_observable() {
         let entries = performance.getEntriesByType("resource");
-        let found_first_iframe = false;
+        let found_first_object = false;
         for (entry of entries) {
-            if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-refreshes.html") {
-                found_first_iframe = true;
+            if (entry.name == pre_refresh_url) {
+                found_first_object = true;
             }
-            assert_not_equals(entry.name, "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/refreshed_iframe.html", "Refreshed object should not be observable");
+            assert_not_equals(entry.name, post_refresh_url, "Refreshed object should not be observable");
         }
-        assert_true(found_first_iframe, "Initial object should be observable");
+        assert_true(found_first_object, "Initial object should be observable");
         t.done();
     }
     window.addEventListener("message", t.step_func(e=>{
         if (e.data == "refreshed") {
-            verify_iframe_refresh_not_observable();
+            verify_object_refresh_not_observable();
         }
     }));
 </script>
-<object type="text/html" data="{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-refreshes.html">
+<object></object>
+<script>
+    document.getElementsByTagName("object")[0].data = pre_refresh_url;
+</script>

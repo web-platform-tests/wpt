@@ -22,6 +22,11 @@ const defaultDetails = Object.freeze({
 
 promise_test(async t => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
+  assert_true(await request.canMakePayment(), "one of the methods should be supported");
+}, `If payment method identifier and serialized parts are supported, resolve promise with true.`);
+
+promise_test(async t => {
+  const request = new PaymentRequest(defaultMethods, defaultDetails);
   const acceptPromise = test_driver.bless("show payment request", () => {
     request.show() // Sets state to "interactive"
   });
@@ -86,11 +91,6 @@ promise_test(async t => {
 }, `If request.[[state]] is "created", then return a promise that resolves to true for known method.`);
 
 promise_test(async t => {
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  assert_true(await request.canMakePayment(), "one of the methods should be supported");
-}, `If payment method identifier and serialized parts are supported, resolve promise with true.`);
-
-promise_test(async t => {
   const unsupportedMethods = [
     "this-is-not-supported",
     "https://not.supported",
@@ -137,35 +137,6 @@ promise_test(async t => {
     }
   }
 }, `If payment method identifier is unknown, resolve promise with false.`);
-
-promise_test(async t => {
-  // This test might never actually hit its assertion, but that's allowed.
-  const request = new PaymentRequest(defaultMethods, defaultDetails);
-  for (let i = 0; i < 1000; i++) {
-    try {
-      await request.canMakePayment();
-    } catch (err) {
-      assert_equals(
-        err.name,
-        "NotAllowedError",
-        "if it throws, then it must be a NotAllowedError."
-      );
-      break;
-    }
-  }
-  for (let i = 0; i < 1000; i++) {
-    try {
-      await new PaymentRequest(defaultMethods, defaultDetails).canMakePayment();
-    } catch (err) {
-      assert_equals(
-        err.name,
-        "NotAllowedError",
-        "if it throws, then it must be a NotAllowedError."
-      );
-      break;
-    }
-  }
-}, `Optionally, at the user agent's discretion, return a promise rejected with a "NotAllowedError" DOMException.`);
 </script>
 
 <small>

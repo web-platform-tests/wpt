@@ -16,6 +16,11 @@ def main(request, response):
     elif tao == 'origin':
     # case-sensitive match for origin, pass
         response.headers.set('Timing-Allow-Origin', origin)
+    elif tao == 'origin_port':
+    # case-sensitive match for origin, pass
+        origin_parts = origin.split(":")
+        host = origin_parts[0] + ":" + origin_parts[1]
+        response.headers.set('Timing-Allow-Origin', host + ":8888")
     elif tao == 'space':
     # space separated list of origin and wildcard, fail
         response.headers.set('Timing-Allow-Origin', (origin + ' *'))

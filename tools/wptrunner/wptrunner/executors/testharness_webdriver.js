@@ -8,10 +8,6 @@ window.win.addEventListener('DOMContentLoaded', (e) => {
   callback();
 });
 
-
-window.message_queue = [];
-window.testdriver_callback = null;
-
 if (%(timeout)s != null) {
   window.timer = setTimeout(function() {
     window.win.timeout();

@@ -52,7 +52,7 @@ matrix:
           packages:
             - libnss3-tools
       env:
-        - JOB=stability SCRIPT=tools/ci/ci_stability.sh PRODUCT=firefox:nightly
+        - JOB=affected_tests SCRIPT=tools/ci/ci_stability.sh PRODUCT=firefox:nightly
     - name: "stability (Chrome Dev)"
       if: type = pull_request
       os: linux
@@ -63,7 +63,7 @@ matrix:
             - libappindicator1
             - fonts-liberation
       env:
-        - JOB=stability SCRIPT=tools/ci/ci_stability.sh PRODUCT=chrome:dev
+        - JOB=affected_tests SCRIPT=tools/ci/ci_stability.sh PRODUCT=chrome:dev
     - name: "tools/ unittests (Python 2)"
       if: type = pull_request
       os: linux

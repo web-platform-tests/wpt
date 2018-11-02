@@ -1,11 +1,11 @@
 from tools.ci import jobs
 
 all_jobs = set([
+    "affected_tests",
     "build_css",
     "lint",
     "manifest_upload",
     "resources_unittest",
-    "stability",
     "tools_unittest",
     "update_built",
     "wpt_integration",
@@ -34,30 +34,30 @@ def test_testharness():
                          includes=["resources_unittest"]) == set()
 
 
-def test_stability():
+def test_affected_tests():
     assert jobs.get_jobs(["dom/historical.html"],
-                         includes=["stability"]) == set(["stability"])
+                         includes=["affected_tests"]) == set(["affected_tests"])
     assert jobs.get_jobs(["tools/pytest.ini"],
-                         includes=["stability"]) == set()
-    assert jobs.get_jobs(["serve"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
+    assert jobs.get_jobs(["serve.py"],
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["resources/testharness.js"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["docs/.gitignore"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["dom/tools/example.py"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["conformance-checkers/test.html"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["dom/README.md"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["css/build-css-testsuite.sh"],
-                         includes=["stability"]) == set()
+                         includes=["affected_tests"]) == set()
     assert jobs.get_jobs(["css/CSS21/test-001.html"],
-                         includes=["stability"]) == set(["stability"])
+                         includes=["affected_tests"]) == set(["affected_tests"])
     assert jobs.get_jobs(["css/build-css-testsuite.sh",
                           "css/CSS21/test-001.html"],
-                         includes=["stability"]) == set(["stability"])
+                         includes=["affected_tests"]) == set(["affected_tests"])
 
 
 def test_tools_unittest():

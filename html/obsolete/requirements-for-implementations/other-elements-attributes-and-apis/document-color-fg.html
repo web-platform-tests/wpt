@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <title>document wg color</title>
-<link rel="author" title="akansha2608" href="mailto:akanshasinghal999@gmail.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-fgcolor">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
+<body>
 <script>
 test(function() {
 var body = document.createElement("body");
 document.documentElement.appendChild(body);
 document.fgColor = "red";
-document.bgColor = "red";
-document.linkColor = "red";
-document.vlinkColor = "red";
-document.alinkColor = "red";
 assert_equals(document.fgColor,"");
+
+document.bgColor = "red";
 assert_equals(document.bgColor,"");
+
+document.linkColor = "red";
 assert_equals(document.linkColor,"");
+
+document.vlinkColor = "red";
 assert_equals(document.vlinkColor,"");
+
+document.alinkColor = "red";
 assert_equals(document.alinkColor,"");
+
 document.documentElement.removeChild(body);
 });
 </script>
+</body>

@@ -15,6 +15,16 @@ XHTML|span {
 </style>
 <span></span>
 <div></div>
+<!--
+
+This is specifically testing whether the namespace prefix gets lowercased when
+comparing element type selectors on HTML elements in HTML documents.
+
+i.e., whether the entire CSS qualified name is lowercased, or whether it's just
+the local part (see element-selectors.html for tests about case-sensitivity of
+the local part)
+
+-->
 <script>
 test(function() {
   let span = document.querySelector("span");

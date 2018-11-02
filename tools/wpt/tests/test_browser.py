@@ -1,5 +1,4 @@
 import mock
-import pytest
 import subprocess
 
 from tools.wpt import browser
@@ -21,13 +20,13 @@ def test_safari_version_errors(mocked_check_output):
     safari = browser.Safari()
 
     # No webdriver_binary
-    assert safari.version() == None
+    assert safari.version() is None
 
     # `safaridriver --version` return gibberish
     mocked_check_output.return_value = 'gibberish'
-    assert safari.version(webdriver_binary="safaridriver") == None
+    assert safari.version(webdriver_binary="safaridriver") is None
 
     # `safaridriver --version` fails (as it does for Safari <=12.0)
     mocked_check_output.return_value = 'dummy'
     mocked_check_output.side_effect = subprocess.CalledProcessError(1, 'cmd')
-    assert safari.version(webdriver_binary="safaridriver") == None
+    assert safari.version(webdriver_binary="safaridriver") is None

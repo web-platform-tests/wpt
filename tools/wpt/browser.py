@@ -366,6 +366,7 @@ class Firefox(Browser):
             os.unlink(package_path)
 
         return path
+
     def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         version_string = call(binary, "--version").strip()

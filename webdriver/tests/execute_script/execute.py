@@ -32,6 +32,80 @@ def test_ending_comment(session):
     assert_success(response, 1)
 
 
+@pytest.mark.parametrize("values", [
+      {"primitive": "null", "expected": None},
+      {"primitive": "undefined", "expected": None},
+      {"primitive": "true", "expected": True},
+      {"primitive": "false", "expected": False},
+      {"primitive": "23", "expected": 23},
+      {"primitive": "'a string'", "expected": "a string"}
+    ])
+def test_primitive_serialization(session, values):
+    response = execute_script(session, "return %s;" % values["primitive"])
+    assert_success(response)
+    assert response.body["value"] == values["expected"]
+
+
+# > To clone an object, taking the arguments value, seen, and clone algorithm:
+# >
+# > 1. Let result be the value of the first matching statement, matching on
+# > value:
+# >
+# >     instance of NodeList
+# >     instance of HTMLCollection
+# >     instance of Array
+# >         A new Array which length property is equal to the result of getting
+# >         the property length of value.
+# >     Otherwise
+# >         A new Object.
+#
+# https://w3c.github.io/webdriver/#dfn-clone-an-object
+@pytest.mark.parametrize("collection", [
+  "[]",
+  "document.createElement('div').childNodes",
+  "document.createElement('div').children"
+])
+def test_array_serialization(session, collection):
+    response = execute_script(session, "return %s;" % collection)
+    assert_success(response)
+    assert isinstance(response.body["value"], list)
+    assert len(response.body["value"]) == 0
+
+
+@pytest.mark.parametrize("collection", [
+  "[]",
+  "document.createElement('div').childNodes",
+  "document.createElement('div').children"
+])
+def test_foreign_array_serialization(session, create_window, collection):
+    session.window_handle = create_window()
+
+    response = execute_script(session, "return %s;" % collection)
+    assert_success(response)
+    assert isinstance(response.body["value"], list)
+    assert len(response.body["value"]) == 0
+
+
+@pytest.mark.parametrize("non_array", [
+  "(function() { return arguments; }(1, 2, 3))",
+  "new Proxy([1, 2, 3], {})",
+  "({length: 3, 0: 1, 1: 2, 2: 3})"
+])
+def test_non_array_serialization(session, non_array):
+    response = execute_script(session, "return %s;" % non_array)
+    assert_success(response)
+    value = response.body["value"]
+    assert isinstance(value, dict)
+    assert "length" in value
+    assert value["length"] == 3
+    assert "0" in value
+    assert value["0"] == 1
+    assert "1" in value
+    assert value["1"] == 2
+    assert "2" in value
+    assert value["2"] == 3
+
+
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
 def test_abort_by_user_prompt(session, dialog_type):
     response = execute_script(

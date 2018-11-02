@@ -74,25 +74,25 @@
     "input": "text/html;charset=\u000Bgbk",
     "output": "text/html",
     "navigable": true,
-    "encoding": "UTF-8"
+    "encoding": null
   },
   {
     "input": "text/html;charset=\u000Cgbk",
     "output": "text/html",
     "navigable": true,
-    "encoding": "UTF-8"
+    "encoding": null
   },
   {
     "input": "text/html;\u000Bcharset=gbk",
     "output": "text/html",
     "navigable": true,
-    "encoding": "UTF-8"
+    "encoding": null
   },
   {
     "input": "text/html;\u000Ccharset=gbk",
-    "output": "text/html;charset=gbk",
+    "output": "text/html",
     "navigable": true,
-    "encoding": "UTF-8"
+    "encoding": null
   },
   "Single quotes are a token, not a delimiter",
   {

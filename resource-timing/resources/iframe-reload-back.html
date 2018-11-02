@@ -4,20 +4,22 @@
 <meta charset="utf-8" />
 <title>Resource Timing iframe reload - back button navigation</title>
 <script>
+    const pre_reload_url = new URL("document-that-reloads.html", location).href;
+    const post_reload_url = new URL("document-reloaded.html", location).href;
     function verify_iframe_reload_not_observable() {
         let entries = performance.getEntriesByType("resource");
         let found_first_iframe = false;
         for (entry of entries) {
-            if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-reloads.html") {
+            if (entry.name == pre_reload_url) {
                 found_first_iframe = true;
             }
-            if (entry.name == "{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/reloaded_iframe.html") {
+            if (entry.name == post_reload_url) {
                 opener.postMessage("FAIL - reloaded iframe exposed", "*");
                 return;
             }
         }
-        if (found_first_iframe) {
-            opener.postMessage("FAIL - first iframe exposed", "*");
+        if (!found_first_iframe) {
+            opener.postMessage("FAIL - first iframe not exposed", "*");
             return;
         }
         opener.postMessage("PASS", "*");
@@ -30,11 +32,14 @@
             } else {
                 sessionStorage.navigated = true;
                 setTimeout(() => {
-                    history.pushState({}, "", "iframe-reload-back.sub.html");
+                    history.pushState({}, "", "iframe-reload-back.html");
                     location.href="navigate_back.html";
                 }, 0);
             }
         }
     });
 </script>
-<iframe src="{{location[scheme]}}://{{host]}}:{{ports[http][0]}}/resource-timing/resources/iframe-that-reloads.html">
+<iframe></iframe>
+<script>
+    document.getElementsByTagName("iframe")[0].src = pre_reload_url;
+</script>

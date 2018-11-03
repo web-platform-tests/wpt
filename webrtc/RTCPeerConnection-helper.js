@@ -476,6 +476,21 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
   const ontrackPromise = addEventListenerPromise(t, callee, 'track');
   await exchangeOffer(caller, callee);
   return ontrackPromise;
+}
+
+// Feature detect whether we can call add transceiver on the target browser.
+// We cannot simply test if the addTransceiver method exist, as Chrome
+// for example would have it implemented but only usable in unified plan,
+// which means it would fail the tests when using default peer connection config
+function canAddTransceiver() {
+  const pc = new RTCPeerConnection();
+  try {
+    pc.addTransceiver('audio');
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
 
 // A dependency agnostic way of adding track depending
 // on the supported method on a browser. Uses addTransceiver(track)
@@ -483,7 +498,7 @@ async function exchangeOfferAndListenToOntrack(t, caller, callee) {
 // or falls back to the legacy addStream method (which has been removed
 // from the spec).
 function addTrackOrTransceiver(pc, track, mediaStream) {
-  if (typeof pc.addTransceiver === 'function') {
+  if (canAddTransceiver()) {
     return pc.addTransceiver(track);
   } else if (typeof pc.addTrack === 'function') {
     // Note: The mediaStream argument is optional in the spec, but we require
@@ -542,8 +557,9 @@ async function createTrackAndStreamWithCleanup(t, kind = 'audio') {
 function findTransceiverForSender(pc, sender) {
   const transceivers = pc.getTransceivers();
   for (let i = 0; i < transceivers.length; ++i) {
-    if (transceivers[i].sender == sender)
+    if (transceivers[i].sender == sender) {
       return transceivers[i];
+    }
   }
   return null;
 }

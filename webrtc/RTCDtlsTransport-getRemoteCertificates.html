@@ -36,50 +36,46 @@
     }
   }
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
-    return createDtlsTransportsFromSenderReceiver(pc1, pc2)
-    .then(([dtlsTransports1, dtlsTransports2]) => {
-      const dtlsTransports = [...dtlsTransports1, ... dtlsTransports2];
+    const [dtlsTransports1, dtlsTransports2] = await createDtlsTransportsFromSenderReceiver(pc1, pc2)
+    const dtlsTransports = [...dtlsTransports1, ... dtlsTransports2];
 
-      for (const dtlsTransport of dtlsTransports) {
-        validateConnectingDtlsTransport(dtlsTransport);
-      }
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectingDtlsTransport(dtlsTransport);
+    }
 
-      return Promise.all([
-        waitConnectingPc(pc1),
-        waitConnectingPc(pc2)
-      ])
-      .then(() => {
-        for (const dtlsTransport of dtlsTransports) {
-          validateConnectedDtlsTransport(dtlsTransport);
-        }
-      });
-    });
+    await waitConnectingPc(pc1);
+    await waitConnectingPc(pc2);
+
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectedDtlsTransport(dtlsTransport);
+    }
   }, 'RTP - connected DTLS transports should have valid remote certificates');
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+
     const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
 
-    return createDtlsTransportsFromSctp(pc1, pc2)
-    .then(dtlsTransports => {
-      for (const dtlsTransport of dtlsTransports) {
-        validateConnectingDtlsTransport(dtlsTransport);
-      }
+    const dtlsTransports = await createDtlsTransportsFromSctp(pc1, pc2)
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectingDtlsTransport(dtlsTransport);
+    }
 
-      return Promise.all([
-        waitConnectingPc(pc1),
-        waitConnectingPc(pc2)
-      ])
-      .then(() => {
-        for (const dtlsTransport of dtlsTransports) {
-          validateConnectedDtlsTransport(dtlsTransport);
-        }
-      });
-    });
+    await waitConnectingPc(pc1);
+    await waitConnectingPc(pc2);
+
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectedDtlsTransport(dtlsTransport);
+    }
   }, 'SCTP - connected DTLS transports should have valid remote certificates');
 
 </script>

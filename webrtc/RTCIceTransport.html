@@ -81,85 +81,79 @@
       'Expect selectedCandidatePair to be null');
   }
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
+
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    return createIceTransportsFromSctp(pc1, pc2)
-    .then(([iceTransport1, iceTransport2]) => {
-      return Promise.all([
-        waitConnectingPc(pc1),
-        waitConnectingPc(pc2)
-      ])
-      .then(() => {
-        validateConnectedIceTransport(iceTransport1);
-        validateConnectedIceTransport(iceTransport2);
-      });
-    });
+    const [iceTransport1, iceTransport2] = await createIceTransportsFromSctp(pc1, pc2);
+
+    await waitConnectingPc(pc1);
+    await waitConnectingPc(pc2);
+
+    validateConnectedIceTransport(iceTransport1);
+    validateConnectedIceTransport(iceTransport2);
   }, 'SCTP - Connected ICE transports should have relevants attributes set');
 
-  promise_test(t => {
-    const pc1 = new RTCPeerConnection();
-    const pc2 = new RTCPeerConnection();
-
-    return createIceTransportsFromSenderReceiver(pc1, pc2)
-    .then(([iceTransports1, iceTransports2]) => {
-      const iceTransports = [...iceTransports1, ...iceTransports2];
-      return Promise.all([
-        waitConnectingPc(pc1),
-        waitConnectingPc(pc2)
-      ])
-      .then(() => {
-        for (const iceTransport of iceTransports) {
-          validateConnectedIceTransport(iceTransport);
-        }
-      });
-    });
-  }, 'RTP - Connected ICE transports should have relevants attributes set');
-
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-
-    return getTrackFromUserMedia('audio')
-    .then(([track, mediaStream]) => {
-      addTrackOrTransceiver(pc, track, mediaStream);
-
-      // setLocalDescription should initialize sender/receiver.transport
-      return pc.createOffer()
-      .then(offer => pc.setLocalDescription(offer))
-      .then(() => {
-        const iceTransports = getIceTransportsFromSenderReceiver(pc);
-
-        for (const iceTransport of iceTransports) {
-          validateUnconnectedIceTransport(iceTransport);
-        }
-      });
-    });
-  }, 'RTP - Unconnected iceTransport should have empty remote candidates and selected pair');
-
-  promise_test(t => {
+  promise_test(async t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
+
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
+
+    const [iceTransports1, iceTransports2] = await createIceTransportsFromSenderReceiver(pc1, pc2)
+    const iceTransports = [...iceTransports1, ...iceTransports2];
+
+    await waitConnectingPc(pc1);
+    await waitConnectingPc(pc2);
+
+    for (const iceTransport of iceTransports) {
+      validateConnectedIceTransport(iceTransport);
+    }
+  }, 'RTP - Connected ICE transports should have relevants attributes set');
+
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
+    const [track, mediaStream] = await getTrackFromUserMedia('audio')
+    addTrackOrTransceiver(pc, track, mediaStream);
+
+    // setLocalDescription should initialize sender/receiver.transport
+    const offer = await pc.createOffer()
+    await pc.setLocalDescription(offer)
+
+    const iceTransports = getIceTransportsFromSenderReceiver(pc);
+
+    for (const iceTransport of iceTransports) {
+      validateUnconnectedIceTransport(iceTransport);
+    }
+  }, 'RTP - Unconnected iceTransport should have empty remote candidates and selected pair');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
     pc1.createDataChannel('');
 
     // pc1.setRemoteDescription(answer) without pc2 setting answer to it's
     // localDescription. This is because pc1.sctp is only set after setting
     // answer description.
-    return pc1.createOffer()
-    .then(offer =>
-      pc1.setLocalDescription(offer)
-      .then(() => pc2.setRemoteDescription(offer))
-      .then(() => pc2.createAnswer()))
-    .then(answer => pc1.setRemoteDescription(answer))
-    .then(() => {
-      const iceTransport = getIceTransportFromSctpTransport(pc1.sctp);
+    const offer = await pc1.createOffer()
 
-      validateUnconnectedIceTransport(iceTransport);
-    });
+    await pc1.setLocalDescription(offer)
+    await pc2.setRemoteDescription(offer)
+    const answer = await pc2.createAnswer()
+    await pc1.setRemoteDescription(answer)
+
+    const iceTransport = getIceTransportFromSctpTransport(pc1.sctp);
+    validateUnconnectedIceTransport(iceTransport);
   }, 'SCTP - Unconnected iceTransport should have empty remote candidates and selected pair');
 
 </script>

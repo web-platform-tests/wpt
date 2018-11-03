@@ -65,7 +65,7 @@ function getDtlsTransportsFromSenderReceiver(pc) {
 
   const dtlsTransportsSet = new Set();
 
-  function adddDtlsTransport(transport) {
+  function addDtlsTransport(transport) {
     // Add a dtls transport to the result set, if it is
     // not null/undefined. Although the spec mandates both
     // transport and rtcpTransport fields must be set together,
@@ -79,13 +79,13 @@ function getDtlsTransportsFromSenderReceiver(pc) {
   }
 
   for (const sender of senders) {
-    adddDtlsTransport(sender.transport);
-    adddDtlsTransport(sender.rtcpTransport);
+    addDtlsTransport(sender.transport);
+    addDtlsTransport(sender.rtcpTransport);
   }
 
   for (const receiver of receivers) {
-    adddDtlsTransport(receiver.transport);
-    adddDtlsTransport(receiver.rtcpTransport);
+    addDtlsTransport(receiver.transport);
+    addDtlsTransport(receiver.rtcpTransport);
   }
 
   const dtlsTransports = [...dtlsTransportsSet];
@@ -129,17 +129,16 @@ function getIceTransportsFromSenderReceiver(pc) {
 // and connecting two peer connections. Returns an
 // array of two RTCDtlsTransports, which obtained
 // from RTCSctpTransport in pc.sctp.
-function createDtlsTransportsFromSctp(pc1, pc2) {
+async function createDtlsTransportsFromSctp(pc1, pc2) {
   pc1.createDataChannel('');
   exchangeIceCandidates(pc1, pc2);
 
-  return doSignalingHandshake(pc1, pc2)
-  .then(() => {
-    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
-    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+  await doSignalingHandshake(pc1, pc2);
 
-    return [dtlsTransport1, dtlsTransport2];
-  });
+  const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
+  const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+
+  return [dtlsTransport1, dtlsTransport2];
 }
 
 // Create DTLS transports by adding tracks and connecting
@@ -147,38 +146,33 @@ function createDtlsTransportsFromSctp(pc1, pc2) {
 // RTCDtlsTransports. This is because each peer connection
 // may have multiple underlying DTLS transports for each
 // RTP/RTCP sender/receivers.
-function createDtlsTransportsFromSenderReceiver(pc1, pc2) {
-  return getTrackFromUserMedia('audio')
-  .then(([track, mediaStream]) => {
-    addTrackOrTransceiver(pc1, track, mediaStream);
-    exchangeIceCandidates(pc1, pc2);
+async function createDtlsTransportsFromSenderReceiver(pc1, pc2) {
+  const [track, mediaStream] = await getTrackFromUserMedia('audio')
+  addTrackOrTransceiver(pc1, track, mediaStream);
+  exchangeIceCandidates(pc1, pc2);
 
-    return doSignalingHandshake(pc1, pc2)
-    .then(() => {
-      const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
-      const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+  await doSignalingHandshake(pc1, pc2);
 
-      return [dtlsTransports1, dtlsTransports2];
-    });
-  });
+  const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
+  const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+
+  return [dtlsTransports1, dtlsTransports2];
 }
 
-function createIceTransportsFromSctp(pc1, pc2) {
-  return createDtlsTransportsFromSctp(pc1, pc2)
-  .then(([dtlsTransport1, dtlsTransport2]) => {
-    const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
-    const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
+async function createIceTransportsFromSctp(pc1, pc2) {
+  const [dtlsTransport1, dtlsTransport2] = await createDtlsTransportsFromSctp(pc1, pc2)
 
-    return [iceTransport1, iceTransport2];
-  });
+  const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
+  const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
+
+  return [iceTransport1, iceTransport2];
 }
 
-function createIceTransportsFromSenderReceiver(pc1, pc2) {
-  return createDtlsTransportsFromSenderReceiver(pc1, pc2)
-  .then(([dtlsTransports1, dtlsTransports2]) => {
-    const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
-    const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
+async function createIceTransportsFromSenderReceiver(pc1, pc2) {
+  const [dtlsTransports1, dtlsTransports2] = await createDtlsTransportsFromSenderReceiver(pc1, pc2)
 
-    return [iceTransports1, iceTransports2];
-  });
+  const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
+  const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
+
+  return [iceTransports1, iceTransports2];
 }

@@ -71,7 +71,7 @@ def env_options():
 
 
 def run_info_extras(**kwargs):
-    return {"wk_port": kwargs["webkit_port"]}
+    return {"webkit_port": kwargs["webkit_port"]}
 
 
 class WebKitBrowser(Browser):

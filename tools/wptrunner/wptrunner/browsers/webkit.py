@@ -35,12 +35,13 @@ def capabilities_for_port(server_config, **kwargs):
     if port_name in ["gtk", "wpe"]:
         port_key_map = {"gtk": "webkitgtk"}
         browser_options_port = port_key_map.get(port_name, port_name)
+        browser_options_key = "%s:browserOptions" % browser_options_port
 
         return {
             "browserName": "MiniBrowser",
             "browserVersion": "2.20",
             "platformName": "ANY",
-            "{}:browserOptions".format(browser_options_port): {
+            browser_options_key: {
                 "binary": kwargs["binary"],
                 "args": kwargs.get("binary_args", []),
                 "certificates": [

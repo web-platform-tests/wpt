@@ -492,11 +492,10 @@ function canAddTransceiver() {
   }
 }
 
-// A dependency agnostic way of adding track depending
-// on the supported method on a browser. Uses addTransceiver(track)
-// first if available, otherwise use addTrack(track, mediaStream)
-// or falls back to the legacy addStream method (which has been removed
-// from the spec).
+// A dependency agnostic way to add a track track depending
+// on the supported method on a browser.
+//   - If addTransceiver(track) is usable, use that.
+//   - If addTrack(track, mediastream) is available, use that.
 function addTrackOrTransceiver(pc, track, mediaStream) {
   if (canAddTransceiver()) {
     return pc.addTransceiver(track);
@@ -505,10 +504,6 @@ function addTrackOrTransceiver(pc, track, mediaStream) {
     // it for now so that we can test older versions of Firefox that only
     // implements addTrack with compulsory mediaStream argument.
     return pc.addTrack(track, mediaStream);
-  } else if (typeof pc.addStream === 'function') {
-    // FIXME: Remove this case of using addStream once most major browsers
-    // support addTrack or addTransceiver.
-    return pc.addStream(mediaStream)
   } else {
     throw new Error('This test requires either addTrack or addTransceiver implemented');
   }

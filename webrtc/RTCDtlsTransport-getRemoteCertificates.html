@@ -13,9 +13,9 @@
   //  doSignalingHandshake
 
   // The following helper functions are called from RTCTransport-helper.js:
-  //  waitConnectingPc
-  //  createDtlsTransportsFromSctp
-  //  createDtlsTransportsFromSenderReceiver
+  //  waitForConnectedState
+  //  getDtlsTransportFromSctpTransport
+  //  getDtlsTransportsFromSenderReceiver
 
   function validateConnectedDtlsTransport(dtlsTransport) {
     const certs = dtlsTransport.getRemoteCertificates();
@@ -43,17 +43,31 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [dtlsTransports1, dtlsTransports2] = await createDtlsTransportsFromSenderReceiver(pc1, pc2)
-    const dtlsTransports = [...dtlsTransports1, ... dtlsTransports2];
+    const [track, mediaStream] = await getTrackFromUserMedia('audio')
+    addTrackOrTransceiver(pc1, track, mediaStream);
+    exchangeIceCandidates(pc1, pc2);
 
-    for (const dtlsTransport of dtlsTransports) {
+    await doSignalingHandshake(pc1, pc2);
+
+    const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
+    const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+
+    for (const dtlsTransport of dtlsTransports1) {
       validateConnectingDtlsTransport(dtlsTransport);
     }
 
-    await waitConnectingPc(pc1);
-    await waitConnectingPc(pc2);
+    for (const dtlsTransport of dtlsTransports2) {
+      validateConnectingDtlsTransport(dtlsTransport);
+    }
 
-    for (const dtlsTransport of dtlsTransports) {
+    await waitForConnectedState(pc1);
+    await waitForConnectedState(pc2);
+
+    for (const dtlsTransport of dtlsTransports1) {
+      validateConnectedDtlsTransport(dtlsTransport);
+    }
+
+    for (const dtlsTransport of dtlsTransports2) {
       validateConnectedDtlsTransport(dtlsTransport);
     }
   }, 'RTP - connected DTLS transports should have valid remote certificates');
@@ -65,17 +79,22 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const dtlsTransports = await createDtlsTransportsFromSctp(pc1, pc2)
-    for (const dtlsTransport of dtlsTransports) {
-      validateConnectingDtlsTransport(dtlsTransport);
-    }
+    pc1.createDataChannel('');
+    exchangeIceCandidates(pc1, pc2);
 
-    await waitConnectingPc(pc1);
-    await waitConnectingPc(pc2);
+    await doSignalingHandshake(pc1, pc2);
 
-    for (const dtlsTransport of dtlsTransports) {
-      validateConnectedDtlsTransport(dtlsTransport);
-    }
+    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
+    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+
+    validateConnectingDtlsTransport(dtlsTransport1);
+    validateConnectingDtlsTransport(dtlsTransport2);
+
+    await waitForConnectedState(pc1);
+    await waitForConnectedState(pc2);
+
+    validateConnectedDtlsTransport(dtlsTransport1);
+    validateConnectedDtlsTransport(dtlsTransport2);
   }, 'SCTP - connected DTLS transports should have valid remote certificates');
 
 </script>

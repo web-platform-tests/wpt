@@ -16,7 +16,7 @@
 // is "connected", all RTCIceTransports and RTCDtlsTransports are in the
 // "connected", "completed" or "closed" state and at least one of them is in the
 // "connected" or "completed" state.
-function waitConnectingPc(pc) {
+function waitForConnectedState(pc) {
   return new Promise((resolve, reject) => {
     if (pc.connectionState === 'connected') {
       resolve();
@@ -56,9 +56,9 @@ function getIceTransportFromSctpTransport(sctpTransport) {
 }
 
 // Get one or more RTCDtlsTransports from RTCRtpSender/Receiver
-// in pc. There may be more than one e.g. there are more than one
-// senders/receivers or when there are different underlying
-// transports for RTP and RTCP.
+// in pc.There may be more than one DTLSTransport if there are
+// multiple underlying transports, such as when not using max-bundle,
+// or when not using RTCP multiplexing.
 function getDtlsTransportsFromSenderReceiver(pc) {
   const senders = pc.getSenders();
   const receivers = pc.getReceivers();
@@ -91,7 +91,7 @@ function getDtlsTransportsFromSenderReceiver(pc) {
   const dtlsTransports = [...dtlsTransportsSet];
 
   if (dtlsTransports.length === 0) {
-    assert_unreached('Expect to get at least one unique RTCDtlsTransport from sender receivers');
+    assert_unreached('Expect to get at least one unique RTCDtlsTransport from senders and receivers');
   }
 
   return dtlsTransports;
@@ -123,56 +123,4 @@ function getIceTransportsFromSenderReceiver(pc) {
     dtlsTransports.map(getIceTransportFromDtlsTransport));
 
   return [...iceTransports];
-}
-
-// Create DTLS transports by creating data channels
-// and connecting two peer connections. Returns an
-// array of two RTCDtlsTransports, which obtained
-// from RTCSctpTransport in pc.sctp.
-async function createDtlsTransportsFromSctp(pc1, pc2) {
-  pc1.createDataChannel('');
-  exchangeIceCandidates(pc1, pc2);
-
-  await doSignalingHandshake(pc1, pc2);
-
-  const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
-  const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
-
-  return [dtlsTransport1, dtlsTransport2];
-}
-
-// Create DTLS transports by adding tracks and connecting
-// two peer connections. Returns an array of two array of
-// RTCDtlsTransports. This is because each peer connection
-// may have multiple underlying DTLS transports for each
-// RTP/RTCP sender/receivers.
-async function createDtlsTransportsFromSenderReceiver(pc1, pc2) {
-  const [track, mediaStream] = await getTrackFromUserMedia('audio')
-  addTrackOrTransceiver(pc1, track, mediaStream);
-  exchangeIceCandidates(pc1, pc2);
-
-  await doSignalingHandshake(pc1, pc2);
-
-  const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
-  const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
-
-  return [dtlsTransports1, dtlsTransports2];
-}
-
-async function createIceTransportsFromSctp(pc1, pc2) {
-  const [dtlsTransport1, dtlsTransport2] = await createDtlsTransportsFromSctp(pc1, pc2)
-
-  const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
-  const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
-
-  return [iceTransport1, iceTransport2];
-}
-
-async function createIceTransportsFromSenderReceiver(pc1, pc2) {
-  const [dtlsTransports1, dtlsTransports2] = await createDtlsTransportsFromSenderReceiver(pc1, pc2)
-
-  const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
-  const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
-
-  return [iceTransports1, iceTransports2];
 }

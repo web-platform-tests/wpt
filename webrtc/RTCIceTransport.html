@@ -15,10 +15,12 @@
   //  addTrackOrTransceiver
 
   // The following helper functions are called from RTCTransport-helper.js:
-  //  waitConnectingPc
+  //  waitForConnectedState
+  //  getDtlsTransportFromSctpTransport
+  //  getDtlsTransportsFromSenderReceiver
   //  getIceTransportFromSctpTransport
-  //  getIceTransportsFromSenderReceiver
-  //  createIceTransportsFromSenderReceiver
+  //  getIceTransportFromDtlsTransport
+  //  getIceTransportsFromDtlsTransports
 
   function validateIceCandidates(candidates) {
     assert_greater_than(candidates.length, 0,
@@ -88,10 +90,19 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [iceTransport1, iceTransport2] = await createIceTransportsFromSctp(pc1, pc2);
+    pc1.createDataChannel('');
+    exchangeIceCandidates(pc1, pc2);
 
-    await waitConnectingPc(pc1);
-    await waitConnectingPc(pc2);
+    await doSignalingHandshake(pc1, pc2);
+
+    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
+    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+
+    const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
+    const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
+
+    await waitForConnectedState(pc1);
+    await waitForConnectedState(pc2);
 
     validateConnectedIceTransport(iceTransport1);
     validateConnectedIceTransport(iceTransport2);
@@ -104,13 +115,26 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [iceTransports1, iceTransports2] = await createIceTransportsFromSenderReceiver(pc1, pc2)
-    const iceTransports = [...iceTransports1, ...iceTransports2];
+    const [track, mediaStream] = await getTrackFromUserMedia('audio')
+    addTrackOrTransceiver(pc1, track, mediaStream);
+    exchangeIceCandidates(pc1, pc2);
 
-    await waitConnectingPc(pc1);
-    await waitConnectingPc(pc2);
+    await doSignalingHandshake(pc1, pc2);
 
-    for (const iceTransport of iceTransports) {
+    const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
+    const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+
+    const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
+    const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
+
+    await waitForConnectedState(pc1);
+    await waitForConnectedState(pc2);
+
+    for (const iceTransport of iceTransports1) {
+      validateConnectedIceTransport(iceTransport);
+    }
+
+    for (const iceTransport of iceTransports2) {
       validateConnectedIceTransport(iceTransport);
     }
   }, 'RTP - Connected ICE transports should have relevants attributes set');

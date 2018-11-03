@@ -1,7 +1,7 @@
 module.exports = {
   rules: {
     'no-undef': 1,
-    'no-unused-vars': 0,
+    'no-unused-vars': 0
   },
   plugins: [
     'html'
@@ -9,6 +9,9 @@ module.exports = {
   env: {
     browser: true,
     es6: true
+  },
+  parserOptions: {
+    ecmaVersion: 2017
   },
   globals: {
     // testharness globals
@@ -155,15 +158,14 @@ module.exports = {
     validateCertificateStats: true,
 
     // RTCTransport-helper.js
-    waitConnectingPc: true,
+    waitForConnectedState: true,
     getDtlsTransportFromSctpTransport: true,
     getIceTransportFromSctpTransport: true,
     getDtlsTransportsFromSenderReceiver: true,
     getIceTransportFromDtlsTransport: true,
     getIceTransportsFromSenderReceiver: true,
-    createDtlsTransportsFromSctp: true,
-    createDtlsTransportsFromSenderReceiver: true,
-    createIceTransportsFromSctp: true,
-    createIceTransportsFromSenderReceiver: true,
+    getIceTransportFromDtlsTransport: true,
+    getIceTransportsFromDtlsTransports: true,
+    getIceTransportsFromSenderReceiver: true
   }
 }

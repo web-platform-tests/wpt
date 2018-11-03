@@ -25,14 +25,14 @@
 
     for(const cert of certs) {
       assert_true(cert instanceof ArrayBuffer,
-        'Expect certificate elements be instance of ArrayBuffer');
+        'Certificates should be represented as ArrayBuffers');
     }
   }
 
   function validateConnectingDtlsTransport(dtlsTransport) {
     if (dtlsTransport.state !== 'connected') {
       assert_array_equals(dtlsTransport.getCertificates(), [],
-        'Expect DTLS certificates be initially empty until become connected');
+        'The DTLS certificate list should be empty before the transport is connected');
     }
   }
 

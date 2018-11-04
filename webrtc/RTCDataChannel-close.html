@@ -94,7 +94,7 @@ promise_test(async (t) => {
       assert_equals(dc2.readyState, 'closed',
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
-      if (nCloses === nChannels - 1) {
+      if (nCloses === nChannels) {
         resolver.resolve();
       }
     });
@@ -133,7 +133,7 @@ promise_test(async (t) => {
       assert_equals(dc1.readyState, 'closed',
         'dc1 should be closed after onclose has been raised');
       ++nCloses;
-      if (nCloses === nChannels - 1) {
+      if (nCloses === nChannels) {
         resolver.resolve();
       }
     });
@@ -177,7 +177,7 @@ promise_test(async (t) => {
       assert_equals(dc1.readyState, 'closed',
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
-      if (nCloses === nChannels - 1) {
+      if (nCloses === nChannels) {
         resolver.resolve();
       }
     });
@@ -226,7 +226,7 @@ promise_test(async (t) => {
       assert_equals(dc1.readyState, 'closed',
         'dc2 should be closed after onclose has been raised');
       ++nCloses;
-      if (nCloses === nChannels - 1) {
+      if (nCloses === nChannels) {
         resolver.resolve();
       }
     });

@@ -260,62 +260,6 @@
     const localStream =
         await getNoiseStream({audio: true});
     t.add_cleanup(() => localStream.getTracks().forEach(track => track.stop()));
-    const [track] = localStream.getTracks();
-    const sender = caller.addTrack(track, localStream);
-    const ontrackPromise = addEventListenerPromise(t, callee, 'track', e => {
-      assert_equals(e.streams.length, 1);
-      return e.streams[0];
-    });
-    await exchangeOfferAnswer(caller, callee);
-    const remoteStream = await ontrackPromise;
-    const remoteTrack = remoteStream.getTracks()[0];
-    const onremovetrackPromise =
-        addEventListenerPromise(t, remoteStream, 'removetrack', e => {
-      assert_equals(e.track, remoteTrack);
-      assert_equals(remoteStream.getTracks().length, 0,
-                    'Remote stream emptied of tracks.');
-    });
-    caller.removeTrack(sender);
-    await exchangeOffer(caller, callee);
-    await onremovetrackPromise;
-  }, 'removeTrack() makes stream.onremovetrack fire and the track to be removed from the stream.');
-
-  promise_test(async t => {
-    const caller = new RTCPeerConnection();
-    t.add_cleanup(() => caller.close());
-    const callee = new RTCPeerConnection();
-    t.add_cleanup(() => callee.close());
-    let eventSequence = '';
-    const localStream =
-        await getNoiseStream({audio: true});
-    t.add_cleanup(() => localStream.getTracks().forEach(track => track.stop()));
-    const sender = caller.addTrack(localStream.getTracks()[0], localStream);
-    const ontrackPromise = addEventListenerPromise(t, callee, 'track', e => {
-      assert_equals(e.streams.length, 1);
-      return e.streams[0];
-    });
-    await exchangeOfferAnswer(caller, callee);
-    const remoteStream = await ontrackPromise;
-    const remoteTrack = remoteStream.getTracks()[0];
-    const onremovetrackPromise =
-        addEventListenerPromise(t, remoteStream, 'removetrack', e => {
-      eventSequence += 'stream.onremovetrack;';
-    });
-    caller.removeTrack(sender);
-    await exchangeOffer(caller, callee);
-    eventSequence += 'setRemoteDescription;';
-    await onremovetrackPromise;
-    assert_equals(eventSequence, 'stream.onremovetrack;setRemoteDescription;');
-  }, 'stream.onremovetrack fires before setRemoteDescription resolves.');
-
-  promise_test(async t => {
-    const caller = new RTCPeerConnection();
-    t.add_cleanup(() => caller.close());
-    const callee = new RTCPeerConnection();
-    t.add_cleanup(() => callee.close());
-    const localStream =
-        await getNoiseStream({audio: true});
-    t.add_cleanup(() => localStream.getTracks().forEach(track => track.stop()));
     const sender = caller.addTrack(localStream.getTracks()[0], localStream);
     const ontrackPromise = addEventListenerPromise(t, callee, 'track', e => {
       assert_equals(e.streams.length, 1);

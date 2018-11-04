@@ -91,7 +91,6 @@ This test uses data only, and thus does not require fake media devices.
 
     gSecondConnection = new RTCPeerConnection(null);
     gSecondConnection.onicecandidate = onIceCandidateToSecond;
-    gSecondConnection.onaddstream = onRemoteStream;
 
     // The createDataChannel is necessary and sufficient to make
     // sure the ICE connection be attempted.

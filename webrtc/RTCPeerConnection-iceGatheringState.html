@@ -11,8 +11,8 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  // doSignalingHandshake
-  // exchangeIceCandidates
+
+  // doSignalingAndCandidateHandshake
   // generateAudioReceiveOnlyOffer
 
   /*
@@ -134,8 +134,8 @@
     // when icegatheringstatechange event is fired.
     pc2.addEventListener('icegatheringstatechange', onIceGatheringStateChange);
 
-    exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2);
+    doSignalingAndCandidateHandshake(pc1, pc2)
+    .catch(t.unreached_func('handshake error'));
   }, 'connection with one data channel should eventually have connected connection state');
 
   /*

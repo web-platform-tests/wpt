@@ -21,8 +21,7 @@
   //   assert_stats_report_has_stats
 
   // The following helper function is called from RTCPeerConnection-helper.js
-  //   exchangeIceCandidates
-  //   doSignalingHandshake
+  //   doSignalingAndCandidateHandshake
 
   /*
     8.2.  getStats
@@ -331,9 +330,7 @@
         }
       }));
 
-
-      exchangeIceCandidates(pc1, pc2);
-      doSignalingHandshake(pc1, pc2);
+      return doSignalingAndCandidateHandshake(pc1, pc2);
     }))
     .catch(t.step_func(err => {
       assert_unreached(`test failed with error: ${err}`);

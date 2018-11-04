@@ -11,8 +11,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  // exchangeIceCandidates
-  // doSignalingHandshake
+  // doSignalingAndCandidateHandshake
 
   /*
     6.2.  RTCDataChannel
@@ -70,8 +69,9 @@
     localPc.createDataChannel('test');
 
     remotePc.addEventListener('datachannel', onDataChannel);
-    exchangeIceCandidates(localPc, remotePc);
-    doSignalingHandshake(localPc, remotePc);
+
+    doSignalingAndCandidateHandshake(localPc, remotePc)
+    .catch(t.unreached_func('handshake error'));
   }, 'datachannel event should fire when new data channel is announced to the remote peer');
 
   /*
@@ -134,8 +134,9 @@
     assert_equals(localChannel.priority, 'high');
 
     remotePc.addEventListener('datachannel', onDataChannel);
-    exchangeIceCandidates(localPc, remotePc);
-    doSignalingHandshake(localPc, remotePc);
+
+    doSignalingAndCandidateHandshake(localPc, remotePc)
+    .catch(t.unreached_func('handshake error'));
   }, 'Data channel created on remote peer should match the same configuration as local peer');
 
   /*
@@ -162,8 +163,9 @@
     });
 
     remotePc.addEventListener('datachannel', onDataChannel);
-    exchangeIceCandidates(localPc, remotePc);
-    doSignalingHandshake(localPc, remotePc);
+
+    doSignalingAndCandidateHandshake(localPc, remotePc)
+    .catch(t.unreached_func('handshake error'));
 
     t.step_timeout(t.step_func_done(), 200);
   }, 'Data channel created with negotiated set to true should not fire datachannel event on remote peer');

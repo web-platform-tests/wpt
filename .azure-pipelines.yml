@@ -18,7 +18,7 @@ jobs:
 
   - script: |
       echo "Test jobs:"
-      ./wpt test-jobs | while read job; do
+      ./wpt test-jobs --all | while read job; do
         echo "$job"
         echo "##vso[task.setvariable variable=run_$job]true";
       done

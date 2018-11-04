@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Negotiate Simulcast</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+
+
+  promise_test(async t => {
+      const offer_sdp = `v=0
+o=- 8749682822644810610 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE video
+a=msid-semantic: WMS
+m=video 9 UDP/TLS/RTP/SAVPF 96
+c=IN IP4 0.0.0.0
+a=rtcp:9 IN IP4 0.0.0.0
+a=ice-ufrag:DuzX
+a=ice-pwd:ZC6+74KyceRKUpU2xGYhFsz+
+a=ice-options:trickle
+a=fingerprint:sha-256 2A:4D:B4:E8:06:CA:80:2E:24:C8:B0:FF:D8:EA:2C:CD:5F:C6:29:A4:1E:55:0D:BD:C4:1C:C8:0E:B3:DB:0D:E8
+a=setup:actpass
+a=mid:video
+a=extmap:2 urn:ietf:params:rtp-hdrext:toffset
+a=extmap:4 urn:3gpp:video-orientation
+a=extmap:9 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id
+a=recvonly
+a=rtcp-mux
+a=rtpmap:96 VP8/90000
+a=rtcp-fb:96 goog-remb
+a=rtcp-fb:96 transport-cc
+a=rtcp-fb:96 ccm fir
+a=simulcast:recv 1;2
+a=rid:1 recv max-fps=60
+a=rid:2 recv max-fps=30
+`;
+      const pc = new RTCPeerConnection();
+      await pc.setRemoteDescription({type: 'offer', sdp: offer_sdp});
+      const answer = await pc.createAnswer();
+      const rid_lines = answer.sdp.split('\r\n')
+            .filter(line => line.match('^a=rid'));
+      assert_equals(rid_lines.length, 2, 'Answer shold have 2 RIDs');
+
+  }, 'Negotiate two simulcast layers');
+
+</script>

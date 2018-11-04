@@ -125,7 +125,8 @@ This test uses the legacy callback API with no media, and thus does not require 
 
     // The offerToReceiveVideo is necessary and sufficient to make
     // an actual connection.
-    gFirstConnection.createOffer({offerToReceiveVideo: true})
+    gFirstConnection.addTransceiver('video', { direction: 'recvonly' });
+    gFirstConnection.createOffer()
       .then(onOfferCreated, failed('createOffer'));
   });
 </script>

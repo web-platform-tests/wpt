@@ -16,12 +16,10 @@
 // is "connected", all RTCIceTransports and RTCDtlsTransports are in the
 // "connected", "completed" or "closed" state and at least one of them is in the
 // "connected" or "completed" state.
-function waitForConnectedState(pc) {
-  return new Promise((resolve, reject) => {
-    if (pc.connectionState === 'connected') {
-      resolve();
-    }
+async function waitForConnectedState(pc) {
+  if (pc.connectionState === 'connected') return;
 
+  return new Promise((resolve, reject) => {
     pc.addEventListener('connectionstatechange', () => {
       const { connectionState } = pc;
 

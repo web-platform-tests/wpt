@@ -105,7 +105,7 @@ function assert_session_desc_not_similar(sessionDesc1, sessionDesc2) {
 
 // Helper function to generate offer using a freshly created RTCPeerConnection
 // object with any audio, video, data media lines present
-function generateOffer(options={}) {
+function generateOffer(options = {}) {
   const {
     audio = false,
     video = false,
@@ -293,9 +293,9 @@ function doSignalingHandshake(localPc, remotePc, options={}) {
 //            to the local channel in order to identify the pair.
 const remoteChannels = {};
 function createDataChannelPair(
-  pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection(),
-  options={})
+  pc1 = new RTCPeerConnection(),
+  pc2 = new RTCPeerConnection(),
+  options = {})
 {
   options = Object.assign({}, {
     channelLabel: '',

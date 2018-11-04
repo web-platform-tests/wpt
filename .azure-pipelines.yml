@@ -44,13 +44,11 @@ jobs:
 
   - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/google-chrome-dev
     displayName: 'Install Chrome Dev'
-    condition: |
-      or(variables.run_wptrunner_infrastructure)
+    condition: variables.run_wptrunner_infrastructure
 
   - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install Homebrew/homebrew-cask-versions/firefox-nightly
     displayName: 'Install Firefox Nightly'
-    condition: |
-      or(variables.run_wptrunner_infrastructure)
+    condition: variables.run_wptrunner_infrastructure
 
   - script: |
       # Pin to STP 67, as SafariDriver isn't working in 68:

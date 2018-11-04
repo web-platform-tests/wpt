@@ -5,7 +5,7 @@
 'use strict';
 
 // The following helper functions are called from RTCPeerConnection-helper.js:
-//   generateDataChannelAnswer()
+//   generateAnswer()
 //   getNoiseStream()
 
 // Put the global IDL test objects under a parent object.
@@ -54,7 +54,7 @@ function asyncInitTransports() {
   return pc.createOffer()
   .then(offer =>
     pc.setLocalDescription(offer)
-    .then(() => generateDataChannelAnswer(offer)))
+    .then(() => generateAnswer(offer)))
   .then(answer => pc.setRemoteDescription(answer))
   .then(() => {
     const sctpTransport = pc.sctp;

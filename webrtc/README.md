@@ -2,7 +2,7 @@
 
 This directory contains the WebRTC test suite.
 
-## Attribution
+## Acknowledgements
 
 Some data channel tests are based on the [data channel conformance test
 suite][nplab-webrtc-dc-playground] of the Network Programming Lab of the Münster

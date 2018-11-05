@@ -27,7 +27,9 @@ __wptrunner__ = {"product": "fennec",
                  "env_extras": "env_extras",
                  "env_options": "env_options",
                  "run_info_extras": "run_info_extras",
-                 "update_properties": "update_properties"}
+                 "update_properties": "update_properties",
+                 "timeout_multiplier": "get_timeout_multiplier"}
+
 
 class FennecProfile(FirefoxProfile):
     # WPT-specific prefs are set in FennecBrowser.start()

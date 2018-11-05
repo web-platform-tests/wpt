@@ -66,10 +66,10 @@
       .then(() => generateAnswer(offer)))
     .then(answer => pc.setRemoteDescription(answer))
     .then(() => {
-      assert_equals(transceiver.currentDirection, 'recvonly');
+      assert_equals(transceiver.currentDirection, 'inactive');
       transceiver.direction = 'sendrecv';
       assert_equals(transceiver.direction, 'sendrecv');
-      assert_equals(transceiver.currentDirection, 'recvonly');
+      assert_equals(transceiver.currentDirection, 'inactive');
     });
   }, 'setting direction should change transceiver.direction independent of transceiver.currentDirection');
 

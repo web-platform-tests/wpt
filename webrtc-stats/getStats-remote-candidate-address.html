@@ -1,0 +1,77 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Exposure or remote candidate address on stats</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../webrtc/RTCPeerConnection-helper.js"></script>
+<script src="../webrtc/RTCStats-helper.js"></script>
+<script>
+  'use strict';
+
+promise_test(async () => {
+    const localPc = new RTCPeerConnection();
+    const remotePc = new RTCPeerConnection();
+
+    const promiseDataChannel = new Promise(resolve => {
+        remotePc.addEventListener('datachannel', (event) => {
+            resolve(event.channel);
+        });
+    });
+
+    const localDataChannel = localPc.createDataChannel('test');
+
+    localPc.addEventListener('icecandidate', event => {
+        if (event.candidate)
+            remotePc.addIceCandidate(event.candidate);
+    });
+    doSignalingHandshake(localPc, remotePc);
+
+    const remoteDataChannel = await promiseDataChannel;
+
+    assert_true(!!remoteDataChannel, "remoteDataChannel is defined");
+    await new Promise(resolve => {
+        remoteDataChannel.onmessage = resolve;
+        localDataChannel.send("test");
+    });
+
+    const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");
+    assert_equals(remoteCandidateStats.address, undefined, "address should remain undefined");
+}, "Do not expose in stats remote addresses that are not known to be already exposed to JS");
+
+
+promise_test(async () => {
+    const localPc = new RTCPeerConnection();
+    const remotePc = new RTCPeerConnection();
+
+    const promiseDataChannel = new Promise(resolve => {
+        remotePc.addEventListener('datachannel', (event) => {
+            resolve(event.channel);
+        });
+    });
+
+    const localDataChannel = localPc.createDataChannel('test');
+
+    localPc.addEventListener('icecandidate', event => {
+        if (event.candidate)
+            remotePc.addIceCandidate(event.candidate);
+    });
+    remotePc.addEventListener('icecandidate', event => {
+        if (event.candidate)
+            localPc.addIceCandidate(event.candidate);
+    });
+    doSignalingHandshake(localPc, remotePc);
+
+    const remoteDataChannel = await promiseDataChannel;
+
+    assert_true(!!remoteDataChannel, "remoteDataChannel is defined");
+    await new Promise(resolve => {
+        remoteDataChannel.onmessage = resolve;
+        localDataChannel.send("test");
+    });
+
+    const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");
+    assert_not_equals(remoteCandidateStats.address, undefined, "address should not be undefined");
+
+}, "Expose in stats remote addresses that are already exposed to JS");
+
+</script>

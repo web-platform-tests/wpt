@@ -30,7 +30,7 @@ def test_promise_resolve_delayed(session):
             )
         );
         """)
-    assert_success(response, "foobar") 
+    assert_success(response, "foobar")
 
 
 def test_promise_all_resolve(session):
@@ -69,6 +69,7 @@ def test_promise_reject_delayed(session):
         """)
     assert_error(response, "javascript error")
 
+
 def test_promise_all_reject(session):
     response = execute_script(session, """
         return Promise.all([
@@ -78,9 +79,11 @@ def test_promise_all_reject(session):
         """)
     assert_error(response, "javascript error")
 
+
 def test_await_promise_reject(session):
     response = execute_script(session, """
         await Promise.reject(new Error('my error'));
+        return 'foo';
         """)
     assert_error(response, "javascript error")
 

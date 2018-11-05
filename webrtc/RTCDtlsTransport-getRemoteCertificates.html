@@ -43,7 +43,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [track, mediaStream] = await getTrackFromUserMedia('audio')
+    const [track, mediaStream] = await getTrackFromUserMedia('audio');
     addTrackOrTransceiver(pc1, track, mediaStream);
     exchangeIceCandidates(pc1, pc2);
 

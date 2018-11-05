@@ -17,7 +17,9 @@
 // "connected", "completed" or "closed" state and at least one of them is in the
 // "connected" or "completed" state.
 async function waitForConnectedState(pc) {
-  if (pc.connectionState === 'connected') return;
+  if (pc.connectionState === 'connected') {
+    return;
+  }
 
   return new Promise((resolve, reject) => {
     pc.addEventListener('connectionstatechange', () => {

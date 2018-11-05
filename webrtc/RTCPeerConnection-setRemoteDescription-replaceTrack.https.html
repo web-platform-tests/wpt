@@ -93,6 +93,7 @@
     const sender = caller.addTrack(tracks[0], streams[0]);
     caller.removeTrack(sender);
     await sender.replaceTrack(tracks[1]);
+    assert_equals(sender.track, tracks[1], "Make sure track gets updated");
   }, 'replaceTrack() rejects when invoked after removeTrack().');
 
   // TODO(hbos): Verify that replaceTrack() changes what media is received on

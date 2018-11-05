@@ -275,6 +275,18 @@
     "input": "x/x;x=\t",
     "output": "x/x"
   },
+  {
+    "input": "x/x\n\r\t ;x=x",
+    "output": "x/x;x=x"
+  },
+  {
+    "input": "\n\r\t x/x;x=x\n\r\t ",
+    "output": "x/x;x=x"
+  },
+  {
+    "input": "x/x;\n\r\t x=x\n\r\t ;x=y",
+    "output": "x/x;x=x"
+  },
   "Latin1",
   {
     "input": "text/html;test=\u00FF;charset=gbk",
@@ -288,6 +300,22 @@
     "output": "x/x;x=x"
   },
   "Failure",
+  {
+    "input": "\u000Bx/x",
+    "output": null
+  },
+  {
+    "input": "\u000Cx/x",
+    "output": null
+  },
+  {
+    "input": "x/x\u000B",
+    "output": null
+  },
+  {
+    "input": "x/x\u000C",
+    "output": null
+  },
   {
     "input": "",
     "output": null

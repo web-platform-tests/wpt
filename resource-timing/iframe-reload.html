@@ -2,32 +2,32 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>Resource Timing iframe reload</title>
+<title>Resource Timing iframe navigate</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-    let t = async_test("Test that iframe reloads are not observable by the parent");
-    const pre_reload_url = new URL("resources/document-that-reloads.html", location).href;
-    const post_reload_url = new URL("resources/document-reloaded.html", location).href;
-    function verify_iframe_reload_not_observable() {
+    let t = async_test("Test that iframe navigates are not observable by the parent");
+    const pre_navigate_url = new URL("resources/document-that-navigates.html", location).href;
+    const post_navigate_url = new URL("resources/document-navigated.html", location).href;
+    function verify_iframe_navigate_not_observable() {
         let entries = performance.getEntriesByType("resource");
         let found_first_iframe = false;
         for (entry of entries) {
-            if (entry.name == pre_reload_url) {
+            if (entry.name == pre_navigate_url) {
                 found_first_iframe = true;
             }
-            assert_not_equals(entry.name, post_reload_url, "Reloaded iframe should not be observable.");
+            assert_not_equals(entry.name, post_navigate_url, "Navigated iframe should not be observable.");
         }
         assert_true(found_first_iframe, "Initial iframe should be observable");
         t.done();
     }
     window.addEventListener("message", t.step_func(e=>{
-        if (e.data == "reloaded") {
-            verify_iframe_reload_not_observable();
+        if (e.data == "navigated") {
+            verify_iframe_navigate_not_observable();
         }
     }));
 </script>
 <iframe></iframe>
 <script>
-    document.getElementsByTagName("iframe")[0].src = pre_reload_url;
+    document.getElementsByTagName("iframe")[0].src = pre_navigate_url;
 </script>

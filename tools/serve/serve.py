@@ -100,9 +100,12 @@ class WrapperHandler(object):
         :param request: The Request being processed.
         """
         path = self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
-        with open(path, "rb") as f:
-            for key, value in read_script_metadata(f, js_meta_re):
-                yield key, value
+        try:
+            with open(path, "rb") as f:
+                for key, value in read_script_metadata(f, js_meta_re):
+                    yield key, value
+        except IOError:
+            raise HTTPException(404)
 
     def _get_meta(self, request):
         """Get an iterator over strings to inject into the wrapper document
@@ -154,6 +157,7 @@ class WrapperHandler(object):
 
 class HtmlWrapperHandler(WrapperHandler):
     global_type = None
+    headers = [('Content-Type', 'text/html')]
 
     def check_exposure(self, request):
         if self.global_type:
@@ -249,7 +253,7 @@ fetch_tests_from_worker(new SharedWorker("%(path)s%(query)s"));
 
 class ServiceWorkersHandler(HtmlWrapperHandler):
     global_type = b"serviceworker"
-    path_replace = [(".https.any.serviceworker.html", ".any.js", ".any.worker.js")]
+    path_replace = [(".any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
@@ -342,7 +346,7 @@ class RoutesBuilder(object):
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
-            ("GET", "*.https.any.serviceworker.html", ServiceWorkersHandler),
+            ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.worker.js", AnyWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
@@ -377,15 +381,17 @@ def build_routes(aliases):
 
 
 class ServerProc(object):
-    def __init__(self):
+    def __init__(self, scheme=None):
         self.proc = None
         self.daemon = None
         self.stop = Event()
+        self.scheme = scheme
 
     def start(self, init_func, host, port, paths, routes, bind_address, config, **kwargs):
         self.proc = Process(target=self.create_daemon,
                             args=(init_func, host, port, paths, routes, bind_address,
                                   config),
+                            name='%s on port %s' % (self.scheme, port),
                             kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
@@ -491,9 +497,10 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
     for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
 
-        # TODO Not very ideal, look into removing it in the future
-        # Check that python 2.7.15 is being used for HTTP/2.0
+        # If trying to start HTTP/2.0 server, check compatibility
         if scheme == 'http2' and not http2_compatible():
+            logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
+                         'Requires Python 2.7.10+ (< 3.0) and OpenSSL 1.0.2+')
             continue
 
         for port in ports:
@@ -505,7 +512,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
                          "ws":start_ws_server,
                          "wss":start_wss_server}[scheme]
 
-            server_proc = ServerProc()
+            server_proc = ServerProc(scheme=scheme)
             server_proc.start(init_func, host, port, paths, routes, bind_address,
                               config, **kwargs)
             servers[scheme].append((port, server_proc))
@@ -622,10 +629,22 @@ class WebSocketDaemon(object):
         self.server = None
 
 
+def release_mozlog_lock():
+    try:
+        from mozlog.structuredlog import StructuredLogger
+        try:
+            StructuredLogger._lock.release()
+        except threading.ThreadError:
+            pass
+    except ImportError:
+        pass
+
+
 def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
-    # Ensure that when we start this in a new process we don't inherit the
-    # global lock in the logging module
+    # Ensure that when we start this in a new process we have the global lock
+    # in the logging module unlocked
     reload_module(logging)
+    release_mozlog_lock()
     return WebSocketDaemon(host,
                            str(port),
                            repo_root,
@@ -636,9 +655,10 @@ def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
 
 
 def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
-    # Ensure that when we start this in a new process we don't inherit the
-    # global lock in the logging module
+    # Ensure that when we start this in a new process we have the global lock
+    # in the logging module unlocked
     reload_module(logging)
+    release_mozlog_lock()
     return WebSocketDaemon(host,
                            str(port),
                            repo_root,
@@ -752,9 +772,11 @@ class ConfigBuilder(config.ConfigBuilder):
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
 
     def __init__(self, *args, **kwargs):
+        if "subdomains" not in kwargs:
+            kwargs["subdomains"] = _subdomains
+        if "not_subdomains" not in kwargs:
+            kwargs["not_subdomains"] = _not_subdomains
         super(ConfigBuilder, self).__init__(
-            subdomains=_subdomains,
-            not_subdomains=_not_subdomains,
             *args,
             **kwargs
         )
@@ -824,9 +846,16 @@ def run(**kwargs):
             servers = start(config, build_routes(config["aliases"]), **kwargs)
 
             try:
-                while any(item.is_alive() for item in iter_procs(servers)):
+                while all(item.is_alive() for item in iter_procs(servers)):
                     for item in iter_procs(servers):
                         item.join(1)
+                exited = [item for item in iter_procs(servers) if not item.is_alive()]
+                subject = "subprocess" if len(exited) == 1 else "subprocesses"
+
+                logger.info("%s %s exited:" % (len(exited), subject))
+
+                for item in iter_procs(servers):
+                    logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
             except KeyboardInterrupt:
                 logger.info("Shutting down")
 

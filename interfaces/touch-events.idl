@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Touch Events - Level 2" spec.
-// See: https://w3c.github.io/touch-events/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Touch Events - Level 2 (https://w3c.github.io/touch-events/)
 
 enum TouchType {
     "direct",
@@ -72,11 +72,4 @@ partial interface GlobalEventHandlers {
                     attribute EventHandler ontouchend;
                     attribute EventHandler ontouchmove;
                     attribute EventHandler ontouchcancel;
-};
-
-partial interface Document {
-  // Deprecated in this specification
-  Touch createTouch(WindowProxy view, EventTarget target, long identifier, double pageX, double pageY, double screenX, double screenY);
-  // Deprecated in this specification
-  TouchList createTouchList(Touch... touches);
 };

@@ -12,7 +12,7 @@ To run Safari on macOS, some manual setup is required:
   * Trust the certificate:
     `security add-trusted-cert -k "$(security default-keychain | cut -d\" -f2)" tools/certs/cacert.pem`
 
-  * Set `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` in your environment. This is a
+  * Set `no_proxy='*'` in your environment. This is a
     workaround for a known
     [macOS High Sierra issue](https://github.com/web-platform-tests/wpt/issues/9007).
 
@@ -22,7 +22,7 @@ Now, run the tests using the `safari` product:
 ```
 
 This will use the `safaridriver` found on the path, which will be stable Safari.
-To run Safari Technology Preview instead, use the `--webdriver-binary` argument:
+To run Safari Technology Preview instead, use the `--channel=preview` argument:
 ```
-./wpt run --webdriver-binary "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" safari [test_list]
+./wpt run --channel=preview safari [test_list]
 ```

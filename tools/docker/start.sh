@@ -12,30 +12,48 @@
 set -ex
 
 REMOTE=${1:-https://github.com/web-platform-tests/wpt}
-BRANCH=${2:-master}
-REV=${3:-FETCH_HEAD}
+REF=${2:-master}
+REVISION=${3:-FETCH_HEAD}
 BROWSER=${4:-all}
+CHANNEL=${5:-nightly}
 
 cd ~
 
-# Initially we just fetch 50 commits in order to save several minutes of fetching
-git clone ${REMOTE} --single-branch --branch ${BRANCH} --no-checkout -q --depth=50 web-platform-tests
+mkdir web-platform-tests
 cd web-platform-tests
-if [[ ! `git rev-parse --verify -q ${REV}` ]];
+git init
+git remote add origin ${REMOTE}
+
+# Initially we just fetch 50 commits in order to save several minutes of fetching
+git fetch --quiet --depth=50 origin ${REF}
+
+if [[ ! `git rev-parse --verify -q ${REVISION}` ]];
 then
     # But if for some reason the commit under test isn't in that range, we give in and
     # fetch everything
     git fetch -q --unshallow ${REMOTE}
-    git rev-parse --verify ${REV}
+    git rev-parse --verify ${REVISION}
 fi
-git checkout -b build ${REV}
+git checkout -b build ${REVISION}
 
 sudo sh -c './wpt make-hosts-file >> /etc/hosts'
 
-if [[ $BROWSER == "chrome"* ]] || [[ "$BROWSER" == all ]]
+if [[ $BROWSER == "chrome" ]] || [[ "$BROWSER" == all ]]
 then
     # Install Chrome dev
-    deb_archive=google-chrome-unstable_current_amd64.deb
+    if [[ "$CHANNEL" == "dev" ]] || [[ "$CHANNEL" == "nightly" ]]
+    then
+       deb_archive=google-chrome-unstable_current_amd64.deb
+    elif [[ "$CHANNEL" == "beta" ]]
+    then
+        deb_archive=google-chrome-beta_current_amd64.deb
+    elif [[ "$CHANNEL" == "stable" ]]
+    then
+        deb_archive=google-chrome-stable_current_amd64.deb
+    else
+        echo Unrecognized release channel: $CHANNEL >&2
+        exit 1
+    fi
     wget https://dl.google.com/linux/direct/$deb_archive
 
     sudo apt-get -qqy update && sudo gdebi -n $deb_archive

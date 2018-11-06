@@ -161,9 +161,9 @@ Test is finished.
 promise_test(test_function, name, properties)
 ```
 
-`test_function` is a function that receives a test as an argument and returns a
-promise. The test completes when the returned promise resolves. The test fails
-if the returned promise rejects.
+`test_function` is a function that receives a test as an argument. It must
+return a promise. The test completes when the returned promise resolves. The
+test fails if the returned promise rejects.
 
 E.g.:
 
@@ -317,6 +317,16 @@ the test result is known. For example:
     assert_equals(document.getElementById(null), element);
   }, "Calling document.getElementById with a null argument.");
 ```
+
+If the test was created using the `promise_test` API, then cleanup functions
+may optionally return a "thenable" value (i.e. an object which defines a `then`
+method). `testharness.js` will assume that such values conform to [the
+ECMAScript standard for
+Promises](https://tc39.github.io/ecma262/#sec-promise-objects) and delay the
+completion of the test until all "thenables" provided in this way have settled.
+All callbacks will be invoked synchronously; tests that require more complex
+cleanup behavior should manage execution order explicitly. If any of the
+eventual values are rejected, the test runner will report an error.
 
 ## Timeouts in Tests ##
 
@@ -748,6 +758,9 @@ asserts that the class string of `object` as returned in
 ### `assert_own_property(object, property_name, description)`
 assert that object has own property `property_name`
 
+### `assert_not_own_property(object, property_name, description)`
+assert that object does not have an own property named `property_name`
+
 ### `assert_inherits(object, property_name, description)`
 assert that object does not have an own property named
 `property_name` but that `property_name` is present in the prototype
@@ -782,14 +795,6 @@ asserts that one `assert_func(actual, expected_array_N, extra_arg1, ..., extra_a
   with multiple allowed pass conditions are bad practice unless the spec specifically
   allows multiple behaviours. Test authors should not use this method simply to hide
   UA bugs.
-
-### `assert_exists(object, property_name, description)`
-**deprecated**
-asserts that object has an own property `property_name`
-
-### `assert_not_exists(object, property_name, description)`
-**deprecated**
-assert that object does not have own property `property_name`
 
 ## Metadata ##
 

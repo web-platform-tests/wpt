@@ -43,7 +43,7 @@ def rel_dir_file_path(draw):
 @hs.composite
 def sourcefile_strategy(draw):
     item_classes = [item.TestharnessTest, item.RefTest, item.RefTestNode,
-                    item.ManualTest, item.Stub, item.WebdriverSpecTest,
+                    item.ManualTest, item.Stub, item.WebDriverSpecTest,
                     item.ConformanceCheckerTest, item.SupportFile]
     cls = draw(hs.sampled_from(item_classes))
 
@@ -110,7 +110,7 @@ def test_manifest_to_json_forwardslash():
         'paths': {
             'a/b': ('0000000000000000000000000000000000000000', 'testharness')
         },
-        'version': 4,
+        'version': 5,
         'url_base': '/',
         'items': {
             'reftest': {},
@@ -134,7 +134,7 @@ def test_manifest_to_json_backslash():
             'paths': {
                 'a/b': ('0000000000000000000000000000000000000000', 'testharness')
             },
-            'version': 4,
+            'version': 5,
             'url_base': '/',
             'items': {
                 'reftest': {},
@@ -157,7 +157,7 @@ def test_manifest_from_json_backslash():
         'paths': {
             'a\\b': ('0000000000000000000000000000000000000000', 'testharness')
         },
-        'version': 4,
+        'version': 5,
         'url_base': '/',
         'items': {
             'reftest': {},

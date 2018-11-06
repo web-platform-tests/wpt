@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Payment Handler API" spec.
-// See: https://w3c.github.io/payment-handler/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Payment Handler API (https://w3c.github.io/payment-handler/)
 
 partial interface ServiceWorkerRegistration {
   [SameObject] readonly attribute PaymentManager paymentManager;
@@ -10,7 +10,6 @@ partial interface ServiceWorkerRegistration {
 [SecureContext, Exposed=(Window,Worker)]
 interface PaymentManager {
   [SameObject] readonly attribute PaymentInstruments instruments;
-  [Exposed=Window] static Promise<PermissionState> requestPermission();
   attribute DOMString userHint;
 };
 
@@ -46,7 +45,6 @@ interface CanMakePaymentEvent : ExtendableEvent {
   readonly attribute USVString topOrigin;
   readonly attribute USVString paymentRequestOrigin;
   readonly attribute FrozenArray<PaymentMethodData> methodData;
-  readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
   void respondWith(Promise<boolean> canMakePaymentResponse);
 };
 
@@ -54,11 +52,17 @@ dictionary CanMakePaymentEventInit : ExtendableEventInit {
   USVString topOrigin;
   USVString paymentRequestOrigin;
   sequence<PaymentMethodData> methodData;
-  sequence<PaymentDetailsModifier> modifiers;
 };
 
 partial interface ServiceWorkerGlobalScope {
   attribute EventHandler onpaymentrequest;
+};
+
+dictionary PaymentMethodChangeResponse {
+  DOMString error;
+  PaymentCurrencyAmount total;
+  FrozenArray<PaymentDetailsModifier> modifiers;
+  object paymentMethodErrors;
 };
 
 [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
@@ -70,7 +74,9 @@ interface PaymentRequestEvent : ExtendableEvent {
   readonly attribute object total;
   readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
   readonly attribute DOMString instrumentKey;
+  readonly attribute boolean requestBillingAddress;
   Promise<WindowClient?> openWindow(USVString url);
+  Promise<PaymentMethodChangeResponse?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
   void respondWith(Promise<PaymentHandlerResponse> handlerResponsePromise);
 };
 

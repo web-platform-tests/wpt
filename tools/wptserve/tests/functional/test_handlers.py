@@ -8,7 +8,7 @@ import pytest
 from six.moves.urllib.error import HTTPError
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer, doc_root
+from .base import TestUsingServer, TestUsingH2Server, doc_root
 
 
 class TestFileHandler(TestUsingServer):
@@ -88,19 +88,16 @@ class TestFileHandler(TestUsingServer):
             self.request("/document.txt", headers={"Range":"bytes=%i-%i" % (len(expected), len(expected) + 10)})
         self.assertEqual(cm.exception.code, 416)
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_sub_config(self):
         resp = self.request("/sub.sub.txt")
         expected = b"localhost localhost %i" % self.server.port
         assert resp.read().rstrip() == expected
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_sub_headers(self):
         resp = self.request("/sub_headers.sub.txt", headers={"X-Test": "PASS"})
         expected = b"PASS"
         assert resp.read().rstrip() == expected
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_sub_params(self):
         resp = self.request("/sub_params.sub.txt", query="test=PASS")
         expected = b"PASS"
@@ -108,7 +105,6 @@ class TestFileHandler(TestUsingServer):
 
 
 class TestFunctionHandler(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_string_rv(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -119,7 +115,7 @@ class TestFunctionHandler(TestUsingServer):
         resp = self.request(route[1])
         self.assertEqual(200, resp.getcode())
         self.assertEqual("9", resp.info()["Content-Length"])
-        self.assertEqual("test data", resp.read())
+        self.assertEqual(b"test data", resp.read())
 
     def test_tuple_1_rv(self):
         @wptserve.handlers.handler
@@ -134,7 +130,6 @@ class TestFunctionHandler(TestUsingServer):
 
         assert cm.value.code == 500
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_tuple_2_rv(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -146,9 +141,8 @@ class TestFunctionHandler(TestUsingServer):
         self.assertEqual(200, resp.getcode())
         self.assertEqual("4", resp.info()["Content-Length"])
         self.assertEqual("test-value", resp.info()["test-header"])
-        self.assertEqual("test", resp.read())
+        self.assertEqual(b"test", resp.read())
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_tuple_3_rv(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -159,9 +153,8 @@ class TestFunctionHandler(TestUsingServer):
         resp = self.request(route[1])
         self.assertEqual(202, resp.getcode())
         self.assertEqual("test-value", resp.info()["test-header"])
-        self.assertEqual("test data", resp.read())
+        self.assertEqual(b"test data", resp.read())
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_tuple_3_rv_1(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -173,7 +166,7 @@ class TestFunctionHandler(TestUsingServer):
         self.assertEqual(202, resp.getcode())
         self.assertEqual("Some Status", resp.msg)
         self.assertEqual("test-value", resp.info()["test-header"])
-        self.assertEqual("test data", resp.read())
+        self.assertEqual(b"test data", resp.read())
 
     def test_tuple_4_rv(self):
         @wptserve.handlers.handler
@@ -263,7 +256,6 @@ class TestPythonHandler(TestUsingServer):
         self.assertEqual("PASS", resp.info()["X-Test"])
         self.assertEqual(b"PASS", resp.read())
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_import(self):
         dir_name = os.path.join(doc_root, "subdir")
         assert dir_name not in sys.path
@@ -273,7 +265,7 @@ class TestPythonHandler(TestUsingServer):
         assert "test_module" not in sys.modules
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/plain", resp.info()["Content-Type"])
-        self.assertEqual("PASS", resp.read())
+        self.assertEqual(b"PASS", resp.read())
 
     def test_no_main(self):
         with pytest.raises(HTTPError) as cm:
@@ -314,14 +306,87 @@ class TestDirectoryHandler(TestUsingServer):
 
 
 class TestAsIsHandler(TestUsingServer):
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_as_is(self):
         resp = self.request("/test.asis")
         self.assertEqual(202, resp.getcode())
         self.assertEqual("Giraffe", resp.msg)
         self.assertEqual("PASS", resp.info()["X-Test"])
-        self.assertEqual("Content", resp.read())
+        self.assertEqual(b"Content", resp.read())
         #Add a check that the response is actually sane
+
+
+class TestH2Handler(TestUsingH2Server):
+    def test_handle_headers(self):
+        self.conn.request("GET", '/test_h2_headers.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
+    def test_only_main(self):
+        self.conn.request("GET", '/test_tuple_3.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 202
+        assert resp.headers['Content-Type'][0] == 'text/html'
+        assert resp.headers['X-Test'][0] == 'PASS'
+        assert resp.read() == b'PASS'
+
+    def test_handle_data(self):
+        self.conn.request("POST", '/test_h2_data.py', body="hello world!")
+        resp = self.conn.get_response()
+
+        assert resp.status == 200
+        assert resp.read() == b'!dlrow olleh'
+
+    def test_handle_headers_data(self):
+        self.conn.request("POST", '/test_h2_headers_data.py', body="hello world!")
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == b'!dlrow olleh'
+
+    def test_no_main_or_handlers(self):
+        self.conn.request("GET", '/no_main.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 500
+        assert "No main function or handlers in script " in json.loads(resp.read())["error"]["message"]
+
+    def test_not_found(self):
+        self.conn.request("GET", '/no_exist.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 404
+
+    def test_requesting_multiple_resources(self):
+        # 1st .py resource
+        self.conn.request("GET", '/test_h2_headers.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
+        # 2nd .py resource
+        self.conn.request("GET", '/test_tuple_3.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 202
+        assert resp.headers['Content-Type'][0] == 'text/html'
+        assert resp.headers['X-Test'][0] == 'PASS'
+        assert resp.read() == b'PASS'
+
+        # 3rd .py resource
+        self.conn.request("GET", '/test_h2_headers.py')
+        resp = self.conn.get_response()
+
+        assert resp.status == 203
+        assert resp.headers['test'][0] == 'passed'
+        assert resp.read() == ''
+
 
 if __name__ == '__main__':
     unittest.main()

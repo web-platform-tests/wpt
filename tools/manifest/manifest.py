@@ -4,12 +4,12 @@ import os
 from collections import defaultdict
 from six import iteritems, itervalues, viewkeys, string_types
 
-from .item import ManualTest, WebdriverSpecTest, Stub, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
+from .item import ManualTest, WebDriverSpecTest, Stub, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
 from .log import get_logger
 from .utils import from_os_path, to_os_path
 
 
-CURRENT_VERSION = 4
+CURRENT_VERSION = 5
 
 
 class ManifestError(Exception):
@@ -193,7 +193,7 @@ class Manifest(object):
                         "reftest_node": RefTestNode,
                         "manual": ManualTest,
                         "stub": Stub,
-                        "wdspec": WebdriverSpecTest,
+                        "wdspec": WebDriverSpecTest,
                         "conformancechecker": ConformanceCheckerTest,
                         "visual": VisualTest,
                         "support": SupportFile}

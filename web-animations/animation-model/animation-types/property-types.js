@@ -1068,6 +1068,23 @@ const transformListType = {
           { time: 500,  expected: [  1, 1, 1,  1, 100, 100 ] },
           { time: 1000, expected: [  1, 1, 1,  1, 100, 100 ] }]);
     }, `${property}: non-invertible matrices in mismatched transform lists`);
+
+    test(t => {
+      const idlName = propertyToIDL(property);
+      const target = createTestElement(t, setup);
+      const animation = target.animate(
+        {
+          [idlName]: ['perspective(0)', 'perspective(10px)'],
+        },
+        1000
+      );
+      testAnimationSampleMatrices(animation, idlName,
+        [{ time: 500,  expected: [ 1, 0, 0, 0,
+                                   0, 1, 0, 0,
+                                   0, 0, 1, -0.05,
+                                   0, 0, 0, 1 ] }]);
+    }, `${property}: perspective`);
+
   },
 
   testAddition: function(property, setup) {
@@ -1456,7 +1473,7 @@ const transformListType = {
                                    Math.cos(Math.PI / 2),
                                    100 * Math.cos(Math.PI / 2),
                                    100 * Math.sin(Math.PI / 2) ] }]);
-    }, `${property}: rotate on roate and translate`);
+    }, `${property}: rotate on rotate and translate`);
 
     test(t => {
       const idlName = propertyToIDL(property);
@@ -2087,7 +2104,7 @@ const filterListType = {
 
       // 10deg = 0.1745rad.
       testAnimationSamples(animation, idlName,
-        [{ time: 500,    expected: 'hue-rotate(50.0873rad)' }]);
+        [{ time: 500,    expected: 'hue-rotate(2869.79deg)' }]);
     }, `${property}: hue-rotate function with different unit(deg -> rad)`);
 
     test(t => {

@@ -93,7 +93,7 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "symbols_path": kwargs["symbols_path"],
             "stackwalk_binary": kwargs["stackwalk_binary"],
             "certutil_binary": kwargs["certutil_binary"],
-            "ca_certificate_path": kwargs["ssl_env"].ca_cert_path(),
+            "ca_certificate_path": config.ssl_config["ca_cert_path"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
@@ -111,7 +111,8 @@ def env_extras(**kwargs):
 
 def run_info_extras(**kwargs):
     return {"e10s": False,
-            "headless": False}
+            "headless": False,
+            "sw-e10s": False}
 
 
 def env_options():
@@ -217,16 +218,6 @@ class FennecBrowser(FirefoxBrowser):
 
         self.runner.start(debug_args=debug_args, interactive=self.debug_info and self.debug_info.interactive)
 
-        # gecko_log comes from logcat when running with device/emulator
-        logcat_args = {
-            "filterspec": "Gecko",
-            "serial": self.runner.device.app_ctx.device_serial
-        }
-        # TODO setting logcat_args["logfile"] yields an almost empty file
-        # even without filterspec
-        logcat_args["stream"] = sys.stdout
-        self.runner.device.start_logcat(**logcat_args)
-
         self.runner.device.device.forward(
             local="tcp:{}".format(self.marionette_port),
             remote="tcp:{}".format(self.marionette_port))
@@ -237,12 +228,14 @@ class FennecBrowser(FirefoxBrowser):
         if self.runner is not None:
             try:
                 if self.runner.device.connected:
-                    self.runner.device.device.remove_forwards(
-                        "tcp:{}".format(self.marionette_port))
+                    if len(self.runner.device.device.list_forwards()) > 0:
+                        self.runner.device.device.remove_forwards(
+                            "tcp:{}".format(self.marionette_port))
             except Exception:
                 traceback.print_exception(*sys.exc_info())
             # We assume that stopping the runner prompts the
             # browser to shut down. This allows the leak log to be written
+            self.runner.stop()
             for clean, stop_f in [(True, lambda: self.runner.wait(self.shutdown_timeout)),
                                   (False, lambda: self.runner.stop(signal.SIGTERM)),
                                   (False, lambda: self.runner.stop(signal.SIGKILL))]:

@@ -8,8 +8,8 @@
 // https://wicg.github.io/background-fetch/#background-fetch-manager-get
 
 promise_test(async test => {
-  const script = 'resources/sw.js';
-  const scope = 'resources/scope' + location.pathname;
+  const script = 'service_workers/sw.js';
+  const scope = 'service_workers/' + location.pathname;
 
   const serviceWorkerRegistration =
       await service_worker_unregister_and_register(test, script, scope);
@@ -26,6 +26,7 @@ promise_test(async test => {
 backgroundFetchTest(async (test, backgroundFetch) => {
   // The |id| parameter to the BackgroundFetchManager.get() method is required.
   await promise_rejects(test, new TypeError(), backgroundFetch.get());
+  await promise_rejects(test, new TypeError(), backgroundFetch.get(''));
 
   const registration = await backgroundFetch.get('my-id');
   assert_equals(registration, undefined);
@@ -41,6 +42,9 @@ backgroundFetchTest(async (test, backgroundFetch) => {
   assert_equals(registration.uploadTotal, 0);
   assert_equals(registration.uploaded, 0);
   assert_equals(registration.downloadTotal, 1234);
+  assert_equals(registration.result, '');
+  assert_equals(registration.failureReason, '');
+  assert_true(registration.recordsAvailable);
   // Skip `downloaded`, as the transfer may have started already.
 
   const secondRegistration = await backgroundFetch.get(registrationId);
@@ -50,6 +54,8 @@ backgroundFetchTest(async (test, backgroundFetch) => {
   assert_equals(secondRegistration.uploadTotal, registration.uploadTotal);
   assert_equals(secondRegistration.uploaded, registration.uploaded);
   assert_equals(secondRegistration.downloadTotal, registration.downloadTotal);
+  assert_equals(secondRegistration.failureReason, registration.failureReason);
+  assert_equals(secondRegistration.recordsAvailable, registration.recordsAvailable);
 
   // While the transfer might have started, both BackgroundFetchRegistration
   // objects should have the latest progress values.

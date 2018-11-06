@@ -17,6 +17,7 @@ This test uses the legacy callback API with no media, and thus does not require 
   <!-- These files are in place when executing on W3C. -->
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/webrtc/RTCPeerConnection-helper.js"></script>
   <script type="text/javascript">
   var test = async_test('Can set up a basic WebRTC call with no data.');
 
@@ -37,9 +38,9 @@ This test uses the legacy callback API with no media, and thus does not require 
     var parsedOffer = new RTCSessionDescription({ type: 'offer',
                                                   sdp: offerSdp });
     // These functions use the legacy interface extensions to RTCPeerConnection.
-    gSecondConnection.setRemoteDescription(parsedOffer,
+    gSecondConnection.setRemoteDescription(parsedOffer).then(
       function() {
-        gSecondConnection.createAnswer(onAnswerCreated,
+        gSecondConnection.createAnswer().then(onAnswerCreated,
                                        failed('createAnswer'));
       },
       failed('setRemoteDescription second'));
@@ -56,7 +57,7 @@ This test uses the legacy callback API with no media, and thus does not require 
   function handleAnswer(answerSdp) {
     var parsedAnswer = new RTCSessionDescription({ type: 'answer',
                                                    sdp: answerSdp });
-    gFirstConnection.setRemoteDescription(parsedAnswer, ignoreSuccess,
+    gFirstConnection.setRemoteDescription(parsedAnswer).then(ignoreSuccess,
                                           failed('setRemoteDescription first'));
   };
 
@@ -123,10 +124,8 @@ This test uses the legacy callback API with no media, and thus does not require 
     gSecondConnection.onicecandidate = onIceCandidateToSecond;
     gSecondConnection.oniceconnectionstatechange = onIceConnectionStateChange;
 
-    // The offerToReceiveVideo is necessary and sufficient to make
-    // an actual connection.
-    gFirstConnection.createOffer(onOfferCreated, failed('createOffer'),
-        {offerToReceiveVideo: true});
+    generateVideoReceiveOnlyOffer(gFirstConnection)
+      .then(onOfferCreated, failed('createOffer'));
   });
 </script>
 

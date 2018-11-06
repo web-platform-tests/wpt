@@ -2,7 +2,10 @@
 
 import pytest
 
+from webdriver.transport import Response
+
 from tests.support.asserts import assert_error, assert_success
+from tests.support.helpers import document_hidden, is_fullscreen
 
 
 def set_window_rect(session, rect):
@@ -11,15 +14,10 @@ def set_window_rect(session, rect):
         rect)
 
 
-def is_fullscreen(session):
-    # At the time of writing, WebKit does not conform to the
-    # Fullscreen API specification.
-    #
-    # Remove the prefixed fallback when
-    # https://bugs.webkit.org/show_bug.cgi?id=158125 is fixed.
-    return session.execute_script("""
-        return !!(window.fullScreen || document.webkitIsFullScreen)
-        """)
+def test_null_parameter_value(session, http):
+    path = "/session/{session_id}/window/rect".format(**vars(session))
+    with http.post(path, None) as response:
+        assert_error(Response.from_http(response), "invalid argument")
 
 
 def test_no_browsing_context(session, closed_window):
@@ -134,26 +132,26 @@ def test_no_change(session, rect):
 
 def test_fully_exit_fullscreen(session):
     session.window.fullscreen()
-    assert is_fullscreen(session) is True
+    assert is_fullscreen(session)
 
     response = set_window_rect(session, {"width": 400, "height": 400})
     value = assert_success(response)
     assert value["width"] == 400
     assert value["height"] == 400
 
-    assert is_fullscreen(session) is False
+    assert not is_fullscreen(session)
 
 
 def test_restore_from_minimized(session):
     session.window.minimize()
-    assert session.execute_script("return document.hidden") is True
+    assert document_hidden(session)
 
     response = set_window_rect(session, {"width": 450, "height": 450})
     value = assert_success(response)
     assert value["width"] == 450
     assert value["height"] == 450
 
-    assert session.execute_script("return document.hidden") is False
+    assert not document_hidden(session)
 
 
 def test_restore_from_maximized(session):
@@ -168,6 +166,11 @@ def test_restore_from_maximized(session):
 
 
 def test_height_width(session):
+    # The window position might be auto-adjusted by the browser
+    # if it exceeds the lower right corner. As such ensure that
+    # there is enough space left so no window move will occur.
+    session.window.position = (50, 50)
+
     original = session.window.rect
     max = session.execute_script("""
         return {
@@ -250,10 +253,16 @@ def test_negative_x_y(session):
     # horizontal axis.  The system menu bar also blocks windows from
     # being moved to (0,0).
     elif os == "mac":
-        assert_success(response, {"x": -8,
-                                  "y": 23,
-                                  "width": original["width"],
-                                  "height": original["height"]})
+        value = assert_success(response)
+
+        # `screen.availTop` is not standardized but all browsers we care
+        # about on MacOS implement the CSSOM View mode `Screen` interface.
+        avail_top = session.execute_script("return window.screen.availTop;")
+
+        assert value == {"x": -8,
+                         "y": avail_top,
+                         "width": original["width"],
+                         "height": original["height"]}
 
     # It turns out that Windows is the only platform on which the
     # window can be reliably positioned off-screen.

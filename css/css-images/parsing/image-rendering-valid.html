@@ -5,7 +5,7 @@
 <title>CSS Images Module Level 3: parsing image-rendering with valid values</title>
 <link rel="author" title="Eric Willigers" href="mailto:ericwilligers@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-images-3/#propdef-image-rendering">
-<meta name="assert" content="image-rendering supports the full grammar 'auto | smooth | high-quality | crisp-edges | pixelated'.">
+<meta name="assert" content="image-rendering supports the full grammar 'auto | smooth | high-quality | crisp-edges | pixelated' as well as the deprecated 'optimizespeed' and 'optimizequality'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -17,6 +17,10 @@ test_valid_value("image-rendering", "smooth");
 test_valid_value("image-rendering", "high-quality");
 test_valid_value("image-rendering", "crisp-edges");
 test_valid_value("image-rendering", "pixelated");
+
+// Deprecated values
+test_valid_value("image-rendering", "optimizespeed");
+test_valid_value("image-rendering", "optimizequality");
 </script>
 </body>
 </html>

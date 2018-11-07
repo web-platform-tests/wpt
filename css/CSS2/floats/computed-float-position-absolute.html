@@ -17,14 +17,12 @@ div[id] {
 <div style="display: none"><div id="test3"></div></div>
 
 <script>
-var test_description = document.title;
 promise_test(
 	t => {
 		return new Promise(test => addEventListener('load', e=>test()))
 		.then(test => assert_equals(getComputedStyle(test1)['float'], "none", "[display:none] Invalid gCS(test1)['float'];"))
 		.then(test => assert_equals(getComputedStyle(test2)['float'], "none", "[display:contents] Invalid gCS(test2)['float'];"))
 		.then(test => assert_equals(getComputedStyle(test3)['float'], "none", "[in a display:none] Invalid gCS(test3)['float'];"))
-	},
-	test_description
+	}
 );
 </script>

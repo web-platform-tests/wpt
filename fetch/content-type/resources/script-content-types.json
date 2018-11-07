@@ -38,5 +38,10 @@
     "input": ["text/javascript; charset=windows-1252", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
+  },
+  {
+    "input": ["text/javascript;\"", "x/x"],
+    "executes": true,
+    "encoding": null
   }
 ]

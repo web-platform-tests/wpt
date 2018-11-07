@@ -10,6 +10,13 @@
 const basicCard = Object.freeze({ supportedMethods: "basic-card" });
 const applePay = Object.freeze({
   supportedMethods: "https://apple.com/apple-pay",
+  data: {
+    version: 1,
+    merchantIdentifier: "wpt",
+    merchantCapabilities: ["supportsCredit"],
+    supportedNetworks: ["visa"],
+    countryCode: "US",
+  },
 });
 const defaultMethods = Object.freeze([basicCard, applePay]);
 const defaultDetails = Object.freeze({
@@ -25,6 +32,7 @@ const defaultDetails = Object.freeze({
 const unsupportedMethods = [
   { supportedMethods: "this-is-not-supported" },
   { supportedMethods: "https://not.supported" },
+  { supportedMethods: "https://apple.com/apple-pay" },
 ];
 
 promise_test(async t => {

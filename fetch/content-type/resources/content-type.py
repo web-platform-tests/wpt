@@ -1,6 +1,6 @@
 def main(request, response):
     values = request.GET.get_list("value")
-    content = "<b>hi</b>\n"
+    content = request.GET.first("content", "<b>hi</b>\n")
     output =  "HTTP/1.1 200 OK\r\n"
     output += "X-Content-Type-Options: nosniff\r\n"
     if "single_header" in request.GET:
@@ -12,4 +12,4 @@ def main(request, response):
     output += "\r\n"
     output += content
     response.writer.write(output)
-    response.write()
+    response.close_connection = True

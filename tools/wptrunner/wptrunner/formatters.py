@@ -5,7 +5,7 @@ import sys
 from mozlog.structured.formatters.base import BaseFormatter
 
 
-LONE_SURROGATE_RE = re.compile(u"[\uD800-\uDFFFF]")
+LONE_SURROGATE_RE = re.compile(u"[\uD800-\uDFFF]")
 
 
 def surrogate_replacement_ucs4(match):

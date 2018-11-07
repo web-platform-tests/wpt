@@ -8,46 +8,70 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<body text="red" linkColor="green" vlink="blue" alink="orange" bgColor="yellow">
+<body text="red" linkColor="red" vlink="red" alink="red"  bgColor="red">
 <script>
 test(function() {
-  assert_equals(document.fgColor, document.body.text);
 
-  assert_equals(document.linkColor, document.body.link);
-
-  assert_equals(document.vlinkColor, document.body.vLink);
-
-  assert_equals(document.alinkColor, document.body.aLink);
-
-  assert_equals(document.bgColor, document.body.bgColor);
-})
-test(function() {
-  document.body.text = red;
-
+  document.linkColor = "red";
+  
   assert_equals(document.fgColor, "red");
+
+  assert_equals(document.linkColor, "red");
+
+  assert_equals(document.vlinkColor, "red");
+
+  assert_equals(document.alinkColor, "red");
+
+  assert_equals(document.bgColor, "red");
+
+}, "testing every attribute is red")
+
+test(function() {
+  document.body.text = "blue";
+
+  assert_equals(document.fgColor, "blue");
 }, "document's fgColor IDL attribute reflects the body's text content attribute");
 
 test(function() {
-  document.body.link = green;
+  document.body.link = "green";
 
   assert_equals(document.linkColor, "green");
 }, "document's linkColor IDL attribute reflects the body's link content attribute");
 
 test(function() {
-  document.body.vLink = blue;
+  document.body.vLink = "blue";
 
   assert_equals(document.vlinkColor, "blue");
 }, "document's vlinkColor IDL attribute reflects the body's vLink content attribute");
 
 test(function() {
-  document.body.aLink = orange;
+  document.body.aLink = "orange";
 
   assert_equals(document.alinkColor, "orange");
 }, "document's alinkColor IDL attribute reflects the body's aLink content attribute");
 
 test(function() {
-  document.body.bgColor = yellow;
+  document.body.bgColor = "yellow";
 
   assert_equals(document.bgColor, "yellow");
 }, "document's bgColor IDL attribute reflects the body's bgColor content attribute");
+
+test(function(){
+   document.body.removeAttribute("text");
+   assert_equals(document.fgColor, "");
+
+   document.body.removeAttribute("link");
+   assert_equals(document.linkColor, "");
+
+   document.body.removeAttribute("vlink");
+   assert_equals(document.vlinkColor, "");
+
+   document.body.removeAttribute("alink");
+   assert_equals(document.alinkColor, "");
+
+   document.body.removeAttribute("bgColor");
+   assert_equals(document.bgColor, "");
+   
+}, "Removing the attributes causes them to be reflected as the empty string");
+
 </script>

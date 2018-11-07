@@ -74,7 +74,13 @@
   {
     "input": ["text/html;x=\"", "text/plain"],
     "encoding": null,
-    "mimeType": "text/html;x=\",text/plain\"",
+    "mimeType": "text/html;x=\", text/plain\"",
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/html;\"", "text/plain"],
+    "encoding": null,
+    "mimeType": "text/html",
     "documentContentType": "text/html"
   }
 ]

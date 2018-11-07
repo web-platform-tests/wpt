@@ -24,6 +24,8 @@ test_valid_value("animation-name", '"string"');
 test_valid_value("animation-name", '"multi word string"');
 test_valid_value("animation-name", '"initial"');
 test_valid_value("animation-name", '"---\\22---"', '\"---\\\"---\"');
+
+test_valid_value("animation-name", '"initial", "None", None, Last', '"initial", "None", none, Last');
 </script>
 </body>
 </html>

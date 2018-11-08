@@ -7,6 +7,10 @@
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <style>
+        @keyframes "string" {
+            0% { top: 0px; }
+            30% { top: 300px; }
+        }
         @keyframes foo {
             0% { top: 0px; }
             100% { top: 200px; }
@@ -16,7 +20,13 @@
 
     <script>
     test(function () {
-        var keyframe = document.styleSheets[0].cssRules[0];
+        var stringKeyframe= document.styleSheets[0].cssRules[0];
+        assert_equals(stringKeyframe.name, "string", "CSSKeyframesRule name attribute");
+        assert_equals(stringKeyframe.cssRules.length, 2, "CSSKeyframesRule cssRule length attribute");
+        assert_equals(stringKeyframe.cssRules[0].cssText, "0% { top: 0px; }", "CSSKeyframesRule cssRule cssText attribute");
+        assert_equals(stringKeyframe.cssRules[1].cssText, "30% { top: 300px; }", "CSSKeyframesRule cssRule cssText attribute");
+
+        var keyframe = document.styleSheets[0].cssRules[1];
         assert_equals(keyframe.name, "foo", "CSSKeyframesRule name attribute");
         assert_equals(keyframe.cssRules.length, 2, "CSSKeyframesRule cssRule length attribute");
         assert_equals(keyframe.cssRules[0].cssText, "0% { top: 0px; }", "CSSKeyframesRule cssRule cssText attribute");
@@ -56,7 +66,7 @@
         assert_equals(keyframe.cssRules[2].cssText, "0% { top: 50px; }", "CSSKeyframesRule cssRule cssText attribute after deleteRule function");
         assert_equals(keyframe.cssRules[3], undefined, "CSSKeyframesRule cssRule cssText attribute after deleteRule function");
 
-        var empty = document.styleSheets[0].cssRules[1];
+        var empty = document.styleSheets[0].cssRules[2];
         empty.name = "bar";
         assert_equals(empty.name, "bar", "CSSKeyframesRule name setter");
         assert_equals(empty.cssText.replace(/\s/g, ""), "@keyframesbar{}", "CSSKeyframesRule cssText attribute");

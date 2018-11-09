@@ -8,8 +8,11 @@ import pytest
 from six.moves.urllib.error import HTTPError
 
 wptserve = pytest.importorskip("wptserve")
-from .base import TestUsingServer, TestUsingH2Server, doc_root
+from .base import TestUsingServer, TestUsingH2Server, \
+    TestWrapperHandlerUsingServer, doc_root
 
+from serve.serve import WorkersHandler, WindowHandler, AnyHtmlHandler,\
+    SharedWorkersHandler, ServiceWorkersHandler, AnyWorkerHandler
 
 class TestFileHandler(TestUsingServer):
     def test_GET(self):
@@ -386,6 +389,65 @@ class TestH2Handler(TestUsingH2Server):
         assert resp.status == 203
         assert resp.headers['test'][0] == 'passed'
         assert resp.read() == ''
+
+
+class TestWorkersHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'foo.worker.js': '',
+                      'foo.any.js': ''}
+
+    def test_any_worker_html(self):
+        self.run_wrapper_test('foo.any.worker.html',
+                              'text/html', WorkersHandler)
+
+    def test_worker_html(self):
+        self.run_wrapper_test('foo.worker.html',
+                              'text/html', WorkersHandler)
+
+
+class TestWindowHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'foo.window.js': ''}
+
+    def test_window_html(self):
+        self.run_wrapper_test('foo.window.html',
+                              'text/html', WindowHandler)
+
+
+class TestAnyHtmlHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'foo.any.js': ''}
+
+    def test_any_html(self):
+        self.run_wrapper_test('foo.any.html',
+                              'text/html', AnyHtmlHandler)
+
+
+class TestSharedWorkersHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'foo.any.js': '// META: global=sharedworker\n'}
+
+    def test_any_sharedworkers_html(self):
+        self.run_wrapper_test('foo.any.sharedworker.html',
+                              'text/html', SharedWorkersHandler)
+
+
+class TestServiceWorkersHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'foo.any.js': '// META: global=serviceworker\n'}
+
+    def test_serviceworker_html(self):
+        self.run_wrapper_test('foo.any.serviceworker.html',
+                              'text/html', ServiceWorkersHandler)
+
+
+class TestAnyWorkerHandler(TestWrapperHandlerUsingServer):
+
+    dummy_js_files = {'bar.any.js': ''}
+
+    def test_any_work_js(self):
+        self.run_wrapper_test('bar.any.worker.js', 'text/javascript',
+                              AnyWorkerHandler)
 
 
 if __name__ == '__main__':

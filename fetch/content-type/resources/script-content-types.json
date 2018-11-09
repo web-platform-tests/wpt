@@ -43,5 +43,21 @@
     "input": ["text/javascript;\"", "x/x"],
     "executes": true,
     "encoding": null
+  },
+  {
+    "input": ["text/javascript", "error"],
+    "executes": true,
+    "encoding": null
+  },
+  {
+    "input": ["text/javascript;charset=windows-1252", "x/x", "text/javascript"],
+    "executes": true,
+    "encoding": null
+  },
+  {
+    "input": ["text/javascript;charset=windows-1252", "error", "text/javascript"],
+    "executes": true,
+    "encoding": "windows-1252"
   }
+
 ]

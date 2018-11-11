@@ -1,10 +1,6 @@
+// META: script=../resources/test-utils.js
+// META: script=../resources/recording-streams.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/test-utils.js');
-  self.importScripts('../resources/recording-streams.js');
-}
 
 function interceptThen() {
   const intercepted = [];

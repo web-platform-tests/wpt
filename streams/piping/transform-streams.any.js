@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 promise_test(() => {
   const rs = new ReadableStream({
     start(c) {

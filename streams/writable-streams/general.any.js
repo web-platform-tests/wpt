@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 test(() => {
   const ws = new WritableStream({});
   const writer = ws.getWriter();

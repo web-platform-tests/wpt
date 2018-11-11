@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 test(() => {
 
   const theError = new Error('a unique string');

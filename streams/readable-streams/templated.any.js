@@ -1,10 +1,6 @@
+// META: script=../resources/test-utils.js
+// META: script=../resources/rs-test-templates.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/test-utils.js');
-  self.importScripts('../resources/rs-test-templates.js');
-}
 
 // Run the readable stream test templates against readable streams created directly using the constructor
 

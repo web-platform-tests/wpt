@@ -1,10 +1,6 @@
+// META: script=../resources/rs-utils.js
+// META: script=../resources/test-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('../resources/rs-utils.js');
-  self.importScripts('../resources/test-utils.js');
-  self.importScripts('/resources/testharness.js');
-}
 
 const error1 = new Error('error1');
 error1.name = 'error1';

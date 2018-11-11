@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 promise_test(() => {
   let isDone = false;
   const ws = new WritableStream(

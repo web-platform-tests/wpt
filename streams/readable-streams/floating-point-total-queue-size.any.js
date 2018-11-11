@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 // Due to the limitations of floating-point precision, the calculation of desiredSize sometimes gives different answers
 // than adding up the items in the queue would. It is important that implementations give the same result in these edge
 // cases so that developers do not come to depend on non-standard behaviour. See

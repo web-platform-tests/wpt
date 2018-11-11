@@ -1,10 +1,6 @@
+// META: script=../resources/rs-utils.js
+// META: script=../resources/test-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/rs-utils.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 function duckTypedPassThroughTransform() {
   let enqueueInReadable;

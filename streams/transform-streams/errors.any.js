@@ -1,9 +1,5 @@
+// META: script=../resources/test-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 const thrownError = new Error('bad things are happening!');
 thrownError.name = 'error1';

@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 // The purpose of this file is to test for objects, attributes and arguments that should not exist.
 // The test cases are generated from data tables to reduce duplication.
 

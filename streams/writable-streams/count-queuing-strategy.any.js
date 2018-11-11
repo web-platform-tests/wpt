@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 test(() => {
   new WritableStream({}, new CountQueuingStrategy({ highWaterMark: 4 }));
 }, 'Can construct a writable stream with a valid CountQueuingStrategy');

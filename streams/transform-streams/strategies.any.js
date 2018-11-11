@@ -1,14 +1,10 @@
+// META: script=../resources/recording-streams.js
+// META: script=../resources/test-utils.js
 'use strict';
 
 // Here we just test that the strategies are correctly passed to the readable and writable sides. We assume that
 // ReadableStream and WritableStream will correctly apply the strategies when they are being used by a TransformStream
 // and so it isn't necessary to repeat their tests here.
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/recording-streams.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 test(() => {
   const ts = new TransformStream({}, { highWaterMark: 17 });

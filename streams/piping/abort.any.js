@@ -1,13 +1,9 @@
+// META: script=../resources/recording-streams.js
+// META: script=../resources/test-utils.js
 'use strict';
 
 // Tests for the use of pipeTo with AbortSignal.
 // There is some extra complexity to avoid timeouts in environments where abort is not implemented.
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/recording-streams.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 const error1 = new Error('error1');
 error1.name = 'error1';

@@ -1,13 +1,9 @@
+// META: script=../resources/rs-utils.js
 'use strict';
 
 // Prior to whatwg/stream#870 it was possible to construct a ReadableStreamBYOBRequest directly. This made it possible
 // to construct requests that were out-of-sync with the state of the ReadableStream. They could then be used to call
 // internal operations, resulting in asserts or bad behaviour. This file contains regression tests for the change.
-
-if (self.importScripts) {
-  self.importScripts('../resources/rs-utils.js');
-  self.importScripts('/resources/testharness.js');
-}
 
 function getRealByteStreamController() {
   let controller;

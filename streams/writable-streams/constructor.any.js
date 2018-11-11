@@ -1,9 +1,5 @@
+// META: script=../resources/constructor-ordering.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/constructor-ordering.js');
-}
 
 const error1 = new Error('error1');
 error1.name = 'error1';

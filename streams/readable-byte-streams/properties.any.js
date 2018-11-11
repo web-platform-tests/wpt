@@ -1,9 +1,5 @@
+// META: script=../resources/rs-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('../resources/rs-utils.js');
-  self.importScripts('/resources/testharness.js');
-}
 
 let ReadableStreamBYOBReader;
 

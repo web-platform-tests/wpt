@@ -1,9 +1,5 @@
+// META: script=../resources/constructor-ordering.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/constructor-ordering.js');
-}
 
 const operations = [
   op('get', 'size'),

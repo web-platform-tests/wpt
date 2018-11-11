@@ -3,10 +3,6 @@
 // Tests which patch the global environment are kept separate to avoid
 // interfering with other tests.
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 const ReadableStream_prototype_locked_get =
       Object.getOwnPropertyDescriptor(ReadableStream.prototype, 'locked').get;
 

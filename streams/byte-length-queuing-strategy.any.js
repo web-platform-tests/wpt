@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 test(() => {
 
   new ByteLengthQueuingStrategy({ highWaterMark: 4 });

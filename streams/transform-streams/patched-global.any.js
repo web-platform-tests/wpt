@@ -2,10 +2,6 @@
 
 // Tests which patch the global environment are kept separate to avoid interfering with other tests.
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 // eslint-disable-next-line no-extend-native, accessor-pairs
 Object.defineProperty(Object.prototype, 'highWaterMark', {
   set() { throw new Error('highWaterMark setter called'); }

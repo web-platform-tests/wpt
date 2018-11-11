@@ -1,9 +1,5 @@
 'use strict';
 
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-}
-
 class LipFuzzTransformer {
   constructor(substitutions) {
     this.substitutions = substitutions;

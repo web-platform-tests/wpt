@@ -1,10 +1,6 @@
+// META: script=../resources/recording-streams.js
+// META: script=../resources/test-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/recording-streams.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 promise_test(t => {
   const ts = recordingTransformStream({}, undefined, { highWaterMark: 0 });

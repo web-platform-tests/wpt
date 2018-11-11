@@ -1,3 +1,6 @@
+// META: script=../resources/recording-streams.js
+// META: script=../resources/rs-utils.js
+// META: script=../resources/test-utils.js
 'use strict';
 
 // The size() function of readableStrategy can re-entrantly call back into the TransformStream implementation. This
@@ -7,13 +10,6 @@
 //
 // There is no such issue with writableStrategy size() because it is never called from within TransformStream
 // algorithms.
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/recording-streams.js');
-  self.importScripts('../resources/rs-utils.js');
-  self.importScripts('../resources/test-utils.js');
-}
 
 const error1 = new Error('error1');
 error1.name = 'error1';

@@ -1,9 +1,5 @@
+// META: script=../resources/test-utils.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('../resources/test-utils.js');
-  self.importScripts('/resources/testharness.js');
-}
 
 let ReadableStreamDefaultReader;
 let ReadableStreamDefaultController;

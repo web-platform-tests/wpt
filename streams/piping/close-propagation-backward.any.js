@@ -1,9 +1,5 @@
+// META: script=../resources/recording-streams.js
 'use strict';
-
-if (self.importScripts) {
-  self.importScripts('/resources/testharness.js');
-  self.importScripts('../resources/recording-streams.js');
-}
 
 const error1 = new Error('error1!');
 error1.name = 'error1';

@@ -1,3 +1,4 @@
+// META: global=worker
 'use strict';
 
 // Tests which patch the global environment are kept separate to avoid

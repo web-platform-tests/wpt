@@ -1,3 +1,4 @@
+// META: global=worker
 'use strict';
 
 // The purpose of this file is to test for objects, attributes and arguments that should not exist.

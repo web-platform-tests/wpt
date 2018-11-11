@@ -1,3 +1,4 @@
+// META: global=worker
 'use strict';
 
 

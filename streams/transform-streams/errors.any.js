@@ -1,3 +1,4 @@
+// META: global=worker
 // META: script=../resources/test-utils.js
 'use strict';
 

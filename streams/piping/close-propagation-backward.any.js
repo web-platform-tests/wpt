@@ -1,3 +1,4 @@
+// META: global=worker
 // META: script=../resources/recording-streams.js
 'use strict';
 

@@ -19,8 +19,8 @@ def add_cleanup():
         fn()
 
 def test_delayed_lock(add_cleanup):
-    '''Ensure that delays in proxied Lock retrieval do not interfere with
-    initialization in parallel threads.'''
+    """Ensure that delays in proxied Lock retrieval do not interfere with
+    initialization in parallel threads."""
 
     class SlowLock(BaseManager):
         pass
@@ -38,13 +38,13 @@ def test_delayed_lock(add_cleanup):
     SlowLock.register("get_dict", callable=lambda: {})
     SlowLock.register("Lock", callable=handle_lock_request)
 
-    slowlock = SlowLock(('localhost', 4543), 'some key')
+    slowlock = SlowLock(("localhost", 4543), b"some key")
     slowlock.start()
     add_cleanup(lambda: slowlock.shutdown())
 
     def run(process_queue, request_lock, response_lock):
         def target(thread_queue):
-            stash = Stash('/', ('localhost', 4543), 'some key')
+            stash = Stash("/", ("localhost", 4543), b"some key")
             thread_queue.put(stash.lock is None)
 
         thread_queue = multiprocessing.Queue()
@@ -72,11 +72,11 @@ def test_delayed_lock(add_cleanup):
     add_cleanup(lambda: parallel.terminate())
 
     assert [queue.get(), queue.get()] == [False, False], (
-        'both instances had valid locks')
+        "both instances had valid locks")
 
 def test_delayed_dict(add_cleanup):
-    '''Ensure that delays in proxied `dict` retrieval do not interfere with
-    initialization in parallel threads.'''
+    """Ensure that delays in proxied `dict` retrieval do not interfere with
+    initialization in parallel threads."""
 
     class SlowDict(BaseManager):
         pass
@@ -94,13 +94,13 @@ def test_delayed_dict(add_cleanup):
     SlowDict.register("get_dict", callable=handle_dict_request)
     SlowDict.register("Lock", callable=lambda: threading.Lock())
 
-    slowdict = SlowDict(('localhost', 4543), 'some key')
+    slowdict = SlowDict(("localhost", 4543), b"some key")
     slowdict.start()
     add_cleanup(lambda: slowdict.shutdown())
 
     def run(process_queue, request_lock, response_lock):
         def target(thread_queue):
-            stash = Stash('/', ('localhost', 4543), 'some key')
+            stash = Stash("/", ("localhost", 4543), b"some key")
             thread_queue.put(stash.lock is None)
 
         thread_queue = multiprocessing.Queue()
@@ -128,4 +128,4 @@ def test_delayed_dict(add_cleanup):
     add_cleanup(lambda: parallel.terminate())
 
     assert [queue.get(), queue.get()] == [False, False], (
-        'both instances had valid locks')
+        "both instances had valid locks")

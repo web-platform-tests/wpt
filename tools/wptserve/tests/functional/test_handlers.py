@@ -391,8 +391,8 @@ class TestH2Handler(TestUsingH2Server):
 
 
 class TestWorkersHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'foo.worker.js': '',
-                      'foo.any.js': ''}
+    dummy_js_files = {'foo.worker.js': b'',
+                      'foo.any.js': b''}
 
     def test_any_worker_html(self):
         self.run_wrapper_test('foo.any.worker.html',
@@ -404,7 +404,7 @@ class TestWorkersHandler(TestWrapperHandlerUsingServer):
 
 
 class TestWindowHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'foo.window.js': ''}
+    dummy_js_files = {'foo.window.js': b''}
 
     def test_window_html(self):
         self.run_wrapper_test('foo.window.html',
@@ -412,7 +412,7 @@ class TestWindowHandler(TestWrapperHandlerUsingServer):
 
 
 class TestAnyHtmlHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'foo.any.js': ''}
+    dummy_js_files = {'foo.any.js': b''}
 
     def test_any_html(self):
         self.run_wrapper_test('foo.any.html',
@@ -420,7 +420,7 @@ class TestAnyHtmlHandler(TestWrapperHandlerUsingServer):
 
 
 class TestSharedWorkersHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'foo.any.js': '// META: global=sharedworker\n'}
+    dummy_js_files = {'foo.any.js': b'// META: global=sharedworker\n'}
 
     def test_any_sharedworkers_html(self):
         self.run_wrapper_test('foo.any.sharedworker.html',
@@ -428,7 +428,7 @@ class TestSharedWorkersHandler(TestWrapperHandlerUsingServer):
 
 
 class TestServiceWorkersHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'foo.any.js': '// META: global=serviceworker\n'}
+    dummy_js_files = {'foo.any.js': b'// META: global=serviceworker\n'}
 
     def test_serviceworker_html(self):
         self.run_wrapper_test('foo.any.serviceworker.html',
@@ -436,7 +436,7 @@ class TestServiceWorkersHandler(TestWrapperHandlerUsingServer):
 
 
 class TestAnyWorkerHandler(TestWrapperHandlerUsingServer):
-    dummy_js_files = {'bar.any.js': ''}
+    dummy_js_files = {'bar.any.js': b''}
 
     def test_any_work_js(self):
         self.run_wrapper_test('bar.any.worker.js', 'text/javascript',

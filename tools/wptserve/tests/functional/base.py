@@ -117,10 +117,10 @@ class TestWrapperHandlerUsingServer(TestUsingServer):
     remove it in tearDown.'''
     dummy_js_files = {}
 
-    def gen_js_file(self, filename, empty=True, content=''):
+    def gen_js_file(self, filename, empty=True, content=b''):
         self.remove_js_file(filename)
 
-        with open(filename, 'w') as fp:
+        with open(filename, 'wb') as fp:
             if not empty:
                 fp.write(content)
 
@@ -146,7 +146,7 @@ class TestWrapperHandlerUsingServer(TestUsingServer):
         self.assertEqual(200, resp.getcode())
         self.assertEqual(header_data, resp.info()['Content-Type'])
 
-        with open(os.path.join(doc_root, req_file), 'r') as fp:
+        with open(os.path.join(doc_root, req_file), 'rb') as fp:
             self.assertEqual(fp.read(), resp.read())
 
     def tearDown(self):

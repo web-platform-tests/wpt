@@ -52,15 +52,16 @@ const samples = [
 samples.forEach(expected => async_test(t => {
   const iframe = document.createElement('iframe');
   iframe.src = expected.file;
-  iframe.onload = t.step_func(() => {
+  iframe.onload = t.step_func_done(() => {
     const doc = iframe.contentDocument;
     assert_equals(doc.contentType, expected.contentType);
     assert_equals(doc.characterSet, expected.characterSet);
+    // The following is a little quirky as non-well-formed XML isn't defined in sufficient detail to
+    // be able to use more precise assertions.
     assert_true(
       !('dataset' in doc.documentElement) ||
       doc.documentElement.dataset['parsed'] !== 'yes',
       'Should not have parsed as (X)HTML');
-    t.done();
   });
   document.body.appendChild(iframe);
   t.add_cleanup(() => iframe.remove());

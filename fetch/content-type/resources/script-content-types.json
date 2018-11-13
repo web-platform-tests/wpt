@@ -45,6 +45,11 @@
     "encoding": null
   },
   {
+    "input": ["text/javascript", ""],
+    "executes": true,
+    "encoding": null
+  },
+  {
     "input": ["text/javascript", "error"],
     "executes": true,
     "encoding": null
@@ -56,6 +61,11 @@
   },
   {
     "input": ["text/javascript;charset=windows-1252", "error", "text/javascript"],
+    "executes": true,
+    "encoding": "windows-1252"
+  },
+  {
+    "input": ["text/javascript;charset=windows-1252", "", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
   }

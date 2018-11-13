@@ -1,5 +1,17 @@
 [
   {
+    "input": ["", "text/plain"],
+    "encoding": null,
+    "mimeType": "text/plain",
+    "documentContentType": "text/plain"
+  },
+  {
+    "input": ["text/plain", ""],
+    "encoding": null,
+    "mimeType": "text/plain",
+    "documentContentType": "text/plain"
+  },
+  {
     "input": ["text/html", "text/plain"],
     "encoding": null,
     "mimeType": "text/plain",

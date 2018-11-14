@@ -1,14 +1,16 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>RTCDTMFSender.prototype.insertDTMF</title>
+<title>getDisplayMedia</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
   'use strict';
+test(() => {
+  assert_idl_attribute(navigator.mediaDevices, 'getDisplayMedia');
+}, "getDisplayMedia in navigator.mediaDevices");
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia({video: true});
+  const stream = await navigator.mediaDevices.getDisplayMedia({video: true});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getTracks().length, 1);
@@ -22,8 +24,7 @@ promise_test(async t => {
 // Note that this results in some non-intuitive cases returning a video track,
 // i.e. {video: false}.
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia();
+  const stream = await navigator.mediaDevices.getDisplayMedia();
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getTracks().length, 1);
@@ -32,8 +33,7 @@ promise_test(async t => {
 }, 'getDisplayMedia() with no constraints');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia({video: false});
+  const stream = await navigator.mediaDevices.getDisplayMedia({video: false});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getTracks().length, 1);
@@ -42,8 +42,7 @@ promise_test(async t => {
 }, 'getDisplayMedia() with video false');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia({audio: false});
+  const stream = await navigator.mediaDevices.getDisplayMedia({audio: false});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getTracks().length, 1);
@@ -52,8 +51,7 @@ promise_test(async t => {
 }, 'getDisplayMedia() with audio false');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia({audio: true});
+  const stream = await navigator.mediaDevices.getDisplayMedia({audio: true});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getTracks().length, 1);
@@ -62,10 +60,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with audio true');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   try {
-    const stream =
-        await navigator.getDisplayMedia({video: {advanced: [{zoom: 1}]}});
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+        {video: {advanced: [{zoom: 1}]}});
   } catch (err) {
     assert_equals(err.name, 'TypeError');
     return;
@@ -74,10 +71,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with advanced constraint');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   try {
-    const stream =
-        await navigator.getDisplayMedia({video: {width: {min: 360}}});
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+        {video: {width: {min: 360}}});
   } catch (err) {
     assert_equals(err.name, 'TypeError');
     return;
@@ -86,10 +82,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with min constraint');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   try {
-    const stream =
-        await navigator.getDisplayMedia({video: {width: {exact: 360}}});
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+        {video: {width: {exact: 360}}});
   } catch (err) {
     assert_equals(err.name, 'TypeError');
     return;
@@ -98,10 +93,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with exact constraint');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   const maxWidth = 360;
-  const stream =
-      await navigator.getDisplayMedia({video: {width: {max: maxWidth}}});
+  const stream = await navigator.mediaDevices.getDisplayMedia(
+      {video: {width: {max: maxWidth}}});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getVideoTracks().length, 1);
@@ -111,10 +105,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with max constraint');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   const maxWidth = 360;
   const maxFrameRate = 4;
-  const stream = await navigator.getDisplayMedia(
+  const stream = await navigator.mediaDevices.getDisplayMedia(
       {video: {width: {max: maxWidth}, frameRate: {max: maxFrameRate}}});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
@@ -126,9 +119,9 @@ promise_test(async t => {
 }, 'getDisplayMedia() with constraints applied');
 
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
   try {
-    const stream = await navigator.getDisplayMedia({video: {width: {max: 0}}});
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+        {video: {width: {max: 0}}});
   } catch (err) {
     assert_equals(err.name, 'OverconstrainedError');
     return;
@@ -138,8 +131,7 @@ promise_test(async t => {
 
 // Content shell picks a fake desktop device by default.
 promise_test(async t => {
-  assert_idl_attribute(navigator, 'getDisplayMedia');
-  const stream = await navigator.getDisplayMedia({video: true});
+  const stream = await navigator.mediaDevices.getDisplayMedia({video: true});
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
   assert_equals(stream.getVideoTracks().length, 1);

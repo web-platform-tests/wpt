@@ -3,11 +3,8 @@
 <title>RTCPeerConnection.prototype.setRemoteDescription - legacy streams without a=msid lines</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="RTCPeerConnection-helper.js"></script>
 <script>
 'use strict';
-  // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   addEventListenerPromise
 
 const FINGERPRINT_SHA256 = '00:00:00:00:00:00:00:00:00:00:00:00:00' +
     ':00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00';
@@ -35,12 +32,9 @@ const MINIMAL_AUDIO_MLINE =
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const ontrackPromise = addEventListenerPromise(t, pc, 'track', e => {
-      assert_equals(e.streams.length, 1);
-    });
+    const haveOntrack = new Promise(r => pc.ontrack = r);
     await pc.setRemoteDescription({type: 'offer', sdp: SDP_BOILERPLATE + MINIMAL_AUDIO_MLINE});
-    await ontrackPromise;
-
+    assert_equals((await haveOntrack).streams.length, 1);
   }, 'setRemoteDescription with an SDP without a=msid lines triggers ontrack with a default stream.');
 
 </script>

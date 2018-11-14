@@ -403,6 +403,16 @@ test(() => {
 }, 'document.createElement with unknown "is" value should create "undefined" state element');
 
 test(() => {
+  class MyElement extends HTMLDivElement {}
+
+  // createElement with unknown 'is' should not throw.
+  // https://github.com/w3c/webcomponents/issues/608
+  let div = document.createElement('div', { is: 314159 });
+  assert_false(div instanceof MyElement);
+  assert_false(div.hasAttribute('is'));
+}, 'document.createElement with non-string type "is" value should create "undefined" state element');
+
+test(() => {
   class MyElement extends HTMLElement {
       constructor() {
           super();

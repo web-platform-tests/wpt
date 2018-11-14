@@ -68,7 +68,7 @@ def test_delayed_lock(add_cleanup):
 
     queue = multiprocessing.Queue()
 
-    def handle_lock_request():
+    def mutex_lock_request():
         """This request handler allows the caller to delay execution of a
         thread which has requested a proxied representation of the `lock`
         property, simulating a "slow" interprocess communication channel."""
@@ -78,7 +78,7 @@ def test_delayed_lock(add_cleanup):
         return threading.Lock()
 
     SlowLock.register("get_dict", callable=lambda: {})
-    SlowLock.register("Lock", callable=handle_lock_request)
+    SlowLock.register("Lock", callable=mutex_lock_request)
 
     slowlock = SlowLock(("localhost", 4543), b"some key")
     slowlock.start()
@@ -106,7 +106,7 @@ def test_delayed_dict(add_cleanup):
 
     # This request handler allows the caller to delay execution of a thread
     # which has requested a proxied representation of the "get_dict" property.
-    def handle_dict_request():
+    def mutex_dict_request():
         """This request handler allows the caller to delay execution of a
         thread which has requested a proxied representation of the `get_dict`
         property, simulating a "slow" interprocess communication channel."""
@@ -114,7 +114,7 @@ def test_delayed_dict(add_cleanup):
         response_lock.acquire()
         return {}
 
-    SlowDict.register("get_dict", callable=handle_dict_request)
+    SlowDict.register("get_dict", callable=mutex_dict_request)
     SlowDict.register("Lock", callable=lambda: threading.Lock())
 
     slowdict = SlowDict(("localhost", 4543), b"some key")

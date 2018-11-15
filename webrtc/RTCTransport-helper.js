@@ -48,9 +48,9 @@ function getDtlsTransportFromSctpTransport(sctpTransport) {
 function getIceTransportFromSctpTransport(sctpTransport) {
   const dtlsTransport = getDtlsTransportFromSctpTransport(sctpTransport);
 
-  const iceTransport = dtlsTransport.transport;
+  const { iceTransport } = dtlsTransport;
   assert_true(iceTransport instanceof RTCIceTransport,
-    'Expect dtlsTransport.transport to be an RTCIceTransport');
+    'Expect dtlsTransport.iceTransport to be an RTCIceTransport');
 
   return iceTransport;
 }
@@ -98,10 +98,10 @@ function getDtlsTransportsFromSenderReceiver(pc) {
 }
 
 function getIceTransportFromDtlsTransport(dtlsTransport) {
-  const iceTransport = dtlsTransport.transport;
+  const { iceTransport } = dtlsTransport;
 
   assert_true(iceTransport instanceof RTCIceTransport,
-    'Expect dtlsTransport.transport to be an RTCIceTransport');
+    'Expect dtlsTransport.iceTransport to be an RTCIceTransport');
 
   return iceTransport;
 }

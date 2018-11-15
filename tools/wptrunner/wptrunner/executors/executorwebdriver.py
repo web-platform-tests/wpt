@@ -65,7 +65,7 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def wait(self):
         while True:
             try:
-                self.webdriver.execute_async_script("")
+                self.session.execute_async_script("")
             except (client.TimeoutException, client.ScriptTimeoutException):
                 pass
             except (socket.timeout, client.NoSuchWindowException,

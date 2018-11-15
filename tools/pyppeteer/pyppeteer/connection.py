@@ -10,7 +10,7 @@ from . import logging, Session
 class ConnectionError(Exception):
     def __init__(self, method, error_details):
         message = error_details['message']
-        data = error_details['data']
+        data = error_details.get('data')
 
         super(ConnectionError, self).__init__(
             '%s - %s - %s' % (method, message, data)
@@ -31,9 +31,28 @@ class Connection(object):
 
         self.logger = logging.getChild('connection')
 
+        # In cases where a behavior can be achieved via either a deprecated API
+        # or an experimental API (e.g. disabling TLS certificate security
+        # checks) this switch controls which of the two APIs will be used.
+        self.prefer_experimental = True
+
     def _handle_event(self, message):
-        session = self._sessions[message['params']['targetId']]
-        session.on_event(message['params']['message'])
+        method = message.get('method')
+
+        if (method == 'Security.certificateError' and # API status: deprecated
+            not self.prefer_experimental):
+            def target(connection, message):
+                connection.send(
+                    'Security.handleCertificateError', # API status: deprecated
+                    {
+                        'eventId': message['params']['eventId'],
+                        'action': 'continue'
+                    }
+                )
+            threading.Thread(target=target, args=(self, message)).start()
+        elif method == 'Target.receivedMessageFromTarget':
+            session = self._sessions[message['params']['targetId']]
+            session.on_event(message['params']['message'])
 
     def _handle_method_result(self, message):
         self._results[message['id']] = message
@@ -69,7 +88,7 @@ class Connection(object):
 
                 if 'id' in message:
                     self._handle_method_result(message)
-                elif message.get('method') == 'Target.receivedMessageFromTarget':
+                else:
                     self._handle_event(message)
 
         self._open_event.clear()
@@ -96,10 +115,17 @@ class Connection(object):
         self._open_event.wait()
         self.logger.info('opened')
 
-        self.send(
-            'Security.setIgnoreCertificateErrors', # API status: experimental
-            {'ignore': True}
-        )
+        if self.prefer_experimental:
+            self.send(
+                'Security.setIgnoreCertificateErrors', # API status: experimental
+                {'ignore': True}
+            )
+        else:
+            self.send('Security.enable', {}) # API status: stable
+            self.send(
+                'Security.setOverrideCertificateErrors', # API status: deprecated
+                {'override': True}
+            )
 
     def create_session(self, target_id):
         if target_id not in self._sessions:

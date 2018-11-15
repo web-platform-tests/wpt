@@ -489,6 +489,8 @@ function canAddTransceiver() {
     return true;
   } catch (err) {
     return false;
+  } finally {
+    pc.close()
   }
 }
 

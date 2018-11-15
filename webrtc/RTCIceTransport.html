@@ -27,20 +27,20 @@
       'Expect at least one ICE candidate returned from get*Candidates()');
 
     for(const candidate of candidates) {
-     assert_true(candidate instanceof RTCIceCandidate,
-       'Expect candidate elements to be instance of RTCIceCandidate');
+      assert_true(candidate instanceof RTCIceCandidate,
+        'Expect candidate elements to be instance of RTCIceCandidate');
     }
   }
 
   function validateIceParameter(param) {
-   assert_not_equals(param, null,
-     'Expect candidate parameter to be non-null after peer connections are connected');
+    assert_not_equals(param, null,
+      'Expect candidate parameter to be non-null after peer connections are connected');
 
-   assert_equals(typeof param.usernameFragment, 'string',
-     'Expect param.usernameFragment to be set with string value');
+    assert_equals(typeof param.usernameFragment, 'string',
+      'Expect param.usernameFragment to be set with string value');
 
-   assert_equals(typeof param.password, 'string',
-     'Expect param.password to be set with string value');
+    assert_equals(typeof param.password, 'string',
+      'Expect param.password to be set with string value');
   }
 
   function validateConnectedIceTransport(iceTransport) {

@@ -73,7 +73,11 @@
             return new Promise(function(resolve, reject) {
                     button.addEventListener("click", resolve);
 
-                    test_driver.click(button).catch(reject);
+                    test_driver.click(button).catch(reason => {
+                        if (navigator.webdriver) {
+                            reject(reason);
+                        }
+                    });
                 }).then(function() {
                     button.remove();
 

@@ -1,4 +1,4 @@
-def test_missing_first_match(new_session, add_browser_capabilities):
+def test_response_headers(new_session, add_browser_capabilities):
     response, _ = new_session({"capabilities": {"alwaysMatch": add_browser_capabilities({})}})
     assert 'cache-control' in response.headers
     assert 'no-cache' == response.headers['cache-control']

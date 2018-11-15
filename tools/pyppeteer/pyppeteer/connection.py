@@ -6,15 +6,7 @@ import lomond
 from lomond.persist import persist
 
 from . import logging, Session
-
-class ConnectionError(Exception):
-    def __init__(self, method, error_details):
-        message = error_details['message']
-        data = error_details.get('data')
-
-        super(ConnectionError, self).__init__(
-            '%s - %s - %s' % (method, message, data)
-        )
+from errors import ProtocolError, PyppeteerError
 
 class Connection(object):
     def __init__(self, url):
@@ -53,6 +45,10 @@ class Connection(object):
         elif method == 'Target.receivedMessageFromTarget':
             session = self._sessions[message['params']['targetId']]
             session.on_event(message['params']['message'])
+        elif method == 'Target.detachedFromTarget':
+            self._sessions.pop(message['params']['targetId'])
+        elif method == 'Inspector.detached':
+            self.close()
 
     def _handle_method_result(self, message):
         self._results[message['id']] = message
@@ -68,6 +64,9 @@ class Connection(object):
         }
 
         for socket_event in persist(self._websocket, **options):
+            if self._polling_thread is None:
+                continue
+
             if is_ready:
                 try:
                     message = self._messages.get(False)
@@ -95,19 +94,31 @@ class Connection(object):
 
     def close(self):
         if self._polling_thread is None:
-            raise Exception('Connection is not open')
+            raise PyppeteerError('Connection is not open')
 
         self.logger.info('closing')
+
+        for message_id in self._locks.keys():
+            self._results[message_id] = ConnectionError(
+                'Command interrupted by closing connection'
+            )
+            self._locks.pop(message_id).release()
+
+        for target_id in self._sessions.keys():
+            session = self._sessions.pop(target_id)
+            session.close()
+
         self._sessions.clear()
         self._exit_event.set()
         self._websocket.close()
-        self._polling_thread.join()
+        if threading.current_thread() != self._polling_thread:
+            self._polling_thread.join()
         self._polling_thread = None
         self.logger.info('closed')
 
     def open(self):
         if self._polling_thread:
-            raise Exception('Connection is already open')
+            raise PypetteerError('Connection is already open')
 
         self.logger.info('opening')
         self._polling_thread = threading.Thread(target=lambda: self._poll())
@@ -158,6 +169,8 @@ class Connection(object):
         result = self._results.pop(message_id)
 
         if 'error' in result:
-            raise ConnectionError(method, result['error'])
+            raise ProtocolError(method, result['error'])
+        if isinstance(result, Exception):
+            raise result
 
         return result['result']

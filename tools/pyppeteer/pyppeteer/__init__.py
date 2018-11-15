@@ -8,3 +8,4 @@ logging.addHandler(_logging.NullHandler())
 from element import Element
 from session import Session
 from connection import Connection
+from errors import PyppeteerError, ConnectionError

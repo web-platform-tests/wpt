@@ -66,6 +66,8 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
         while True:
             try:
                 self.session.execute_async_script("")
+            except pyppeteer.ConnectionError:
+                break
             except (client.TimeoutException, client.ScriptTimeoutException):
                 pass
             except (socket.timeout, client.NoSuchWindowException,

@@ -6,6 +6,7 @@ import lomond
 from lomond.persist import persist
 
 from . import logging, Element
+from errors import ConnectionError, ProtocolError, ScriptError
 import action_handlers
 
 _DEFAULT_TIMEOUT = 10 * 1000
@@ -16,24 +17,6 @@ def unpack_remote_object(result):
         return None
 
     return result['value']
-
-# https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
-class ScriptError(Exception):
-    def __init__(self, exception_details):
-        super(ScriptError, self).__init__((
-            '{lineNumber}:{columnNumber} ' +
-            '{exception[className]} {exception[description]}'
-            ).format(**exception_details)
-        )
-
-class SessionError(Exception):
-    def __init__(self, method, error_details):
-        message = error_details['message']
-        data = error_details['data']
-
-        super(SessionError, self).__init__(
-            '%s - %s - %s' % (method, message, data)
-        )
 
 class Session(object):
     def __init__(self, connection, session_id, target_id):
@@ -67,8 +50,18 @@ class Session(object):
 
         self.logger.debug('RECV %s' % (message,))
 
+        if 'id' not in message:
+            return
+
         self._results[message['id']] = message
         self._locks.pop(message['id']).release()
+
+    def close(self):
+        for message_id in self._locks.keys():
+            self._results[message_id] = ConnectionError(
+                'Command interrupted by closing connection'
+            )
+            self._locks.pop(message_id).release()
 
     def _send(self, method, params={}):
         self._message_id += 1
@@ -92,7 +85,10 @@ class Session(object):
         result = self._results.pop(message_id)
 
         if 'error' in result:
-            raise SessionError(method, result['error'])
+            raise ProtocolError(method, result['error'])
+
+        if isinstance(result, Exception):
+            raise result
 
         if method == 'Input.dispatchMouseEvent':
             self._on_mouse_move(params)

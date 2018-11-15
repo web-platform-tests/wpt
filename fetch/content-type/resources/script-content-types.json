@@ -15,6 +15,11 @@
     "encoding": null
   },
   {
+    "input": ["\"text/javascript\""],
+    "executes": false,
+    "encoding": null
+  },
+  {
     "input": ["text / javascript"],
     "executes": false,
     "encoding": null
@@ -68,5 +73,15 @@
     "input": ["text/javascript;charset=windows-1252", "", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
+  },
+  {
+    "input": ["text/javascript;charset=windows-1252;\"", "\\\"", "x/x"],
+    "executes": true,
+    "encoding": "windows-1252"
+  },
+  {
+    "input": ["x/x;\"", "x/y;\\\"", "text/javascript;charset=windows-1252;\"", "text/javascript"],
+    "executes": true,
+    "encoding": null
   }
 ]

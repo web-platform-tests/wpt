@@ -94,5 +94,11 @@
     "encoding": null,
     "mimeType": "text/html",
     "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/html;\"", "\\\"", "text/plain"],
+    "encoding": null,
+    "mimeType": "text/html",
+    "documentContentType": "text/html"
   }
 ]

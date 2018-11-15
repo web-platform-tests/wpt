@@ -470,6 +470,8 @@ class Session(object):
                 self.session_id = None
 
             raise err
+        
+        self._assert_response_headers(response.headers)
 
         if "value" in response.body:
             value = response.body["value"]
@@ -506,6 +508,17 @@ class Session(object):
         """
         url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         return self.send_command(method, url, body)
+    
+    def _assert_response_headers(self, headers):
+        """
+        Method to assert response headers for WebDriver requests
+        
+        :param headers: dict with header data
+        """
+        assert 'cache-control' in headers
+        assert 'no-cache' == headers['cache-control']
+        assert 'content-type' in headers
+        assert 'application/json; charset=utf-8' == headers['content-type']
 
     @property
     @command

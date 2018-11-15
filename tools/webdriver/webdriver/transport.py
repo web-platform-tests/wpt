@@ -39,7 +39,8 @@ class Response(object):
     def from_http(cls, http_response, decoder=json.JSONDecoder, **kwargs):
         try:
             body = json.load(http_response, cls=decoder, **kwargs)
-            headers = dict(http_response.getheaders())
+            headers = dict(
+                (key.lower(), val.lower()) for (key, val) in http_response.getheaders())
         except ValueError:
             raise ValueError("Failed to decode response body as JSON:\n" +
                 http_response.read())

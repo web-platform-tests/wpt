@@ -147,7 +147,7 @@ class Session(object):
             'expression': as_expression,
             'awaitPromise': True,
             'returnByValue': True,
-            'timeout': self._timeout
+            'timeout': self._timeout # API status: experimental
         })
 
         if 'exceptionDetails' in result:
@@ -185,7 +185,7 @@ class Session(object):
             # https://w3c.github.io/webdriver/#execute-script
             'awaitPromise': True,
             'returnByValue': True,
-            'timeout': self._timeout
+            'timeout': self._timeout # API status: experimental
         })
 
         if 'exceptionDetails' in result:

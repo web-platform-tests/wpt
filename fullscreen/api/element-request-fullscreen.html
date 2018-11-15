@@ -21,6 +21,7 @@ async_test(function(t)
         t.done();
     }));
 
-    test_driver.bless('fullscreen', () => div.requestFullscreen());
+    test_driver.bless("fullscreen", () => div.requestFullscreen())
+        .catch(t.step_func(assert_unreached));
 });
 </script>

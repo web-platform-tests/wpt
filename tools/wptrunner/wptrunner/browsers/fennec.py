@@ -14,14 +14,16 @@ from serve.serve import make_hosts_file
 from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
-from ..executors.executormarionette import MarionetteTestharnessExecutor  # noqa: F401
+from ..executors.executormarionette import (MarionetteTestharnessExecutor, # noqa: F401
+                                            MarionetteRefTestExecutor)  # noqa: F401
 from .firefox import (get_timeout_multiplier, update_properties, executor_kwargs, FirefoxBrowser)  # noqa: F401
 
 
 __wptrunner__ = {"product": "fennec",
                  "check_args": "check_args",
                  "browser": "FennecBrowser",
-                 "executor": {"testharness": "MarionetteTestharnessExecutor"},
+                 "executor": {"testharness": "MarionetteTestharnessExecutor",
+                              "reftest": "MarionetteRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",

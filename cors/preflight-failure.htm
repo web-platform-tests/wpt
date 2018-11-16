@@ -25,31 +25,33 @@ function preflight_failure(code) {
   var isCodeOK = code >= 200 && code <= 299,
       descOK = isCodeOK ? 'succeed' : 'throw error',
       desc = 'Should ' + descOK + ' if preflight has status ' + code;
-  async_test(desc).step(function() {
-    var client = new XMLHttpRequest();
-    var redirect =
-      encodeURIComponent(CROSSDOMAIN_URL + 'headers=x-test&' + req_c++);
+  promise_test(function(t) {
+    return new Promise(resolve => {
+      var client = new XMLHttpRequest();
+      var redirect =
+        encodeURIComponent(CROSSDOMAIN_URL + 'headers=x-test&' + req_c++);
 
-    client.open('GET',
-        CROSSDOMAIN_URL + 'headers=x-test&location=' + redirect
-        + '&code=' + code + '&preflight=' + code
-        + '&' + req_c++,
-        true /* async */);
-    client.setRequestHeader('x-test', 'test');
-    client.onerror = this.step_func(function() {
-      assert_false(isCodeOK);
-      this.done();
+      client.open('GET',
+          CROSSDOMAIN_URL + 'headers=x-test&location=' + redirect
+          + '&code=' + code + '&preflight=' + code
+          + '&' + req_c++,
+          true /* async */);
+      client.setRequestHeader('x-test', 'test');
+      client.onerror = t.step_func(function() {
+        assert_false(isCodeOK);
+        resolve();
+      });
+      client.onreadystatechange = t.step_func(function() {
+        if (!isCodeOK)
+          assert_equals(client.status, 0);
+      });
+      client.onload = t.step_func(function() {
+        assert_true(isCodeOK);
+        resolve();
+      });
+      client.send(null);
     });
-    client.onreadystatechange = this.step_func(function() {
-      if (!isCodeOK)
-        assert_equals(client.status, 0);
-    });
-    client.onload = this.step_func(function() {
-      assert_true(isCodeOK);
-      this.done();
-    });
-    client.send(null);
-  });
+  }, desc);
 }
 [200, 299,
  300, 301, 302, 303, 304, 305, 306, 307, 308,

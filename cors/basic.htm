@@ -22,13 +22,14 @@ function cors(desc, scheme, subdomain, port) {
         }
         var url = scheme + "://" + (subdomain ? subdomain + "." : "") + location.hostname + ":" + port + dirname(location.pathname)
     }
-    async_test(desc).step(function() {
+    promise_test(function(t) {
         var client = new XMLHttpRequest();
-        this.count = counter++;
+        t.count = counter++;
 
-        client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&origin=none&" + this.count);
+        client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&origin=none&" + t.count);
 
-        client.onreadystatechange = this.step_func(function(e) {
+        return new Promise(resolve => {
+          client.onreadystatechange = t.step_func(function(e) {
             // First request, test that it fails with no origin
             if (client.readyState < 4) return;
             if (!url)
@@ -37,17 +38,18 @@ function cors(desc, scheme, subdomain, port) {
                 assert_false(!!client.response, "Got CORS-disallowed response");
 
             client = new XMLHttpRequest();
-            client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&" + this.count);
-            client.onreadystatechange = this.step_func(function(e) {
+            client.open("GET", url + "resources/cors-makeheader.py?get_value=hest_er_best&" + t.count);
+            client.onreadystatechange = t.step_func(function(e) {
                 // Second request, test that it passes with the allowed-origin
                 if (client.readyState < 4) return;
                 assert_true(client.response.indexOf("hest_er_best") != -1, "Got CORS-allowed response");
-                this.done();
+                resolve();
             });
             client.send();
+          });
+          client.send();
         });
-        client.send();
-    });
+    }, desc);
 }
 
 cors("Same domain basic usage");

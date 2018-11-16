@@ -49,6 +49,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     }
 
     kwargs["binary_args"].append("--disable-popup-blocking")
+    kwargs["binary_args"].append("--ignore-certificate-errors")
 
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:

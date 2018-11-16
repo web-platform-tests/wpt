@@ -211,6 +211,9 @@ class WebDriverProtocol(Protocol):
                 self.binary,
                 '--user-data-dir=%s' % self.profile_dir,
                 '--remote-debugging-port=0',
+                # Chrome may not navigate to the URL specified on the command
+                # line if this is the first execution of the binary.
+                '--no-first-run',
                 'data:text/html,%s' % identifier
                 ] + self.args,
             stderr=open(os.devnull, 'w')

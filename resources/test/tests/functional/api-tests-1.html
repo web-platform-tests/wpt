@@ -193,7 +193,7 @@
     async_test("test should timeout (fail) with a custom set timeout value of 1 second",
                {timeout:1000}).step(function(){});
 
-    async_test("async test that is never started, should have status Not Run", {timeout:1000});
+    async_test("async test that is never started, should have status Not Run");
 
 
     test(function(t) {

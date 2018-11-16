@@ -336,7 +336,7 @@ def get_parser_affected():
 def get_revish(**kwargs):
     revish = kwargs["revish"]
     if kwargs["revish"] is None:
-        revish = "%s..HEAD" % branch_point()
+        revish = branch_point()
     return revish
 
 

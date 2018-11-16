@@ -230,7 +230,7 @@ class WebDriverProtocol(Protocol):
         # https://chromedevtools.github.io/devtools-protocol/
         self.logger.debug('inferring browser port')
         port = None
-        while port is None:
+        while port is None and self.browser_process.returncode is None:
             try:
                 with open('%s/DevToolsActivePort' % self.profile_dir) as handle:
                     contents = handle.read().strip()

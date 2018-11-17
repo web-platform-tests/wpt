@@ -19,6 +19,9 @@ idl_test(
         resolve();
       });
       observer.observe({ entryTypes: ['paint'] });
+
+      // Force the creation of a new "paint" entry
+      document.body.appendChild(document.createTextNode('content'));
     });
     const timeout = new Promise((_, reject) => {
       t.step_timeout(() => reject('Timed out waiting for paint event'), 3000);

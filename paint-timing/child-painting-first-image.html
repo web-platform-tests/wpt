@@ -5,21 +5,26 @@
 
 <script>
 async_test(function (t) {
-    window.addEventListener('message', t.step_func(e => {
+    // This test must take place within an iframe to avoid interference from
+    // paint entries created by testharness.js
+    const parent = document.createElement('iframe');
+    document.body.appendChild(parent);
+
+    parent.contentWindow.addEventListener('message', t.step_func(e => {
         assert_equals(e.data, '2 paint first-paint paint first-contentful-paint');
         // When only child frame paints, expect only first-paint.
         t.step_timeout( function() {
-            const bufferedEntries = performance.getEntriesByType('paint');
+            const bufferedEntries = parent.contentWindow.performance.getEntriesByType('paint');
             assert_equals(bufferedEntries.length, 1);
             assert_equals(bufferedEntries[0].entryType, 'paint');
             assert_equals(bufferedEntries[0].name, 'first-paint');
             t.done();
         }, 50);
     }));
-    const iframe = document.createElement('iframe');
+    const iframe = parent.contentDocument.createElement('iframe');
     iframe.id = 'child-iframe';
     iframe.src = 'resources/subframe-painting.html';
-    document.body.appendChild(iframe);
+    parent.contentDocument.body.appendChild(iframe);
 }, 'Parent frame ignores paint-timing events fired from child image rendering.');
 </script>
 </body>

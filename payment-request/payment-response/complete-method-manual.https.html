@@ -12,11 +12,11 @@ async function runManualTest({ completeWith: result }, button) {
   button.disabled = true;
   const { response, request } = await getPaymentRequestResponse();
   promise_test(async t => {
-    // We .complete() as normal, using the passed test value
     let completePromise;
     let invalidComplete;
     let afterComplete;
     try {
+      // We .complete() as normal, using the passed test value
       completePromise = response.complete(result);
       assert_true(completePromise instanceof Promise, "returns a promise");
       // Immediately calling complete() again yields a rejected promise.

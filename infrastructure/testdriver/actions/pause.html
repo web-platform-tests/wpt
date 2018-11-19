@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>TestDriver actions: event order</title>
+<title>TestDriver actions: pause</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -8,11 +8,11 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-async_test(t => {
+promise_test(() => {
   let t0 = performance.now();
-  let actions = new test_driver.Actions()
-    .addTick(2000)
+  return new test_driver.Actions()
+    .addTick(1000)
     .send()
-    .then(t.step_func_done(() => assert_greater_than(performance.now() - t0, 2000)));
+    .then(() => assert_greater_than(performance.now() - t0, 1000));
 })
 </script>

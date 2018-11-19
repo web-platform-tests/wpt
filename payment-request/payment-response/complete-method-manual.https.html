@@ -82,9 +82,12 @@ async function runManualTest({ completeWith: result }, button) {
     </button>
   </li>
   <li>
-    <button onclick="runManualTest({completeWith: 'fail'}, this).then(done)">
+    <button onclick="runManualTest({completeWith: 'fail'}, this)">
       Passing "fail" eventually closes the sheet and doesn't throw.
     </button>
+  </li>
+  <li>
+    <button onclick="done()">Done!</button>
   </li>
 </ol>
 <small>

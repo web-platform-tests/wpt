@@ -4,6 +4,7 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
 #
 # In addition to this configuration file, the "Build pull requests from forks
 # of this repository" setting must also be enabled in the Azure DevOps project:
@@ -50,3 +51,43 @@ jobs:
     displayName: 'Run tests (Firefox Nightly)'
   - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari_webdriver infrastructure/
     displayName: 'Run tests (Safari Technology Preview)'
+
+- job: tools_unittest_macOS
+  displayName: 'tools/ unittests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.tools_unittest']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/
+      toxenv: py27
+
+- job: wptrunner_unittest_macOS
+  displayName: 'tools/wptrunner/ unittests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wptrunner_unittest']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wptrunner/
+
+- job: wpt_integration_macOS
+  displayName: 'tools/wpt/ tests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wpt_integration']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  # full checkout required
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wpt/

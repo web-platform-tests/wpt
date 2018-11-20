@@ -121,15 +121,12 @@
     await doSignalingHandshake(pc1, pc2);
 
     const iceTransports = [
-      pc1.getSenders().transport,
-      pc1.getReceivers().transport,
-      pc1.getSenders().rtcpTransport,
-      pc1.getReceivers().rtcpTransport,
-      pc2.getSenders().transport,
-      pc2.getReceivers().transport,
-      pc2.getSenders().rtcpTransport,
-      pc2.getReceivers().rtcpTransport,
+      ...pc1.getSenders(),
+      ...pc1.getReceivers(),
+      ...pc2.getSenders(),
+      ...pc2.getReceivers()
     ]
+    .map(senderReceiver => senderReceiver.transport)
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport)
     .filter(iceTransport => iceTransport); // filter null/undefined
@@ -155,12 +152,11 @@
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    const iceTransports = [
-      pc.getSenders().transport,
-      pc.getReceivers().transport,
-      pc.getSenders().rtcpTransport,
-      pc.getReceivers().rtcpTransport
+    const iceTransports =[
+      ...pc.getSenders(),
+      ...pc.getReceivers()
     ]
+    .map(senderReceiver => senderReceiver.transport)
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport)
     .filter(iceTransport => iceTransport); // filter null/undefined

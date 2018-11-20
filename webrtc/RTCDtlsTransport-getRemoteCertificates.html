@@ -48,15 +48,12 @@
     await doSignalingHandshake(pc1, pc2);
 
     const dtlsTransports = [
-      pc1.getSenders().transport,
-      pc1.getReceivers().transport,
-      pc1.getSenders().rtcpTransport,
-      pc1.getReceivers().rtcpTransport,
-      pc2.getSenders().transport,
-      pc2.getReceivers().transport,
-      pc2.getSenders().rtcpTransport,
-      pc2.getReceivers().rtcpTransport,
+      ...pc1.getSenders(),
+      ...pc1.getReceivers(),
+      ...pc2.getSenders(),
+      ...pc2.getReceivers()
     ]
+    .map(senderReceiver => senderReceiver.transport)
     .filter(dtlsTransport => dtlsTransport); // filter null/undefined
 
     assert_greater_than(dtlsTransports.length, 2, 'expect to find at least 2 RTCDtlsTransports');

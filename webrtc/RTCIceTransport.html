@@ -94,8 +94,7 @@
       pc2.sctp.transport
     ]
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
-    .map(dtlsTransport => dtlsTransport.iceTransport)
-    .filter(iceTransport => iceTransport); // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport);
 
     assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
@@ -128,8 +127,7 @@
     ]
     .map(senderReceiver => senderReceiver.transport)
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
-    .map(dtlsTransport => dtlsTransport.iceTransport)
-    .filter(iceTransport => iceTransport); // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport);
 
     assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
@@ -158,8 +156,7 @@
     ]
     .map(senderReceiver => senderReceiver.transport)
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
-    .map(dtlsTransport => dtlsTransport.iceTransport)
-    .filter(iceTransport => iceTransport); // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport);
 
     assert_greater_than(iceTransports.length, 1, 'expect to find at least 1 RTCIceTransports');
 

@@ -157,14 +157,6 @@ module.exports = {
     validateCertificateStats: true,
 
     // RTCTransport-helper.js
-    waitForConnectedState: true,
-    getDtlsTransportFromSctpTransport: true,
-    getIceTransportFromSctpTransport: true,
-    getDtlsTransportsFromSenderReceiver: true,
-    getIceTransportFromDtlsTransport: true,
-    getIceTransportsFromSenderReceiver: true,
-    getIceTransportFromDtlsTransport: true,
-    getIceTransportsFromDtlsTransports: true,
-    getIceTransportsFromSenderReceiver: true
+    waitForConnectedState: true
   }
 }

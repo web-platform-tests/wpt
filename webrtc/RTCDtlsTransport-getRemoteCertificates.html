@@ -14,8 +14,6 @@
 
   // The following helper functions are called from RTCTransport-helper.js:
   //  waitForConnectedState
-  //  getDtlsTransportFromSctpTransport
-  //  getDtlsTransportsFromSenderReceiver
 
   function validateConnectedDtlsTransport(dtlsTransport) {
     const certs = dtlsTransport.getRemoteCertificates();
@@ -23,7 +21,7 @@
     assert_greater_than(certs.length, 0,
       'Expect DTLS transport to have at least one remote certificate when connected');
 
-    for(const cert of certs) {
+    for (const cert of certs) {
       assert_true(cert instanceof ArrayBuffer,
         'Certificates should be represented as ArrayBuffers');
     }
@@ -49,25 +47,28 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
-    const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+    const dtlsTransports = [
+      pc1.getSenders().transport,
+      pc1.getReceivers().transport,
+      pc1.getSenders().rtcpTransport,
+      pc1.getReceivers().rtcpTransport,
+      pc2.getSenders().transport,
+      pc2.getReceivers().transport,
+      pc2.getSenders().rtcpTransport,
+      pc2.getReceivers().rtcpTransport,
+    ]
+    .filter(dtlsTransport => dtlsTransport); // filter null/undefined
 
-    for (const dtlsTransport of dtlsTransports1) {
-      validateConnectingDtlsTransport(dtlsTransport);
-    }
+    assert_greater_than(dtlsTransports.length, 2, 'expect to find at least 2 RTCDtlsTransports');
 
-    for (const dtlsTransport of dtlsTransports2) {
+    for (const dtlsTransport of dtlsTransports) {
       validateConnectingDtlsTransport(dtlsTransport);
     }
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
 
-    for (const dtlsTransport of dtlsTransports1) {
-      validateConnectedDtlsTransport(dtlsTransport);
-    }
-
-    for (const dtlsTransport of dtlsTransports2) {
+    for (const dtlsTransport of dtlsTransports) {
       validateConnectedDtlsTransport(dtlsTransport);
     }
   }, 'RTP - connected DTLS transports should have valid remote certificates');
@@ -84,17 +85,24 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
-    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+    const dtlsTransports = [
+      pc1.sctp.transport,
+      pc2.sctp.transport
+    ]
+    .filter(dtlsTransport => dtlsTransport); // filter null/undefined
 
-    validateConnectingDtlsTransport(dtlsTransport1);
-    validateConnectingDtlsTransport(dtlsTransport2);
+    assert_greater_than(dtlsTransports.length, 2, 'expect to find at least 2 RTCDtlsTransports');
+
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectingDtlsTransport(dtlsTransport);
+    }
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
 
-    validateConnectedDtlsTransport(dtlsTransport1);
-    validateConnectedDtlsTransport(dtlsTransport2);
+    for (const dtlsTransport of dtlsTransports) {
+      validateConnectedDtlsTransport(dtlsTransport);
+    }
   }, 'SCTP - connected DTLS transports should have valid remote certificates');
 
 </script>

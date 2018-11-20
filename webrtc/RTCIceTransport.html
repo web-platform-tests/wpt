@@ -15,11 +15,6 @@
 
   // The following helper functions are called from RTCTransport-helper.js:
   //  waitForConnectedState
-  //  getDtlsTransportFromSctpTransport
-  //  getDtlsTransportsFromSenderReceiver
-  //  getIceTransportFromSctpTransport
-  //  getIceTransportFromDtlsTransport
-  //  getIceTransportsFromDtlsTransports
 
   function validateIceCandidates(candidates) {
     assert_greater_than(candidates.length, 0,
@@ -94,17 +89,22 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransport1 = getDtlsTransportFromSctpTransport(pc1.sctp);
-    const dtlsTransport2 = getDtlsTransportFromSctpTransport(pc2.sctp);
+    const iceTransports = [
+      pc1.sctp.transport,
+      pc2.sctp.transport
+    ]
+    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport)
+    .filter(iceTransport => iceTransport); // filter null/undefined
 
-    const iceTransport1 = getIceTransportFromDtlsTransport(dtlsTransport1);
-    const iceTransport2 = getIceTransportFromDtlsTransport(dtlsTransport2);
+    assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
 
-    validateConnectedIceTransport(iceTransport1);
-    validateConnectedIceTransport(iceTransport2);
+    for (const iceTransport of iceTransports) {
+      validateConnectedIceTransport(iceTransport);
+    }
   }, 'SCTP - Connected ICE transports should have relevants attributes set');
 
   promise_test(async t => {
@@ -120,20 +120,26 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransports1 = getDtlsTransportsFromSenderReceiver(pc1);
-    const dtlsTransports2 = getDtlsTransportsFromSenderReceiver(pc2);
+    const iceTransports = [
+      pc1.getSenders().transport,
+      pc1.getReceivers().transport,
+      pc1.getSenders().rtcpTransport,
+      pc1.getReceivers().rtcpTransport,
+      pc2.getSenders().transport,
+      pc2.getReceivers().transport,
+      pc2.getSenders().rtcpTransport,
+      pc2.getReceivers().rtcpTransport,
+    ]
+    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport)
+    .filter(iceTransport => iceTransport); // filter null/undefined
 
-    const iceTransports1 = getIceTransportsFromDtlsTransports(dtlsTransports1);
-    const iceTransports2 = getIceTransportsFromDtlsTransports(dtlsTransports2);
+    assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
 
-    for (const iceTransport of iceTransports1) {
-      validateConnectedIceTransport(iceTransport);
-    }
-
-    for (const iceTransport of iceTransports2) {
+    for (const iceTransport of iceTransports) {
       validateConnectedIceTransport(iceTransport);
     }
   }, 'RTP - Connected ICE transports should have relevants attributes set');
@@ -149,7 +155,17 @@
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    const iceTransports = getIceTransportsFromSenderReceiver(pc);
+    const iceTransports = [
+      pc.getSenders().transport,
+      pc.getReceivers().transport,
+      pc.getSenders().rtcpTransport,
+      pc.getReceivers().rtcpTransport
+    ]
+    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
+    .map(dtlsTransport => dtlsTransport.iceTransport)
+    .filter(iceTransport => iceTransport); // filter null/undefined
+
+    assert_greater_than(iceTransports.length, 1, 'expect to find at least 1 RTCIceTransports');
 
     for (const iceTransport of iceTransports) {
       validateUnconnectedIceTransport(iceTransport);
@@ -175,7 +191,8 @@
     const answer = await pc2.createAnswer()
     await pc1.setRemoteDescription(answer)
 
-    const iceTransport = getIceTransportFromSctpTransport(pc1.sctp);
+    const iceTransport = pc1.sctp.transport.iceTransport;
+
     validateUnconnectedIceTransport(iceTransport);
   }, 'SCTP - Unconnected iceTransport should have empty remote candidates and selected pair');
 

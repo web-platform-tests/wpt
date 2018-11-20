@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head onload>
+<meta charset="utf-8" />
+<title>This test validates increasing the buffer size in onresourcetimingbufferfull callback of resource timing.</title>
+<link rel="author" title="Intel" href="http://www.intel.com/" />
+<link rel="help" href="http://www.w3.org/TR/resource-timing/#performanceresourcetiming"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/append.js"></script>
+</head>
+<body onload=onload_test()>
+<script>
+    const resource_timing_buffer_size = 1;
+    performance.clearResourceTimings();
+    var increase = function() {
+        performance.setResourceTimingBufferSize(resource_timing_buffer_size * 2);
+    }
+    performance.addEventListener('resourcetimingbufferfull', increase);
+    performance.setResourceTimingBufferSize(resource_timing_buffer_size);
+    // Scripts appended in JS to ensure setResourceTimingBufferSize is called before.
+    // This resource gets buffered in the resource timing entry buffer, then moved to the global buffer
+    appendScript('resources/empty.js');
+    // This resource overflows the entry buffer, goes into the secondary buffer and eventually copied to the entry buffer, after its size was increased.
+    appendScript('resources/empty_script.js');
+    setup({ explicit_done: true });
+    function onload_test() {
+        test(function() {
+            assert_equals(performance.getEntriesByType('resource').length, 2,
+                          'Both entries should be stored in resource timing buffer since its increases size once it overflows.');
+            assert_true(performance.getEntriesByType('resource')[0].name.includes('empty.js'), "empty.js is in the entries buffer");
+            assert_true(performance.getEntriesByType('resource')[1].name.includes('empty_script.js'), "empty_script.js is in the entries buffer");
+            done();
+        });
+    }
+</script>
+</body>
+</html>

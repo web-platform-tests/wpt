@@ -9,6 +9,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webperftestharness.js"></script>
 <script src="resources/webperftestharnessextension.js"></script>
+<script src="resources/append.js"></script>
 </head>
 <body onload=onload_test()>
 <script>
@@ -21,12 +22,6 @@
     }
     context.registerResourceTimingBufferFullCallback(buffer_full_callback);
     // Scripts appended in JS to ensure setResourceTimingBufferSize is called before.
-    function appendScript(src) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = src;
-        document.body.appendChild(script);
-    }
     appendScript('resources/empty.js');
     appendScript('resources/empty_script.js');
     appendScript('resources/resource_timing_test0.js');

@@ -96,7 +96,7 @@
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport);
 
-    assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
+    assert_greater_than_equal(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
@@ -129,7 +129,7 @@
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport);
 
-    assert_greater_than(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
+    assert_greater_than_equal(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
 
     await waitForConnectedState(pc1);
     await waitForConnectedState(pc2);
@@ -158,7 +158,7 @@
     .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport);
 
-    assert_greater_than(iceTransports.length, 1, 'expect to find at least 1 RTCIceTransports');
+    assert_greater_than_equal(iceTransports.length, 1, 'expect to find at least 1 RTCIceTransports');
 
     for (const iceTransport of iceTransports) {
       validateUnconnectedIceTransport(iceTransport);

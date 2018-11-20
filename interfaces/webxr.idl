@@ -165,7 +165,6 @@ dictionary XRWebGLLayerInit {
   boolean depth = true;
   boolean stencil = false;
   boolean alpha = true;
-  boolean multiview = false;
   double framebufferScaleFactor = 1.0;
 };
 
@@ -180,7 +179,6 @@ interface XRWebGLLayer : XRLayer {
   readonly attribute boolean depth;
   readonly attribute boolean stencil;
   readonly attribute boolean alpha;
-  readonly attribute boolean multiview;
 
   readonly attribute WebGLFramebuffer framebuffer;
   readonly attribute unsigned long framebufferWidth;

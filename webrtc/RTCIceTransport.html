@@ -12,7 +12,6 @@
   //  createDataChannelPair
   //  awaitMessage
   //  getTrackFromUserMedia
-  //  addTrackOrTransceiver
 
   // The following helper functions are called from RTCTransport-helper.js:
   //  waitForConnectedState
@@ -115,8 +114,8 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [track, mediaStream] = await getTrackFromUserMedia('audio')
-    addTrackOrTransceiver(pc1, track, mediaStream);
+    const [track] = await getTrackFromUserMedia('audio');
+    pc1.addTransceiver(track);
     exchangeIceCandidates(pc1, pc2);
 
     await doSignalingHandshake(pc1, pc2);
@@ -143,12 +142,12 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const [track, mediaStream] = await getTrackFromUserMedia('audio')
-    addTrackOrTransceiver(pc, track, mediaStream);
+    const [track] = await getTrackFromUserMedia('audio');
+    pc.addTransceiver(track);
 
     // setLocalDescription should initialize sender/receiver.transport
-    const offer = await pc.createOffer()
-    await pc.setLocalDescription(offer)
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
 
     const iceTransports = getIceTransportsFromSenderReceiver(pc);
 

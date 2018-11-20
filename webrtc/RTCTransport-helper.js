@@ -6,7 +6,6 @@
 
   The following helper functions are called from RTCPeerConnection-helper.js:
     getTrackFromUserMedia
-    addTrackOrTransceiver
     exchangeIceCandidates
     doSignalingHandshake
 */

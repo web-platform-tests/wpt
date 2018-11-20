@@ -114,7 +114,6 @@ module.exports = {
     getUserMediaTracksAndStreams: true,
     performOffer: true,
     Resolver: true,
-    addTrackOrTransceiver: true,
 
     // RTCRtpCapabilities-helper.js
     validateRtpCapabilities: true,

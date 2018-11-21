@@ -163,7 +163,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -192,7 +192,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -214,7 +214,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -236,7 +236,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -266,7 +266,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -289,7 +289,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  setTimeout(() => rs.controller.close());
+  step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -312,9 +312,9 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.close());
+    step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(value => {
@@ -344,9 +344,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.close());
+    step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(() => {
@@ -369,9 +369,9 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.close());
+    step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(value => {

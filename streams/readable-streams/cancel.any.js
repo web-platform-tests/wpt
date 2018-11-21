@@ -23,7 +23,7 @@ promise_test(() => {
       randomSource.readStop();
 
       return new Promise(resolve => {
-        setTimeout(() => {
+        step_timeout(() => {
           cancellationFinished = true;
           resolve();
         }, 1);
@@ -181,7 +181,7 @@ promise_test(() => {
     }
   });
 
-  setTimeout(() => resolveSourceCancelPromise('Hello'), 1);
+  step_timeout(() => resolveSourceCancelPromise('Hello'), 1);
 
   return rs.cancel().then(value => {
     assert_true(sourceCancelPromiseHasFulfilled, 'cancel() return value should be fulfilled only after the promise returned by the underlying source\'s cancel');
@@ -209,7 +209,7 @@ promise_test(() => {
 
   const errorInCancel = new Error('Sorry, it just wasn\'t meant to be.');
 
-  setTimeout(() => rejectSourceCancelPromise(errorInCancel), 1);
+  step_timeout(() => rejectSourceCancelPromise(errorInCancel), 1);
 
   return rs.cancel().then(() => {
     assert_unreached('cancel() return value should be rejected');

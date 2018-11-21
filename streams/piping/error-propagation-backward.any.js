@@ -370,7 +370,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, ['cancel', error1]);
@@ -391,7 +391,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the cancel error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, ['cancel', error1]);
@@ -409,7 +409,7 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventCancel: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -483,7 +483,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, ['cancel', error1]);
@@ -505,7 +505,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the cancel error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, ['cancel', error1]);
@@ -524,7 +524,7 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventCancel: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => ws.controller.error(error1), 10);
+  step_timeout(() => ws.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);

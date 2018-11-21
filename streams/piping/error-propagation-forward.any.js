@@ -140,7 +140,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -161,7 +161,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the abort error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -179,7 +179,7 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -196,7 +196,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -218,7 +218,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the abort error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -237,7 +237,7 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => rs.controller.error(error1), 10);
+  step_timeout(() => rs.controller.error(error1), 10);
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -255,9 +255,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {
@@ -279,9 +279,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the abort error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {
@@ -300,9 +300,9 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {
@@ -320,9 +320,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {
@@ -345,9 +345,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error2, rs.pipeTo(ws), 'pipeTo must reject with the abort error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {
@@ -367,9 +367,9 @@ promise_test(t => {
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws, { preventAbort: true }),
                                       'pipeTo must reject with the same error');
 
-  setTimeout(() => {
+  step_timeout(() => {
     rs.controller.enqueue('Hello');
-    setTimeout(() => rs.controller.error(error1), 10);
+    step_timeout(() => rs.controller.error(error1), 10);
   }, 10);
 
   return pipePromise.then(() => {

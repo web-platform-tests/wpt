@@ -142,9 +142,9 @@ promise_test(() => {
     assert_array_equals(ws.events, ['write', 'Hello', 'close']);
   });
 
-  setTimeout(() => {
+  step_timeout(() => {
     controller.enqueue('Hello');
-    setTimeout(() => controller.close(), 10);
+    step_timeout(() => controller.close(), 10);
   }, 10);
 
   return pipePromise;

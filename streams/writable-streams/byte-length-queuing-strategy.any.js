@@ -7,7 +7,7 @@ promise_test(() => {
     {
       write() {
         return new Promise(resolve => {
-          setTimeout(() => {
+          step_timeout(() => {
             isDone = true;
             resolve();
           }, 200);

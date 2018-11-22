@@ -74,11 +74,6 @@ function callCompleteWhileRetrying(button) {
       completePromise2,
       "Calling complete() while retrying rejects with an InvalidStateError"
     );
-    assert_not_equals(
-      completePromise1,
-      completePromise2,
-      "complete() must return unique promises"
-    );
     await retryPromise;
     await response.complete("success");
   }, button.textContent.trim());

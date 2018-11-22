@@ -107,5 +107,3 @@ test(() => {
                 'ByteLengthQueuingStrategy.name must be "ByteLengthQueuingStrategy"');
 
 }, 'ByteLengthQueuingStrategy.name is correct');
-
-done();

@@ -437,5 +437,3 @@ test(() => {
 test(() => {
   assert_throws(new RangeError(), () => new TransformStream({ writableType: 'bytes' }), 'constructor should throw');
 }, 'specifying a defined writableType should throw');
-
-done();

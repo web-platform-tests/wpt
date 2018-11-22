@@ -628,5 +628,3 @@ promise_test(t => {
   });
 
 }, 'Errors must be propagated backward: erroring via the controller errors once pending write completes');
-
-done();

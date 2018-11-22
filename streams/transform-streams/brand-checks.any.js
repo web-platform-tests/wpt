@@ -72,5 +72,3 @@ test(() => {
   methodThrowsForAll(TransformStreamDefaultController.prototype, 'error',
                      [fakeTSDefaultController(), realTS(), undefined, null]);
 }, 'TransformStreamDefaultController.prototype.error enforces a brand check');
-
-done();

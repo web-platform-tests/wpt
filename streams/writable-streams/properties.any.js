@@ -218,5 +218,3 @@ for (const method in sinkMethods) {
     });
   }, `unexpected properties should not be accessed when calling sink method ${method}`);
 }
-
-done();

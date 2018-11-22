@@ -193,5 +193,3 @@ promise_test(t => {
     return promise_rejects(t, error1, pipePromise, 'promise returned from pipeTo() should be rejected');
   });
 }, 'cancelling the readable side of a TransformStream should abort a full pipe');
-
-done();

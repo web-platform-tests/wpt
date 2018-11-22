@@ -254,5 +254,3 @@ test(() => {
   assert_equals(count, 1, 'pipeTo was called once');
 
 }, 'pipeThrough should work with no options argument');
-
-done();

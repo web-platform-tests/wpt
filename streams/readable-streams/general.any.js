@@ -901,5 +901,3 @@ promise_test(() => {
   });
 
 }, 'ReadableStream integration test: adapting an async pull source');
-
-done();

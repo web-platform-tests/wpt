@@ -187,5 +187,3 @@ for (const method in transformerMethods) {
     });
   }, `unexpected properties should not be accessed when calling transformer method ${method}`);
 }
-
-done();

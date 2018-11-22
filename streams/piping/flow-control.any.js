@@ -299,5 +299,3 @@ promise_test(() => {
     ]);
   });
 }, 'Piping to a WritableStream that does not consume the writes fast enough exerts backpressure on the ReadableStream');
-
-done();

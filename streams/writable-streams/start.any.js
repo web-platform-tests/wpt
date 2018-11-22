@@ -161,5 +161,3 @@ promise_test(t => {
         assert_array_equals(events, ['ready', 'write', 'closed'], 'promises should reject in standard order');
       });
 }, 'when start() rejects, writer promises should reject in standard order');
-
-done();

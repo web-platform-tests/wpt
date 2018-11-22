@@ -234,5 +234,3 @@ promise_test(() => {
   return Promise.all([rs.cancel(), rs.getReader().closed]);
 
 }, 'ReadableStream cancellation: cancelling before start finishes should prevent pull() from being called');
-
-done();

@@ -339,5 +339,3 @@ promise_test(t => {
   const reader = ts.readable.getReader();
   return promise_rejects(t, thrownError, reader.read(), 'read() should reject with thrownError');
 }, 'the readable should be errored with the reason passed to the writable abort() method');
-
-done();

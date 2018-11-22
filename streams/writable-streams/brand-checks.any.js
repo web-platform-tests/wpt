@@ -107,5 +107,3 @@ test(() => {
   methodThrowsForAll(WritableStreamDefaultController.prototype, 'error',
                      [fakeWSDefaultController(), realWS(), realWSDefaultWriter(), undefined, null]);
 }, 'WritableStreamDefaultController.prototype.error enforces a brand check');
-
-done();

@@ -587,5 +587,3 @@ promise_test(t => {
     ]);
   });
 }, 'Closing must be propagated forward: erroring the writable while flushing pending writes should error pipeTo');
-
-done();

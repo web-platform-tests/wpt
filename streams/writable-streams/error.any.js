@@ -62,5 +62,3 @@ promise_test(() => {
     controller.error(error1);
   });
 }, 'controller.error() on closed stream should not throw');
-
-done();

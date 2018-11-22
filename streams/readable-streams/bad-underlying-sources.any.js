@@ -398,5 +398,3 @@ promise_test(t => {
   });
 
 }, 'read should not error if it dequeues and pull() throws');
-
-done();

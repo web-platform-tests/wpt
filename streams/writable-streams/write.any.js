@@ -251,5 +251,3 @@ promise_test(() => {
   });
   return ws.getWriter().write('a').then(() => assert_true(thenCalled, 'thenCalled should be true'));
 }, 'returning a thenable from write() should work');
-
-done();

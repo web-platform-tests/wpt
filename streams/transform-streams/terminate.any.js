@@ -98,5 +98,3 @@ promise_test(() => {
     ts.readable.getReader().closed
   ]);
 }, 'controller.terminate() inside flush() should not prevent writer.close() from succeeding');
-
-done();

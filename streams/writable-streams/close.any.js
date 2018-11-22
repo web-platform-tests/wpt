@@ -399,5 +399,3 @@ promise_test(t => {
     });
   });
 }, 'close() should not reject until no sink methods are in flight');
-
-done();

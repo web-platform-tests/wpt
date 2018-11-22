@@ -286,5 +286,3 @@ test(t => {
   assert_not_equals(getReader.call(rs2), undefined, 'getReader should work on rs2');
 
 }, 'ReadableStreamTee should not use a modified ReadableStream constructor from the global object');
-
-done();

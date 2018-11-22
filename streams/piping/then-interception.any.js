@@ -60,5 +60,3 @@ promise_test(async () => {
   assert_array_equals(intercepted, [], 'nothing should have been intercepted');
   assert_array_equals(ws.events, ['write', 'a', 'close'], 'written chunk should be "a"');
 }, 'tee should not be observable');
-
-done();

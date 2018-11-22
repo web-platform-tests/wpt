@@ -161,5 +161,3 @@ for (const testCase of cases) {
     return Promise.all(promises);
   }, `testing "${inputChunks}" (length ${inputChunks.length})`);
 }
-
-done();

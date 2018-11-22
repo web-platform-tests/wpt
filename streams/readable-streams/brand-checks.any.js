@@ -157,5 +157,3 @@ test(() => {
                      [fakeRSDefaultController(), realRS(), realRSDefaultReader(), undefined, null]);
 
 }, 'ReadableStreamDefaultController.prototype.error enforces a brand check');
-
-done();

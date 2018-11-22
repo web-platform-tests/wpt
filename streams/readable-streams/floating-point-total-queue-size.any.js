@@ -114,5 +114,3 @@ function setupTestStream() {
 
   return { reader: rs.getReader(), controller };
 }
-
-done();

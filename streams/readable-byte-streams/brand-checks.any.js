@@ -187,5 +187,3 @@ promise_test(t => {
   }
 
 }, 'ReadableStreamBYOBRequest enforces brand checks');
-
-done();

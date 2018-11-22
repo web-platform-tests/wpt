@@ -172,5 +172,3 @@ promise_test(t => {
         assert_array_equals(ws.events, ['write', 0, 'close'], 'sink.write() should only be called once');
       });
 }, 'original reader should error when new reader is created within strategy.size()');
-
-done();

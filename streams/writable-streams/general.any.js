@@ -244,5 +244,3 @@ promise_test(() => {
     });
   });
 }, 'ready promise should fire before closed on releaseLock');
-
-done();

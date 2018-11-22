@@ -57,5 +57,3 @@ test(t => {
   assert_true(isReadableStream(branch1), 'branch1 should be a ReadableStream');
   assert_true(isReadableStream(branch2), 'branch2 should be a ReadableStream');
 }, 'ReadableStream tee() should not call the global ReadableStream');
-
-done();

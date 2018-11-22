@@ -106,5 +106,3 @@ test(() => {
                 'CountQueuingStrategy.name must be "CountQueuingStrategy"');
 
 }, 'CountQueuingStrategy.name is correct');
-
-done();

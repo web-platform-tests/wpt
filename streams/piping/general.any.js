@@ -188,5 +188,3 @@ for (const preventCancel of [true, false]) {
 
   }, `an undefined rejection from write should cause pipeTo() to reject when preventCancel is ${preventCancel}`);
 }
-
-done();

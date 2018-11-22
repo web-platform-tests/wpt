@@ -26,5 +26,3 @@ promise_test(t => {
 
   return writer.close();
 }, 'Closing a writable stream with in-flight writes below the high water mark delays the close call properly');
-
-done();

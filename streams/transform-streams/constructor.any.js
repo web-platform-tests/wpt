@@ -44,5 +44,3 @@ for (const failureOp of operations) {
                   'operations should be performed in the right order');
   }, `TransformStream constructor should stop after ${failureOp} fails`);
 }
-
-done();

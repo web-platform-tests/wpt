@@ -494,5 +494,3 @@ test(() => {
   assert_throws(new RangeError(), () => rs.getReader({ mode }), 'getReader() should throw');
   assert_true(toStringCalled, 'toString() should be called');
 }, 'getReader() should call ToString() on mode');
-
-done();

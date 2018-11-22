@@ -129,5 +129,3 @@ promise_test(t => {
   });
   return promise_rejects(t, error1, ts.writable.getWriter().close(), 'close() should reject');
 }, 'error() during flush should cause writer.close() to reject');
-
-done();

@@ -93,5 +93,3 @@ test(() => {
     highWaterMark: NaN
   }), 'WritableStream constructor should throw a TypeError');
 }, 'Writable stream: invalid size beats invalid highWaterMark');
-
-done();

@@ -140,5 +140,3 @@ test(() => {
   assert_equals(controller.error.length, 1, 'releaseLock has 1 parameter');
 
 }, 'ReadableByteStreamController instances should have the correct list of properties');
-
-done();

@@ -183,5 +183,3 @@ for (const failureOp of operations) {
                   'operations should be performed in the right order');
   }, `WritableStream constructor should stop after ${failureOp} fails`);
 }
-
-done();

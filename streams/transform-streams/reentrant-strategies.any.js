@@ -317,5 +317,3 @@ promise_test(t => {
     return Promise.all([promise_rejects(t, error1, reader.read(), 'read() should reject'), abortPromise]);
   });
 }, 'writer.abort() inside size() should work');
-
-done();

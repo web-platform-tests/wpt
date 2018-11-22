@@ -43,5 +43,3 @@ test(t => {
   assert_not_equals(getWriter.call(ts.writable), undefined,
                     'getWriter should work when called on ts.writable');
 }, 'TransformStream should use the original value of ReadableStream and WritableStream');
-
-done();

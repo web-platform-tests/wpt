@@ -358,5 +358,3 @@ promise_test(t => {
     assert_array_equals(rs.events, ['pull'], 'cancel should not have been called');
   });
 }, 'abort should do nothing after the writable is errored');
-
-done();

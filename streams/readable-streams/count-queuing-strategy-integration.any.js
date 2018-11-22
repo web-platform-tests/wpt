@@ -206,5 +206,3 @@ promise_test(() => {
     });
 
 }, 'Correctly governs a ReadableStreamController\'s desiredSize property (HWM = 4)');
-
-done();

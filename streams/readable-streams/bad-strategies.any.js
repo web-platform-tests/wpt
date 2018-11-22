@@ -157,5 +157,3 @@ promise_test(() => {
   return Promise.all(promises);
 
 }, 'Readable stream: invalid strategy.size return value');
-
-done();

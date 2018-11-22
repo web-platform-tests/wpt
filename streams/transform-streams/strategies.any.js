@@ -148,5 +148,3 @@ promise_test(t => {
   });
 }, 'a bad readableStrategy size function should error the stream on enqueue even when transformer.transform() ' +
    'catches the exception');
-
-done();

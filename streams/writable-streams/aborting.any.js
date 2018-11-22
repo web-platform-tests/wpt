@@ -1368,5 +1368,3 @@ promise_test(t => {
                               e => assert_equals(e, 'string argument', 'e should be \'string argument\''));
   });
 }, 'abort with a string argument should set the stored error to that argument');
-
-done();

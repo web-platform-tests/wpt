@@ -262,5 +262,3 @@ promise_test(() => {
     readableStreamToArray(branch2).then(array => assert_array_equals(array, ['a'], 'branch2 should have one chunk'))
   ]);
 }, 'tee() inside size() should work');
-
-done();

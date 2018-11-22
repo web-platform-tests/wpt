@@ -37,7 +37,7 @@ bluetooth_test(() => setUpHealthThermometerAndHeartRateDevices()
       for (let iframe of iframes) {
         await callWithTrustedClick(() => iframe.contentWindow.postMessage({
             type: 'RequestDevice'
-        }, '*'));
+        }, '*'), iframe.contentWindow.document);
       }
     })), test_desc);
 </script>

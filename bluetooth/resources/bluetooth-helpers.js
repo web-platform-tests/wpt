@@ -237,19 +237,23 @@ function waitForDocumentReady() {
   });
 }
 
-function callWithTrustedClick(callback) {
+function callWithTrustedClick(callback, targetDocument) {
   return waitForDocumentReady()
     .then(() => new Promise(resolve => {
+      if (!targetDocument)
+        targetDocument = document;
+
       let button = document.createElement('button');
       button.textContent = 'click to continue test';
       button.style.display = 'block';
       button.style.fontSize = '20px';
       button.style.padding = '10px';
       button.onclick = () => {
-        document.body.removeChild(button);
+        targetDocument.body.removeChild(button);
         resolve(callback());
       };
-      document.body.appendChild(button);
+      targetDocument.body.appendChild(button);
+
       test_driver.click(button);
     }));
 }

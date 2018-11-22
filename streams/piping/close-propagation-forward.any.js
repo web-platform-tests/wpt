@@ -155,7 +155,7 @@ promise_test(() => {
 
 }, 'Closing must be propagated forward: starts closed; preventClose = true, preventAbort = true, preventCancel = true');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -163,7 +163,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -192,7 +192,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -206,7 +206,7 @@ promise_test(t => {
 
 }, 'Closing must be propagated forward: becomes closed asynchronously; preventClose omitted; rejected close promise');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -214,7 +214,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -228,7 +228,7 @@ promise_test(() => {
 
 }, 'Closing must be propagated forward: becomes closed asynchronously; preventClose = true');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -236,7 +236,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -266,7 +266,7 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(() => {
     assert_array_equals(rs.eventsWithoutPulls, []);
@@ -281,7 +281,7 @@ promise_test(t => {
 }, 'Closing must be propagated forward: becomes closed asynchronously; dest never desires chunks; ' +
    'preventClose omitted; rejected close promise');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -289,7 +289,7 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  step_timeout(() => rs.controller.close());
+  t.step_timeout(() => rs.controller.close());
 
   return pipePromise.then(value => {
     assert_equals(value, undefined, 'the promise must fulfill with undefined');
@@ -304,7 +304,7 @@ promise_test(() => {
 }, 'Closing must be propagated forward: becomes closed asynchronously; dest never desires chunks; ' +
    'preventClose = true');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -312,9 +312,9 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws);
 
-  step_timeout(() => {
+  t.step_timeout(() => {
     rs.controller.enqueue('Hello');
-    step_timeout(() => rs.controller.close());
+    t.step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(value => {
@@ -344,9 +344,9 @@ promise_test(t => {
 
   const pipePromise = promise_rejects(t, error1, rs.pipeTo(ws), 'pipeTo must reject with the same error');
 
-  step_timeout(() => {
+  t.step_timeout(() => {
     rs.controller.enqueue('Hello');
-    step_timeout(() => rs.controller.close());
+    t.step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(() => {
@@ -361,7 +361,7 @@ promise_test(t => {
 
 }, 'Closing must be propagated forward: becomes closed after one chunk; preventClose omitted; rejected close promise');
 
-promise_test(() => {
+promise_test(t => {
 
   const rs = recordingReadableStream();
 
@@ -369,9 +369,9 @@ promise_test(() => {
 
   const pipePromise = rs.pipeTo(ws, { preventClose: true });
 
-  step_timeout(() => {
+  t.step_timeout(() => {
     rs.controller.enqueue('Hello');
-    step_timeout(() => rs.controller.close());
+    t.step_timeout(() => rs.controller.close());
   }, 10);
 
   return pipePromise.then(value => {

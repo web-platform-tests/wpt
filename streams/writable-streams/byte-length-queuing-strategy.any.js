@@ -1,13 +1,13 @@
 // META: global=worker
 'use strict';
 
-promise_test(() => {
+promise_test(t => {
   let isDone = false;
   const ws = new WritableStream(
     {
       write() {
         return new Promise(resolve => {
-          step_timeout(() => {
+          t.step_timeout(() => {
             isDone = true;
             resolve();
           }, 200);

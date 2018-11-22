@@ -3,7 +3,7 @@
 // META: script=../resources/rs-utils.js
 'use strict';
 
-promise_test(() => {
+promise_test(t => {
 
   const randomSource = new RandomPushSource();
 
@@ -23,7 +23,7 @@ promise_test(() => {
       randomSource.readStop();
 
       return new Promise(resolve => {
-        step_timeout(() => {
+        t.step_timeout(() => {
           cancellationFinished = true;
           resolve();
         }, 1);
@@ -164,7 +164,7 @@ promise_test(() => {
 
 }, 'ReadableStream cancellation: if the underlying source\'s cancel method returns a promise, the promise returned by the stream\'s cancel should fulfill when that one does (1)');
 
-promise_test(() => {
+promise_test(t => {
 
   let resolveSourceCancelPromise;
   let sourceCancelPromiseHasFulfilled = false;
@@ -181,7 +181,7 @@ promise_test(() => {
     }
   });
 
-  step_timeout(() => resolveSourceCancelPromise('Hello'), 1);
+  t.step_timeout(() => resolveSourceCancelPromise('Hello'), 1);
 
   return rs.cancel().then(value => {
     assert_true(sourceCancelPromiseHasFulfilled, 'cancel() return value should be fulfilled only after the promise returned by the underlying source\'s cancel');
@@ -190,7 +190,7 @@ promise_test(() => {
 
 }, 'ReadableStream cancellation: if the underlying source\'s cancel method returns a promise, the promise returned by the stream\'s cancel should fulfill when that one does (2)');
 
-promise_test(() => {
+promise_test(t => {
 
   let rejectSourceCancelPromise;
   let sourceCancelPromiseHasRejected = false;
@@ -209,7 +209,7 @@ promise_test(() => {
 
   const errorInCancel = new Error('Sorry, it just wasn\'t meant to be.');
 
-  step_timeout(() => rejectSourceCancelPromise(errorInCancel), 1);
+  t.step_timeout(() => rejectSourceCancelPromise(errorInCancel), 1);
 
   return rs.cancel().then(() => {
     assert_unreached('cancel() return value should be rejected');

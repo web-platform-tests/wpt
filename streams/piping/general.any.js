@@ -127,7 +127,7 @@ promise_test(() => {
 
 }, 'Piping from a ReadableStream from which lots of chunks are synchronously readable');
 
-promise_test(() => {
+promise_test(t => {
 
   let controller;
   const rs = recordingReadableStream({
@@ -142,9 +142,9 @@ promise_test(() => {
     assert_array_equals(ws.events, ['write', 'Hello', 'close']);
   });
 
-  step_timeout(() => {
+  t.step_timeout(() => {
     controller.enqueue('Hello');
-    step_timeout(() => controller.close(), 10);
+    t.step_timeout(() => controller.close(), 10);
   }, 10);
 
   return pipePromise;

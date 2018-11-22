@@ -2,7 +2,7 @@ promise_test(() => {
   return fetch("resources/script-content-types.json").then(res => res.json()).then(runTests);
 }, "Loading JSON…");
 
-self.isThereABetterWay = undefined;
+self.stringFromExecutedScript = undefined;
 
 function runTests(allTestData) {
   allTestData.forEach(testData => {
@@ -18,13 +18,13 @@ function runScriptTest(testData, singleHeader) {
     const script = document.createElement("script");
       t.add_cleanup(() => {
       script.remove()
-      self.isThereABetterWay = undefined;
+      self.stringFromExecutedScript = undefined;
     });
     script.src = getURL(testData.input, singleHeader);
     document.head.appendChild(script);
     if (testData.executes) {
       script.onload = t.step_func_done(() => {
-        assert_equals(self.isThereABetterWay, testData.encoding === "windows-1252" ? "â‚¬" : "€");
+        assert_equals(self.stringFromExecutedScript, testData.encoding === "windows-1252" ? "â‚¬" : "€");
       });
       script.onerror = t.unreached_func();
     } else {
@@ -43,6 +43,6 @@ function getURL(input, singleHeader) {
   input.forEach(val => {
     url += "value=" + encodeURIComponent(val) + "&";
   });
-  url += "&content=" + encodeURIComponent("self.isThereABetterWay = \"€\"");
+  url += "&content=" + encodeURIComponent("self.stringFromExecutedScript = \"€\"");
   return url;
 }

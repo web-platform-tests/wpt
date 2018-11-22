@@ -48,6 +48,12 @@
     "documentContentType": "text/html"
   },
   {
+    "input": ["text/plain;charset=gbk;x=foo", "text/plain"],
+    "encoding": "GBK",
+    "mimeType": "text/plain;charset=gbk",
+    "documentContentType": "text/plain"
+  },
+  {
     "input": ["text/html;charset=gbk", "text/plain", "text/html"],
     "encoding": null,
     "mimeType": "text/html",
@@ -100,5 +106,17 @@
     "encoding": null,
     "mimeType": "text/html",
     "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/html;\"", "\\\"", "text/plain", "\";charset=GBK"],
+    "encoding": "GBK",
+    "mimeType": "text/html;charset=GBK",
+    "documentContentType": "text/html"
+  },
+  {
+    "input": ["text/html;\"",  "\"", "text/plain"],
+    "encoding": null,
+    "mimeType": "text/plain",
+    "documentContentType": "text/plain"
   }
 ]

@@ -20,7 +20,12 @@
     "encoding": null
   },
   {
-    "input": ["text / javascript"],
+    "input": ["text/ javascript"],
+    "executes": false,
+    "encoding": null
+  },
+  {
+    "input": ["text /javascript"],
     "executes": false,
     "encoding": null
   },

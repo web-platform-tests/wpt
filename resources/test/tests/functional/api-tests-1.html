@@ -193,6 +193,9 @@
     async_test("test should timeout (fail) with a custom set timeout value of 1 second",
                {timeout:1000}).step(function(){});
 
+    async_test("async test that is never started, should have status Not Run", {timeout:1000});
+
+
     test(function(t) {
              window.global = 1;
              t.add_cleanup(function() {delete window.global});
@@ -336,6 +339,14 @@
       "name": "assert_true expected to pass",
       "message": null,
       "properties": {}
+    },
+    {
+      "status_string": "NOTRUN",
+      "name": "async test that is never started, should have status Not Run",
+      "message": null,
+      "properties": {
+        "timeout": 1000
+      }
     },
     {
       "status_string": "PASS",

@@ -128,7 +128,7 @@ function testCloner(testFunction, name) {
 
 function testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, interfaceName) {
     test(function () {
-        if(elementName === undefined) {
+        if (elementName === undefined) {
             var element = define_new_custom_element([contentAttributeName]);
             var instance = document.createElement(element.name);
         } else {
@@ -140,11 +140,11 @@ function testReflectAttributeWithContentValues(jsAttributeName, contentAttribute
         var logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
 
-        assert_attribute_log_entry(logEntries.last(), { name: contentAttributeName, oldValue: null, newValue: contentValue1, namespace: null });
+        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: null, newValue: contentValue1, namespace: null});
     }, name + ' must enqueue an attributeChanged reaction when adding ' + contentAttributeName + ' content attribute');
 
     test(function () {
-        if(elementName === undefined) {
+        if (elementName === undefined) {
             var element = define_new_custom_element([contentAttributeName]);
             var instance = document.createElement(element.name);
         } else {
@@ -156,7 +156,7 @@ function testReflectAttributeWithContentValues(jsAttributeName, contentAttribute
         instance[jsAttributeName] = validValue2;
         var logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
-        assert_attribute_log_entry(logEntries.last(), { name: contentAttributeName, oldValue: contentValue1, newValue: contentValue2, namespace: null });
+        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: contentValue1, newValue: contentValue2, namespace: null});
     }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
 }
 

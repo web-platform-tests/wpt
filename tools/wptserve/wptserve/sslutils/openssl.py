@@ -119,6 +119,9 @@ def make_alt_names(hosts):
         rv.append("DNS:%s" % name)
     return ",".join(rv)
 
+def make_name_constraints(hosts):
+    return "permitted;DNS:".join(h for h in hosts.split(","))
+
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:
         san_line = ""
@@ -129,6 +132,8 @@ def get_config(root_dir, hosts, duration=30):
         # This seems to be needed for the Shining Light OpenSSL on
         # Windows, at least.
         root_dir = root_dir.replace("\\", "\\\\")
+
+    constraints_line = "nameConstraints = "+make_name_constraints(hosts)
 
     rv = """[ ca ]
 default_ca = CA_default
@@ -213,6 +218,7 @@ basicConstraints = CA:true
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 keyUsage = keyCertSign
+%(constraints_line)s
 """ % {"root_dir": root_dir,
        "san_line": san_line,
        "duration": duration,

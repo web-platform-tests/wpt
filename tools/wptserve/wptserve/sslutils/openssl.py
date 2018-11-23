@@ -222,6 +222,7 @@ keyUsage = keyCertSign
 """ % {"root_dir": root_dir,
        "san_line": san_line,
        "duration": duration,
+       "constraints_line": constraints_line,
        "sep": os.path.sep.replace("\\", "\\\\")}
 
     return rv

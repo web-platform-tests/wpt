@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="variant" content="">
+<meta name="variant" content="?keep-promise">
+<title>Test with null byte in name</title>
+<script src="../../variants.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+"use strict";
+
+test(function() {}, "before (should PASS)");
+
+test(function() {}, "Null byte: '\u0000'");
+
+test(function() {}, "after");
+</script>
+<script type="text/json" id="expected">
+{
+  "summarized_status": {
+    "status_string": "ERROR",
+    "message": "Error: Test names may not include the null byte: \"Null byte: '\\u0000'\"."
+  },
+  "summarized_tests": [
+    {
+      "status_string": "PASS",
+      "name": "before (should PASS)",
+      "properties": {},
+      "message": null
+    }
+  ],
+  "type": "complete"
+}
+</script>
+</body>
+</html>
+

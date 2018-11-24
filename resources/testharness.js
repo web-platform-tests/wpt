@@ -1476,6 +1476,19 @@ policies and contribution forms [3].
         if (tests.file_is_test && tests.tests.length) {
             throw new Error("Tried to create a test with file_is_test");
         }
+
+        if (/\u0000/.test(name)) {
+            try {
+                name = JSON.stringify(name);
+            } catch (err) {
+                name = "'" + name + "'";
+            }
+
+            throw new Error(
+                "Test names may not include the null byte: " + name + "."
+            );
+        }
+
         this.name = name;
 
         this.phase = tests.is_aborted ?

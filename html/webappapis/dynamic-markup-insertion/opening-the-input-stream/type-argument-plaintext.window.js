@@ -19,5 +19,7 @@
       assert_equals(frame.contentDocument.body.textContent, "heya");
       assert_equals(frame.contentDocument.contentType, "text/plain");
     });
-  }, "document.open() on plaintext document with type set to: " + type + " (type argument is supposed to be ignored)");
+  }, "document.open() on plaintext document with type set to: " +
+    type.replace(/\u0000/g, "\\u0000") +
+    " (type argument is supposed to be ignored)");
 });

@@ -75,6 +75,9 @@ var nomatch = [
   ["[foo='bar' i]", ["", "baz", "BAR"]],
 ];
 var mode = "standards mode";
+function replace_null(str) {
+  return str.replace(/\u0000/g, "\\u0000");
+}
 function format_attrs(attrs) {
   var rv = [];
   attrs.forEach(function(attr) {
@@ -87,7 +90,7 @@ function format_attrs(attrs) {
     str += name + "=\"" + value + "\"";
     rv.push(str);
   });
-  return rv.join(" ");
+  return replace_null(rv.join(" "));
 }
 onload = function() {
   var quirks = document.getElementById('quirks').contentWindow;
@@ -117,11 +120,11 @@ onload = function() {
         style.textContent = s + ' { visibility:hidden }';
         assert_equals(style.sheet.cssRules.length, (ns_decl ? 2 : 1), 'rule didn\'t parse into CSSOM');
         assert_equals(global.getComputedStyle(elm).visibility, 'hidden', 'selector didn\'t match');
-      }, s + ' <div ' + format_attrs(attrs) + '> in ' + global.mode);
+      }, replace_null(s) + ' <div ' + format_attrs(attrs) + '> in ' + global.mode);
       if (!ns_decl) {
         test(function() {
           assert_equals(global.document.querySelector(s), elm, 'selector didn\'t match');
-        }, s + ' <div ' + format_attrs(attrs) + '> with querySelector in ' + global.mode);
+        }, replace_null(s) + ' <div ' + format_attrs(attrs) + '> with querySelector in ' + global.mode);
       }
     });
     nomatch.forEach(function(arr) {
@@ -134,11 +137,11 @@ onload = function() {
         style.textContent = s + ' { visibility:hidden }';
         assert_equals(style.sheet.cssRules.length, (ns_decl ? 2 : 1), 'rule didn\'t parse into CSSOM');
         assert_equals(global.getComputedStyle(elm).visibility, 'visible', 'selector matched');
-      }, s + ' <div ' + format_attrs(attrs) + '> in ' + global.mode);
+      }, replace_null(s) + ' <div ' + format_attrs(attrs) + '> in ' + global.mode);
       if (!ns_decl) {
         test(function() {
           assert_equals(global.document.querySelector(s), null, 'selector matched');
-        }, s + ' <div ' + format_attrs(attrs) + '> with querySelector in ' + global.mode);
+        }, replace_null(s) + ' <div ' + format_attrs(attrs) + '> with querySelector in ' + global.mode);
       }
     });
   });

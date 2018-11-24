@@ -77,6 +77,9 @@ var invalid = [
   "[foo/**/i]",
 ];
 var mode = "standards mode";
+function sanitize_name(name) {
+  return name.replace(/\u0000/g, "\\u0000");
+}
 onload = function() {
   var quirks = document.getElementById('quirks').contentWindow;
   var xml = document.getElementById('xml').contentWindow;
@@ -94,10 +97,10 @@ onload = function() {
         style.textContent = s + ' { visibility:hidden }';
         assert_equals(style.sheet.cssRules.length, 1, 'valid rule didn\'t parse into CSSOM');
         assert_equals(global.getComputedStyle(elm).visibility, 'hidden', 'valid selector didn\'t match');
-      }, s + ' in ' + global.mode);
+      }, sanitize_name(s + ' in ' + global.mode));
       test(function() {
         assert_equals(global.document.querySelector(s), elm, 'valid selector');
-      }, s + ' with querySelector in ' + global.mode);
+      }, sanitize_name(s + ' with querySelector in ' + global.mode));
     });
     invalid.forEach(function(s) {
       test(function() {
@@ -105,12 +108,12 @@ onload = function() {
         style.textContent = s + ' { visibility:hidden }';
         assert_equals(style.sheet.cssRules.length, 0, 'invalid rule parsed into CSSOM');
         assert_equals(global.getComputedStyle(elm).visibility, 'visible', 'invalid selector matched');
-      }, s + ' in ' + global.mode);
+      }, sanitize_name(s + ' in ' + global.mode));
       test(function() {
         assert_throws("SyntaxError", function() {
           global.document.querySelector(s);
         }, 'invalid selector');
-      }, s + ' with querySelector in ' + global.mode);
+      }, sanitize_name(s + ' with querySelector in ' + global.mode));
     });
   });
   done();

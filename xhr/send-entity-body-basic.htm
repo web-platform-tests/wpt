@@ -15,7 +15,7 @@
           client.open("POST", "resources/content.py", false)
           client.send(input)
           assert_equals(client.responseText, output)
-        }, document.title + " (" + output + ")")
+        }, document.title + " (" + output.replace(/\u0000/g, "\\u0000") + ")")
       }
       request(1, "1")
       request(10000000, "10000000")

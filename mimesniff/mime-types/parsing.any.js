@@ -25,11 +25,12 @@ function runTests(tests) {
     if(typeof val === "string") {
       return;
     }
+    const title = val.input.replace(/\u0000/g, "\\u0000");
     const output = val.output === null ? "" : val.output
     test(() => {
       assert_equals(new Blob([], { type: val.input}).type, output, "Blob");
       assert_equals(new File([], "noname", { type: val.input}).type, output, "File");
-    }, val.input + " (Blob/File)");
+    }, title + " (Blob/File)");
 
     promise_test(() => {
       const compatibleNess = isByteCompatible(val.input);
@@ -43,6 +44,6 @@ function runTests(tests) {
           new Response(null, { headers: [["Content-Type", val.input]] }).blob().then(blob => assert_equals(blob.type, output))
         ]);
       }
-    }, val.input + " (Request/Response)");
+    }, title + " (Request/Response)");
   });
 }

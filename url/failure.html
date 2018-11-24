@@ -14,7 +14,7 @@ function runTests(testData) {
       continue
     }
 
-    const name = test.input + " should throw"
+    const name = test.input.replace(/\u0000/g, "\\u0000") + " should throw"
 
     self.test(() => { // URL's constructor's first argument is tested by url-constructor.html
       // If a URL fails to parse with any valid base, it must also fail to parse with no base, i.e.

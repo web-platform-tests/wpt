@@ -1,4 +1,5 @@
 import os
+import sys
 
 from .base import NullBrowser, ExecutorBrowser, require_arg
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -28,12 +29,16 @@ def check_args(**kwargs):
 
 
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
+    if sys.platform == 'win32':
+        ca_cert_path = config.ssl["pregenerated"]["ca_cert_path"]
+    else:
+        ca_cert_path = config.ssl_config["ca_cert_path"]
     return {
         "binary": kwargs["binary"],
         "debug_info": kwargs["debug_info"],
         "binary_args": kwargs["binary_args"],
         "user_stylesheets": kwargs.get("user_stylesheets"),
-        "ca_certificate_path": config.ssl_config["ca_cert_path"],
+        "ca_certificate_path": ca_cert_path,
     }
 
 

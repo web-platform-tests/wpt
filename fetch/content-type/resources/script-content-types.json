@@ -1,91 +1,91 @@
 [
   {
-    "input": ["text/javascript;charset=windows-1252"],
+    "contentType": ["text/javascript;charset=windows-1252"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["text/javascript;\";charset=windows-1252"],
+    "contentType": ["text/javascript;\";charset=windows-1252"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["text/javascript\u000C"],
+    "contentType": ["text/javascript\u000C"],
     "executes": false,
     "encoding": null
   },
   {
-    "input": ["\"text/javascript\""],
+    "contentType": ["\"text/javascript\""],
     "executes": false,
     "encoding": null
   },
   {
-    "input": ["text/ javascript"],
+    "contentType": ["text/ javascript"],
     "executes": false,
     "encoding": null
   },
   {
-    "input": ["text /javascript"],
+    "contentType": ["text /javascript"],
     "executes": false,
     "encoding": null
   },
   {
-    "input": ["x/x", "text/javascript"],
+    "contentType": ["x/x", "text/javascript"],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["x/x;charset=windows-1252", "text/javascript"],
+    "contentType": ["x/x;charset=windows-1252", "text/javascript"],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["text/javascript", "x/x"],
+    "contentType": ["text/javascript", "x/x"],
     "executes": false,
     "encoding": null
   },
   {
-    "input": ["text/javascript; charset=windows-1252", "text/javascript"],
+    "contentType": ["text/javascript; charset=windows-1252", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["text/javascript;\"", "x/x"],
+    "contentType": ["text/javascript;\"", "x/x"],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["text/javascript", ""],
+    "contentType": ["text/javascript", ""],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["text/javascript", "error"],
+    "contentType": ["text/javascript", "error"],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["text/javascript;charset=windows-1252", "x/x", "text/javascript"],
+    "contentType": ["text/javascript;charset=windows-1252", "x/x", "text/javascript"],
     "executes": true,
     "encoding": null
   },
   {
-    "input": ["text/javascript;charset=windows-1252", "error", "text/javascript"],
+    "contentType": ["text/javascript;charset=windows-1252", "error", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["text/javascript;charset=windows-1252", "", "text/javascript"],
+    "contentType": ["text/javascript;charset=windows-1252", "", "text/javascript"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["text/javascript;charset=windows-1252;\"", "\\\"", "x/x"],
+    "contentType": ["text/javascript;charset=windows-1252;\"", "\\\"", "x/x"],
     "executes": true,
     "encoding": "windows-1252"
   },
   {
-    "input": ["x/x;\"", "x/y;\\\"", "text/javascript;charset=windows-1252;\"", "text/javascript"],
+    "contentType": ["x/x;\"", "x/y;\\\"", "text/javascript;charset=windows-1252;\"", "text/javascript"],
     "executes": true,
     "encoding": null
   }

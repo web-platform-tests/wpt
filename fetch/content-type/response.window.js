@@ -19,7 +19,7 @@ function runFrameTest(testUnit, singleHeader) {
   async_test(t => {
     const frame = document.body.appendChild(document.createElement("iframe"));
     t.add_cleanup(() => frame.remove());
-    frame.src = getURL(testUnit.input, singleHeader);
+    frame.src = getURL(testUnit.contentType, singleHeader);
     frame.onload = t.step_func_done(() => {
       // Edge requires toUpperCase()
       const doc = frame.contentDocument;
@@ -32,7 +32,7 @@ function runFrameTest(testUnit, singleHeader) {
       }
       assert_equals(doc.contentType, testUnit.documentContentType);
     });
-  }, getDesc("<iframe>", testUnit.input, singleHeader));
+  }, getDesc("<iframe>", testUnit.contentType, singleHeader));
 }
 
 function getDesc(type, input, singleHeader) {
@@ -53,9 +53,9 @@ function getURL(input, singleHeader) {
 
 function runFetchTest(testUnit, singleHeader) {
   promise_test(async t => {
-    const blob = await (await fetch(getURL(testUnit.input, singleHeader))).blob();
+    const blob = await (await fetch(getURL(testUnit.contentType, singleHeader))).blob();
     assert_equals(blob.type, testUnit.mimeType);
-  }, getDesc("fetch()", testUnit.input, singleHeader));
+  }, getDesc("fetch()", testUnit.contentType, singleHeader));
 }
 
 function runRequestResponseTest(testUnit, stringConstructor) {
@@ -63,10 +63,10 @@ function runRequestResponseTest(testUnit, stringConstructor) {
     // Cannot give Response a body as that will set Content-Type, but Request needs a URL
     const constructorArgument = stringConstructor === "Request" ? "about:blank" : undefined;
     const r = new self[stringConstructor](constructorArgument);
-    testUnit.input.forEach(val => {
+    testUnit.contentType.forEach(val => {
       r.headers.append("Content-Type", val);
     });
     const blob = await r.blob();
     assert_equals(blob.type, testUnit.mimeType);
-  }, getDesc(stringConstructor, testUnit.input, true));
+  }, getDesc(stringConstructor, testUnit.contentType, true));
 }

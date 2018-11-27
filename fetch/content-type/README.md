@@ -2,7 +2,7 @@
 
 An array of tests. Each test has these fields:
 
-* `input`: an array of values for the `Content-Type` header. A harness needs to run the test twice if there are multiple values. One time with the values concatenated with `,` followed by a space and one time with multiple `Content-Type` declarations, each on their own line with one of the values, in order.
+* `contentType`: an array of values for the `Content-Type` header. A harness needs to run the test twice if there are multiple values. One time with the values concatenated with `,` followed by a space and one time with multiple `Content-Type` declarations, each on their own line with one of the values, in order.
 * `encoding`: the expected encoding, null for the default.
 * `mimeType`: the result of extracing a MIME type and serializing it.
 * `documentContentType`: the MIME type expected to be exposed in DOM documents.
@@ -13,7 +13,7 @@ An array of tests. Each test has these fields:
 
 An array of tests, surprise. Each test has these fields:
 
-* `input`: see above.
+* `contentType`: see above.
 * `executes`: whether the script is expected to execute.
 * `encoding`: how the script is expected to be decoded.
 

@@ -7,7 +7,7 @@ self.stringFromExecutedScript = undefined;
 function runTests(allTestData) {
   allTestData.forEach(testData => {
     runScriptTest(testData, false);
-    if (testData.input.length > 1) {
+    if (testData.contentType.length > 1) {
       runScriptTest(testData, true);
     }
   });
@@ -20,7 +20,7 @@ function runScriptTest(testData, singleHeader) {
       script.remove()
       self.stringFromExecutedScript = undefined;
     });
-    script.src = getURL(testData.input, singleHeader);
+    script.src = getURL(testData.contentType, singleHeader);
     document.head.appendChild(script);
     if (testData.executes) {
       script.onload = t.step_func_done(() => {
@@ -31,7 +31,7 @@ function runScriptTest(testData, singleHeader) {
       script.onerror = t.step_func_done();
       script.onload = t.unreached_func();
     }
-  }, (singleHeader ? "combined" : "separate") + " " + testData.input.join(" "));
+  }, (singleHeader ? "combined" : "separate") + " " + testData.contentType.join(" "));
 }
 
 function getURL(input, singleHeader) {

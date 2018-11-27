@@ -27,17 +27,19 @@
 
   const knownPMIs = ["basic-card", "https://apple.com/apple-pay"];
   const unknownPMIs = ["fake-pmi", "https://does-not.exist"];
+
   promise_test(async t => {
-    for (const supportedMethods of [...knownPMIs, ...unknownPMIs]) {
+    for (const supportedMethods of [].concat(knownPMIs).concat(unknownPMIs)) {
       const method = { supportedMethods };
       const request = new PaymentRequest([method], details);
       assert_throws(
         new TypeError(),
         () => {
-          const badMethod = {
-            ...method,
-            data: 123, // <- this will throw
-          };
+          const badMethod = Object.assign(
+            {},
+            method,
+            { data: 123 } // <- this will throw
+          );
           new PaymentRequest([badMethod], details);
         },
         "PaymentMethodData.data can't be converted to an Object."
@@ -56,11 +58,12 @@
       assert_throws(
         new TypeError(),
         () => {
-          const badMethod = {
-            ...method,
+          const badMethod = Object.assign(
+            {},
+            method,
             /* This is invalid in both Apple Pay and Basic Card */
-            data: { supportedNetworks: "this will throw" },
-          };
+            { data: { supportedNetworks: "this will throw" } }
+          );
           new PaymentRequest([badMethod], details);
         },
         "PaymentMethodData.data is invalid."

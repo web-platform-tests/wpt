@@ -125,16 +125,16 @@ def make_name_constraints(hosts):
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:
         san_line = ""
+        constraints_line = ""
     else:
         san_line = "subjectAltName = %s" % make_alt_names(hosts)
+        constraints_line = "nameConstraints = " + make_name_constraints(hosts)
 
     if os.path.sep == "\\":
         # This seems to be needed for the Shining Light OpenSSL on
         # Windows, at least.
         root_dir = root_dir.replace("\\", "\\\\")
-
-    constraints_line = "nameConstraints = "+make_name_constraints(hosts)
-
+    
     rv = """[ ca ]
 default_ca = CA_default
 

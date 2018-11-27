@@ -25,5 +25,5 @@ def main(request, response):
         response.headers.set("Location", request.GET.first("location"))
         return
 
-    response.headers.set("content-Type", "text/plain")
-    response.content = "Fix https://github.com/whatwg/fetch/issues/737..."
+    response.headers.set("content-Type", "text/html")
+    response.content = "<script>parent.postMessage('loaded','*')</script>"

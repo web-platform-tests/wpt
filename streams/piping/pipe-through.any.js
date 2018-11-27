@@ -192,7 +192,7 @@ test(() => {
   rs.getReader();
   assert_throws(new TypeError(), () => rs.pipeThrough(uninterestingReadableWritablePair()),
                 'pipeThrough should throw');
-}, 'pipeThrough should throw if |this| is locked');
+}, 'pipeThrough should throw if this is locked');
 
 test(() => {
   const rs = new ReadableStream();

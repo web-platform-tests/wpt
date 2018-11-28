@@ -32,15 +32,15 @@
       const showPromise = request.show();
 
       // Let's check the method data from event.
-      const { methodData } = await new Promise(resolve =>
+      const { methodDetails } = await new Promise(resolve =>
         request.addEventListener("paymentmethodchange", resolve)
       );
 
-      assert_true("billingAddress" in methodData);
+      assert_true("billingAddress" in methodDetails);
       assert_equals(
-        methodData.billingAddress,
+        methodDetails.billingAddress,
         null,
-        "Expected methodData.billingAddress to be null"
+        "Expected methodDetails.billingAddress to be null"
       );
       await request.abort();
     });
@@ -54,13 +54,13 @@
       const showPromise = request.show();
 
       // Let's check the method data from event.
-      const { methodData } = await new Promise(resolve =>
+      const { methodDetails } = await new Promise(resolve =>
         request.addEventListener("paymentmethodchange", resolve)
       );
 
-      assert_true("billingAddress" in methodData);
+      assert_true("billingAddress" in methodDetails);
 
-      const { billingAddress } = methodData;
+      const { billingAddress } = methodDetails;
       assert_true(
         billingAddress instanceof PaymentAddress,
         "Expected instance of PaymentAddress"
@@ -85,13 +85,13 @@
       onclick="dontRequestBillingAddress({ requestBillingAddress: false })"
     >
       When no billing address is requested,
-      `PaymentMethodChangeEvent.methodData.billingAddress` is null.
+      `PaymentMethodChangeEvent.methodDetails.billingAddress` is null.
     </button>
   </li>
   <li>
     <button onclick="testRequestBilling({ requestBillingAddress: true })">
       When billing address is
-      requested,`PaymentMethodChangeEvent.methodData.billingAddress` is a
+      requested,`PaymentMethodChangeEvent.methodDetails.billingAddress` is a
       `PaymentAddress`.
     </button>
   </li>

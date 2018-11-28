@@ -1,24 +1,21 @@
 <!doctype html>
-<html>
-<head>
-  <title>getUserMedia() triggers error callback when auth is denied</title>
-  <link rel="author" title="Dr. A. Gouaillard" href="mailto:agouaillard@gmail.com"/>
-  <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#methods-5">
-  <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#navigatorusermediaerrorcallback">
-</head>
-<body>
-  <p class="instructions">When prompted, <strong>please deny</strong> access to
-    the video stream.</p>
-  <h1 class="instructions">Description</h1>
-  <p class="instructions">This test checks that the error callback is triggered
-    when user denies access to the video stream.</p>
-  <div id='log'></div>
-  <script src=/resources/testharness.js></script>
-  <script src=/resources/testharnessreport.js></script>
-  <script>
-    promise_test(t => {
-      return promise_rejects(t, "NotAllowedError", navigator.mediaDevices.getUserMedia({video: true}));
-    }, "Tests that the error callback is triggered when permission is denied");
-  </script>
-</body>
-</html>
+<title>getUserMedia() triggers error callback when auth is denied</title>
+<link rel="author" title="Dr. A. Gouaillard" href="mailto:agouaillard@gmail.com"/>
+<link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#methods-5">
+<link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#navigatorusermediaerrorcallback">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
+<p class="instructions">When prompted, <strong>please deny</strong> access to
+  the video stream.</p>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that the error callback is triggered
+  when user denies access to the video stream.</p>
+
+<script>
+
+promise_test(t => {
+  return promise_rejects(t, "NotAllowedError", navigator.mediaDevices.getUserMedia({video: true}));
+}, "Tests that the error callback is triggered when permission is denied");
+
+</script>

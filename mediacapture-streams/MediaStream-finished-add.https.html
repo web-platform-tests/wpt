@@ -1,40 +1,29 @@
 <!doctype html>
-<html>
-<head>
 <title>Adding a track to an inactive MediaStream</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#widl-MediaStream-addTrack-void-MediaStreamTrack-track">
 <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#widl-MediaStreamTrack-stop-void">
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <p class="instructions">When prompted, accept to share your audio stream, then
 your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that adding a track to an inactive
 MediaStream is allowed.</p>
 
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
 <script>
-promise_test(t => {
-  let audio, video;
 
-  return navigator.mediaDevices.getUserMedia({audio: true})
-  .then(audio_stream => {
-    audio = audio_stream;
+promise_test(async t => {
+  const audio = await navigator.mediaDevices.getUserMedia({audio: true});
+  const video = await navigator.mediaDevices.getUserMedia({video: true});
+  t.add_cleanup(() => audio.getAudioTracks()[0].stop());
 
-    return navigator.mediaDevices.getUserMedia({video: true})
-    .then(video_stream => {
-      video = video_stream;
-      video.getVideoTracks()[0].stop();
-      assert_false(video.active, "video stream is inactive after stopping its only video track");
-      assert_true(audio.active, "audio stream is active");
-      video.addTrack(audio.getAudioTracks()[0]);
-      video.removeTrack(video.getVideoTracks()[0]);
-    });
-  });
-}, "Tests that adding a track to an inactive MediaStream is allowed", {timeout: 20000});
+  video.getVideoTracks()[0].stop();
+  assert_false(video.active, "video stream is inactive after stopping its only video track");
+  assert_true(audio.active, "audio stream is active");
+  video.addTrack(audio.getAudioTracks()[0]);
+  video.removeTrack(video.getVideoTracks()[0]);
+}, "Tests that adding a track to an inactive MediaStream is allowed");
+
 </script>
-</body>
-</html>

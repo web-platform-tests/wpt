@@ -1,30 +1,26 @@
 <!doctype html>
-<html>
-<head>
 <title>getUserMedia({video:true}) creates a stream with one video track</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-NavigatorUserMedia-getUserMedia-void-MediaStreamConstraints-constraints-NavigatorUserMediaSuccessCallback-successCallback-NavigatorUserMediaErrorCallback-errorCallback">
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrack-kind">
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <p class="instructions">When prompted, accept to share your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that the MediaStream object returned by
 the success callback in getUserMedia has exactly one video track and no audio.</p>
 
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
 <script>
-promise_test(t => {
-  return navigator.mediaDevices.getUserMedia({video: true})
-  .then(stream => {
-    assert_true(stream instanceof MediaStream, "getUserMedia success callback comes with a MediaStream object");
-    assert_equals(stream.getAudioTracks().length, 0, "the media stream has zero audio track");
-    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
-    assert_equals(stream.getVideoTracks()[0].kind, "video", "getAudioTracks() returns a sequence of tracks whose kind is 'video'");
-  });
+
+promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video: true});
+  const [track] = stream.getVideoTracks();
+  t.add_cleanup(() => track.stop());
+  assert_true(stream instanceof MediaStream, "getUserMedia success callback comes with a MediaStream object");
+  assert_equals(stream.getAudioTracks().length, 0, "the media stream has zero audio track");
+  assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+  assert_equals(track.kind, "video", "getAudioTracks() returns a sequence of tracks whose kind is 'video'");
 }, "Tests that a MediaStream with at least one video track is returned");
+
 </script>
-</body>
-</html>

@@ -1,58 +1,41 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Test that the HTMLMediaElement preload 'none' attribute value is ignored for MediaStream used as srcObject and MediaStream object URLs used as src.</title>
-        <link rel="author" title="Matthew Wolenetz" href="mailto:wolenetz@chromium.org"/>
-        <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>
-    </head>
-    <body>
-        <p class="instructions">When prompted, accept to share your audio and video streams.</p>
-        <p class="instructions">This test checks that the HTMLMediaElement preload 'none' attribute value is ignored for MediaStream used as srcObject and MediaStream object URLs used as src.</p>
-        <div id=log></div>
+<title>Test that the HTMLMediaElement preload 'none' attribute value is ignored for MediaStream used as srcObject and MediaStream object URLs used as src.</title>
+<link rel="author" title="Matthew Wolenetz" href="mailto:wolenetz@chromium.org"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-        <audio preload="none"></audio>
-        <video preload="none"></video>
+<p class="instructions">When prompted, accept to share your audio and video streams.</p>
+<p class="instructions">This test checks that the HTMLMediaElement preload 'none' attribute value is ignored for MediaStream used as srcObject and MediaStream object URLs used as src.</p>
 
-        <script>
-            function testPreloadNone(t, mediaElement, setSourceStreamFunc)
-            {
-                // The optional deferred load steps (for preload none) for MediaStream resources should be skipped.
-                mediaElement.addEventListener("suspend", t.unreached_func("'suspend' should not be fired."));
-                mediaElement.addEventListener("error", t.step_func(function() {
-                  assert_unreached("'error' should not be fired, code=" + mediaElement.error.code);
-                }));
+<audio preload="none"></audio>
+<video preload="none"></video>
 
-                mediaElement.addEventListener("loadeddata", t.step_func(function()
-                {
-                    assert_equals(mediaElement.networkState, mediaElement.NETWORK_LOADING);
-                    t.done();
-                }));
+<script>
 
-                setSourceStreamFunc();
-                assert_equals(mediaElement.networkState, mediaElement.NETWORK_NO_SOURCE); // Resource selection is active.
-            }
+async function testPreloadNone(t, mediaElement, setSourceStreamFunc) {
+  // The optional deferred load steps (for preload none) for MediaStream resources should be skipped.
+  mediaElement.addEventListener("suspend", t.unreached_func("'suspend' should not be fired."));
+  mediaElement.addEventListener("error", t.step_func(() =>
+    assert_unreached("'error' should not be fired, code=" + mediaElement.error.code)));
+  const watcher = new EventWatcher(t, mediaElement, ["loadeddata"]);
+  setSourceStreamFunc();
+  assert_equals(mediaElement.networkState, mediaElement.NETWORK_NO_SOURCE); // Resource selection is active.
+  await watcher.wait_for("loadeddata");
+  assert_equals(mediaElement.networkState, mediaElement.NETWORK_LOADING);
+}
 
-            async_test(function(t)
-            {
-                var aud = document.querySelector("audio");
-                navigator.mediaDevices.getUserMedia({audio:true})
-                  .then(t.step_func(function(stream)
-                  {
-                      testPreloadNone(t, aud, t.step_func(function() { aud.srcObject = stream; }));
-                  }),
-                  t.unreached_func("getUserMedia error callback was invoked."));
-            }, "Test that preload 'none' is ignored for MediaStream object URL used as srcObject for audio");
+promise_test(async t => {
+  const aud = document.querySelector("audio");
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  t.add_cleanup(() => stream.getAudioTracks()[0].stop());
+  testPreloadNone(t, aud, () => { aud.srcObject = stream; });
+}, "Test that preload 'none' is ignored for MediaStream object URL used as srcObject for audio");
 
-            async_test(function(t)
-            {
-                var vid = document.querySelector("video");
-                navigator.mediaDevices.getUserMedia({video:true})
-                  .then(t.step_func(function(stream)
-                  {
-                      testPreloadNone(t, vid, t.step_func(function() { vid.srcObject = stream; }));
-                  }), t.unreached_func("getUserMedia error callback was invoked."));
-            }, "Test that preload 'none' is ignored for MediaStream used as srcObject for video");
-        </script>
-    </body>
-</html>
+promise_test(async t => {
+  const vid = document.querySelector("video");
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  t.add_cleanup(() => stream.getVideoTracks()[0].stop());
+  testPreloadNone(t, vid, () => { vid.srcObject = stream; });
+}, "Test that preload 'none' is ignored for MediaStream used as srcObject for video");
+
+</script>

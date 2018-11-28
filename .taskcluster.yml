@@ -8,38 +8,38 @@ tasks:
         $map:
           $flatten:
             $match: {
+              True: [
+                {name: firefox, channel: nightly},
+                {name: chrome, channel: dev},
+                {name: firefox, channel: stable},
+                {name: chrome, channel: stable}
+              ],
               event.ref == "refs/heads/master": [{name: firefox, channel: nightly}, {name: chrome, channel: dev}],
               event.ref == "refs/heads/epochs/daily": [{name: firefox, channel: stable}, {name: chrome, channel: stable}],
               event.ref == "refs/heads/epochs/weekly": [{name: firefox, channel: beta}, {name: chrome, channel: beta}]
               }
         each(browser):
           $map:
-            - [testharness, 1, 15]
-            - [testharness, 2, 15]
-            - [testharness, 3, 15]
-            - [testharness, 4, 15]
-            - [testharness, 5, 15]
-            - [testharness, 6, 15]
-            - [testharness, 7, 15]
-            - [testharness, 8, 15]
-            - [testharness, 9, 15]
-            - [testharness, 10, 15]
-            - [testharness, 11, 15]
-            - [testharness, 12, 15]
-            - [testharness, 13, 15]
-            - [testharness, 14, 15]
-            - [testharness, 15, 15]
-            - [reftest, 1, 10]
-            - [reftest, 2, 10]
-            - [reftest, 3, 10]
-            - [reftest, 4, 10]
-            - [reftest, 5, 10]
-            - [reftest, 6, 10]
-            - [reftest, 7, 10]
-            - [reftest, 8, 10]
-            - [reftest, 9, 10]
-            - [reftest, 10, 10]
-            - [wdspec, 1, 1]
+            - [placeholder, 1, 20]
+            - [placeholder, 2, 20]
+            - [placeholder, 3, 20]
+            - [placeholder, 4, 20]
+            - [placeholder, 5, 20]
+            - [placeholder, 6, 20]
+            - [placeholder, 7, 20]
+            - [placeholder, 8, 20]
+            - [placeholder, 9, 20]
+            - [placeholder, 10, 20]
+            - [placeholder, 11, 20]
+            - [placeholder, 12, 20]
+            - [placeholder, 13, 20]
+            - [placeholder, 14, 20]
+            - [placeholder, 15, 20]
+            - [placeholder, 16, 20]
+            - [placeholder, 17, 20]
+            - [placeholder, 18, 20]
+            - [placeholder, 19, 20]
+            - [placeholder, 20, 20]
           each(chunk):
             taskId: {$eval: 'as_slugid(browser.name + browser.channel + chunk[0] + str(chunk[1]))'}
             taskGroupId: {$eval: 'as_slugid("task group")'}
@@ -79,13 +79,16 @@ tasks:
                     ${browser.name}
                     ${browser.channel};
                   cd ~/web-platform-tests;
+                  wget
+                    https://github.com/web-platform-tests/wpt/releases/download/merge_pr_14289/MANIFEST-38ba0516aac49af3e3cd971038266393aa0e107e.json.gz
+                    --output-document MANIFEST.json.gz;
+                  gunzip MANIFEST.json.gz;
                   ./tools/ci/taskcluster-run.py
                     ${browser.name}
                     --
                     --channel=${browser.channel}
                     --log-wptreport=../artifacts/wpt_report.json
                     --no-fail-on-unexpected
-                    --test-type=${chunk[0]}
                     --this-chunk=${chunk[1]}
                     --total-chunks=${chunk[2]};
     - $if: tasks_for == "github-pull-request"

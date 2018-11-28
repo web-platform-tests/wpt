@@ -120,7 +120,7 @@ def make_alt_names(hosts):
     return ",".join(rv)
 
 def make_name_constraints(hosts):
-    return "permitted;DNS:".join(h for h in hosts.split(","))
+    return "permitted;DNS:".join(hosts)
 
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:

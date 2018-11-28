@@ -26,7 +26,7 @@
     );
   }, "onpaymentmethodchange is in prototype");
 
-  function dontRequestBillingAddress(options) {
+  function dontRequestBillingAddress() {
     promise_test(async t => {
       const request = new PaymentRequest(methods, details, {});
       const showPromise = request.show();
@@ -81,15 +81,13 @@
 </p>
 <ol>
   <li>
-    <button
-      onclick="dontRequestBillingAddress({ requestBillingAddress: false })"
-    >
+    <button onclick="dontRequestBillingAddress()">
       When no billing address is requested,
       `PaymentMethodChangeEvent.methodDetails.billingAddress` is null.
     </button>
   </li>
   <li>
-    <button onclick="requestBillingAddress({ requestBillingAddress: true })">
+    <button onclick="requestBillingAddress()">
       When billing address is
       requested,`PaymentMethodChangeEvent.methodDetails.billingAddress` is a
       `PaymentAddress`.

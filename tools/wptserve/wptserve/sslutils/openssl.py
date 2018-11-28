@@ -114,13 +114,10 @@ def make_subject(common_name,
     return "".join(rv)
 
 def make_alt_names(hosts):
-    rv = []
-    for name in hosts:
-        rv.append("DNS:%s" % name)
-    return ",".join(rv)
+    return ",".join("DNS:%s" % host for host in hosts)
 
 def make_name_constraints(hosts):
-    return "permitted;DNS:".join(hosts)
+    return ",".join("permitted;DNS:%s" % host for host in hosts)
 
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:

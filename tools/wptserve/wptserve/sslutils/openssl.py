@@ -131,7 +131,7 @@ def get_config(root_dir, hosts, duration=30):
         # This seems to be needed for the Shining Light OpenSSL on
         # Windows, at least.
         root_dir = root_dir.replace("\\", "\\\\")
-    
+
     rv = """[ ca ]
 default_ca = CA_default
 

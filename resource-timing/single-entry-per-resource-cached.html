@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>One resource when reusing data (cached resources)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<p>
+Chrome 70 emits delayed performance events for &lt;script&gt; elements in the
+document head which reference chached resources. This test attempts to prompt
+that condition by first loading <code>testharness.js</code> and then loading
+the relevant web-platform-test in an iframe. The nested test's reference to
+<code>testharness.js</code> is expected to cause a cache hit, prompting Chrome
+to emit the unexpected performance event.
+</p>
+<iframe id="subject" src="single-entry-per-resource.html"></iframe>
+<script>
+fetch_tests_from_window(document.getElementById('subject').contentWindow);
+</script>
+</body>

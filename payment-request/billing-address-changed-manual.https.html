@@ -49,7 +49,7 @@
   function requestBillingAddress() {
     promise_test(async t => {
       const request = new PaymentRequest(methods, details, {
-        requestBillingAddress: false,
+        requestBillingAddress: true,
       });
       const showPromise = request.show();
 

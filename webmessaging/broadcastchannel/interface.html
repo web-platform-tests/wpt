@@ -51,8 +51,8 @@ test(() => {
 test(() => {
     let c = new BroadcastChannel('');
     c.close();
-    assert_throws('InvalidStateError', () => c.postMessage(''));
-  }, 'postMessage after close should throw');
+    assert_equals(c.postMessage(''), undefined);
+  }, 'postMessage after close should return early');
 
 test(() => {
     let c = new BroadcastChannel('');
@@ -67,7 +67,7 @@ test(() => {
 test(() => {
     let c = new BroadcastChannel('');
     c.close();
-    assert_throws('InvalidStateError', () => c.postMessage(Symbol()));
-  }, 'postMessage should throw InvalidStateError after close, even with uncloneable data');
+    assert_equals(c.postMessage(Symbol()), undefined);
+  }, 'postMessage should return early after close, even with uncloneable data');
 
 </script>

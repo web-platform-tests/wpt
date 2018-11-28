@@ -70,6 +70,22 @@ async_test(t => {
   }, 'messages aren\'t delivered to a closed port');
 
 async_test(t => {
+  const c1 = new BroadcastChannel("closed-post"),
+        c2 = new BroadcastChannel("closed-post"),
+        c3 = new BroadcastChannel("closed-post");
+  c1.close();
+  c2.onmessage = t.step_func(e => {
+    if (e.data === "yup") {
+      t.done();
+    } else {
+      assert_unreached();
+    }
+  });
+  c1.postMessage("nope");
+  c3.postMessage("yup");
+}, "cannot post from a closed channel");
+
+async_test(t => {
     let c1 = new BroadcastChannel('create-in-onmessage');
     let c2 = new BroadcastChannel('create-in-onmessage');
 

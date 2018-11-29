@@ -1,0 +1,135 @@
+<!DOCTYPE html> <meta charset="utf-8" />
+<title>Test for PaymentRequest.show(optional promise) method</title>
+<link
+  rel="help"
+  href="https://w3c.github.io/browser-payment-api/#dfn-payment-request-is-showing"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script>
+  "use strict";
+  setup({ explicit_done: true });
+  const basicCard = { supportedMethods: "basic-card" };
+  const methods = [basicCard];
+  const details = {
+    total: {
+      label: "Total",
+      amount: {
+        currency: "USD",
+        value: "1.00",
+      },
+    },
+  };
+
+  promise_test(async t => {
+    const showPromise = test_driver.bless("show payment request", () => {
+      // Set payment request is showing boolean to true
+      return new PaymentRequest(methods, details).show();
+    });
+    await promise_rejects(
+      new PaymentRequest(methods, details).show(),
+      "AbortError",
+      "Expected to reject with an AbortError DOMException"
+    );
+    showPromise.abort();
+  }, "Simple payment-relevant browsing context's payment request is showing boolean is true");
+
+  promise_test(async t => {
+    // Load up an iframe, so it can set the payment is showing boolean
+    const iframe = document.createElement("iframe");
+    iframe.src = "blank.html";
+    document.body.appendChild(iframe);
+    await new Promise(resolve => (iframe.onload = resolve));
+
+    const iframeRequest = new iframe.contentWindow.PaymentRequest(
+      methods,
+      details
+    );
+
+    // Let's get some blessed showPromises
+    const [iframeShowPromise, showPromise] = await test_driver.bless(
+      "show payment request",
+      () => {
+        // Set top-level is showing boolean to true
+        const iframeShowPromise = iframeRequest.show();
+        // The window's showPromise should be rejected, because iframe is showing
+        const showPromise = window.PaymentRequest(methods, details).show();
+        return [iframeShowPromise, showPromise];
+      }
+    );
+
+    await promise_rejects(
+      showPromise,
+      "AbortError",
+      "Expected to reject with an AbortError DOMException, iframe is showing a payment request"
+    );
+
+    // Bring down the iframe's payment sheet
+    await iframeRequest.abort();
+
+    // We should now be able to show again with top level browsing context,
+    // but the iframe will reject.
+    {
+      const request = PaymentRequest(methods, details);
+      const [iframeShowPromise, showPromise] = await test_driver.bless(
+        "show payment request",
+        () => {
+          const iframeRequest = new iframe.contentWindow.PaymentRequest(
+            methods,
+            details
+          );
+          // Set top-level is showing boolean to true
+          const showPromise = request.show();
+          const iframeShowPromise = iframeRequest.show();
+          return [iframeShowPromise, showPromise];
+        }
+      );
+
+      // The iframe's iframeShowPromise should be rejected,
+      // because window set the payment is showing boolean
+      await promise_rejects(
+        iframeShowPromise,
+        "AbortError",
+        "Expected to reject with an AbortError DOMException, the top window is showing a payment request"
+      );
+    }
+  }, "Simple payment-relevant browsing context's payment request is showing boolean is true");
+
+  promise_test(async t => {
+    const iframe = document.createElement("iframe");
+    iframe.src = "blank.html";
+    document.body.appendChild(iframe);
+    await new Promise(resolve => (iframe.onload = resolve));
+    const iframeRequest = new iframe.contentWindow.PaymentRequest(
+      methods,
+      details
+    );
+    const iframeShowPromise = await test_driver.bless(
+      "show payment request",
+      () => iframeRequest.show()
+    );
+
+    // We navigate away, causing the sheet to close and the request is showing boolean to become false
+    iframe.src = "about:blank";
+    await new Promise(resolve => (iframe.onload = resolve));
+    await promise_rejects(
+      iframeShowPromise,
+      "AbortError",
+      "Navigating away must cause the iframeShowPromise to reject with an AbortError"
+    );
+
+    // We should now be able to spin up a new payment request
+    const request = PaymentRequest(methods, details);
+    const showPromise = await test_driver.bless("show payment request", () =>
+      request.show()
+    );
+    await request.abort();
+    await promise_rejects(
+      showPromise,
+      "AbortError",
+      "Must reject with AbortError"
+    );
+  }, "Navigating an nested browsing context sets 'payment request is showing boolean' back to false");
+</script>

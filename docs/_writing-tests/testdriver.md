@@ -26,8 +26,8 @@ This function causes a sequence of actions to be sent to the browser. It is base
 The action can be a keyboard action, a pointer action or a pause. It returns a `Promise` that
 resolves after the actions have been sent or rejects if an error was thrown.
 
-Test authors are encouraged to use the the builder API to generate the sequence of actions. The builder
-API can be accessed via `new test_driver.Actions()` object. 
+Test authors are encouraged to use the builder API to generate the sequence of actions. The builder
+API can be accessed via the `new test_driver.Actions()` object.
 
 Example:
 

@@ -9,7 +9,7 @@
 <meta name="help" content="https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/custom-elements-helpers.js"></script>
+<script src="resources/custom-elements-helpers.js"></script>
 </head>
 <body>
 <div id="log"></div>
@@ -83,6 +83,7 @@ promise_test(async function () {
     assert_true(Array.isArray(recordsList));
     assert_equals(recordsList.length, 1);
     assert_true(Array.isArray(recordsList[0]));
+    console.log(recordsList[0]);
     assert_equals(recordsList[0].length, 4);
 
     let record = recordsList[0][0];

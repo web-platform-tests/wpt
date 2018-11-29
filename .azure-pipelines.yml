@@ -27,6 +27,14 @@ jobs:
     name: test_jobs
     displayName: 'Run ./wpt test-jobs'
 
+- job: win10
+  displayName: 'Windows 10 test job'
+  pool:
+    # self-hosted Windows 10
+    name: 'Hosted Windows Client'
+  steps:
+  - script: echo Hello World
+
 - job: infrastructure_macOS
   displayName: 'infrastructure/ tests (macOS)'
   dependsOn: root

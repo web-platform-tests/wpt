@@ -105,6 +105,6 @@ jobs:
     inputs:
       versionSpec: '2.7'
       addToPath: true
-  displayName: 'Install Python'
+    displayName: 'Install Python'
   - script: python --version
     displayName: 'Show Python version'

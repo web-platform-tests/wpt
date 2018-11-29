@@ -33,6 +33,7 @@ jobs:
     # self-hosted Windows 10
     name: 'Hosted Windows Client'
   steps:
+  - template: tools/ci/azure/checkout.yml
   - script: echo Hello World
 
 - job: infrastructure_macOS

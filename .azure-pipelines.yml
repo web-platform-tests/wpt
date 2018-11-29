@@ -27,15 +27,6 @@ jobs:
     name: test_jobs
     displayName: 'Run ./wpt test-jobs'
 
-- job: win10
-  displayName: 'Windows 10 test job'
-  pool:
-    # self-hosted Windows 10
-    name: 'Hosted Windows Client'
-  steps:
-  - template: tools/ci/azure/checkout.yml
-  - script: echo Hello World
-
 - job: infrastructure_macOS
   displayName: 'infrastructure/ tests (macOS)'
   dependsOn: root
@@ -100,3 +91,23 @@ jobs:
   - template: tools/ci/azure/tox_pytest.yml
     parameters:
       directory: tools/wpt/
+
+- job: win10
+  displayName: 'Test (Windows 10)'
+  pool:
+    # self-hosted Windows 10
+    name: 'Hosted Windows Client'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: python --version
+    displayName: 'Show Python version'
+
+- job: win10_preview
+  displayName: 'Test (Windows 10 Insider Preview)'
+  pool:
+    # self-hosted Windows 10 Insider Preview
+    name: 'Hosted Windows Client Next'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: python --version
+    displayName: 'Show Python version'

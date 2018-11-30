@@ -259,4 +259,5 @@ function create_window_in_test(t, srcdoc) {
               hasBrowsingContext: false,
           }
       ];
-  }  
+  }
+  

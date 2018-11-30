@@ -101,11 +101,10 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: |
-      %windir%\system32\msiexec.exe /unregister
-      %windir%\system32\msiexec.exe /regserver
-      %windir%\syswow64\msiexec.exe /unregister
-      %windir%\syswow64\msiexec.exe /regserver
+  - script: %windir%\system32\msiexec.exe /unregister
+  - script: %windir%\system32\msiexec.exe /regserver
+  - script: %windir%\syswow64\msiexec.exe /unregister
+  - script: %windir%\syswow64\msiexec.exe /regserver
   - script: msiexec /i python-2.7.15.amd64.msi
 
 - job: toolsdir_win2016

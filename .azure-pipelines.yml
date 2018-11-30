@@ -112,11 +112,14 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - bash: find $AGENT_TOOLSDIRECTORY/Python/2.7.* -type f
-  - task: PublishPipelineArtifact@0
+  - bash: find $AGENT_TOOLSDIRECTORY -type d
+  - task: UsePythonVersion@0
     inputs:
-      artifactName: 'python'
-      targetPath: $(Agent.ToolsDirectory)/Python/
+      versionSpec: '2.7'
+      addToPath: true
+    displayName: 'Install Python'
+  - script: python --version
+    displayName: 'Show Python version'
 
 - job: toolsdir_win1803
   displayName: 'Test (Windows Server 1803)'

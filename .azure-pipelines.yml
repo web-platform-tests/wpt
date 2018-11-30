@@ -124,3 +124,16 @@ jobs:
       cd $AGENT_TOOLSDIRECTORY
       pwd
       find .
+
+- job: toolsdir_win2016
+  displayName: 'Test (Windows Server 2016)'
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - bash: |
+      echo $(Agent.ToolsDirectory)
+      cd $AGENT_TOOLSDIRECTORY
+      pwd
+      find .
+      python --version

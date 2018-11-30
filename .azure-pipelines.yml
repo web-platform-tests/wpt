@@ -104,7 +104,6 @@ jobs:
   - script: |
       echo $(Agent.ToolsDirectory)
       cd %AGENT_TOOLSDIRECTORY%
-      pwd
       dir
   - task: UsePythonVersion@0
     inputs:
@@ -113,3 +112,15 @@ jobs:
     displayName: 'Install Python'
   - script: python --version
     displayName: 'Show Python version'
+
+- job: toolsdir_macOS
+  displayName: 'Test (macOS)'
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: |
+      echo $(Agent.ToolsDirectory)
+      cd $AGENT_TOOLSDIRECTORY
+      pwd
+      find .

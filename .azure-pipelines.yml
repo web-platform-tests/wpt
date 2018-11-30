@@ -101,8 +101,15 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: msiexec /i python-2.7.15.amd64.msi /quiet TARGETDIR=$(Agent.ToolsDirectory)
+  - script: xcopy agent/tools/Python $(Agent.ToolsDirectory) /s /e
+  - script: find $AGENT_TOOLSDIRECTORY -type d
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
     displayName: 'Install Python'
+  - script: python --version
+    displayName: 'Show Python version'
 
 - job: toolsdir_win2016
   displayName: 'Test (Windows Server 2016)'

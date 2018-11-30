@@ -115,6 +115,7 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
+  - bash: find $AGENT_TOOLSDIRECTORY -type d
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'
@@ -131,6 +132,4 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: msiexec /i python-2.7.15.amd64.msi
-  - script: python --version
-    displayName: 'Show Python version'
+  - bash: find $AGENT_TOOLSDIRECTORY -type d

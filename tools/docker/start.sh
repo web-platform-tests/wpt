@@ -26,7 +26,7 @@ git init
 git remote add origin ${REMOTE}
 
 # Initially we just fetch 50 commits in order to save several minutes of fetching
-git fetch --quiet --depth=50 origin ${REF}
+git fetch --quiet --depth=50 --tags origin ${REF}
 
 if [[ ! `git rev-parse --verify -q ${REVISION}` ]];
 then

@@ -102,7 +102,6 @@ jobs:
   - script: systeminfo
     displayName: 'Show system info'
   - script: xcopy "agent\tools\Python" "$(Agent.ToolsDirectory)" /s /e
-  - script: find $AGENT_TOOLSDIRECTORY -type d
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'

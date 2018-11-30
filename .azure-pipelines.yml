@@ -101,6 +101,11 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
+  - script: |
+      echo $(Agent.ToolsDirectory)
+      cd %AGENT_TOOLSDIRECTORY%
+      pwd
+      dir
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'

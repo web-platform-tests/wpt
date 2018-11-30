@@ -101,11 +101,8 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: '%windir%\system32\msiexec.exe /unregister'
-  - script: '%windir%\system32\msiexec.exe /regserver'
-  - script: '%windir%\syswow64\msiexec.exe /unregister'
-  - script: '%windir%\syswow64\msiexec.exe /regserver'
-  - script: msiexec /i python-2.7.15.amd64.msi
+  - script: msiexec /i python-2.7.15.amd64.msi /quiet TARGETDIR=$(Agent.ToolsDirectory)
+    displayName: 'Install Python'
 
 - job: toolsdir_win2016
   displayName: 'Test (Windows Server 2016)'

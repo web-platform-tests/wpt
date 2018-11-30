@@ -106,7 +106,6 @@ jobs:
       %windir%\system32\msiexec.exe /regserver
       %windir%\syswow64\msiexec.exe /unregister
       %windir%\syswow64\msiexec.exe /regserver
-  - bash: which msiexec
   - script: msiexec /i python-2.7.15.amd64.msi
 
 - job: toolsdir_win2016

@@ -101,7 +101,8 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: xcopy "agent\tools\Python" "$(Agent.ToolsDirectory)" /s /e
+  - script: xcopy /syi "agent\tools\Python" "$(Agent.ToolsDirectory)"
+  - script: dir $(Agent.ToolsDirectory)
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'

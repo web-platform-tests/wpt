@@ -101,17 +101,10 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: |
-      echo $(Agent.ToolsDirectory)
-      cd %AGENT_TOOLSDIRECTORY%
-      dir
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7'
-      addToPath: true
-    displayName: 'Install Python'
-  - script: python --version
-    displayName: 'Show Python version'
+  - bash: |
+      cd $AGENT_TOOLSDIRECTORY
+      pwd
+      find . -type d
 
 - job: toolsdir_macOS
   displayName: 'Test (macOS)'
@@ -120,10 +113,9 @@ jobs:
   steps:
   - template: tools/ci/azure/checkout.yml
   - script: |
-      echo $(Agent.ToolsDirectory)
       cd $AGENT_TOOLSDIRECTORY
       pwd
-      find .
+      find . -type d
 
 - job: toolsdir_win2016
   displayName: 'Test (Windows Server 2016)'
@@ -131,9 +123,58 @@ jobs:
     vmImage: 'vs2017-win2016'
   steps:
   - template: tools/ci/azure/checkout.yml
+  - script: systeminfo
+    displayName: 'Show system info'
   - bash: |
-      echo $(Agent.ToolsDirectory)
       cd $AGENT_TOOLSDIRECTORY
       pwd
-      find .
-      python --version
+      find . -type d
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
+    displayName: 'Install Python'
+  - script: python --version
+    displayName: 'Show Python version'
+
+
+- job: toolsdir_win1803
+  displayName: 'Test (Windows Server 1803)'
+  pool:
+    vmImage: 'win1803'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: systeminfo
+    displayName: 'Show system info'
+  - bash: |
+      cd $AGENT_TOOLSDIRECTORY
+      pwd
+      find . -type d
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
+    displayName: 'Install Python'
+  - script: python --version
+    displayName: 'Show Python version'
+
+
+- job: toolsdir_win2012r2
+  displayName: 'Test (Windows Server 2012R2)'
+  pool:
+    vmImage: 'vs2015-win2012r2'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: systeminfo
+    displayName: 'Show system info'
+  - bash: |
+      cd $AGENT_TOOLSDIRECTORY
+      pwd
+      find . -type d
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
+    displayName: 'Install Python'
+  - script: python --version
+    displayName: 'Show Python version'

@@ -102,11 +102,13 @@ jobs:
   - script: systeminfo
     displayName: 'Show system info'
   - script: xcopy /syi "agent\tools" "$(Agent.ToolsDirectory)"
-  - script: dir $(Agent.ToolsDirectory)
+    displayName: 'Copy tools directory'
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'
       addToPath: true
-    displayName: 'Install Python'
-  - script: python --version
-    displayName: 'Show Python version'
+    displayName: 'Use Python 2.7'
+  - script: pip install --user virtualenv
+    displayName: 'Install Python packages'
+  - script: python wpt --help
+    displayName: './wpt --help'

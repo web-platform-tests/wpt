@@ -101,7 +101,7 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: msiexec /a python-2.7.15.amd64.msi
+  - script: msiexec /i python-2.7.15.amd64.msi
 
 - job: toolsdir_win2016
   displayName: 'Test (Windows Server 2016)'
@@ -127,6 +127,6 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: msiexec /a python-2.7.15.amd64.msi
+  - script: msiexec /i python-2.7.15.amd64.msi
   - script: python --version
     displayName: 'Show Python version'

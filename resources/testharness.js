@@ -1476,9 +1476,6 @@ policies and contribution forms [3].
         if (tests.file_is_test && tests.tests.length) {
             throw new Error("Tried to create a test with file_is_test");
         }
-        if (properties.timeout) {
-            throw new Error("Tried to create a test with timeout");
-        }
         this.name = name;
 
         this.phase = tests.is_aborted ?
@@ -1489,10 +1486,9 @@ policies and contribution forms [3].
         this.index = null;
 
         this.properties = properties;
-        if (settings.test_timeout !== null) {
-            this.timeout_length = settings.test_timeout * tests.timeout_multiplier;
-        } else {
-            this.timeout_length = null;
+        this.timeout_length = settings.test_timeout;
+        if (this.timeout_length !== null) {
+            this.timeout_length *= tests.timeout_multiplier;
         }
 
         this.message = null;

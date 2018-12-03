@@ -115,7 +115,7 @@ jobs:
       versionSpec: '2.7'
       addToPath: true
     displayName: 'Use Python 2.7'
-  - script: pip install --upgrade --user tox
+  - script: pip install --upgrade --user virtualenv
     displayName: 'Install Python packages'
   #- template: tools/ci/azure/install_fonts.yml
   #- template: tools/ci/azure/install_certs.yml

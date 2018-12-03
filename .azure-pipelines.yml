@@ -101,10 +101,10 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: rd /sq "$(Agent.ToolsDirectory)"
-    displayName: 'Clean tools directory'
-  - script: xcopy /syi "agent\_work\_tool" "$(Agent.ToolsDirectory)"
-    displayName: 'Copy tools directory'
+  - script: |
+      rd /s /q "$(Agent.ToolsDirectory)"
+      xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
+    displayName: 'Update tools'
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '2.7'

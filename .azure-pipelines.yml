@@ -159,3 +159,33 @@ jobs:
       testRunTitle: tools
     displayName: 'Publish results'
     condition: succeededOrFailed()
+
+- job: tools_unittest_win10_preview
+  displayName: 'tools/ unittests (Windows 10 Insider Preview)'
+  #dependsOn: root
+  #condition: dependencies.root.outputs['test_jobs.tools_unittest']
+  pool:
+    name: 'Hosted Windows Client Next'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: systeminfo
+    displayName: 'Show system info'
+  - script: |
+      rd /s /q "$(Agent.ToolsDirectory)"
+      xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
+    displayName: 'Update tools'
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '2.7'
+      addToPath: true
+    displayName: 'Use Python 2.7'
+  - script: pip install --upgrade --user tox
+    displayName: 'Install Python packages'
+  - script: python -m tox -c tools/ -e py27 -- --junitxml=results.xml
+    displayName: 'Run tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: tools/results.xml
+      testRunTitle: tools
+    displayName: 'Publish results'
+    condition: succeededOrFailed()

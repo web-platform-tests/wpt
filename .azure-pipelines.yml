@@ -110,8 +110,8 @@ jobs:
       versionSpec: '2.7'
       addToPath: true
     displayName: 'Use Python 2.7'
-  - script: pip install --user tox
+  - script: pip install -vvv --user tox
     displayName: 'Install Python packages'
-  - script: dir "$(Agent.ToolsDirectory)\Python\2.7.15\x64"
-  - script: tox -c tools/ -e py27 -- --junitxml=results.xml
+  - script: dir "$(Agent.ToolsDirectory)\Python\2.7.15\x64\Scripts"
+  - script: python -m tox -c tools/ -e py27 -- --junitxml=results.xml
     displayName: 'Run tests'

@@ -111,14 +111,3 @@ jobs:
       addToPath: true
     displayName: 'Use Python 2.7'
   - script: pip
-
-- job: win2016
-  displayName: 'Test (Windows Server 2016)'
-  pool:
-    vmImage: 'vs2017-win2016'
-  steps:
-  - checkout: none
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Agent.ToolsDirectory)/Python/
-      artifactName: 'python'

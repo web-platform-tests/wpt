@@ -4,39 +4,39 @@
 // Source: Gamepad (https://w3c.github.io/gamepad/)
 
 [Exposed=Window]
-interface Gamepad {
-  readonly attribute DOMString id;
-  readonly attribute long index;
-  readonly attribute boolean connected;
-  readonly attribute DOMHighResTimeStamp timestamp;
-  readonly attribute GamepadMappingType mapping;
-  readonly attribute FrozenArray<double> axes;
-  readonly attribute FrozenArray<GamepadButton> buttons;
-};
+        interface Gamepad {
+          readonly attribute DOMString id;
+          readonly attribute long index;
+          readonly attribute boolean connected;
+          readonly attribute DOMHighResTimeStamp timestamp;
+          readonly attribute GamepadMappingType mapping;
+          readonly attribute FrozenArray<double> axes;
+          readonly attribute FrozenArray<GamepadButton> buttons;
+        };
 
 [Exposed=Window]
-interface GamepadButton {
-  readonly attribute boolean pressed;
-  readonly attribute boolean touched;
-  readonly attribute double value;
-};
+        interface GamepadButton {
+          readonly attribute boolean pressed;
+          readonly attribute boolean touched;
+          readonly attribute double value;
+        };
 
 enum GamepadMappingType {
-  "",
-  "standard",
-};
+          "",
+          "standard",
+        };
 
 [Exposed=Window]
-partial interface Navigator {
-  sequence<Gamepad?> getGamepads();
-};
+        partial interface Navigator {
+          sequence<Gamepad?> getGamepads();
+        };
 
 [Constructor(DOMString type, GamepadEventInit eventInitDict), Exposed=Window]
 
-interface GamepadEvent : Event {
-  [SameObject] readonly attribute Gamepad gamepad;
-};
+        interface GamepadEvent: Event {
+          [SameObject] readonly attribute Gamepad gamepad;
+        };
 
-dictionary GamepadEventInit : EventInit {
-  required Gamepad gamepad;
-};
+dictionary GamepadEventInit: EventInit {
+          required Gamepad gamepad;
+        };

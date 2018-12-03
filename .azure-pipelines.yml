@@ -118,5 +118,5 @@ jobs:
   - checkout: none
   - task: PublishBuildArtifacts@1
     inputs:
+      pathtoPublish: $(Agent.ToolsDirectory)/Python/
       artifactName: 'python'
-      targetPath: $(Agent.ToolsDirectory)/Python/

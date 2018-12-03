@@ -92,8 +92,8 @@ jobs:
     parameters:
       directory: tools/wpt/
 
-- job: win10
-  displayName: 'Test (Windows 10)'
+- job: tools_unittest_win10
+  displayName: 'tools/ unittests (Windows 10)'
   pool:
     # self-hosted Windows 10
     name: 'Hosted Windows Client'
@@ -110,8 +110,13 @@ jobs:
       versionSpec: '2.7'
       addToPath: true
     displayName: 'Use Python 2.7'
-  - script: pip install -vvv --user tox
+  - script: pip install --upgrade --user tox
     displayName: 'Install Python packages'
-  - script: dir "$(Agent.ToolsDirectory)\Python\2.7.15\x64\Scripts"
   - script: python -m tox -c tools/ -e py27 -- --junitxml=results.xml
     displayName: 'Run tests'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: tools/results.xml
+      testRunTitle: tools
+    displayName: 'Publish results'
+    condition: succeededOrFailed()

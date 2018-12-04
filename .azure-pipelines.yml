@@ -170,15 +170,8 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
+  - script: certmgr /add tools\certs\cacert.pem /s /r localmachine root
+    displayName: 'Install web-platform.test certificate'
   - script: msiexec /i python-2.7.15.amd64.msi TARGETDIR="C:\myfolder" /qb
     displayName: 'Install Python 2.7'
-  - script: pip install --upgrade --user tox
-    displayName: 'Install Python packages'
-  - script: python -m tox -c tools/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tests'
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: tools/results.xml
-      testRunTitle: tools
-    displayName: 'Publish results'
     condition: succeededOrFailed()

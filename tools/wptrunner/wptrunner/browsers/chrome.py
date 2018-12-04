@@ -18,6 +18,31 @@ __wptrunner__ = {"product": "chrome",
                  "env_options": "env_options"}
 
 
+cli_arguments = [
+    # https://cs.chromium.org/chromium/src/chrome/test/chromedriver/chrome_launcher.cc?l=70-75&rcl=50b9fd38ae9ca373dc8889637eb94a50eea7dc94
+    "--disable-popup-blocking",
+    "--enable-automation",
+    "--ignore-certificate-errors",
+    "--metrics-recording-only",
+
+    # https://cs.chromium.org/chromium/src/chrome/test/chromedriver/chrome_launcher.cc?l=77-92&rcl=50b9fd38ae9ca373dc8889637eb94a50eea7dc94
+    "--disable-hang-monitor",
+    "--disable-prompt-on-repost",
+    "--disable-sync",
+    "--no-first-run",
+    "--disable-background-networking",
+    "--disable-web-resources",
+    "--disable-client-side-phishing-detection",
+    "--disable-default-apps",
+    "--enable-logging",
+    "--log-level=0",
+    "--password-store=basic",
+    "--use-mock-keychain",
+    "--test-type=webdriver",
+    "--force-fieldtrials=SiteIsolationExtensions/Control",
+]
+
+
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
@@ -48,8 +73,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         }
     }
 
-    kwargs["binary_args"].append("--disable-popup-blocking")
-    kwargs["binary_args"].append("--ignore-certificate-errors")
+    kwargs["binary_args"] += cli_arguments
 
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:

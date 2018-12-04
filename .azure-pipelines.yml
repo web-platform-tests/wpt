@@ -125,7 +125,7 @@ jobs:
   #- template: tools/ci/azure/install_chrome.yml
   #- template: tools/ci/azure/install_firefox.yml
   #- template: tools/ci/azure/update_hosts.yml
-  - script: MicrosoftWebDriver
+  - script: MicrosoftWebDriver /h
     displayName: 'Run EdgeDriver'
     condition: succeededOrFailed()
   - powershell: python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
@@ -179,7 +179,7 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: MicrosoftWebDriver
+  - script: MicrosoftWebDriver /h
     displayName: 'Run EdgeDriver'
     condition: succeededOrFailed()
   - script: certmgr /add tools\certs\cacert.pem /s /r localmachine root

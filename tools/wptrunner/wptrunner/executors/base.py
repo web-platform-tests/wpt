@@ -588,7 +588,7 @@ class ActionSequenceAction(object):
                     if (action["type"] == "pointerMove" and
                         isinstance(action["origin"], dict)):
                         action["origin"] = self.get_element(action["origin"]["selector"])
-        self.protocol.action_sequence.send_actions(actions)
+        self.protocol.action_sequence.send_actions({"actions": actions})
 
     def get_element(self, selector):
         element = self.protocol.select.element_by_selector(selector)

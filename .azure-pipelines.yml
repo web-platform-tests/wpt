@@ -125,9 +125,6 @@ jobs:
   #- template: tools/ci/azure/install_chrome.yml
   #- template: tools/ci/azure/install_firefox.yml
   #- template: tools/ci/azure/update_hosts.yml
-  - script: MicrosoftWebDriver /h
-    displayName: 'Run EdgeDriver'
-    condition: succeededOrFailed()
   - powershell: python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
     displayName: 'Update hosts'
     condition: succeededOrFailed()
@@ -149,6 +146,8 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
+  - script: set username
+    displayName: 'Show user info'
   - script: |
       rd /s /q "$(Agent.ToolsDirectory)"
       xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
@@ -179,10 +178,9 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: MicrosoftWebDriver /h
-    displayName: 'Run EdgeDriver'
-    condition: succeededOrFailed()
-  - script: certmgr /add tools\certs\cacert.pem /s /r localmachine root
+  - script: set username
+    displayName: 'Show user info'
+  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
     displayName: 'Install web-platform.test certificate'
     condition: succeededOrFailed()
   - script: msiexec /i python-2.7.15.amd64.msi TARGETDIR="C:\myfolder" /qb

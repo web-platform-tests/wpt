@@ -11,6 +11,7 @@ idl_test(
   ['performance-timeline', 'hr-time', 'dom'],
   idl_array => {
     idl_array.add_objects({
+      Performance: ['performance'],
       // PerformanceEventTiming: [ TODO ]
     });
   }

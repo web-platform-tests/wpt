@@ -11,7 +11,7 @@ here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 sys.path.insert(0, wpt_root)
 
-from tools.wpt import testfiles
+from tools.wpt import run as wptrun, testfiles
 from tools.wpt.testfiles import get_git_cmd
 from tools.wpt.virtualenv import Virtualenv
 from tools.wpt.utils import Kwargs
@@ -32,7 +32,7 @@ def setup_logging():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
-
+    wptrun.setup_logging({})
 
 def do_delayed_imports():
     global wptrunner, run_step, write_inconsistent, write_slow_tests, write_results
@@ -110,7 +110,7 @@ def call(*args):
 
     Returns a bytestring of the subprocess output if no error.
     """
-    logger.debug("%s" % " ".join(args))
+    logger.debug(" ".join(args))
     try:
         return subprocess.check_output(args)
     except subprocess.CalledProcessError as e:
@@ -118,6 +118,7 @@ def call(*args):
                         (e.cmd, e.returncode))
         logger.critical(e.output)
         raise
+
 
 def fetch_wpt(user, *args):
     git = get_git_cmd(wpt_root)
@@ -207,6 +208,8 @@ def main():
 def run(venv, wpt_args, **kwargs):
     do_delayed_imports()
 
+    setup_logging()
+
     retcode = 0
 
     wpt_args = create_parser().parse_args(wpt_args)
@@ -227,8 +230,6 @@ def run(venv, wpt_args, **kwargs):
         os.makedirs(wpt_args.metadata_root)
     except OSError:
         pass
-
-    setup_logging()
 
     pr_number = pr()
 
@@ -273,6 +274,8 @@ def run(venv, wpt_args, **kwargs):
         if wpt_kwargs["repeat"] == 1:
             wpt_kwargs["repeat"] = 10
         wpt_kwargs["headless"] = False
+
+        wpt_kwargs["log_tbpl"] = [sys.stdout]
 
         wpt_kwargs = setup_wptrunner(venv, **wpt_kwargs)
 

@@ -5,10 +5,6 @@
   <title>CSS Reftest Reference</title>
   <link rel="author" title="Morgan Rae Reschenberg" href="mailto:mreschenberg@berkeley.edu">
   <style>
-  .basic {
-    border: none;
-    visibility: hidden;
-  }
   .container {
     border: 10px solid green;
     display: inline-block;
@@ -24,11 +20,23 @@
     display: flex;
     align-items: baseline;
   }
+  fieldset {
+    border: none;
+    color: transparent;
+  }
+  legend, .innerContents {
+    width: 0;
+    height: 0;
+    padding: 0;
+  }
   </style>
 </head>
 <body>
   <div class="flexBaselineCheck">
-  outside before<fieldset class="basic"></fieldset>outside after
+  outside before<fieldset>
+    <legend>l</legend>
+    <div class="innerContents">i</div>
+  </fieldset>outside after
   </div>
 </body>
 </html>

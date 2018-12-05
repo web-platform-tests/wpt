@@ -49,7 +49,7 @@ dictionary PaymentDetailsUpdate : PaymentDetailsBase {
   DOMString error;
   PaymentItem total;
   AddressErrors shippingAddressErrors;
-  PayerErrorFields payerErrors;
+  PayerErrors payerErrors;
   object paymentMethodErrors;
 };
 
@@ -68,6 +68,7 @@ enum PaymentShippingType {
 
 dictionary PaymentOptions {
   boolean requestPayerName = false;
+  boolean requestBillingAddress = false;
   boolean requestPayerEmail = false;
   boolean requestPayerPhone = false;
   boolean requestShipping = false;
@@ -78,12 +79,6 @@ dictionary PaymentItem {
   required DOMString label;
   required PaymentCurrencyAmount amount;
   boolean pending = false;
-  // Note: type member is "at risk" of being removed!
-  PaymentItemType type;
-};
-
-enum PaymentItemType {
-  "tax"
 };
 
 [SecureContext, Exposed=(Window)]
@@ -92,8 +87,6 @@ interface PaymentAddress {
   readonly attribute DOMString city;
   readonly attribute DOMString country;
   readonly attribute DOMString dependentLocality;
-  // "languageCode" is a feature at risk
-  readonly attribute DOMString languageCode;
   readonly attribute DOMString organization;
   readonly attribute DOMString phone;
   readonly attribute DOMString postalCode;
@@ -113,7 +106,6 @@ dictionary AddressInit {
   DOMString dependentLocality;
   DOMString postalCode;
   DOMString sortingCode;
-  DOMString languageCode;
   DOMString organization;
   DOMString recipient;
   DOMString phone;
@@ -124,7 +116,6 @@ dictionary AddressErrors {
   DOMString city;
   DOMString country;
   DOMString dependentLocality;
-  DOMString languageCode;
   DOMString organization;
   DOMString phone;
   DOMString postalCode;
@@ -163,19 +154,19 @@ interface PaymentResponse : EventTarget {
   [NewObject]
   Promise<void> complete(optional PaymentComplete result = "unknown");
   [NewObject]
-  Promise<void> retry(PaymentValidationErrors errorFields);
+  Promise<void> retry(optional PaymentValidationErrors errorFields);
 
   attribute EventHandler onpayerdetailchange;
 };
 
 dictionary PaymentValidationErrors {
-  PayerErrorFields payer;
+  PayerErrors payer;
   AddressErrors shippingAddress;
   DOMString error;
   object paymentMethod;
 };
 
-dictionary PayerErrorFields {
+dictionary PayerErrors {
   DOMString email;
   DOMString name;
   DOMString phone;

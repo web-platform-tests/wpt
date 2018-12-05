@@ -46,11 +46,10 @@ interface InterventionReportBody : ReportBody {
 };
 
 interface CrashReportBody : ReportBody {
-  readonly attribute DOMString crashId;
   readonly attribute DOMString? reason;
 };
 
 dictionary GenerateTestReportParameters {
   required DOMString message;
-  DOMString group;
+  DOMString group = "default";
 };

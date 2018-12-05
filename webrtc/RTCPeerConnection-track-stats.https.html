@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCPeerConnection.prototype.getStats</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,6 +13,7 @@
   // The following helper functions are called from RTCPeerConnection-helper.js:
   //   doSignalingHandshake
   //   getUserMediaTracksAndStreams
+  //   waitForRtpAndRtcpStats
 
   // The following helper functions are called from RTCStats-helper.js
   // (depends on dictionary-helper.js):
@@ -24,7 +26,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       track = tracks[0];
-      pc.addTrack(track);
+      pc.addTrack(track, streams[0]);
       return pc.getStats();
     }))
     .then(t.step_func(report => {
@@ -71,7 +73,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       track = tracks[0];
-      pc.addTrack(track);
+      pc.addTrack(track, streams[0]);
       return pc.createOffer();
     }))
     .then(t.step_func(offer => {
@@ -202,7 +204,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack = tracks[0];
-      caller.addTrack(sendingTrack);
+      caller.addTrack(sendingTrack, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -235,7 +237,7 @@
     };
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
-      caller.addTrack(tracks[0]);
+      caller.addTrack(tracks[0], streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -269,7 +271,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return sender.replaceTrack(sendingTrack2);
     }))
     .then(t.step_func(() => {
@@ -298,7 +300,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return exchangeOffer(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -335,7 +337,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -371,7 +373,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -504,6 +506,10 @@
     await doSignalingHandshake(caller, callee);
     await onIceConnectionStateCompleted(caller);
 
+    // Wait until RTCP has arrived so that it can not arrive between
+    // the two get stats calls.
+    await waitForRtpAndRtcpStats(caller);
+
     let senderReport = await sender.getStats();
     let trackReport = await caller.getStats(sender.track);
 
@@ -532,6 +538,10 @@
     await onIceConnectionStateCompleted(caller);
     let receiver = caller.getReceivers()[0];
 
+    // Wait until RTCP has arrived so that it can not arrive between
+    // the two get stats calls.
+    await waitForRtpAndRtcpStats(caller);
+
     let receiverReport = await receiver.getStats();
     let trackReport = await caller.getStats(receiver.track);
 
@@ -559,8 +569,8 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
-    let sender1 = pc.addTrack(tracks[0]);
-    let sender2 = pc.addTrack(tracks[1]);
+    let sender1 = pc.addTrack(tracks[0], streams[0]);
+    let sender2 = pc.addTrack(tracks[1], streams[1]);
     await sender2.replaceTrack(sender1.track);
     await promise_rejects(t, 'InvalidAccessError', pc.getStats(sender1.track));
   }, 'RTCPeerConnection.getStats(track) throws InvalidAccessError when there ' +

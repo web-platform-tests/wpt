@@ -47,7 +47,7 @@ def create_parser(product_choices=None):
 
 TEST is either the full path to a test file to run, or the URL of a test excluding
 scheme host and port.""")
-    parser.add_argument("--manifest-update", action="store_true", default=True,
+    parser.add_argument("--manifest-update", action="store_true", default=None,
                         help="Regenerate the test manifest.")
     parser.add_argument("--no-manifest-update", action="store_false", dest="manifest_update",
                         help="Prevent regeneration of the test manifest.")
@@ -302,6 +302,10 @@ scheme host and port.""")
                              help="Number of seconds to wait for Sauce "
                                   "Connect tunnel to be available before "
                                   "aborting")
+    sauce_group.add_argument("--sauce-connect-arg", action="append",
+                             default=[], dest="sauce_connect_args",
+                             help="Command-line argument to forward to the "
+                                  "Sauce Connect binary (repeatable)")
 
     webkit_group = parser.add_argument_group("WebKit-specific")
     webkit_group.add_argument("--webkit-port", dest="webkit_port",
@@ -431,6 +435,9 @@ def check_args(kwargs):
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
 
+    if kwargs["manifest_update"] is None:
+        kwargs["manifest_update"] = True
+
     if "sauce" in kwargs["product"]:
         kwargs["pause_after_test"] = False
 
@@ -502,6 +509,9 @@ def check_args(kwargs):
         kwargs["certutil_binary"] = path
 
     if kwargs['extra_prefs']:
+        # If a single pref is passed in as a string, make it a list
+        if type(kwargs['extra_prefs']) in (str, unicode):
+            kwargs['extra_prefs'] = [kwargs['extra_prefs']]
         missing = any('=' not in prefarg for prefarg in kwargs['extra_prefs'])
         if missing:
             print >> sys.stderr, "Preferences via --setpref must be in key=value format"
@@ -510,8 +520,7 @@ def check_args(kwargs):
                                  kwargs['extra_prefs']]
 
     if kwargs["reftest_internal"] is None:
-        # Default to the internal reftest implementation on Linux and OSX
-        kwargs["reftest_internal"] = sys.platform.startswith("linux") or sys.platform.startswith("darwin")
+        kwargs["reftest_internal"] = True
 
     return kwargs
 

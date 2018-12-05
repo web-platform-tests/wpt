@@ -164,6 +164,8 @@ class SourceFile(object):
         :param contents: Byte array of the contents of the file or ``None``.
         """
 
+        assert not os.path.isabs(rel_path), rel_path
+
         self.tests_root = tests_root
         if os.name == "nt":
             # do slash normalization on Windows
@@ -267,6 +269,7 @@ class SourceFile(object):
                 self.name_prefix("MANIFEST") or
                 self.filename == "META.yml" or
                 self.filename.startswith(".") or
+                self.filename.endswith(".headers") or
                 self.type_flag == "support" or
                 self.in_non_test_dir())
 

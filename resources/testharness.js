@@ -145,9 +145,9 @@ policies and contribution forms [3].
     };
 
     WindowTestEnvironment.prototype._forEach_windows = function(callback) {
-        // Iterate of the the windows [self ... top, opener]. The callback is passed
-        // two objects, the first one is the windows object itself, the second one
-        // is a boolean indicating whether or not its on the same origin as the
+        // Iterate over the windows [self ... top, opener]. The callback is passed
+        // two objects, the first one is the window object itself, the second one
+        // is a boolean indicating whether or not it's on the same origin as the
         // current window.
         var cache = this.window_cache;
         if (!cache) {
@@ -754,7 +754,7 @@ policies and contribution forms [3].
         }
         if (tests.file_is_test) {
             // file is test files never have asynchronous cleanup logic,
-            // meaning the fully-sycnronous `done` funtion can be used here.
+            // meaning the fully-synchronous `done` function can be used here.
             tests.tests[0].done();
         }
         tests.end_wait();
@@ -1262,6 +1262,13 @@ policies and contribution forms [3].
     }
     expose(assert_own_property, "assert_own_property");
 
+    function assert_not_own_property(object, property_name, description) {
+        assert(!object.hasOwnProperty(property_name),
+               "assert_not_own_property", description,
+               "unexpected property ${p} is found on object", {p:property_name});
+    }
+    expose(assert_not_own_property, "assert_not_own_property");
+
     function _assert_inherits(name) {
         return function (object, property_name, description)
         {
@@ -1541,7 +1548,7 @@ policies and contribution forms [3].
             return;
         }
         this.phase = this.phases.STARTED;
-        //If we don't get a result before the harness times out that will be a test timout
+        //If we don't get a result before the harness times out that will be a test timeout
         this.set_status(this.TIMEOUT, "Test timed out");
 
         tests.started = true;
@@ -1897,7 +1904,9 @@ policies and contribution forms [3].
      */
     function RemoteContext(remote, message_target, message_filter) {
         this.running = true;
+        this.started = false;
         this.tests = new Array();
+        this.early_exception = null;
 
         var this_obj = this;
         // If remote context is cross origin assigning to onerror is not
@@ -1936,6 +1945,21 @@ policies and contribution forms [3].
     }
 
     RemoteContext.prototype.remote_error = function(error) {
+        if (error.preventDefault) {
+            error.preventDefault();
+        }
+
+        // Defer interpretation of errors until the testing protocol has
+        // started and the remote test's `allow_uncaught_exception` property
+        // is available.
+        if (!this.started) {
+            this.early_exception = error;
+        } else if (!this.allow_uncaught_exception) {
+            this.report_uncaught(error);
+        }
+    };
+
+    RemoteContext.prototype.report_uncaught = function(error) {
         var message = error.message || String(error);
         var filename = (error.filename ? " " + error.filename: "");
         // FIXME: Display remote error states separately from main document
@@ -1943,9 +1967,14 @@ policies and contribution forms [3].
         tests.set_status(tests.status.ERROR,
                          "Error in remote" + filename + ": " + message,
                          error.stack);
+    };
 
-        if (error.preventDefault) {
-            error.preventDefault();
+    RemoteContext.prototype.start = function(data) {
+        this.started = true;
+        this.allow_uncaught_exception = data.properties.allow_uncaught_exception;
+
+        if (this.early_exception && !this.allow_uncaught_exception) {
+            this.report_uncaught(this.early_exception);
         }
     };
 
@@ -1995,6 +2024,7 @@ policies and contribution forms [3].
     };
 
     RemoteContext.prototype.message_handlers = {
+        start: RemoteContext.prototype.start,
         test_state: RemoteContext.prototype.test_state,
         result: RemoteContext.prototype.test_done,
         complete: RemoteContext.prototype.remote_done
@@ -2787,7 +2817,7 @@ policies and contribution forms [3].
     /*
      * Template code
      *
-     * A template is just a javascript structure. An element is represented as:
+     * A template is just a JavaScript structure. An element is represented as:
      *
      * [tag_name, {attr_name:attr_value}, child1, child2]
      *
@@ -2949,7 +2979,7 @@ policies and contribution forms [3].
     }
 
     /*
-     * Utility funcions
+     * Utility functions
      */
     function assert(expected_true, function_name, description, error, substitutions)
     {
@@ -3212,7 +3242,7 @@ policies and contribution forms [3].
         // Touching the postMessage prop on a window can throw if the window is
         // not from the same origin AND post message is not supported in that
         // browser. So just doing an existence test here won't do, you also need
-        // to wrap it in a try..cacth block.
+        // to wrap it in a try..catch block.
         try {
             type = typeof w.postMessage;
             if (type === "function") {

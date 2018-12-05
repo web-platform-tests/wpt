@@ -186,7 +186,7 @@ class Response(object):
         if isinstance(self.content, binary_type):
             yield self.content
         elif isinstance(self.content, text_type):
-            yield self.content.encode("utf-8")
+            yield self.content.encode(self.encoding)
         elif hasattr(self.content, "read"):
             if read_file:
                 yield self.content.read()

@@ -1,0 +1,93 @@
+# This is the configuration file for Azure Pipelines, used to run tests on
+# macOS. Documentation to help understand this setup:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/multiple-phases
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
+#
+# In addition to this configuration file, the "Build pull requests from forks
+# of this repository" setting must also be enabled in the Azure DevOps project:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
+
+trigger: none # disable builds for branches
+
+jobs:
+- job: root
+  displayName: './wpt test-jobs'
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - script: |
+      ./wpt test-jobs | while read job; do
+        echo "$job"
+        echo "##vso[task.setvariable variable=$job;isOutput=true]true";
+      done
+    name: test_jobs
+    displayName: 'Run ./wpt test-jobs'
+
+- job: infrastructure_macOS
+  displayName: 'infrastructure/ tests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wptrunner_infrastructure']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: virtualenv
+  - template: tools/ci/azure/install_fonts.yml
+  - template: tools/ci/azure/install_certs.yml
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/install_safari.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
+  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=dev chrome infrastructure/
+    displayName: 'Run tests (Chrome Dev)'
+  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=nightly firefox infrastructure/
+    displayName: 'Run tests (Firefox Nightly)'
+  - script: no_proxy='*' ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ --channel=preview safari infrastructure/
+    displayName: 'Run tests (Safari Technology Preview)'
+
+- job: tools_unittest_macOS
+  displayName: 'tools/ unittests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.tools_unittest']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/
+      toxenv: py27
+
+- job: wptrunner_unittest_macOS
+  displayName: 'tools/wptrunner/ unittests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wptrunner_unittest']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - template: tools/ci/azure/checkout.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wptrunner/
+
+- job: wpt_integration_macOS
+  displayName: 'tools/wpt/ tests (macOS)'
+  dependsOn: root
+  condition: dependencies.root.outputs['test_jobs.wpt_integration']
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  # full checkout required
+  - template: tools/ci/azure/install_chrome.yml
+  - template: tools/ci/azure/install_firefox.yml
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/tox_pytest.yml
+    parameters:
+      directory: tools/wpt/

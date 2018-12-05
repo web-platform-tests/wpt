@@ -70,6 +70,7 @@ class RunInfo(dict):
     def __init__(self, metadata_root, product, debug,
                  browser_version=None,
                  browser_channel=None,
+                 verify=None,
                  extras=None):
         import mozinfo
         self._update_mozinfo(metadata_root)
@@ -94,6 +95,10 @@ class RunInfo(dict):
             self["browser_version"] = browser_version
         if browser_channel:
             self["browser_channel"] = browser_channel
+
+        self["verify"] = verify
+        if "wasm" not in self:
+            self["wasm"] = False
         if extras is not None:
             self.update(extras)
 
@@ -141,7 +146,7 @@ class Test(object):
         return metadata
 
     @classmethod
-    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+    def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         return cls(manifest_item.source_file.tests_root,
@@ -230,6 +235,14 @@ class Test(object):
         return lsan_allowed
 
     @property
+    def lsan_max_stack_depth(self):
+        for meta in self.itermeta(None):
+            depth = meta.lsan_max_stack_depth
+            if depth is not None:
+                return depth
+        return None
+
+    @property
     def tags(self):
         tags = set()
         for meta in self.itermeta():
@@ -289,7 +302,7 @@ class TestharnessTest(Test):
         self.scripts = scripts or []
 
     @classmethod
-    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
+    def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
         protocol = "https" if hasattr(manifest_item, "https") and manifest_item.https else "http"
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
@@ -339,6 +352,7 @@ class ReftestTest(Test):
 
     @classmethod
     def from_manifest(cls,
+                      manifest_file,
                       manifest_test,
                       inherit_metadata,
                       test_metadata,
@@ -381,9 +395,10 @@ class ReftestTest(Test):
 
             references_seen.add(comparison_key)
 
-            manifest_node = manifest_test.manifest.get_reference(ref_url)
+            manifest_node = manifest_file.get_reference(ref_url)
             if manifest_node:
-                reference = ReftestTest.from_manifest(manifest_node,
+                reference = ReftestTest.from_manifest(manifest_file,
+                                                      manifest_node,
                                                       [],
                                                       None,
                                                       nodes,
@@ -435,6 +450,6 @@ manifest_test_cls = {"reftest": ReftestTest,
                      "wdspec": WdspecTest}
 
 
-def from_manifest(manifest_test, inherit_metadata, test_metadata):
+def from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata):
     test_cls = manifest_test_cls[manifest_test.item_type]
-    return test_cls.from_manifest(manifest_test, inherit_metadata, test_metadata)
+    return test_cls.from_manifest(manifest_file, manifest_test, inherit_metadata, test_metadata)

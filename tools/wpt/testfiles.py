@@ -8,7 +8,7 @@ import sys
 from collections import OrderedDict
 from six import iteritems
 
-from ..manifest import manifest, update
+from ..manifest import manifest
 
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
@@ -190,10 +190,8 @@ def _init_manifest_cache():
             return c[manifest_path]
         # cache at most one path:manifest
         c.clear()
-        wpt_manifest = manifest.load(wpt_root, manifest_path)
-        if wpt_manifest is None:
-            wpt_manifest = manifest.Manifest()
-        update.update(wpt_root, wpt_manifest)
+        wpt_manifest = manifest.load_and_update(wpt_root, manifest_path, "/",
+                                                update=True)
         c[manifest_path] = wpt_manifest
         return c[manifest_path]
     return load
@@ -219,6 +217,11 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
     test_files = {os.path.join(wpt_root, path)
                   for _, path, _ in wpt_manifest.itertypes(*test_types)}
 
+    interface_dir = os.path.join(wpt_root, 'interfaces')
+    interfaces_files = {os.path.join(wpt_root, 'interfaces', filename)
+                        for filename in os.listdir(interface_dir)}
+
+    interfaces_changed = interfaces_files.intersection(nontests_changed)
     nontests_changed = nontests_changed.intersection(support_files)
 
     tests_changed = set(item for item in files_changed if item in test_files)
@@ -237,6 +240,9 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
             full_path = os.path.join(wpt_root, repo_path[1:].replace("/", os.path.sep))
         nontest_changed_paths.add((full_path, repo_path))
 
+    interface_name = lambda x: os.path.splitext(os.path.basename(x))[0]
+    interfaces_changed_names = map(interface_name, interfaces_changed)
+
     def affected_by_wdspec(test):
         affected = False
         if test in wdspec_test_files:
@@ -251,6 +257,15 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
                     affected = True
                     break
         return affected
+
+    def affected_by_interfaces(file_contents):
+        if len(interfaces_changed_names) > 0:
+            if 'idlharness.js' in file_contents:
+                for interface in interfaces_changed_names:
+                    regex = '[\'"]' + interface + '(\\.idl)?[\'"]'
+                    if re.search(regex, file_contents):
+                        return True
+        return False
 
     for root, dirs, fnames in os.walk(wpt_root):
         # Walk top_level_subdir looking for test files containing either the
@@ -277,7 +292,7 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
                     file_contents = file_contents.decode("utf8", "replace")
                 for full_path, repo_path in nontest_changed_paths:
                     rel_path = os.path.relpath(full_path, root).replace(os.path.sep, "/")
-                    if rel_path in file_contents or repo_path in file_contents:
+                    if rel_path in file_contents or repo_path in file_contents or affected_by_interfaces(file_contents):
                         affected_testfiles.add(test_full_path)
                         continue
 

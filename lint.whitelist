@@ -59,6 +59,10 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.ico
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wasm
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.bmp
 
+## Whitespace needed for testing
+
+TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
+
 ## Documentation ##
 
 W3C-TEST.ORG: README.md
@@ -169,6 +173,7 @@ SET TIMEOUT: html/webappapis/scripting/events/event-handler-processing-algorithm
 SET TIMEOUT: html/webappapis/scripting/processing-model-2/*
 SET TIMEOUT: IndexedDB/*
 SET TIMEOUT: infrastructure/*
+SET TIMEOUT: intersection-observer/target-in-different-window.html
 SET TIMEOUT: media-source/mediasource-util.js
 SET TIMEOUT: media-source/URL-createObjectURL-revoke.html
 SET TIMEOUT: mixed-content/generic/sanity-checker.js
@@ -201,13 +206,6 @@ SET TIMEOUT: shadow-dom/Document-prototype-currentScript.html
 SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: shadow-dom/untriaged/html-elements-in-shadow-trees/html-forms/test-003.html
-SET TIMEOUT: streams/piping/close-propagation-forward.js
-SET TIMEOUT: streams/piping/error-propagation-backward.js
-SET TIMEOUT: streams/piping/error-propagation-forward.js
-SET TIMEOUT: streams/piping/general.js
-SET TIMEOUT: streams/readable-streams/cancel.js
-SET TIMEOUT: streams/resources/rs-utils.js
-SET TIMEOUT: streams/writable-streams/byte-length-queuing-strategy.js
 SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: user-timing/*
@@ -306,15 +304,16 @@ SET TIMEOUT: resources/test/tests/functional/add_cleanup_async_rejection.html
 SET TIMEOUT: resources/test/tests/functional/add_cleanup_async_rejection_after_load.html
 SET TIMEOUT: resources/test/tests/functional/api-tests-1.html
 SET TIMEOUT: resources/test/tests/functional/worker.js
+SET TIMEOUT: resources/test/tests/functional/worker-uncaught-allow.js
 SET TIMEOUT: resources/test/tests/unit/exceptional-cases.html
 SET TIMEOUT: resources/testharness.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
 
-# Travis
+# CI configuration
+WEB-PLATFORM.TEST: .azure-pipelines.yml
 WEB-PLATFORM.TEST: .travis.yml
-
 
 # Third party code
 *: css/tools/apiclient/*
@@ -373,7 +372,6 @@ SUPPORT-WRONG-DIR: css/CSS2/section-index.xht
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-18.css
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19-alt.xml
 SUPPORT-WRONG-DIR: css/CSS2/other-formats/xml/background-19.css
-SUPPORT-WRONG-DIR: css/filter-effects/filter-external-002-filter.svg
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/check-for-references.sh
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests-filter
 SUPPORT-WRONG-DIR: css/vendor-imports/mozilla/mozilla-central-reftests/sync-tests.sh
@@ -655,6 +653,8 @@ CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/cont
 CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-grid-001-ref.html
 CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-grid-001-ref.html
 CSS-COLLIDING-SUPPORT-NAME: css/css-backgrounds/support/red.png
+CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-fieldset-001-ref.html
+CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-fieldset-001-ref.html
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/mix-blend-mode/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/background-blending/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-3.png
@@ -753,7 +753,7 @@ MISSING-LINK: css/css-scroll-anchoring/position-change-heuristic.html
 MISSING-LINK: css/css-scroll-anchoring/start-edge-in-block-layout-direction.html
 MISSING-LINK: css/css-scroll-anchoring/subtree-exclusion.html
 MISSING-LINK: css/css-scroll-anchoring/wrapped-text.html
-SUPPORT-WRONG-DIR: css/css-timing/testcommon.js
+SUPPORT-WRONG-DIR: css/css-easing/testcommon.js
 MISSING-LINK: css/css-typed-om/CSSMatrixComponent-DOMMatrix-mutable.html
 MISSING-LINK: css/css-typed-om/declared-styleMap-accepts-inherit.html
 SUPPORT-WRONG-DIR: css/cssom/stylesheet-same-origin.css
@@ -791,3 +791,11 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: css/css-regions/interactivity/*
 LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
+
+# Gecko additons to remove
+CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-fieldset-001-ref.html
+CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-fieldset-001-ref.html
+
+# Signed Exchange files have hard-coded URLs in the certUrl field
+WEB-PLATFORM.TEST:signed-exchange/resources/*.sxg
+WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh

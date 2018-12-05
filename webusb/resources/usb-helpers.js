@@ -14,8 +14,9 @@
   if ('MojoInterfaceInterceptor' in self) {
     let prefix = '/resources/chromium';
     if ('window' in self) {
-      if (window.location.pathname.includes('/LayoutTests/')) {
-        let root = window.location.pathname.match(/.*LayoutTests/);
+      const pathname = window.location.pathname;
+      if (pathname.includes('/LayoutTests/') || pathname.includes('/web_tests/')) {
+        let root = pathname.match(/.*(?:LayoutTests|web_tests)/);
         prefix = `${root}/external/wpt/resources/chromium`;
       }
     }
@@ -42,6 +43,7 @@ let loadChromiumResources = Promise.resolve().then(() => {
   [
     '/resources/chromium/mojo_bindings.js',
     '/resources/chromium/string16.mojom.js',
+    '/resources/chromium/url.mojom.js',
     '/resources/chromium/device.mojom.js',
     '/resources/chromium/device_manager.mojom.js',
     '/resources/chromium/web_usb_service.mojom.js',

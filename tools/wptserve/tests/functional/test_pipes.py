@@ -35,10 +35,9 @@ class TestHeader(TestUsingServer):
         resp = self.request("/document.txt", query="pipe=header(Content-Type,FAIL)|header(Content-Type,text/html)")
         self.assertEqual(resp.info()["Content-Type"], "text/html")
 
-    @pytest.mark.xfail(sys.version_info >= (3,), reason="wptserve only works on Py2")
     def test_multiple_append(self):
         resp = self.request("/document.txt", query="pipe=header(X-Test,1)|header(X-Test,2,True)")
-        self.assertEqual(resp.info()["X-Test"], "1, 2")
+        self.assert_multiple_headers(resp, "X-Test", ["1", "2"])
 
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
@@ -115,7 +114,6 @@ server: http://localhost:{0}""".format(self.server.port).encode("ascii")
     def test_sub_var(self):
         resp = self.request("/sub_var.sub.txt")
         port = self.server.port
-        print(port, type(port))
         expected = b"localhost %d A %d B localhost C" % (port, port)
         self.assertEqual(resp.read().rstrip(), expected)
 

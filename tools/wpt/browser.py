@@ -41,12 +41,12 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         """Find the binary of the WebDriver."""
         return NotImplemented
 
     @abstractmethod
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         return NotImplemented
 
@@ -67,22 +67,28 @@ class Firefox(Browser):
     platform_ini = "browsers/firefox/platform.ini"
     requirements = "requirements_firefox.txt"
 
-    def platform_string_geckodriver(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "macos"
-        }.get(uname[0])
+    platform = {
+        "Linux": "linux",
+        "Windows": "win",
+        "Darwin": "macos"
+    }.get(uname[0])
 
-        if platform is None:
+    application_name = {
+        "stable": "Firefox.app",
+        "beta": "Firefox.app",
+        "nightly": "Firefox Nightly.app"
+    }
+
+    def platform_string_geckodriver(self):
+        if self.platform is None:
             raise ValueError("Unable to construct a valid Geckodriver package name for current platform")
 
-        if platform in ("linux", "win"):
+        if self.platform in ("linux", "win"):
             bits = "64" if uname[4] == "x86_64" else "32"
         else:
             bits = ""
 
-        return "%s%s" % (platform, bits)
+        return "%s%s" % (self.platform, bits)
 
     def install(self, dest=None, channel="nightly"):
         """Install Firefox."""
@@ -102,24 +108,14 @@ class Firefox(Browser):
             "beta": "latest-beta",
             "nightly": "latest"
         }
-        application_name = {
-            "stable": "Firefox.app",
-            "beta": "Firefox.app",
-            "nightly": "Firefox Nightly.app"
-        }
+
         if channel not in branch:
             raise ValueError("Unrecognised release channel: %s" % channel)
 
         from mozdownload import FactoryScraper
         import mozinstall
 
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
-
-        if platform is None:
+        if self.platform is None:
             raise ValueError("Unable to construct a valid Firefox package name for current platform")
 
         if dest is None:
@@ -136,10 +132,10 @@ class Firefox(Browser):
         try:
             mozinstall.install(filename, dest)
         except mozinstall.mozinstall.InstallError:
-            if platform == "mac" and os.path.exists(os.path.join(dest, application_name[channel])):
+            if self.platform == "macos" and os.path.exists(os.path.join(dest, self.application_name.get(channel, "Firefox Nightly.app"))):
                 # mozinstall will fail if nightly is already installed in the venv because
                 # mac installation uses shutil.copy_tree
-                mozinstall.uninstall(os.path.join(dest, application_name[channel]))
+                mozinstall.uninstall(os.path.join(dest, self.application_name.get(channel, "Firefox Nightly.app")))
                 mozinstall.install(filename, dest)
             else:
                 raise
@@ -150,46 +146,31 @@ class Firefox(Browser):
     def find_binary_path(self,path=None, channel="nightly"):
         """Looks for the firefox binary in the virtual environment"""
 
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
-
-        application_name = {
-            "stable": "Firefox.app",
-            "beta": "Firefox.app",
-            "nightly": "Firefox Nightly.app"
-        }.get(channel)
-
         if path is None:
             #os.getcwd() doesn't include the venv path
             path = os.path.join(os.getcwd(), "_venv", "browsers", channel)
 
         binary = None
 
-        if platform == "linux":
+        if self.platform == "linux":
             binary = find_executable("firefox", os.path.join(path, "firefox"))
-        elif platform == "win":
+        elif self.platform == "win":
             import mozinstall
             binary = mozinstall.get_binary(path, "firefox")
-        elif platform == "mac":
-            binary = find_executable("firefox", os.path.join(path, application_name,
+        elif self.platform == "macos":
+            binary = find_executable("firefox", os.path.join(path, self.application_name.get(channel, "Firefox Nightly.app"),
                                                              "Contents", "MacOS"))
 
         return binary
 
-    def find_binary(self, venv_path=None, channel=None):
+    def find_binary(self, venv_path=None, channel="nightly"):
         if venv_path is None:
             venv_path = os.path.join(os.getcwd(), "_venv")
-
-        if channel is None:
-            channel = "nightly"
 
         path = os.path.join(venv_path, "browsers", channel)
         binary = self.find_binary_path(path, channel)
 
-        if not binary and uname[0] == "Darwin":
+        if not binary and self.platform == "macos":
             macpaths = ["/Applications/Firefox Nightly.app/Contents/MacOS",
                         os.path.expanduser("~/Applications/Firefox Nightly.app/Contents/MacOS"),
                         "/Applications/Firefox Developer Edition.app/Contents/MacOS",
@@ -211,7 +192,7 @@ class Firefox(Browser):
             return None
         return path
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("geckodriver")
 
     def get_version_and_channel(self, binary):
@@ -262,7 +243,9 @@ class Firefox(Browser):
         if dest is None:
             dest = os.pwd
 
-        dest = os.path.join(dest, "profiles", channel, version)
+        dest = os.path.join(dest, "profiles", channel)
+        if version:
+            dest = os.path.join(dest, version)
         have_cache = False
         if os.path.exists(dest):
             if channel != "nightly":
@@ -280,7 +263,7 @@ class Firefox(Browser):
 
             url = self.get_profile_bundle_url(version, channel)
 
-            print("Installing test prefs from %s" % url)
+            logger.info("Installing test prefs from %s" % url)
             try:
                 extract_dir = tempfile.mkdtemp()
                 unzip(get(url).raw, dest=extract_dir)
@@ -292,7 +275,7 @@ class Firefox(Browser):
             finally:
                 shutil.rmtree(extract_dir)
         else:
-            print("Using cached test prefs from %s" % dest)
+            logger.info("Using cached test prefs from %s" % dest)
 
         return dest
 
@@ -365,9 +348,8 @@ class Firefox(Browser):
 
         return path
 
-    def version(self, binary=None, channel=None):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
-        binary = binary or self.find_binary(channel)
         version_string = call(binary, "--version").strip()
         m = re.match(r"Mozilla Firefox (.*)", version_string)
         if not m:
@@ -387,13 +369,13 @@ class Fennec(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         raise NotImplementedError
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -441,7 +423,7 @@ class Chrome(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
     def install_webdriver(self, dest=None, channel=None):
@@ -457,7 +439,7 @@ class Chrome(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, binary=None):
+    def version(self, binary=None, webdriver_binary=None):
         binary = binary or self.binary
         if uname[0] != "Windows":
             try:
@@ -489,22 +471,15 @@ class ChromeAndroid(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
     def install_webdriver(self, dest=None, channel=None):
         chrome = Chrome()
         return chrome.install_webdriver(dest, channel)
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
-
-class ChromeWebDriver(Chrome):
-    """Chrome-specific interface for chrome without using selenium.
-
-    Includes webdriver installation.
-    """
-    product = "chrome_webdriver"
 
 class Opera(Browser):
     """Opera-specific interface.
@@ -548,7 +523,7 @@ class Opera(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("operadriver")
 
     def install_webdriver(self, dest=None, channel=None):
@@ -568,7 +543,7 @@ class Opera(Browser):
         os.chmod(path, st.st_mode | stat.S_IEXEC)
         return path
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         binary = binary or self.binary
         try:
@@ -576,7 +551,9 @@ class Opera(Browser):
         except subprocess.CalledProcessError:
             logger.warn("Failed to call %s", binary)
             return None
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+        m = re.search(r"[0-9\.]+( [a-z]+)?$", output.strip())
+        if m:
+            return m.group(0)
 
 
 class Edge(Browser):
@@ -591,13 +568,13 @@ class Edge(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("MicrosoftWebDriver")
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -617,13 +594,13 @@ class InternetExplorer(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return find_executable("IEDriverServer.exe")
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -642,18 +619,33 @@ class Safari(Browser):
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
-        return find_executable("safaridriver")
+    def find_webdriver(self, channel=None):
+        path = None
+        if channel == "preview":
+            path = "/Applications/Safari Technology Preview.app/Contents/MacOS"
+        return find_executable("safaridriver", path)
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
-        return None
-
-
-class SafariWebDriver(Safari):
-    product = "safari_webdriver"
+    def version(self, binary=None, webdriver_binary=None):
+        if webdriver_binary is None:
+            logger.warn("Cannot find Safari version without safaridriver")
+            return None
+        # Use `safaridriver --version` to get the version. Example output:
+        # "Included with Safari 12.1 (14607.1.11)"
+        # "Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)"
+        # The `--version` flag was added in STP 67, so allow the call to fail.
+        try:
+            version_string = call(webdriver_binary, "--version").strip()
+        except subprocess.CalledProcessError:
+            logger.warn("Failed to call %s --version", webdriver_binary)
+            return None
+        m = re.match(r"Included with Safari (.*)", version_string)
+        if not m:
+            logger.warn("Failed to extract version from: s%", version_string)
+            return None
+        return m.group(1)
 
 
 class Servo(Browser):
@@ -702,16 +694,22 @@ class Servo(Browser):
             path = find_executable("servo")
         return path
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return None
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         """Retrieve the release version of the installed browser."""
         output = call(binary, "--version")
-        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
+        m = re.search(r"Servo ([0-9\.]+-[a-f0-9]+)?(-dirty)?$", output.strip())
+        if m:
+            return m.group(0)
+
+
+class ServoWebDriver(Servo):
+    product = "servodriver"
 
 
 class Sauce(Browser):
@@ -726,13 +724,13 @@ class Sauce(Browser):
     def find_binary(self, venev_path=None, channel=None):
         raise NotImplementedError
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         raise NotImplementedError
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None
 
 
@@ -748,11 +746,11 @@ class WebKit(Browser):
     def find_binary(self, venv_path=None, channel=None):
         return None
 
-    def find_webdriver(self):
+    def find_webdriver(self, channel=None):
         return None
 
     def install_webdriver(self, dest=None, channel=None):
         raise NotImplementedError
 
-    def version(self, binary):
+    def version(self, binary=None, webdriver_binary=None):
         return None

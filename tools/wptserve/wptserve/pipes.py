@@ -329,7 +329,7 @@ def sub(request, response, escape_type="html"):
                         "html" and "none", with "html" the default for historic reasons.
 
     The format is a very limited template language. Substitutions are
-    enclosed by {{ and }}. There are several avaliable substitutions:
+    enclosed by {{ and }}. There are several available substitutions:
 
     host
       A simple string value and represents the primary host from which the
@@ -427,10 +427,12 @@ def template(request, content, escape_type="html"):
         tokens = deque(tokens)
 
         token_type, field = tokens.popleft()
+        assert isinstance(field, text_type)
 
         if token_type == "var":
             variable = field
             token_type, field = tokens.popleft()
+            assert isinstance(field, text_type)
         else:
             variable = None
 
@@ -489,8 +491,9 @@ def template(request, content, escape_type="html"):
         escape_func = {"html": lambda x:escape(x, quote=True),
                        "none": lambda x:x}[escape_type]
 
-        #Should possibly support escaping for other contexts e.g. script
-        #TODO: read the encoding of the response
+        # Should possibly support escaping for other contexts e.g. script
+        # TODO: read the encoding of the response
+        # cgi.escape() only takes text strings in Python 3.
         if isinstance(value, binary_type):
             value = value.decode("utf-8")
         elif isinstance(value, int):

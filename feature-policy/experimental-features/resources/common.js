@@ -58,3 +58,35 @@ function createIframe(container, attributes) {
   container.appendChild(new_iframe);
   return new_iframe;
 }
+
+// Returns a promise which is resolved when |load| event is dispatched for |e|.
+function wait_for_load(e) {
+  return new Promise((resolve) => {
+    e.addEventListener("load", resolve);
+  });
+}
+
+window.reporting_observer_instance = new ReportingObserver((reports, observer) => {
+  if (window.reporting_observer_callback) {
+    reports.forEach(window.reporting_observer_callback);
+  }
+}, {types: ["feature-policy-violation"]});
+window.reporting_observer_instance.observe();
+window.reporting_observer_callback = null;
+
+// Waits for a violation in |feature| and source file containing |file_name|.
+function wait_for_violation_in_file(feature, file_name) {
+  return new Promise( (resolve) => {
+    assert_equals(null, window.reporting_observer_callback);
+    window.reporting_observer_callback = (report) => {
+        var feature_match = (feature === report.body.featureId);
+        var file_name_match =
+            !file_name ||
+            (report.body.sourceFile.indexOf(file_name) !== -1);
+        if (feature_match && file_name_match) {
+          window.reporting_observer_callback = null;
+          resolve(report);
+        }
+    };
+  });
+}

@@ -59,7 +59,7 @@ class Connection(object):
 
         options = {
             'exit_event': self._exit_event,
-            'poll': 0.1,
+            'poll': 0.01,
             'ping_rate': 0
         }
 

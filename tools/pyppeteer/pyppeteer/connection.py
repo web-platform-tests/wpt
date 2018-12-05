@@ -6,7 +6,7 @@ import lomond
 from lomond.persist import persist
 
 from . import logging, Session
-from errors import ProtocolError, PyppeteerError
+from errors import ConnectionError, ProtocolError, PyppeteerError
 
 class Connection(object):
     def __init__(self, url):

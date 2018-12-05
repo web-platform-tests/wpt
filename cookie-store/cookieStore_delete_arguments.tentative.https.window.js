@@ -124,7 +124,7 @@ promise_test(async testCase => {
   const cookie = await cookieStore.get('cookie-name');
   assert_equals(cookie, null);
 
-  async_cleanup(async () => {
+  await async_cleanup(async () => {
     await cookieStore.delete({ name: 'cookie-name', path: currentDirectory });
   });
 }, 'cookieStore.delete with path set to the current directory');

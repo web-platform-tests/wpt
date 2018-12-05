@@ -13,13 +13,16 @@ class ProtocolError(PyppeteerError):
             '%s - %s - %s' % (method, message, data)
         )
 
-# https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
+# https://chromedevtools.github.io/devtools-protocol/1-3/Runtime#type-ExceptionDetails
 class ScriptError(PyppeteerError):
     def __init__(self, exception_details):
-        super(ScriptError, self).__init__((
-            '{lineNumber}:{columnNumber} ' +
-            '{exception[className]} {exception[description]}'
-            ).format(**exception_details)
-        )
+        message = '{lineNumber}:{columnNumber}'.format(**exception_details)
+        exception = exception_details.get('exception')
 
+        if exception:
+            if 'className' in exception:
+                message += ' {className}'.format(**exception)
+            if 'description' in exception:
+                message += ' {description}'.format(**exception)
 
+        super(ScriptError, self).__init__(message)

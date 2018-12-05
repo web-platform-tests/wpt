@@ -21,9 +21,7 @@ promise_test(async t => {
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   const [track] = stream.getVideoTracks();
   t.add_cleanup(() => track.stop());
-  if (track.enabled) {
-    track.enabled = false;
-  }
+  track.enabled = false;
   const watcher = new EventWatcher(t, vid, ["loadeddata"]);
 
   vid.srcObject = stream;

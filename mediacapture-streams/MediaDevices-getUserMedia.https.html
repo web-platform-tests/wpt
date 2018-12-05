@@ -37,53 +37,53 @@ test(() => {
 
 promise_test(async t => {
   const devices = await navigator.mediaDevices.enumerateDevices();
-  const tracks = [];
-  t.add_cleanup(() => tracks.forEach(track => track.stop()));
-  for (const i in devices) {
+  for (const device of devices) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(
-        {video: {groupId: {exact: devices[i].groupId}}}
+        {video: {groupId: {exact: device.groupId}}}
       );
-      tracks.push(...stream.getTracks());
-      const found_device = devices.find(element => {
-        return element.deviceId == stream.getTracks()[0].getSettings().deviceId;
+      const [track] = stream.getTracks();
+      track.stop();
+      const settings = track.getSettings();
+      const found = devices.find(({deviceId}) => {
+        return deviceId == settings.deviceId;
       });
-      assert_true(undefined !== found_device);
-      assert_equals(found_device.kind, "videoinput");
-      assert_equals(found_device.groupId, devices[i].groupId);
+      assert_not_equals(found, undefined);
+      assert_equals(found.kind, "videoinput");
+      assert_equals(found.groupId, device.groupId);
     } catch (e) {
       assert_equals(e.name, "OverconstrainedError");
       assert_equals(e.constraint, "groupId");
-      const found_device = devices.find(element => {
-        return element.kind == "videoinput" && element.groupId == devices[i].groupId});
-      assert_true(undefined === found_device);
+      const found = devices.find(({groupId, kind}) => {
+        return kind == "videoinput" && groupId == device.groupId});
+      assert_equals(found, undefined);
     }
   }
 }, 'groupId is correctly supported by getUserMedia() for video devices');
 
 promise_test(async t => {
   const devices = await navigator.mediaDevices.enumerateDevices();
-  const tracks = [];
-  t.add_cleanup(() => tracks.forEach(track => track.stop()));
-  for (const i in devices) {
+  for (const device of devices) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia(
-        {audio: {groupId: {exact: devices[i].groupId}}}
+        {audio: {groupId: {exact: device.groupId}}}
       );
-      tracks.push(...stream.getTracks());
-      const found_device = devices.find(element => {
-        return element.deviceId == stream.getTracks()[0].getSettings().deviceId;
+      const [track] = stream.getTracks();
+      track.stop();
+      const settings = track.getSettings();
+      const found = devices.find(({deviceId}) => {
+        return deviceId == settings.deviceId;
       });
-      assert_true(undefined !== found_device);
-      assert_equals(found_device.kind, "audioinput");
-      assert_equals(found_device.groupId, devices[i].groupId);
+      assert_not_equals(found, undefined);
+      assert_equals(found.kind, "audioinput");
+      assert_equals(found.groupId, device.groupId);
     } catch (e) {
       assert_equals(e.name, "OverconstrainedError");
       assert_equals(e.constraint, "groupId");
-      const found_device = devices.find(element => {
-        return element.kind == "audioinput" && element.groupId == devices[i].groupId
+      const found = devices.find(({groupId, kind}) => {
+        return kind == "audioinput" && groupId == device.groupId
       });
-      assert_true(undefined === found_device);
+      assert_equals(found, undefined);
     }
   }
 }, 'groupId is correctly supported by getUserMedia() for audio devices');

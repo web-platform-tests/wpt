@@ -1,5 +1,5 @@
 <!doctype html>
-<title>getUserMedia({video:true}) creates a stream with a properly initialized video track</title>
+<title>getUserMedia({video: true}) creates a stream with a properly initialized video track</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#idl-def-MediaStreamTrack">
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#life-cycle-and-media-flow">
@@ -20,12 +20,10 @@ promise_test(async t => {
   const stream = await navigator.mediaDevices.getUserMedia({video: true});
   const videoTracks = stream.getVideoTracks();
   assert_equals(videoTracks.length, 1, "There is exactly one video track in the media stream");
-  track = videoTracks[0];
+  const track = videoTracks[0];
   t.add_cleanup(() => track.stop());
   assert_equals(track.readyState, "live", "The track object is in live state");
   assert_equals(track.kind, "video", "The track object is of video kind");
-  // Not clear that this is required by the spec,
-  // see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22212
   assert_true(track.enabled, "The track object is enabed");
 });
 

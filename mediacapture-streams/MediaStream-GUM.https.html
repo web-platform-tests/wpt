@@ -46,7 +46,7 @@ promise_test(async t => {
 
 promise_test(t => {
   return promise_rejects(t, new TypeError(), navigator.mediaDevices.getUserMedia({doesnotexist: true}));
-}, "Tests that getUserMedia is rejected with a TypeError when used with an unknown device type");
+}, "Tests that getUserMedia is rejected with a TypeError when only used with an unknown device type");
 
 promise_test(async t => {
   try {

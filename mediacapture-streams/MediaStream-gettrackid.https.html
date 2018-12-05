@@ -16,7 +16,7 @@ promise_test(async t => {
   const track = stream.getVideoTracks()[0];
   t.add_cleanup(() => track.stop());
   assert_equals(track, stream.getTrackById(track.id), "getTrackById returns track of given id");
-  assert_equals(stream.getTrackById(track.id + "foo"), null, "getTrackById of inexistant id returns null");
+  assert_equals(stream.getTrackById(track.id + "foo"), null, "getTrackById of inexistent id returns null");
 }, "Tests that MediaStream.getTrackById works as expected");
 
 </script>

@@ -26,16 +26,16 @@ async function testPreloadNone(t, mediaElement, setSourceStreamFunc) {
 
 promise_test(async t => {
   const aud = document.querySelector("audio");
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  const stream = await navigator.mediaDevices.getUserMedia({audio: true});
   t.add_cleanup(() => stream.getAudioTracks()[0].stop());
-  testPreloadNone(t, aud, () => { aud.srcObject = stream; });
+  await testPreloadNone(t, aud, () => { aud.srcObject = stream; });
 }, "Test that preload 'none' is ignored for MediaStream object URL used as srcObject for audio");
 
 promise_test(async t => {
   const vid = document.querySelector("video");
-  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const stream = await navigator.mediaDevices.getUserMedia({video: true});
   t.add_cleanup(() => stream.getVideoTracks()[0].stop());
-  testPreloadNone(t, vid, () => { vid.srcObject = stream; });
+  await testPreloadNone(t, vid, () => { vid.srcObject = stream; });
 }, "Test that preload 'none' is ignored for MediaStream used as srcObject for video");
 
 </script>

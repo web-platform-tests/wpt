@@ -36,7 +36,7 @@ test(() => {
   const dest = context.createMediaStreamDestination();
   const track = dest.stream.getTracks()[0];
   assert_true(track instanceof MediaStreamTrack);
-  const event = new MediaStreamTrackEvent("type", { track: track });
+  const event = new MediaStreamTrackEvent("type", { track });
   assert_equals(event.type, "type");
   assert_equals(event.track, track);
 }, "The MediaStreamTrackEvent instance's track attribute is set.");

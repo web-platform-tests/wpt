@@ -26,6 +26,7 @@
     const [track] = stream.getVideoTracks();
     t.add_cleanup(() => track.stop());
     const groupId = track.getSettings().groupId;
+    assert_not_equals(groupId, undefined);
     await track.applyConstraints({ groupId: "INVALID" });
     assert_equals(track.getSettings().groupId, groupId);
   }, 'applyConstraints accepts invalid ideal groupID, does not change setting');
@@ -34,10 +35,10 @@
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     const [track] = stream.getVideoTracks();
     t.add_cleanup(() => track.stop());
-    const groupId = track.getSettings().groupId;
+    const settings = track.getSettings();
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const anotherDevice = devices.find(device => {
-      return device.kind == "videoinput" && device.groupId != groupId;
+    const anotherDevice = devices.find((kind, groupId) => {
+      return kind == "videoinput" && groupId != settings.groupId;
     });
     if (anotherDevice !== undefined) {
       try {

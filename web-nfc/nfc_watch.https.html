@@ -7,37 +7,59 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/nfc_help.js"></script>
 
-<div id="log"></div>
-
 <script>
 
 "use strict";
 
-promise_test(t => {
-  return promise_rejects(t, 'NotFoundError', navigator.nfc.cancelWatch(1));
-}, "Test that nfc.cancelWatch fails if invalid watch ID is provided.");
+promise_test(async t => {
+  const invalidSignals = [
+    'string',
+    123,
+    false,
+    {},
+    Symbol(),
+    () => {},
+    self,
+  ];
+
+  for (const signal of invalidSignals) {
+    await promise_rejects(
+      t, new TypeError(),
+      navigator.nfc.watch(noop, {signal: signal}));
+  }
+}, 'Test that the signal option must be an AbortSignal.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  controller.abort();
+
+  await promise_rejects(
+    t, 'AbortError',
+    navigator.nfc.watch(noop, {signal: controller.signal}));
+}, 'Test that passing an already aborted signal should abort.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+
+  await promise_rejects(
+    t, 'AbortError',
+    new Promise(resolve => {
+      navigator.nfc.watch(noop, {signal: controller.signal});
+      controller.abort();
+      resolve();
+    }));
+}, 'Test that an aborted request results in AbortError.');
 
 promise_test(t => {
-  return promise_rejects(t, 'NotFoundError', navigator.nfc.cancelWatch());
-}, "Test that nfc.cancelWatch fails if there are no active watchers.");
+  const controller = new AbortController();
+
+  assert_false(controller.signal.aborted);
+  return navigator.nfc.watch(noop, {signal: controller.signal});
+}, 'Test that no exception occurs if signal is not aborted.');
 
 promise_test(t => {
-  return navigator.nfc.watch(noop).then(id => {
-    assert_equals(typeof(id), "number");
-    assert_greater_than(id, 0, "greater than zero");
-  });
-}, "Test that nfc watch success if NFC HW is enable.");
-
-promise_test(t => {
-  return navigator.nfc.watch(noop).
-      then(id => navigator.nfc.cancelWatch(id));
-}, "Test that nfc.cancelWatch succeeds if correct watch id is provided.");
-
-promise_test(t => {
-  return navigator.nfc.watch(noop).then(() => {
-    navigator.nfc.cancelWatch();
-  });
-}, "Test that nfc.cancelWatch succeeds if there are active watchers.");
+  return navigator.nfc.watch(noop);
+}, "Test that nfc watch succeeds if NFC HW is enable.");
 
 promise_test(t => {
   return promise_rejects(t, 'SyntaxError', navigator.nfc.watch(noop, {url:"www.a.com"}));

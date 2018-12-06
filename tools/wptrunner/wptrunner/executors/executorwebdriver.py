@@ -115,9 +115,8 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                 target['targetId']
             )
 
-            if session.execute_script('return !!window.opener;'):
+            if session.execute_script('return window.name;') == window_id:
                 break
-
         else:
             raise Exception('Could not locate test window')
 

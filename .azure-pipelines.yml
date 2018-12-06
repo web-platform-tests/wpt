@@ -148,6 +148,8 @@ jobs:
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
+  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
+    displayName: 'Install web-platform.test certificate'
   - script: |
       rd /s /q "$(Agent.ToolsDirectory)"
       xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
@@ -182,7 +184,5 @@ jobs:
     displayName: 'Show user info'
   - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
     displayName: 'Install web-platform.test certificate'
-    condition: succeededOrFailed()
   - script: msiexec /i python-2.7.15.amd64.msi TARGETDIR="C:\myfolder" /qb
     displayName: 'Install Python 2.7'
-    condition: succeededOrFailed()

@@ -28,5 +28,25 @@ promise_test(async t => {
     assert_not_equals(pipWindow.width, 0);
     assert_not_equals(pipWindow.height, 0);
   });
-}, 'request Picture-in-Picture resolves on user click with Picture-in-Picture window');
+}, 'request Picture-in-Picture with canvas resolves on user click with Picture-in-Picture window');
+
+promise_test(async t => {
+  const video = document.createElement('video');
+  video.muted = true;
+  video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+  await video.play();
+  return requestPictureInPictureWithTrustedClick(video)
+  .then(pipWindow => {
+    assert_not_equals(pipWindow.width, 0);
+    assert_not_equals(pipWindow.height, 0);
+  });
+}, 'request Picture-in-Picture with getUserMedia resolves on user click with Picture-in-Picture window');
+
+promise_test(async t => {
+  const video = document.createElement('video');
+  video.muted = true;
+  video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+  await video.play();
+  return video.requestPictureInPicture();
+}, 'request Picture-in-Picture does not require user gesture if document is capturing user media');
 </script>

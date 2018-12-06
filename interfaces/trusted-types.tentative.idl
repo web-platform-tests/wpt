@@ -2,7 +2,7 @@
 
 typedef (DOMString or TrustedHTML) HTMLString;
 typedef (DOMString or TrustedScript) ScriptString;
-typedef (DOMString or TrustedScriptURL) ScriptURLString;
+typedef (USVString or TrustedScriptURL) ScriptURLString;
 typedef (USVString or TrustedURL) URLString;
 
 [Exposed=(Window, Worker)]
@@ -37,8 +37,8 @@ interface TrustedTypePolicy {
     [Unforgeable] readonly attribute DOMString name;
     [Unforgeable] TrustedHTML createHTML(DOMString input);
     [Unforgeable] TrustedScript createScript(DOMString input);
-    [Unforgeable] TrustedScriptURL createScriptURL(DOMString input);
-    [Unforgeable] TrustedURL createURL(DOMString input);
+    [Unforgeable] TrustedScriptURL createScriptURL(USVString input);
+    [Unforgeable] TrustedURL createURL(USVString input);
 };
 
 dictionary TrustedTypePolicyOptions {
@@ -50,4 +50,4 @@ dictionary TrustedTypePolicyOptions {
 
 callback CreateHTMLCallback = DOMString (DOMString input);
 callback CreateScriptCallback = DOMString (DOMString input);
-callback CreateURLCallback = USVString (DOMString input);
+callback CreateURLCallback = USVString (USVString input);

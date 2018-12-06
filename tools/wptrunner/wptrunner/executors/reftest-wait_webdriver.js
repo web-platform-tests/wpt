@@ -1,6 +1,11 @@
 var callback = arguments[arguments.length - 1];
 
 function root_wait() {
+  if (document.readyState != "complete") {
+    setTimeout(root_wait, 10);
+    return;
+  }
+
   if (!root.classList.contains("reftest-wait")) {
     observer.disconnect();
 
@@ -37,8 +42,4 @@ var observer = new MutationObserver(root_wait);
 
 observer.observe(root, {attributes: true});
 
-if (document.readyState != "complete") {
-    onload = root_wait;
-} else {
-    root_wait();
-}
+root_wait();

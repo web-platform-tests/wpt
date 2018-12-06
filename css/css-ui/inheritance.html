@@ -32,7 +32,6 @@
 <script>
 const mediumWidth = getComputedStyle(reference).borderTopWidth; // e.g. 3px
 const currentColor = getComputedStyle(reference).color;
-const invertBackgroundColor = 'rgb(255, 255, 0)';
 
 assert_not_inherited('appearance', 'auto', 'none');
 assert_inherited('caret-color', currentColor, 'rgba(42, 53, 64, 0.75)');
@@ -43,7 +42,7 @@ assert_not_inherited('nav-left', 'auto', '#foo');
 assert_not_inherited('nav-right', 'auto', '#foo');
 assert_not_inherited('nav-up', 'auto', '#foo');
 if (CSS.supports('outline-color', 'invert'))
-  assert_not_inherited('outline-color', invertBackgroundColor, 'rgba(42, 53, 64, 0.75)');
+  assert_not_inherited('outline-color', 'invert', 'rgba(42, 53, 64, 0.75)');
 else
   assert_not_inherited('outline-color', currentColor, 'rgba(42, 53, 64, 0.75)');
 assert_not_inherited('outline-offset', '0px', '10px');

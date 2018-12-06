@@ -100,9 +100,21 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.session.execute_script(self.runner_script % format_map)
 
     def close_old_windows(self):
-        targets = [target for target in self.session.targets() if target['targetId'] != self.session.target_id]
-        for target in targets:
-            self.session.close_target(target['targetId'])
+        for target in self.session.targets():
+            if target['type'] != 'page':
+                continue
+            if target['targetId'] == self.session.target_id:
+                continue
+
+            # The `Target.closeTarget` method appears to be the canonical way
+            # to close targets of all types. However, existing references to
+            # windows closed in this way exhibit behavior which interferes with
+            # the test scheduling.
+            # TODO(jugglinmike): determine exactly how the semantics of
+            # `Target.closeTarget` differ from WebDriver's "Close Window"
+            # command and HTML's `close` function.
+            page = self.session.connection.create_session(target['targetId'])
+            page.evaluate('close();')
 
         return self.session
 

@@ -95,12 +95,6 @@ class Session(object):
 
         return result['result']
 
-    def close_target(self, target_id):
-        return self._send(
-            'Target.closeTarget', # API status: stable
-            {'targetId': target_id}
-        )
-
     def evaluate(self, source):
         result = self._send('Runtime.evaluate', { # API status: stable
             'expression': source

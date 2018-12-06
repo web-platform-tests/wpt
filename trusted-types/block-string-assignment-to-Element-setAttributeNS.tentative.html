@@ -4,11 +4,12 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
-
-  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
 </head>
 <body>
 <script>
+  run_tests_in_child_frame(
+  '<meta http-equiv="Content-Security-Policy" content="trusted-types *">',
+  () => {
     test(t => {
       assert_element_accepts_trusted_html_set_ns(window, '0', t, 'a', 'b', RESULTS.HTML);
     }, "Element.setAttributeNS assigned via policy (successful HTML transformation)");
@@ -32,4 +33,5 @@
     test(t => {
       assert_throws_no_trusted_type_set_ns('a', 'b', null);
     }, "`Element.setAttributeNS = null` throws");
+  });
 </script>

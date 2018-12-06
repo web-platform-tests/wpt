@@ -1,15 +1,20 @@
 <!DOCTYPE html>
+<head>
 <script src="/resources/testharness.js" ></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/helper.sub.js"></script>
-<meta http-equiv="Content-Security-Policy" content="trusted-types">
+</head>
 <body>
 <script>
-  //No name given test
-  test(t => {
-    assert_throws(new TypeError(), _ => {
-      window.TrustedTypes.createPolicy('SomeName', { createHTML: s => s } );
-    });
-  }, "No name list given - policy creation throws");
+  run_tests_in_child_frame(
+  '<meta http-equiv="Content-Security-Policy" content="trusted-types">',
+  () => {
+    //No name given test
+    test(t => {
+      assert_throws(new TypeError(), _ => {
+        window.TrustedTypes.createPolicy('SomeName', { createHTML: s => s } );
+      });
+    }, "No name list given - policy creation throws");
+  });
 </script>
 

@@ -187,3 +187,22 @@ function assert_element_accepts_non_trusted_type_set_ns(tag, attribute, value, e
   let attr_node = elem.getAttributeNodeNS(namespace, attribute);
   assert_equals(attr_node.value + "", expected);
 }
+
+function run_tests_in_child_frame(meta, tests) {
+  const frame = document.createElement('iframe');
+  frame.name = 'child-frame';
+  let srcdoc = meta;
+  // Add all scripts from the main document head, apart from testharnessreport.
+  [].slice.call(document.head.querySelectorAll('script[src]'))
+    .filter((script) => script.src.indexOf('testharnessreport') === -1)
+    .forEach((script) => {
+      srcdoc += '<script src="' + script.src + '"></sc' + 'ript>';
+    });
+  srcdoc += '<body><script>';
+  // Disabling string output in the harness as it clashes with TT-enforcing CSP.
+  srcdoc += 'setup({output: false});';
+  srcdoc += '(' + tests.toString() + ')()' + '</sc'+'ript>';
+  frame.srcdoc = srcdoc;
+  document.body.appendChild(frame);
+  fetch_tests_from_window(frame.contentWindow);
+}

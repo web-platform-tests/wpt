@@ -1,14 +1,19 @@
 <!DOCTYPE html>
+<head>
 <script src="/resources/testharness.js" ></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/helper.sub.js"></script>
-<meta http-equiv="Content-Security-Policy" content="trusted-types *">
+</head>
 <body>
 <script>
-  //No name given test
-  test(t => {
-    let policy = window.TrustedTypes.createPolicy('SomeName', { createHTML: s => s } );
-    assert_equals(policy.name, 'SomeName');
-  }, "Wildcard given - policy creation works");
+  run_tests_in_child_frame(
+  '<meta http-equiv="Content-Security-Policy" content="trusted-types *">',
+  () => {
+    //No name given test
+    test(t => {
+      let policy = window.TrustedTypes.createPolicy('SomeName', { createHTML: s => s } );
+      assert_equals(policy.name, 'SomeName');
+    }, "Wildcard given - policy creation works");
+  });
 </script>
 

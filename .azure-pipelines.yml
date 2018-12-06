@@ -104,6 +104,10 @@ jobs:
   pool:
     name: 'Hosted Windows Client'
   steps:
+  - script: systeminfo
+    displayName: 'Show system info'
+  - script: set username
+    displayName: 'Show user info'
   - template: tools/ci/azure/checkout.yml
   #- template: tools/ci/azure/pip_install.yml
   - script: |
@@ -143,11 +147,11 @@ jobs:
   pool:
     name: 'Hosted Windows Client'
   steps:
-  - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
+  - template: tools/ci/azure/checkout.yml
   - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
     displayName: 'Install web-platform.test certificate'
   - script: |
@@ -177,11 +181,11 @@ jobs:
   pool:
     name: 'Hosted Windows Client Next'
   steps:
-  - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
+  - template: tools/ci/azure/checkout.yml
   - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
     displayName: 'Install web-platform.test certificate'
   - script: msiexec /i python-2.7.15.amd64.msi TARGETDIR="C:\myfolder" /qb

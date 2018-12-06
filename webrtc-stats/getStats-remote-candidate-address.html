@@ -35,7 +35,7 @@ promise_test(async () => {
     });
 
     const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");
-    assert_equals(remoteCandidateStats.address, undefined, "address should remain undefined");
+    assert_equals(remoteCandidateStats.address, null, "address should be null");
 }, "Do not expose in stats remote addresses that are not known to be already exposed to JS");
 
 
@@ -70,7 +70,7 @@ promise_test(async () => {
     });
 
     const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");
-    assert_not_equals(remoteCandidateStats.address, undefined, "address should not be undefined");
+    assert_not_equals(remoteCandidateStats.address, null, "address should not be null");
 
 }, "Expose in stats remote addresses that are already exposed to JS");
 

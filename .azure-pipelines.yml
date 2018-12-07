@@ -112,6 +112,8 @@ jobs:
   #- template: tools/ci/azure/pip_install.yml
   - script: |
       msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb
+      dir C:\
+      dir C:\Python27
       echo "##vso[task.prependpath]C:\Python27"
       echo "##vso[task.prependpath]C:\Python27\Scripts"
     displayName: 'Install Python 2.7'

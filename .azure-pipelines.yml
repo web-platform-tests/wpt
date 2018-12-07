@@ -154,3 +154,4 @@ jobs:
       $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
     displayName: 'Restore hosts file'
+    condition: always()

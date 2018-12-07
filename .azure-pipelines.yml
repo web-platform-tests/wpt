@@ -117,8 +117,11 @@ jobs:
     displayName: 'Install Python 2.7'
   - script: python --version
     displayName: 'Show Python version'
+  - powershell: pip --disable-pip-version-check uninstall virtualenv -y
+    continueOnError: true
+    errorActionPreference: silentlyContinue
+    displayName: 'Cleanup Python packages'
   - powershell: |
-      pip --disable-pip-version-check uninstall virtualenv -y
       pip --disable-pip-version-check install --upgrade virtualenv
       Write-Host "Path = $env:path"
       cmd /c where python

@@ -97,10 +97,10 @@ jobs:
     parameters:
       directory: tools/wpt/
 
-- job: tools_unittest_win10
-  displayName: 'tools/ unittests (Windows 10)'
+- job: infrastructure_win10
+  displayName: 'infrastructure/ tests (Windows 10)'
   #dependsOn: root
-  #condition: dependencies.root.outputs['test_jobs.tools_unittest']
+  #condition: dependencies.root.outputs['test_jobs.wptrunner_infrastructure']
   pool:
     name: 'Hosted Windows Client'
   steps:

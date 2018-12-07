@@ -118,11 +118,12 @@ jobs:
   - script: python --version
     displayName: 'Show Python version'
   - powershell: |
-      pip --disable-pip-version-check install --upgrade --user virtualenv
+      pip --disable-pip-version-check install --upgrade virtualenv
       echo "##vso[task.prependpath]$env:appdata\Python\Scripts"
     displayName: 'Install Python packages'
   - powershell: |
-      echo %PATH%
+      set PATH
+      where virtualenv
       dir "C:\Users\localuser\AppData\Roaming\Python\Scripts"
       virtualenv --version
     displayName: 'Show virtualenv version'

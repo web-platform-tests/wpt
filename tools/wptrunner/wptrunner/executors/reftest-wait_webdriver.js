@@ -37,9 +37,19 @@ function ready_for_screenshot() {
   });
 }
 
-var root = document.documentElement;
-var observer = new MutationObserver(root_wait);
+var root, observer;
 
-observer.observe(root, {attributes: true});
+(function begin() {
+  root = document.documentElement;
 
-root_wait();
+  // This script may be evaluated before the document element is available.
+  if (!root) {
+    setTimeout(begin, 0);
+    return;
+  }
+  observer = new MutationObserver(root_wait);
+
+  observer.observe(root, {attributes: true});
+
+  root_wait();
+}());

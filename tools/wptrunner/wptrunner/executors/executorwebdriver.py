@@ -123,16 +123,13 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             if target['type'] != 'page':
                 continue
 
-            session = self.session.connection.create_session(
-                target['targetId']
-            )
+            # `openerId` is an optional attribute of TargetInfo objects
+            if target.get('openerId') == parent.target_id:
+                return self.session.connection.create_session(
+                    target['targetId']
+                )
 
-            if session.execute_script('return window.name;') == window_id:
-                break
-        else:
-            raise Exception('Could not locate test window')
-
-        return session
+        raise Exception('Could not locate test window')
 
 
 class WebDriverSelectorProtocolPart(SelectorProtocolPart):

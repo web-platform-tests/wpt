@@ -118,11 +118,9 @@ jobs:
   - script: python --version
     displayName: 'Show Python version'
   - powershell: |
-      pip --disable-pip-version-check install --upgrade --user virtualenv
-      Write-Host "##vso[task.prependpath]$env:appdata\Python\Scripts"
+      pip --disable-pip-version-check install --upgrade virtualenv
+      Write-Host "Path = $env:path"
     displayName: 'Install Python packages'
-  - script: virtualenv --version
-    displayName: 'Show virtualenv version'
   #- template: tools/ci/azure/install_fonts.yml
   #- template: tools/ci/azure/install_certs.yml
   - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem

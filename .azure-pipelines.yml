@@ -143,11 +143,13 @@ jobs:
       Copy-Item -Path $hostFile -Destination "$hostFile.back" -Force
       python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
     displayName: 'Update hosts'
+  - script: git clean -fdx
+    displayName: 'Git clean'
   #- template: tools/ci/azure/update_manifest.yml
-  - script: python ./wpt manifest
+  - script: runas /user:TestRunner python ./wpt manifest
     displayName: 'Update manifest'
     continueOnError: true
-  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level debug edge_webdriver infrastructure/
+  - script: runas /user:TestRunner python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level debug edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
     continueOnError: true
   - powershell: |

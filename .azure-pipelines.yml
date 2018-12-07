@@ -110,14 +110,19 @@ jobs:
   - script: set username
     displayName: 'Show user info'
   #- template: tools/ci/azure/pip_install.yml
-  - script: rd /s /q "$(Agent.ToolsDirectory)"
-    displayName: 'Delete tools'
-  - script: msiexec /i python-2.7.15.amd64.msi /qb
+  - script: |
+      msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb
+      echo "##vso[task.prependpath]C:\Python27"
+      echo "##vso[task.prependpath]C:\Python27\Scripts"
     displayName: 'Install Python 2.7'
   - script: python --version
     displayName: 'Show Python version'
-  - script: pip install --upgrade --user virtualenv
+  - script: |
+      pip install --upgrade --user virtualenv
+      echo "##vso[task.prependpath]%AppData%\Python\Scripts"
     displayName: 'Install Python packages'
+  - script: virtualenv --version
+    displayName: 'Show virtualenv version'
   #- template: tools/ci/azure/install_fonts.yml
   #- template: tools/ci/azure/install_certs.yml
   - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem

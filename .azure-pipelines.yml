@@ -109,8 +109,7 @@ jobs:
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
-  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
-    displayName: 'Install web-platform.test certificate'
+  #- template: tools/ci/azure/pip_install.yml
   - script: |
       rd /s /q "$(Agent.ToolsDirectory)"
       xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
@@ -120,13 +119,19 @@ jobs:
       versionSpec: '2.7'
       addToPath: true
     displayName: 'Use Python 2.7'
-  - script: pip install --upgrade --user tox
+  - script: pip install --upgrade --user virtualenv
     displayName: 'Install Python packages'
-  - script: python -m tox -c tools/ -e py27 -- --junitxml=results.xml
-    displayName: 'Run tests'
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFiles: tools/results.xml
-      testRunTitle: tools
-    displayName: 'Publish results'
-    condition: succeededOrFailed()
+  #- template: tools/ci/azure/install_fonts.yml
+  #- template: tools/ci/azure/install_certs.yml
+  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
+    displayName: 'Install web-platform.test certificate'
+  #- template: tools/ci/azure/install_chrome.yml
+  #- template: tools/ci/azure/install_firefox.yml
+  #- template: tools/ci/azure/update_hosts.yml
+  - powershell: python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
+    displayName: 'Update hosts'
+  #- template: tools/ci/azure/update_manifest.yml
+  - script: python ./wpt manifest
+    displayName: 'Update manifest'
+  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ edge_webdriver infrastructure/
+    displayName: 'Run tests (Edge)'

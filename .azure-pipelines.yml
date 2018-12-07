@@ -129,7 +129,7 @@ jobs:
   #- template: tools/ci/azure/install_firefox.yml
   #- template: tools/ci/azure/update_hosts.yml
   - powershell: |
-      $hostFile = $env:systemroot\System32\drivers\etc\hosts
+      $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path $hostFile -Destination "$hostFile.back" -Force
       python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
     displayName: 'Update hosts'
@@ -139,6 +139,6 @@ jobs:
   - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
   - powershell: |
-      $hostFile = $env:systemroot\System32\drivers\etc\hosts
+      $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
     displayName: 'Restore hosts file'

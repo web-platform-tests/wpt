@@ -1,0 +1,271 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCDataChannel DCEP</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+// Disable global timeout
+// IMPORTANT: You need to add a timeout to *every test* of this file!
+setup({ explicit_timeout: true });
+
+// Test is based on the following revision:
+// https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
+
+/*
+  Check that DCEP-negotiated data channels transmit all options correctly.
+  See: https://tools.ietf.org/html/draft-ietf-rtcweb-data-protocol-09
+
+  Note: Some of these tests may seem redundant on first sight but if you take a look at
+        the channel types defined by DCEP, they should make sense to you.
+ */
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  // DATA_CHANNEL_RELIABLE (0x00)
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelOptions: { ordered: true }
+  });
+
+  assert_equals(dc1.ordered, true);
+  assert_equals(dc2.ordered, true);
+}, 'Ordered and reliable channel should be created via DCEP', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  // DATA_CHANNEL_RELIABLE_UNORDERED (0x80)
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelOptions: { ordered: false }
+  });
+
+  assert_equals(dc1.ordered, false);
+  assert_equals(dc2.ordered, false);
+}, 'Unordered and reliable channel should be created via DCEP', {
+  timeout: 5000
+});
+
+// Note: The value may be clamped for these parameters.
+const reliabilityParameters = [
+  [undefined, null],
+  [null, null],
+  [0, 0],
+  [65535, 65535],
+  [4294967295, 65535],
+];
+
+for (const [reliabilityParameter, expectedReliabilityParameter] of reliabilityParameters) {
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT (0x01)
+    const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: true,
+        maxRetransmits: reliabilityParameter
+      }
+    });
+
+    assert_equals(dc1.ordered, true);
+    assert_equals(dc2.ordered, true);
+    assert_equals(dc1.maxRetransmits, expectedReliabilityParameter);
+    assert_equals(dc2.maxRetransmits, expectedReliabilityParameter);
+  },`Ordered and unreliable (maxRetransmits=${reliabilityParameter}) channel should be created
+   via DCEP`, {
+    timeout: 5000
+  });
+
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // DATA_CHANNEL_PARTIAL_RELIABLE_REXMIT_UNORDERED (0x81)
+    const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: false,
+        maxRetransmits: reliabilityParameter
+      }
+    });
+
+    assert_equals(dc1.ordered, false);
+    assert_equals(dc2.ordered, false);
+    assert_equals(dc1.maxRetransmits, expectedReliabilityParameter);
+    assert_equals(dc2.maxRetransmits, expectedReliabilityParameter);
+  }, `Unordered and unreliable (maxRetransmits=${reliabilityParameter}) channel should be created
+  via DCEP`, {
+    timeout: 5000
+  });
+
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED (0x02)
+    const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: true,
+        maxPacketLifeTime: reliabilityParameter
+      }
+    });
+
+    assert_equals(dc1.ordered, true);
+    assert_equals(dc2.ordered, true);
+    assert_equals(dc1.maxPacketLifeTime, expectedReliabilityParameter);
+    assert_equals(dc2.maxPacketLifeTime, expectedReliabilityParameter);
+  }, `Ordered and unreliable (maxPacketLifeTime=${reliabilityParameter}) channel should be
+  created via DCEP`, {
+    timeout: 5000
+  });
+
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    // DATA_CHANNEL_PARTIAL_RELIABLE_TIMED_UNORDERED (0x82)
+    const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+      channelOptions: {
+        ordered: false,
+        maxPacketLifeTime: reliabilityParameter
+      }
+    });
+
+    assert_equals(dc1.ordered, false);
+    assert_equals(dc2.ordered, false);
+    assert_equals(dc1.maxPacketLifeTime, expectedReliabilityParameter);
+    assert_equals(dc2.maxPacketLifeTime, expectedReliabilityParameter);
+  }, `Unordered and unreliable (maxPacketLifeTime=${reliabilityParameter}) channel should be
+  created via DCEP`, {
+    timeout: 5000
+  });
+}
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelOptions: {
+      priority: 'high'
+    }
+  });
+
+  assert_equals(dc1.priority, 'high');
+  assert_equals(dc2.priority, 'high');
+}, 'Channel with priority set to high should be created via DCEP', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+
+  assert_greater_than_equal(dc1.id, 0, 'Expect id to be >= 0');
+  assert_less_than(dc1.id, 65535, 'Expect id to be < 65535');
+  assert_equals(dc1.id, dc2.id);
+}, 'Channel IDs should be synchronized when created via DCEP', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const label = '';
+  const protocol = '';
+
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelLabel: label,
+    channelOptions: {
+      protocol: protocol
+    }
+  });
+
+  assert_equals(dc1.label, label);
+  assert_equals(dc2.label, label);
+  assert_equals(dc1.protocol, protocol);
+  assert_equals(dc2.protocol, protocol);
+}, 'Zero length label and protocol option should be transmitted via DCEP', {
+  timeout: 5000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const label = 'l'.repeat(65535);
+  const protocol = 'p'.repeat(65535);
+
+  t.step_timeout(() => assert_unreached('Channel did not open in time'), 5000);
+
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelLabel: label,
+    channelOptions: {
+      protocol: protocol
+    }
+  });
+
+  assert_equals(dc1.label, label);
+  assert_equals(dc2.label, label);
+  assert_equals(dc1.protocol, protocol);
+  assert_equals(dc2.protocol, protocol);
+}, 'Maximum length label and protocol option should be transmitted via DCEP', {
+  timeout: 10000
+});
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  const label = '\u2022'.repeat(21845);
+  const protocol = '\u20AC'.repeat(21845);
+
+  t.step_timeout(() => assert_unreached('Channel did not open in time'), 5000);
+
+  const [dc1, dc2] = await createDataChannelPair(pc1, pc2, {
+    channelLabel: label,
+    channelOptions: {
+      protocol: protocol
+    }
+  });
+
+  assert_equals(dc1.label, label);
+  assert_equals(dc2.label, label);
+  assert_equals(dc1.protocol, protocol);
+  assert_equals(dc2.protocol, protocol);
+}, 'Maximum length label and protocol option (3 byte unicode) should be transmitted via DCEP', {
+  timeout: 10000
+});
+
+</script>

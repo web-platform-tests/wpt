@@ -118,8 +118,11 @@ jobs:
   - script: python --version
     displayName: 'Show Python version'
   - powershell: |
+      pip --disable-pip-version-check uninstall virtualenv -y
       pip --disable-pip-version-check install --upgrade virtualenv
       Write-Host "Path = $env:path"
+      cmd /c where python
+      cmd /c where virtualenv
     displayName: 'Install Python packages'
   #- template: tools/ci/azure/install_fonts.yml
   #- template: tools/ci/azure/install_certs.yml

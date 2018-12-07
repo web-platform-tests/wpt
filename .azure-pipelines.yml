@@ -97,45 +97,6 @@ jobs:
     parameters:
       directory: tools/wpt/
 
-- job: infrastructure_win10
-  displayName: 'infrastructure/ tests (Windows 10)'
-  #dependsOn: root
-  #condition: dependencies.root.outputs['test_jobs.wptrunner_infrastructure']
-  pool:
-    name: 'Hosted Windows Client'
-  steps:
-  - template: tools/ci/azure/checkout.yml
-  #- template: tools/ci/azure/pip_install.yml
-  - script: |
-      rd /s /q "$(Agent.ToolsDirectory)"
-      xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
-    displayName: 'Update tools'
-    condition: succeededOrFailed()
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7'
-      addToPath: true
-    displayName: 'Use Python 2.7'
-    condition: succeededOrFailed()
-  - script: pip install --upgrade --user virtualenv
-    displayName: 'Install Python packages'
-    condition: succeededOrFailed()
-  #- template: tools/ci/azure/install_fonts.yml
-  #- template: tools/ci/azure/install_certs.yml
-  #- template: tools/ci/azure/install_chrome.yml
-  #- template: tools/ci/azure/install_firefox.yml
-  #- template: tools/ci/azure/update_hosts.yml
-  - powershell: python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
-    displayName: 'Update hosts'
-    condition: succeededOrFailed()
-  #- template: tools/ci/azure/update_manifest.yml
-  - script: python ./wpt manifest
-    displayName: 'Update manifest'
-    condition: succeededOrFailed()
-  - script: python ./wpt run --yes --no-manifest-update --manifest MANIFEST.json --metadata infrastructure/metadata/ edge_webdriver infrastructure/
-    displayName: 'Run tests (Edge)'
-    condition: succeededOrFailed()
-
 - job: tools_unittest_win10
   displayName: 'tools/ unittests (Windows 10)'
   #dependsOn: root
@@ -169,20 +130,3 @@ jobs:
       testRunTitle: tools
     displayName: 'Publish results'
     condition: succeededOrFailed()
-
-- job: tools_unittest_win10_preview
-  displayName: 'tools/ unittests (Windows 10 Insider Preview)'
-  #dependsOn: root
-  #condition: dependencies.root.outputs['test_jobs.tools_unittest']
-  pool:
-    name: 'Hosted Windows Client Next'
-  steps:
-  - template: tools/ci/azure/checkout.yml
-  - script: systeminfo
-    displayName: 'Show system info'
-  - script: set username
-    displayName: 'Show user info'
-  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
-    displayName: 'Install web-platform.test certificate'
-  - script: msiexec /i python-2.7.15.amd64.msi TARGETDIR="C:\myfolder" /qb
-    displayName: 'Install Python 2.7'

@@ -45,46 +45,43 @@ a=ssrc:1 cname:1
 a=ssrc:1 msid:1 1
 `;
 
-async function applyRemoteDescriptionAndReturnTrackEventStreams(test, pc, sdp)
+async function applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp)
 {
-    let testTrackPromise = new Promise((resolve, reject) => {
-        pc.ontrack = (event) => {
-            resolve(event.streams ? event.streams : []);
-        }
-        test.step_timeout(() => { reject("No track event fired") }, 5000);
+    const testTrackPromise = new Promise(resolve  => {
+        pc.ontrack = (event) => { resolve([event.track, event.streams]); };
     });
-    await pc.setRemoteDescription({type: 'offer', 'sdp': sdp});
+    await pc.setRemoteDescription({type: 'offer', sdp: sdp});
     return testTrackPromise;
 }
 
 promise_test(async test => {
     const pc = new RTCPeerConnection();
 
-    let streams = await applyRemoteDescriptionAndReturnTrackEventStreams(test, pc, sdp0);
-
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-
-    streams = await applyRemoteDescriptionAndReturnTrackEventStreams(test, pc, sdp1);
+    const [track, streams] = await applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp1);
     assert_equals(streams.length, 1, "track event has a stream");
     assert_equals(streams[0].id, "1", "msid should match");
-}, "Applying a remote description with a new msid should trigger firing an event with populated streams");
+    const stream = streams[0];
+
+    await pc.setLocalDescription(await pc.createAnswer());
+
+    const testTrackPromise = new Promise((resolve) => { stream.onremovetrack = resolve; });
+    await pc.setRemoteDescription({type: 'offer', 'sdp': sdp0});
+    await testTrackPromise;
+
+    assert_equals(stream.getAudioTracks().length, 0, "stream should be empty");
+}, "Applying a remote description with removed msid should trigger firing a removetrack event on the corresponding stream");
 
 promise_test(async test => {
     const pc = new RTCPeerConnection();
 
-    let streams = await applyRemoteDescriptionAndReturnTrackEventStreams(test, pc, sdp1);
-    assert_equals(streams.length, 1, "track event has a stream");
-    assert_equals(streams[0].id, "1", "msid should match");
+    let [track0, streams0] = await applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp0);
 
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
+    await pc.setLocalDescription(await pc.createAnswer());
 
-    let testTrackPromise = new Promise((resolve, reject) => {
-        streams[0].onremovetrack = resolve;
-        test.step_timeout(() => { reject("No removetrack event fired") }, 5000);
-    });
-    await pc.setRemoteDescription({type: 'offer', 'sdp': sdp0});
-    await testTrackPromise;
-}, "Applying a remote description with removed msid should trigger firing a removetrack event on the corresponding stream");
+    let [track1, streams1] = await applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp1);
+
+    assert_equals(streams1.length, 1, "track event has a stream");
+    assert_equals(streams1[0].id, "1", "msid should match");
+    assert_equals(streams1[0].getTracks()[0], track0, "track should match");
+}, "Applying a remote description with a new msid should trigger firing an event with populated streams");
 </script>

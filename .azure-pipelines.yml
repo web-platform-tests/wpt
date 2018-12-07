@@ -121,8 +121,9 @@ jobs:
       pip --disable-pip-version-check install --upgrade --user virtualenv
       echo "##vso[task.prependpath]$env:appdata\Python\Scripts"
     displayName: 'Install Python packages'
-  - script: |
+  - powershell: |
       echo %PATH%
+      dir "C:\Users\localuser\AppData\Roaming\Python\Scripts"
       virtualenv --version
     displayName: 'Show virtualenv version'
   #- template: tools/ci/azure/install_fonts.yml

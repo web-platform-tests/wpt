@@ -110,15 +110,12 @@ jobs:
   - script: set username
     displayName: 'Show user info'
   #- template: tools/ci/azure/pip_install.yml
-  - script: |
-      rd /s /q "$(Agent.ToolsDirectory)"
-      xcopy /s /i "agent\_work\_tool" "$(Agent.ToolsDirectory)"
-    displayName: 'Update tools'
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '2.7'
-      addToPath: true
-    displayName: 'Use Python 2.7'
+  - script: rd /s /q "$(Agent.ToolsDirectory)"
+    displayName: 'Delete tools'
+  - script: msiexec /i python-2.7.15.amd64.msi
+    displayName: 'Install Python 2.7'
+  - script: python --version
+    displayName: 'Show Python version'
   - script: pip install --upgrade --user virtualenv
     displayName: 'Install Python packages'
   #- template: tools/ci/azure/install_fonts.yml

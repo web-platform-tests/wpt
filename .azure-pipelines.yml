@@ -109,11 +109,6 @@ jobs:
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
-  - script: net user /add TestRunner password
-    displayName: 'Create user'
-    continueOnError: true
-  - script: runas /user:TestRunner dir
-    displayName: 'Use TestRunner'
   #- template: tools/ci/azure/pip_install.yml
   - powershell: |
       msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb
@@ -156,3 +151,5 @@ jobs:
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
     displayName: 'Restore hosts file'
     condition: always()
+    continueOnError: true
+    errorActionPreference: silentlyContinue

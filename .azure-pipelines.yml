@@ -112,19 +112,19 @@ jobs:
   #- template: tools/ci/azure/pip_install.yml
   - powershell: |
       msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb
-      echo "##vso[task.prependpath]C:\Python27"
-      echo "##vso[task.prependpath]C:\Python27\Scripts"
+      Write-Host "##vso[task.prependpath]C:\Python27"
+      Write-Host "##vso[task.prependpath]C:\Python27\Scripts"
     displayName: 'Install Python 2.7'
   - script: python --version
     displayName: 'Show Python version'
   - powershell: |
-      pip --disable-pip-version-check install --upgrade virtualenv
-      echo "##vso[task.prependpath]$env:appdata\Python\Scripts"
+      pip --disable-pip-version-check install --upgrade --user virtualenv
+      Write-Host "##vso[task.prependpath]$env:appdata\Python\Scripts"
     displayName: 'Install Python packages'
   - powershell: |
-      set PATH
-      where virtualenv
+      Write-Host $env:PATH
       dir "C:\Users\localuser\AppData\Roaming\Python\Scripts"
+      cmd /c where virtualenv
       virtualenv --version
     displayName: 'Show virtualenv version'
   #- template: tools/ci/azure/install_fonts.yml
@@ -134,10 +134,17 @@ jobs:
   #- template: tools/ci/azure/install_chrome.yml
   #- template: tools/ci/azure/install_firefox.yml
   #- template: tools/ci/azure/update_hosts.yml
-  - powershell: python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
+  - powershell: |
+      $hostFile = $env:systemroot\System32\drivers\etc\hosts
+      Copy-Item -Path $hostFile -Destination "$hostFile.back" -Force
+      python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
     displayName: 'Update hosts'
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt manifest
     displayName: 'Update manifest'
   - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
+  - powershell: |
+      $hostFile = $env:systemroot\System32\drivers\etc\hosts
+      Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
+    displayName: 'Restore hosts file'

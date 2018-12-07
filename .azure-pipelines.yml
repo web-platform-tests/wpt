@@ -109,6 +109,10 @@ jobs:
     displayName: 'Show system info'
   - script: set username
     displayName: 'Show user info'
+  - script: net user /add TestRunner password
+    displayName: 'Create user'
+  - script: runas /user:TestRunner set username
+    displayName: 'Show new user info'
   #- template: tools/ci/azure/pip_install.yml
   - powershell: |
       msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb

@@ -40,16 +40,16 @@
       mediaList = styleSheet.media;
     }
 
-
+    // MediaList.mediaText equals the 'media' value of the initial 'style' element.
     test(function() {
         setup();
 
         assert_equals(mediaList.mediaText, "all");
 
     }, "mediatest_medialist_serialize_element",
-    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serializing-media-queries"],
-      assert: ["MediaList.mediaText equals the 'media' value of the initial 'style' element."] });
+    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serializing-media-queries"]});
 
+    // To serialize a comma-separated list concatenate all items of the list in list order while separating them by \",\" (U+002C), followed by a space (U+0020).
     test(function() {
       setup();
 
@@ -57,9 +57,9 @@
       assert_equals(mediaList.mediaText, "all, screen");
 
     }, "mediatest_medialist_serialize_comma",
-    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serialize-a-media-query-list"],
-      assert: ["To serialize a comma-separated list concatenate all items of the list in list order while separating them by \",\" (U+002C), followed by a space (U+0020)."] });
+    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serialize-a-media-query-list"]});
 
+    // If the media query list is empty return the empty string.
     test(function() {
       setup();
 
@@ -67,9 +67,9 @@
       assert_equals(mediaList.mediaText, "");
 
     }, "mediatest_medialist_serialize_empty",
-    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serializing-media-queries"],
-      assert: ["If the media query list is empty return the empty string."] });
+    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serializing-media-queries"]});
 
+    // Each media query should be sorted in the same order as they appear in the list of media queries.
     test(function() {
       setup();
 
@@ -78,8 +78,7 @@
       assert_equals(mediaList.mediaText, "all, screen, print");
 
     }, "mediatest_medialist_serialize_order",
-    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serialize-a-media-query-list"],
-      assert: ["Each media query should be sorted in the same order as they appear in the list of media queries."] });
+    { help: ["http://www.w3.org/TR/cssom-1/#the-medialist-interface", "http://www.w3.org/TR/cssom-1/#serialize-a-media-query-list"]});
 
   </script>
  </body>

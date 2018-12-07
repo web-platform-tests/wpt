@@ -257,51 +257,105 @@ function doSignalingHandshake(localPc, remotePc, options={}) {
 // end points to open.
 function createDataChannelPair(
   pc1=new RTCPeerConnection(),
-  pc2=new RTCPeerConnection())
+  pc2=new RTCPeerConnection(),
+  options={})
 {
-  const channel1 = pc1.createDataChannel('');
+  options = Object.assign({}, {
+    channelLabel: '',
+    channelOptions: undefined,
+    doSignaling: true
+  }, options);
 
-  exchangeIceCandidates(pc1, pc2);
+  let channel1Options;
+  let channel2Options = null;
+  if (options.channelOptions instanceof Array) {
+    [channel1Options, channel2Options] = options.channelOptions;
+  } else {
+    channel1Options = options.channelOptions;
+  }
+
+  const channel1 = pc1.createDataChannel(options.channelLabel, channel1Options);
 
   return new Promise((resolve, reject) => {
     let channel2;
     let opened1 = false;
     let opened2 = false;
 
+    function cleanup() {
+      channel1.removeEventListener('open', onOpen1);
+      channel2.removeEventListener('open', onOpen2);
+      channel1.removeEventListener('error', onError);
+      channel2.removeEventListener('error', onError);
+    }
+
     function onBothOpened() {
+      cleanup();
       resolve([channel1, channel2]);
+    }
+
+    function onError(...args) {
+      cleanup();
+      reject(...args);
     }
 
     function onOpen1() {
       opened1 = true;
-      if(opened2) onBothOpened();
+      if (opened2) {
+        onBothOpened();
+      }
     }
 
     function onOpen2() {
       opened2 = true;
-      if(opened1) onBothOpened();
-    }
-
-    function onDataChannel(event) {
-      channel2 = event.channel;
-      channel2.addEventListener('error', reject);
-      const { readyState } = channel2;
-
-      if(readyState === 'open') {
-        onOpen2();
-      } else if(readyState === 'connecting') {
-        channel2.addEventListener('open', onOpen2);
-      } else {
-        reject(new Error(`Unexpected ready state ${readyState}`));
+      if (opened1) {
+        onBothOpened();
       }
     }
 
-    channel1.addEventListener('open', onOpen1);
-    channel1.addEventListener('error', reject);
+    function onDataChannelPairFound() {
+      channel2.addEventListener('error', onError, { once: true });
+      const { readyState } = channel2;
 
-    pc2.addEventListener('datachannel', onDataChannel);
+      if (readyState === 'open') {
+        onOpen2();
+      } else if (readyState === 'connecting') {
+        channel2.addEventListener('open', onOpen2, { once: true });
+      } else {
+        onError(new Error(`Unexpected ready state ${readyState}`));
+      }
+    }
 
-    doSignalingHandshake(pc1, pc2);
+    function onDataChannel(event) {
+      const channel = event.channel;
+
+      // Keep this check. Will prevent finding pairs where both local and remote
+      // id are not an integer (e.g. null).
+      if (!Number.isInteger(channel.id)) {
+        return;
+      }
+
+      if (channel.id !== channel1.id) {
+        return;
+      }
+
+      channel2 = channel;
+      onDataChannelPairFound();
+    }
+
+    channel1.addEventListener('open', onOpen1, { once: true });
+    channel1.addEventListener('error', onError, { once: true });
+
+    if (channel2Options !== null) {
+      channel2 = pc2.createDataChannel(options.channelLabel, channel2Options);
+      onDataChannelPairFound();
+    } else {
+      pc2.addEventListener('datachannel', onDataChannel);
+    }
+
+    if (options.doSignaling) {
+      exchangeIceCandidates(pc1, pc2);
+      doSignalingHandshake(pc1, pc2, options);
+    }
   });
 }
 

@@ -119,7 +119,7 @@ jobs:
     displayName: 'Show Python version'
   - powershell: |
       pip --disable-pip-version-check install --upgrade --user virtualenv
-      echo "##vso[task.prependpath]env:appdata\Python\Scripts"
+      echo "##vso[task.prependpath]$env:appdata\Python\Scripts"
     displayName: 'Install Python packages'
   - script: |
       echo %PATH%

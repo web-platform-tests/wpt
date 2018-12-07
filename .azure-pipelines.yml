@@ -117,7 +117,9 @@ jobs:
       echo "##vso[task.prependpath]C:\Python27"
       echo "##vso[task.prependpath]C:\Python27\Scripts"
     displayName: 'Install Python 2.7'
-  - script: python --version
+  - script: |
+      echo %PATH%
+      python --version
     displayName: 'Show Python version'
   - script: |
       pip install --upgrade --user virtualenv

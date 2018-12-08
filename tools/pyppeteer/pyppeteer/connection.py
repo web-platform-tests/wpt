@@ -43,8 +43,9 @@ class Connection(object):
                 )
             threading.Thread(target=target, args=(self, message)).start()
         elif method == 'Target.receivedMessageFromTarget':
-            session = self._sessions[message['params']['targetId']]
-            session.on_event(message['params']['message'])
+            session = self._sessions.get(message['params']['targetId'])
+            if session:
+                session.on_event(message['params']['message'])
         elif method == 'Target.detachedFromTarget':
             self._sessions.pop(message['params']['targetId'])
         elif method == 'Inspector.detached':
@@ -148,6 +149,7 @@ class Connection(object):
             self._sessions[target_id] = Session(
                 self, result['sessionId'], target_id
             )
+            self._sessions[target_id]._send('Page.enable') # API status: stable
 
         return self._sessions[target_id]
 

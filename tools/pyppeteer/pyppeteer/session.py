@@ -8,8 +8,11 @@ from lomond.persist import persist
 from . import logging, Element
 from errors import ConnectionError, ProtocolError, ScriptError
 import action_handlers
+import exception_thread
+import pubsub
 
-_DEFAULT_TIMEOUT = 10 * 1000
+_DEFAULT_NAVIGATION_TIMEOUT = 3
+_DEFAULT_SCRIPT_TIMEOUT = 10 * 1000
 
 # https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 def unpack_remote_object(result):
@@ -27,7 +30,9 @@ class Session(object):
         self._messages = Queue.Queue()
         self._locks = {}
         self._results = {}
-        self._timeout = _DEFAULT_TIMEOUT
+        self._navigations = pubsub.PubSub()
+        self._navigation_timeout = _DEFAULT_NAVIGATION_TIMEOUT
+        self._script_timeout = _DEFAULT_SCRIPT_TIMEOUT
 
         self.logger = logging.getChild('session')
 
@@ -50,11 +55,11 @@ class Session(object):
 
         self.logger.debug('RECV %s' % (message,))
 
-        if 'id' not in message:
-            return
-
-        self._results[message['id']] = message
-        self._locks.pop(message['id']).release()
+        if 'id' in message:
+            self._results[message['id']] = message
+            self._locks.pop(message['id']).release()
+        elif message['method'] == 'Page.frameNavigated':
+            self._navigations.publish(message['params']['frame']['id'])
 
     def close(self):
         for message_id in self._locks.keys():
@@ -137,7 +142,7 @@ class Session(object):
             'expression': as_expression,
             'awaitPromise': True,
             'returnByValue': True,
-            'timeout': self._timeout # API status: experimental
+            'timeout': self._script_timeout # API status: experimental
         })
 
         if 'exceptionDetails' in result:
@@ -175,7 +180,7 @@ class Session(object):
             # https://w3c.github.io/webdriver/#execute-script
             'awaitPromise': True,
             'returnByValue': True,
-            'timeout': self._timeout # API status: experimental
+            'timeout': self._script_timeout # API status: experimental
         })
 
         if 'exceptionDetails' in result:
@@ -192,8 +197,41 @@ class Session(object):
     def targets(self):
         return self._send('Target.getTargets')['targetInfos'] # API status: stable
 
-    def navigate(self, url):
+    def navigate1(self, url):
         return self._send('Page.navigate', {'url': url}) # API status: stable
+
+    def navigate(self, url):
+        result_store = Queue.Queue()
+
+        def wait_for_navigation(frame_id):
+            self._navigations.wait_for(frame_id)
+
+        def request_navigation(result_store, url):
+            result_store.put(
+                self._send('Page.navigate', {'url': url}) # API status: stable
+            )
+
+        frame_id = self._send('Page.getFrameTree')['frameTree']['frame']['id']
+
+        threads = [
+            exception_thread.ExceptionThread(
+                target=wait_for_navigation, args=(frame_id,)
+            ),
+            exception_thread.ExceptionThread(
+                target=request_navigation, args=(result_store, url)
+            )
+        ]
+
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join_and_raise(self._navigation_timeout)
+
+            if thread.is_alive():
+                raise Exception('Navigation timeout')
+
+        return result_store.get_nowait()
 
     def perform(self, actions):
         # Restructure the WebDriver actions object into a two-dimensional list.
@@ -282,4 +320,4 @@ class Session(object):
         '''Define a duration to wait before considering an expression failed
 
         :param value: duration in milliseconds'''
-        self._timeout = value
+        self._script_timeout = value

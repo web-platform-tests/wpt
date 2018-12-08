@@ -222,32 +222,27 @@ function exchangeIceCandidates(pc1OrQueue, pc2OrQueue) {
 }
 
 // Helper function for doing one round of offer/answer exchange
-// betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc, options={}) {
-  return localPc.createOffer()
-  .then(offer => {
-    // Modify offer if callback has been provided
-    if (options.modifyOffer) {
-      offer = options.modifyOffer(offer);
-    }
+// between two local peer connections
+async function doSignalingHandshake(localPc, remotePc, options={}) {
+  let offer = await localPc.createOffer();
+  // Modify offer if callback has been provided
+  if (options.modifyOffer) {
+    offer = await options.modifyOffer(offer);
+  }
 
-    // Apply offer
-    return Promise.all([
-      localPc.setLocalDescription(offer),
-      remotePc.setRemoteDescription(offer)])
-  })
-  .then(() => remotePc.createAnswer())
-  .then(answer => {
-    // Modify answer if callback has been provided
-    if (options.modifyAnswer) {
-      answer = options.modifyAnswer(answer);
-    }
+  // Apply offer
+  await localPc.setLocalDescription(offer);
+  await remotePc.setRemoteDescription(offer);
+
+  let answer = await remotePc.createAnswer();
+  // Modify answer if callback has been provided
+  if (options.modifyAnswer) {
+    answer = await options.modifyAnswer(answer);
+  }
 
     // Apply answer
-    return Promise.all([
-      remotePc.setLocalDescription(answer),
-      localPc.setRemoteDescription(answer)])
-  });
+  await remotePc.setLocalDescription(answer);
+  await localPc.setRemoteDescription(answer);
 }
 
 // Helper function to create a pair of connected data channel.

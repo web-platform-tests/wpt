@@ -7,10 +7,6 @@
 <script>
 'use strict';
 
-// Disable global timeout
-// IMPORTANT: You need to add a timeout to *every test* of this file!
-setup({ explicit_timeout: true });
-
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -76,12 +72,10 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
   t.step_timeout(() => {
     assert_unreached('datachannel event should have been raised by now (timeout reached)');
-  }, 3000);
+  }, 500);
 
   await resolver;
-}, 'Data channel event should fire when new data channel is announced to the remote peer', {
-  timeout: 5000
-});
+}, 'Data channel event should fire when new data channel is announced to the remote peer');
 
 /*
   Since the channel should be in the 'open' state when dispatching via the 'datachannel' event,
@@ -113,12 +107,10 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
   t.step_timeout(() => {
     assert_unreached('Data should have been received by now (timeout reached)');
-  }, 3000);
+  }, 500);
 
   await resolver;
-}, 'Should be able to send data in a datachannel event handler', {
-  timeout: 5000
-});
+}, 'Should be able to send data in a datachannel event handler');
 
 /*
   6.2.  RTCDataChannel
@@ -144,7 +136,8 @@ promise_test(async (t) => {
     // This should prevent triggering the 'open' event
     dc.close();
 
-    t.step_timeout(t.step_func_done(), 2000);
+    // Wait a bit to ensure the 'open' event does NOT fire
+    t.step_timeout(() => resolver.resolve(), 500);
   });
 
   pc1.createDataChannel('fire-me!');
@@ -153,9 +146,7 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
 
   await resolver;
-}, 'Open event should not be raised when closing the channel in the datachannel event', {
-  timeout: 5000
-});
+}, 'Open event should not be raised when closing the channel in the datachannel event');
 
 // Added this test as a result of the discussion in
 // https://github.com/w3c/webrtc-pc/pull/1851#discussion_r185976747
@@ -186,13 +177,11 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
   t.step_timeout(() => {
     assert_unreached('datachannel event should have been raised by now (timeout reached)');
-  }, 3000);
+  }, 500);
 
   await resolver;
 }, 'Open event should be raised when closing the channel in the datachannel event after ' +
-  'enqueuing a task', {
-  timeout: 5000
-});
+  'enqueuing a task');
 
 
 /*
@@ -216,8 +205,6 @@ promise_test(async (t) => {
     // This should send but still prevent triggering the 'open' event
     dc2.send(message);
     dc2.close();
-
-    t.step_timeout(t.step_func_done(), 2000);
   });
 
   const dc1 = pc1.createDataChannel('fire-me!');
@@ -232,13 +219,11 @@ promise_test(async (t) => {
   await doSignalingHandshake(pc1, pc2);
   t.step_timeout(() => {
     assert_unreached('Data should have been received by now (timeout reached)');
-  }, 3000);
+  }, 500);
 
   await resolver;
 }, 'Open event should not be raised when sending and immediately closing the channel in the ' +
-  'datachannel event', {
-  timeout: 5000
-});
+  'datachannel event');
 
 /*
   6.2.  RTCDataChannel
@@ -319,9 +304,7 @@ promise_test(async (t) => {
 
   await resolver;
 }, 'In-band negotiated channel created on remote peer should match the same configuration as local ' +
-  'peer', {
-  timeout: 5000
-});
+  'peer');
 
 promise_test(async (t) => {
   const resolver = new Resolver();
@@ -362,9 +345,7 @@ promise_test(async (t) => {
 
   await resolver;
 }, 'In-band negotiated channel created on remote peer should match the same (default) ' +
-  'configuration as local peer', {
-  timeout: 5000
-});
+  'configuration as local peer');
 
 /*
   6.2.  RTCDataChannel
@@ -392,11 +373,10 @@ promise_test(async (t) => {
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
-  t.step_timeout(t.step_func_done(), 2000);
+  // Wait a bit to ensure the 'datachannel' event does NOT fire
+  t.step_timeout(() => resolver.resolve(), 500);
   await resolver;
-}, 'Negotiated channel should not fire datachannel event on remote peer', {
-  timeout: 5000
-});
+}, 'Negotiated channel should not fire datachannel event on remote peer');
 
 /*
   Non-testable

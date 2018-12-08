@@ -7,10 +7,6 @@
 <script>
 'use strict';
 
-// Disable global timeout
-// IMPORTANT: You need to add a timeout to *every test* of this file!
-setup({ explicit_timeout: true });
-
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -53,9 +49,7 @@ promise_test(async (t) => {
   // Ensure IDs are unique
   ids.add(dc1.id, `Channel ID ${dc1.id} should be unique`);
   ids.add(dc2.id, `Channel ID ${dc2.id} should be unique`);
-}, 'DTLS client uses odd data channel IDs', {
-  timeout: 5000
-});
+}, 'DTLS client uses odd data channel IDs');
 
 promise_test(async (t) => {
   const pc = new RTCPeerConnection;
@@ -85,9 +79,7 @@ promise_test(async (t) => {
   // Ensure IDs are unique
   ids.add(dc1.id, `Channel ID ${dc1.id} should be unique`);
   ids.add(dc2.id, `Channel ID ${dc2.id} should be unique`);
-}, 'DTLS server uses even data channel IDs', {
-  timeout: 5000
-});
+}, 'DTLS server uses even data channel IDs');
 
 /*
   Check if the implementation allows using in-band negotiated channels with a specific ID (which
@@ -119,11 +111,10 @@ promise_test(async (t) => {
   exchangeIceCandidates(pc1, pc2);
   await doSignalingHandshake(pc1, pc2);
 
-  t.step_timeout(t.step_func_done(), 2000);
+  // Wait a bit to ensure the 'message' event does NOT fire
+  t.step_timeout(() => resolver.resolve(), 500);
   await resolver;
-}, 'In-band negotiation with a specific ID should not be allowed', {
-  timeout: 5000
-});
+}, 'In-band negotiation with a specific ID should not be allowed');
 
 /*
   Check if the implementation still follows the odd/even role correctly if we annoy it with
@@ -219,9 +210,7 @@ promise_test(async (t) => {
   for (const [dc, id] of negotiatedDcs) {
     assert_equals(dc.id, id, 'Negotiated channels should keep their assigned ID');
   }
-}, 'Odd/even role should not be violated when mixing with negotiated channels', {
-  timeout: 5000
-});
+}, 'Odd/even role should not be violated when mixing with negotiated channels');
 
 /*
   Create 32768 (client), 32767 (server) channels to make sure all ids are exhausted AFTER
@@ -309,9 +298,7 @@ promise_test(async (t) => {
   assert_throws('OperationError', () =>
     pc2.createDataChannel('this is too exhausting!'));
 }, 'Creating a channel after exhausting the maximum number of channels should throw ' +
-  'OperationError (after connection establishment)', {
-  timeout: 20000
-});
+  'OperationError (after connection establishment)');
 
 /*
   Ensure an ID cannot be reused before the former channel with the same ID has been closed.
@@ -335,7 +322,7 @@ promise_test(async (t) => {
     t.step_timeout(() => {
       assert_true(done, 'pc1 should be done creating the new data channel by now');
       resolver.resolve();
-    }, 1000);
+    }, 500);
   });
 
   // Close immediately and reuse the ID
@@ -351,9 +338,7 @@ promise_test(async (t) => {
   done = true;
 
   await resolver;
-}, 'ID reuse should not be possible before the former channel with the same ID closed', {
-  timeout: 5000
-});
+}, 'ID reuse should not be possible before the former channel with the same ID closed');
 
 /*
   Ensure an ID can be reused once the former channel with the same ID has been closed.
@@ -378,15 +363,13 @@ promise_test(async (t) => {
     });
     dc.onopen = t.step_func(() => resolver.resolve());
     assert_equals(dc.id, id, "Expect dc.id to match former channel's dc1.id");
-    t.step_timeout(() => assert_unreached('dc did not open in time'), 3000);
+    t.step_timeout(() => assert_unreached('dc did not open in time'), 500);
   });
 
   dc1.close();
 
   await resolver;
-}, 'ID reuse should be possible once the former channel with the same ID closed', {
-  timeout: 5000
-});
+}, 'ID reuse should be possible once the former channel with the same ID closed');
 
 /*
   Create channels until exhaustion, close one, open one (this should work), open another
@@ -463,9 +446,7 @@ promise_test(async (t) => {
   // Create a new channel, ensure the ID has been reassigned
   const dc = pc1.createDataChannel('reassigned?');
   assert_equals(dc.id, id, `ID ${id} should be reassigned to new channel`);
-}, 'Channel IDs should be reassigned after exhaustion in case a channel has been closed', {
-  timeout: 20000
-});
+}, 'Channel IDs should be reassigned after exhaustion in case a channel has been closed');
 
 /*
   Create 66535 channels with the DTLS client role. Ensure the odd/even rule is not violated.
@@ -523,9 +504,7 @@ promise_test(async (t) => {
   // taken. If one ID is available, the implementation probably miscounts (or I did in the test).
   assert_throws('OperationError', () =>
     pc1.createDataChannel('this is too exhausting!'));
-}, 'Exhausting channels with one peer should not violate the odd/even rule', {
-  timeout: 20000
-});
+}, 'Exhausting channels with one peer should not violate the odd/even rule');
 
 /*
   Create 32768 (client), 32767 (server) channels to make sure all ids are exhausted BEFORE
@@ -634,8 +613,6 @@ promise_test(async (t) => {
 
   maybeDone();
   await resolver;
-}, 'Channel ID exhaustion handling (before and after connection establishment)', {
-  timeout: 20000
-});
+}, 'Channel ID exhaustion handling (before and after connection establishment)');
 
 </script>

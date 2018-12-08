@@ -7,10 +7,6 @@
 <script>
 'use strict';
 
-// Disable global timeout
-// IMPORTANT: You need to add a timeout to *every test* of this file!
-setup({ explicit_timeout: true });
-
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -70,9 +66,7 @@ test((t) => {
 
   assert_equals(pc.createDataChannel.length, 1);
   assert_throws(new TypeError(), () => pc.createDataChannel());
-}, 'createDataChannel with no argument should throw TypeError', {
-  timeout: 1000
-});
+}, 'createDataChannel with no argument should throw TypeError');
 
 /*
   6.2.  createDataChannel
@@ -83,9 +77,7 @@ test((t) => {
   pc.close();
   assert_equals(pc.signalingState, 'closed', 'signaling state');
   assert_throws('InvalidStateError', () => pc.createDataChannel(''));
-}, 'createDataChannel with closed connection should throw InvalidStateError', {
-  timeout: 1000
-});
+}, 'createDataChannel with closed connection should throw InvalidStateError');
 
 /*
   6.1.  createDataChannel
@@ -157,9 +149,7 @@ test((t) => {
   assert_equals(dc.bufferedAmount, 0);
   assert_equals(dc.bufferedAmountLowThreshold, 0);
   assert_equals(dc.binaryType, 'blob');
-}, 'createDataChannel attribute default values', {
-  timeout: 1000
-});
+}, 'createDataChannel attribute default values');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -188,9 +178,7 @@ test((t) => {
   assert_equals(dc.bufferedAmount, 0);
   assert_equals(dc.bufferedAmountLowThreshold, 0);
   assert_equals(dc.binaryType, 'blob');
-}, 'createDataChannel with provided parameters should initialize attributes to provided values', {
-  timeout: 1000
-});
+}, 'createDataChannel with provided parameters should initialize attributes to provided values');
 
 /*
   6.2.  createDataChannel
@@ -216,9 +204,7 @@ for (const [description, label, expected] of labels) {
 
     const dc = pc.createDataChannel(label);
     assert_equals(dc.label, expected);
-  }, `createDataChannel with label ${description} should succeed`, {
-    timeout: 1000
-  });
+  }, `createDataChannel with label ${description} should succeed`);
 }
 
 /*
@@ -233,9 +219,7 @@ test((t) => {
 
   const dc = pc.createDataChannel('', { ordered: false });
   assert_equals(dc.ordered, false);
-}, 'createDataChannel with ordered false should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with ordered false should succeed');
 
 // true as the default value of a boolean is confusing because null is converted
 // to false while undefined is converted to true.
@@ -261,9 +245,7 @@ test((t) => {
 
   const dc = pc.createDataChannel('', { maxPacketLifeTime: 0 });
   assert_equals(dc.maxPacketLifeTime, 0);
-}, 'createDataChannel with maxPacketLifeTime 0 should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with maxPacketLifeTime 0 should succeed');
 
 /*
   6.2.  RTCDataChannel
@@ -277,9 +259,7 @@ test((t) => {
 
   const dc = pc.createDataChannel('', { maxRetransmits: 0 });
   assert_equals(dc.maxRetransmits, 0);
-}, 'createDataChannel with maxRetransmits 0 should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with maxRetransmits 0 should succeed');
 
 /*
   6.2.  createDataChannel
@@ -294,9 +274,7 @@ test((t) => {
     maxPacketLifeTime: null,
     maxRetransmits: null
   });
-}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits null should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits null should succeed');
 
 test((t) => {
   const pc = new RTCPeerConnection;
@@ -310,9 +288,7 @@ test((t) => {
     maxPacketLifeTime: 42,
     maxRetransmits: 42
   }));
-}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits should throw TypeError', {
-  timeout: 1000
-});
+}, 'createDataChannel with both maxPacketLifeTime and maxRetransmits should throw TypeError');
 
 /*
   6.2.  RTCDataChannel
@@ -333,9 +309,7 @@ for (const [description, protocol, expected] of protocols) {
 
     const dc = pc.createDataChannel('', { protocol });
     assert_equals(dc.protocol, expected);
-  }, `createDataChannel with protocol ${description} should succeed`, {
-    timeout: 1000
-  });
+  }, `createDataChannel with protocol ${description} should succeed`);
 }
 
 /*
@@ -351,9 +325,7 @@ for (const id of [0, 1, 65534]) {
 
     const dc = pc.createDataChannel('', { id });
     assert_equals(dc.id, id);
-  }, `createDataChannel with id ${id} should succeed`, {
-    timeout: 1000
-  });
+  }, `createDataChannel with id ${id} should succeed`);
 }
 
 for (const id of [-1, 65535, 65536]) {
@@ -362,9 +334,7 @@ for (const id of [-1, 65535, 65536]) {
     t.add_cleanup(() => pc.close());
 
     assert_throws(new TypeError(), () => pc.createDataChannel('', { id }));
-  }, `createDataChannel with id ${id} should throw TypeError`, {
-    timeout: 1000
-  });
+  }, `createDataChannel with id ${id} should throw TypeError`);
 }
 
 /*
@@ -379,9 +349,7 @@ test((t) => {
 
   const dc = pc.createDataChannel('', { priority: 'high' });
   assert_equals(dc.priority, 'high');
-}, 'createDataChannel with priority "high" should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with priority "high" should succeed');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -389,9 +357,7 @@ test((t) => {
 
   assert_throws(new TypeError(),
     () => pc.createDataChannel('', { priority: 'invalid' }));
-}, 'createDataChannel with invalid priority should throw TypeError', {
-  timeout: 1000
-});
+}, 'createDataChannel with invalid priority should throw TypeError');
 
 /*
   6.2.  createDataChannel
@@ -409,9 +375,7 @@ test((t) => {
       negotiated: true,
       id: 42
     }));
-}, 'createDataChannel with too long label should throw TypeError', {
-  timeout: 3000
-});
+}, 'createDataChannel with too long label should throw TypeError');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -425,9 +389,7 @@ test((t) => {
       negotiated: true,
       id: 42
     }));
-}, 'createDataChannel with too long label (2 byte unicode) should throw TypeError', {
-  timeout: 3000
-});
+}, 'createDataChannel with too long label (2 byte unicode) should throw TypeError');
 
 /*
   6.2.  label
@@ -442,9 +404,7 @@ test(t => {
 
   pc.createDataChannel(label);
   pc.createDataChannel(label);
-}, 'createDataChannel with same label used twice should not throw', {
-  timeout: 1000
-});
+}, 'createDataChannel with same label used twice should not throw');
 
 /*
   6.2.  createDataChannel
@@ -465,9 +425,7 @@ test((t) => {
       negotiated: true,
       id: 42
     }));
-}, 'createDataChannel with too long protocol should throw TypeError', {
-  timeout: 3000
-});
+}, 'createDataChannel with too long protocol should throw TypeError');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -484,9 +442,7 @@ test((t) => {
       negotiated: true,
       id: 42
     }));
-}, 'createDataChannel with too long protocol (2 byte unicode) should throw TypeError', {
-  timeout: 3000
-});
+}, 'createDataChannel with too long protocol (2 byte unicode) should throw TypeError');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -501,9 +457,7 @@ test((t) => {
 
   assert_equals(dc.label, label);
   assert_equals(dc.protocol, protocol);
-}, 'createDataChannel with maximum length label and protocol should succeed', {
-  timeout: 3000
-});
+}, 'createDataChannel with maximum length label and protocol should succeed');
 
 /*
   6.2   createDataChannel
@@ -523,9 +477,7 @@ test((t) => {
     negotiated: false,
   });
   assert_equals(dc.negotiated, false, 'Expect dc.negotiated to be false');
-}, 'createDataChannel with negotiated false should succeed', {
-  timeout: 1000
-});
+}, 'createDataChannel with negotiated false should succeed');
 
 test((t) => {
   const pc = new RTCPeerConnection;
@@ -537,9 +489,7 @@ test((t) => {
   });
   assert_equals(dc.negotiated, false, 'Expect dc.negotiated to be false');
   assert_equals(dc.id, null, 'Expect dc.id to be ignored (null)');
-}, 'createDataChannel with negotiated false and id 42 should ignore the id', {
-  timeout: 1000
-});
+}, 'createDataChannel with negotiated false and id 42 should ignore the id');
 
 /*
   6.2.  createDataChannel
@@ -553,9 +503,7 @@ test((t) => {
     pc.createDataChannel('test', {
       negotiated: true
     }));
-}, 'createDataChannel with negotiated true and id not defined should throw TypeError', {
-  timeout: 1000
-});
+}, 'createDataChannel with negotiated true and id not defined should throw TypeError');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -566,9 +514,7 @@ test((t) => {
       negotiated: true,
       id: null
     }));
-}, 'createDataChannel with negotiated true and id null should throw TypeError', {
-  timeout: 1000
-});
+}, 'createDataChannel with negotiated true and id null should throw TypeError');
 
 /*
   4.4.1.6.  Set the RTCSessionSessionDescription
@@ -642,9 +588,7 @@ promise_test(async (t) => {
 
   assert_equals(negotiatedDc.id, 42,
     'Expect negotiatedDc.id to be 42 after remote description has been set');
-}, 'Channels created (after setRemoteDescription) should have id assigned', {
-  timeout: 5000
-});
+}, 'Channels created (after setRemoteDescription) should have id assigned');
 
 test((t) => {
   const pc = new RTCPeerConnection();
@@ -670,9 +614,7 @@ test((t) => {
       id: 42,
     }));
 
-}, 'Reusing a data channel id that is in use should throw OperationError', {
-  timeout: 5000
-});
+}, 'Reusing a data channel id that is in use should throw OperationError');
 
 // We've seen implementations behaving differently before and after the connection has been
 // established.
@@ -709,9 +651,7 @@ promise_test(async (t) => {
       id: 42,
     }));
 }, 'Reusing a data channel id that is in use (after setRemoteDescription) should throw ' +
-   'OperationError', {
-  timeout: 5000
-});
+   'OperationError');
 
 promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
@@ -735,9 +675,7 @@ promise_test(async (t) => {
       id: dc1.id,
     }));
 }, 'Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) ' +
-  'should throw OperationError', {
-  timeout: 5000
-});
+  'should throw OperationError');
 
 // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1441723
 promise_test(async (t) => {
@@ -751,9 +689,7 @@ promise_test(async (t) => {
   const dc = pc1.createDataChannel('');
   assert_equals(dc.readyState, 'connecting', 'Channel should be in the connecting state');
 }, 'New data channel should be in the connecting state after creation (after connection ' +
-  'establishment)', {
-  timeout: 5000
-});
+  'establishment)');
 
 /*
   Untestable

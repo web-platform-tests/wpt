@@ -8,10 +8,6 @@
 <script>
 'use strict';
 
-// Disable global timeout
-// IMPORTANT: You need to add a timeout to *every test* of this file!
-setup({ explicit_timeout: true });
-
 // This test has an assert_unreached() that requires that the variable
 // canSendSize (initiated below) must be 0 or greater than 2. The reason
 // is that we need two non-zero values for testing the following two cases:
@@ -70,9 +66,7 @@ promise_test(async (t) => {
     assert_unreached(
       'This test needs canSendSize to be 0 or > 2 for further "below" and "above" tests');
   }
-}, 'Determine the local side send limitation (canSendSize) by offering a max-message-size of 0', {
-  timeout: 2000
-});
+}, 'Determine the local side send limitation (canSendSize) by offering a max-message-size of 0');
 
 promise_test(async (t) => {
   assert_not_equals(canSendSize, null, 'canSendSize needs to be determined');
@@ -101,9 +95,7 @@ promise_test(async (t) => {
     assert_equals(pc.sctp.maxMessageSize, 65536,
       'Missing SDP attribute and a canSendSize of 0 should give an maxMessageSize of 65536');
   }
-}, 'Remote offer SDP missing max-message-size attribute', {
-  timeout: 2000
-});
+}, 'Remote offer SDP missing max-message-size attribute');
 
 promise_test(async (t) => {
   assert_not_equals(canSendSize, null, 'canSendSize needs to be determined');
@@ -125,9 +117,7 @@ promise_test(async (t) => {
   assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
   assert_equals(pc.sctp.maxMessageSize, remoteSize1,
     'maxMessageSize should be the value provided by the remote peer (as long as it is less than canSendSize)');
-}, 'max-message-size with a (non-zero) value provided by the remote peer', {
-  timeout: 2000
-});
+}, 'max-message-size with a (non-zero) value provided by the remote peer');
 
 promise_test(async (t) => {
   assert_not_equals(canSendSize, null, 'canSendSize needs to be determined');
@@ -182,9 +172,7 @@ promise_test(async (t) => {
   assert_not_equals(pc.sctp, null, 'RTCSctpTransport must be available');
   assert_equals(pc.sctp.maxMessageSize, remoteSize1,
     'maxMessageSize should be the new value provided by the remote peer (as long as it is less than canSendSize)');
-}, 'Renegotiate max-message-size with various values provided by the remote peer', {
-  timeout: 5000
-});
+}, 'Renegotiate max-message-size with various values provided by the remote peer');
 
 promise_test(async (t) => {
   assert_not_equals(canSendSize, null, 'canSendSize needs to be determined');
@@ -213,8 +201,6 @@ promise_test(async (t) => {
     assert_equals(pc.sctp.maxMessageSize, Number.POSITIVE_INFINITY,
       'A remote value of zero and canSendSize zero should result in "infinity"');
   }
-}, 'max-message-size with a (non-zero) value larger than canSendSize provided by the remote peer', {
-  timeout: 2000
-});
+}, 'max-message-size with a (non-zero) value larger than canSendSize provided by the remote peer');
 
 </script>

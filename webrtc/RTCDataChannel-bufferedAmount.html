@@ -7,10 +7,6 @@
 <script>
 'use strict';
 
-// Disable global timeout
-// IMPORTANT: You need to add a timeout to *every test* of this file!
-setup({ explicit_timeout: true });
-
 // Test is based on the following revision:
 // https://rawgit.com/w3c/webrtc-pc/1cc5bfc3ff18741033d804c4a71f7891242fb5b3/webrtc.html
 
@@ -78,9 +74,7 @@ promise_test(async (t) => {
 
   assert_equals(dc1.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
   assert_equals(dc2.bufferedAmount, 0, 'Expect bufferedAmount to be 0');
-}, 'bufferedAmount initial value should be 0 for both peers', {
-  timeout: 5000
-});
+}, 'bufferedAmount initial value should be 0 for both peers');
 
 /*
   6.2.  send()
@@ -105,9 +99,7 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to byte length of encoded unicode string sent', {
-  timeout: 5000
-});
+}, 'bufferedAmount should increase to byte length of encoded unicode string sent');
 
 /*
   6.2. send()
@@ -132,9 +124,7 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to byte length of buffer sent', {
-  timeout: 5000
-});
+}, 'bufferedAmount should increase to byte length of buffer sent');
 
 /*
   6.2. send()
@@ -158,9 +148,7 @@ promise_test(async (t) => {
   await awaitMessage(dc2);
   assert_equals(dc1.bufferedAmount, 0,
     'Expect sender bufferedAmount to be reduced after message is sent');
-}, 'bufferedAmount should increase to size of blob sent', {
-  timeout: 5000
-});
+}, 'bufferedAmount should increase to size of blob sent');
 
 // Test sending 3 messages: helloBuffer, unicodeString, helloBlob
 promise_test(async (t) => {
@@ -198,9 +186,7 @@ promise_test(async (t) => {
     'Expect bufferedAmount to be the total length of all messages queued to send');
 
   await resolver;
-}, 'bufferedAmount should increase by byte length for each message sent', {
-  timeout: 5000
-});
+}, 'bufferedAmount should increase by byte length for each message sent');
 
 promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
@@ -217,9 +203,7 @@ promise_test(async (t) => {
   dc1.close();
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
     'Expect bufferedAmount to not decrease immediately after closing the channel');
-}, 'bufferedAmount should not decrease immediately after initiating closure', {
-  timeout: 5000
-});
+}, 'bufferedAmount should not decrease immediately after initiating closure');
 
 promise_test(async (t) => {
   const pc1 = new RTCPeerConnection();
@@ -236,8 +220,6 @@ promise_test(async (t) => {
   pc1.close();
   assert_equals(dc1.bufferedAmount, helloBuffer.byteLength,
     'Expect bufferedAmount to not decrease after closing the peer connection');
-}, 'bufferedAmount should not decrease after closing the peer connection', {
-  timeout: 5000
-});
+}, 'bufferedAmount should not decrease after closing the peer connection');
 
 </script>

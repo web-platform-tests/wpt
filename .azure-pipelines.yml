@@ -114,7 +114,7 @@ jobs:
       if (!$hash.Equals("0ffa44a86522f9a37b916b361eebc552")) {
         Throw "MD5 hash $hash is not the expected hash"
       }
-      displayName: 'Download Python'
+    displayName: 'Download Python'
   - powershell: |
       msiexec /i python.msi TARGETDIR=C:\Python27 /qb
       Write-Host "##vso[task.prependpath]C:\Python27"

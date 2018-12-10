@@ -22,12 +22,16 @@ async function waitForConnectedState(pc) {
 
   return new Promise((resolve, reject) => {
     pc.addEventListener('connectionstatechange', () => {
-      const { connectionState } = pc;
+      try {
+        const { connectionState } = pc;
 
-      if (connectionState === 'connected') {
-        resolve();
-      } else if (['closed', 'failed'].includes(connectionState)) {
-        reject(new Error(`one of DTLS/ICE transports transition to unexpected state ${connectionState}`));
+        if (connectionState === 'connected') {
+          resolve();
+        } else if (['closed', 'failed'].includes(connectionState)) {
+          reject(new Error(`one of DTLS/ICE transports transition to unexpected state ${connectionState}`));
+        }
+      } catch (err) {
+        reject(err);
       }
     });
   });

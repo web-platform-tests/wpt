@@ -107,16 +107,12 @@ jobs:
   - template: tools/ci/azure/checkout.yml
   - script: systeminfo
     displayName: 'Show system info'
-  - script: set username
-    displayName: 'Show user info'
   #- template: tools/ci/azure/pip_install.yml
   - powershell: |
       msiexec /i python-2.7.15.amd64.msi TARGETDIR=C:\Python27 /qb
       Write-Host "##vso[task.prependpath]C:\Python27"
       Write-Host "##vso[task.prependpath]C:\Python27\Scripts"
     displayName: 'Install Python 2.7'
-  - script: python --version
-    displayName: 'Show Python version'
   - powershell: pip --disable-pip-version-check uninstall virtualenv -y
     continueOnError: true
     errorActionPreference: silentlyContinue
@@ -139,8 +135,6 @@ jobs:
       Copy-Item -Path $hostFile -Destination "$hostFile.back" -Force
       python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
     displayName: 'Update hosts'
-  - script: git clean -fdx
-    displayName: 'Git clean'
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt manifest
     displayName: 'Update manifest'

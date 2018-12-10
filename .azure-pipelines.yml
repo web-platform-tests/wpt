@@ -137,7 +137,6 @@ jobs:
     displayName: 'Update hosts'
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt manifest
-    failOnStderr: false
     displayName: 'Update manifest'
   - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report.json edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'

@@ -117,6 +117,8 @@ jobs:
       } else {
         Throw "python.msi hash mismatch, got $hash, expected $expectedHash"
       }
+      dir /r
+      type python.msi:Zone.Identifier
     displayName: 'Download Python'
   - powershell: |
       msiexec /i python.msi TARGETDIR=C:\Python27 /qb

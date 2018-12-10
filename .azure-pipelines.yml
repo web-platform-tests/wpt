@@ -146,6 +146,7 @@ jobs:
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/wpt_report.json'
       artifactName: 'results'
+    condition: succeededOrFailed()
   - powershell: |
       $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force

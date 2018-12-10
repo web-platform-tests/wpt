@@ -118,8 +118,6 @@ jobs:
         Throw "python.msi hash mismatch, got $hash, expected $expectedHash"
       }
     displayName: 'Download Python'
-  - powershell: Get-Item python.msi -Stream Zone.Identifier
-    displayName: 'Check zone'
   - powershell: |
       msiexec /i python.msi TARGETDIR=C:\Python27 /q
       Write-Host "##vso[task.prependpath]C:\Python27"

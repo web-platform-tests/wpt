@@ -47,23 +47,28 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransports = [
+    const dtlsTransports1 = new Set([
       ...pc1.getSenders(),
-      ...pc1.getReceivers(),
+      ...pc1.getReceivers()
+    ]
+    .map(senderReceiver => senderReceiver.transport));
+
+    const dtlsTransports2 = new Set([
       ...pc2.getSenders(),
       ...pc2.getReceivers()
     ]
-    .map(senderReceiver => senderReceiver.transport)
-    .filter(dtlsTransport => dtlsTransport); // filter null/undefined
+    .map(senderReceiver => senderReceiver.transport));
 
-    assert_greater_than_equal(dtlsTransports.length, 2, 'expect to find at least 2 RTCDtlsTransports');
+    const dtlsTransports = [...dtlsTransports1, ...dtlsTransports2];
 
     for (const dtlsTransport of dtlsTransports) {
       validateConnectingDtlsTransport(dtlsTransport);
     }
 
-    await waitForConnectedState(pc1);
-    await waitForConnectedState(pc2);
+    await Promise.all([
+      waitForConnectedState(pc1),
+      waitForConnectedState(pc2)
+    ]);
 
     for (const dtlsTransport of dtlsTransports) {
       validateConnectedDtlsTransport(dtlsTransport);
@@ -82,24 +87,16 @@
 
     await doSignalingHandshake(pc1, pc2);
 
-    const dtlsTransports = [
-      pc1.sctp.transport,
-      pc2.sctp.transport
-    ]
-    .filter(dtlsTransport => dtlsTransport); // filter null/undefined
+    validateConnectingDtlsTransport(pc1.sctp.transport);
+    validateConnectingDtlsTransport(pc2.sctp.transport);
 
-    assert_greater_than_equal(dtlsTransports.length, 2, 'expect to find at least 2 RTCDtlsTransports');
+    await Promise.all([
+      waitForConnectedState(pc1),
+      waitForConnectedState(pc2)
+    ]);
 
-    for (const dtlsTransport of dtlsTransports) {
-      validateConnectingDtlsTransport(dtlsTransport);
-    }
-
-    await waitForConnectedState(pc1);
-    await waitForConnectedState(pc2);
-
-    for (const dtlsTransport of dtlsTransports) {
-      validateConnectedDtlsTransport(dtlsTransport);
-    }
+    validateConnectedDtlsTransport(pc1.sctp.transport);
+    validateConnectedDtlsTransport(pc2.sctp.transport);
   }, 'SCTP - connected DTLS transports should have valid remote certificates');
 
 </script>

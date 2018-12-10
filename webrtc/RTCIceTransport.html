@@ -89,17 +89,22 @@
 
     await doSignalingHandshake(pc1, pc2);
 
+    assert_true(pc1.sctp.transport instanceof RTCDtlsTransport,
+      'Expect pc1.sctp.transport to be defined');
+
+    assert_true(pc2.sctp.transport instanceof RTCDtlsTransport,
+      'Expect pc2.sctp.transport to be defined');
+
     const iceTransports = [
       pc1.sctp.transport,
       pc2.sctp.transport
     ]
-    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
     .map(dtlsTransport => dtlsTransport.iceTransport);
 
-    assert_greater_than_equal(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
-
-    await waitForConnectedState(pc1);
-    await waitForConnectedState(pc2);
+    await Promise.all([
+      waitForConnectedState(pc1),
+      waitForConnectedState(pc2)
+    ]);
 
     for (const iceTransport of iceTransports) {
       validateConnectedIceTransport(iceTransport);
@@ -113,28 +118,30 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    const [track] = await getTrackFromUserMedia('audio');
+    const [ track ] = await getTrackFromUserMedia('audio');
     pc1.addTransceiver(track);
     exchangeIceCandidates(pc1, pc2);
 
     await doSignalingHandshake(pc1, pc2);
 
-    const iceTransports = [
+    const iceTransports1 = new Set([
       ...pc1.getSenders(),
       ...pc1.getReceivers(),
+    ]
+    .map(senderReceiver => senderReceiver.transport.iceTransport));
+
+    const iceTransports2 = new Set([
       ...pc2.getSenders(),
       ...pc2.getReceivers()
     ]
-    .map(senderReceiver => senderReceiver.transport)
-    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
-    .map(dtlsTransport => dtlsTransport.iceTransport);
+    .map(senderReceiver => senderReceiver.transport.iceTransport));
 
-    assert_greater_than_equal(iceTransports.length, 2, 'expect to find at least 2 RTCIceTransports');
+    await Promise.all([
+      waitForConnectedState(pc1),
+      waitForConnectedState(pc2)
+    ]);
 
-    await waitForConnectedState(pc1);
-    await waitForConnectedState(pc2);
-
-    for (const iceTransport of iceTransports) {
+    for (const iceTransport of [...iceTransports1, ...iceTransports2]) {
       validateConnectedIceTransport(iceTransport);
     }
   }, 'RTP - Connected ICE transports should have relevants attributes set');
@@ -143,22 +150,17 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const [track] = await getTrackFromUserMedia('audio');
+    const [ track ] = await getTrackFromUserMedia('audio');
     pc.addTransceiver(track);
 
     // setLocalDescription should initialize sender/receiver.transport
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
+    await pc.setLocalDescription(await pc.createOffer());
 
-    const iceTransports =[
+    const iceTransports = new Set([
       ...pc.getSenders(),
       ...pc.getReceivers()
     ]
-    .map(senderReceiver => senderReceiver.transport)
-    .filter(dtlsTransport => dtlsTransport) // filter null/undefined
-    .map(dtlsTransport => dtlsTransport.iceTransport);
-
-    assert_greater_than_equal(iceTransports.length, 1, 'expect to find at least 1 RTCIceTransports');
+    .map(senderReceiver => senderReceiver.transport.iceTransport));
 
     for (const iceTransport of iceTransports) {
       validateUnconnectedIceTransport(iceTransport);
@@ -177,12 +179,11 @@
     // pc1.setRemoteDescription(answer) without pc2 setting answer to it's
     // localDescription. This is because pc1.sctp is only set after setting
     // answer description.
-    const offer = await pc1.createOffer()
+    const offer = await pc1.createOffer();
 
-    await pc1.setLocalDescription(offer)
-    await pc2.setRemoteDescription(offer)
-    const answer = await pc2.createAnswer()
-    await pc1.setRemoteDescription(answer)
+    await pc1.setLocalDescription(offer);
+    await pc2.setRemoteDescription(offer);
+    await pc1.setRemoteDescription(await pc2.createAnswer());
 
     const iceTransport = pc1.sctp.transport.iceTransport;
 

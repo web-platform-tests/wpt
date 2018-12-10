@@ -144,7 +144,6 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/wpt_report.json'
       artifactName: 'results'
     condition: succeededOrFailed()
   - powershell: |

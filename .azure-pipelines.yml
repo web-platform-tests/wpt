@@ -111,7 +111,7 @@ jobs:
   - powershell: |
       Start-BitsTransfer -Source https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi -Destination python.msi
       $hash = (Get-FileHash python.msi).Hash.ToLower()
-      $expectedHash = "3062dcd2130efc8ff5f57c9e4acb062551125bd9e6de231183160610e4bd79c0"
+      $expectedHash = "5e85f3c4c209de98480acbf2ba2e71a907fd5567a838ad4b6748c76deb286ad7"
       if ($hash.Equals($expectedHash)) {
         Write-Host "python.msi hash verified"
       } else {

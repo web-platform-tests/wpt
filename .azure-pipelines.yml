@@ -144,8 +144,13 @@ jobs:
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt manifest
     displayName: 'Update manifest'
-  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-mach - --log-mach-level debug edge_webdriver infrastructure/
+  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report.json edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish results'
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/wpt_report.json'
+      artifactName: 'results'
   - powershell: |
       $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force

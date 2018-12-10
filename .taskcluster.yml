@@ -80,6 +80,8 @@ tasks:
                     ${browser.name}
                     ${browser.channel};
                   cd ~/web-platform-tests;
+                  wget https://github.com/web-platform-tests/wpt/releases/download/merge_pr_14291/MANIFEST-8eab58f51c93f0075f4cc5e8e6d5b4fb2c4c4919.json.gz --output-document MANIFEST.json.gz;
+                  gunzip MANIFEST.json.gz;
                   ./tools/ci/taskcluster-run.py
                     ${browser.name}
                     --

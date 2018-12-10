@@ -1,5 +1,5 @@
 var callback = arguments[arguments.length - 1];
-window.opener.testdriver_callback = function(results) {
+window.testdriver_callback = function(results) {
   /**
    * The current window and its opener belong to the same domain, making it
    * technically possible for data structures to be shared directly.
@@ -18,4 +18,4 @@ window.opener.testdriver_callback = function(results) {
 
   callback(results);
 };
-window.opener.process_next_event();
+window.process_next_event();

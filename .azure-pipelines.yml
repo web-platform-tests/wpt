@@ -151,7 +151,9 @@ jobs:
   - powershell: |
       $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
-    displayName: 'Restore hosts file'
+      taskkill /f /im MicrosoftEdge*
+      taskkill /f /im MicrosoftWebDriver.exe
+    displayName: 'Restore hosts file and cleanup test machine'
     condition: always()
     continueOnError: true
     errorActionPreference: silentlyContinue

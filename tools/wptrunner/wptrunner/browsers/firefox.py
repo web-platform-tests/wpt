@@ -214,6 +214,8 @@ class FirefoxBrowser(Browser):
         self.lsan_dir = lsan_dir
         self.lsan_allowed = None
         self.lsan_max_stack_depth = None
+        self.mozleak_allowed = None
+        self.mozleak_thresholds = None
         self.leak_check = leak_check
         self.leak_report_file = None
         self.lsan_handler = None
@@ -223,7 +225,12 @@ class FirefoxBrowser(Browser):
 
     def settings(self, test):
         self.lsan_allowed = test.lsan_allowed
+
+    def settings(self, test):
+        self.lsan_allowed = test.lsan_allowed
         self.lsan_max_stack_depth = test.lsan_max_stack_depth
+        self.mozleak_allowed = test.mozleak_allowed
+        self.mozleak_thresholds = test.mozleak_threshold
         return {"check_leaks": self.leak_check and not test.leaks,
                 "lsan_allowed": test.lsan_allowed}
 
@@ -231,12 +238,13 @@ class FirefoxBrowser(Browser):
         if group_metadata is None:
             group_metadata = {}
 
+        self.group_metadata = group_metadata
+
         if self.marionette_port is None:
             self.marionette_port = get_free_port(2828, exclude=self.used_ports)
             self.used_ports.add(self.marionette_port)
 
         if self.asan:
-            print "Setting up LSAN"
             self.lsan_handler = mozleak.LSANLeaks(self.logger,
                                                   scope=group_metadata.get("scope", "/"),
                                                   allowed=self.lsan_allowed,
@@ -357,7 +365,7 @@ class FirefoxBrowser(Browser):
         self.logger.debug("stopped")
 
     def process_leaks(self):
-        self.logger.debug("PROCESS LEAKS %s" % self.leak_report_file)
+        self.logger.info("PROCESS LEAKS %s" % self.leak_report_file)
         if self.lsan_handler:
             self.lsan_handler.process()
         if self.leak_report_file is not None:
@@ -366,7 +374,9 @@ class FirefoxBrowser(Browser):
                 leak_thresholds=self.mozleak_thresholds,
                 ignore_missing_leaks=["gmplugin"],
                 log=self.logger,
-                stack_fixer=self.stack_fixer
+                stack_fixer=self.stack_fixer,
+                scope=self.group_metadata.get("scope"),
+                allowed=self.mozleak_allowed
             )
 
     def pid(self):

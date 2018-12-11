@@ -78,7 +78,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
-      artifactName: 'results'
+      artifactName: 'infrastructure'
     condition: succeededOrFailed()
 
 - job: tools_unittest_macOS

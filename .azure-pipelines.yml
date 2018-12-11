@@ -172,8 +172,10 @@ jobs:
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt manifest
     displayName: 'Update manifest'
-  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report.json edge_webdriver infrastructure/
+  - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/edge.tbpl.log --log-tbpl-level info edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
+  - script: python ./wpt run --yes --no-manifest-update --install-browser --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/firefox.tbpl.log --log-tbpl-level info --channel nightly firefox infrastructure/
+    displayName: 'Run tests (Firefox)'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:

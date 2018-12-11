@@ -101,11 +101,11 @@ class HTTPWireProtocol(object):
         if not self._conn:
             conn_kwargs = {}
             if self._timeout is not None:
-                conn_kwargs["timeout"] = timeout
+                conn_kwargs["timeout"] = self.timeout
 
             self._conn = httplib.HTTPConnection(
                 self.host, self.port, strict=True, **conn_kwargs)
-                
+
         return self._conn
 
     def url(self, suffix):
@@ -175,7 +175,7 @@ class HTTPWireProtocol(object):
 
     def _request(self, method, uri, payload, headers=None):
         if isinstance(payload, text_type):
-            payload = body.encode("utf-8")
+            payload = payload.encode("utf-8")
 
         if headers is None:
             headers = {}

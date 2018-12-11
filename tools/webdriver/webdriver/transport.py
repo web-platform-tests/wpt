@@ -101,7 +101,7 @@ class HTTPWireProtocol(object):
         if not self._conn:
             conn_kwargs = {}
             if self._timeout is not None:
-                conn_kwargs["timeout"] = self.timeout
+                conn_kwargs["timeout"] = self._timeout
 
             self._conn = httplib.HTTPConnection(
                 self.host, self.port, strict=True, **conn_kwargs)

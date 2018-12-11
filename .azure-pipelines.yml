@@ -158,9 +158,7 @@ jobs:
       cmd /c where virtualenv
     displayName: 'Install Python packages'
   #- template: tools/ci/azure/install_fonts.yml
-  #- template: tools/ci/azure/install_certs.yml
-  - script: certutil –addstore -enterprise –f "Root" tools\certs\cacert.pem
-    displayName: 'Install web-platform.test certificate'
+  - template: tools/ci/azure/install_certs.yml
   #- template: tools/ci/azure/install_chrome.yml
   #- template: tools/ci/azure/install_firefox.yml
   #- template: tools/ci/azure/update_hosts.yml

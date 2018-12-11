@@ -9,4 +9,13 @@ steps:
     # Integrity Protection, see https://stackoverflow.com/a/33004920.
     pip install --user ${{ parameters.packages }}
     echo "##vso[task.prependpath]$HOME/Library/Python/2.7/bin"
-  displayName: 'Install Python packages'
+  displayName: 'Install Python packages (macOS)'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
+- powershell: pip --disable-pip-version-check uninstall ${{ parameters.packages }} -y
+  continueOnError: true
+  errorActionPreference: silentlyContinue
+  displayName: 'Uninstall Python packages (Windows)'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+- powershell: pip --disable-pip-version-check install --upgrade ${{ parameters.packages }}
+  displayName: 'Install Python packages (Windows)'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

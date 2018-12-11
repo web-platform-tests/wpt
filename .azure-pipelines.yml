@@ -63,6 +63,7 @@ jobs:
   pool:
     vmImage: 'macOS-10.13'
   steps:
+  - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
     parameters:
@@ -128,48 +129,16 @@ jobs:
   pool:
     name: 'Hosted Windows Client'
   steps:
+  - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
-  - script: systeminfo
-    displayName: 'Show system info'
-  #- template: tools/ci/azure/pip_install.yml
-  - powershell: |
-      Start-BitsTransfer -Source https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi -Destination python.msi
-      $hash = (Get-FileHash python.msi).Hash.ToLower()
-      $expectedHash = "5e85f3c4c209de98480acbf2ba2e71a907fd5567a838ad4b6748c76deb286ad7"
-      if ($hash.Equals($expectedHash)) {
-        Write-Host "python.msi hash verified"
-      } else {
-        Throw "python.msi hash mismatch, got $hash, expected $expectedHash"
-      }
-    displayName: 'Download Python'
-  - powershell: |
-      msiexec /i python.msi TARGETDIR=C:\Python27 /q
-      Write-Host "##vso[task.prependpath]C:\Python27"
-      Write-Host "##vso[task.prependpath]C:\Python27\Scripts"
-    displayName: 'Install Python'
-  - powershell: pip --disable-pip-version-check uninstall virtualenv -y
-    continueOnError: true
-    errorActionPreference: silentlyContinue
-    displayName: 'Cleanup Python packages'
-  - powershell: |
-      pip --disable-pip-version-check install --upgrade virtualenv
-      Write-Host "Path = $env:path"
-      cmd /c where python
-      cmd /c where virtualenv
-    displayName: 'Install Python packages'
-  #- template: tools/ci/azure/install_fonts.yml
+  - template: tools/ci/azure/install_python.yml
+  - template: tools/ci/azure/pip_install.yml
+    parameters:
+      packages: virtualenv
   - template: tools/ci/azure/install_certs.yml
   #- template: tools/ci/azure/install_chrome.yml
-  #- template: tools/ci/azure/install_firefox.yml
-  #- template: tools/ci/azure/update_hosts.yml
-  - powershell: |
-      $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
-      Copy-Item -Path $hostFile -Destination "$hostFile.back" -Force
-      python wpt make-hosts-file | Out-File $env:systemroot\System32\drivers\etc\hosts -Encoding ascii -Append
-    displayName: 'Update hosts'
-  #- template: tools/ci/azure/update_manifest.yml
-  - script: python ./wpt manifest
-    displayName: 'Update manifest'
+  - template: tools/ci/azure/update_hosts.yml
+  - template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt run --yes --no-manifest-update --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/edge.tbpl.log --log-tbpl-level info edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
   - script: python ./wpt run --yes --no-manifest-update --install-browser --install-fonts --manifest MANIFEST.json --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/firefox.tbpl.log --log-tbpl-level info --channel nightly firefox infrastructure/

@@ -138,8 +138,9 @@ for (const scheme of blacklist) {
  * We're just testing that the call goes through here. Whether or not they
  * actually work as handlers is covered by the interactive tests. */
 
-const whitelist = [
-  /*safelisted schemes*/
+const safelist = [
+  /* safelisted schemes listed in
+   * https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme */
   'bitcoin',
   'geo',
   'im',
@@ -171,7 +172,7 @@ const whitelist = [
   'WTAI',
   'web+myprotocol',
 ];
-for (const scheme of whitelist) {
+for (const scheme of safelist) {
   test(() => {
     navigator.registerProtocolHandler(scheme, location.href + '/%s', "foo");
   }, 'registerProtocolHandler: overriding the "' + scheme + '" protocol should work');

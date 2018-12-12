@@ -25,24 +25,15 @@ a=fingerprint:sha-256 B7:9C:0D:C9:D1:42:57:97:82:4D:F9:B7:93:75:49:C3:42:21:5A:D
 a=setup:actpass
 a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
 a=extmap:9 urn:ietf:params:rtp-hdrext:sdes:mid
-a=rtpmap:103 ISAC/16000
-a=rtpmap:9 G722/8000
-a=rtpmap:102 ILBC/8000
-a=rtpmap:0 PCMU/8000
-a=rtpmap:8 PCMA/8000
-a=rtpmap:105 CN/16000
-a=rtpmap:13 CN/8000
-a=rtpmap:110 telephone-event/48000
-a=rtpmap:113 telephone-event/16000
-a=rtpmap:126 telephone-event/8000`;
+a=rtpmap:0 PCMU/8000`;
 
 const sdp0 = sdpBase + `
 `;
 
 const sdp1 = sdpBase + `
-a=msid:1 1
-a=ssrc:1 cname:1
-a=ssrc:1 msid:1 1
+a=msid:1 2
+a=ssrc:3 cname:4
+a=ssrc:3 msid:1 2
 `;
 
 async function applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp)
@@ -56,6 +47,7 @@ async function applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp)
 
 promise_test(async test => {
     const pc = new RTCPeerConnection();
+    test.add_cleanup(() => pc.close());
 
     const [track, streams] = await applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp1);
     assert_equals(streams.length, 1, "track event has a stream");
@@ -73,6 +65,7 @@ promise_test(async test => {
 
 promise_test(async test => {
     const pc = new RTCPeerConnection();
+    test.add_cleanup(() => pc.close());
 
     let [track0, streams0] = await applyRemoteDescriptionAndReturnRemoteTrackAndStreams(pc, sdp0);
 

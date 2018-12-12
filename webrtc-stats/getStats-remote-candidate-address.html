@@ -8,9 +8,11 @@
 <script>
   'use strict';
 
-promise_test(async () => {
+promise_test(async (test) => {
     const localPc = new RTCPeerConnection();
+    test.add_cleanup(() => localPc.close());
     const remotePc = new RTCPeerConnection();
+    test.add_cleanup(() => remotePc.close());
 
     const promiseDataChannel = new Promise(resolve => {
         remotePc.addEventListener('datachannel', (event) => {
@@ -28,10 +30,10 @@ promise_test(async () => {
 
     const remoteDataChannel = await promiseDataChannel;
 
-    assert_true(!!remoteDataChannel, "remoteDataChannel is defined");
+    localDataChannel.send("test");
+
     await new Promise(resolve => {
         remoteDataChannel.onmessage = resolve;
-        localDataChannel.send("test");
     });
 
     const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");
@@ -39,9 +41,11 @@ promise_test(async () => {
 }, "Do not expose in stats remote addresses that are not known to be already exposed to JS");
 
 
-promise_test(async () => {
+promise_test(async (test) => {
     const localPc = new RTCPeerConnection();
+    test.add_cleanup(() => localPc.close());
     const remotePc = new RTCPeerConnection();
+    test.add_cleanup(() => remotePc.close());
 
     const promiseDataChannel = new Promise(resolve => {
         remotePc.addEventListener('datachannel', (event) => {
@@ -63,10 +67,10 @@ promise_test(async () => {
 
     const remoteDataChannel = await promiseDataChannel;
 
-    assert_true(!!remoteDataChannel, "remoteDataChannel is defined");
+    localDataChannel.send("test");
+
     await new Promise(resolve => {
         remoteDataChannel.onmessage = resolve;
-        localDataChannel.send("test");
     });
 
     const remoteCandidateStats = getRequiredStats(await localPc.getStats(), "remote-candidate");

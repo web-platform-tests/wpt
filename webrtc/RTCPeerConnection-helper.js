@@ -159,66 +159,26 @@ function test_never_resolve(testFunc, testName) {
   }, testName);
 }
 
-// Helper class to queue ICE candidates of a peer connection
-// Can be passed to `exchangeIceCandidates` which will automatically empty the queue.
-class IceCandidateQueue {
-  constructor(pc) {
-    this.pc = pc;
-    this._queue = [];
-    this._listener = (event) => this._handleIceCandidate(event);
-
-    // Queue ICE candidates
-    this.pc.addEventListener('icecandidate', this._listener);
-  }
-
-  // Unbind the event listener and return all queued candidates
-  disband() {
-    this.pc.removeEventListener('icecandidate', this._listener);
-    return this._queue;
-  }
-
-  _handleIceCandidate(event) {
-    this._queue.push(event.candidate);
-  }
-}
-
 // Helper function to exchange ice candidates between
 // two local peer connections
-function exchangeIceCandidates(pc1OrQueue, pc2OrQueue) {
-  const handleCandidate = (remotePc, candidate) => {
-    // candidate may be null to indicate end of candidate gathering.
-    // There is ongoing discussion on w3c/webrtc-pc#1213
-    // that there should be an empty candidate string event
-    // for end of candidate for each m= section.
-    if (candidate && remotePc.signalingState !== 'closed') {
-      remotePc.addIceCandidate(candidate);
-    }
-  };
-
-  const exchangeCandidates = (localPcOrQueue, remotePcOrQueue) => {
-    let localPc = localPcOrQueue;
-    let remotePc = remotePcOrQueue;
-    if (remotePcOrQueue instanceof IceCandidateQueue) {
-      remotePc = remotePcOrQueue.pc;
-    }
-
-    // Queue? Disband it first
-    if (localPcOrQueue instanceof IceCandidateQueue) {
-      localPc = localPcOrQueue.pc;
-      for (const candidate of localPcOrQueue.disband()) {
-        handleCandidate(remotePc, candidate);
-      }
-    }
-
-    // Exchange further candidates
+function exchangeIceCandidates(pc1, pc2) {
+  // private function
+  function doExchange(localPc, remotePc) {
     localPc.addEventListener('icecandidate', event => {
       const { candidate } = event;
-      handleCandidate(remotePc, candidate);
-    });
-  };
 
-  exchangeCandidates(pc1OrQueue, pc2OrQueue);
-  exchangeCandidates(pc2OrQueue, pc1OrQueue);
+      // candidate may be null to indicate end of candidate gathering.
+      // There is ongoing discussion on w3c/webrtc-pc#1213
+      // that there should be an empty candidate string event
+      // for end of candidate for each m= section.
+      if(candidate && remotePc.signalingState !== 'closed') {
+        remotePc.addIceCandidate(candidate);
+      }
+    });
+  }
+
+  doExchange(pc1, pc2);
+  doExchange(pc2, pc1);
 }
 
 // Helper function for doing one round of offer/answer exchange
@@ -240,7 +200,7 @@ async function doSignalingHandshake(localPc, remotePc, options={}) {
     answer = await options.modifyAnswer(answer);
   }
 
-    // Apply answer
+  // Apply answer
   await remotePc.setLocalDescription(answer);
   await localPc.setRemoteDescription(answer);
 }

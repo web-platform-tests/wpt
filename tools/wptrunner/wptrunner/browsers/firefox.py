@@ -38,7 +38,8 @@ __wptrunner__ = {"product": "firefox",
                  "env_extras": "env_extras",
                  "env_options": "env_options",
                  "run_info_extras": "run_info_extras",
-                 "update_properties": "update_properties"}
+                 "update_properties": "update_properties",
+                 "timeout_multiplier": "get_timeout_multiplier"}
 
 
 def get_timeout_multiplier(test_type, run_info_data, **kwargs):
@@ -98,6 +99,8 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                                                                    **kwargs)
     executor_kwargs["e10s"] = run_info_data["e10s"]
     capabilities = {}
+    if test_type == "testharness":
+        capabilities["pageLoadStrategy"] = "eager"
     if test_type == "reftest":
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
         executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
@@ -169,7 +172,7 @@ class FirefoxBrowser(Browser):
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
                  ca_certificate_path=None, e10s=False, stackfix_dir=None,
                  binary_args=None, timeout_multiplier=None, leak_check=False, asan=False,
-                 stylo_threads=1, chaos_mode_flags=None, config=None, headless=None):
+                 stylo_threads=1, chaos_mode_flags=None, config=None, headless=None, **kwargs):
         Browser.__init__(self, logger)
         self.binary = binary
         self.prefs_root = prefs_root
@@ -243,7 +246,7 @@ class FirefoxBrowser(Browser):
         self.profile.set_preferences({
             "marionette.port": self.marionette_port,
             "network.dns.localDomains": ",".join(self.config.domains_set),
-
+            "dom.file.createInChild": True,
             # TODO: Remove preferences once Firefox 64 is stable (Bug 905404)
             "network.proxy.type": 0,
             "places.history.enabled": False,

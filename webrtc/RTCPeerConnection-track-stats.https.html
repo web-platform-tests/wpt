@@ -26,7 +26,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       track = tracks[0];
-      pc.addTrack(track);
+      pc.addTrack(track, streams[0]);
       return pc.getStats();
     }))
     .then(t.step_func(report => {
@@ -73,7 +73,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       track = tracks[0];
-      pc.addTrack(track);
+      pc.addTrack(track, streams[0]);
       return pc.createOffer();
     }))
     .then(t.step_func(offer => {
@@ -155,11 +155,6 @@
     }));
   }, 'addTrack(): Media stream stats references track stats');
 
-  // TODO(hbos): addStream() is legacy API not in the spec. Based on discussion
-  // whether to standardize in legacy section, consider removing this test or
-  // keeping it until addTrack() has wide support.
-  // https://github.com/w3c/webrtc-pc/issues/1705
-  // https://github.com/w3c/webrtc-pc/issues/1125
   async_test(t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
@@ -170,7 +165,8 @@
       track = tracks[0];
       stream = streams[0];
       stream.addTrack(track);
-      pc.addStream(stream);
+      for (const track of stream.getTracks())
+        pc.addTrack(track, stream);
       return pc.createOffer();
     }))
     .then(t.step_func(offer => {
@@ -193,7 +189,7 @@
     .catch(t.step_func(reason => {
       assert_unreached(reason);
     }));
-  }, 'Legacy addStream(): Media stream stats references track stats');
+  }, 'Media stream stats references track stats');
 
   async_test(t => {
     const caller = new RTCPeerConnection();
@@ -204,7 +200,7 @@
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack = tracks[0];
-      caller.addTrack(sendingTrack);
+      caller.addTrack(sendingTrack, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -237,7 +233,7 @@
     };
     return getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
-      caller.addTrack(tracks[0]);
+      caller.addTrack(tracks[0], streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -271,7 +267,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return sender.replaceTrack(sendingTrack2);
     }))
     .then(t.step_func(() => {
@@ -300,7 +296,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return exchangeOffer(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -337,7 +333,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -373,7 +369,7 @@
     .then(t.step_func(([tracks, streams]) => {
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
-      sender = caller.addTrack(sendingTrack1);
+      sender = caller.addTrack(sendingTrack1, streams[0]);
       return doSignalingHandshake(caller, callee);
     }))
     .then(t.step_func(() => {
@@ -569,8 +565,8 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
-    let sender1 = pc.addTrack(tracks[0]);
-    let sender2 = pc.addTrack(tracks[1]);
+    let sender1 = pc.addTrack(tracks[0], streams[0]);
+    let sender2 = pc.addTrack(tracks[1], streams[1]);
     await sender2.replaceTrack(sender1.track);
     await promise_rejects(t, 'InvalidAccessError', pc.getStats(sender1.track));
   }, 'RTCPeerConnection.getStats(track) throws InvalidAccessError when there ' +

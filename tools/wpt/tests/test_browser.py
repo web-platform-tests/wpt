@@ -13,7 +13,7 @@ def test_safari_version(mocked_check_output):
 
     # Safari Technology Preview
     mocked_check_output.return_value = 'Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)'
-    assert safari.version(webdriver_binary="safaridriver") == 'Technology Preview (Release 67, 13607.1.9.0.1)'
+    assert safari.version(webdriver_binary="safaridriver") == '67 (13607.1.9.0.1)'
 
 @mock.patch('subprocess.check_output')
 def test_safari_version_errors(mocked_check_output):

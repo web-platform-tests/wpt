@@ -636,6 +636,9 @@ class Safari(Browser):
         # "Included with Safari 12.1 (14607.1.11)"
         # "Included with Safari Technology Preview (Release 67, 13607.1.9.0.1)"
         # The `--version` flag was added in STP 67, so allow the call to fail.
+        # For the two examples, this function will return, respectively:
+        # "12.1 (14607.1.11)"
+        # "67 (13607.1.9.0.1)"
         try:
             version_string = call(webdriver_binary, "--version").strip()
         except subprocess.CalledProcessError:
@@ -645,7 +648,11 @@ class Safari(Browser):
         if not m:
             logger.warn("Failed to extract version from: s%", version_string)
             return None
-        return m.group(1)
+        v = m.group(1)
+        m = re.match(r"Technology Preview \(Release (\d+), (.*)\)", v)
+        if m:
+            return "{} ({})".format(m.group(1), m.group(2))
+        return v
 
 
 class Servo(Browser):

@@ -5,31 +5,28 @@
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
 <link rel="match"  href="backdrop-filter-isolation-ref.html">
 
-<div>
-  <p>Expected: Two green boxes overlapped by a yellow box. The overlapped region<br>
-  of the right-hand box ONLY should be inverted (pink).</p>
-</div>
-<div class="box outside">
-  <div class="box stacking-context">
-    <div class="box filter">
+<div class="outside">
+  <div class="stacking-context">
+    <div class="filter">
     </div>
   </div>
 </div>
 
+
 <style>
-.box {
+div {
   position: absolute;
   width: 100px;
   height: 100px;
   background: green;
 }
 .outside {
-  top: 110px;
+  top: 10px;
   left: 10px;
 }
 .stacking-context {
   position: fixed;
-  top: 110px;
+  top: 10px;
   left: 130px;
 }
 .filter {
@@ -37,8 +34,9 @@
   height: 160px;
   top: 30px;
   left: -90px;
+  opacity: 0.3;
   backdrop-filter: invert(1);
-  background: #ff08;
+  background: yellow;
 }
 </style>
 

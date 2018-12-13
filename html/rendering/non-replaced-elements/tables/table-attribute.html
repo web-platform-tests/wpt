@@ -57,7 +57,6 @@ const alignIds = ["thead", "tbody", "tfoot", "tr", "td", "th"];
 const heightIds = ["tr", "td", "th"];
 const div = document.getElementById("div");
 const table = document.getElementById("table");
-const prefixes = ["-moz-", "-ms-", "-o-", "-webkit-", ""];
 const aligns = [
   ["center", "center"],
   ["middle", "center"],
@@ -86,7 +85,7 @@ function commonAlignTest(id, attr, value, cssProp, expected) {
     });
     elem.setAttribute(attr, value);
     let css = window.getComputedStyle(elem, null).getPropertyValue(cssProp);
-    assert_not_equals(prefixes.map(x => x + expected).indexOf(css), -1);
+    assert_equals(css, expected);
   }, `table ${id} align attribute ${value} is correct`);
 }
 
@@ -165,7 +164,7 @@ test(t => {
 test(t => {
   let elem = document.getElementById("th");
   let css = window.getComputedStyle(elem, null).getPropertyValue("text-align");
-  assert_not_equals(prefixes.map(x => x + "center").indexOf(css), -1);
+  assert_equals(css, "center");
 }, "th default align attribute is center");
 
 // col#width#{pixel, percentage}

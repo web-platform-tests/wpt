@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-position: inter-character (v)</title>
+<meta name="assert" content="ruby-position:intercharacter will make zhuyin annotations appear in vertical columns alongside the base in vertical text.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; font-size: 30%; }
+</style>
+<style type="text/css">/* this is the test */
+.test { -webkit-writing-mode: vertical-lr; writing-mode: tb-rl; writing-mode: vertical-rl; }
+ruby { ruby-position: inter-character; }
+</style>
+</head>
+<body>
+<p class="instructions">Skip if the text is not vertical.<br/>Test passes if the text is vertically set and the tone marks appear in the locations indicated in the images without exceeding the height of the base character.</p>
+<div class="test" lang="zh-hant">
+<p><img src="support/zhuyin-1.png" alt=""/> <img src="support/zhuyin-2.png" alt=""/> <img src="support/zhuyin-3.png" alt=""/></p>
+<p><ruby>安<rt>ㄢ</rt>西<rt>ㄒㄧ</rt>心<rt>ㄒㄧㄣ</rt></ruby></p>
+</div>
+<!-- Notes:
+These tests contain no tone marks. They are very basic. They don't check whether there is some blank space to the right where the tone marks would normally appear.
+-->
+</body>
+</html>

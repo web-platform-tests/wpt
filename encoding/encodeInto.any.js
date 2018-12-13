@@ -3,7 +3,7 @@ function getDestination(bufferSize, viewOffset, viewLength) {
   return [buffer, new Uint8Array(buffer, viewOffset, viewLength)];
 }
 
-function getFilledDestination(bufferSize, viewOffset, viewLength, filler = 0) {
+function getFilledDestination(bufferSize, viewOffset, viewLength, filler) {
   const [buffer, view] = getDestination(bufferSize, viewOffset, viewLength),
         fullView = new Uint8Array(buffer),
         control = new Array(bufferSize);

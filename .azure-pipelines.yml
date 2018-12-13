@@ -81,7 +81,7 @@ jobs:
   - script: |
       set -eux -o pipefail
       git fetch --depth 50 --quiet origin master
-      ./wpt test-jobs | while read job; do
+      ./wpt test-jobs --all | while read job; do
         echo "$job"
         echo "##vso[task.setvariable variable=$job;isOutput=true]true";
       done

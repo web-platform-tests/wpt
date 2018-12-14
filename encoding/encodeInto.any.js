@@ -1,19 +1,3 @@
-function getFilledDestination(bufferSize, viewOffset, viewLength, filler) {
-  const buffer = new ArrayBuffer(bufferSize),
-        view = new Uint8Array(buffer, viewOffset, viewLength),
-        fullView = new Uint8Array(buffer),
-        control = new Array(bufferSize);
-  let byte = filler;
-  for (let i = 0; i < bufferSize; i++) {
-    if (filler === "random") {
-      byte = Math.floor(Math.random() * 256);
-    }
-    control[i] = byte;
-    fullView[i] = byte;
-  }
-  return [buffer, view, fullView, control];
-}
-
 [
   {
     "input": "Hi",
@@ -91,22 +75,40 @@ function getFilledDestination(bufferSize, viewOffset, viewLength, filler) {
     }
   ].forEach(destinationData => {
     test(() => {
-      const encoder = new TextEncoder(),
-            [buffer, view, fullView, control] = getFilledDestination(testData.destinationLength + destinationData.bufferIncrease, destinationData.destinationOffset, testData.destinationLength, destinationData.filler),
-            result = encoder.encodeInto(testData.input, view);
+      // Setup
+      const bufferLength = testData.destinationLength + destinationData.bufferIncrease,
+            destinationOffset = destinationData.destinationOffset,
+            destinationLength = testData.destinationLength,
+            destinationFiller = destinationData.filler,
+            encoder = new TextEncoder(),
+            buffer = new ArrayBuffer(bufferLength),
+            view = new Uint8Array(buffer, destinationOffset, destinationLength),
+            fullView = new Uint8Array(buffer),
+            control = new Array(bufferLength);
+      let byte = destinationFiller;
+      for (let i = 0; i < bufferLength; i++) {
+        if (destinationFiller === "random") {
+          byte = Math.floor(Math.random() * 256);
+        }
+        control[i] = byte;
+        fullView[i] = byte;
+      }
+
+      // It's happening
+      const result = encoder.encodeInto(testData.input, view);
 
       // Basics
-      assert_equals(view.byteLength, testData.destinationLength);
-      assert_equals(view.length, testData.destinationLength);
+      assert_equals(view.byteLength, destinationLength);
+      assert_equals(view.length, destinationLength);
 
       // Remainder
       assert_equals(result.read, testData.read);
       assert_equals(result.written, testData.written.length);
-      for (let i = 0; i < testData.destinationLength + destinationData.bufferIncrease; i++) {
-        if (i < destinationData.destinationOffset || i > (destinationData.destinationOffset + testData.written.length)) {
+      for (let i = 0; i < bufferLength; i++) {
+        if (i < destinationOffset || i > (destinationOffset + testData.written.length)) {
           assert_equals(fullView[i], control[i]);
         } else {
-          assert_equals(fullView[i], testData.written[i - destinationData.destinationOffset]);
+          assert_equals(fullView[i], testData.written[i - destinationOffset]);
         }
       }
     }, "encodeInto() with " + testData.input + " and destination length " + testData.destinationLength + ", offset " + destinationData.destinationOffset + ", filler " + destinationData.filler);

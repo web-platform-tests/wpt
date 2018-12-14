@@ -1,10 +1,6 @@
-function getDestination(bufferSize, viewOffset, viewLength) {
-  const buffer = new ArrayBuffer(bufferSize);
-  return [buffer, new Uint8Array(buffer, viewOffset, viewLength)];
-}
-
 function getFilledDestination(bufferSize, viewOffset, viewLength, filler) {
-  const [buffer, view] = getDestination(bufferSize, viewOffset, viewLength),
+  const buffer = new ArrayBuffer(bufferSize),
+        view = new Uint8Array(buffer, viewOffset, viewLength),
         fullView = new Uint8Array(buffer),
         control = new Array(bufferSize);
   let byte = filler;

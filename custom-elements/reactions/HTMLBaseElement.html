@@ -7,39 +7,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
 </head>
 <script>
 
-testReflectAttribute('href', 'href', '/', '/', 'http://example.com/', 'http://example.com/', 'href on HTMLBaseElement', 'base', HTMLBaseElement);
-testReflectAttribute('target', 'target', '_blank', '_blank', '_self', '_self', 'target on HTMLBaseElement', 'base', HTMLBaseElement);
-
-function testReflectAttribute(jsAtName, coAtName, jsAtValue1, coAtValue1, jsAtValue2, coAtValue2, name, elementName, interfaceName) {
-  test(() => {
-    let element = define_build_in_custom_element([coAtName], interfaceName, elementName);
-    let instance = document.createElement(elementName, { is: element.name });
-
-    assert_array_equals(element.takeLog().types(), ['constructed']);
-    document.head.appendChild(instance);
-    assert_array_equals(element.takeLog().types(), ['connected']);
-    instance[jsAtName] = jsAtValue1;
-    let logEntries = element.takeLog();
-    assert_array_equals(logEntries.types(), ['attributeChanged']);
-    assert_attribute_log_entry(logEntries.last(), { name: coAtName, oldValue: null, newValue: coAtValue1, namespace: null });
-}, name + ' must enqueue an attributeChanged reaction when adding a new attribute');
-
-  test(() => {
-    let element = define_build_in_custom_element([coAtName], interfaceName, elementName);
-    let instance = document.createElement(elementName, { is: element.name });
-    document.head.appendChild(instance);
-
-    assert_array_equals(element.takeLog().types(), ['constructed', 'connected']);
-    instance[jsAtName] = jsAtValue1;
-    assert_array_equals(element.takeLog().types(), ['attributeChanged']);
-    instance[jsAtName] = jsAtValue2;
-    let logEntries = element.takeLog();
-    assert_array_equals(logEntries.types(), ['attributeChanged']);
-    assert_attribute_log_entry(logEntries.last(), { name: coAtName, oldValue: coAtValue1, newValue: coAtValue2, namespace: null });
-  }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
+function pElementNameFunction() {
+  return document.head;
 }
+
+testReflectAttributeWithParentNode('href', 'href', '/', 'http://example.com/', 'href on HTMLBaseElement', 'base', pElementNameFunction, HTMLBaseElement);
+testReflectAttributeWithParentNode('target', 'target', '_blank', '_self', 'target on HTMLBaseElement', 'base', pElementNameFunction, HTMLBaseElement);
 
 </script>

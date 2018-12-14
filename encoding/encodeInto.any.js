@@ -128,3 +128,17 @@
     assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new view(new ArrayBuffer(0))));
   }, "Invalid encodeInto() destination: " + view);
  });
+
+test(() => {
+  assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new ArrayBuffer(10)));
+}, "Invalid encodeInto() destination: ArrayBuffer");
+
+test(() => {
+  const buffer = new ArrayBuffer(10),
+        view = new Uint8Array(buffer);
+  const { read, written } = new TextEncoder().encodeInto("", view);
+  assert_equals(read, 0);
+  assert_equals(written, 0);
+  self.postMessage(buffer, "/", [buffer]);
+  assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", view));
+}, "encodeInto() cannot operate on a detached buffer");

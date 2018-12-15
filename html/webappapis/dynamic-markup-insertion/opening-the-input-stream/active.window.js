@@ -30,6 +30,7 @@ async_test(t => {
   const frame = document.body.appendChild(document.createElement("iframe"));
   t.add_cleanup(() => frame.remove());
   frame.onload = t.step_func(() => {
+    console.log("FIRST LOAD")
     const childFrame = frame.contentDocument.querySelector("iframe");
     const childDoc = childFrame.contentDocument;
     const childWin = childFrame.contentWindow;
@@ -37,6 +38,7 @@ async_test(t => {
     // Right now childDoc is still fully active.
 
     frame.onload = t.step_func_done(() => {
+      console.log("SECOND LOAD")
       // Now childDoc is still active but no longer fully active.
       assertOpenIsEffective(childDoc, 1);
     });

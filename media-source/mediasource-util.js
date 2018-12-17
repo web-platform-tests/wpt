@@ -330,13 +330,14 @@
     };
 
     window['MediaSourceUtil'] = MediaSourceUtil;
-    window['media_test'] = function(testFunction, description)
+    window['media_test'] = function(testFunction, description, options)
     {
+        options = options || {};
         return async_test(function(test)
         {
             addExtraTestMethods(test);
             testFunction(test);
-        }, description);
+        }, description, options);
     };
     window['mediasource_test'] = function(testFunction, description)
     {

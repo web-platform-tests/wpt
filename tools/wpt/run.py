@@ -496,6 +496,8 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
 
     affected_revish = kwargs.pop("affected", None)
     if affected_revish is not None:
+        # TODO: Consolidate with `./wpt tests-affected --ignore-rules`:
+        # https://github.com/web-platform-tests/wpt/issues/14560
         files_changed, _ = testfiles.files_changed(
             affected_revish,
             ignore_rules=["resources/testharness*"],

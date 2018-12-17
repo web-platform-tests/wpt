@@ -45,9 +45,18 @@ window.onload = function () {
     test(function () {
       assert_equals( hashcount, 2, 'the wrong number of queued commands were executed' );
     }, 'queued .go commands should all be executed when the queue is processed');
+
+    // Specification:
+    // https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta
+    // ---
+    // If there is an ongoing attempt to navigate specified browsing context
+    // that has not yet matured (i.e. it has not passed the point of making its
+    // Document the active document), then cancel that attempt to navigate the
+    // browsing context.
+    // ---
     test(function () {
-      assert_equals( location.hash.replace(/^#/,''), '' );
-    }, 'history position should be calculated when executing, not when calling the .go command');
+      assert_equals( location.hash.replace(/^#/,''), 'bar' );
+    }, 'history position should be calculated when calling the .go command');
     done();
   }
 };

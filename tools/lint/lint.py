@@ -16,6 +16,7 @@ from . import fnmatch
 from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
+from ..manifest.vcs import walk
 
 from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants, get_default_any_variants
 from six import binary_type, iteritems, itervalues
@@ -67,14 +68,14 @@ def all_filesystem_paths(repo_root, subdir=None):
         expanded_path = subdir
     else:
         expanded_path = repo_root
-    for dirpath, dirnames, filenames in os.walk(expanded_path):
-        for filename in filenames:
-            path = os.path.relpath(os.path.join(dirpath, filename), repo_root)
-            if path_filter(path):
-                yield path
-        dirnames[:] = [item for item in dirnames if
-                       path_filter(os.path.relpath(os.path.join(dirpath, item) + "/",
-                                                   repo_root)+"/")]
+    for dirpath, dirnames, filenames in path_filter(walk(expanded_path)):
+        for filename, _ in filenames:
+            path = os.path.join(dirpath, filename)
+            if subdir:
+                path = os.path.join(subdir, path)
+            assert not os.path.isabs(path), path
+            yield path
+
 
 def _all_files_equal(paths):
     """
@@ -216,7 +217,8 @@ def check_css_globally_unique(repo_root, paths):
         elif source_file.name_is_reference:
             ref_files[source_file.name].add(path)
         else:
-            test_files[source_file.name].add(path)
+            name = source_file.name.replace('-manual', '')
+            test_files[name].add(path)
 
     errors = []
 
@@ -457,10 +459,15 @@ def check_parsed(repo_root, path, f):
     if source_file.type == "visual" and not source_file.name_is_visual:
         errors.append(("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None))
 
+    about_blank_parts = urlsplit("about:blank")
     for reftest_node in source_file.reftest_nodes:
         href = reftest_node.attrib.get("href", "").strip(space_chars)
         parts = urlsplit(href)
-        if (parts.scheme or parts.netloc) and parts != urlsplit("about:blank"):
+
+        if parts == about_blank_parts:
+            continue
+
+        if (parts.scheme or parts.netloc):
             errors.append(("ABSOLUTE-URL-REF",
                      "Reference test with a reference file specified via an absolute URL: '%s'" % href, path, None))
             continue

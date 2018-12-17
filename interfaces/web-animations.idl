@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content of this file was automatically extracted from the
-// "Web Animations" spec.
-// See: https://w3c.github.io/web-animations/
+// Content was automatically extracted by Reffy into reffy-reports
+// (https://github.com/tidoust/reffy-reports)
+// Source: Web Animations (https://drafts.csswg.org/web-animations-1/)
 
 [Exposed=Window]
 interface AnimationTimeline {
@@ -98,22 +98,22 @@ interface KeyframeEffect : AnimationEffect {
 };
 
 dictionary BaseComputedKeyframe {
-     double?             offset = null;
-     double              computedOffset;
-     DOMString           easing = "linear";
-     CompositeOperation? composite = null;
+     double?                  offset = null;
+     double                   computedOffset;
+     DOMString                easing = "linear";
+     CompositeOperationOrAuto composite = "auto";
 };
 
 dictionary BasePropertyIndexedKeyframe {
     (double? or sequence<double?>)                         offset = [];
     (DOMString or sequence<DOMString>)                     easing = [];
-    (CompositeOperation? or sequence<CompositeOperation?>) composite = [];
+    (CompositeOperationOrAuto or sequence<CompositeOperationOrAuto>) composite = [];
 };
 
 dictionary BaseKeyframe {
-    double?             offset = null;
-    DOMString           easing = "linear";
-    CompositeOperation? composite = null;
+    double?                  offset = null;
+    DOMString                easing = "linear";
+    CompositeOperationOrAuto composite = "auto";
 };
 
 dictionary KeyframeEffectOptions : EffectTiming {
@@ -124,6 +124,8 @@ dictionary KeyframeEffectOptions : EffectTiming {
 enum IterationCompositeOperation {"replace", "accumulate"};
 
 enum CompositeOperation {"replace", "add", "accumulate"};
+
+enum CompositeOperationOrAuto {"replace", "add", "accumulate", "auto"};
 
 interface mixin Animatable {
     Animation           animate (object? keyframes,

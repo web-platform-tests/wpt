@@ -4,6 +4,8 @@ import json
 import os
 import sys
 
+from wptserve import sslutils
+
 import environment as env
 import products
 import testloader
@@ -37,14 +39,17 @@ metadata files are used to store the expected test results.
 def setup_logging(*args, **kwargs):
     global logger
     logger = wptlogging.setup(*args, **kwargs)
+    return logger
 
 
-def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, **kwargs):
+def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
     if run_info_extras is None:
         run_info_extras = {}
 
     run_info = wpttest.get_run_info(kwargs["run_info"], product,
                                     browser_version=kwargs.get("browser_version"),
+                                    browser_channel=kwargs.get("browser_channel"),
+                                    verify=kwargs.get("verify"),
                                     debug=debug,
                                     extras=run_info_extras)
 
@@ -62,6 +67,7 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
     if kwargs["tags"]:
         meta_filters.append(testloader.TagFilter(tags=kwargs["tags"]))
 
+    ssl_enabled = sslutils.get_cls(kwargs["ssl_type"]).ssl_enabled
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         run_info,
@@ -70,7 +76,7 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
                                         chunk_type=kwargs["chunk_type"],
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],
-                                        include_https=ssl_env.ssl_enabled,
+                                        include_https=ssl_enabled,
                                         skip_timeout=kwargs["skip_timeout"])
     return run_info, test_loader
 
@@ -78,11 +84,9 @@ def get_loader(test_paths, product, ssl_env, debug=None, run_info_extras=None, *
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    ssl_env = env.ssl_env(logger, **kwargs)
-
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
@@ -96,9 +100,7 @@ def list_disabled(test_paths, product, **kwargs):
 
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    ssl_env = env.ssl_env(logger, **kwargs)
-
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.iteritems():
@@ -110,11 +112,9 @@ def list_disabled(test_paths, product, **kwargs):
 def list_tests(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    ssl_env = env.ssl_env(logger, **kwargs)
-
     run_info_extras = products.load_product(kwargs["config"], product)[-1](**kwargs)
 
-    run_info, test_loader = get_loader(test_paths, product, ssl_env,
+    run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
     for test in test_loader.test_ids:
@@ -126,6 +126,8 @@ def get_pause_after_test(test_loader, **kwargs):
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat_until_unexpected"]:
             return False
+        if kwargs["headless"]:
+            return False
         if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and total_tests == 1:
             return True
         return False
@@ -136,34 +138,22 @@ def run_tests(config, test_paths, product, **kwargs):
     with wptlogging.CaptureIO(logger, not kwargs["no_capture_stdio"]):
         env.do_delayed_imports(logger, test_paths)
 
-        (check_args,
-         target_browser_cls, get_browser_kwargs,
-         executor_classes, get_executor_kwargs,
-         env_options, get_env_extras, run_info_extras) = products.load_product(config, product)
+        product = products.load_product(config, product, load_cls=True)
 
-        ssl_env = env.ssl_env(logger, **kwargs)
-        env_extras = get_env_extras(**kwargs)
+        env_extras = product.get_env_extras(**kwargs)
 
-        check_args(**kwargs)
+        product.check_args(**kwargs)
 
         if kwargs["install_fonts"]:
             env_extras.append(FontInstaller(
                 font_dir=kwargs["font_dir"],
-                ahem=os.path.join(kwargs["tests_root"], "fonts/Ahem.ttf")
+                ahem=os.path.join(test_paths["/"]["tests_path"], "fonts/Ahem.ttf")
             ))
 
-        if "test_loader" in kwargs:
-            run_info = wpttest.get_run_info(kwargs["run_info"], product,
-                                            browser_version=kwargs.get("browser_version"),
-                                            debug=None,
-                                            extras=run_info_extras(**kwargs))
-            test_loader = kwargs["test_loader"]
-        else:
-            run_info, test_loader = get_loader(test_paths,
-                                               product,
-                                               ssl_env,
-                                               run_info_extras=run_info_extras(**kwargs),
-                                               **kwargs)
+        run_info, test_loader = get_loader(test_paths,
+                                           product.name,
+                                           run_info_extras=product.run_info_extras(**kwargs),
+                                           **kwargs)
 
         test_source_kwargs = {"processes": kwargs["processes"]}
         if kwargs["run_by_dir"] is False:
@@ -175,16 +165,26 @@ def run_tests(config, test_paths, product, **kwargs):
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
+        skipped_tests = 0
         test_total = 0
         unexpected_total = 0
 
         kwargs["pause_after_test"] = get_pause_after_test(test_loader, **kwargs)
 
+        ssl_config = {"type": kwargs["ssl_type"],
+                      "openssl": {"openssl_binary": kwargs["openssl_binary"]},
+                      "pregenerated": {"host_key_path": kwargs["host_key_path"],
+                                       "host_cert_path": kwargs["host_cert_path"],
+                                       "ca_cert_path": kwargs["ca_cert_path"]}}
+
+        testharness_timeout_multipler = product.get_timeout_multiplier("testharness", run_info, **kwargs)
+
         with env.TestEnvironment(test_paths,
-                                 ssl_env,
+                                 testharness_timeout_multipler,
                                  kwargs["pause_after_test"],
                                  kwargs["debug_info"],
-                                 env_options,
+                                 product.env_options,
+                                 ssl_config,
                                  env_extras) as test_environment:
             try:
                 test_environment.ensure_started()
@@ -205,7 +205,10 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 test_count = 0
                 unexpected_count = 0
-                logger.suite_start(test_loader.test_ids, name='web-platform-test', run_info=run_info)
+                logger.suite_start(test_loader.test_ids,
+                                   name='web-platform-test',
+                                   run_info=run_info,
+                                   extra={"run_by_dir": kwargs["run_by_dir"]})
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
 
@@ -217,42 +220,38 @@ def run_tests(config, test_paths, product, **kwargs):
                     if test_type == "wdspec":
                         browser_cls = NullBrowser
                     else:
-                        browser_cls = target_browser_cls
+                        browser_cls = product.browser_cls
 
-                    browser_kwargs = get_browser_kwargs(test_type,
-                                                        run_info,
-                                                        ssl_env=ssl_env,
-                                                        config=test_environment.config,
-                                                        **kwargs)
+                    browser_kwargs = product.get_browser_kwargs(test_type,
+                                                                run_info,
+                                                                config=test_environment.config,
+                                                                **kwargs)
 
-                    executor_cls = executor_classes.get(test_type)
-                    executor_kwargs = get_executor_kwargs(test_type,
-                                                          test_environment.config,
-                                                          test_environment.cache_manager,
-                                                          run_info,
-                                                          **kwargs)
+                    executor_cls = product.executor_classes.get(test_type)
+                    executor_kwargs = product.get_executor_kwargs(test_type,
+                                                                  test_environment.config,
+                                                                  test_environment.cache_manager,
+                                                                  run_info,
+                                                                  **kwargs)
 
                     if executor_cls is None:
                         logger.error("Unsupported test type %s for product %s" %
-                                     (test_type, product))
+                                     (test_type, product.name))
                         continue
 
                     for test in test_loader.disabled_tests[test_type]:
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
+                        skipped_tests += 1
 
                     if test_type == "testharness":
                         run_tests = {"testharness": []}
                         for test in test_loader.tests["testharness"]:
-                            if test.testdriver and not executor_cls.supports_testdriver:
+                            if ((test.testdriver and not executor_cls.supports_testdriver) or
+                                (test.jsshell and not executor_cls.supports_jsshell)):
                                 logger.test_start(test.id)
                                 logger.test_end(test.id, status="SKIP")
-                            elif test.jsshell and not executor_cls.supports_jsshell:
-                                # We expect that tests for JavaScript shells
-                                # will not be run along with tests that run in
-                                # a full web browser, so we silently skip them
-                                # here.
-                                pass
+                                skipped_tests += 1
                             else:
                                 run_tests["testharness"].append(test)
                     else:
@@ -270,26 +269,32 @@ def run_tests(config, test_paths, product, **kwargs):
                                       kwargs["pause_after_test"],
                                       kwargs["pause_on_unexpected"],
                                       kwargs["restart_on_unexpected"],
-                                      kwargs["debug_info"]) as manager_group:
+                                      kwargs["debug_info"],
+                                      not kwargs["no_capture_stdio"]) as manager_group:
                         try:
                             manager_group.run(test_type, run_tests)
                         except KeyboardInterrupt:
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
-                    test_count += manager_group.test_count()
-                    unexpected_count += manager_group.unexpected_count()
+                        test_count += manager_group.test_count()
+                        unexpected_count += manager_group.unexpected_count()
 
                 test_total += test_count
                 unexpected_total += unexpected_count
                 logger.info("Got %i unexpected results" % unexpected_count)
+                logger.suite_end()
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
-                logger.suite_end()
+                if len(test_loader.test_ids) == skipped_tests:
+                    break
 
     if test_total == 0:
-        logger.error("No tests ran")
-        return False
+        if skipped_tests > 0:
+            logger.warning("All requested tests were skipped")
+        else:
+            logger.error("No tests ran")
+            return False
 
     if unexpected_total and not kwargs["fail_on_unexpected"]:
         logger.info("Tolerating %s unexpected results" % unexpected_total)
@@ -316,6 +321,7 @@ def check_stability(**kwargs):
                                      output_results=kwargs['verify_output_results'],
                                      **kwargs)
 
+
 def start(**kwargs):
     if kwargs["list_test_groups"]:
         list_test_groups(**kwargs)
@@ -324,7 +330,7 @@ def start(**kwargs):
     elif kwargs["list_tests"]:
         list_tests(**kwargs)
     elif kwargs["verify"] or kwargs["stability"]:
-        check_stability(**kwargs)
+        return check_stability(**kwargs)
     else:
         return not run_tests(**kwargs)
 

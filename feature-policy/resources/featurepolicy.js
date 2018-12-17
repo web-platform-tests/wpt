@@ -22,7 +22,7 @@ function assert_feature_policy_supported() {
 //      attribute. "feature_name" is the feature name of a policy controlled
 //      feature (https://wicg.github.io/feature-policy/#features).
 //      See examples at:
-//      https://github.com/WICG/feature-policy/blob/gh-pages/features.md
+//      https://github.com/WICG/feature-policy/blob/master/features.md
 //    allow_attribute: Optional argument, only used for testing fullscreen or
 //      payment: either "allowfullscreen" or "allowpaymentrequest" is passed.
 function test_feature_availability(
@@ -396,14 +396,15 @@ function test_subframe_header_policy(
 // by iframe allow attribute.
 // Arguments:
 //     feature: feature name.
-//     src: the URL to load in the frame.
+//     src: the URL to load in the frame. If undefined, the iframe will have a
+//         srcdoc="" attribute
 //     test_expect: boolean value of whether the feature should be allowed.
 //     allow: optional, the allow attribute (container policy) of the iframe.
 //     allowfullscreen: optional, boolean value of allowfullscreen attribute.
 //     sandbox: optional boolean. If true, the frame will be sandboxed (with
 //         allow-scripts, so that tests can run in it.)
 function test_frame_policy(
-    feature, src, test_expect, allow, allowfullscreen, sandbox) {
+    feature, src, srcdoc, test_expect, allow, allowfullscreen, sandbox) {
   let frame = document.createElement('iframe');
   document.body.appendChild(frame);
   // frame_policy should be dynamically updated as allow and allowfullscreen is
@@ -418,7 +419,12 @@ function test_frame_policy(
   if (!!sandbox) {
     frame.setAttribute('sandbox', 'allow-scripts');
   }
-  frame.src = src;
+  if (!!src) {
+    frame.src = src;
+  }
+  if (!!srcdoc) {
+    frame.srcdoc = "<h1>Hello world!</h1>";
+  }
   if (test_expect) {
     assert_true(frame_policy.allowedFeatures().includes(feature));
   } else {

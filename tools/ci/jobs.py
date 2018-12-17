@@ -23,7 +23,7 @@ job_path_map = {
                   "!css/[^/]*$"],
     "lint": [".*"],
     "manifest_upload": [".*"],
-    "resources_unittest": ["resources/"],
+    "resources_unittest": ["resources/", "tools/"],
     "tools_unittest": ["tools/"],
     "wptrunner_unittest": ["tools/wptrunner/*"],
     "build_css": ["css/"],
@@ -31,8 +31,17 @@ job_path_map = {
                      "html/",
                      "offscreen-canvas/"],
     "wpt_integration": ["tools/"],
-    "wptrunner_infrastructure": ["infrastructure/", "tools/"],
+    "wptrunner_infrastructure": ["infrastructure/", "tools/", "resources/"],
 }
+
+
+def _path_norm(path):
+    """normalize a path for both case and slashes (to /)"""
+    path = os.path.normcase(path)
+    if os.path.sep != "/":
+        # this must be after the normcase call as that does slash normalization
+        path = path.replace(os.path.sep, "/")
+    return path
 
 
 class Ruleset(object):
@@ -40,6 +49,7 @@ class Ruleset(object):
         self.include = []
         self.exclude = []
         for rule in rules:
+            rule = _path_norm(rule)
             self.add_rule(rule)
 
     def add_rule(self, rule):
@@ -52,9 +62,7 @@ class Ruleset(object):
         target.append(re.compile("^%s" % rule))
 
     def __call__(self, path):
-        if os.path.sep != "/":
-            path = path.replace(os.path.sep, "/")
-        path = os.path.normcase(path)
+        path = _path_norm(path)
         for item in self.exclude:
             if item.match(path):
                 return False
@@ -82,6 +90,9 @@ def get_paths(**kwargs):
 
 
 def get_jobs(paths, **kwargs):
+    if kwargs.get("all"):
+        return set(job_path_map.keys())
+
     jobs = set()
 
     rules = {}
@@ -113,6 +124,7 @@ def get_jobs(paths, **kwargs):
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the commits on the current branch", nargs="?")
+    parser.add_argument("--all", help="List all jobs unconditionally.", action="store_true")
     parser.add_argument("--includes", default=None, help="Jobs to check for. Return code is 0 if all jobs are found, otherwise 1", nargs="*")
     return parser
 

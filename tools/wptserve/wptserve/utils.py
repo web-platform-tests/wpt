@@ -1,8 +1,9 @@
 import socket
+import sys
 
 def invert_dict(dict):
     rv = {}
-    for key, values in dict.iteritems():
+    for key, values in dict.items():
         for value in values:
             if value in rv:
                 raise ValueError
@@ -98,7 +99,7 @@ def is_bad_port(port):
         6697,  # irc+tls
     ]
 
-def get_port(host):
+def get_port(host=''):
     port = 0
     while True:
         free_socket = _open_socket(host, 0)
@@ -107,3 +108,10 @@ def get_port(host):
         if not is_bad_port(port):
             break
     return port
+
+def http2_compatible():
+    # Currently, the HTTP/2.0 server is only working in python 2.7.10+ and OpenSSL 1.0.2+
+    import ssl
+    ssl_v = ssl.OPENSSL_VERSION_INFO
+    return ((sys.version_info[0] == 2 and sys.version_info[1] == 7 and sys.version_info[2] >= 10) and
+            (ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2))))

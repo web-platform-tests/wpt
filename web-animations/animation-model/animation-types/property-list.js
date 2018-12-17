@@ -196,7 +196,7 @@ const gCSSProperties = {
   'border-image-repeat': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-repeat
     types: [
-      { type: 'discrete', options: [ [ 'stretch stretch', 'repeat repeat' ] ] }
+      { type: 'discrete', options: [ [ 'stretch repeat', 'round space' ] ] }
     ]
   },
   'border-image-slice': {
@@ -361,13 +361,13 @@ const gCSSProperties = {
   'color-interpolation': {
     // https://svgwg.org/svg2-draft/painting.html#ColorInterpolationProperty
     types: [
-      { type: 'discrete', options: [ [ 'linearRGB', 'auto' ] ] }
+      { type: 'discrete', options: [ [ 'linearrgb', 'auto' ] ] }
     ]
   },
   'color-interpolation-filters': {
     // https://drafts.fxtf.org/filters-1/#propdef-color-interpolation-filters
     types: [
-      { type: 'discrete', options: [ [ 'sRGB', 'linearRGB' ] ] }
+      { type: 'discrete', options: [ [ 'srgb', 'linearrgb' ] ] }
     ]
   },
   'column-count': {
@@ -413,12 +413,6 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
     ]
   },
-  'contain': {
-    // https://drafts.csswg.org/css-containment/#propdef-contain
-    types: [
-      { type: 'discrete', options: [ [ 'strict', 'none' ] ] }
-    ]
-  },
   'content': {
     // https://drafts.csswg.org/css-content-3/#propdef-content
     types: [
@@ -444,12 +438,6 @@ const gCSSProperties = {
     // https://drafts.csswg.org/css2/ui.html#propdef-cursor
     types: [
       { type: 'discrete', options: [ [ 'pointer', 'wait' ] ] }
-    ]
-  },
-  'direction': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-direction
-    types: [
-      { type: 'discrete', options: [ [ 'ltr', 'rtl' ] ] }
     ]
   },
   'dominant-baseline': {
@@ -711,13 +699,13 @@ const gCSSProperties = {
   'hyphens': {
     // https://drafts.csswg.org/css-text-3/#propdef-hyphens
     types: [
-      { type: 'discrete', options: [ [ 'manual', 'auto' ] ] }
+      { type: 'discrete', options: [ [ 'manual', 'none' ] ] }
     ]
   },
   'image-orientation': {
     // https://drafts.csswg.org/css-images-3/#propdef-image-orientation
     types: [
-      { type: 'discrete', options: [ [ '0deg', '90deg' ] ] }
+      { type: 'discrete', options: [ [ 'none', 'from-image' ] ] }
     ]
   },
   'image-rendering': {
@@ -997,23 +985,28 @@ const gCSSProperties = {
     types: [
     ]
   },
-  'offset-block-end': {
-    // https://drafts.csswg.org/css-logical-props/#propdef-offset-block-end
+  'inset-block-end': {
+    // https://drafts.csswg.org/css-logical-props/#propdef-inset-block-end
     types: [
     ]
   },
-  'offset-block-start': {
-    // https://drafts.csswg.org/css-logical-props/#propdef-offset-block-start
+  'inset-block-start': {
+    // https://drafts.csswg.org/css-logical-props/#propdef-inset-block-start
     types: [
     ]
   },
-  'offset-inline-end': {
-    // https://drafts.csswg.org/css-logical-props/#propdef-offset-inline-end
+  'inset-inline-end': {
+    // https://drafts.csswg.org/css-logical-props/#propdef-inset-inline-end
     types: [
     ]
   },
-  'offset-inline-start': {
-    // https://drafts.csswg.org/css-logical-props/#propdef-offset-inline-start
+  'inset-inline-start': {
+    // https://drafts.csswg.org/css-logical-props/#propdef-inset-inline-start
+    types: [
+    ]
+  },
+  'offset-path': {
+    // https://drafts.fxtf.org/motion-1/#offset-path-property
     types: [
     ]
   },
@@ -1340,12 +1333,6 @@ const gCSSProperties = {
     types: [
     ]
   },
-  'text-orientation': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-text-orientation
-    types: [
-      { type: 'discrete', options: [ [ 'upright', 'sideways' ] ] }
-    ]
-  },
   'text-overflow': {
     // https://drafts.csswg.org/css-ui/#propdef-text-overflow
     types: [
@@ -1424,12 +1411,6 @@ const gCSSProperties = {
     // https://drafts.csswg.org/css-transforms-2/#individual-transforms
     types: [ 'scaleList' ]
   },
-  'unicode-bidi': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-unicode-bidi
-    types: [
-      { type: 'discrete', options: [ [ 'embed', 'bidi-override' ] ] },
-    ]
-  },
   'vector-effect': {
     // https://svgwg.org/svg2-draft/coords.html#VectorEffectProperty
     types: [
@@ -1465,18 +1446,6 @@ const gCSSProperties = {
   'word-spacing': {
     // https://drafts.csswg.org/css-text-3/#propdef-word-spacing
     types: [ 'lengthPercentageOrCalc' ]
-  },
-  'will-change': {
-    // http://dev.w3.org/csswg/css-will-change/#propdef-will-change
-    types: [
-      { type: 'discrete', options: [ [ 'scroll-position', 'contents' ] ] }
-    ]
-  },
-  'writing-mode': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-writing-mode
-    types: [
-      { type: 'discrete', options: [ [ 'vertical-rl', 'sideways-rl' ] ] }
-    ]
   },
   'z-index': {
     // https://drafts.csswg.org/css-position/#propdef-z-index
@@ -1526,12 +1495,34 @@ function testAnimationSamplesWithAnyOrder(animation, idlName, testSamples) {
   }
 }
 
+function RoundMatrix(style) {
+  var matrixMatch = style.match(/^(matrix(3d)?)\(.+\)$/);
+  if (!!matrixMatch) {
+    var matrixType = matrixMatch[1];
+    var matrixArgs = style.substr(matrixType.length);
+    var extractmatrix = function(matrixStr) {
+      var list = [];
+      var regex = /[+\-]?[0-9]+[.]?[0-9]*(e[+/-][0-9]+)?/g;
+      var match = undefined;
+      do {
+        match = regex.exec(matrixStr);
+        if (match) {
+          list.push(parseFloat(parseFloat(match[0]).toFixed(6)));
+        }
+      } while (match);
+      return list;
+    }
+    return matrixType + '(' + extractmatrix(matrixArgs).join(', ') + ')';
+  }
+  return style;
+}
+
 function testAnimationSampleMatrices(animation, idlName, testSamples) {
   const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    const actual = getComputedStyle(target)[idlName];
-    const expected = createMatrixFromArray(testSample.expected);
+    const actual = RoundMatrix(getComputedStyle(target)[idlName]);
+    const expected = RoundMatrix(createMatrixFromArray(testSample.expected));
     assert_matrix_equals(actual, expected,
                          `The value should be ${expected} at`
                          + ` ${testSample.time}ms but got ${actual}`);

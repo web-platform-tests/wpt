@@ -3,18 +3,21 @@ import os
 import subprocess
 import time
 import sys
-import urllib2
+from six.moves import urllib
 
 
 class WPTServer(object):
     def __init__(self, wpt_root):
         self.wpt_root = wpt_root
+
+        # This is a terrible hack to get the default config of wptserve.
         sys.path.insert(0, os.path.join(wpt_root, "tools"))
-        from serve.serve import Config
-        config = Config()
-        self.host = config["browser_host"]
-        self.http_port = config["ports"]["http"][0]
-        self.https_port = config["ports"]["https"][0]
+        from serve.serve import build_config
+        with build_config() as config:
+            self.host = config["browser_host"]
+            self.http_port = config["ports"]["http"][0]
+            self.https_port = config["ports"]["https"][0]
+
         self.base_url = 'http://%s:%s' % (self.host, self.http_port)
         self.https_base_url = 'https://%s:%s' % (self.host, self.https_port)
 
@@ -35,9 +38,9 @@ class WPTServer(object):
                 logging.warn('Command "%s" exited with %s', ' '.join(wptserve_cmd), exit_code)
                 break
             try:
-                urllib2.urlopen(self.base_url, timeout=1)
+                urllib.request.urlopen(self.base_url, timeout=1)
                 return
-            except urllib2.URLError:
+            except urllib.error.URLError:
                 pass
 
         raise Exception('Could not start wptserve on %s' % self.base_url)

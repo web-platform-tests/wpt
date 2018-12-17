@@ -11,9 +11,8 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   generateOffer
   //   generateAnswer
-  //   assert_session_desc_equals
+  //   assert_session_desc_similar
 
   /*
     4.3.2.  Interface Definition
@@ -65,7 +64,7 @@
     const states = [];
     pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return pc.createOffer({ offerToReceiveVideo: true })
+    return generateVideoReceiveOnlyOffer(pc)
     .then(offer =>
       pc.setRemoteDescription(offer)
       .then(() => pc.createAnswer())
@@ -73,11 +72,11 @@
         pc.setLocalDescription(answer)
         .then(() => {
           assert_equals(pc.signalingState, 'stable');
-          assert_session_desc_equals(pc.localDescription, answer);
-          assert_session_desc_equals(pc.remoteDescription, offer);
+          assert_session_desc_similar(pc.localDescription, answer);
+          assert_session_desc_similar(pc.remoteDescription, offer);
 
-          assert_session_desc_equals(pc.currentLocalDescription, answer);
-          assert_session_desc_equals(pc.currentRemoteDescription, offer);
+          assert_session_desc_similar(pc.currentLocalDescription, answer);
+          assert_session_desc_similar(pc.currentRemoteDescription, offer);
 
           assert_equals(pc.pendingLocalDescription, null);
           assert_equals(pc.pendingRemoteDescription, null);
@@ -97,7 +96,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return pc.createOffer({ offerToReceiveVideo: true })
+    return generateVideoReceiveOnlyOffer(pc)
     .then(offer =>
       pc.setRemoteDescription(offer)
       .then(() => pc.createAnswer())
@@ -105,11 +104,11 @@
         pc.setLocalDescription({ type: 'answer' })
         .then(() => {
           assert_equals(pc.signalingState, 'stable');
-          assert_session_desc_equals(pc.localDescription, answer);
-          assert_session_desc_equals(pc.remoteDescription, offer);
+          assert_session_desc_similar(pc.localDescription, answer);
+          assert_session_desc_similar(pc.remoteDescription, offer);
 
-          assert_session_desc_equals(pc.currentLocalDescription, answer);
-          assert_session_desc_equals(pc.currentRemoteDescription, offer);
+          assert_session_desc_similar(pc.currentLocalDescription, answer);
+          assert_session_desc_similar(pc.currentRemoteDescription, offer);
 
           assert_equals(pc.pendingLocalDescription, null);
           assert_equals(pc.pendingRemoteDescription, null);
@@ -128,7 +127,7 @@
 
     t.add_cleanup(() => pc.close());
 
-    return pc.createOffer({ offerToReceiveVideo: true })
+    return generateVideoReceiveOnlyOffer(pc)
     .then(offer =>
       pc.setRemoteDescription(offer)
       .then(() => generateAnswer(offer))

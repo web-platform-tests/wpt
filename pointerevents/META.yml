@@ -1,10 +1,8 @@
+spec: https://w3c.github.io/pointerevents/
 suggested_reviewers:
-  - bethge
   - Steditor
-  - EvgenyAgafonchikov
   - jacobrossi
   - plehegar
   - scottgonzalez
-  - staktrace
   - RByers
   - NavidZ

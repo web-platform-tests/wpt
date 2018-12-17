@@ -458,15 +458,18 @@ function setupFonts(func) {
             savedValues[key] = document.body.style.getPropertyValue(key);
             document.body.style.setProperty(key, value);
         });
-        func.apply(this, arguments);
-        each(fontProperties, function (key, value) {
-            if (value) {
-                document.body.style.setProperty(key, value);
-            }
-            else {
-                document.body.style.removeProperty(key);
-            }
-        });
+        try {
+            func.apply(this, arguments);
+        } finally {
+            each(savedValues, function (key, value) {
+                if (value) {
+                    document.body.style.setProperty(key, value);
+                }
+                else {
+                    document.body.style.removeProperty(key);
+                }
+            });
+        }
     };
 }
 
@@ -815,7 +818,7 @@ var calcTestValues = [
     // of a dimension and a percentage.
     // http://www.w3.org/TR/css3-values/#calc-notation
     ["calc(25%*3 - 10in)", "calc(75% - 10in)", ["calc(75% - 960px)", "calc(-960px + 75%)"]],
-    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", ["calc((75% + 960px) / 4)", "calc(240px + 18.75%)"]]
+    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", ["calc((75% + 960px) / 4)", "calc(18.75% + 240px)"]]
 ]
 
 return {

@@ -1,8 +1,10 @@
 import os
 import unittest
-import urllib2
 import time
 import json
+import sys
+
+from six.moves import urllib
 
 import pytest
 
@@ -35,7 +37,7 @@ class TestHeader(TestUsingServer):
 
     def test_multiple_append(self):
         resp = self.request("/document.txt", query="pipe=header(X-Test,1)|header(X-Test,2,True)")
-        self.assertEqual(resp.info()["X-Test"], "1, 2")
+        self.assert_multiple_headers(resp, "X-Test", ["1", "2"])
 
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
@@ -56,30 +58,33 @@ class TestSlice(TestUsingServer):
 class TestSub(TestUsingServer):
     def test_sub_config(self):
         resp = self.request("/sub.txt", query="pipe=sub")
-        expected = "localhost localhost %i" % self.server.port
+        expected = b"localhost localhost %i" % self.server.port
         self.assertEqual(resp.read().rstrip(), expected)
 
+    @pytest.mark.xfail(sys.platform == "win32",
+                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_file_hash(self):
         resp = self.request("/sub_file_hash.sub.txt")
-        expected = """
+        expected = b"""
 md5: JmI1W8fMHfSfCarYOSxJcw==
 sha1: nqpWqEw4IW8NjD6R375gtrQvtTo=
 sha224: RqQ6fMmta6n9TuA/vgTZK2EqmidqnrwBAmQLRQ==
 sha256: G6Ljg1uPejQxqFmvFOcV/loqnjPTW5GSOePOfM/u0jw=
 sha384: lkXHChh1BXHN5nT5BYhi1x67E1CyYbPKRKoF2LTm5GivuEFpVVYtvEBHtPr74N9E
-sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dXaICz
-JwGFonfXwg=="""
+sha512: r8eLGRTc7ZznZkFjeVLyo6/FyQdra9qmlYCwKKxm3kfQAswRS9+3HsYk3thLUhcFmmWhK4dXaICzJwGFonfXwg=="""
         self.assertEqual(resp.read().rstrip(), expected.strip())
 
     def test_sub_file_hash_unrecognized(self):
-        with self.assertRaises(urllib2.HTTPError):
+        with self.assertRaises(urllib.error.HTTPError):
             self.request("/sub_file_hash_unrecognized.sub.txt")
 
     def test_sub_headers(self):
         resp = self.request("/sub_headers.txt", query="pipe=sub", headers={"X-Test": "PASS"})
-        expected = "PASS"
+        expected = b"PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
+    @pytest.mark.xfail(sys.platform == "win32",
+                       reason="https://github.com/web-platform-tests/wpt/issues/12949")
     def test_sub_location(self):
         resp = self.request("/sub_location.sub.txt?query_string")
         expected = """
@@ -90,27 +95,36 @@ pathname: /sub_location.sub.txt
 port: {0}
 query: ?query_string
 scheme: http
-server: http://localhost:{0}""".format(self.server.port)
+server: http://localhost:{0}""".format(self.server.port).encode("ascii")
         self.assertEqual(resp.read().rstrip(), expected.strip())
 
     def test_sub_params(self):
         resp = self.request("/sub_params.txt", query="test=PASS&pipe=sub")
-        expected = "PASS"
+        expected = b"PASS"
         self.assertEqual(resp.read().rstrip(), expected)
 
     def test_sub_url_base(self):
         resp = self.request("/sub_url_base.sub.txt")
-        self.assertEqual(resp.read().rstrip(), "Before / After")
+        self.assertEqual(resp.read().rstrip(), b"Before / After")
 
     def test_sub_uuid(self):
         resp = self.request("/sub_uuid.sub.txt")
-        self.assertRegexpMatches(resp.read().rstrip(), r"Before [a-f0-9-]+ After")
+        self.assertRegexpMatches(resp.read().rstrip(), b"Before [a-f0-9-]+ After")
 
     def test_sub_var(self):
         resp = self.request("/sub_var.sub.txt")
         port = self.server.port
-        expected = "localhost %s A %s B localhost C" % (port, port)
+        expected = b"localhost %d A %d B localhost C" % (port, port)
         self.assertEqual(resp.read().rstrip(), expected)
+
+    def test_sub_fs_path(self):
+        resp = self.request("/subdir/sub_path.sub.txt")
+        root = os.path.abspath(doc_root)
+        expected = """%(root)s%(sep)ssubdir%(sep)ssub_path.sub.txt
+%(root)s%(sep)ssub_path.sub.txt
+%(root)s%(sep)ssub_path.sub.txt
+""" % {"root": root, "sep": os.path.sep}
+        self.assertEqual(resp.read(), expected.encode("utf8"))
 
 class TestTrickle(TestUsingServer):
     def test_trickle(self):
@@ -131,7 +145,7 @@ class TestTrickle(TestUsingServer):
 class TestPipesWithVariousHandlers(TestUsingServer):
     def test_with_python_file_handler(self):
         resp = self.request("/test_string.py", query="pipe=slice(null,2)")
-        self.assertEqual(resp.read(), "PA")
+        self.assertEqual(resp.read(), b"PA")
 
     def test_with_python_func_handler(self):
         @wptserve.handlers.handler
@@ -140,7 +154,7 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         route = ("GET", "/test/test_pipes_1/", handler)
         self.server.router.register(*route)
         resp = self.request(route[1], query="pipe=slice(null,2)")
-        self.assertEqual(resp.read(), "PA")
+        self.assertEqual(resp.read(), b"PA")
 
     def test_with_python_func_handler_using_response_writer(self):
         @wptserve.handlers.handler
@@ -150,7 +164,7 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         self.server.router.register(*route)
         resp = self.request(route[1], query="pipe=slice(null,2)")
         # slice has not been applied to the response, because response.writer was used.
-        self.assertEqual(resp.read(), "PASS")
+        self.assertEqual(resp.read(), b"PASS")
 
     def test_header_pipe_with_python_func_using_response_writer(self):
         @wptserve.handlers.handler
@@ -161,7 +175,7 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         resp = self.request(route[1], query="pipe=header(X-TEST,FAIL)")
         # header pipe was ignored, because response.writer was used.
         self.assertFalse(resp.info().get("X-TEST"))
-        self.assertEqual(resp.read(), "CONTENT")
+        self.assertEqual(resp.read(), b"CONTENT")
 
     def test_with_json_handler(self):
         @wptserve.handlers.json_handler
@@ -170,7 +184,7 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         route = ("GET", "/test/test_pipes_2/", handler)
         self.server.router.register(*route)
         resp = self.request(route[1], query="pipe=slice(null,2)")
-        self.assertEqual(resp.read(), '"{')
+        self.assertEqual(resp.read(), b'"{')
 
     def test_slice_with_as_is_handler(self):
         resp = self.request("/test.asis", query="pipe=slice(null,2)")
@@ -178,7 +192,7 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         self.assertEqual("Giraffe", resp.msg)
         self.assertEqual("PASS", resp.info()["X-Test"])
         # slice has not been applied to the response, because response.writer was used.
-        self.assertEqual("Content", resp.read())
+        self.assertEqual(b"Content", resp.read())
 
     def test_headers_with_as_is_handler(self):
         resp = self.request("/test.asis", query="pipe=header(X-TEST,FAIL)")
@@ -186,13 +200,13 @@ class TestPipesWithVariousHandlers(TestUsingServer):
         self.assertEqual("Giraffe", resp.msg)
         # header pipe was ignored.
         self.assertEqual("PASS", resp.info()["X-TEST"])
-        self.assertEqual("Content", resp.read())
+        self.assertEqual(b"Content", resp.read())
 
     def test_trickle_with_as_is_handler(self):
         t0 = time.time()
         resp = self.request("/test.asis", query="pipe=trickle(1:d2:5:d1:r2)")
         t1 = time.time()
-        self.assertTrue('Content' in resp.read())
+        self.assertTrue(b'Content' in resp.read())
         self.assertGreater(6, t1-t0)
 
 if __name__ == '__main__':

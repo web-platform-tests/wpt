@@ -8,7 +8,7 @@ import uuid
 
 from mozprocess import ProcessHandler
 
-from serve.serve import make_hosts_file
+from tools.serve.serve import make_hosts_file
 
 from .base import (ConnectionlessProtocol,
                    RefTestImplementation,
@@ -122,7 +122,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                     self.proc.wait()
                 else:
                     self.proc.kill()
-        except KeyboardInterrupt:
+        except:  # noqa
             self.proc.kill()
             raise
 

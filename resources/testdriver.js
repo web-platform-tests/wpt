@@ -1,5 +1,6 @@
 (function() {
     "use strict";
+    var idCounter = 0;
 
     function getInViewCenterPoint(rect) {
         var left = Math.max(0, rect.left);
@@ -46,6 +47,42 @@
      * @namespace
      */
     window.test_driver = {
+        /**
+         * Trigger user interaction in order to grant additional privileges to
+         * a provided function.
+         *
+         * https://html.spec.whatwg.org/#triggered-by-user-activation
+         *
+         * @param {String} intent - a description of the action which much be
+         *                          triggered by user interaction
+         * @param {Function} action - code requiring escalated privileges
+         *
+         * @returns {Promise} fulfilled following user interaction and
+         *                    execution of the provided `action` function;
+         *                    rejected if interaction fails or the provided
+         *                    function throws an error
+         */
+        bless: function(intent, action) {
+            var button = document.createElement("button");
+            button.innerHTML = "This test requires user interaction.<br />" +
+                "Please click here to allow " + intent + ".";
+            button.id = "wpt-test-driver-bless-" + (idCounter += 1);
+            const elem = document.body || document.documentElement;
+            elem.appendChild(button);
+
+            return new Promise(function(resolve, reject) {
+                    button.addEventListener("click", resolve);
+
+                    test_driver.click(button).catch(reject);
+                }).then(function() {
+                    button.remove();
+
+                    if (typeof action === "function") {
+                        return action();
+                    }
+                });
+        },
+
         /**
          * Triggers a user-initiated click
          *
@@ -134,6 +171,29 @@
          */
         freeze: function() {
             return window.test_driver_internal.freeze();
+        },
+
+        /**
+         * Send a sequence of actions
+         *
+         * This function sends a sequence of actions to the top level window
+         * to perform. It is modeled after the behaviour of {@link
+         * https://w3c.github.io/webdriver/#actions|WebDriver Actions Command}
+         *
+         * @param {Array} actions - an array of actions. The format is the same as the actions
+                                    property of the WebDriver command {@link
+                                    https://w3c.github.io/webdriver/#perform-actions|Perform
+                                    Actions} command. Each element is an object representing an
+                                    input source and each input source itself has an actions
+                                    property detailing the behaviour of that source at each timestep
+                                    (or tick). Authors are not expected to construct the actions
+                                    sequence by hand, but to use the builder api provided in
+                                    testdriver-actions.js
+         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         *                    the cases the WebDriver command errors
+         */
+        action_sequence: function(actions) {
+            return window.test_driver_internal.action_sequence(actions);
         }
     };
 
@@ -204,6 +264,16 @@
          * it gets rejected
          */
         freeze: function() {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        /**
+         * Send a sequence of pointer actions
+         *
+         * @returns {Promise} fufilled after actions are sent, rejected if any actions
+         *                    fail
+         */
+        action_sequence: function(actions) {
             return Promise.reject(new Error("unimplemented"));
         }
     };

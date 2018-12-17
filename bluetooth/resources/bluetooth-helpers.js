@@ -26,8 +26,9 @@ function performChromiumSetup() {
   // Load the Chromium-specific resources.
   let prefix = '/resources/chromium';
   let extra = [];
-  if (window.location.pathname.includes('/LayoutTests/')) {
-    let root = window.location.pathname.match(/.*LayoutTests/);
+  const pathname = window.location.pathname;
+  if (pathname.includes('/LayoutTests/') || pathname.includes('/web_tests/')) {
+    let root = pathname.match(/.*(?:LayoutTests|web_tests)/);
     prefix = `${root}/external/wpt/resources/chromium`;
     extra = [
       `${root}/resources/bluetooth/bluetooth-fake-adapter.js`,
@@ -39,7 +40,7 @@ function performChromiumSetup() {
   }
   return loadScripts([
     `${prefix}/mojo_bindings.js`,
-    `${prefix}/mojo_layouttest_test.mojom.js`,
+    `${prefix}/mojo_web_test_helper_test.mojom.js`,
     `${prefix}/uuid.mojom.js`,
     `${prefix}/fake_bluetooth.mojom.js`,
     `${prefix}/fake_bluetooth_chooser.mojom.js`,

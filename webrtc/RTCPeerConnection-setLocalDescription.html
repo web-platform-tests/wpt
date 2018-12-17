@@ -11,9 +11,9 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   generateOffer
-  //   assert_session_desc_not_equals
-  //   assert_session_desc_equals
+  //   generateDataChannelOffer
+  //   assert_session_desc_not_similar
+  //   assert_session_desc_similar
 
   /*
     4.3.2.  Interface Definition
@@ -50,23 +50,23 @@
     const states = [];
     pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return pc.createOffer({ offerToReceiveAudio: true })
+    return generateAudioReceiveOnlyOffer(pc)
     .then(offer1 =>
       pc.setLocalDescription(offer1)
       .then(() => generateAnswer(offer1))
       .then(answer => pc.setRemoteDescription(answer))
       .then(() => {
         pc.createDataChannel('test');
-        return pc.createOffer({ offerToReceiveVideo: true });
+        return generateVideoReceiveOnlyOffer(pc);
       })
       .then(offer2 =>
         pc.setLocalDescription(offer2)
         .then(() => {
           assert_equals(pc.signalingState, 'have-local-offer');
-          assert_session_desc_not_equals(offer1, offer2);
-          assert_session_desc_equals(pc.localDescription, offer2);
-          assert_session_desc_equals(pc.currentLocalDescription, offer1);
-          assert_session_desc_equals(pc.pendingLocalDescription, offer2);
+          assert_session_desc_not_similar(offer1, offer2);
+          assert_session_desc_similar(pc.localDescription, offer2);
+          assert_session_desc_similar(pc.currentLocalDescription, offer1);
+          assert_session_desc_similar(pc.pendingLocalDescription, offer2);
 
           assert_array_equals(states, ['have-local-offer', 'stable', 'have-local-offer']);
         })));
@@ -79,19 +79,19 @@
     const states = [];
     pc.addEventListener('signalingstatechange', () => states.push(pc.signalingState));
 
-    return generateOffer({ pc, data: true })
+    return generateDataChannelOffer(pc)
     .then(offer => pc.setRemoteDescription(offer))
     .then(() => pc.createAnswer())
     .then(answer =>
       pc.setLocalDescription(answer)
-      .then(() => pc.createOffer({ offerToReceiveVideo: true }))
+      .then(() => generateVideoReceiveOnlyOffer(pc))
       .then(offer =>
         pc.setLocalDescription(offer)
         .then(() => {
           assert_equals(pc.signalingState, 'have-local-offer');
-          assert_session_desc_equals(pc.localDescription, offer);
-          assert_session_desc_equals(pc.currentLocalDescription, answer);
-          assert_session_desc_equals(pc.pendingLocalDescription, offer);
+          assert_session_desc_similar(pc.localDescription, offer);
+          assert_session_desc_similar(pc.currentLocalDescription, answer);
+          assert_session_desc_similar(pc.pendingLocalDescription, offer);
 
           assert_array_equals(states, ['have-remote-offer', 'stable', 'have-local-offer']);
         })));

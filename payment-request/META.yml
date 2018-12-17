@@ -1,7 +1,10 @@
+spec: https://w3c.github.io/payment-request/
 suggested_reviewers:
   - marcoscaceres
   - rsolomakhin
   - domenic
-  - MSFTkihans
+  - zouhir
   - mnoorenberghe
+  - romandev
   - edenchuang
+  - aestes

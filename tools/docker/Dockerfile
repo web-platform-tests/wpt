@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # No interactive frontend during docker build
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -10,6 +10,7 @@ RUN apt-get -qqy update \
     bzip2 \
     ca-certificates \
     dbus-x11 \
+    earlyoom \
     gdebi \
     git \
     locales \

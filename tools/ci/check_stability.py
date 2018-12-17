@@ -11,7 +11,7 @@ here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 sys.path.insert(0, wpt_root)
 
-from tools.wpt import testfiles
+from tools.wpt import run as wptrun, testfiles
 from tools.wpt.testfiles import get_git_cmd
 from tools.wpt.virtualenv import Virtualenv
 from tools.wpt.utils import Kwargs
@@ -20,7 +20,7 @@ from tools.wpt import markdown
 from tools import localpaths  # noqa: F401
 
 logger = None
-run_step, write_inconsistent, write_results = None, None, None
+run_step, write_inconsistent, write_slow_tests, write_results = None, None, None, None
 wptrunner = None
 
 def setup_logging():
@@ -32,12 +32,12 @@ def setup_logging():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
-
+    wptrun.setup_logging({})
 
 def do_delayed_imports():
-    global wptrunner, run_step, write_inconsistent, write_results
+    global wptrunner, run_step, write_inconsistent, write_slow_tests, write_results
     from wptrunner import wptrunner
-    from wptrunner.stability import run_step, write_inconsistent, write_results
+    from wptrunner.stability import run_step, write_inconsistent, write_slow_tests, write_results
 
 
 class TravisFold(object):
@@ -110,7 +110,7 @@ def call(*args):
 
     Returns a bytestring of the subprocess output if no error.
     """
-    logger.debug("%s" % " ".join(args))
+    logger.debug(" ".join(args))
     try:
         return subprocess.check_output(args)
     except subprocess.CalledProcessError as e:
@@ -118,6 +118,7 @@ def call(*args):
                         (e.cmd, e.returncode))
         logger.critical(e.output)
         raise
+
 
 def fetch_wpt(user, *args):
     git = get_git_cmd(wpt_root)
@@ -175,7 +176,7 @@ def pr():
     return pr if pr != "false" else None
 
 
-def get_changed_files(manifest_path, rev, ignore_changes, skip_tests):
+def get_changed_files(manifest_path, rev, ignore_changes):
     if not rev:
         branch_point = testfiles.branch_point()
         revish = "%s..HEAD" % branch_point
@@ -188,7 +189,7 @@ def get_changed_files(manifest_path, rev, ignore_changes, skip_tests):
         logger.info("Ignoring %s changed files:\n%s" %
                     (len(files_ignored), "".join(" * %s\n" % item for item in files_ignored)))
 
-    tests_changed, files_affected = testfiles.affected_testfiles(files_changed, skip_tests,
+    tests_changed, files_affected = testfiles.affected_testfiles(files_changed,
                                                                  manifest_path=manifest_path)
 
     return tests_changed, files_affected
@@ -207,6 +208,8 @@ def main():
 def run(venv, wpt_args, **kwargs):
     do_delayed_imports()
 
+    setup_logging()
+
     retcode = 0
 
     wpt_args = create_parser().parse_args(wpt_args)
@@ -214,7 +217,6 @@ def run(venv, wpt_args, **kwargs):
     with open(kwargs["config_file"], 'r') as config_fp:
         config = SafeConfigParser()
         config.readfp(config_fp)
-        skip_tests = config.get("file detection", "skip_tests").split()
         ignore_changes = set(config.get("file detection", "ignore_changes").split())
 
     if kwargs["output_bytes"] is not None:
@@ -227,8 +229,6 @@ def run(venv, wpt_args, **kwargs):
         os.makedirs(wpt_args.metadata_root)
     except OSError:
         pass
-
-    setup_logging()
 
     pr_number = pr()
 
@@ -249,7 +249,7 @@ def run(venv, wpt_args, **kwargs):
         if not wpt_kwargs["test_list"]:
             manifest_path = os.path.join(wpt_kwargs["metadata_root"], "MANIFEST.json")
             tests_changed, files_affected = get_changed_files(manifest_path, kwargs["rev"],
-                                                              ignore_changes, skip_tests)
+                                                              ignore_changes)
 
             if not (tests_changed or files_affected):
                 logger.info("No tests changed")
@@ -266,13 +266,15 @@ def run(venv, wpt_args, **kwargs):
         do_delayed_imports()
 
         wpt_kwargs["prompt"] = False
-        wpt_kwargs["install_browser"] = True
-        wpt_kwargs["install"] = wpt_kwargs["product"].split(":")[0] == "firefox"
+        wpt_kwargs["install_browser"] = wpt_kwargs["product"].split(":")[0] == "firefox"
 
         wpt_kwargs["pause_after_test"] = False
         wpt_kwargs["verify_log_full"] = False
         if wpt_kwargs["repeat"] == 1:
             wpt_kwargs["repeat"] = 10
+        wpt_kwargs["headless"] = False
+
+        wpt_kwargs["log_tbpl"] = [sys.stdout]
 
         wpt_kwargs = setup_wptrunner(venv, **wpt_kwargs)
 
@@ -283,11 +285,14 @@ def run(venv, wpt_args, **kwargs):
         logger.info("Starting tests")
 
         wpt_logger = wptrunner.logger
-        results, inconsistent, iterations = run_step(wpt_logger, wpt_kwargs["repeat"], True, {}, **wpt_kwargs)
+        results, inconsistent, slow, iterations = run_step(wpt_logger, wpt_kwargs["repeat"], True, {}, **wpt_kwargs)
 
     if results:
         if inconsistent:
             write_inconsistent(logger.error, inconsistent, iterations)
+            retcode = 2
+        elif slow:
+            write_slow_tests(logger.error, slow)
             retcode = 2
         else:
             logger.info("All results were stable\n")

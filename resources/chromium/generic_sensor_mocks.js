@@ -109,7 +109,7 @@ var GenericSensorTest = (() => {
       this.readingSizeInBytes_ =
           device.mojom.SensorInitParams.kReadBufferSizeForTests;
       this.sharedBufferSizeInBytes_ = this.readingSizeInBytes_ *
-              device.mojom.SensorType.LAST;
+              (device.mojom.SensorType.MAX_VALUE + 1);
       let rv = Mojo.createSharedBuffer(this.sharedBufferSizeInBytes_);
       assert_equals(rv.result, Mojo.RESULT_OK, "Failed to create buffer");
       this.sharedBufferHandle_ = rv.handle;
@@ -130,8 +130,7 @@ var GenericSensorTest = (() => {
     }
 
     async getSensor(type) {
-      const offset = (device.mojom.SensorType.LAST - type) *
-                      this.readingSizeInBytes_;
+      const offset = type * this.readingSizeInBytes_;
       const reportingMode = device.mojom.ReportingMode.ON_CHANGE;
 
       let sensorPtr = new device.mojom.SensorPtr();
@@ -167,23 +166,13 @@ var GenericSensorTest = (() => {
               initParams: initParams};
     }
 
-    async reset() {
+    reset() {
       if (this.activeSensor_ !== null) {
         this.activeSensor_.reset();
         this.activeSensor_ = null;
       }
-      // Wait for an event loop iteration to let
-      // the pending mojo commands pass.
-      function schedule(func) {
-        return new Promise(resolve => {
-          setTimeout(() => {
-            func();
-            resolve();
-          }, 0);
-        });
-      }
-      await schedule(this.binding_.close.bind(this.binding_));
-      await schedule(this.interceptor_.stop.bind(this.interceptor_));
+      this.binding_.close();
+      this.interceptor_.stop();
     }
   }
 
@@ -216,9 +205,13 @@ var GenericSensorTest = (() => {
     async reset() {
       if (!testInternal.initialized)
         throw new Error('Call initialize() before reset().');
-      await testInternal.sensorProvider.reset();
+      testInternal.sensorProvider.reset();
       testInternal.sensorProvider = null;
       testInternal.initialized = false;
+
+      // Wait for an event loop iteration to let any pending mojo commands in
+      // the sensor provider finish.
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
   }
 

@@ -161,9 +161,9 @@ Test is finished.
 promise_test(test_function, name, properties)
 ```
 
-`test_function` is a function that receives a test as an argument and returns a
-promise. The test completes when the returned promise resolves. The test fails
-if the returned promise rejects.
+`test_function` is a function that receives a test as an argument. It must
+return a promise. The test completes when the returned promise resolves. The
+test fails if the returned promise rejects.
 
 E.g.:
 
@@ -318,6 +318,16 @@ the test result is known. For example:
   }, "Calling document.getElementById with a null argument.");
 ```
 
+If the test was created using the `promise_test` API, then cleanup functions
+may optionally return a "thenable" value (i.e. an object which defines a `then`
+method). `testharness.js` will assume that such values conform to [the
+ECMAScript standard for
+Promises](https://tc39.github.io/ecma262/#sec-promise-objects) and delay the
+completion of the test until all "thenables" provided in this way have settled.
+All callbacks will be invoked synchronously; tests that require more complex
+cleanup behavior should manage execution order explicitly. If any of the
+eventual values are rejected, the test runner will report an error.
+
 ## Timeouts in Tests ##
 
 In general the use of timeouts in tests is discouraged because this is
@@ -424,7 +434,7 @@ is called, the two conditions above apply like normal.
 Dedicated and shared workers don't have an event that corresponds to the `load`
 event in a document. Therefore these worker tests always behave as if the
 `explicit_done` property is set to true. Service workers depend on the
-[install](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-install-event)
+[install](https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event)
 event which is fired following the completion of [running the
 worker](https://html.spec.whatwg.org/multipage/workers.html#run-a-worker).
 
@@ -600,7 +610,7 @@ capable of accessing the browsing context as either an ancestor or opener.
 
 The `testharness.js` script can be used from within [dedicated workers, shared
 workers](https://html.spec.whatwg.org/multipage/workers.html) and [service
-workers](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/).
+workers](https://w3c.github.io/ServiceWorker/).
 
 Testing from a worker script is different from testing from an HTML document in
 several ways:
@@ -627,7 +637,7 @@ several ways:
   complete](#determining-when-all-tests-are-complete)). So these worker tests
   behave as if they were started with the `explicit_done` option. Service
   workers depend on the
-  [oninstall](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-install-event)
+  [oninstall](https://w3c.github.io/ServiceWorker/#service-worker-global-scope-install-event)
   event and don't require an explicit `done` call.
 
 Here's an example that uses a dedicated worker.
@@ -664,7 +674,7 @@ fetch_tests_from_worker(new Worker("worker.js"));
 The argument to the `fetch_tests_from_worker` function can be a
 [`Worker`](https://html.spec.whatwg.org/multipage/workers.html#dedicated-workers-and-the-worker-interface),
 a [`SharedWorker`](https://html.spec.whatwg.org/multipage/workers.html#shared-workers-and-the-sharedworker-interface)
-or a [`ServiceWorker`](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#service-worker-obj).
+or a [`ServiceWorker`](https://w3c.github.io/ServiceWorker/#serviceworker-interface).
 Once called, the containing document fetches all the tests from the worker and
 behaves as if those tests were running in the containing document itself.
 
@@ -699,6 +709,11 @@ Relies on `===`, distinguishes between `-0` and `+0`, and has a specific check f
 ### `assert_in_array(actual, expected, description)`
 asserts that `expected` is an Array, and `actual` is equal to one of the
 members i.e. `expected.indexOf(actual) != -1`
+
+### `assert_object_equals(actual, expected, description)`
+asserts that `actual` is an object and not null and that all enumerable
+properties on `actual` are own properties on `expected` with the same values,
+recursing if the value is an object and not null.
 
 ### `assert_array_equals(actual, expected, description)`
 asserts that `actual` and `expected` have the same
@@ -743,6 +758,9 @@ asserts that the class string of `object` as returned in
 ### `assert_own_property(object, property_name, description)`
 assert that object has own property `property_name`
 
+### `assert_not_own_property(object, property_name, description)`
+assert that object does not have an own property named `property_name`
+
 ### `assert_inherits(object, property_name, description)`
 assert that object does not have an own property named
 `property_name` but that `property_name` is present in the prototype
@@ -777,14 +795,6 @@ asserts that one `assert_func(actual, expected_array_N, extra_arg1, ..., extra_a
   with multiple allowed pass conditions are bad practice unless the spec specifically
   allows multiple behaviours. Test authors should not use this method simply to hide
   UA bugs.
-
-### `assert_exists(object, property_name, description)`
-**deprecated**
-asserts that object has an own property `property_name`
-
-### `assert_not_exists(object, property_name, description)`
-**deprecated**
-assert that object does not have own property `property_name`
 
 ## Metadata ##
 

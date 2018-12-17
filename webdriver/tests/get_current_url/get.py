@@ -4,7 +4,7 @@ import types
 
 from tests.support.inline import inline
 from tests.support.asserts import assert_error, assert_success
-from tests.support.wait import wait
+from tests.support.sync import Poll
 
 alert_doc = inline("<script>window.alert()</script>")
 frame_doc = inline("<p>frame")
@@ -17,37 +17,32 @@ def get_current_url(session):
         "GET", "session/{session_id}/url".format(**vars(session)))
 
 
-# TODO(ato): 7.1 Get
+def test_no_browsing_context(session, closed_window):
+    response = get_current_url(session)
+    assert_error(response, "no such window")
 
-
-def test_get_current_url_no_browsing_context(session, create_window):
-    # 7.2 step 1
-    session.window_handle = create_window()
-    session.close()
-
-    result = get_current_url(session)
-    assert_error(result, "no such window")
 
 def test_get_current_url_matches_location(session):
-    # 7.2 step 3
     url = session.execute_script("return window.location.href")
 
     result = get_current_url(session)
     assert_success(result, url)
 
+
 def test_get_current_url_payload(session):
-    # 7.2 step 4-5
     session.start()
 
     result = get_current_url(session)
     assert result.status == 200
     assert isinstance(result.body["value"], basestring)
 
+
 def test_get_current_url_special_pages(session):
     session.url = "about:blank"
 
     result = get_current_url(session)
     assert_success(result, "about:blank")
+
 
 # TODO(ato): This test requires modification to pass on Windows
 def test_get_current_url_file_protocol(session):
@@ -58,9 +53,11 @@ def test_get_current_url_file_protocol(session):
     result = get_current_url(session)
     assert_success(result, "file:///")
 
+
 # TODO(ato): Test for http:// and https:// protocols.
 # We need to expose a fixture for accessing
 # documents served by wptserve in order to test this.
+
 
 def test_set_malformed_url(session):
     result = session.transport.send("POST",
@@ -72,9 +69,8 @@ def test_set_malformed_url(session):
 def test_get_current_url_after_modified_location(session):
     start = get_current_url(session)
     session.execute_script("window.location.href = 'about:blank#wd_test_modification'")
-    wait(session,
-         lambda _: get_current_url(session).body["value"] != start.body["value"],
-         "URL did not change")
+    Poll(session, message="URL did not change").until(
+         lambda s: get_current_url(s).body["value"] != start.body["value"])
 
     result = get_current_url(session)
     assert_success(result, "about:blank#wd_test_modification")

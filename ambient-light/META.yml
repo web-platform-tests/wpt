@@ -1,8 +1,7 @@
+spec: https://w3c.github.io/ambient-light/
 suggested_reviewers:
   - zqzhang
-  - Volker-E
   - dontcallmedom
   - riju
-  - alexshalamov
-  - pozdnyakov
+  - rakuco
   - Honry

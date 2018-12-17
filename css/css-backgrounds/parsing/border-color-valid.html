@@ -8,13 +8,12 @@
 <meta name="assert" content="border-color supports the full grammar '<color>{1,4}'.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/parsing-testcommon.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
 </head>
 <body>
 <script>
-// Edge serializes as "currentColor".
-test_valid_value("border-color", "currentcolor", ["currentcolor", "currentColor"]);
-test_valid_value("border-color", "currentColor", ["currentcolor", "currentColor"]);
+test_valid_value("border-color", "currentcolor", "currentcolor");
+test_valid_value("border-color", "currentColor", "currentcolor");
 
 test_valid_value("border-color", "red yellow green blue");
 

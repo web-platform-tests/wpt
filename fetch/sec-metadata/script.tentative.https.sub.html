@@ -7,12 +7,11 @@
 <script src="https://{{host}}:{{ports[https][0]}}/fetch/sec-metadata/resources/echo-as-script.py"></script>
 <script>
   test(t => {
-    t.add_cleanup(_ => header = null);
+    t.add_cleanup(_ => { header = null; });
 
     assert_header_equals(header, {
       "cause": undefined,
       "destination": "script",
-      "target": "subresource",
       "site": "same-origin"
     });
   }, "Same-origin script");
@@ -22,12 +21,11 @@
 <script src="https://{{hosts[][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/echo-as-script.py"></script>
 <script>
   test(t => {
-    t.add_cleanup(_ => header = null);
+    t.add_cleanup(_ => { header = null; });
 
     assert_header_equals(header, {
       "cause": undefined,
       "destination": "script",
-      "target": "subresource",
       "site": "same-site"
     });
   }, "Same-site script");
@@ -37,12 +35,11 @@
 <script src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/fetch/sec-metadata/resources/echo-as-script.py"></script>
 <script>
   test(t => {
-    t.add_cleanup(_ => header = null);
+    t.add_cleanup(_ => { header = null; });
 
     assert_header_equals(header, {
       "cause": undefined,
       "destination": "script",
-      "target": "subresource",
       "site": "cross-site"
     });
   }, "Cross-site script");

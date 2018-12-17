@@ -50,6 +50,7 @@ test_computed_value("grid-auto-columns", "minmax(auto, 0%)");
 test_computed_value("grid-auto-columns", "fit-content(0px)");
 
 // <track-size>+
+// https://bugzilla.mozilla.org/show_bug.cgi?id=1339672
 test_computed_value("grid-auto-columns", "1px 2px 3px 0px");
 test_computed_value("grid-auto-columns", "fit-content(1px) minmax(2px, 3px) 4px");
 </script>

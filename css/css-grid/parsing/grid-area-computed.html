@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>CSS Grid Layout Test: getComputedValue().gridArea</title>
-<link rel="help" href="https://drafts.csswg.org/css-grid-1/#propdef-grid-area">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#placement">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -36,12 +36,15 @@ test_computed_value("grid-column-end", "5 π_");
 // span && [ <integer> || <custom-ident> ]
 test_computed_value("grid-area", "span 2 i / auto / auto / auto");
 test_computed_value("grid-row", "span 2 / auto");
-test_computed_value("grid-column", "span i / auto", "span 1 i / auto");
 test_computed_value("grid-column-start", "span 1 i");
 test_computed_value("grid-row-end", "span 2 i");
 test_computed_value("grid-column-end", "span 2");
+
+// https://github.com/w3c/csswg-drafts/issues/3448
 // grid-row-start  "span i" computes to "span 1 i" on Blink/WebKit,
 // but computes to "span i" on Edge/Firefox.
+// grid-row "span i / auto" computes to "span 1 i / auto" on Blink/WebKit,
+// but computes to "span i / auto" on Edge, empty string on Firefox.
 
 // <grid-line> [ / <grid-line> ]{0,3}
 test_computed_value("grid-area", "auto / i / auto / i");

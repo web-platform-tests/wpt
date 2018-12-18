@@ -41,10 +41,8 @@ test_computed_value("grid-row-end", "span 2 i");
 test_computed_value("grid-column-end", "span 2");
 
 // https://github.com/w3c/csswg-drafts/issues/3448
-// grid-row-start  "span i" computes to "span 1 i" on Blink/WebKit,
-// but computes to "span i" on Edge/Firefox.
-// grid-row "span i / auto" computes to "span 1 i / auto" on Blink/WebKit,
-// but computes to "span i / auto" on Edge, empty string on Firefox.
+test_computed_value("grid-row-start", "span i");
+test_computed_value("grid-row", "span i / auto");
 
 // <grid-line> [ / <grid-line> ]{0,3}
 test_computed_value("grid-area", "auto / i / auto / i");

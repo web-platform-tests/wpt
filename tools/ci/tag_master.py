@@ -11,8 +11,6 @@ wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 if not(wpt_root in sys.path):
     sys.path.append(wpt_root)
 
-from tools.wpt.testfiles import get_git_cmd
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -51,15 +49,16 @@ def get_pr(owner, repo, sha):
     return pr["number"]
 
 
-def tag(owner, repo, sha, tag):
-    data = json.dumps({"ref": "refs/tags/%s" % tag,
-                       "sha": sha})
+def tag(owner, repo, sha, tag, auth, staging):
+    ref = "refs/tags/%s" % tag
+    if staging:
+        ref = "refs/staging/tags/%s" % tag
+    data = json.dumps({"ref": ref, "sha": sha})
     try:
         url = "https://api.github.com/repos/%s/%s/git/refs" % (owner, repo)
         req = urllib2.Request(url, data=data)
 
-        base64string = base64.b64encode(os.environ["GH_TOKEN"])
-        req.add_header("Authorization", "Basic %s" % base64string)
+        req.add_header("Authorization", auth)
 
         opener = urllib2.build_opener(urllib2.HTTPSHandler())
 
@@ -78,21 +77,40 @@ def tag(owner, repo, sha, tag):
 
 
 def main():
-    owner, repo = os.environ["TRAVIS_REPO_SLUG"].split("/", 1)
-    if os.environ["TRAVIS_PULL_REQUEST"] != "false":
-        logger.info("Not tagging for PR")
-        return
-    if os.environ["TRAVIS_BRANCH"] != "master":
-        logger.info("Not tagging for non-master branch")
-        return
+    # TODO(foolip): remove the staging flag and Travis job once GitHub Actions
+    # has proven stable enough.
+    staging = False
+    if "GITHUB_ACTION" in os.environ:
+        staging = True
 
-    git = get_git_cmd(wpt_root)
-    head_rev = git("rev-parse", "HEAD")
+        owner, repo = os.environ["GITHUB_REPOSITORY"].split("/", 1)
 
-    pr = get_pr(owner, repo, head_rev)
+        if os.environ["GITHUB_REF"] != "refs/heads/master":
+            logger.error("Not tagging for non-master branch")
+            sys.exit(1)
+
+        auth = "token %s" % os.environ["GITHUB_TOKEN"]
+
+        sha = os.environ["GITHUB_SHA"]
+    else:
+        owner, repo = os.environ["TRAVIS_REPO_SLUG"].split("/", 1)
+
+        if os.environ["TRAVIS_PULL_REQUEST"] != "false":
+            logger.info("Not tagging for PR")
+            return
+
+        if os.environ["TRAVIS_BRANCH"] != "master":
+            logger.info("Not tagging for non-master branch")
+            return
+
+        auth = "Basic %s" % base64.b64encode(os.environ["GH_TOKEN"])
+
+        sha = os.environ["TRAVIS_COMMIT"]
+
+    pr = get_pr(owner, repo, sha)
     if pr is None:
         sys.exit(1)
-    tagged = tag(owner, repo, head_rev, "merge_pr_%s" % pr)
+    tagged = tag(owner, repo, sha, "merge_pr_%s" % pr, auth, staging)
     if not tagged:
         sys.exit(1)
 

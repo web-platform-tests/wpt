@@ -239,6 +239,10 @@
             return new Promise(function(resolve, reject) {
                 var seen = "";
 
+                function remove() {
+                    element.removeEventListener("keydown", onKeyDown);
+                }
+
                 function onKeyDown(event) {
                     if (event.key.length > 1) {
                         return;
@@ -248,8 +252,10 @@
 
                     if (keys.indexOf(seen) !== 0) {
                         reject(new Error("Unexpected key sequence: " + seen));
+                        remove();
                     } else if (seen === keys) {
                         resolve();
+                        remove();
                     }
                 }
 

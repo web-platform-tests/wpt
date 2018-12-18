@@ -291,13 +291,13 @@ class OpenSSLEnvironment(object):
         return OpenSSL(self.logger, self.binary, self.base_path, conf_path, hosts,
                        self.duration, self.base_conf_path)
 
-    def ca_cert_path(self):
+    def ca_cert_path(self, hosts):
         """Get the path to the CA certificate file, generating a
         new one if needed"""
         if self._ca_cert_path is None and not self.force_regenerate:
             self._load_ca_cert()
         if self._ca_cert_path is None:
-            self._generate_ca()
+            self._generate_ca(hosts)
         return self._ca_cert_path
 
     def _load_ca_cert(self):
@@ -330,7 +330,7 @@ class OpenSSLEnvironment(object):
         #TODO: check the key actually signed the cert.
         return True
 
-    def _generate_ca(self):
+    def _generate_ca(self, hosts):
         path = self.path
         self.logger.info("Generating new CA in %s" % self.base_path)
 
@@ -338,7 +338,7 @@ class OpenSSLEnvironment(object):
         req_path = path("careq.pem")
         cert_path = path("cacert.pem")
 
-        with self._config_openssl(None) as openssl:
+        with self._config_openssl(hosts) as openssl:
             openssl("req",
                     "-batch",
                     "-new",
@@ -395,7 +395,7 @@ class OpenSSLEnvironment(object):
     def _generate_host_cert(self, hosts):
         host = hosts[0]
         if self._ca_key_path is None:
-            self._generate_ca()
+            self._generate_ca(hosts)
         ca_key_path = self._ca_key_path
 
         assert os.path.exists(ca_key_path)

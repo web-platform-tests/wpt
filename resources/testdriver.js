@@ -232,7 +232,7 @@
          *                    an incorrect key sequence is received
          */
         send_keys: function(element, keys) {
-            if (!window.test_driver_internal.in_automation) {
+            if (this.in_automation) {
                 return Promise.reject(new Error('Not implemented'));
             }
 

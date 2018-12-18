@@ -11,8 +11,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  // exchangeIceCandidates
-  // doSignalingHandshake
+  // doSignalingAndCandidateHandshake
 
   /*
     4.3.2.  Interface Definition
@@ -105,8 +104,8 @@
   async_test(t => {
     const pc1 = new RTCPeerConnection();
     t.add_cleanup(() => pc1.close());
-    const pc2 = new RTCPeerConnection();
 
+    const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
     const onIceConnectionStateChange = t.step_func(() => {
@@ -139,8 +138,8 @@
 
     pc1.addEventListener('iceconnectionstatechange', onIceConnectionStateChange);
 
-    exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2);
+    doSignalingAndCandidateHandshake(pc1, pc2)
+    .catch(t.unreached_func('handshake error'));
   }, 'connection with one data channel should eventually have connected connection state');
 
   /*

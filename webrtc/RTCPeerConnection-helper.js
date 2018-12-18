@@ -159,19 +159,17 @@ function test_never_resolve(testFunc, testName) {
   }, testName);
 }
 
-// Helper function to exchange ice candidates between
-// two local peer connections
-function exchangeIceCandidates(pc1, pc2) {
+// Helper function to exchange ice candidates between two local peer connections.
+// Accepts an optional handshakePromise to wait for setRemoteDescription() to be
+// done before calling addIceCandidate().
+function exchangeIceCandidates(pc1, pc2, handshakePromise) {
   // private function
   function doExchange(localPc, remotePc) {
-    localPc.addEventListener('icecandidate', event => {
+    localPc.addEventListener('icecandidate', async event => {
       const { candidate } = event;
 
-      // candidate may be null to indicate end of candidate gathering.
-      // There is ongoing discussion on w3c/webrtc-pc#1213
-      // that there should be an empty candidate string event
-      // for end of candidate for each m= section.
       if(candidate && remotePc.signalingState !== 'closed') {
+        await handshakePromise
         remotePc.addIceCandidate(candidate);
       }
     });
@@ -183,15 +181,23 @@ function exchangeIceCandidates(pc1, pc2) {
 
 // Helper function for doing one round of offer/answer exchange
 // betweeen two local peer connections
-function doSignalingHandshake(localPc, remotePc) {
-  return localPc.createOffer()
-  .then(offer => Promise.all([
-    localPc.setLocalDescription(offer),
-    remotePc.setRemoteDescription(offer)]))
-  .then(() => remotePc.createAnswer())
-  .then(answer => Promise.all([
-    remotePc.setLocalDescription(answer),
-    localPc.setRemoteDescription(answer)]))
+async function doSignalingHandshake(localPc, remotePc) {
+  const offer = await localPc.createOffer();
+  await localPc.setLocalDescription(offer);
+  await remotePc.setRemoteDescription(offer);
+
+  const answer = await remotePc.createAnswer();
+  await remotePc.setLocalDescription(answer);
+  await localPc.setRemoteDescription(answer);
+}
+
+// Helper function to do both signaling handshake and ICE candidates
+// exchange. The two tasks are done in parallel in a safe way, with
+// care to make sure addIceCandidate() called after setRemoteDescription().
+async function doSignalingAndCandidateHandshake(pc1, pc2) {
+  const handshakePromise = doSignalingHandshake(pc1, pc2)
+  exchangeIceCandidates(pc1, pc2, handshakePromise)
+  await handshakePromise
 }
 
 // Helper function to create a pair of connected data channel.
@@ -204,8 +210,6 @@ function createDataChannelPair(
   pc2=new RTCPeerConnection())
 {
   const channel1 = pc1.createDataChannel('');
-
-  exchangeIceCandidates(pc1, pc2);
 
   return new Promise((resolve, reject) => {
     let channel2;
@@ -245,7 +249,8 @@ function createDataChannelPair(
 
     pc2.addEventListener('datachannel', onDataChannel);
 
-    doSignalingHandshake(pc1, pc2);
+    doSignalingAndCandidateHandshake(pc1, pc2)
+    .catch(reject);
   });
 }
 

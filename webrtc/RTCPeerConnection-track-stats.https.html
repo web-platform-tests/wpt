@@ -402,8 +402,7 @@
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
-    exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await doSignalingAndCandidateHandshake(caller, callee);
     await onIceConnectionStateCompleted(caller);
     let receiver = caller.getReceivers()[0];
 
@@ -450,8 +449,7 @@
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
-    exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await doSignalingAndCandidateHandshake(caller, callee);
     await onIceConnectionStateCompleted(caller);
     let receiver = caller.getReceivers()[0];
 
@@ -498,8 +496,7 @@
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
-    exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await doSignalingAndCandidateHandshake(caller, callee);
     await onIceConnectionStateCompleted(caller);
 
     // Wait until RTCP has arrived so that it can not arrive between
@@ -529,8 +526,7 @@
     let [tracks, streams] = await getUserMediaTracksAndStreams(2);
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
-    exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await doSignalingAndCandidateHandshake(caller, callee);
     await onIceConnectionStateCompleted(caller);
     let receiver = caller.getReceivers()[0];
 

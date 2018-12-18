@@ -12,8 +12,7 @@
 
   // The following helper function is called from RTCPeerConnection-helper.js
   //   getTrackFromUserMedia
-  //   exchangeIceCandidates
-  //   doSignalingHandshake
+  //   doSignalingAndCandidateHandshake
 
   /*
     5.3.  RTCRtpReceiver Interface
@@ -58,8 +57,7 @@
     return getTrackFromUserMedia('audio')
     .then(([track, mediaStream]) => {
       pc1.addTrack(track, mediaStream);
-      exchangeIceCandidates(pc1, pc2);
-      return doSignalingHandshake(pc1, pc2);
+      return doSignalingAndCandidateHandshake(pc1, pc2);
     })
     .then(() => ontrackPromise)
     .then(receiver => {

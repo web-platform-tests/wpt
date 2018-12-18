@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CSSOM ComputedStyle for line-height returns resolved value</title>
+    <link rel="help" href="https://drafts.csswg.org/cssom/#resolved-value">
+    <meta name="author" title="Emil A Eklund" href="mailto:eae@chromium.org">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      p { font-size: 20px; display: none; }
+    </style>
+  </head>
+  <body>
+    <p id="test">
+      Test paragraph
+    </p>
+    <script>
+      var element = document.getElementById('test');
+      function lineHeight(element) {
+        return window.getComputedStyle(element)['line-height'];
+      }
+      let paragraphs = document.getElementsByTagName('p');
+
+      test(function() {
+        element.style.lineHeight = 'normal';
+        // line-height default value of roughly 1.2 in most browsers, depending
+        // on the font. Allow a ~25% tolerance.
+        assert_approx_equals(parseInt(lineHeight(element), 10), 24, 5);
+      }, "font-size 20px, line-height 'normal' (default ~1.2) => ~24px");
+
+      test(function() {
+        element.style.lineHeight = '-1';
+        assert_approx_equals(parseInt(lineHeight(element), 10), 24, 5);
+      }, "font-size 20px, line-height -1 (default ~1.2) => ~24px");
+
+      test(function() {
+        element.style.lineHeight = '0';
+        assert_equals(lineHeight(element), '0px');
+      }, "font-size 20px, line-height 0 => 0px");
+
+      test(function() {
+        element.style.lineHeight = '1.0';
+        assert_equals(lineHeight(element), '20px');
+      }, "font-size 20px, line-height 1 => 20px");
+
+      test(function() {
+        element.style.lineHeight = '1.1';
+        assert_equals(lineHeight(element), '22px');
+      }, "font-size 20px, line-height 1.1 => 22px");
+
+      test(function() {
+        element.style.lineHeight = '50%';
+        assert_equals(lineHeight(element), '10px');
+      }, "font-size 20px, line-height 50% => 10px");
+
+      test(function() {
+        element.style.lineHeight = '0.5em';
+        assert_equals(lineHeight(element), '10px');
+      }, "font-size 20px, line-height 0.5em => 10px");
+
+      test(function() {
+        element.style.lineHeight = '1em';
+        assert_equals(lineHeight(element), '20px');
+      }, "font-size 20px, line-height 1em => 20px");
+
+      test(function() {
+        element.style.lineHeight = '2em';
+        assert_equals(lineHeight(element), '40px');
+      }, "font-size 20px, line-height 2em => 40px");
+    </script>
+  </body>
+</html>

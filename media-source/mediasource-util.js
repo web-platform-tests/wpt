@@ -339,7 +339,7 @@
             testFunction(test);
         }, description, options);
     };
-    window['mediasource_test'] = function(testFunction, description)
+    window['mediasource_test'] = function(testFunction, description, options)
     {
         return media_test(function(test)
         {
@@ -362,10 +362,10 @@
             {
                 testFunction(test, mediaTag, mediaSource);
             });
-        }, description);
+        }, description, options);
     };
 
-    window['mediasource_testafterdataloaded'] = function(testFunction, description)
+    window['mediasource_testafterdataloaded'] = function(testFunction, description, options)
     {
         mediasource_test(function(test, mediaElement, mediaSource)
         {
@@ -383,7 +383,7 @@
             {
                 testFunction(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData);
             });
-        }, description);
+        }, description, options);
     }
 
     function timeRangesToString(ranges)

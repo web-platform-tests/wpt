@@ -37,8 +37,10 @@ jobs:
   #- template: tools/ci/azure/update_manifest.yml
   - script: python ./wpt run --yes --install-fonts --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/edge.tbpl.log --log-tbpl-level info edge_webdriver infrastructure/
     displayName: 'Run tests (Edge)'
+    continueOnError: true
   - script: python ./wpt run --yes --install-browser --install-fonts --metadata infrastructure/metadata/ --log-tbpl $(Build.ArtifactStagingDirectory)/firefox.tbpl.log --log-tbpl-level info --channel nightly firefox infrastructure/
     displayName: 'Run tests (Firefox)'
+    continueOnError: true
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:
@@ -47,8 +49,6 @@ jobs:
   - powershell: |
       $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
       Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
-      taskkill /f /im MicrosoftEdge*
-      taskkill /f /im MicrosoftWebDriver.exe
     displayName: 'Restore hosts file and cleanup test machine'
     condition: always()
     continueOnError: true

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ $RUN_JOB -eq 1 ]] || ./wpt test-jobs --includes $JOB; then
+if [[ $RUN_JOB -eq 1 ]] || ./wpt test-jobs --all --includes $JOB; then
     export RUN_JOB=1
     git submodule update --init --recursive 1>&2
     export DISPLAY=:99.0

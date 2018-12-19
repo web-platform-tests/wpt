@@ -28,6 +28,15 @@ function dump_test_results(tests, status) {
                 stack: status.stack};
     results_element.textContent = JSON.stringify(data);
 
+    if (tests.length === 1) {
+        for (let assertion of tests[0].assertions) {
+            if (assertion.passed)
+                console.log("PASS " + assertion.message);
+            else
+                console.error("FAIL " + assertion.message);
+        }
+    }
+
     // To avoid a HierarchyRequestError with XML documents, ensure that 'results_element'
     // is inserted at a location that results in a valid document.
     var parent = document.body

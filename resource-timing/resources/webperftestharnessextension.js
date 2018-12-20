@@ -80,7 +80,9 @@ function test_resource_entries(entries, expected_entries)
         var url = sorted_urls[i];
         test_equals(actual_entries[url].initiatorType,
                     expected_entries[url],
-                    origin + url + ' is expected to have initiatorType ' + expected_entries[url]);
+                    origin + url + ' is expected to have initiatorType ' +
+                    expected_entries[url] + ' rather than ' + 
+                    actual_entries[url].initiatorType);
     }
     for (var j in expected_entries) {
         if (!(j in actual_entries)) {

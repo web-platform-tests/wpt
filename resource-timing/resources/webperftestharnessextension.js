@@ -47,6 +47,25 @@ function test_fail(msg, properties)
     wp_test(function() { assert_unreached(); }, msg, properties);
 }
 
+function assert_equals(actual, expected, description)
+{
+     /*
+      * Test if two primitives are equal or two objects
+      * are the same object
+      */
+    if (typeof actual != typeof expected) {
+        description += "typeof ";
+        assert(false, "assert_equals", description,
+                      "expected (" + typeof expected + ") ${expected} but got (" + typeof actual + ") ${actual}",
+                      {expected:expected, actual:actual});
+        return;
+    }
+        description += "same " + actual + " " + expected + " " + same_value(actual, expected);
+    assert(same_value(actual, expected), "assert_equals", description,
+                                         "expected ${expected} but got ${actual}",
+                                         {expected:expected, actual:actual});
+}
+
 function test_resource_entries(entries, expected_entries)
 {
     // This is slightly convoluted so that we can sort the output.

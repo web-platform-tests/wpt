@@ -17,7 +17,7 @@
         const entry = context.getEntriesByName(document.getElementById('frameContext').src, 'resource')[0];
 
         test_greater_than(entry.redirectStart, 0, 'redirectStart should be greater than 0 in same-origin redirect.');
-        test_equals(entry.redirectStart, entry.startTime, 'redirectStart should be equal to startTime in same-origin redirect.');
+        assert_equals(entry.redirectStart, entry.startTime, 'redirectStart should be equal to startTime in same-origin redirect.');
         test_noless_than(entry.redirectEnd, entry.redirectStart, 'redirectEnd should be no less than redirectStart in same-origin redirect.');
         test_noless_than(entry.fetchStart, entry.redirectEnd, 'fetchStart should be no less than redirectEnd in same-origin redirect.');
         done();

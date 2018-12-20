@@ -34,9 +34,9 @@ function onload_test() {
     }
     var context = new PerformanceContext(iframe.contentWindow.performance);
     var entries = context.getEntriesByType('resource');
-    test_equals(entries.length, 2, "There should be two entries");
+    assert_equals(entries.length, 2, "There should be two entries");
     if (entries.length >= 2) {
-        test_equals(entries[0].name, entries[1].name, "Both entries should have the same name");
+        assert_equals(entries[0].name, entries[1].name, "Both entries should have the same name");
     }
     done();
 }

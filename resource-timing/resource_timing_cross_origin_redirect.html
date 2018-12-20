@@ -16,15 +16,15 @@
         const context = new PerformanceContext(performance);
         const entry = context.getEntriesByName(document.getElementById('frameContext').src, 'resource')[0];
 
-        test_equals(entry.redirectStart, 0, 'redirectStart should be 0 in cross-origin redirect.');
-        test_equals(entry.redirectEnd, 0, 'redirectEnd should be 0 in cross-origin redirect.');
-        test_equals(entry.domainLookupStart, 0, 'domainLookupStart should be 0 in cross-origin redirect.');
-        test_equals(entry.domainLookupEnd, 0, 'domainLookupEnd should be 0 in cross-origin redirect.');
-        test_equals(entry.connectStart, 0, 'connectStart should be 0 in cross-origin redirect.');
-        test_equals(entry.connectEnd, 0, 'connectEnd should be 0 in cross-origin redirect.');
-        test_equals(entry.requestStart, 0, 'requestStart should be 0 in cross-origin redirect.');
-        test_equals(entry.responseStart, 0, 'responseStart should be 0 in cross-origin redirect.');
-        test_equals(entry.secureConnectionStart, 0, 'secureConnectionStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.redirectStart, 0, 'redirectStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.redirectEnd, 0, 'redirectEnd should be 0 in cross-origin redirect.');
+        assert_equals(entry.domainLookupStart, 0, 'domainLookupStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.domainLookupEnd, 0, 'domainLookupEnd should be 0 in cross-origin redirect.');
+        assert_equals(entry.connectStart, 0, 'connectStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.connectEnd, 0, 'connectEnd should be 0 in cross-origin redirect.');
+        assert_equals(entry.requestStart, 0, 'requestStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.responseStart, 0, 'responseStart should be 0 in cross-origin redirect.');
+        assert_equals(entry.secureConnectionStart, 0, 'secureConnectionStart should be 0 in cross-origin redirect.');
         test_greater_than(entry.fetchStart, 0, 'fetchStart should be greater than 0 in cross-origin redirect.');
         test_greater_than(entry.responseEnd, 0, 'responseEnd should be greater than 0 in cross-origin redirect.');
         done();

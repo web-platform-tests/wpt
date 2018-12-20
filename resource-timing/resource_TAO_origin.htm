@@ -28,17 +28,17 @@ function onload_test() {
     const context = new PerformanceContext(iframe.contentWindow.performance);
     const entries = context.getEntriesByType('resource');
 
-    test_equals(entries.length, 1, 'The iframe should have one resource timing entry.');
+    assert_equals(entries.length, 1, 'The iframe should have one resource timing entry.');
     const entry = entries[0];
-    test_equals(entry.redirectStart, 0, 'redirectStart should be 0 in cross-origin request since no redirect.');
-    test_equals(entry.redirectEnd, 0, 'redirectEnd should be 0 in cross-origin request since no redirect.');
+    assert_equals(entry.redirectStart, 0, 'redirectStart should be 0 in cross-origin request since no redirect.');
+    assert_equals(entry.redirectEnd, 0, 'redirectEnd should be 0 in cross-origin request since no redirect.');
     test_greater_than(entry.domainLookupStart, 0, 'domainLookupStart should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.domainLookupEnd, 0, 'domainLookupEnd should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.connectStart, 0, 'connectStart should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.connectEnd, 0, 'connectEnd should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.requestStart, 0, 'requestStart should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.responseStart, 0, 'responseStart should not be 0 in timing-allow cross-origin request.');
-    test_equals(entry.secureConnectionStart, 0, 'secureConnectionStart should be 0 in cross-origin request since no ssl!');
+    assert_equals(entry.secureConnectionStart, 0, 'secureConnectionStart should be 0 in cross-origin request since no ssl!');
     test_greater_than(entry.fetchStart, 0, 'fetchStart should not be 0 in timing-allow cross-origin request.');
     test_greater_than(entry.responseEnd, 0, 'responseEnd should not be 0 in timing-allow cross-origin request.');
     done();

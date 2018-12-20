@@ -40,7 +40,7 @@ function onload_test() {
 
     const context = new PerformanceContext(iframe.contentWindow.performance);
     const entries = context.getEntriesByType('resource');
-    test_equals(entries.length, 1, "There should be only one entry");
+    assert_equals(entries.length, 1, "There should be only one entry");
 
     const index = window.location.pathname.lastIndexOf('/');
     const pathname = window.location.pathname.substring(0, index);
@@ -63,10 +63,10 @@ function start_crossorigin_test() {
 function finish_crossorigin_test() {
     const context = new PerformanceContext(iframe.contentWindow.performance);
     const entries = context.getEntriesByType('resource');
-    test_equals(entries.length, 1, 'There should be one entry in second test');
-    test_true(entries[0].name.startsWith('http://{{domains[www1]}}:{{ports[http][1]}}'), 'Entry name should start with cross-origin domain');
-    test_true(entries[0].name.endsWith('/resources/blue.png?id=cached'), 'Entry name should end with file name');
-    test_equals(entries[0].requestStart, 0, 'requestStart should be 0 on the cross-origin request');
+    assert_equals(entries.length, 1, 'There should be one entry in second test');
+    assert_true(entries[0].name.startsWith('http://{{domains[www1]}}:{{ports[http][1]}}'), 'Entry name should start with cross-origin domain');
+    assert_true(entries[0].name.endsWith('/resources/blue.png?id=cached'), 'Entry name should end with file name');
+    assert_equals(entries[0].requestStart, 0, 'requestStart should be 0 on the cross-origin request');
     done();
 }
 window.setup_iframe = () => {};

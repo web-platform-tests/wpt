@@ -14,9 +14,9 @@
     const context = new PerformanceContext(performance);
     function onload_test()
     {
-        test_equals(context.getEntriesByType('resource').length, 4, 4 + ' resource timing entries should be stored in this page.');
+        assert_equals(context.getEntriesByType('resource').length, 4, 4 + ' resource timing entries should be stored in this page.');
         context.clearResourceTimings();
-        test_equals(context.getEntriesByType('resource').length, 0, 'No resource timing entries should be stored after clearResourceTimings.');
+        assert_equals(context.getEntriesByType('resource').length, 0, 'No resource timing entries should be stored after clearResourceTimings.');
         done();
     }
 </script>

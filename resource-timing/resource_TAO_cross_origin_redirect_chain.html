@@ -19,11 +19,11 @@
     {
         const context = new PerformanceContext(performance);
         const entries = context.getEntriesByName(document.getElementById('frameContext').src, 'resource');
-        test_equals(entries.length, 1, 'There should be one entry.');
+        assert_equals(entries.length, 1, 'There should be one entry.');
         const entry = entries[0];
 
         test_greater_than(entry.redirectStart, 0, 'redirectStart > 0 in timing allowed cross-origin redirect.');
-        test_equals(entry.redirectStart, entry.startTime, 'redirectStart == startTime in timing allowed cross-origin redirect.');
+        assert_equals(entry.redirectStart, entry.startTime, 'redirectStart == startTime in timing allowed cross-origin redirect.');
         test_greater_than(entry.redirectEnd, entry.redirectStart, 'redirectEnd > redirectStart in timing allowed cross-origin redirect.');
         test_greater_or_equals(entry.fetchStart, entry.redirectEnd, 'fetchStart >= redirectEnd in timing allowed cross-origin redirect.');
         done();

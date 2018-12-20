@@ -19,7 +19,7 @@ function setup_iframe() {
 function onload_test() {
     const context = new PerformanceContext(iframe.contentWindow.performance);
     const entries = context.getEntriesByType('resource');
-    test_true(entries.length == 0, "entries.length == 0");
+    assert_true(entries.length == 0, "entries.length == 0");
 }
 window.setup_iframe = setup_iframe;
 </script>

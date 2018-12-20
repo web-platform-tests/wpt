@@ -19,13 +19,13 @@
     {
         const context = new PerformanceContext(performance);
         const entries = context.getEntriesByName(document.getElementById('frameContext').src, 'resource');
-        test_equals(entries.length, 1, 'There should be one entry.');
+        assert_equals(entries.length, 1, 'There should be one entry.');
         const entry = entries[0];
 
-        test_equals(entry.redirectStart, 0, 'redirectStart == 0 in cross-origin redirect.');
-        test_equals(entry.redirectEnd, 0, 'redirectEnd == 0 in cross-origin redirect.');
+        assert_equals(entry.redirectStart, 0, 'redirectStart == 0 in cross-origin redirect.');
+        assert_equals(entry.redirectEnd, 0, 'redirectEnd == 0 in cross-origin redirect.');
         test_greater_than(entry.fetchStart, 0, 'fetchStart > 0 in cross-origin redirect.');
-        test_equals(entry.startTime, entry.fetchStart, 'startTime == fetchStart in cross-origin redirect.');
+        assert_equals(entry.startTime, entry.fetchStart, 'startTime == fetchStart in cross-origin redirect.');
         done();
     }
 </script>

@@ -20,8 +20,8 @@
     function onload_test() {
         context.setResourceTimingBufferSize(3);
         context.setResourceTimingBufferSize(0);
-        test_equals(context.getEntriesByType('resource').length, 4, 'There are 4 scripts, and setResourceTimingBufferSize does not reduce the size.');
-        test_equals(bufferFullCount, 0, 'onresourcetimingbufferfull should not be invoked during setResourceTimingBufferSize.');
+        assert_equals(context.getEntriesByType('resource').length, 4, 'There are 4 scripts, and setResourceTimingBufferSize does not reduce the size.');
+        assert_equals(bufferFullCount, 0, 'onresourcetimingbufferfull should not be invoked during setResourceTimingBufferSize.');
         done();
     }
 </script>

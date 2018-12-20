@@ -16,7 +16,7 @@ const worker = new Worker("resources/worker_with_images.js");
 worker.onmessage = function(event) {
   const context = new PerformanceContext(window.performance);
   const entries = context.getEntriesByType('resource');
-  test_equals(entries.length, 6, "There should be six entries: 4 scripts, 1 stylesheet, and the worker itself");
+  assert_equals(entries.length, 6, "There should be six entries: 4 scripts, 1 stylesheet, and the worker itself");
   done();
 }
 </script>

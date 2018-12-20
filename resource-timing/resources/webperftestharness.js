@@ -107,7 +107,7 @@ function test_timing_greater_than(attribute_name, greater_than, properties)
 function test_timing_equals(attribute_name, equals, msg, properties)
 {
     var test_msg = msg || "window.performance.timing." + attribute_name + " == " + equals;
-    test_equals(performanceNamespace.timing[attribute_name], equals, test_msg, properties);
+    assert_equals(performanceNamespace.timing[attribute_name], equals, test_msg, properties);
 }
 
 //
@@ -125,16 +125,6 @@ function sleep_milliseconds(n)
 //
 // Common helper functions
 //
-
-function test_true(value, msg, properties)
-{
-    wp_test(function () { assert_true(value, msg); }, msg, properties);
-}
-
-function test_equals(value, equals, msg, properties)
-{
-    wp_test(function () { assert_equals(value, equals, msg); }, msg, properties);
-}
 
 function test_greater_than(value, greater_than, msg, properties)
 {

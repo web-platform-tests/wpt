@@ -96,13 +96,13 @@ function performance_entrylist_checker(type)
     {
         var msg = 'Entry \"' + entry.name + '\" should be one that we have set.';
         wp_test(function() { assert_in_array(entry.name, expectedNames, msg); }, msg);
-        test_equals(entry.entryType, entryType, 'entryType should be \"' + entryType + '\".');
+        assert_equals(entry.entryType, entryType, 'entryType should be \"' + entryType + '\".');
         if (type === "measure") {
-            test_true(isFinite(entry.startTime), 'startTime should be a number.');
-            test_true(isFinite(entry.duration), 'duration should be a number.');
+            assert_true(isFinite(entry.startTime), 'startTime should be a number.');
+            assert_true(isFinite(entry.duration), 'duration should be a number.');
         } else if (type === "mark") {
             test_greater_than(entry.startTime, 0, 'startTime should greater than 0.');
-            test_equals(entry.duration, 0, 'duration of mark should be 0.');
+            assert_equals(entry.duration, 0, 'duration of mark should be 0.');
         }
     }
 
@@ -121,8 +121,8 @@ function performance_entrylist_checker(type)
 
     function entrylist_check(entryList, expectedLength, expectedNames)
     {
-        test_equals(entryList.length, expectedLength, 'There should be ' + expectedLength + ' entries.');
-        test_true(entrylist_order_check(entryList), 'Entries in entrylist should be in order.');
+        assert_equals(entryList.length, expectedLength, 'There should be ' + expectedLength + ' entries.');
+        assert_true(entrylist_order_check(entryList), 'Entries in entrylist should be in order.');
         for (var i = 0; i < entryList.length; ++i)
         {
             entry_check(entryList[i], expectedNames);

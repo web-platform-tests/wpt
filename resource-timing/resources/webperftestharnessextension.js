@@ -83,7 +83,7 @@ function test_resource_entries(entries, expected_entries)
         test_equals(actual_value, expected_value,
                     origin + url + ' is expected to have initiatorType "' +
                     expected_value + '" rather than "' + 
-                    actual_value + '" but comparison gives us ' + (actual_value === expected_value) + ". Typeof " + typeof(actual_value) + " " + typeof(expected_value) + ".")
+                    actual_value + '" but === comparison gives us ' + (actual_value === expected_value) + ". Typeof " + typeof(actual_value) + " " + typeof(expected_value) + ".")
     }
     for (var j in expected_entries) {
         if (!(j in actual_entries)) {

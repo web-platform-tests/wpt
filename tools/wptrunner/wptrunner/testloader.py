@@ -345,12 +345,12 @@ class TestFilter(object):
             self.manifest = manifestinclude.IncludeManifest.create()
             self.manifest.set_defaults()
 
-        if include:
+        if include != None:
             self.manifest.set("skip", "true")
             for item in include:
                 self.manifest.add_include(test_manifests, item)
 
-        if exclude:
+        if exclude != None:
             for item in exclude:
                 self.manifest.add_exclude(test_manifests, item)
 

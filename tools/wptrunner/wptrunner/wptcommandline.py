@@ -441,11 +441,12 @@ def check_args(kwargs):
     if "sauce" in kwargs["product"]:
         kwargs["pause_after_test"] = False
 
-    if kwargs["test_list"]:
+    if kwargs["test_list"] or "affected" in kwargs:
+        test_list = kwargs["test_list"] or []
         if kwargs["include"] is not None:
-            kwargs["include"].extend(kwargs["test_list"])
+            kwargs["include"].extend(test_list)
         else:
-            kwargs["include"] = kwargs["test_list"]
+            kwargs["include"] = test_list
 
     if kwargs["run_info"] is None:
         kwargs["run_info"] = kwargs["config_path"]

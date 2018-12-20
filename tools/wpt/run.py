@@ -494,12 +494,11 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
     setup_cls = product_setup[kwargs["product"]](venv, prompt, sub_product)
     setup_cls.install_requirements()
 
-    affected_revish = kwargs.pop("affected", None)
-    if affected_revish is not None:
+    if "affected" in kwargs and kwargs["affected"] is not None:
         # TODO: Consolidate with `./wpt tests-affected --ignore-rules`:
         # https://github.com/web-platform-tests/wpt/issues/14560
         files_changed, _ = testfiles.files_changed(
-            affected_revish,
+            kwargs["affected"],
             ignore_rules=["resources/testharness*"],
             include_uncommitted=True, include_new=True)
         # TODO: Perhaps use wptrunner.testloader.ManifestLoader here
@@ -509,11 +508,11 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
             files_changed, manifest_path=kwargs.get("manifest_path"), manifest_update=kwargs["manifest_update"])
         test_list = tests_changed | tests_affected
         logger.info("Identified %s affected tests" % len(test_list))
-        if not test_list and not kwargs["test_list"]:
-            logger.info("Quitting because no tests were affected.")
-            exit()
         test_list = [os.path.relpath(item, wpt_root) for item in test_list]
-        kwargs["test_list"] += test_list
+        if kwargs["test_list"] is not None:
+            kwargs["test_list"].extend(test_list)
+        else:
+            kwargs["test_list"] = test_list
 
     if install_browser and not kwargs["channel"]:
         logger.info("--install-browser is given but --channel is not set, default to nightly channel")

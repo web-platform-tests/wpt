@@ -59,7 +59,7 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, **kwargs):
     manifest_filters = []
     meta_filters = []
 
-    if kwargs["include"] or kwargs["exclude"] or kwargs["include_manifest"]:
+    if kwargs["include"] != None or kwargs["exclude"] != None or kwargs["include_manifest"]:
         manifest_filters.append(testloader.TestFilter(include=kwargs["include"],
                                                       exclude=kwargs["exclude"],
                                                       manifest_path=kwargs["include_manifest"],
@@ -294,7 +294,7 @@ def run_tests(config, test_paths, product, **kwargs):
             logger.warning("All requested tests were skipped")
         else:
             logger.error("No tests ran")
-            return False
+        return True
 
     if unexpected_total and not kwargs["fail_on_unexpected"]:
         logger.info("Tolerating %s unexpected results" % unexpected_total)

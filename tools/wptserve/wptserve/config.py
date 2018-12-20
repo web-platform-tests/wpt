@@ -126,7 +126,9 @@ class ConfigBuilder(object):
             "openssl": {
                 "openssl_binary": "openssl",
                 "base_path": "_certs",
+                "password": "web-platform-tests",
                 "force_regenerate": False,
+                "duration": 30,
                 "base_conf_path": None
             },
             "pregenerated": {

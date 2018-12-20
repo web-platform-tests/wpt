@@ -129,8 +129,8 @@ jobs:
 
 - job: infrastructure_win10_next
   displayName: 'infrastructure/ tests (Windows 10 Insider Preview)'
-  #dependsOn: root
-  #condition: dependencies.root.outputs['test_jobs.wptrunner_infrastructure']
+  #dependsOn: decision
+  #condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
   pool:
     name: 'Hosted Windows Client Next'
   steps:

@@ -127,8 +127,8 @@ jobs:
     parameters:
       directory: tools/wpt/
 
-- job: infrastructure_win10
-  displayName: 'infrastructure/ tests (Windows 10)'
+- job: infrastructure_win10_next
+  displayName: 'infrastructure/ tests (Windows 10 Insider Preview)'
   #dependsOn: root
   #condition: dependencies.root.outputs['test_jobs.wptrunner_infrastructure']
   pool:

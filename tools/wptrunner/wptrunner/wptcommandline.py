@@ -318,6 +318,9 @@ scheme host and port.""")
     commandline.log_formatters["wptreport"] = (formatters.WptreportFormatter, "wptreport format")
 
     commandline.add_logging_group(parser)
+    # Add --verbose option as the an alias of --log-mach-level debug
+    parser.add_argument("--verbose", action="store_true",
+                        help="An alias of --log-mach-level debug")
     return parser
 
 
@@ -524,6 +527,10 @@ def check_args(kwargs):
 
     return kwargs
 
+def check_verbose(kwargs):
+    if kwargs.get("verbose"):
+        if not kwargs.get("log_mach_level"):
+            kwargs["log_mach_level"] = "debug"
 
 def check_args_update(kwargs):
     set_from_config(kwargs)

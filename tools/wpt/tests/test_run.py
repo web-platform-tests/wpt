@@ -9,6 +9,8 @@ from tools.wpt import run
 from tools import localpaths  # noqa: F401
 from wptrunner.browsers import product_list
 
+from wptrunner import wptcommandline
+
 
 @pytest.fixture(scope="module")
 def venv():
@@ -68,3 +70,22 @@ def test_setup_wptrunner(venv, logger, product):
     if kwargs["product"] == "sauce":
         kwargs["product"] = "sauce:firefox:63"
     run.setup_wptrunner(venv, **kwargs)
+
+
+def test_opt_verbose():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--verbose chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_mach_level"] == "debug"
+
+def test_opt_verbose_log_mach_level_debug():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--verbose --log-mach-level debug chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_mach_level"] == "debug"
+
+def test_opt_verbose_log_mach_level_info():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--verbose --log-mach-level info chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_mach_level"] == "info"

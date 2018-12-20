@@ -49,10 +49,6 @@ function test_fail(msg, properties)
 
 function assert_equals(actual, expected, description)
 {
-     /*
-      * Test if two primitives are equal or two objects
-      * are the same object
-      */
     if (typeof actual != typeof expected) {
         description += "typeof ";
         assert(false, "assert_equals", description,
@@ -65,6 +61,17 @@ function assert_equals(actual, expected, description)
                                          "expected ${expected} but got ${actual}",
                                          {expected:expected, actual:actual});
 }
+    function same_value(x, y) {
+        if (y !== y) {
+            //NaN case
+            return x !== x;
+        }
+        if (x === 0 && y === 0) {
+            //Distinguish +0 and -0
+            return 1/x === 1/y;
+        }
+        return x === y;
+    }
 
 function test_resource_entries(entries, expected_entries)
 {

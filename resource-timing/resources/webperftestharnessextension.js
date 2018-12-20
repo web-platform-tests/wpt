@@ -78,11 +78,12 @@ function test_resource_entries(entries, expected_entries)
     sorted_urls.sort();
     for (var i in sorted_urls) {
         var url = sorted_urls[i];
-        test_equals(actual_entries[url].initiatorType,
-                    expected_entries[url],
+        var actual_value = actual_entries[url].initiatorType;
+        var expected_value = expected_entries[url];
+        test_equals(actual_value, expected_value,
                     origin + url + ' is expected to have initiatorType "' +
-                    expected_entries[url] + '" rather than "' + 
-                    actual_entries[url].initiatorType + '" but comparison gives us ' + (actual_entries[url].initiatorType == expected_entries[url]));
+                    expected_value + '" rather than "' + 
+                    actual_value + '" but comparison gives us ' + (actual_value == expected_value) + ". Typeof " + typeof(actual_value) + " " + typeof(expected_value) + ".")
     }
     for (var j in expected_entries) {
         if (!(j in actual_entries)) {

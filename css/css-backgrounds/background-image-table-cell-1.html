@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-GB" xml:lang="en-GB" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CSS Background Test: Table Cell Image Backgrounds Fill Without Gaps (Version 1)</title>
+  <link rel="author" title="schenney" href="mailto:schenney@chromium.org">
+  <link rel="help" href="http://www.w3.org/TR/css3-background">
+  <link rel="match" href="reference/background-image-table-cell-1-ref.html">
+  <style>
+    body {
+      zoom: 112%;
+      margin: 8px;
+    }
+    table {
+      border-collapse: collapse;
+      background-color: green;
+      width: 95px;
+      padding: 0px;
+    }
+    tr {
+      padding: 0px;
+    }
+    td {
+      padding: 0px;
+    }
+    .topleft1 {
+      background-image: url("support/green-60-60.png");
+      background-repeat: no-repeat;
+      background-color: red;
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tbody>
+      <tr>
+        <td class="topleft1"></td>
+        <td class="middlebar">&nbsp;</td>
+      </tr>
+   </tbody>
+  </table>
+</body>
+</html>

@@ -1,7 +1,4 @@
 steps:
-- script: system_profiler
-  displayName: 'Show system info (macOS)'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
 - script: systeminfo
   displayName: 'Show system info (Windows)'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))

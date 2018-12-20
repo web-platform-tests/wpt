@@ -47,6 +47,7 @@ function test_fail(msg, properties)
     wp_test(function() { assert_unreached(); }, msg, properties);
 }
 
+/*
 function assert_equals(actual, expected, description)
 {
     if (typeof actual != typeof expected) {
@@ -72,6 +73,7 @@ function assert_equals(actual, expected, description)
         }
         return x === y;
     }
+    */
 
 function test_resource_entries(entries, expected_entries)
 {

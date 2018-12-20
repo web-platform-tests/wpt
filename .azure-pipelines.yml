@@ -158,3 +158,4 @@ jobs:
     displayName: 'Restore hosts file and cleanup test machine'
     condition: always()
     errorActionPreference: silentlyContinue
+    ignoreLASTEXITCODE: true

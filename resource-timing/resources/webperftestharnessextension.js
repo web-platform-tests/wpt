@@ -47,35 +47,6 @@ function test_fail(msg, properties)
     wp_test(function() { assert_unreached(); }, msg, properties);
 }
 
-/*
-function assert_equals(actual, expected, description)
-{
-    if (typeof actual != typeof expected) {
-        description += "typeof ";
-        assert(false, "assert_equals", description,
-                      "expected (" + typeof expected + ") ${expected} but got (" + typeof actual + ") ${actual}",
-                      {expected:expected, actual:actual});
-        return;
-    }
-        description += "same " + actual + " " + expected + " " + same_value(actual, expected);
-    assert(same_value(actual, expected), "assert_equals", description,
-                                         "expected ${expected} but got ${actual}",
-                                         {expected:expected, actual:actual});
-}
-    function same_value(x, y) {
-        if (y !== y) {
-            //NaN case
-            return x !== x;
-        }
-        if (x === 0 && y === 0) {
-            //Distinguish +0 and -0
-            return 1/x === 1/y;
-        }
-        return x === y;
-    }
-    */
-
-
 function test_resource_entries(entries, expected_entries)
 {
     // This is slightly convoluted so that we can sort the output.
@@ -107,12 +78,9 @@ function test_resource_entries(entries, expected_entries)
     sorted_urls.sort();
     for (var i in sorted_urls) {
         var url = sorted_urls[i];
-        var actual_value = actual_entries[url].initiatorType;
-        var expected_value = expected_entries[url];
-        test_equals(actual_value, expected_value,
-                    origin + url + ' is expected to have initiatorType "' +
-                    expected_value + '" rather than "' + 
-                    actual_value + '" but === comparison gives us ' + (actual_value === expected_value) + ". Typeof " + typeof(actual_value) + " " + typeof(expected_value) + ".")
+        assert_equals(actual_entries[url].initiatorType,
+                    expected_entries[url],
+                    origin + url + ' is expected to have initiatorType ' + expected_entries[url]);
     }
     for (var j in expected_entries) {
         if (!(j in actual_entries)) {

@@ -996,13 +996,11 @@ policies and contribution forms [3].
           * are the same object
           */
         if (typeof actual != typeof expected) {
-            description += "typeof ";
             assert(false, "assert_equals", description,
                           "expected (" + typeof expected + ") ${expected} but got (" + typeof actual + ") ${actual}",
                           {expected:expected, actual:actual});
             return;
         }
-            description += "same " + actual + " " + expected + " " + same_value(actual, expected);
         assert(same_value(actual, expected), "assert_equals", description,
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});

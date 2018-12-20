@@ -75,6 +75,7 @@ function assert_equals(actual, expected, description)
     }
     */
 
+
 function test_resource_entries(entries, expected_entries)
 {
     // This is slightly convoluted so that we can sort the output.

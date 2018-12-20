@@ -9,7 +9,7 @@
 #
 # Self-hosted agents for Windows 10 and Insider Preview are used:
 # - 'Hosted Windows Client' is the latest Windows 10
-# - 'Hosted Windows Client Next' is 10 Windows Insider Preview
+# - 'Hosted Windows Client Next' is Windows 10 Insider Preview
 #
 # In addition to this configuration file, the "Build pull requests from forks
 # of this repository" setting must also be enabled in the Azure DevOps project:

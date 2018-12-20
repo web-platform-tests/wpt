@@ -34,16 +34,16 @@ function onload_test() {
     const entries = context.getEntriesByType('resource');
 
     // When a persistent connection is used, follow-on resources should be included as PerformanceResourceTiming objects.
-    test_equals(entries.length, 2, 'There should be 2 PerformanceEntries');
+    assert_equals(entries.length, 2, 'There should be 2 PerformanceEntries');
 
     if (entries.length >= 2) {
         // When a persistent connection is used, for the resource that reuses the socket, connectStart and connectEnd should have the same value as fetchStart.
         const entry = entries[1];
-        test_equals(entry.fetchStart, entry.connectStart, 'connectStart and fetchStart should be the same');
-        test_equals(entry.fetchStart, entry.connectEnd, 'connectEnd and fetchStart should be the same');
-        test_equals(entry.fetchStart, entry.secureConnectionStart, 'secureConnectStart and fetchStart should be the same');
-        test_equals(entry.fetchStart, entry.domainLookupStart, 'domainLookupStart and fetchStart should be the same')
-        test_equals(entry.fetchStart, entry.domainLookupEnd, 'domainLookupEnd and fetchStart should be the same')
+        assert_equals(entry.fetchStart, entry.connectStart, 'connectStart and fetchStart should be the same');
+        assert_equals(entry.fetchStart, entry.connectEnd, 'connectEnd and fetchStart should be the same');
+        assert_equals(entry.fetchStart, entry.secureConnectionStart, 'secureConnectStart and fetchStart should be the same');
+        assert_equals(entry.fetchStart, entry.domainLookupStart, 'domainLookupStart and fetchStart should be the same')
+        assert_equals(entry.fetchStart, entry.domainLookupEnd, 'domainLookupEnd and fetchStart should be the same')
 
     }
 

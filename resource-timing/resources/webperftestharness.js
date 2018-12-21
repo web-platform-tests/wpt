@@ -133,9 +133,9 @@ function test_true(value, msg, properties)
 
 function test_equals(value, equals, msg, properties)
 {
-    let localValue = value;
-    let localEquals = equals;
-    wp_test(function () { assert_equals(localValue, localEquals, msg); }, msg, properties);
+    msg += " " + value + " " + equals;
+    wp_test(function () { assert_equals(value, equals, msg); }, msg, properties);
+    console.log(value + " " + equals);
 }
 
 function test_greater_than(value, greater_than, msg, properties)

@@ -33,11 +33,19 @@ function createInput(type) {
   return input;
 }
 
+function getFormDataEvent() {
+  let formDataEvent = null;
+  let form = document.createElement("form");
+  form.addEventListener('formdata', e => { formDataEvent = e });
+  new FormData(form);
+  return formDataEvent;
+}
+
 const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); })
 
 idl_test(
   ['html'],
-  ['SVG', 'cssom', 'touch-events', 'uievents', 'dom'],
+  ['SVG', 'cssom', 'touch-events', 'uievents', 'dom', 'xhr'],
   async idlArray => {
     idlArray.add_objects({
       NodeList: ['document.getElementsByName("name")'],
@@ -174,6 +182,7 @@ idl_test(
       HTMLProgressElement: ['document.createElement("progress")'],
       HTMLMeterElement: ['document.createElement("meter")'],
       ValidityState: ['document.createElement("input").validity'],
+      FormDataEvent: ['getFormDataEvent()'],
       HTMLDetailsElement: ['document.createElement("details")'],
       HTMLMenuElement: ['document.createElement("menu")'],
       Window: ['window'],

@@ -1081,6 +1081,11 @@ interface ValidityState {
   readonly attribute boolean valid;
 };
 
+[Exposed=Window]
+interface FormDataEvent : Event {
+  readonly attribute FormData formData;
+};
+
 [Exposed=Window,
  HTMLConstructor]
 interface HTMLDetailsElement : HTMLElement {
@@ -1735,6 +1740,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onended;
   attribute OnErrorEventHandler onerror;
   attribute EventHandler onfocus;
+  attribute EventHandler onformdata;
   attribute EventHandler oninput;
   attribute EventHandler oninvalid;
   attribute EventHandler onkeydown;

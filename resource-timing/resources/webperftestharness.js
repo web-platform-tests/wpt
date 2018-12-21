@@ -133,7 +133,7 @@ function test_true(value, msg, properties)
 
 function test_equals(value, equals, msg, properties)
 {
-    test(function () { assert_equals(value, equals, msg); }, msg, properties);
+    test(function () { assert_equals(value, equals, msg); return value + " " + equals }, msg, properties);
 }
 
 function test_greater_than(value, greater_than, msg, properties)

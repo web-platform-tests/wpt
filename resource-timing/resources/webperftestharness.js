@@ -30,6 +30,8 @@ var timingAttributes = [
     'unloadEventStart'
 ];
 
+var namespace_check = false;
+
 //
 // All test() functions in the WebPerf test suite should use wp_test() instead.
 //
@@ -39,6 +41,19 @@ var timingAttributes = [
 
 function wp_test(func, msg, properties)
 {
+    // only run the namespace check once
+    if (!namespace_check)
+    {
+        namespace_check = true;
+
+        if (performanceNamespace === undefined || performanceNamespace == null)
+        {
+            // show a single error that window.performance is undefined
+            // The window.performance attribute provides a hosting area for performance related attributes.
+            test(function() { assert_true(performanceNamespace !== undefined && performanceNamespace != null, "window.performance is defined and not null"); }, "window.performance is defined and not null.");
+        }
+    }
+
     test(func, msg, properties);
 }
 
@@ -118,7 +133,7 @@ function test_true(value, msg, properties)
 
 function test_equals(value, equals, msg, properties)
 {
-    wp_test(function () { assert_equals(value, equals, msg); }, msg, properties);
+    wp_test(function () { msg += " " + value + " " + equals + "."; assert_equals(value, equals, msg); }, msg, properties);
 }
 
 function test_greater_than(value, greater_than, msg, properties)

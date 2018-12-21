@@ -10,8 +10,8 @@
 <body>
 <script>
 
-function pElementNameFunction(pElementName) {
-  let parentElement = document.createElement(pElementName);
+function getParentElement(parentElementName) {
+  let parentElement = document.createElement(parentElementName);
   document.body.appendChild(parentElement);
   return parentElement;
 }
@@ -20,7 +20,7 @@ testReflectAttributeWithContentValues('autofocus', 'autofocus', true, 'true', fa
 testReflectAttributeWithContentValues('disabled', 'disabled', true, 'true', false, 'false', 'disabled on HTMLButtonElement', 'button', HTMLButtonElement);
 testReflectAttribute('name', 'name', 'intel', 'intel1', 'name on HTMLButtonElement', 'button', HTMLButtonElement);
 testReflectAttribute('value', 'value', 'HTML', 'CSS', 'value on HTMLButtonElement', 'button', HTMLButtonElement);
-testReflectAttributeWithParentNode('type', 'type', 'submit', 'reset', 'type on HTMLButtonElement', 'button', () => pElementNameFunction('form'), HTMLButtonElement);
+testReflectAttributeWithParentNode('type', 'type', 'submit', 'reset', 'type on HTMLButtonElement', 'button', () => getParentElement('form'), HTMLButtonElement);
 testReflectAttrWithDepAttr('formAction', 'formaction', 'type', 'intel.asp', 'intel1.asp', 'submit', 'formAction on HTMLButtonElement', 'button', 'form', HTMLButtonElement);
 testReflectAttrWithDepAttr('formEnctype', 'formenctype', 'type', 'text/plain', 'multipart/form-data', 'submit', 'formEnctype on HTMLButtonElement', 'button', 'form', HTMLButtonElement);
 testReflectAttrWithDepAttr('formMethod', 'formmethod', 'type', 'get', 'post', 'submit', 'formMethod on HTMLButtonElement', 'button', 'form', HTMLButtonElement);

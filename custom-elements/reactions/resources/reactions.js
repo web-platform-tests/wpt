@@ -168,8 +168,8 @@ function testReflectBooleanAttribute(jsAttributeName, contentAttributeName, name
     testReflectAttributeWithContentValues(jsAttributeName, contentAttributeName, true, '', false, null, name, elementName, interfaceName);
 }
 
-function testReflectAttributeWithContentValuesAndParentNode(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, pElementNameFunction, interfaceName) {
-    let parentElement = pElementNameFunction();
+function testReflectAttributeWithContentValuesAndParentNode(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, elementName, getParentElement, interfaceName) {
+    let parentElement = getParentElement();
 
     test(() => {
         let element = define_build_in_custom_element([contentAttributeName], interfaceName, elementName);
@@ -199,8 +199,8 @@ function testReflectAttributeWithContentValuesAndParentNode(jsAttributeName, con
     }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
 }
 
-function testReflectAttributeWithParentNode(jsAttributeName, contentAttributeName, validValue1, validValue2, name, elementName, pElementNameFunction, interfaceName) {
-    testReflectAttributeWithContentValuesAndParentNode(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name, elementName, pElementNameFunction, interfaceName);
+function testReflectAttributeWithParentNode(jsAttributeName, contentAttributeName, validValue1, validValue2, name, elementName, getParentElement, interfaceName) {
+    testReflectAttributeWithContentValuesAndParentNode(jsAttributeName, contentAttributeName, validValue1, validValue1, validValue2, validValue2, name, elementName, getParentElement, interfaceName);
 }
 
 function testAttributeAdder(testFunction, name) {

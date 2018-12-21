@@ -11,11 +11,11 @@
 </head>
 <script>
 
-function pElementNameFunction() {
+function getParentElement() {
   return document.head;
 }
 
-testReflectAttributeWithParentNode('href', 'href', '/', 'http://example.com/', 'href on HTMLBaseElement', 'base', pElementNameFunction, HTMLBaseElement);
-testReflectAttributeWithParentNode('target', 'target', '_blank', '_self', 'target on HTMLBaseElement', 'base', pElementNameFunction, HTMLBaseElement);
+testReflectAttributeWithParentNode('href', 'href', '/', 'http://example.com/', 'href on HTMLBaseElement', 'base', getParentElement, HTMLBaseElement);
+testReflectAttributeWithParentNode('target', 'target', '_blank', '_self', 'target on HTMLBaseElement', 'base', getParentElement, HTMLBaseElement);
 
 </script>

@@ -14,6 +14,13 @@
 <body>
   <div id="log"></div>
   <pre id="output"></pre>
-  <script src="resource-timing.js"></script>
+  <script>
+      if (window.location.hostname != "{{domains[www]}}") {
+          let url = new URL(window.location.href);
+          url.hostname = "{{domains[www]}}";
+          window.location = url.href;
+      }
+  </script>
+  <script src="resource-timing-level1.js"></script>
 </body>
 </html>

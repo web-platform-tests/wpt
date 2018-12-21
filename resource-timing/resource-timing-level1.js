@@ -60,13 +60,13 @@ window.onload =
                         initiateFetch(
                             test,
                             "iframe",
-                            canonicalize("iframe-setdomain.sub.html"),
+                            canonicalize("resources/iframe-setdomain.sub.html"),
                             function (initiator, entry) {
                                 // Ensure that the script inside the IFrame has successfully changed the IFrame's domain.
                                 assert_throws(
-                                    null,
+                                    "SecurityError",
                                     function () {
-                                        assert_not_equals(frame.contentWindow.document, null);
+                                        assert_not_equals(initiator.contentWindow.document, null);
                                     },
                                     "Test Error: IFrame is not recognized as cross-domain.");
 
@@ -74,7 +74,7 @@ window.onload =
                                 // verify that the following non-zero properties return their value.
                                 ["domainLookupStart", "domainLookupEnd", "connectStart", "connectEnd"]
                                     .forEach(function(property) {
-                                        assert_greater_than(entry.connectEnd, 0,
+                                        assert_greater_than(entry[property], 0,
                                             "Property should be non-zero because timing allow check ignores 'document.domain'.");
                                     });
                                 test.done();
@@ -324,7 +324,7 @@ window.onload =
             // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187
             // Yield for 100ms to workaround a suspected race where window.onload fires before
             //     script visible side-effects from the wininet/urlmon thread have finished.
-            window.setTimeout(
+            test.step_timeout(
                 test.step_func(
                     function () {
                         performance
@@ -468,7 +468,7 @@ window.onload =
             when invoked. */
         function createOnloadCallbackFn(test, initiator, url, onloadCallback) {
             // Remember the number of entries on the timeline prior to initiating the fetch:
-            var beforeEntryCount = performance.getEntries().length;
+            var beforeEntryCount = performance.getEntriesByType("resource").length;
 
             return test.step_func(
                 function() {
@@ -480,7 +480,7 @@ window.onload =
                         }
                     }
 
-                    var entries = performance.getEntries();
+                    var entries = performance.getEntriesByType("resource");
                     var candidateEntry = entries[entries.length - 1];
 
                     switch (entries.length - beforeEntryCount)

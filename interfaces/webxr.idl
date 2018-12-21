@@ -69,12 +69,21 @@ callback XRFrameRequestCallback = void (DOMHighResTimeStamp time, XRFrame frame)
 [SecureContext, Exposed=Window] interface XRFrame {
   readonly attribute XRSession session;
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Wrestling git
   XRViewerPose? getViewerPose(optional XRReferenceSpace referenceSpace);
   XRInputPose? getInputPose(XRInputSource inputSource, optional XRReferenceSpace referenceSpace);
 };
 
 [SecureContext, Exposed=Window] interface XRSpace : EventTarget {
+<<<<<<< HEAD
   XRRigidTransform? getTransformTo(XRSpace other);
+=======
+  Float32Array? getTransformTo(XRSpace other);
+>>>>>>> Wrestling git
 };
 
 enum XRReferenceSpaceType {
@@ -85,6 +94,17 @@ enum XRReferenceSpaceType {
 
 dictionary XRReferenceSpaceOptions {
   required XRReferenceSpaceType type;
+<<<<<<< HEAD
+=======
+  XRDevicePose? getDevicePose(XRCoordinateSystem coordinateSystem);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRCoordinateSystem coordinateSystem);
+>>>>>>> Wah
+=======
+  XRViewerPose? getViewerPose(XRFrameOfReference frameOfRef);
+  XRInputPose? getInputPose(XRInputSource inputSource, XRFrameOfReference frameOfRef);
+>>>>>>> MUD WRESTLING WITH GIT
+=======
+>>>>>>> Wrestling git
 };
 
 [SecureContext, Exposed=Window] interface XRReferenceSpace : XRSpace {
@@ -124,8 +144,15 @@ enum XREye {
 [SecureContext, Exposed=Window] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
+<<<<<<< HEAD
+<<<<<<< HEAD
   readonly attribute Float32Array viewMatrix;
   readonly attribute XRRigidTransform transform;
+=======
+>>>>>>> Wah
+=======
+  readonly attribute Float32Array viewMatrix;
+>>>>>>> MUD WRESTLING WITH GIT
 };
 
 [SecureContext, Exposed=Window] interface XRViewport {
@@ -135,6 +162,8 @@ enum XREye {
   readonly attribute long height;
 };
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 [SecureContext, Exposed=Window,
  Constructor(optional DOMPointInit position, optional DOMPointInit orientation)]
 interface XRRigidTransform {
@@ -155,6 +184,17 @@ interface XRRay {
 [SecureContext, Exposed=Window] interface XRViewerPose {
   readonly attribute XRRigidTransform transform;
   readonly attribute FrozenArray<XRView> views;
+=======
+[SecureContext, Exposed=Window] interface XRDevicePose {
+  readonly attribute Float32Array poseModelMatrix;
+
+  Float32Array getViewMatrix(XRView view);
+>>>>>>> Wah
+=======
+[SecureContext, Exposed=Window] interface XRViewerPose {
+  readonly attribute Float32Array poseMatrix;
+  readonly attribute FrozenArray<XRView> views;
+>>>>>>> MUD WRESTLING WITH GIT
 };
 
 enum XRHandedness {
@@ -251,6 +291,8 @@ dictionary XRInputSourceEventInit : EventInit {
   required XRInputSource inputSource;
 };
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 [SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
 interface XRReferenceSpaceEvent : Event {
   readonly attribute XRReferenceSpace referenceSpace;
@@ -260,4 +302,24 @@ interface XRReferenceSpaceEvent : Event {
 dictionary XRReferenceSpaceEventInit : EventInit {
   required XRReferenceSpace referenceSpace;
   XRRigidTransform transform;
+=======
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRCoordinateSystemEventInit eventInitDict)]
+interface XRCoordinateSystemEvent : Event {
+  readonly attribute XRCoordinateSystem coordinateSystem;
+};
+
+dictionary XRCoordinateSystemEventInit : EventInit {
+  required XRCoordinateSystem coordinateSystem;
+>>>>>>> Wah
+=======
+[SecureContext, Exposed=Window, Constructor(DOMString type, XRReferenceSpaceEventInit eventInitDict)]
+interface XRReferenceSpaceEvent : Event {
+  readonly attribute XRReferenceSpace referenceSpace;
+  readonly attribute Float32Array? transformMatrix;
+};
+
+dictionary XRReferenceSpaceEventInit : EventInit {
+  required XRReferenceSpace referenceSpace;
+  Float32Array transformMatrix;
+>>>>>>> Wrestling git
 };

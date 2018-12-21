@@ -224,10 +224,18 @@ window.onload =
                 });
             });
 
+<<<<<<< HEAD
+<<<<<<< HEAD
         // Ensure that responseStart only measures the time up to the first few
         // bytes of the header response. This is tested by writing an HTTP 1.1
         // status line, followed by a flush, then a pause before the end of the
         // headers. The test makes sure that responseStart is not delayed by
+=======
+        // Ensure that responseStart only measures the time up to the first few
+        // bytes of the header response. This is tested by writing an HTTP 1.1
+        // status line, followed by a flush, then a pause before the end of the
+        // headers. The tests makes sure that responseStart is not delayed by
+>>>>>>> Revert "Removing layout diff pics"
         // this pause.
         [
             { initiator: "iframe",         response: "(done)",    mime: mimeHtml },
@@ -248,6 +256,7 @@ window.onload =
                                         + "&mime:" + template.mime
                                         + "&send:" + encodeURIComponent(template.response)),
                         function (initiator, entry) {
+<<<<<<< HEAD
                             // Test that the delay between 'responseStart' and
                             // 'responseEnd' includes the delay, which implies
                             // that 'responseStart' was measured at the time of
@@ -255,6 +264,14 @@ window.onload =
                             assert_greater_than_equal(
                                 entry.responseEnd,
                                 entry.responseStart + serverStepDelay,
+=======
+                            // Test that the delay between 'requestStart' and
+                            // 'responseStart' does not include the added delay
+                            // post-statusline.
+                            assert_less_than(
+                                entry.responseStart - entry.requestStart,
+                                serverStepDelay,
+>>>>>>> Revert "Removing layout diff pics"
                                 "Delay after HTTP/1.1 status should not affect 'responseStart'.");
 
                             test.done();
@@ -263,6 +280,7 @@ window.onload =
                 });
             });
 
+<<<<<<< HEAD
         // Test that responseStart uses the timing of 1XX responses by
         // synthesizing a delay between a 100 and 200 status, and verifying that
         // this delay is included before responseEnd. If the delay is not
@@ -304,6 +322,10 @@ window.onload =
                 });
             });
 
+=======
+>>>>>>> Removing layout diff pics
+=======
+>>>>>>> Revert "Removing layout diff pics"
         // Function to run the next case in the queue.
         var currentTestIndex = -1;
         function runNextCase() {

@@ -129,9 +129,16 @@ promise_test(async t => {
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
+<<<<<<< HEAD
+<<<<<<< HEAD
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
   localStream.write({ finish: true });
+=======
+      await makeTwoConnectedQuicTransports(t);
+  const localStream = localQuicTransport.createStream();
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   assert_equals(remoteStream.state, 'open');
@@ -141,13 +148,21 @@ promise_test(async t => {
       remoteStream.readInto(new Uint8Array(10)),
       { amount: 0, finished: true } );
   assert_equals(remoteStream.state, 'closing');
+<<<<<<< HEAD
 }, 'waitForReadable() promise resolves with remote finish');
+=======
+}, 'waitForReadable() resolves with remote finish');
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ finish: true });
+=======
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(remoteStream.maxReadBufferedAmount);
@@ -155,31 +170,51 @@ promise_test(async t => {
       remoteStream.readInto(new Uint8Array(10)),
       { amount: 0, finished: true } );
   assert_equals(remoteStream.state, 'closing');
+<<<<<<< HEAD
   remoteStream.write({ finish: true });
   assert_equals(remoteStream.state, 'closed');
 }, 'write() with a finish on a stream that has already read out finish ' +
     `changes state to 'closed'.`);
+=======
+  remoteStream.finish()
+  assert_equals(remoteStream.state, 'closed');
+}, 'finish() on a stream that has already read out finish changes ' +
+    `state to 'closed'.`);
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ finish: true });
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   remoteStream.write({ finish: true });
+=======
+  localStream.finish();
+  const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
+  const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
+  remoteStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   assert_equals(localStream.state, 'closing');
   await localStream.waitForReadable(localStream.maxReadBufferedAmount);
   assert_object_equals(
       localStream.readInto(new Uint8Array(10)),
       { amount: 0, finished: true } );
   assert_equals(localStream.state, 'closed');
+<<<<<<< HEAD
 }, 'Reading out finish on stream that has already called write() with a ' +
     `finish  state to 'closed'.`);
+=======
+}, 'Reading out finish on stream that has already called finish()  ' +
+    `state to 'closed'.`);
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
     const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
+<<<<<<< HEAD
   const localStream = localQuicTransport.createStream();
   localStream.write({ finish: true });
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
@@ -189,6 +224,22 @@ promise_test(async t => {
       remoteStream.readInto(new Uint8Array(10)),
       { amount: 0, finished: true } );
   assert_equals(remoteStream.state, 'closing');
+=======
+    await makeTwoConnectedQuicTransports(t);
+  const localStream = localQuicTransport.createStream();
+  const promise = localStream.waitForReadable(1);
+>>>>>>> Wah
+=======
+  const localStream = localQuicTransport.createStream();
+  localStream.finish();
+  const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
+  const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
+  await remoteStream.waitForReadable(remoteStream.maxReadBufferedAmount);
+  assert_object_equals(
+      remoteStream.readInto(new Uint8Array(10)),
+      { amount: 0, finished: true } );
+  assert_equals(remoteStream.state, 'closing');
+>>>>>>> MUD WRESTLING WITH GIT
   localStream.reset();
   const remoteStreamWatcher = new EventWatcher(t, remoteStream, 'statechange');
   await remoteStreamWatcher.wait_for('statechange');
@@ -304,7 +355,12 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+<<<<<<< HEAD
   localStream.write({ data: generateData(10) });
+=======
+  localStream.write(generateData(10));
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream : remoteStream} = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(10);
@@ -317,7 +373,11 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ data: generateData(10) });
+=======
+  localStream.write(generateData(10));
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream : remoteStream} = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(10);
@@ -334,7 +394,13 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ data: new Uint8Array(10) });
+=======
+=======
+>>>>>>> MUD WRESTLING WITH GIT
+  localStream.write(new Uint8Array(10));
+>>>>>>> Wah
   localStream.reset();
   assert_equals(localStream.writeBufferedAmount, 0);
 }, 'writeBufferedAmount set to 0 after local reset().');
@@ -343,6 +409,8 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+<<<<<<< HEAD
   localStream.write({ finish: true });
   const remoteWatcher =
       new EventWatcher(t, remoteQuicTransport, 'quicstream');
@@ -357,12 +425,35 @@ promise_test(async t => {
   assert_equals(remoteStream.writeBufferedAmount, 0);
 }, 'writeBufferedAmount set to 0 after reading remote finish, followed ' +
     'by write() with finish.');
+=======
+  localStream.write(new Uint8Array(1));
+  const remoteWatcher =
+      new EventWatcher(t, remoteQuicTransport, 'quicstream');
+  const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
+  remoteStream.finish();
+  await localStream.waitForReadable(localStream.maxReadBufferedAmount);
+  assert_object_equals(
+      localStream.readInto(new Uint8Array(10)),
+      { amount: 0, finished: true });
+  localStream.write(new Uint8Array(10));
+  assert_equals(localStream.writeBufferedAmount, 10);
+  localStream.finish();
+  assert_equals(localStream.writeBufferedAmount, 0);
+}, 'writeBufferedAmount set to 0 after reading remote finish, followed ' +
+    'by finish().');
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ data: new Uint8Array(10) });
+=======
+=======
+>>>>>>> MUD WRESTLING WITH GIT
+  localStream.write(new Uint8Array(10));
+>>>>>>> Wah
   localQuicTransport.stop();
   assert_equals(localStream.writeBufferedAmount, 0);
 }, 'writeBufferedAmount set to 0 after local RTCQuicTransport stop().');
@@ -406,23 +497,40 @@ promise_test(async t => {
       promise_rejects(t, 'InvalidStateError', promise1),
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'Pending waitForWriteBufferedAmountBelow() promises rejected after ' +
+<<<<<<< HEAD
+<<<<<<< HEAD
     'write() with finish.');
+=======
+    'finish().');
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({
     data: new Uint8Array(localStream.maxWriteBufferedAmount)
   });
   localStream.write({ finish: true });
+=======
+  localStream.write(new Uint8Array(localStream.maxWriteBufferedAmount));
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const promise1 = localStream.waitForWriteBufferedAmountBelow(0);
   const promise2 = localStream.waitForWriteBufferedAmountBelow(0);
   await Promise.all([
       promise_rejects(t, 'InvalidStateError', promise1),
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'waitForWriteBufferedAmountBelow() promises immediately rejected after ' +
+<<<<<<< HEAD
     'wrote finish.');
+=======
+  'finish().');
+>>>>>>> Wah
+=======
+    'finish().');
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
@@ -438,15 +546,23 @@ promise_test(async t => {
       promise_rejects(t, 'InvalidStateError', promise1),
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'Pending waitForWriteBufferedAmountBelow() promises rejected after ' +
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> MUD WRESTLING WITH GIT
     'reset().');
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({
     data: new Uint8Array(localStream.maxWriteBufferedAmount)
   });
+=======
+  localStream.write(new Uint8Array(localStream.maxWriteBufferedAmount));
+>>>>>>> MUD WRESTLING WITH GIT
   const promise1 = localStream.waitForWriteBufferedAmountBelow(0);
   const promise2 = localStream.waitForWriteBufferedAmountBelow(0);
   localQuicTransport.stop();
@@ -455,6 +571,12 @@ promise_test(async t => {
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'Pending waitForWriteBufferedAmountBelow() promises rejected after ' +
     'RTCQuicTransport stop().');
+<<<<<<< HEAD
+=======
+  'reset().');
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
 
 closed_stream_test(async (t, stream) => {
   await promise_rejects(t, 'InvalidStateError',
@@ -516,8 +638,15 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+<<<<<<< HEAD
   const data = generateData(10);
   localStream.write({ data: data, finish: true });
+=======
+  const data = generateData(10);
+  localStream.write(data);
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(data.length + 1);
@@ -539,6 +668,11 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+=======
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   writeGeneratedData(localStream, localStream.maxReadBufferedAmount);
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
@@ -555,19 +689,33 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+<<<<<<< HEAD
   localStream.write({ finish: true });
+=======
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(remoteStream.maxReadBufferedAmount);
   assert_object_equals(
       remoteStream.readInto(new Uint8Array(10)),
       { amount: 0, finished: true } );
+<<<<<<< HEAD
 }, 'waitForReadable() resolves with write() with finish.');
+=======
+}, 'waitForReadable() resolves with finish().');
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+=======
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
   const writeData = generateData(10);
   localStream.write({ data: writeData });
   localStream.write({ finish: true });
@@ -588,13 +736,21 @@ promise_test(async t => {
   await promise_rejects(t, new TypeError(),
       localStream.waitForReadable(localStream.maxReadBufferedAmount + 1));
 }, 'waitForReadable() rejects with TypeError if amount is more than ' +
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> MUD WRESTLING WITH GIT
     'maxReadBufferedAmount.');
 
 promise_test(async t => {
     const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ finish: true });
+=======
+  localStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
   await remoteStream.waitForReadable(remoteStream.maxReadBufferedAmount);
@@ -609,6 +765,12 @@ promise_test(async t => {
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'waitForReadable() promises immediately rejected with InvalidStateError ' +
     'after finish is read out.');
+<<<<<<< HEAD
+=======
+  'maxReadBufferedAmount.');
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
 
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
@@ -637,6 +799,10 @@ promise_test(async t => {
       promise_rejects(t, 'InvalidStateError', promise2)]);
 }, 'Pending waitForReadable() promises rejected after remote reset().');
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> MUD WRESTLING WITH GIT
 promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
@@ -654,7 +820,11 @@ promise_test(async t => {
   const [ localQuicTransport, remoteQuicTransport ] =
       await makeTwoConnectedQuicTransports(t);
   const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
   localStream.write({ data: new Uint8Array(1) });
+=======
+  localStream.write(new Uint8Array(1));
+>>>>>>> MUD WRESTLING WITH GIT
   const remoteWatcher = new EventWatcher(t, remoteQuicTransport, 'quicstream');
   const { stream : remoteStream} = await remoteWatcher.wait_for('quicstream');
   const promise1 = remoteStream.waitForReadable(10);
@@ -666,6 +836,11 @@ promise_test(async t => {
 }, 'Pending waitForReadable() promises rejected after remote RTCQuicTransport ' +
     'stop().');
 
+<<<<<<< HEAD
+=======
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
 closed_stream_test(async (t, stream) => {
   await promise_rejects(t, 'InvalidStateError',
       stream.waitForReadable(1));

@@ -39,24 +39,38 @@ function closed_stream_test(test_func, description) {
     const [ localQuicTransport, remoteQuicTransport ] =
         await makeTwoConnectedQuicTransports(t);
     const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+<<<<<<< HEAD
     localStream.write({ finish: true });
     const remoteWatcher =
         new EventWatcher(t, remoteQuicTransport, 'quicstream');
     const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
     remoteStream.write({ finish: true });
+=======
+    localStream.finish();
+    const remoteWatcher =
+        new EventWatcher(t, remoteQuicTransport, 'quicstream');
+    const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
+    remoteStream.finish();
+>>>>>>> MUD WRESTLING WITH GIT
     await localStream.waitForReadable(localStream.maxReadBufferedAmount);
     assert_object_equals(
         localStream.readInto(new Uint8Array(10)),
         { amount: 0, finished: true });
     assert_equals(localStream.state, 'closed');
     return test_func(t, localStream);
+<<<<<<< HEAD
   }, 'Stream closed by writing a finish, followed by reading remote finish: ' +
+=======
+  }, 'Stream closed by finish(), followed by reading remote finish: ' +
+>>>>>>> MUD WRESTLING WITH GIT
       description);
 
   promise_test(async t => {
     const [ localQuicTransport, remoteQuicTransport ] =
         await makeTwoConnectedQuicTransports(t);
     const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
     localStream.write({ finish: true });
     const remoteWatcher =
         new EventWatcher(t, remoteQuicTransport, 'quicstream');
@@ -70,11 +84,32 @@ function closed_stream_test(test_func, description) {
     return test_func(t, remoteStream);
   }, 'Stream closed by by reading remote finish, followed by writing a ' +
       'finish: ' + description);
+=======
+    localStream.write(new Uint8Array(1));
+    const remoteWatcher =
+        new EventWatcher(t, remoteQuicTransport, 'quicstream');
+    const { stream: remoteStream } = await remoteWatcher.wait_for('quicstream');
+    remoteStream.finish();
+    await localStream.waitForReadable(localStream.maxReadBufferedAmount);
+    assert_object_equals(
+        localStream.readInto(new Uint8Array(10)),
+        { amount: 0, finished: true });
+    localStream.finish();
+    assert_equals(localStream.state, 'closed');
+    return test_func(t, localStream);
+  }, 'Stream closed by by reading remote finish, followed by finish(): ' +
+      description);
+>>>>>>> MUD WRESTLING WITH GIT
 
   promise_test(async t => {
     const [ localQuicTransport, remoteQuicTransport ] =
         await makeTwoConnectedQuicTransports(t);
     const localStream = localQuicTransport.createStream();
+<<<<<<< HEAD
+=======
+>>>>>>> Wah
+=======
+>>>>>>> MUD WRESTLING WITH GIT
     localQuicTransport.stop();
     assert_equals(localStream.state, 'closed');
     return test_func(t, localStream);

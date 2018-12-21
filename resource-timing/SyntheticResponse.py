@@ -30,6 +30,8 @@ def main(request, response):
                 headersSent = True
 
             response.writer.write_content(text)
+<<<<<<< HEAD
+<<<<<<< HEAD
         elif arg.startswith("status:"):
             code = int(urllib.unquote(arg[7:]))
             response.writer.write_status(code)
@@ -41,6 +43,17 @@ def main(request, response):
         elif arg == "flush":
             response.writer.flush()
 
+=======
+>>>>>>> Removing layout diff pics
+=======
+        elif arg.startswith("status:"):
+            code = int(urllib.unquote(arg[7:]))
+            response.writer.write_status(code)
+            statusSent = True
+        elif arg == "flush":
+            response.writer.flush()
+
+>>>>>>> Revert "Removing layout diff pics"
 #        else:
 #            error "  INVALID ARGUMENT %s" % arg
 

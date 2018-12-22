@@ -47,7 +47,7 @@ policies and contribution forms [3].
  * briefly documented, hopefully.
  */
 (function(){
-"use strict";
+'use strict';
 // Support subsetTestByKey from /common/subset-tests-by-key.js, but make it optional
 if (!('subsetTestByKey' in self)) {
     self.subsetTestByKey = function(key, callback, ...args) {

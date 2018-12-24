@@ -1,38 +1,21 @@
 <!DOCTYPE HTML>
 <meta charset="utf-8">
-<title>Loading a nonexistent image should fail</title>
+<title>Loading an nonexisting image should fail; triggering appropriate events</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<img id="img1">
-<img id="img2">
-<img id="img3">
+<img>
 
 <script>
-  async_test(t => {
-    var img = document.getElementById("img1");
-    img.onload = t.unreached_func("image.onload() was not supposed to be called");
-    img.onerror = t.step_func_done(e => {
+  async_test(function(t) {
+    var img = document.querySelector("img");
+    img.onload = this.step_func_done(function() {
+      assert_unreached("image.onload() was not supposed to be called");
+    });
+    img.onerror = this.step_func_done(function(e) {
       assert_equals(e.type, "error", "image.onerror() called");
+      t.done();
     });
     img.src = "404";
-  }, "Loading an invalid image should fire onerror event");
-
-  async_test(t => {
-    var img = document.getElementById("img2");
-    img.onload = t.unreached_func("image.onload() was not supposed to be called");
-    img.onerror = t.step_func_done(e => {
-      assert_equals(e.type, "error", "image.onerror() called");
-    });
-    img.src = "404.png";
-  }, "Loading a nonexistent image should fire onerror event");
-
-  async_test(t => {
-    var img = document.getElementById("img3");
-    img.onload = t.unreached_func("image.onload() was not supposed to be called");
-    img.onerror = t.step_func_done(e => {
-      assert_equals(e.type, "error", "image.onerror() called");
-    });
-    img.src = "";
-  }, "Loading an empty URL image should fire onerror event");
+  });
 </script>

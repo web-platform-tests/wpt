@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text level 3 Test ref</title>
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
+<style>
+  div {
+    font-size: 4em;
+    margin: 1rem;
+  }
+  section {
+    float: left; /* to sizing to the intrinsic min of the ref box*/
+  }
+  #ref { border: solid orange; }
+  #test { border: solid blue; }
+</style>
+
+<p>Test passes if the blue and organge boxes are identical. Pay attention to characters at the left of the first line, and on the second line.
+<section>
+<div dir=rtl lang=ar id=ref>عائل&zwj;<br>&zwj;ة</div>
+<div dir=rtl lang=ar id=test>عائل&zwj;<br>&zwj;ة</div>
+</section>

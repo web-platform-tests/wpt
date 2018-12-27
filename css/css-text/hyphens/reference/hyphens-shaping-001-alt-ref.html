@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Text level 3 Test reference</title>
+<link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
+<style>
+  div {
+    font-size: 4em;
+    line-height: 1; /* Not strictly needed, but it gets quite tall otherwise, so this helps fit the screen. */
+  }
+  section {
+    float: left; /* to size to  the intrinsic min of the larger of the ref boxes. */
+    position: relative;
+  }
+  .ref {
+    border: solid orange;
+    margin: 1rem;
+  }
+  #test {
+    border: solid cyan;
+    position: absolute; /* to avoid influencing the size of the section */
+    left: 1rem;
+    right: 1rem;
+    line-break: anywhere;
+  }
+</style>
+
+<p>Test passes if the cyan box is identical to one of the two organge boxes.
+<section>
+<div dir=rtl lang=ug class=ref>&#xFEA9;&#xFE8D;&#xFEE3;&#xFEF4;-<br>&#xFEAA;&#xFEEF;</div>
+<div dir=rtl lang=ug class=ref>&#xFEA9;&#xFE8D;&#xFEE3;&#xFEF4;&dash;<br>&#xFEAA;&#xFEEF;</div>
+<div dir=rtl lang=ug id=test>&#xFEA9;&#xFE8D;&#xFEE3;&#xFEF4;&dash;<br>&#xFEAA;&#xFEEF;</div>
+</section>

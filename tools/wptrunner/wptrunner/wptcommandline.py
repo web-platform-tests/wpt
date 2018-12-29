@@ -529,8 +529,10 @@ def check_args(kwargs):
 
 def check_verbose(kwargs):
     if kwargs.get("verbose"):
-        if not kwargs.get("log_mach_level"):
-            kwargs["log_mach_level"] = "debug"
+        for key, value in kwargs.items():
+            if key.startswith("log_") and not key.endswith("_level"):
+                if kwargs.get(key):
+                    kwargs[key + "_level"] = "debug"
 
 def check_args_update(kwargs):
     set_from_config(kwargs)

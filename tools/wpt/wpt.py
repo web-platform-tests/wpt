@@ -9,7 +9,6 @@ from tools import localpaths  # noqa: flake8
 from six import iteritems
 from . import virtualenv
 
-from wptrunner import wptcommandline
 
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
@@ -125,6 +124,7 @@ def main(prog=None, argv=None):
     else:
         args = extras
 
+    from wptrunner import wptcommandline
     wptcommandline.check_verbose(kwargs)
 
     if script:

@@ -72,20 +72,56 @@ def test_setup_wptrunner(venv, logger, product):
     run.setup_wptrunner(venv, **kwargs)
 
 
-def test_opt_verbose():
+def test_opt_mach_verbose():
     parser = run.create_parser()
-    kwargs = vars(parser.parse_args("--verbose chrome".split()))
+    kwargs = vars(parser.parse_args("--log-mach - --verbose chrome".split()))
     wptcommandline.check_verbose(kwargs)
     assert kwargs["log_mach_level"] == "debug"
 
 def test_opt_verbose_log_mach_level_debug():
     parser = run.create_parser()
-    kwargs = vars(parser.parse_args("--verbose --log-mach-level debug chrome".split()))
+    kwargs = vars(parser.parse_args("--log-mach - --verbose --log-mach-level debug chrome".split()))
     wptcommandline.check_verbose(kwargs)
     assert kwargs["log_mach_level"] == "debug"
 
 def test_opt_verbose_log_mach_level_info():
     parser = run.create_parser()
-    kwargs = vars(parser.parse_args("--verbose --log-mach-level info chrome".split()))
+    kwargs = vars(parser.parse_args("--log-mach - --verbose --log-mach-level info chrome".split()))
     wptcommandline.check_verbose(kwargs)
     assert kwargs["log_mach_level"] == "info"
+
+def test_opt_raw_verbose():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-raw - --verbose chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_raw_level"] == "debug"
+
+def test_opt_verbose_log_raw_level_debug():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-raw - --verbose --log-raw-level debug chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_raw_level"] == "debug"
+
+def test_opt_verbose_log_raw_level_info():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-raw - --verbose --log-raw-level info chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_raw_level"] == "info"
+
+def test_opt_tbpl_verbose():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-tbpl - --verbose chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_tbpl_level"] == "debug"
+
+def test_opt_verbose_log_tbpl_level_debug():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-tbpl - --verbose --log-tbpl-level debug chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_tbpl_level"] == "debug"
+
+def test_opt_verbose_log_tbpl_level_info():
+    parser = run.create_parser()
+    kwargs = vars(parser.parse_args("--log-tbpl - --verbose --log-tbpl-level info chrome".split()))
+    wptcommandline.check_verbose(kwargs)
+    assert kwargs["log_tbpl_level"] == "info"

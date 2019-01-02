@@ -4,6 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
+<!-- The stylesheet is fetched from http://www1.web-platform.test:64941/resource-timing/resources/nested.css -->
 <link rel=stylesheet id=cross_origin_style href="//{{domains[www1]}}:{{ports[http][1]}}{{location[path]}}/../resources/nested.css">
 <script>
   let t = async_test("Make sure that resources fetched by cross origin CSS are not in the timeline.");
@@ -12,9 +13,9 @@
     t.step_timeout(function() {
           let url = (new URL(document.getElementById("cross_origin_style").href));
           let prefix = url.protocol + "//" + url.host;
-          assert_equals(performance.getEntriesByName(prefix + "/resource-timing/resources/resource_timing_test0.css?id=n1").length, 0, "Import is in timeline");
-          assert_equals(performance.getEntriesByName(prefix + "/fonts/Ahem.ttf?id=n1").length, 0, "Font is in timeline");
-          assert_equals(performance.getEntriesByName(prefix + "/resource-timing/resources/blue.png?id=n1").length, 0, "Image is in timeline");
+          assert_equals(performance.getEntriesByName(prefix + "/resource-timing/resources/resource_timing_test0.css?id=n1").length, 0, "Import should not be in timeline");
+          assert_equals(performance.getEntriesByName(prefix + "/fonts/Ahem.ttf?id=n1").length, 0, "Font should not be in timeline");
+          assert_equals(performance.getEntriesByName(prefix + "/resource-timing/resources/blue.png?id=n1").length, 0, "Image should not be in timeline");
           t.done();
     },0);
   };

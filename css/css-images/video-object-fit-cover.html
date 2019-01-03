@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Video object-fit: cover should clip overflows</title>
+<link rel="help" href="https://www.w3.org/TR/css3-images/#cover-constraint" />
+<link rel="match" href="video-object-fit-cover-ref.html" />
+<script src="/common/reftest-wait.js"></script>
+<style>
+  video {
+    width: 500px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid blue;
+  }
+</style>
+<video src='../../media/white.webm'></video>
+<script>
+var video = document.querySelector("video");
+video.onloadeddata = function() {
+  window.requestAnimationFrame(function() {
+    window.requestAnimationFrame(function() {
+      takeScreenshot();
+    });
+  });
+};
+</script>
+</html>

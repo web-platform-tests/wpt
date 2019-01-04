@@ -79,6 +79,8 @@ class TypeData(object):
         return rv
 
     def __delitem__(self, key):
+        # First access the index to ensure it is loaded.
+        self[key]
         del self.data[key]
 
     def __setitem__(self, key, value):
@@ -279,6 +281,10 @@ class Manifest(object):
                     if old_hash != file_hash:
                         new_type, manifest_items = source_file.manifest_items()
                         hash_changed = True
+                        try:
+                            del self._data[old_type][rel_path]
+                        except KeyError:
+                            pass
                     else:
                         new_type, manifest_items = old_type, self._data[old_type][rel_path]
                     if old_type in reftest_types and new_type != old_type:
@@ -306,10 +312,7 @@ class Manifest(object):
                     _, old_type = self._path_hash[rel_path]
                     if old_type in reftest_types:
                         reftest_changes = True
-                    try:
-                        del self._path_hash[rel_path]
-                    except KeyError:
-                        pass
+                    del self._path_hash[rel_path]
                     try:
                         del self._data[old_type][rel_path]
                     except KeyError:

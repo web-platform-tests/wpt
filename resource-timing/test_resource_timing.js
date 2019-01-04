@@ -186,6 +186,11 @@ function resource_load(expected)
         const entries = window.performance.getEntriesByName(expected.name);
         assert_equals(entries.length, 1, 'There should be a single matching entry');
         const actual = entries[0];
+        if (window.location.protocol == "http:") {
+            assert_equals(actual.secureConnectionStart, 0, 'secureConnectionStart should be 0 in http');
+        } else {
+            assert_greater_than(actual.secureConnectionStart, 0, 'secureConnectionStart should not be 0 in https');
+        }
 
         assert_equals(actual.redirectStart, 0, 'redirectStart should be 0');
         assert_equals(actual.redirectEnd, 0, 'redirectEnd should be 0');

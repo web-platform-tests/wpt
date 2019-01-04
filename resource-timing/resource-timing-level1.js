@@ -53,34 +53,6 @@ window.onload =
                             "'Src' of new <iframe> must be 'about:blank'.");
                     }
             },
-            {
-                description: "Setting 'document.domain' does not effect same-origin checks",
-                test:
-                    function (test) {
-                        initiateFetch(
-                            test,
-                            "iframe",
-                            canonicalize("resources/iframe-setdomain.sub.html"),
-                            function (initiator, entry) {
-                                // Ensure that the script inside the IFrame has successfully changed the IFrame's domain.
-                                assert_throws(
-                                    "SecurityError",
-                                    function () {
-                                        assert_not_equals(initiator.contentWindow.document, null);
-                                    },
-                                    "Test Error: IFrame is not recognized as cross-domain.");
-
-                                // To verify that setting 'document.domain' did not change the results of the timing allow check,
-                                // verify that the following non-zero properties return their value.
-                                ["domainLookupStart", "domainLookupEnd", "connectStart", "connectEnd"]
-                                    .forEach(function(property) {
-                                        assert_greater_than(entry[property], 0,
-                                            "Property should be non-zero because timing allow check ignores 'document.domain'.");
-                                    });
-                                test.done();
-                            });
-                    }
-            }
         ];
 
         // Create cached/uncached tests from the following array of templates.  For each template entry,

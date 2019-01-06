@@ -513,7 +513,7 @@ policies and contribution forms [3].
             return new DedicatedWorkerTestEnvironment();
         }
 
-        if (!('self' in global_scope)) {
+        if (!('location' in global_scope)) {
             return new ShellTestEnvironment();
         }
 
@@ -1486,11 +1486,9 @@ policies and contribution forms [3].
         this.index = null;
 
         this.properties = properties;
-        var timeout = properties.timeout ? properties.timeout : settings.test_timeout;
-        if (timeout !== null) {
-            this.timeout_length = timeout * tests.timeout_multiplier;
-        } else {
-            this.timeout_length = null;
+        this.timeout_length = settings.test_timeout;
+        if (this.timeout_length !== null) {
+            this.timeout_length *= tests.timeout_multiplier;
         }
 
         this.message = null;
@@ -1904,7 +1902,9 @@ policies and contribution forms [3].
      */
     function RemoteContext(remote, message_target, message_filter) {
         this.running = true;
+        this.started = false;
         this.tests = new Array();
+        this.early_exception = null;
 
         var this_obj = this;
         // If remote context is cross origin assigning to onerror is not
@@ -1943,6 +1943,21 @@ policies and contribution forms [3].
     }
 
     RemoteContext.prototype.remote_error = function(error) {
+        if (error.preventDefault) {
+            error.preventDefault();
+        }
+
+        // Defer interpretation of errors until the testing protocol has
+        // started and the remote test's `allow_uncaught_exception` property
+        // is available.
+        if (!this.started) {
+            this.early_exception = error;
+        } else if (!this.allow_uncaught_exception) {
+            this.report_uncaught(error);
+        }
+    };
+
+    RemoteContext.prototype.report_uncaught = function(error) {
         var message = error.message || String(error);
         var filename = (error.filename ? " " + error.filename: "");
         // FIXME: Display remote error states separately from main document
@@ -1950,9 +1965,14 @@ policies and contribution forms [3].
         tests.set_status(tests.status.ERROR,
                          "Error in remote" + filename + ": " + message,
                          error.stack);
+    };
 
-        if (error.preventDefault) {
-            error.preventDefault();
+    RemoteContext.prototype.start = function(data) {
+        this.started = true;
+        this.allow_uncaught_exception = data.properties.allow_uncaught_exception;
+
+        if (this.early_exception && !this.allow_uncaught_exception) {
+            this.report_uncaught(this.early_exception);
         }
     };
 
@@ -2002,6 +2022,7 @@ policies and contribution forms [3].
     };
 
     RemoteContext.prototype.message_handlers = {
+        start: RemoteContext.prototype.start,
         test_state: RemoteContext.prototype.test_state,
         result: RemoteContext.prototype.test_done,
         complete: RemoteContext.prototype.remote_done
@@ -2536,6 +2557,9 @@ policies and contribution forms [3].
 
     Output.prototype.resolve_log = function() {
         var output_document;
+        if (this.output_node) {
+            return;
+        }
         if (typeof this.output_document === "function") {
             output_document = this.output_document.apply(undefined);
         } else {
@@ -2546,7 +2570,7 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
-            if (!document.readyState == "loading") {
+            if (output_document.readyState === "loading") {
                 return;
             }
             node = output_document.createElementNS("http://www.w3.org/1999/xhtml", "div");
@@ -2586,8 +2610,8 @@ policies and contribution forms [3].
         if (!this.enabled) {
             return;
         }
+        this.resolve_log();
         if (this.phase < this.HAVE_RESULTS) {
-            this.resolve_log();
             this.phase = this.HAVE_RESULTS;
         }
         var done_count = tests.tests.length - tests.num_pending;

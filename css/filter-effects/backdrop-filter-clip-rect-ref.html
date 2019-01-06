@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>backdrop-filter: Clip the filter at border box of element</title>
+<link rel="author" title="Mason Freed" href="mailto:masonfreed@chromium.org">
+
+
+
+<div>
+  <p>Expected: A green box, color-inverted inside the short, wide box with a<br>
+  blue border, and not color-inverted anywhere else. In particular, there should be<br>
+  no color inversion inside the tall, narrow box, or anywhere outside that.</p>
+</div>
+<div class="box"></div>
+<div class="navbar"></div>
+<div class="menu"></div>
+<div class="menu2"></div>
+
+<style>
+div {
+  position: absolute;
+}
+.box {
+  width: 200px;
+  height: 200px;
+  top: 100px;
+  left: 100px;
+  background: green;
+}
+.navbar {
+  width: 300px;
+  height: 50px;
+  top: 150px;
+  left: 50px;
+  border: 1px solid blue;
+  backdrop-filter: invert(1);
+}
+.menu {
+  width: 100px;
+  height: 150px;
+  top: 201px;
+  left: 146px;
+  border: 1px solid blue;
+}
+.menu2 {
+  width: 100px;
+  height: 30px;
+  top: 119px;
+  left: 146px;
+  border: 1px solid blue;
+}
+</style>

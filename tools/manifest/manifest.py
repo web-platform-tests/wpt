@@ -79,9 +79,12 @@ class TypeData(object):
         return rv
 
     def __delitem__(self, key):
-        # First access the index to ensure it is loaded.
-        self[key]
-        del self.data[key]
+        if key in self.data:
+            del self.data[key]
+        elif self.json_data is not None:
+            del self.json_data[from_os_path(key)]
+        else:
+            raise KeyError
 
     def __setitem__(self, key, value):
         self.data[key] = value

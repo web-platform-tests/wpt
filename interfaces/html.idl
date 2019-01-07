@@ -1081,9 +1081,14 @@ interface ValidityState {
   readonly attribute boolean valid;
 };
 
-[Exposed=Window]
+[Exposed=Window,
+ Constructor(DOMString type, FormDataEventInit eventInitDict)]
 interface FormDataEvent : Event {
   readonly attribute FormData formData;
+};
+
+dictionary FormDataEventInit : EventInit {
+  required FormData formData;
 };
 
 [Exposed=Window,

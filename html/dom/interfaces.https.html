@@ -33,14 +33,6 @@ function createInput(type) {
   return input;
 }
 
-function getFormDataEvent() {
-  let formDataEvent = null;
-  let form = document.createElement("form");
-  form.addEventListener('formdata', e => { formDataEvent = e });
-  new FormData(form);
-  return formDataEvent;
-}
-
 const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); })
 
 idl_test(
@@ -182,7 +174,7 @@ idl_test(
       HTMLProgressElement: ['document.createElement("progress")'],
       HTMLMeterElement: ['document.createElement("meter")'],
       ValidityState: ['document.createElement("input").validity'],
-      FormDataEvent: ['getFormDataEvent()'],
+      FormDataEvent: ['new FormDataEvent("formdata", { formData: new FormData() })'],
       HTMLDetailsElement: ['document.createElement("details")'],
       HTMLMenuElement: ['document.createElement("menu")'],
       Window: ['window'],

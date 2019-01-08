@@ -105,7 +105,7 @@
       assert_equals(result.read, testData.read);
       assert_equals(result.written, testData.written.length);
       for (let i = 0; i < bufferLength; i++) {
-        if (i < destinationOffset || i > (destinationOffset + testData.written.length)) {
+        if (i < destinationOffset || i >= (destinationOffset + testData.written.length)) {
           assert_equals(fullView[i], control[i]);
         } else {
           assert_equals(fullView[i], testData.written[i - destinationOffset]);

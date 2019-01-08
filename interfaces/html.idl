@@ -1082,7 +1082,7 @@ interface ValidityState {
 };
 
 [Exposed=Window,
- Constructor(DOMString type, FormDataEventInit eventInitDict)]
+ Constructor(DOMString type, optional FormDataEventInit eventInitDict)]
 interface FormDataEvent : Event {
   readonly attribute FormData formData;
 };

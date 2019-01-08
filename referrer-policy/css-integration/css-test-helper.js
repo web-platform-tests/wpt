@@ -1,3 +1,4 @@
+
 var svg_ns = "http://www.w3.org/2000/svg";
 var url_prefix = location.protocol + "//" + location.hostname + ":" +
                  location.port + "/referrer-policy/generic/subresource/";

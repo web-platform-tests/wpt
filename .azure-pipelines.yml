@@ -125,7 +125,7 @@ jobs:
 
 - job: all_macOS
   displayName: 'all tests (Safari Technology Preview)'
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/azure-daily-safari')
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/epochs/daily')
   strategy:
     parallel: 4 # chosen to make runtime <2h
   timeoutInMinutes: 360

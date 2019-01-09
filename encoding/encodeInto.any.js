@@ -140,5 +140,10 @@ test(() => {
   assert_equals(read, 0);
   assert_equals(written, 0);
   self.postMessage(buffer, "/", [buffer]);
-  assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", view));
-}, "encodeInto() cannot operate on a detached buffer");
+  const { read2, written2 } = new TextEncoder().encodeInto("", view);
+  assert_equals(read2, 0);
+  assert_equalss(written2, 0);
+  const { read3, written3 } = new TextEncoder().encodeInto("test", view);
+  assert_equals(read3, 0);
+  assert_equalss(written3, 0);
+}, "encodeInto() and a detached output buffer");

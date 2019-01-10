@@ -14,11 +14,16 @@
 test_invalid_value("scroll-snap-type", "auto");
 
 test_invalid_value("scroll-snap-type", "x y");
+test_invalid_value("scroll-snap-type", "block mandatory inline");
 
 test_invalid_value("scroll-snap-type", "mandatory");
 test_invalid_value("scroll-snap-type", "proximity");
 test_invalid_value("scroll-snap-type", "mandatory inline");
 test_invalid_value("scroll-snap-type", "proximity both");
+test_invalid_value("scroll-snap-type", "mandatory x");
+test_invalid_value("scroll-snap-type", "proximity y");
+test_invalid_value("scroll-snap-type", "mandatory block");
+test_invalid_value("scroll-snap-type", "proximity mandatory");
 </script>
 </body>
 </html>

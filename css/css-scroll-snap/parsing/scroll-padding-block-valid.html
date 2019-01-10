@@ -11,8 +11,21 @@
 </head>
 <body>
 <script>
-test_valid_value("scroll-padding-block", "auto");
+test_valid_value("scroll-padding-block-start", "auto");
+test_valid_value("scroll-padding-block-start", "10px");
+test_valid_value("scroll-padding-block-start", "20%");
+test_valid_value("scroll-padding-block-start", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-block-start", "calc(50% + 60px)");
 
+
+test_valid_value("scroll-padding-block-end", "auto");
+test_valid_value("scroll-padding-block-end", "10px");
+test_valid_value("scroll-padding-block-end", "20%");
+test_valid_value("scroll-padding-block-end", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-block-end", "calc(50% + 60px)");
+
+
+test_valid_value("scroll-padding-block", "auto");
 test_valid_value("scroll-padding-block", "10px");
 test_valid_value("scroll-padding-block", "20%");
 test_valid_value("scroll-padding-block", "calc(2em + 3ex)");

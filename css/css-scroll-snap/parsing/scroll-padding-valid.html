@@ -11,8 +11,35 @@
 </head>
 <body>
 <script>
-test_valid_value("scroll-padding", "auto");
+test_valid_value("scroll-padding-top", "auto");
+test_valid_value("scroll-padding-top", "10px");
+test_valid_value("scroll-padding-top", "20%");
+test_valid_value("scroll-padding-top", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-top", "calc(50% + 60px)");
 
+
+test_valid_value("scroll-padding-right", "auto");
+test_valid_value("scroll-padding-right", "10px");
+test_valid_value("scroll-padding-right", "20%");
+test_valid_value("scroll-padding-right", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-right", "calc(50% + 60px)");
+
+
+test_valid_value("scroll-padding-bottom", "auto");
+test_valid_value("scroll-padding-bottom", "10px");
+test_valid_value("scroll-padding-bottom", "20%");
+test_valid_value("scroll-padding-bottom", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-bottom", "calc(50% + 60px)");
+
+
+test_valid_value("scroll-padding-left", "auto");
+test_valid_value("scroll-padding-left", "10px");
+test_valid_value("scroll-padding-left", "20%");
+test_valid_value("scroll-padding-left", "calc(2em + 3ex)");
+test_valid_value("scroll-padding-left", "calc(50% + 60px)");
+
+
+test_valid_value("scroll-padding", "auto");
 test_valid_value("scroll-padding", "10px");
 test_valid_value("scroll-padding", "20%");
 test_valid_value("scroll-padding", "calc(2em + 3ex)");

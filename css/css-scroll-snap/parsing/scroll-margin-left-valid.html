@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Scroll Snap Test: scroll-margin-left with valid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#propdef-scroll-margin-left">
+<meta name="assert" content="scroll-margin-left supports the full grammar '<length>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("scroll-margin-left", "-10px");
+test_valid_value("scroll-margin-left", "calc(2em + 3ex)");
+</script>
+</body>
+</html>

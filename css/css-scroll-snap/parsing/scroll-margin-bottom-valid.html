@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Scroll Snap Test: scroll-margin-bottom with valid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#propdef-scroll-margin-bottom">
+<meta name="assert" content="scroll-margin-bottom supports the full grammar '<length>'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("scroll-margin-bottom", "-10px");
+test_valid_value("scroll-margin-bottom", "calc(2em + 3ex)");
+</script>
+</body>
+</html>

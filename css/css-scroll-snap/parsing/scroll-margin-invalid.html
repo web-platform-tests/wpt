@@ -11,9 +11,33 @@
 </head>
 <body>
 <script>
-test_invalid_value("scroll-margin", "auto");
+test_invalid_value("scroll-margin-top", "auto");
+test_invalid_value("scroll-margin-top", "20%");
+test_invalid_value("scroll-margin-top", "-30%");
+test_invalid_value("scroll-margin-top", "1px 2px");
 
+
+test_invalid_value("scroll-margin-right", "auto");
+test_invalid_value("scroll-margin-right", "20%");
+test_invalid_value("scroll-margin-right", "-30%");
+test_invalid_value("scroll-margin-right", "1px 2px");
+
+
+test_invalid_value("scroll-margin-bottom", "auto");
+test_invalid_value("scroll-margin-bottom", "20%");
+test_invalid_value("scroll-margin-bottom", "-30%");
+test_invalid_value("scroll-margin-bottom", "1px 2px");
+
+
+test_invalid_value("scroll-margin-left", "auto");
+test_invalid_value("scroll-margin-left", "20%");
+test_invalid_value("scroll-margin-left", "-30%");
+test_invalid_value("scroll-margin-left", "1px 2px");
+
+
+test_invalid_value("scroll-margin", "auto");
 test_invalid_value("scroll-margin", "20%");
+test_invalid_value("scroll-margin", "-30%");
 test_invalid_value("scroll-margin", "1px 2px 3px 4px 5px");
 </script>
 </body>

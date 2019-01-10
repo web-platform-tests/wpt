@@ -1,11 +1,10 @@
 <!doctype html>
-<html>
-<head>
 <title>Assigning mediastream to a video element</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#navigatorusermedia">
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <p class="instructions">When prompted, accept to share your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that the MediaStream object returned by
@@ -14,10 +13,8 @@ via the <code>srcObject</code> attribute.</p>
 
 <video id="vid"></video>
 
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
 <script>
+
 'use strict';
 const vid = document.getElementById("vid");
 
@@ -68,6 +65,5 @@ promise_test(async t => {
   // TODO add test that duration must be set to currentTime
   // when mediastream is destroyed
 }, "Tests that a MediaStream can be assigned to a video element with srcObject");
+
 </script>
-</body>
-</html>

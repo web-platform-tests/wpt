@@ -1,20 +1,18 @@
 <!doctype html>
-<html>
-<head>
 <title>Removing a track from a MediaStream</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrackList-remove-void-MediaStreamTrack-track">
 <link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#event-mediastream-removetrack">
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <p class="instructions">When prompted, accept to share your audio stream, then your video stream.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that removinging a track from a MediaStream works as expected.</p>
+
 <video id="video" height="120" width="160" autoplay muted></video>
 <audio id="audio" autoplay muted></audio>
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+
 <script>
 
 promise_test(async t => {
@@ -122,5 +120,3 @@ promise_test(async t => {
 }, "Test that removal from a MediaStream fires ended on media elements (audio first)");
 
 </script>
-</body>
-</html>

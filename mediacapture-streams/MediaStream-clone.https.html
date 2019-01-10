@@ -1,16 +1,14 @@
 <!doctype html>
-<html>
-<head>
 <title>MediaStream and MediaStreamTrack clone()</title>
 <link rel="help" href="https://w3c.github.io/mediacapture-main/#dom-mediastream-clone">
 <link rel="help" href="https://w3c.github.io/mediacapture-main/#dom-mediastreamtrack-clone">
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <p class="instructions">When prompted, accept to give permission to use your audio and video devices.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that cloning MediaStreams and MediaStreamTracks works as expected.</p>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+
 <script>
 
 promise_test(async t => {
@@ -90,5 +88,3 @@ promise_test(async t => {
 }, "Tests that cloning MediaStreamTrack objects works as expected");
 
 </script>
-</body>
-</html>

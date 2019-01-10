@@ -1,19 +1,17 @@
 <!doctype html>
-<html>
-<head>
 <title>enumerateDevices: test that enumerateDevices is present</title>
 <link rel="author" title="Dr Alex Gouaillard" href="mailto:agouaillard@gmail.com"/>
 <link rel="help" href="https://w3c.github.io/mediacapture-main/#enumerating-devices">
 <meta name='assert' content='Check that the enumerateDevices() method is present.'/>
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks for the presence of the
 <code>navigator.mediaDevices.enumerateDevices()</code> method.</p>
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+
 <script>
+
 "use strict";
 //NOTE ALEX: for completion, a test for ondevicechange event is missing.
 promise_test(async () => {
@@ -40,6 +38,5 @@ promise_test(async () => {
     }
   }
 }, "InputDeviceInfo is supported");
+
 </script>
-</body>
-</html>

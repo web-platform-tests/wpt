@@ -1,18 +1,16 @@
 <!doctype html>
-<html>
-<head>
 <title>Test navigator.mediaDevices.getSupportedConstraints()</title>
 <link rel="help" href="https://w3c.github.io/mediacapture-main/#enumerating-devices">
 <meta name='assert' content='Test the getSupportedConstraints() method.'/>
-</head>
-<body>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks for the presence of the
 <code>navigator.mediaDevices.getSupportedConstraints()</code> method.</p>
-<div id='log'></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+
 <script>
+
 "use strict";
 test(() => {
   assert_inherits(navigator.mediaDevices, "getSupportedConstraints");
@@ -44,6 +42,5 @@ test(() => {
     }, property + " is supported");
   });
 }
+
 </script>
-</body>
-</html>

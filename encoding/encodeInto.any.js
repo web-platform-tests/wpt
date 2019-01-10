@@ -142,8 +142,8 @@ test(() => {
   new MessageChannel().port1.postMessage(buffer, [buffer]);
   ({ read, written } = new TextEncoder().encodeInto("", view));
   assert_equals(read, 0);
-  assert_equalss(written, 0);
+  assert_equals(written, 0);
   ({ read, written } = new TextEncoder().encodeInto("test", view));
   assert_equals(read, 0);
-  assert_equalss(written, 0);
+  assert_equals(written, 0);
 }, "encodeInto() and a detached output buffer");

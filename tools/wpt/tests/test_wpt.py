@@ -30,27 +30,29 @@ def is_port_8000_in_use():
     return False
 
 
-@pytest.fixture(scope="module")
-def manifest_dir():
-    def update_manifest():
-        with pytest.raises(SystemExit) as excinfo:
-            wpt.main(argv=["manifest", "--no-download", "--path", os.path.join(path, "MANIFEST.json")])
-        assert excinfo.value.code == 0
+def get_persistent_manifest_path():
+    directory = ("~/meta" if os.environ.get('TRAVIS') == "true"
+                 else wpt.localpaths.repo_root)
+    return os.path.join(directory, "MANIFEST.json")
 
-    if os.environ.get('TRAVIS') == "true":
-        path = "~/meta"
-        update_manifest()
+
+@pytest.fixture(scope="module", autouse=True)
+def init_manifest():
+    with pytest.raises(SystemExit) as excinfo:
+        wpt.main(argv=["manifest", "--no-download",
+                       "--path", get_persistent_manifest_path()])
+    assert excinfo.value.code == 0
+
+
+@pytest.fixture
+def manifest_dir():
+    try:
+        path = tempfile.mkdtemp()
+        shutil.copyfile(get_persistent_manifest_path(),
+                        os.path.join(path, "MANIFEST.json"))
         yield path
-    else:
-        try:
-            path = tempfile.mkdtemp()
-            old_path = os.path.join(wpt.localpaths.repo_root, "MANIFEST.json")
-            if os.path.exists(os.path.join(wpt.localpaths.repo_root, "MANIFEST.json")):
-                shutil.copyfile(old_path, os.path.join(path, "MANIFEST.json"))
-            update_manifest()
-            yield path
-        finally:
-            shutil.rmtree(path)
+    finally:
+        shutil.rmtree(path)
 
 
 @pytest.fixture
@@ -443,9 +445,9 @@ def test_serve():
                 assert False, "server did not start responding within 60s"
             try:
                 resp = urllib2.urlopen("http://web-platform.test:8000")
-                print resp
+                print(resp)
             except urllib2.URLError:
-                print "URLError"
+                print("URLError")
                 time.sleep(1)
             else:
                 assert resp.code == 200

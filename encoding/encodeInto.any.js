@@ -136,14 +136,14 @@ test(() => {
 test(() => {
   const buffer = new ArrayBuffer(10),
         view = new Uint8Array(buffer);
-  const { read, written } = new TextEncoder().encodeInto("", view);
+  let { read, written } = new TextEncoder().encodeInto("", view);
   assert_equals(read, 0);
   assert_equals(written, 0);
-  self.postMessage(buffer, "/", [buffer]);
-  const { read2, written2 } = new TextEncoder().encodeInto("", view);
-  assert_equals(read2, 0);
-  assert_equalss(written2, 0);
-  const { read3, written3 } = new TextEncoder().encodeInto("test", view);
-  assert_equals(read3, 0);
-  assert_equalss(written3, 0);
+  new MessageChannel().port1.postMessage(buffer, [buffer]);
+  ({ read, written } = new TextEncoder().encodeInto("", view));
+  assert_equals(read, 0);
+  assert_equalss(written, 0);
+  ({ read, written } = new TextEncoder().encodeInto("test", view));
+  assert_equals(read, 0);
+  assert_equalss(written, 0);
 }, "encodeInto() and a detached output buffer");

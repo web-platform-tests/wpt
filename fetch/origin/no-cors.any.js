@@ -15,8 +15,8 @@ promise_test(async function () {
 
   const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-  assert_equals(json[0], origins.HTTP_ORIGIN, "first origin should equal this origin");
-  assert_equals(json[1], "null", "second origin should be opaque and therefore null");
+  assert_equals(json[0], origins.HTTP_ORIGIN);
+  assert_equals(json[1], "null");
 }, "Origin header and 308 redirect");
 
 promise_test(async function () {
@@ -39,8 +39,8 @@ promise_test(async function () {
 
   const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-  assert_equals(json[0], "no Origin header", "first origin should equal this origin");
-  assert_equals(json[1], "no Origin header", "second origin should be opaque and therefore null");
+  assert_equals(json[0], "no Origin header");
+  assert_equals(json[1], "no Origin header");
 }, "Origin header and GET navigation");
 
 promise_test(async function () {
@@ -59,18 +59,20 @@ promise_test(async function () {
         frame.remove();
       }
     }, { once: true });
+    frame.onload = () => {
+      const doc = frame.contentDocument,
+            form = doc.body.appendChild(doc.createElement("form")),
+            submit = form.appendChild(doc.createElement("input"));
+      form.action = url;
+      form.method = "POST";
+      submit.type = "submit";
+      submit.click();
+    }
     document.body.appendChild(frame);
-    const doc = frame.contentDocument,
-          form = doc.body.appendChild(doc.createElement("form")),
-          submit = form.appendChild(doc.createElement("input"));
-    form.action = url;
-    form.method = "POST";
-    submit.type = "submit";
-    submit.click();
   });
 
   const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-  assert_equals(json[0], "null", "first origin should equal this origin");
-  assert_equals(json[1], "null", "second origin should be opaque and therefore null");
+  assert_equals(json[0], "null");
+  assert_equals(json[1], "null");
 }, "Origin header and POST navigation");

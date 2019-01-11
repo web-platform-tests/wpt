@@ -67,8 +67,11 @@
 
       // Try to show a second payment sheet in the same window, which should reject.
       const showPromise2 = test_driver.bless("show payment request", () =>
+        // Sets the request's state to "closed", and rejects with AbortError.
+        // See: https://github.com/w3c/payment-request/pull/821
         request2.show()
       );
+
       await promise_rejects(
         t,
         "AbortError",
@@ -82,6 +85,22 @@
         "AbortError",
         showPromise1,
         "request1 was aborted via .abort()"
+      );
+      // Finally, request2 should have been "closed", so trying to show
+      // it will again result in promise rejected with an InvalidStateError.
+      // See: https://github.com/w3c/payment-request/pull/821
+      const rejectedPromise = request2.show();
+      await promise_rejects(
+        t,
+        "InvalidStateError",
+        rejectedPromise,
+        "Attempting to show a second payment request must reject."
+      );
+      // Finally, we confirm that request2's returned promises are unique.
+      assert_not_equals(
+        showPromise2,
+        rejectedPromise,
+        "Returned Promises be unique"
       );
     }, "The top browsing context can only show one payment sheet at a time.");
 
@@ -347,6 +366,5 @@
       request.show();
       await request.abort();
     }, "Navigating a popup as a nested browsing context sets 'payment request is showing boolean' to false.");
-
   </script>
 </body>

@@ -38,6 +38,31 @@ export function propertyKeys(o, expectedNames, expectedSymbols, label) {
     `${label}property symbols`);
 }
 
+export function iterResult(o, expectedValue, expectedDone, label) {
+  label = formatLabel(label);
+
+  assert_equals(typeof expectedDone, "boolean",
+    `${label} iterResult assert usage check: expectedDone must be a boolean`);
+
+  propertyKeys(o, ["value", "done"], [], label);
+  assert_equals(Object.getPrototypeOf(o), Object.prototype, `${label}prototype must be Object.prototype`);
+  assert_equals(o.value, expectedValue, `${label}value`);
+  assert_equals(o.done, expectedDone, `${label}done`);
+}
+
+export function iterResults(actualArray, expectedArrayOfArrays, label) {
+  label = formatLabel(label);
+
+  assert_equals(actualArray.length, expectedArrayOfArrays.length,
+    `${label} iterResults assert usage check: actual and expected must have the same length`);
+
+  for (let i = 0; i < actualArray.length; ++i) {
+    const { value: actualValue, done: actualDone } = actualArray[i];
+    const [expectedValue, expectedDone] = expectedArrayOfArrays[i];
+    iterResult(actualArray[i], expectedValue, expectedDone, `${label}iter result ${i}`);
+  }
+}
+
 export function methods(o, expectedMethods) {
   for (const [name, length] of Object.entries(expectedMethods)) {
     method(o, name, length);
@@ -103,5 +128,5 @@ function isConstructorTest(o) {
 }
 
 function formatLabel(label) {
-  return label !== undefined ? ` ${label}` : "";
+  return label !== undefined ? `${label} ` : "";
 }

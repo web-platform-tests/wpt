@@ -23,15 +23,29 @@ export function assertArrayBufferEqualsABView(actual, expected, label) {
   assertEqualArrayBuffers(actual, expected.buffer, label);
 }
 
-export function assertArrayCustomEquals(actual, expected, equalityAsserter, label) {
+export function assertAsyncIteratorEquals(actual, expected, label) {
+  return assertAsyncIteratorCustomEquals(actual, expected, Object.is, label);
+}
+
+export async function assertAsyncIteratorCustomEquals(actual, expected, equalityAsserter, label) {
   assert_true(Array.isArray(expected),
     "assertArrayCustomEquals usage check: expected must be an Array");
 
   const labelPart = label === undefined ? "" : `${label}: `;
-  assert_true(Array.isArray(actual), `${labelPart}must be an array`);
-  assert_equals(actual.length, expected.length, `${labelPart}length must be as expected`);
 
-  for (let i = 0; i < actual.length; ++i) {
-    equalityAsserter(actual[i], expected[i], `${labelPart}index ${i}`);
+  const collected = await collectAsyncIterator(actual);
+  assert_equals(collected.length, expected.length, `${labelPart}length must be as expected`);
+
+  for (let i = 0; i < collected.length; ++i) {
+    equalityAsserter(collected[i], expected[i], `${labelPart}index ${i}`);
   }
+}
+
+async function collectAsyncIterator(asyncIterator) {
+  const array = [];
+  for await (const entry of asyncIterator) {
+    array.push(entry);
+  }
+
+  return array;
 }

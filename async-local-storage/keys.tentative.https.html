@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Async local storage: keys()</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="module">
+import { testWithArea } from "./helpers/als-tests.js";
+import * as classAssert from "./helpers/class-assert.js";
+import { assertAsyncIteratorEquals, assertAsyncIteratorCustomEquals } from "./helpers/equality-asserters.js";
+
+const AsyncIteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf(async function* () {}).prototype);
+
+testWithArea(async area => {
+  const keysProto = Object.getPrototypeOf(area.keys());
+  const valuesProto = Object.getPrototypeOf(area.values());
+  const entriesProto = Object.getPrototypeOf(area.entries());
+
+  assert_equals(keysProto, valuesProto, "keys() and values() return values' must have the same [[Prototype]]");
+  assert_equals(valuesProto, entriesProto, "values() and entries () return values' must have the same [[Prototype]]");
+}, "keys()/values()/entries() all use the same prototype object");
+
+testWithArea(async area => {
+  const iter = area.keys();
+  const proto = Object.getPrototypeOf(iter);
+  assert_equals(Object.getPrototypeOf(proto), AsyncIteratorPrototype,
+    "[[Prototype]] must be the async iterator prototype");
+  classAssert.propertyKeys(proto, ["next"], [], "must only have a next() method");
+}, "Is an async iterator of the expected shape");
+
+testWithArea(async area => {
+  await area.set(1, "value 1");
+  await area.set(2, "value 2");
+  await area.set(3, "value 3");
+
+  await assertAsyncIteratorEquals(area.keys(), [1, 2, 3]);
+}, "Using for-await-of to collect the results works");
+
+testWithArea(async area => {
+  // We're not testing everything since this isn't a test of IndexedDB.
+  await area.set(1, "value 1");
+  await area.set(new Date(500), "value date 500");
+  await area.set(-1, "value -1");
+  await area.set(new Date(-20), "value date -20");
+  await area.set("aaa", "value aaa");
+  await area.set("a", "value a");
+
+  await assertAsyncIteratorCustomEquals(
+    area.keys(),
+    [
+      new Date(-20),
+      -1,
+      1,
+      new Date(500),
+      "a",
+      "aaa"
+    ],
+    (actual, expected) => actual.getTime ? Number(actual) === Number(expected) : actual === expected
+  );
+}, "keys() are returned in IndexedDB order");
+
+testWithArea(async area => {
+  await area.set(1, "value 1");
+  await area.set(2, "value 2");
+  await area.set(3, "value 3");
+
+  const iter = area.keys();
+  const iterResults = [
+    await iter.next(),
+    await iter.next(),
+    await iter.next(),
+    await iter.next(),
+    await iter.next(),
+    await iter.next()
+  ];
+
+  classAssert.iterResults(iterResults, [
+    [1, false],
+    [2, false],
+    [3, false],
+    [undefined, true],
+    [undefined, true],
+    [undefined, true]
+  ]);
+}, "manual testing of .next() calls, with awaiting");
+
+testWithArea(async area => {
+  area.set(1, "value 1");
+  area.set(2, "value 2");
+  area.set(3, "value 3");
+
+  const iter = area.keys();
+  const promises = [
+    iter.next(),
+    iter.next(),
+    iter.next(),
+    iter.next(),
+    iter.next(),
+    iter.next()
+  ];
+  const iterResults = await Promise.all(promises);
+
+  classAssert.iterResults(iterResults, [
+    [1, false],
+    [2, false],
+    [3, false],
+    [undefined, true],
+    [undefined, true],
+    [undefined, true]
+  ]);
+}, "manual testing of .next() calls, no awaiting");
+
+testWithArea(async area => {
+  const iter = area.keys();
+  const promise = iter.next();
+
+  await area.set(1, "value 1");
+
+  const iterResults = [
+    await promise,
+    await iter.next()
+  ];
+
+  classAssert.iterResults(iterResults, [
+    [undefined, true],
+    [undefined, true]
+  ]);
+}, ".next() on empty means forever done, even if you set more");
+
+testWithArea(async area => {
+  let everExecuted = false;
+  let counter = 1;
+  for await (const key of area.keys()) {
+    await area.set(counter, `value ${counter}`);
+    everExecuted = true;
+    ++counter;
+  }
+
+  assert_false(everExecuted, "Loop body must never be executed");
+  await assertAsyncIteratorEquals(area.keys(), [], "No keys must be present still");
+}, "for-await-of adding during the loop body, initially empty");
+
+testWithArea(async area => {
+  await area.set(1, "value 1");
+
+  let counter = 2;
+  for await (const key of area.keys()) {
+    await area.set(counter, `value ${counter}`);
+    ++counter;
+
+    if (counter > 5) {
+      break;
+    }
+  }
+
+  assert_equals(counter, 6, "Loop body must have executed 5 times");
+  await assertAsyncIteratorEquals(area.keys(), [1, 2, 3, 4, 5], "All the keys must be there now");
+}, "for-await-of adding during the loop body, initially has a value");
+</script>

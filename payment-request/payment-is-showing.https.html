@@ -11,7 +11,17 @@
 <body>
   <script>
     "use strict";
-    const methods = [{ supportedMethods: "basic-card" }];
+    const applePayMethod = {
+      supportedMethods: "https://apple.com/apple-pay",
+      data: {
+        version: 3,
+        merchantIdentifier: "merchant.com.example",
+        countryCode: "US",
+        merchantCapabilities: ["supports3DS"],
+        supportedNetworks: ["visa"],
+      },
+    };
+    const methods = [{ supportedMethods: "basic-card" }, applePayMethod];
     const details = {
       total: {
         label: "Total",

@@ -22,13 +22,13 @@ function onload_prep() {
     d = iframe.contentWindow.document;
     iframeBody = d.body;
 
-    const image = d.createElement('img');
+    const image = d.createElement('IMG');
     image.addEventListener('load', function() {
         step_timeout(onload_test, 0); });
     image.src = 'blue.png?id=cached';
     iframeBody.appendChild(image);
 
-    const image2 = d.createElement('img');
+    const image2 = d.createElement('IMG');
     image2.addEventListener('load', function() {
         step_timeout(onload_test, 0); });
     image2.src = 'blue.png?id=cached';
@@ -57,7 +57,7 @@ function onload_test() {
     start_crossorigin_test();
 }
 function start_crossorigin_test() {
-    const image3 = d.createElement('img');
+    const image3 = d.createElement('IMG');
     image3.addEventListener("load", function() { step_timeout(finish_crossorigin_test, 0); });
     image3.src = 'http://' + host.REMOTE_HOST + ':{{ports[http][1]}}{{location[path]}}/../resources/blue.png?id=cached';
     iframeBody.appendChild(image3);

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>TestDriver reftest click method</title>
+<link rel="match" href="click-reftest-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<button type="button" id="button">Button</button>
+
+<p id="log">Waiting for button press</p>
+
+<script>
+let log = document.getElementById("log");
+try {
+  let button = document.getElementById("button");
+  test_driver
+    .click(button)
+    .then(() => { log.textContent = "PASS"; takeScreenshot(); } )
+    .catch(() => { log.textContent = "FAIL"; takeScreenshot(); } );
+} catch(e) {
+  log.textContent = e.message;
+  takeScreenshot();
+}
+</script>

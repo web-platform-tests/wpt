@@ -6,9 +6,8 @@ import socket
 import sys
 import time
 
-from mozlog import get_default_logger, handlers, proxy
+from mozlog import get_default_logger, proxy
 
-from wptlogging import LogLevelRewriter
 from wptserve.handlers import StringHandler
 
 here = os.path.split(__file__)[0]

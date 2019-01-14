@@ -149,10 +149,6 @@ class TestEnvironment(object):
     def setup_server_logging(self):
         server_logger = get_default_logger(component="wptserve")
         assert server_logger is not None
-        log_filter = handlers.LogLevelFilter(lambda x:x, "info")
-        # Downgrade errors to warnings for the server
-        log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
-        server_logger.component_filter = log_filter
 
         server_logger = proxy.QueuedProxyLogger(server_logger)
 

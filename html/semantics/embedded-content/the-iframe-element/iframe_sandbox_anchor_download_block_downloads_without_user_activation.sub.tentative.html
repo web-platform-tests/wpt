@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>&lt;a download&gt; triggered download in sandbox is blocked.</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-iframe-sandbox">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-iframe-element">
+<script src="/resources/testharness.js"></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="support/iframe_sandbox_download_helper.js"></script>
+<body>
+<script>
+"use strict";
+
+async_test(t => {
+    const token = "{{$id:uuid()}}";
+    var frame_onload_triggered = false;
+    var iframe = document.createElement("iframe");
+    iframe.src = "support/iframe_sandbox_download.html";
+    iframe.sandbox = "allow-same-origin";
+    iframe.onload = t.step_func(function () {
+        assert_false(frame_onload_triggered, "Unexpected navigation.");
+        frame_onload_triggered = true;
+        var doc = iframe.contentDocument;
+        var anchor = doc.getElementById('link_id');
+        anchor.href += "?token=" + token;
+        anchor.download = "tmp.txt";
+        anchor.click();
+        VerifyDownload(t, token, false, DownloadVerifyDelay());
+    });
+
+    document.body.appendChild(iframe);
+}, "<a download> triggered download in sandbox is blocked.");
+</script>
+</body>

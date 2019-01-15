@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Navigation resulted download in sandbox is allowed by allow-downloads-without-user-activation.</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-iframe-sandbox">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#the-iframe-element">
+<script src="/resources/testharness.js"></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="support/iframe_sandbox_download_helper.js"></script>
+<body>
+<script>
+"use strict";
+
+async_test(t => {
+    const token = "{{$id:uuid()}}";
+    var frame_onload_triggered = false;
+    var iframe = document.createElement("iframe");
+    iframe.src = "support/iframe_sandbox_download.html";
+    iframe.sandbox = "allow-same-origin allow-downloads-without-user-activation";
+    iframe.onload = t.step_func(function () {
+        assert_false(frame_onload_triggered, "Unexpected navigation.");
+        frame_onload_triggered = true;
+        var doc = iframe.contentDocument;
+        var anchor = doc.getElementById('link_id');
+        anchor.href += "?token=" + token;
+        // Set |finish-delay| to let the server stream a response over a
+        // period of time, so it's able to catch potential download
+        // cancellation by detecting a socket close.
+        anchor.href += "&finish-delay=" + StreamDownloadFinishDelay();
+        anchor.click();
+        VerifyDownload(t, token, true, StreamDownloadFinishDelay() + DownloadVerifyDelay());
+    });
+
+    document.body.appendChild(iframe);
+}, "Navigation resulted download in sandbox is allowed by allow-downloads-without-user-activation.");
+</script>
+</body>

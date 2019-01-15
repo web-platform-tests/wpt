@@ -390,7 +390,7 @@ class Chrome(Browser):
     """
 
     product = "chrome"
-    requirements = "requirements_chrome.txt"
+    requirements = None
 
     @property
     def binary(self):
@@ -590,7 +590,7 @@ class InternetExplorer(Browser):
     """Internet Explorer-specific interface."""
 
     product = "ie"
-    requirements = "requirements_ie.txt"
+    requirements = None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -615,7 +615,7 @@ class Safari(Browser):
     """
 
     product = "safari"
-    requirements = "requirements_safari.txt"
+    requirements = None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -656,7 +656,7 @@ class Servo(Browser):
     """Servo-specific interface."""
 
     product = "servo"
-    requirements = "requirements_servo.txt"
+    requirements = None
 
     def platform_components(self):
         platform = {
@@ -742,7 +742,7 @@ class WebKit(Browser):
     """WebKit-specific interface."""
 
     product = "webkit"
-    requirements = "requirements_webkit.txt"
+    requirements = None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError
@@ -764,7 +764,7 @@ class Epiphany(Browser):
     """Epiphany-specific interface."""
 
     product = "epiphany"
-    requirements = "requirements_epiphany.txt"
+    requirements = None
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError

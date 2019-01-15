@@ -171,7 +171,8 @@ class BrowserSetup(object):
             return self.browser.install(venv.path, channel)
 
     def install_requirements(self):
-        self.venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements))
+        if self.browser.requirements is not None:
+            self.venv.install_requirements(os.path.join(wpt_root, "tools", "wptrunner", self.browser.requirements))
 
     def setup(self, kwargs):
         self.setup_kwargs(kwargs)

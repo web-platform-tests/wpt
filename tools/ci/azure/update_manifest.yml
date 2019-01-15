@@ -1,3 +1,4 @@
 steps:
-- script: ./wpt manifest
+# --no-download is a workaround for https://github.com/web-platform-tests/wpt/issues/14860
+- script: ./wpt manifest --no-download
   displayName: 'Update manifest'

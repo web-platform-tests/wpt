@@ -487,6 +487,7 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["ssl_type"] is None:
+        print("none")
         if None not in (kwargs["ca_cert_path"], kwargs["host_cert_path"], kwargs["host_key_path"]):
             kwargs["ssl_type"] = "pregenerated"
         elif exe_path(kwargs["openssl_binary"]) is not None:
@@ -495,11 +496,14 @@ def check_args(kwargs):
             kwargs["ssl_type"] = "none"
 
     if kwargs["ssl_type"] == "pregenerated":
+        print("pregen")
         require_arg(kwargs, "ca_cert_path", lambda x:os.path.exists(x))
         require_arg(kwargs, "host_cert_path", lambda x:os.path.exists(x))
         require_arg(kwargs, "host_key_path", lambda x:os.path.exists(x))
 
     elif kwargs["ssl_type"] == "openssl":
+        print(kwargs["openssl_binary"])
+        print("openssl")
         path = exe_path(kwargs["openssl_binary"])
         if path is None:
             print >> sys.stderr, "openssl-binary argument missing or not a valid executable"
@@ -507,6 +511,7 @@ def check_args(kwargs):
         kwargs["openssl_binary"] = path
 
     if kwargs["ssl_type"] != "none" and kwargs["product"] == "firefox" and kwargs["certutil_binary"]:
+        print("ffox??")
         path = exe_path(kwargs["certutil_binary"])
         if path is None:
             print >> sys.stderr, "certutil-binary argument missing or not a valid executable"

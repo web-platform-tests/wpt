@@ -6,8 +6,11 @@ import socket
 import sys
 import time
 
-from mozlog import get_default_logger, proxy
+import six
+from mozlog import get_default_logger, handlers, proxy
+from mozlog.structuredlog import log_levels
 
+from wptlogging import LogLevelRewriter
 from wptserve.handlers import StringHandler
 
 here = os.path.split(__file__)[0]
@@ -146,8 +149,19 @@ class TestEnvironment(object):
         return config
 
     def setup_server_logging(self):
+        from wptrunner import logger
         server_logger = get_default_logger(component="wptserve")
         assert server_logger is not None
+
+        server_log_level = "info"
+        for key, value in six.iteritems(log_levels):
+            # Set the same log level for wpt server as the wpt runner.
+            if logger.handlers[0].formatter.level == value:
+                server_log_level = key.lower()
+        log_filter = handlers.LogLevelFilter(lambda x:x, server_log_level)
+        # Downgrade errors to warnings for the server
+        log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
+        server_logger.component_filter = log_filter
 
         server_logger = proxy.QueuedProxyLogger(server_logger)
 

@@ -1,7 +1,8 @@
 function forcePerformanceEntry(entryType) {
   switch (entryType) {
     case 'resource':
-      fetch(window.location.href + "?" + Math.random());
+      // Use `self` for Workers
+      fetch(self.location.href + "?" + Math.random());
       break;
 
     case 'longtask':
@@ -17,7 +18,9 @@ function forcePerformanceEntry(entryType) {
       break;
 
     case 'paint':
-      document.head.parentNode.appendChild(document.createTextNode('baz'));
+      // Use `self` for Workers
+      if (self.document)
+        document.head.parentNode.appendChild(document.createTextNode('baz'));
       break;
 
     case 'navigation':

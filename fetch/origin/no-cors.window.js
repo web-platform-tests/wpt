@@ -76,3 +76,65 @@ promise_test(async function () {
   assert_equals(json[0], "null");
   assert_equals(json[1], "null");
 }, "Origin header and POST navigation");
+
+function referrerPolicyFucnctor(referrerPolicy, isCors, expectedOrigin) {
+  return async function () {
+    const stash = token(),
+          origins = get_host_info(),
+          redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
+
+    let url = (isCors ? origins.HTTP_REMOTE_ORIGIN : origins.HTTP_ORIGIN) +
+              redirectPath + "?stash=" + stash;
+
+    await new Promise(resolve => {
+      const frame = document.createElement("iframe");
+      const rp = "no-referrer";
+      frame.src = origins.HTTP_ORIGIN + redirectPath +
+                  "?referrerPolicy=" + referrerPolicy + "&stash=" + stash;
+      self.addEventListener("message", e => {
+        if (e.data === "loaded") {
+          resolve();
+          frame.remove();
+        }
+      }, { once: true });
+      frame.onload = () => {
+        const doc = frame.contentDocument,
+              form = doc.body.appendChild(doc.createElement("form")),
+              submit = form.appendChild(doc.createElement("input"));
+        form.action = url;
+        form.method = "POST";
+        submit.type = "submit";
+        submit.click();
+      }
+      document.body.appendChild(frame);
+    });
+
+    const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
+
+    assert_equals(json[0], "no Origin header");
+    assert_equals(json[1], expectedOrigin);
+  };
+}
+
+function referrerPolicyTestString(referrerPolicy, isCors) {
+  return "Origin header and POST" + (isCors ? "Cross-origin" : "same-origin") +
+         " navigation with Referrer-Policy " + referrerPolicy;
+}
+
+promise_test(referrerPolicyFucnctor("no-referrer", false, "null"),
+             referrerPolicyTestString("no-referrer", false));
+
+promise_test(referrerPolicyFucnctor("no-referrer", true, "null"),
+             referrerPolicyTestString("no-referrer", true));
+
+promise_test(referrerPolicyFucnctor("same-origin", false, "http://web-platform.test:8000"),
+             referrerPolicyTestString("same-origin", false));
+
+promise_test(referrerPolicyFucnctor("same-origin", true, "null"),
+             referrerPolicyTestString("same-origin", true));
+
+promise_test(referrerPolicyFucnctor("no-referrer-when-downgrade", false, "http://web-platform.test:8000"),
+             referrerPolicyTestString("no-referrer-when-downgrade", false));
+
+promise_test(referrerPolicyFucnctor("no-referrer-when-downgrade", true, "http://web-platform.test:8000"),
+             referrerPolicyTestString("no-referrer-when-downgrade", true));

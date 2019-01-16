@@ -20,6 +20,13 @@ def main(request, response):
 
     request.server.stash.put(key, origin_list)
 
+    if "referrerPolicy" in request.GET:
+        response.status = 200
+        response.headers.set("content-Type", "text/html")
+        response.headers.set("Referrer-Policy",
+                             request.GET.first("referrerPolicy"))
+        return
+
     if "location" in request.GET:
         response.status = 308
         response.headers.set("Location", request.GET.first("location"))

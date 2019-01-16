@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link rel="author" title="Dom Farolino" href="mailto:dom@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+var t = async_test("Check that the style sheet loaded by an <link> element " +
+                   "is available to scripts until its successor is completely loaded");
+</script>
+<link href="style.css?pipe=trickle(d3)" rel="stylesheet" id="style_test"
+      onerror="t.step(function() { assert_unreached('Sheet should load OK'); });"></link>
+<script>
+  t.step(function() {
+    assert_true(document.styleSheets.length === 1 &&
+                document.styleSheets[0].href.includes("style.css"),
+                "The style sheet 'style.css' is not available to scripts");
+  });
+
+  style_test.href = "resources/neutral.css?pipe=trickle(d3)";
+  t.step(function() {
+    assert_true(document.styleSheets.length === 1 &&
+                document.styleSheets[0].href.includes("style.css"),
+                "The style sheet 'style.css' was removed from " +
+                "document.styleSheets before the next style sheet to replace " +
+                "it has finished loading");
+    t.done();
+  });
+</script>
+</head>
+</html>

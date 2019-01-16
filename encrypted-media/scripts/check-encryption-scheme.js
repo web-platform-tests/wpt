@@ -26,8 +26,7 @@ function runTest(config, qualifier)
               return Promise.resolve('Supported');
             },
             function error() {
-              // CDM does not support "encryptionScheme". Test should
-              // still pass.
+              // CDM does not support "encryptionScheme". Test should still pass.
               return Promise.resolve('Not supported');
             });
   }

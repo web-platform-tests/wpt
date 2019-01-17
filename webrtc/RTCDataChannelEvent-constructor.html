@@ -29,8 +29,10 @@ test(function() {
     );
 }, 'RTCDataChannelEvent constructor with a channel passed as undefined.');
 
-test(function() {
+test(t => {
     const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
     const dc = pc.createDataChannel('');
     const event = new RTCDataChannelEvent('type', { channel: dc });
     assert_true(event instanceof RTCDataChannelEvent);

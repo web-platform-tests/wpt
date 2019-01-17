@@ -1,5 +1,7 @@
 import urllib
-import time
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../common/"))
+import sleep
 
 def main(request, response):
     index = request.request_path.index("?")
@@ -11,7 +13,7 @@ def main(request, response):
         if arg.startswith("ignored"):
             continue
         elif arg.endswith("ms"):
-            time.sleep(float(arg[0:-2]) / 1E3);
+            sleep.sleep_at_least(float(arg[0:-2]))
         elif arg.startswith("redirect:"):
             return (302, "WEBPERF MARKETING"), [("Location", urllib.unquote(arg[9:]))], "TEST"
         elif arg.startswith("mime:"):
@@ -33,7 +35,11 @@ def main(request, response):
         elif arg.startswith("status:"):
             code = int(urllib.unquote(arg[7:]))
             response.writer.write_status(code)
-            statusSent = True
+            if code // 100 == 1:
+                # Terminate informational 1XX responses with an empty line.
+                response.writer.end_headers()
+            else:
+                statusSent = True
         elif arg == "flush":
             response.writer.flush()
 

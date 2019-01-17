@@ -41,7 +41,7 @@ promise_test((test) => {
 promise_test((test) => {
     const remoteURL = httpsBaseURL + "resources/hello.py?corp=same-site";
     return promise_rejects(test, new TypeError, fetch(remoteURL, { mode: "no-cors" }));
-}, "Cross-origin no-cors fetch to a same-site URL with a 'Cross-Origin-Resource-Policy: same-site' response header.");
+}, "Cross-scheme (HTTP to HTTPS) no-cors fetch to a same-site URL with a 'Cross-Origin-Resource-Policy: same-site' response header.");
 
 promise_test((test) => {
     const remoteURL = httpsBaseURL + "resources/hello.py?corp=same-origin";

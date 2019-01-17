@@ -5,7 +5,6 @@ const host = get_host_info();
 const path = "/fetch/cross-origin-resource-policy/";
 const localBaseURL = host.HTTPS_ORIGIN + path;
 const notSameSiteBaseURL = host.HTTPS_NOTSAMESITE_ORIGIN + path;
-const httpBaseURL = host.HTTP_ORIGIN + path;
 
 promise_test(async () => {
     const response = await fetch("./resources/hello.py?corp=same-origin");

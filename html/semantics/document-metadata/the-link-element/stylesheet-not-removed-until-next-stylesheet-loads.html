@@ -3,28 +3,21 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script>
-var t = async_test("Check that the style sheet loaded by an <link> element " +
-                   "is available to scripts until its successor is completely loaded");
-</script>
 <link href="style.css?pipe=trickle(d3)" rel="stylesheet" id="style_test"
-      onerror="t.step(function() { assert_unreached('Sheet should load OK'); });"></link>
+      onerror="t.unreached_func('Sheet should load OK')">
 <script>
-  t.step(function() {
+  test(function() {
     assert_true(document.styleSheets.length === 1 &&
                 document.styleSheets[0].href.includes("style.css"),
-                "The style sheet 'style.css' is not available to scripts");
-  });
+                "The style sheet 'style.css' must be available to scripts");
 
-  style_test.href = "resources/neutral.css?pipe=trickle(d3)";
-  t.step(function() {
+    style_test.href = "resources/neutral.css?pipe=trickle(d3)";
+
     assert_true(document.styleSheets.length === 1 &&
                 document.styleSheets[0].href.includes("style.css"),
-                "The style sheet 'style.css' was removed from " +
-                "document.styleSheets before the next style sheet to replace " +
-                "it has finished loading");
-    t.done();
-  });
+                "The style sheet 'style.css' must remain accessible to " +
+                "scripts until its replacement has finished loading");
+  }, "Check that a style sheet loaded by a <link> is available until its successor is loaded");
 </script>
 </head>
 </html>

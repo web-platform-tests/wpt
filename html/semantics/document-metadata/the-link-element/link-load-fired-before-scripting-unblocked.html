@@ -9,8 +9,8 @@ var t = async_test("Check if the stylesheet's load event is fired before the " +
                    "pending parsing-blocking script is unblocked");
 </script>
 <link href="style.css?pipe=trickle(d3)" rel="stylesheet" id="style_test"
-      onload="t.step(function() { saw_link_onload = true; });"
-      onerror="t.step(function() { assert_unreached('Sheet should load OK'); });"></link>
+      onload="t.step(function() { saw_link_onload = true; })"
+      onerror="t.unreached_func('Sheet should load OK')">
 <script>
   t.step(function() {
     assert_true(saw_link_onload, "The pending parsing-blocking script should " +

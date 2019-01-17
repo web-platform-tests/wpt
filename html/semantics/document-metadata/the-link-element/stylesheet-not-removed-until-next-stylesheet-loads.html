@@ -3,8 +3,7 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link href="style.css?pipe=trickle(d3)" rel="stylesheet" id="style_test"
-      onerror="t.unreached_func('Sheet should load OK')">
+<link href="style.css?pipe=trickle(d3)" rel="stylesheet" id="style_test">
 <script>
   test(function() {
     assert_true(document.styleSheets.length === 1 &&

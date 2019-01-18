@@ -74,7 +74,7 @@ def test_setup_wptrunner(venv, logger, product):
 def run_cmdline_test(cmdline, key, value):
     parser = run.create_parser()
     kwargs = vars(parser.parse_args(cmdline.split()))
-    wptcommandline.check_verbose(kwargs)
+    wptcommandline.check_log_verbose(kwargs)
     assert kwargs.get(key) == value
 
 def test_opt_mach_verbose():

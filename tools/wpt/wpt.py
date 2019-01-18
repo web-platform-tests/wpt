@@ -124,9 +124,6 @@ def main(prog=None, argv=None):
     else:
         args = extras
 
-    from wptrunner import wptcommandline
-    wptcommandline.check_verbose(kwargs)
-
     if script:
         try:
             rv = script(*args, **kwargs)

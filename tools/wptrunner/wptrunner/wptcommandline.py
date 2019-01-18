@@ -527,7 +527,7 @@ def check_args(kwargs):
 
     return kwargs
 
-def check_verbose(kwargs):
+def check_log_verbose(kwargs):
     if kwargs.get("verbose"):
         for key, value in kwargs.items():
             if key.startswith("log_") and not key.endswith("_level"):

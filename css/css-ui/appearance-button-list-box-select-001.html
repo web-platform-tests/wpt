@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: appearance: button on list box select (multiple)</title>
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-switching">
+<meta name="assert" content="The button value acts like auto on a list box select.">
+<link rel="match" href="list-box-select-ref.html">
+<style>
+ select { -webkit-appearance: button; }
+</style>
+<select multiple><option>select</option></select>

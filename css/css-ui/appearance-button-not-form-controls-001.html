@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: appearance: button on elements that are not form controls</title>
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-switching">
+<meta name="assert" content="button should work on elements in general.">
+<link rel="match" href="appearance-button-other-form-controls-001-ref.html">
+<style>
+ #container { width: 500px; }
+ #container > * { -webkit-appearance: button; }
+</style>
+<div id="container">
+	<a>a</a>
+	<b>b</b>
+	<canvas width=20 height=20></canvas>
+	<span>span</span>
+	<svg width=20 height=20></svg>
+	<x-foo>x-foo</x-foo>
+</div>

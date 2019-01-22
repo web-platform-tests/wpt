@@ -186,6 +186,8 @@ def run_tests(config, test_paths, product, **kwargs):
 
         testharness_timeout_multipler = product.get_timeout_multiplier("testharness", run_info, **kwargs)
 
+        # For setting up the log level for test servers.
+        product.env_options['verify'] = kwargs['verify']
         with env.TestEnvironment(test_paths,
                                  testharness_timeout_multipler,
                                  kwargs["pause_after_test"],

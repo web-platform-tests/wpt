@@ -11,6 +11,9 @@
 
   -->
 
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-values-3/#calc-computed-value">
+
   <style>
   div#target
     {
@@ -20,9 +23,9 @@
     }
   </style>
 
-  <script src="./resources/testharness.js"></script>
+  <script src="../../resources/testharness.js"></script>
 
-  <script src="./resources/testharnessreport.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
 
   <div id="log"></div>
 
@@ -55,21 +58,21 @@
       }, description);
     }
 
-    compareValue("border-top-left-radius", "calc(50%)", "50%", "simple percentage conversion");
+    compareValue("border-top-left-radius", "calc(50%)", "50%", "simple percentage conversion test 1");
 
-    compareValue("border-top-right-radius", "calc(50%)", "50%", "simple percentage conversion");
+    compareValue("border-top-right-radius", "calc(50%)", "50%", "simple percentage conversion test 2");
 
-    compareValue("border-bottom-left-radius", "calc(50%)", "50%", "simple percentage conversion");
+    compareValue("border-bottom-left-radius", "calc(50%)", "50%", "simple percentage conversion test 3");
 
-    compareValue("border-bottom-right-radius", "calc(50%)", "50%", "simple percentage conversion");
+    compareValue("border-bottom-right-radius", "calc(50%)", "50%", "simple percentage conversion test 4");
 
-    compareValue("border-top-left-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion");
+    compareValue("border-top-left-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion test 5");
 
-    compareValue("border-top-right-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion");
+    compareValue("border-top-right-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion test 6");
 
-    compareValue("border-bottom-left-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion");
+    compareValue("border-bottom-left-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion test 7");
 
-    compareValue("border-bottom-right-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion");
+    compareValue("border-bottom-right-radius", "calc(50%) calc(25%)", "50% 25%", "percentage conversion test 8");
   }
 
   startTesting();

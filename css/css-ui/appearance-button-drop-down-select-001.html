@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: appearance: button on drop-down select</title>
+<link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-switching">
+<meta name="assert" content="The button value works on a drop-down select.">
+<link rel="mismatch" href="drop-down-select-ref.html">
+<link rel="mismatch" href="drop-down-select-appearance-none-ref.html">
+<style>
+ select { -webkit-appearance: button; }
+</style>
+<select><option>select</option></select>

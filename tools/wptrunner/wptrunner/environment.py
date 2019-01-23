@@ -157,9 +157,10 @@ class TestEnvironment(object):
         if not self.options.get("verify"):
             for key, value in six.iteritems(log_levels):
                 # Set the same log level for wpt server as the wpt runner.
-                if logger.handlers[0].formatter.level == value:
+                if hasattr(logger, "handlers") and logger.handlers[0].formatter.level == value:
                     server_log_level = key.lower()
-        self.options.pop("verify")
+        if "verify" in self.options:
+            self.options.pop("verify")
         log_filter = handlers.LogLevelFilter(lambda x:x, server_log_level)
         # Downgrade errors to warnings for the server
         log_filter = LogLevelRewriter(log_filter, ["error"], "warning")

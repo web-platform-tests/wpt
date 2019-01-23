@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!---
+Tentative test against:
+https://github.com/whatwg/fetch/pull/853
+-->
+<meta charset="utf-8">
+<title>Tests Stale While Revalidate works for images</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+
+async_test(t => {
+  window.onload = t.step_func(() => {
+    step_timeout(() => {
+      assert_equals(document.getElementById("firstimage").width, 16, "Width is 16");
+      var img2 = document.createElement("img");
+      img2.onload = t.step_func(() => {
+        var resources = performance.getEntriesByType("resource");
+        var count = 0;
+        for (var i=0; i < resources.length; i++) {
+          if (resources[i].name.indexOf('stale-image.py') != -1) {
+            count++;
+          }
+        }
+        // We shouldn't have the stale while revalidate resource load yet
+        // as it should be issued during an idle period.
+        assert_greater_than_equal(count, 1, "performance entries");
+        assert_equals(img.width, 16, "image dimension");
+
+        // Ensure that we get a performance resource entry for the stale
+        // while revalidate load.
+        var checkResult = () => {
+          var resources = performance.getEntriesByType("resource");
+          var count = 0;
+          for (var i=0; i < resources.length; i++) {
+            if (resources[i].name.indexOf('stale-image.py') != -1) {
+              count++;
+            }
+          }
+
+          if (count < 2) {
+            t.step_timeout(checkResult, 25);
+            return;
+          }
+
+          assert_equals(count, 2, "Performance count");
+          t.done();
+        };
+
+        t.step_timeout(checkResult, 25);
+      });
+      img2.src = "stale-image.py";
+      document.body.appendChild(img2);
+    }, 0);
+  });
+}, 'Cache returns stale resource');
+
+var img = document.createElement("img");
+img.src = "stale-image.py";
+img.id = "firstimage";
+document.body.appendChild(img);
+</script>
+</body>

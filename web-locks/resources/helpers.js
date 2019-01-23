@@ -4,9 +4,9 @@
   // Generate a unique resource identifier, using the script path and
   // test case name. This is useful to avoid lock interference between
   // test cases.
-  let res_num = 0;
   self.uniqueName = (testCase, prefix) => {
-    return `${self.location.pathname}-${prefix}-${testCase.name}-${++res_num}`;
+    const rand = Math.floor(1e10 * Math.random());
+    return `${self.location.pathname}-${prefix}-${testCase.name}-${rand}`;
   };
 
   // Inject an iframe showing the given url into the page, and resolve

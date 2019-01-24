@@ -624,7 +624,7 @@ def test_update_leak_total_0():
     new_manifest = updated[0][1]
 
     assert not new_manifest.is_empty
-    assert new_manifest.get("leak-threshold") == ['default:110']
+    assert new_manifest.get("leak-threshold") == ['default:51200']
 
 
 def test_update_leak_total_1():
@@ -677,7 +677,7 @@ leak-total: 100""")]
     new_manifest = updated[0][1]
 
     assert not new_manifest.is_empty
-    assert new_manifest.get("leak-threshold") == ['default:1100']
+    assert new_manifest.get("leak-threshold") == ['default:51200']
 
 
 def test_update_leak_total_4():

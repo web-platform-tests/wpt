@@ -165,4 +165,3 @@ jobs:
     inputs:
       serviceConnection: staging.wpt.fyi
       urlSuffix: /api/checks/azure/$(Build.BuildId)
-      waitForCompletion: true

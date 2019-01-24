@@ -159,6 +159,7 @@ jobs:
   displayName: 'all tests (wpt.fyi hook)'
   dependsOn: all_macOS
   server: true
+  steps:
   - task: InvokeRESTAPI@1
     displayName: 'Invoke wpt.fyi hook'
     inputs:

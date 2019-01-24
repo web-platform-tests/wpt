@@ -10,7 +10,7 @@
 # project is required:
 #  - The "Build pull requests from forks of this repository" setting must be
 #    enabled: https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
-#  - A scheduled build need to be set up for the the epochs/daily branch.
+#  - A scheduled build needs to be set up for the the epochs/daily branch.
 #  - To get results from scheduled builds into wpt.fyi, a service connection
 #    named staging.wpt.fyi with URL https://staging.wpt.fyi is needed.
 

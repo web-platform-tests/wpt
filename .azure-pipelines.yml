@@ -6,9 +6,14 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/index
 #
-# In addition to this configuration file, the "Build pull requests from forks
-# of this repository" setting must also be enabled in the Azure DevOps project:
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
+# In addition to this configuration file, some setup in the Azure DevOps
+# project is required:
+#  - The "Build pull requests from forks of this repository" setting must be
+#    enabled: https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
+#  - A scheduled build for the epochs/daily branch needs to be set up, the push
+#    to the branch alone is not enough: https://github.community/t5/GitHub-API-Development-and/Can-the-Checks-API-be-used-to-trigger-two-runs-when-two-pushed/m-p/17777
+#  - A service connection named staging.wpt.fyi with URL
+#    https://staging.wpt.fyi needs to be created.
 
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or
@@ -148,3 +153,9 @@ jobs:
     inputs:
       artifactName: 'results'
     condition: succeededOrFailed()
+  - task: InvokeRESTAPI@1
+    displayName: 'Invoke wpt.fyi hook'
+    inputs:
+      serviceConnection: staging.wpt.fyi
+      urlSuffix: /api/checks/azure/$(Build.BuildId)
+      waitForCompletion: true

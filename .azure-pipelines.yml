@@ -12,8 +12,9 @@
 #    enabled: https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#validate-contributions-from-forks
 #  - A scheduled build for the epochs/daily branch needs to be set up, the push
 #    to the branch alone is not enough: https://github.community/t5/GitHub-API-Development-and/Can-the-Checks-API-be-used-to-trigger-two-runs-when-two-pushed/m-p/17777
-#  - A service connection named staging.wpt.fyi with URL
-#    https://staging.wpt.fyi needs to be created.
+#  - Because scheduled builds don't show up as check runs on GitHub, the wpt.fyi
+#    integration is different; a service connection named staging.wpt.fyi with
+#    URL https://staging.wpt.fyi needs to be created.
 
 jobs:
 # The affected tests jobs are unconditional for speed, as most PRs have one or

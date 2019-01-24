@@ -158,7 +158,7 @@ jobs:
 - job: all_post
   displayName: 'all tests (wpt.fyi hook)'
   dependsOn: all_macOS
-  server: true
+  pool: server
   steps:
   - task: InvokeRESTAPI@1
     displayName: 'Invoke wpt.fyi hook'

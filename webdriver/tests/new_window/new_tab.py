@@ -26,8 +26,11 @@ def test_new_tab_opens_about_blank(session):
     value = assert_success(response)
     assert value["type"] == "tab"
 
-    session.handle = value["handle"]
-    assert session.url == "about:blank"
+    original_handle = session.window_handle
+    session.window_handle = value["handle"]
+    new_window_url = session.url
+    session.window_handle = original_handle
+    assert new_window_url == "about:blank"
 
 
 def test_new_tab_sets_no_window_name(session):
@@ -35,8 +38,11 @@ def test_new_tab_sets_no_window_name(session):
     value = assert_success(response)
     assert value["type"] == "tab"
 
-    session.handle = value["handle"]
-    assert window_name(session) == ""
+    original_handle = session.window_handle
+    session.window_handle = value["handle"]
+    new_window_name = window_name(session)
+    session.window_handle = original_handle
+    assert new_window_name == ""
 
 
 def test_new_tab_sets_no_opener(session):
@@ -44,5 +50,8 @@ def test_new_tab_sets_no_opener(session):
     value = assert_success(response)
     assert value["type"] == "tab"
 
-    session.handle = value["handle"]
-    assert opener(session) is None
+    original_handle = session.window_handle
+    session.window_handle = value["handle"]
+    new_window_opener = opener(session)
+    session.window_handle = original_handle
+    assert new_window_opener is None

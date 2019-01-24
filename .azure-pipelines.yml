@@ -153,6 +153,12 @@ jobs:
     inputs:
       artifactName: 'results'
     condition: succeededOrFailed()
+
+# The InvokeRESTAPI task can only run in a server job.
+- job: all_post
+  displayName: 'all tests (wpt.fyi hook)'
+  dependsOn: all_macOS
+  server: true
   - task: InvokeRESTAPI@1
     displayName: 'Invoke wpt.fyi hook'
     inputs:

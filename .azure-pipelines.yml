@@ -130,7 +130,7 @@ jobs:
 
 - job: all_macOS
   displayName: 'all tests (Safari Technology Preview)'
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/epochs/daily')
+  #condition: eq(variables['Build.SourceBranch'], 'refs/heads/epochs/daily')
   strategy:
     parallel: 4 # chosen to make runtime ~2h
   timeoutInMinutes: 360
@@ -146,8 +146,8 @@ jobs:
   - template: tools/ci/azure/install_safari.yml
   - template: tools/ci/azure/update_hosts.yml
   - template: tools/ci/azure/update_manifest.yml
-  - script: no_proxy='*' ./wpt run --no-manifest-update --no-restart-on-unexpected --no-fail-on-unexpected --this-chunk=$(System.JobPositionInPhase) --total-chunks=$(System.TotalJobsInPhase) --chunk-type hash --log-wptreport $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json --channel preview safari
-    displayName: 'Run tests'
+  - script: echo '{}' > $(Build.ArtifactStagingDirectory)/wpt_report_$(System.JobPositionInPhase).json
+    displayName: 'Pretend to run tests'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish results'
     inputs:

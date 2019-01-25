@@ -43,17 +43,17 @@ function testIdent(input, expected) {
 
 /* Digits are the inclusive range 0-9 */
 for(var i = 0; i <= 9; i++) {
-	testInteger(i+"", i+"");
+    testInteger(i+"", i+"");
 }
 
 /* Non-printables are the inclusive ranges 0-8, b, e-1f, or 7f */
 // 0 never shows up due to preprocessing, so start at 1
 for(var i = 1; i <= 8; i++) {
-	testIdent("foo"+String.fromCodePoint(i), "parse error");
+    testIdent("foo"+String.fromCodePoint(i), "parse error");
 }
 testIdent("foo"+String.fromCodePoint(0xb), "parse error");
 for(var i = 0xe; i <= 0x1f; i++) {
-	testIdent("foo"+String.fromCodePoint(i), "parse error");
+    testIdent("foo"+String.fromCodePoint(i), "parse error");
 }
 testIdent("foo" + String.fromCodePoint(0x7f), "parse error");
 

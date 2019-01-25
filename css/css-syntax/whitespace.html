@@ -36,7 +36,7 @@ function isNotWhitespace(codepoint) {
         const withSpace = document.querySelector(".a b");
         document.querySelector("#foo").setAttribute("class", `.a${char}b`);
         try {
-            var withChar = document.querySelector(`.a${char}b`);	
+            var withChar = document.querySelector(`.a${char}b`);
         } catch(e) {
             assert_true(true, `${codepointName} isn't valid in a selector at all`);
             return;

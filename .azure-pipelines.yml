@@ -139,7 +139,7 @@ jobs:
   #dependsOn: decision
   #condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
   pool:
-    name: 'Hosted Windows Client Next'
+    name: 'Hosted Windows Client'
   steps:
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml

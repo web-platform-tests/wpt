@@ -3152,11 +3152,25 @@ function idl_test(srcs, deps, idl_setup_func) {
  */
 function fetch_spec(spec) {
     var url = '/interfaces/' + spec + '.idl';
-    return fetch(url).then(function (r) {
+    return fetch(url).then(function(r) {
         if (!r.ok) {
             throw new IdlHarnessError("Error fetching " + url + ".");
         }
         return r.text();
+    }).then(function(idl) {
+        if (spec == 'cssom') {
+            // CSSOMString is an implementation-defined typedef of either
+            // DOMString or USVString in CSSOM:
+            // https://drafts.csswg.org/cssom/#cssomstring-type
+            // Because of this, neither typedef is included in cssom.idl.
+            // We need some definition, and use DOMString because USVString
+            // has additional requirements in type conversion and could result
+            // in spurious failures for implementations that use DOMString.
+            // Note: No newline is added to preserve line numbers.
+            return 'typedef DOMString CSSOMString;' + idl;
+        }
+
+        return idl;
     });
 }
 // vim: set expandtab shiftwidth=4 tabstop=4 foldmarker=@{,@} foldmethod=marker:

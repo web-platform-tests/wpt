@@ -363,13 +363,8 @@ class FirefoxBrowser(Browser):
         if self.leak_report_file is not None:
             mozleak.process_leak_log(
                 self.leak_report_file,
-                leak_thresholds={
-                    "default": 0,
-                    "tab": 10000,  # See dependencies of bug 1051230.
-                    # GMP rarely gets a log, but when it does, it leaks a little.
-                    "geckomediaplugin": 20000,
-                },
-                ignore_missing_leaks=["geckomediaplugin"],
+                leak_thresholds=self.mozleak_thresholds,
+                ignore_missing_leaks=["gmplugin"],
                 log=self.logger,
                 stack_fixer=self.stack_fixer
             )

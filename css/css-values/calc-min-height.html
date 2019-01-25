@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Values and Units Test: calc() function and min-height</title>
+
+  <!--
+
+  Original test is:
+
+  https://chromium.googlesource.com/chromium/src/+/c825d655f6aaf73484f9d56e9012793f5b9668cc/third_party/WebKit/LayoutTests/css3/calc/calc-min-height.html
+
+  -->
+
+  <link rel="help" href="https://www.w3.org/TR/css-values-3/#calc-notation">
+  <link rel="match" href="reference/calc-min-height-ref.html">
+
+<style>
+.container {
+	height: 400px;
+	overflow-y: hidden;
+}
+.item {
+	height: calc(100% - 50px);
+	min-height: calc(100% - 50px);
+	box-sizing: border-box;
+}
+.item > div {
+	height: 100%;
+	overflow-y: auto;
+	border: 1px solid black;
+	box-sizing: border-box;
+}
+</style>
+<p>crbug.com/580508: Should have a black border all round.</p>
+<div class="container">
+	<div class="item">
+		<div>
+		</div>
+	</div>
+</div>

@@ -151,7 +151,7 @@ class BrowserSetup(object):
     browser_cls = None
 
     def __init__(self, venv, prompt=True, sub_product=None):
-        self.browser = self.browser_cls()
+        self.browser = self.browser_cls(logger)
         self.venv = venv
         self.prompt = prompt
         self.sub_product = sub_product
@@ -422,7 +422,7 @@ class Servo(BrowserSetup):
             binary = self.browser.find_binary(self.venv.path, None)
 
             if binary is None:
-                raise WptrunError("Unable to find servo binary on the PATH")
+                raise WptrunError("Unable to find servo binary in PATH")
             kwargs["binary"] = binary
 
 
@@ -442,6 +442,29 @@ class WebKit(BrowserSetup):
         pass
 
 
+class Epiphany(BrowserSetup):
+    name = "epiphany"
+    browser_cls = browser.Epiphany
+
+    def install(self, venv, channel=None):
+        raise NotImplementedError
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary()
+
+            if binary is None:
+                raise WptrunError("Unable to find epiphany in PATH")
+            kwargs["binary"] = binary
+
+        if kwargs["webdriver_binary"] is None:
+            webdriver_binary = self.browser.find_webdriver()
+
+            if webdriver_binary is None:
+                raise WptrunError("Unable to find WebKitWebDriver in PATH")
+            kwargs["webdriver_binary"] = webdriver_binary
+
+
 product_setup = {
     "fennec": Fennec,
     "firefox": Firefox,
@@ -456,6 +479,7 @@ product_setup = {
     "sauce": Sauce,
     "opera": Opera,
     "webkit": WebKit,
+    "epiphany": Epiphany,
 }
 
 
@@ -474,6 +498,7 @@ def setup_logging(kwargs, default_config=None):
         default_config = {default_formatter: sys.stdout}
     wptrunner.setup_logging(kwargs, default_config)
     logger = wptrunner.logger
+    return logger
 
 
 def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
@@ -509,11 +534,9 @@ def setup_wptrunner(venv, prompt=True, install_browser=False, **kwargs):
             files_changed, manifest_path=kwargs.get("manifest_path"), manifest_update=kwargs["manifest_update"])
         test_list = tests_changed | tests_affected
         logger.info("Identified %s affected tests" % len(test_list))
-        if not test_list and not kwargs["test_list"]:
-            logger.info("Quitting because no tests were affected.")
-            exit()
         test_list = [os.path.relpath(item, wpt_root) for item in test_list]
         kwargs["test_list"] += test_list
+        kwargs["default_exclude"] = True
 
     if install_browser and not kwargs["channel"]:
         logger.info("--install-browser is given but --channel is not set, default to nightly channel")

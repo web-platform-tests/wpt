@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>css-conditional IDL tests</title>
+  <title>CSS Conditional Rules IDL tests</title>
   <link rel="help" href="https://drafts.csswg.org/css-conditional/">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -16,16 +16,13 @@
 
   <script>
     'use strict';
-    promise_test(async () => {
-      const idl = await fetch('/interfaces/css-conditional.idl').then(r => r.text());
-      const cssom = await fetch('/interfaces/cssom.idl').then(r => r.text());
-      const dom = await fetch('/interfaces/dom.idl').then(r => r.text());
-      const idl_array = new IdlArray();
-      idl_array.add_idls(idl);
-      idl_array.add_dependency_idls(cssom);
-      idl_array.add_dependency_idls(dom);
-      idl_array.test();
-    }, 'Test css-conditional IDL implementation');
+    idl_test(
+      ['css-conditional'],
+      ['cssom', 'dom'],
+      idl_array => {
+        // No objects
+      }
+    );
   </script>
 
 </body>

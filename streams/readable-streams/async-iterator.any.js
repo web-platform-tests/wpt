@@ -22,7 +22,7 @@ promise_test(async () => {
     chunks.push(chunk);
   }
   assert_array_equals(chunks, [1, 2, 3]);
-}, 'async iterator push source');
+}, 'Async-iterating a push source');
 
 promise_test(async () => {
   let i = 1;
@@ -41,7 +41,7 @@ promise_test(async () => {
     chunks.push(chunk);
   }
   assert_array_equals(chunks, [1, 2, 3]);
-}, 'async iterator pull source');
+}, 'Async-iterating a pull source');
 
 promise_test(async () => {
   const s = new ReadableStream({
@@ -105,7 +105,7 @@ promise_test(async () => {
     await test(t, true);
     await test(t, false);
   }
-}, 'cancellation behavior');
+}, 'Cancellation behavior');
 
 promise_test(async () => {
   const s = new ReadableStream();
@@ -139,4 +139,4 @@ test(() => {
   });
   const it = s.getIterator();
   assert_throws(new TypeError(), () => s.getIterator(), 'getIterator() should throw');
-}, 'getIterator throws if there\'s already a lock');
+}, 'getIterator() throws if there\'s already a lock');

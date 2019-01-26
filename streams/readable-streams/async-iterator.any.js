@@ -140,8 +140,5 @@ test(() => {
     },
   });
   const it = s.getIterator();
-  try {
-    s.getIterator();
-    assert_unreached();
-  } catch (e) {}
+  assert_throws(new TypeError(), () => s.getIterator(), 'getIterator() should throw');
 }, 'getIterator throws if there\'s already a lock');

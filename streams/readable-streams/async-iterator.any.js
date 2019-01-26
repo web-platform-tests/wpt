@@ -82,7 +82,8 @@ promise_test(async () => {
       }
     });
 
-    await (async () => {
+    // use a separate function for the loop body so return does not stop the test
+    const loop = async () => {
       for await (const c of s.getIterator({ preventCancel })) {
         if (type === 'throw') {
           throw new Error();
@@ -92,7 +93,11 @@ promise_test(async () => {
           return;
         }
       }
-    })().catch(() => 0);
+    };
+
+    try {
+      await loop();
+    } catch (e) {}
 
     if (preventCancel) {
       assert_array_equals(s.events, ['pull'], `cancel() should not be called when type = '${type}' and preventCancel is true`);

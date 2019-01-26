@@ -108,7 +108,6 @@ promise_test(async () => {
 }, 'cancellation behavior');
 
 promise_test(async () => {
-  {
     const s = new ReadableStream();
     const it = s[Symbol.asyncIterator]();
     await it.return();
@@ -116,9 +115,9 @@ promise_test(async () => {
       await it.return();
       assert_unreached();
     } catch (e) {}
-  }
+}, 'Calling return() twice rejects');
 
-  {
+promise_test(async () => {
     const s = new ReadableStream({
       start(c) {
         c.enqueue(0);
@@ -129,8 +128,7 @@ promise_test(async () => {
     const next = await it.next();
     assert_equals(Object.getPrototypeOf(next), Object.prototype);
     assert_array_equals(Object.keys(next), ['value', 'done']);
-  }
-}, 'manual manipulation');
+}, 'next()\'s fulfillment value has the right shape');
 
 test(() => {
   const s = new ReadableStream({

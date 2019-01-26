@@ -108,26 +108,26 @@ promise_test(async () => {
 }, 'cancellation behavior');
 
 promise_test(async () => {
-    const s = new ReadableStream();
-    const it = s[Symbol.asyncIterator]();
+  const s = new ReadableStream();
+  const it = s[Symbol.asyncIterator]();
+  await it.return();
+  try {
     await it.return();
-    try {
-      await it.return();
-      assert_unreached();
-    } catch (e) {}
+    assert_unreached();
+  } catch (e) {}
 }, 'Calling return() twice rejects');
 
 promise_test(async () => {
-    const s = new ReadableStream({
-      start(c) {
-        c.enqueue(0);
-        c.close();
-      },
-    });
-    const it = s[Symbol.asyncIterator]();
-    const next = await it.next();
-    assert_equals(Object.getPrototypeOf(next), Object.prototype);
-    assert_array_equals(Object.keys(next), ['value', 'done']);
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(0);
+      c.close();
+    },
+  });
+  const it = s[Symbol.asyncIterator]();
+  const next = await it.next();
+  assert_equals(Object.getPrototypeOf(next), Object.prototype);
+  assert_array_equals(Object.keys(next), ['value', 'done']);
 }, 'next()\'s fulfillment value has the right shape');
 
 test(() => {

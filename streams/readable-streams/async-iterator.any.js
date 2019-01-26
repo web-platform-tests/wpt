@@ -132,7 +132,7 @@ promise_test(async () => {
   const it = s[Symbol.asyncIterator]();
   const next = await it.next();
   assert_equals(Object.getPrototypeOf(next), Object.prototype);
-  assert_array_equals(Object.keys(next), ['value', 'done']);
+  assert_array_equals(Object.getOwnPropertyNames(next).sort(), ['done', 'value']);
 }, 'next()\'s fulfillment value has the right shape');
 
 test(() => {

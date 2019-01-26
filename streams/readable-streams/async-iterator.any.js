@@ -113,6 +113,28 @@ promise_test(async () => {
 }, 'Cancellation behavior');
 
 promise_test(async () => {
+  const test = async (preventCancel) => {
+    const s = recordingReadableStream({
+      start(c) {
+        c.enqueue(0);
+      }
+    });
+
+    const it = s.getIterator({ preventCancel });
+    await it.return();
+
+    if (preventCancel) {
+      assert_array_equals(s.events, [], `cancel() should not be called when preventCancel is true`);
+    } else {
+      assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called when preventCancel is false`);
+    }
+  };
+
+  await test(true);
+  await test(false);
+}, 'Cancellation behavior when manually calling return()');
+
+promise_test(async () => {
   const s = new ReadableStream();
   const it = s[Symbol.asyncIterator]();
   await it.return();

@@ -7,6 +7,8 @@
 <div id=log></div>
 <div id=target></div>
 <script>
+setup({ allow_uncaught_exception: true });
+
 test(function(t) {
     var type = "foo";
     var target = document.getElementById("target");
@@ -26,4 +28,23 @@ test(function(t) {
     target.dispatchEvent(new Event(type));
 }, "calls `handleEvent` method of `EventListener`");
 
+test(function(t) {
+    var type = "foo";
+    var target = document.getElementById("target");
+    var thrownError = new Error();
+    var uncaughtError;
+
+    window.addEventListener("error", function(event) {
+        uncaughtError = event.error;
+    });
+
+    target.addEventListener(type, {
+        get handleEvent() {
+            throw thrownError;
+        },
+    });
+
+    target.dispatchEvent(new Event(type));
+    assert_equals(thrownError, uncaughtError);
+}, "rethrows errors when getting `handleEvent`");
 </script>

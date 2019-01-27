@@ -88,6 +88,29 @@ promise_test(async () => {
 }, 'Async-iterating an empty but not closed/errored stream never executes the loop body and stalls the async function');
 
 promise_test(async () => {
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(1);
+      c.enqueue(2);
+      c.enqueue(3);
+      c.close();
+    },
+  });
+
+  const reader = s.getReader();
+  const readResult = await reader.read();
+  assert_equals(readResult.done, false);
+  assert_equals(readResult.value, 1);
+  reader.releaseLock();
+
+  const chunks = [];
+  for await (const chunk of s) {
+    chunks.push(chunk);
+  }
+  assert_array_equals(chunks, [2, 3]);
+}, 'Async-iterating a partially consumed stream');
+
+promise_test(async () => {
   const test = async (type, preventCancel) => {
     const s = recordingReadableStream({
       start(c) {

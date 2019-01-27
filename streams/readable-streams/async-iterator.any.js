@@ -1,5 +1,6 @@
 // META: global=worker,jsshell
 // META: script=../resources/rs-utils.js
+// META: script=../resources/test-utils.js
 // META: script=../resources/recording-streams.js
 'use strict';
 
@@ -71,7 +72,19 @@ promise_test(async () => {
 }, 'Async-iterating a closed stream never executes the loop body, but works fine');
 
 promise_test(async () => {
+  const s = new ReadableStream();
 
+  const loop = async () => {
+    for await (const chunk of s) {
+      assert_unreached();
+    }
+    assert_unreached();
+  };
+
+  await Promise.race([
+    loop(),
+    delay(500)
+  ]);
 }, 'Async-iterating an empty but not closed/errored stream never executes the loop body and stalls the async function');
 
 promise_test(async () => {

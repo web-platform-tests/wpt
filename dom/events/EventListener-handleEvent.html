@@ -47,4 +47,21 @@ test(function(t) {
     target.dispatchEvent(new Event(type));
     assert_equals(thrownError, uncaughtError);
 }, "rethrows errors when getting `handleEvent`");
+
+test(function(t) {
+    var type = "foo";
+    var target = document.getElementById("target");
+    var uncaughtError;
+
+    window.addEventListener("error", function(event) {
+        uncaughtError = event.error;
+    });
+
+    target.addEventListener(type, {
+        handleEvent: null,
+    });
+
+    target.dispatchEvent(new Event(type));
+    assert_true(uncaughtError instanceof TypeError);
+}, "throws if `handleEvent` is not callable");
 </script>

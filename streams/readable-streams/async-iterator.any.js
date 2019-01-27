@@ -170,6 +170,15 @@ promise_test(async () => {
   assert_array_equals(Object.getOwnPropertyNames(next).sort(), ['done', 'value']);
 }, 'next()\'s fulfillment value has the right shape');
 
+promise_test(async t => {
+  const s = recordingReadableStream();
+  const it = s[Symbol.asyncIterator]();
+  it.next();
+
+  await promise_rejects(t, new TypeError(), it.return(), 'return() should reject');
+  assert_array_equals(s.events, ['pull']);
+}, 'calling return() while there are pending reads rejects');
+
 test(() => {
   const s = new ReadableStream({
     start(c) {

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Values and Units Test: calc() function with angle values</title>
+
+  <!--
+
+  Original test is:
+
+  https://chromium.googlesource.com/chromium/src/+/c825d655f6aaf73484f9d56e9012793f5b9668cc/third_party/WebKit/LayoutTests/css3/calc/calc-with-time-angle-and-frequency-values.html
+
+  Issue 917718: [css-values] calc-with-time-angle-and-frequency-values
+  test is highly unreliable, transition-delay testing causes side effects
+  https://bugs.chromium.org/p/chromium/issues/detail?id=917718
+
+  -->
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="https://www.w3.org/TR/css-values-3/#calc-computed-value">
+  <link rel="help" href="https://www.w3.org/TR/css-values-3/#angles">
+
+  <meta content="This test checks that additions, substractions, multiplications and divisions in calc() function when applied to angle units." name="assert">
+
+  <script src="/resources/testharness.js"></script>
+
+  <script src="/resources/testharnessreport.js"></script>
+
+  <div id="log"></div>
+
+  <div id="target"></div>
+
+  <script>
+  function startTesting()
+  {
+
+    var targetElement = document.getElementById("target");
+
+    function compareValue(property_name, calcValue, expectedValue, description)
+    {
+
+    test(function()
+      {
+
+      targetElement.style.setProperty(property_name, "inherit");
+
+      /*
+      Since we are running many consecutive tests on the same
+      element, then it is necessary to 'reset' its property
+      to an initial value before actually re-testing it.
+      */
+
+      targetElement.style.setProperty(property_name, calcValue);
+
+      var computedCalcValue = getComputedStyle(targetElement)[property_name];
+
+      targetElement.style[property_name] = expectedValue;
+
+      var computedExpectedValue = getComputedStyle(targetElement)[property_name];
+
+      assert_equals(computedCalcValue, computedExpectedValue, calcValue + ' should equal to ' + expectedValue);
+
+      targetElement.style.removeProperty(property_name);
+      }, description);
+    }
+
+    /* Testing angle units  */
+
+    /*
+
+    deg
+       Degrees. There are 360 degrees in a full circle.
+
+    grad
+       Gradians, also known as "gons" or "grades". There are 400 gradians in a full circle.
+
+    rad
+       Radians. There are 2π radians in a full circle.
+
+    turn
+       Turns. There is 1 turn in a full circle.
+
+   */
+
+
+ /* compareValue(property_name, calcValue, expectedValue, description)  */
+
+    compareValue("transform", "rotate(calc(45deg + 45deg))", "rotate(90deg)", "addition of 2 angle units: deg plus deg");
+
+    compareValue("transform", "rotate(calc(45deg + 1rad))", "rotate(102.3deg)", "addition of 2 angle units: deg plus rad");
+
+    compareValue("transform", "rotate(calc(20deg + 200grad))", "rotate(200deg)", "addition of 2 angle units: deg plus grad");
+
+    compareValue("transform", "rotate(calc(200deg + 0.5turn))", "rotate(380deg)", "addition of 2 angle units: deg plus turn");
+
+    compareValue("transform", "rotate(calc(45rad + 45rad))", "rotate(90rad)", "addition of 2 angle units: rad plus rad");
+
+    compareValue("transform", "rotate(calc(1rad + 40grad))", "matrix(-0.0574904875548093, 0.998346054151921, -0.998346054151921, -0.0574904875548093, 0, 0)", "addition of 2 angle units: rad plus grad");
+
+    compareValue("transform", "rotate(calc(1rad + 0.5turn))", "matrix(-0.54030230586814, -0.841470984807896, 0.841470984807896, -0.54030230586814, 0, 0)", "addition of 2 angle units: rad plus turn");
+
+    compareValue("transform", "rotate(calc(45grad + 45grad))", "rotate(90grad)", "addition of 2 angle units: grad plus grad");
+
+    compareValue("transform", "rotate(calc(10grad + 0.5turn))", "rotate(189deg)", "addition of 2 angle units: grad plus turn");
+
+    compareValue("transform", "rotate(calc(45deg - 15deg))", "rotate(30deg)", "substraction of angle unit: deg minus deg");
+
+    compareValue("transform", "rotate(calc(90deg - 1rad))", "matrix(0.841470984807897, 0.54030230586814, -0.54030230586814, 0.841470984807897, 0, 0)", "substraction of angle unit: deg minus rad");
+
+    compareValue("transform", "rotate(calc(38deg - 20grad))", "rotate(20deg)", "substraction of angle unit: deg minus grad");
+
+    compareValue("transform", "rotate(calc(360deg - 0.5turn))", "rotate(180deg)", "substraction of angle unit: deg minus turn");
+
+    compareValue("transform", "rotate(calc(45rad - 15rad))", "rotate(30rad)", "substraction of angle unit: rad minus rad");
+
+    compareValue("transform", "rotate(calc(30rad - 10grad))", "matrix(-0.955728013201613, 0.294251533184956, -0.294251533184956, -0.955728013201613, 0, 0)", "substraction of angle unit: rad minus grad");
+
+    compareValue("transform", "rotate(calc(4rad - 0.1turn))", "matrix(-0.973646143183581, -0.228063999490797, 0.228063999490797, -0.973646143183581, 0, 0)", "substraction of angle unit: rad minus turn");
+
+    compareValue("transform", "rotate(calc(45grad - 15grad))", "rotate(30grad)", "substraction of angle unit: grad minus grad");
+
+    compareValue("transform", "rotate(calc(100grad - 0.25turn))", "rotate(0deg)", "substraction of angle unit: grad minus turn");
+
+    compareValue("transform", "rotate(calc(45deg * 2))", "rotate(90deg)", "multiplication of angle unit: deg multiplied by int");
+
+    compareValue("transform", "rotate(calc(2 * 45rad))", "rotate(90rad)", "multiplication of angle unit: int multiplied by rad");
+
+    compareValue("transform", "rotate(calc(45grad * 2))", "rotate(90grad)", "multiplication of angle unit: grad multiplied by int");
+
+    compareValue("transform", "rotate(calc(2 * 45turn))", "rotate(90turn)", "multiplication of angle unit: int multiplied by turn");
+
+    compareValue("transform", "rotate(calc(90deg / 2))", "rotate(45deg)", "division of angle unit: deg divided by int");
+
+    compareValue("transform", "rotate(calc(90rad / 2))", "rotate(45rad)", "division of angle unit: rad divided by int");
+
+    compareValue("transform", "rotate(calc(90grad / 2))", "rotate(45grad)", "division of angle unit: grad divided by int");
+
+    compareValue("transform", "rotate(calc(90turn / 2))", "rotate(45turn)", "division of angle unit: turn divided by int");
+
+ /* compareValue(property_name, calcValue, expectedValue, description)  */
+
+    /*
+
+    deg
+       Degrees. There are 360 degrees in a full circle.
+
+    grad
+       Gradians, also known as "gons" or "grades". There are 400 gradians in a full circle.
+
+    rad
+       Radians. There are 2π radians in a full circle.
+
+    turn
+       Turns. There is 1 turn in a full circle.
+
+   */
+
+
+
+  /* Testing conversion of angle unit  */
+
+ /* compareValue(property_name, calcValue, expectedValue, description)  */
+
+    compareValue("transform", "rotate(calc(50grad)", "rotate(45deg)", "conversion of angle unit: grad into deg");
+
+  }
+
+  startTesting();
+
+  </script>

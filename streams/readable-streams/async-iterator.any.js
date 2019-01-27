@@ -212,3 +212,54 @@ test(() => {
   const it = s.getIterator();
   assert_throws(new TypeError(), () => s.getIterator(), 'getIterator() should throw');
 }, 'getIterator() throws if there\'s already a lock');
+
+promise_test(async () => {
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(1);
+      c.enqueue(2);
+      c.enqueue(3);
+      c.close();
+    },
+  });
+
+  // read the first two chunks, then cancel
+  const chunks = [];
+  for await (const chunk of s) {
+    chunks.push(chunk);
+    if (chunk >= 2) {
+      break;
+    }
+  }
+  assert_array_equals(chunks, [1, 2]);
+
+  const reader = s.getReader();
+  await reader.closed;
+}, 'Acquiring a reader after partially async-iterating a stream');
+
+promise_test(async () => {
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(1);
+      c.enqueue(2);
+      c.enqueue(3);
+      c.close();
+    },
+  });
+
+  // read the first two chunks, then release lock
+  const chunks = [];
+  for await (const chunk of s.getIterator({preventCancel: true})) {
+    chunks.push(chunk);
+    if (chunk >= 2) {
+      break;
+    }
+  }
+  assert_array_equals(chunks, [1, 2]);
+
+  const reader = s.getReader();
+  const readResult = await reader.read();
+  assert_equals(readResult.done, false, 'should not be closed yet');
+  assert_equals(readResult.value, 3, 'should read remaining chunk');
+  await reader.closed;
+}, 'Acquiring a reader and reading the remaining chunks after partially async-iterating a stream with preventCancel = true');

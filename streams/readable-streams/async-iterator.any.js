@@ -223,6 +223,26 @@ promise_test(async () => {
     },
   });
 
+  const chunks = [];
+  for await (const chunk of s) {
+    chunks.push(chunk);
+  }
+  assert_array_equals(chunks, [1, 2, 3]);
+
+  const reader = s.getReader();
+  await reader.closed;
+}, 'Acquiring a reader after exhaustively async-iterating a stream');
+
+promise_test(async () => {
+  const s = new ReadableStream({
+    start(c) {
+      c.enqueue(1);
+      c.enqueue(2);
+      c.enqueue(3);
+      c.close();
+    },
+  });
+
   // read the first two chunks, then cancel
   const chunks = [];
   for await (const chunk of s) {

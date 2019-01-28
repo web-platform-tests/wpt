@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<title>CSS Position Absolute: css-position-3</title>
+<link rel="author" title="mailto:atotic@google.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://www.w3.org/TR/css-position-3/">
+<meta name="assert" content="abspos resolves %-ge sizes correctly.">
+<style>
+
+#container {
+  position: relative;
+}
+
+#image-wrapper {
+  display: inline-flex;
+  position: absolute;
+  height: 100%;
+  width: auto;
+  background: yellow;
+}
+
+#content-wrapper {
+  margin-left: 30%;
+}
+
+#target {
+  height: auto;
+  width: auto;
+  max-width: none;
+  min-height: 100%;
+  display: block;
+}
+</style>
+<!-- IMG height is 100% of image wrapper height.
+  IMG width equals IMG height -->
+<div id="container">
+  <div id="image-wrapper">
+    <img id="target" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+  </div>
+  <div id="content-wrapper">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+  </div>
+</div>
+<script>
+document.body.offsetTop;
+test(() => {
+  let target = document.querySelector("#target");
+  assert_equals(target.offsetWidth, target.offsetHeight);
+  assert_equals(target.offsetHeight, document.querySelector("#content-wrapper").offsetHeight);
+}, '#target matches content height, and #target width matches #target height' );
+
+test(() => {
+  document.body.style.marginLeft = "300px";
+  let target = document.querySelector("#target");
+  assert_equals(target.offsetWidth, target.offsetHeight);
+  assert_equals(target.offsetHeight, document.querySelector("#content-wrapper").offsetHeight);
+}, '#target matches content height, and #target width matches #target height after resize');
+</script>

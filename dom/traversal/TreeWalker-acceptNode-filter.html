@@ -113,17 +113,6 @@ test(function()
 
 test(function()
 {
-    var filter = {
-        acceptNode: function(node) {
-            return NodeFilter.FILTER_ACCEPT;
-        }
-    };
-    var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
-    assert_node(walker.firstChild(), { type: Element, id: 'A1' });
-}, 'Testing acceptNode callee');
-
-test(function()
-{
     var test_error = { name: "test" };
     var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT,
                                            function(node) {

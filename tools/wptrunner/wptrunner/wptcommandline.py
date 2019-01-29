@@ -137,6 +137,11 @@ scheme host and port.""")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
+    test_selection_group.add_argument("--default-exclude", action="store_true",
+                                      default=False,
+                                      help="Only run the tests explicitly given in arguments. "
+                                           "No tests will run if the list is empty, and the "
+                                           "program will exit with status code 0.")
 
     debugging_group = parser.add_argument_group("Debugging")
     debugging_group.add_argument('--debugger', const="__default__", nargs="?",
@@ -251,11 +256,16 @@ scheme host and port.""")
                              help="Run tests without electrolysis preferences")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
                              help="Path to directory containing assertion stack fixing scripts")
+    gecko_group.add_argument("--lsan-dir", dest="lsan_dir", action="store",
+                             help="Path to directory containing LSAN suppressions file")
     gecko_group.add_argument("--setpref", dest="extra_prefs", action='append',
                              default=[], metavar="PREF=VALUE",
                              help="Defines an extra user preference (overrides those in prefs_root)")
-    gecko_group.add_argument("--leak-check", dest="leak_check", action="store_true",
-                             help="Enable leak checking")
+    gecko_group.add_argument("--leak-check", dest="leak_check", action="store_true", default=None,
+                             help="Enable leak checking (enabled by default for debug builds, "
+                             "silently ignored for opt)")
+    gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
+                             help="Disable leak checking")
     gecko_group.add_argument("--stylo-threads", action="store", type=int, default=1,
                              help="Number of parallel threads to use for stylo")
     gecko_group.add_argument("--reftest-internal", dest="reftest_internal", action="store_true",
@@ -263,7 +273,7 @@ scheme host and port.""")
     gecko_group.add_argument("--reftest-external", dest="reftest_internal", action="store_false",
                              help="Disable reftest runner implemented inside Marionette")
     gecko_group.add_argument("--reftest-screenshot", dest="reftest_screenshot", action="store",
-                             choices=["always", "fail", "unexpected"], default="unexpected",
+                             choices=["always", "fail", "unexpected"], default=None,
                              help="With --reftest-internal, when to take a screenshot")
     gecko_group.add_argument("--chaos", dest="chaos_mode_flags", action="store",
                              nargs="?", const=0xFFFFFFFF, type=int,
@@ -521,6 +531,12 @@ def check_args(kwargs):
 
     if kwargs["reftest_internal"] is None:
         kwargs["reftest_internal"] = True
+
+    if kwargs["lsan_dir"] is None:
+        kwargs["lsan_dir"] = kwargs["prefs_root"]
+
+    if kwargs["reftest_screenshot"] is None:
+        kwargs["reftest_screenshot"] = "unexpected"
 
     return kwargs
 

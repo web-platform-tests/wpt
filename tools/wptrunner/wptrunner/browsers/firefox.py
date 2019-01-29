@@ -76,12 +76,13 @@ def browser_kwargs(test_type, run_info_data, config, **kwargs):
             "certutil_binary": kwargs["certutil_binary"],
             "ca_certificate_path": config.ssl_config["ca_cert_path"],
             "e10s": kwargs["gecko_e10s"],
+            "lsan_dir": kwargs["lsan_dir"],
             "stackfix_dir": kwargs["stackfix_dir"],
             "binary_args": kwargs["binary_args"],
             "timeout_multiplier": get_timeout_multiplier(test_type,
                                                          run_info_data,
                                                          **kwargs),
-            "leak_check": kwargs["leak_check"],
+            "leak_check": run_info_data["debug"] and (kwargs["leak_check"] is not False),
             "asan": run_info_data.get("asan"),
             "stylo_threads": kwargs["stylo_threads"],
             "chaos_mode_flags": kwargs["chaos_mode_flags"],
@@ -181,7 +182,7 @@ class FirefoxBrowser(Browser):
 
     def __init__(self, logger, binary, prefs_root, test_type, extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
-                 ca_certificate_path=None, e10s=False, stackfix_dir=None,
+                 ca_certificate_path=None, e10s=False, lsan_dir=None, stackfix_dir=None,
                  binary_args=None, timeout_multiplier=None, leak_check=False, asan=False,
                  stylo_threads=1, chaos_mode_flags=None, config=None, headless=None, **kwargs):
         Browser.__init__(self, logger)
@@ -210,8 +211,11 @@ class FirefoxBrowser(Browser):
             self.init_timeout = self.init_timeout * timeout_multiplier
 
         self.asan = asan
+        self.lsan_dir = lsan_dir
         self.lsan_allowed = None
         self.lsan_max_stack_depth = None
+        self.mozleak_allowed = None
+        self.mozleak_thresholds = None
         self.leak_check = leak_check
         self.leak_report_file = None
         self.lsan_handler = None
@@ -220,21 +224,27 @@ class FirefoxBrowser(Browser):
         self.headless = headless
 
     def settings(self, test):
-        self.lsan_allowed = test.lsan_allowed
-        self.lsan_max_stack_depth = test.lsan_max_stack_depth
         return {"check_leaks": self.leak_check and not test.leaks,
-                "lsan_allowed": test.lsan_allowed}
+                "lsan_allowed": test.lsan_allowed,
+                "lsan_max_stack_depth": test.lsan_max_stack_depth,
+                "mozleak_allowed": self.leak_check and test.mozleak_allowed,
+                "mozleak_thresholds": self.leak_check and test.mozleak_threshold}
 
     def start(self, group_metadata=None, **kwargs):
         if group_metadata is None:
             group_metadata = {}
+
+        self.group_metadata = group_metadata
+        self.lsan_allowed = kwargs.get("lsan_allowed")
+        self.lsan_max_stack_depth = kwargs.get("lsan_max_stack_depth")
+        self.mozleak_allowed = kwargs.get("mozleak_allowed")
+        self.mozleak_thresholds = kwargs.get("mozleak_thresholds")
 
         if self.marionette_port is None:
             self.marionette_port = get_free_port(2828, exclude=self.used_ports)
             self.used_ports.add(self.marionette_port)
 
         if self.asan:
-            print "Setting up LSAN"
             self.lsan_handler = mozleak.LSANLeaks(self.logger,
                                                   scope=group_metadata.get("scope", "/"),
                                                   allowed=self.lsan_allowed,
@@ -243,7 +253,7 @@ class FirefoxBrowser(Browser):
         env = test_environment(xrePath=os.path.dirname(self.binary),
                                debugger=self.debug_info is not None,
                                log=self.logger,
-                               lsanPath=self.prefs_root)
+                               lsanPath=self.lsan_dir)
 
         env["STYLO_THREADS"] = str(self.stylo_threads)
         if self.chaos_mode_flags is not None:
@@ -355,21 +365,18 @@ class FirefoxBrowser(Browser):
         self.logger.debug("stopped")
 
     def process_leaks(self):
-        self.logger.debug("PROCESS LEAKS %s" % self.leak_report_file)
+        self.logger.info("PROCESS LEAKS %s" % self.leak_report_file)
         if self.lsan_handler:
             self.lsan_handler.process()
         if self.leak_report_file is not None:
             mozleak.process_leak_log(
                 self.leak_report_file,
-                leak_thresholds={
-                    "default": 0,
-                    "tab": 10000,  # See dependencies of bug 1051230.
-                    # GMP rarely gets a log, but when it does, it leaks a little.
-                    "geckomediaplugin": 20000,
-                },
-                ignore_missing_leaks=["geckomediaplugin"],
+                leak_thresholds=self.mozleak_thresholds,
+                ignore_missing_leaks=["gmplugin"],
                 log=self.logger,
-                stack_fixer=self.stack_fixer
+                stack_fixer=self.stack_fixer,
+                scope=self.group_metadata.get("scope"),
+                allowed=self.mozleak_allowed
             )
 
     def pid(self):

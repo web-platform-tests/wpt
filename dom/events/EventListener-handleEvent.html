@@ -33,9 +33,13 @@ test(function(t) {
     var target = document.getElementById("target");
     var thrownError = { name: "test" };
     var uncaughtError;
-
-    window.addEventListener("error", function(event) {
+    var errorHandler = function(event) {
         uncaughtError = event.error;
+    };
+
+    window.addEventListener("error", errorHandler);
+    t.add_cleanup(function() {
+        window.removeEventListener("error", errorHandler);
     });
 
     target.addEventListener(type, {
@@ -83,9 +87,13 @@ test(function(t) {
     var type = "foo";
     var target = document.getElementById("target");
     var uncaughtError;
-
-    window.addEventListener("error", function(event) {
+    var errorHandler = function(event) {
         uncaughtError = event.error;
+    };
+
+    window.addEventListener("error", errorHandler);
+    t.add_cleanup(function() {
+        window.removeEventListener("error", errorHandler);
     });
 
     target.addEventListener(type, {
@@ -100,9 +108,13 @@ test(function(t) {
     var type = "foo";
     var target = document.getElementById("target");
     var uncaughtError;
-
-    window.addEventListener("error", function(event) {
+    var errorHandler = function(event) {
         uncaughtError = event.error;
+    };
+
+    window.addEventListener("error", errorHandler);
+    t.add_cleanup(function() {
+        window.removeEventListener("error", errorHandler);
     });
 
     target.addEventListener(type, {

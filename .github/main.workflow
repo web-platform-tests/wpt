@@ -16,7 +16,6 @@ action "Tag master" {
 }
 
 action "Upload manifest" {
-  needs = "Tag master"
   uses = "./tools/ci/actions/upload_manifest"
   secrets = ["GITHUB_TOKEN"]
 }

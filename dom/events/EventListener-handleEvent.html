@@ -75,9 +75,7 @@ test(function(t) {
     var target = document.getElementById("target");
 
     var eventListener = function() {};
-    eventListener.handleEvent = function() {
-        assert_unreached("`handleEvent` method should not be called on functions");
-    };
+    eventListener.handleEvent = t.unreached_func("`handleEvent` method should not be called on functions");
 
     target.addEventListener(type, eventListener);
     target.dispatchEvent(new Event(type));

@@ -102,10 +102,10 @@ test(function()
     assert_node(walker.currentNode, { type: Element, id: 'root' });
 }, 'Testing with object with non-function acceptNode property');
 
-test(function()
+test(function(t)
 {
     var filter = function() { return NodeFilter.FILTER_ACCEPT; };
-    filter.acceptNode = function(node) { return NodeFilter.FILTER_SKIP; };
+    filter.acceptNode = t.unreached_func("`acceptNode` method should not be called on functions");
     var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.nextNode(), { type: Element, id: 'B1' });

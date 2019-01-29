@@ -138,6 +138,24 @@ test(function() {
     assert_throws(testError, function() { walker.nextNode(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
 }, "rethrows errors when getting `acceptNode`");
+
+test(function() {
+    var calls = 0;
+    var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, {
+        get acceptNode() {
+            calls++;
+            return function() {
+                return NodeFilter.FILTER_ACCEPT;
+            };
+        },
+    });
+
+    assert_equals(calls, 0);
+    walker.nextNode();
+    walker.nextNode();
+    assert_equals(calls, 2);
+}, "performs `Get` on every traverse");
+
 test(function()
 {
     var test_error = { name: "test" };

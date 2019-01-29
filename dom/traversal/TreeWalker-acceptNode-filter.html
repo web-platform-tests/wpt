@@ -124,6 +124,20 @@ test(function()
     assert_node(walker.currentNode, { type: Element, id: 'root' });
 }, 'Testing with filter function that throws');
 
+test(function() {
+    var testError = new Error();
+    var filter = {
+        get acceptNode() {
+            throw testError;
+        },
+    };
+
+    var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
+    assert_throws(testError, function() { walker.firstChild(); });
+    assert_node(walker.currentNode, { type: Element, id: 'root' });
+    assert_throws(testError, function() { walker.nextNode(); });
+    assert_node(walker.currentNode, { type: Element, id: 'root' });
+}, "rethrows errors when getting `acceptNode`");
 test(function()
 {
     var test_error = { name: "test" };

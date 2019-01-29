@@ -137,9 +137,9 @@ for (const type of ['throw', 'break', 'return']) {
       } catch (e) {}
 
       if (preventCancel) {
-        assert_array_equals(s.events, ['pull'], `cancel() should not be called when type = '${type}' and preventCancel is true`);
+        assert_array_equals(s.events, ['pull'], `cancel() should not be called`);
       } else {
-        assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
+        assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called`);
       }
     }, `Cancellation behavior when ${type}ing inside loop body; preventCancel = ${preventCancel}`);
   }
@@ -157,9 +157,9 @@ for (const preventCancel of [false, true]) {
     await it.return();
 
     if (preventCancel) {
-      assert_array_equals(s.events, [], `cancel() should not be called when preventCancel is true`);
+      assert_array_equals(s.events, [], `cancel() should not be called`);
     } else {
-      assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called when preventCancel is false`);
+      assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called`);
     }
   }, `Cancellation behavior when manually calling return(); preventCancel = ${preventCancel}`);
 }

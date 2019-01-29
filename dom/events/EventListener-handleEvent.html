@@ -73,12 +73,13 @@ test(function(t) {
 test(function(t) {
     var type = "foo";
     var target = document.getElementById("target");
-
-    var eventListener = function() {};
+    var calls = 0;
+    var eventListener = function() { calls++; };
     eventListener.handleEvent = t.unreached_func("`handleEvent` method should not be called on functions");
 
     target.addEventListener(type, eventListener);
     target.dispatchEvent(new Event(type));
+    assert_equals(calls, 1);
 }, "doesn't call `handleEvent` method on callable `EventListener`");
 
 test(function(t) {

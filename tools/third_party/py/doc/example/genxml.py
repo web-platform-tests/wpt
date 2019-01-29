@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import py
 class ns(py.xml.Namespace):
@@ -12,6 +13,6 @@ doc = ns.books(
         ns.title("Java for Python programmers"),),
     publisher="N.N",
     )
-print doc.unicode(indent=2).encode('utf8')
+print(doc.unicode(indent=2).encode('utf8'))
 
 

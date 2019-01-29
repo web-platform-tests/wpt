@@ -110,8 +110,9 @@ promise_test(async () => {
   assert_array_equals(chunks, [2, 3]);
 }, 'Async-iterating a partially consumed stream');
 
-promise_test(async () => {
-  const test = async (type, preventCancel) => {
+for (const type of ['throw', 'break', 'return']) {
+  for (const preventCancel of [false, true]) {
+    promise_test(async () => {
     const s = recordingReadableStream({
       start(c) {
         c.enqueue(0);
@@ -140,16 +141,12 @@ promise_test(async () => {
     } else {
       assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
     }
-  };
-
-  for (const t of ['throw', 'break', 'return']) {
-    await test(t, true);
-    await test(t, false);
+    }, `Cancellation behavior when ${type}ing inside loop body; preventCancel = ${preventCancel}`);
   }
-}, 'Cancellation behavior');
+}
 
-promise_test(async () => {
-  const test = async (preventCancel) => {
+for (const preventCancel of [false, true]) {
+  promise_test(async () => {
     const s = recordingReadableStream({
       start(c) {
         c.enqueue(0);
@@ -164,11 +161,8 @@ promise_test(async () => {
     } else {
       assert_array_equals(s.events, ['cancel', undefined], `cancel() should be called when preventCancel is false`);
     }
-  };
-
-  await test(true);
-  await test(false);
-}, 'Cancellation behavior when manually calling return()');
+  }, `Cancellation behavior when manually calling return(); preventCancel = ${preventCancel}`);
+}
 
 promise_test(async () => {
   const s = new ReadableStream();

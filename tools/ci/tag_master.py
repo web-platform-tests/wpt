@@ -51,11 +51,11 @@ def get_pr(repo, owner, sha):
     return pr["number"]
 
 
-def tag(repo, owner, sha, tag):
+def tag(owner, repo, sha, tag):
     data = json.dumps({"ref": "refs/tags/%s" % tag,
                        "sha": sha})
     try:
-        url = "https://api.github.com/repos/%s/%s/git/refs" % (repo, owner)
+        url = "https://api.github.com/repos/%s/%s/git/refs" % (owner, repo)
         req = urllib2.Request(url, data=data)
 
         base64string = base64.b64encode(os.environ["GH_TOKEN"])

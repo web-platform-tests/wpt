@@ -113,34 +113,34 @@ promise_test(async () => {
 for (const type of ['throw', 'break', 'return']) {
   for (const preventCancel of [false, true]) {
     promise_test(async () => {
-    const s = recordingReadableStream({
-      start(c) {
-        c.enqueue(0);
-      }
-    });
-
-    // use a separate function for the loop body so return does not stop the test
-    const loop = async () => {
-      for await (const c of s.getIterator({ preventCancel })) {
-        if (type === 'throw') {
-          throw new Error();
-        } else if (type === 'break') {
-          break;
-        } else if (type === 'return') {
-          return;
+      const s = recordingReadableStream({
+        start(c) {
+          c.enqueue(0);
         }
+      });
+
+      // use a separate function for the loop body so return does not stop the test
+      const loop = async () => {
+        for await (const c of s.getIterator({ preventCancel })) {
+          if (type === 'throw') {
+            throw new Error();
+          } else if (type === 'break') {
+            break;
+          } else if (type === 'return') {
+            return;
+          }
+        }
+      };
+
+      try {
+        await loop();
+      } catch (e) {}
+
+      if (preventCancel) {
+        assert_array_equals(s.events, ['pull'], `cancel() should not be called when type = '${type}' and preventCancel is true`);
+      } else {
+        assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
       }
-    };
-
-    try {
-      await loop();
-    } catch (e) {}
-
-    if (preventCancel) {
-      assert_array_equals(s.events, ['pull'], `cancel() should not be called when type = '${type}' and preventCancel is true`);
-    } else {
-      assert_array_equals(s.events, ['pull', 'cancel', undefined], `cancel() should be called when type = '${type}' and preventCancel is false`);
-    }
     }, `Cancellation behavior when ${type}ing inside loop body; preventCancel = ${preventCancel}`);
   }
 }

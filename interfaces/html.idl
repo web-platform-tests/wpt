@@ -114,6 +114,8 @@ interface HTMLElement : Element {
   [CEReactions] attribute DOMString autocapitalize;
 
   [CEReactions] attribute [TreatNullAs=EmptyString] DOMString innerText;
+
+  ElementInternals attachInternals();
 };
 
 HTMLElement includes GlobalEventHandlers;
@@ -1406,6 +1408,11 @@ callback CustomElementConstructor = any ();
 
 dictionary ElementDefinitionOptions {
   DOMString extends;
+};
+
+[Exposed=Window]
+interface ElementInternals {
+
 };
 
 dictionary FocusOptions {

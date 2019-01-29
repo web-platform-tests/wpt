@@ -125,7 +125,7 @@ test(function()
 }, 'Testing with filter function that throws');
 
 test(function() {
-    var testError = new Error();
+    var testError = { name: "test" };
     var filter = {
         get acceptNode() {
             throw testError;

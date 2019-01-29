@@ -31,7 +31,7 @@ test(function(t) {
 test(function(t) {
     var type = "foo";
     var target = document.getElementById("target");
-    var thrownError = new Error();
+    var thrownError = { name: "test" };
     var uncaughtError;
 
     window.addEventListener("error", function(event) {

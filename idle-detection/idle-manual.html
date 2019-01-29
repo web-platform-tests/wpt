@@ -1,0 +1,31 @@
+<!doctype html>
+<title>Manually going idle</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({explicit_timeout: true})
+</script>
+
+<script>
+    function log(msg) {
+      document.write(`<div>[${new Date().toLocaleString()}] ${msg}</div>`);
+    };
+
+    async function main() {
+      assert_true(navigator.idle != undefined);
+      assert_true(navigator.idle.query != undefined);
+      log("Welcome to the idle detector manual test!");
+      let observer = await navigator.idle.query({threshold: 10});
+      assert_equals(observer.state, "active");
+      log("Observing for 10 sec idleness!");
+      log("Please stop moving your mouse or using your keyboard (i.e. go idle).");
+      log("Waiting for state change");
+      observer.addEventListener("change", ({state}) => {
+        log("Observed change: " + observer.state);
+        assert_equals(observer.state, "idle");
+        done();
+      });
+    }
+
+    main();
+</script>

@@ -83,7 +83,7 @@ promise_test(async () => {
 
   await Promise.race([
     loop(),
-    delay(500)
+    flushAsyncEvents()
   ]);
 }, 'Async-iterating an empty but not closed/errored stream never executes the loop body and stalls the async function');
 

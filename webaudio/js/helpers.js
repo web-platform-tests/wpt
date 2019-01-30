@@ -159,8 +159,13 @@ function runTest(name)
     function testOnNormalContext(callback) {
       function testOutput(nodeToInspect, expectedBuffers, callback) {
         testLength = 0;
-        var sp = context.createScriptProcessor(expectedBuffers[0].length, gTest.numberOfChannels, 0);
-        nodeToInspect.connect(sp);
+        // While the spec allows ScriptProcessorNode's to have no outputs, it's
+        // not well specified, and Chrome requires the ScriptProcessorNode to
+        // be connected (directly or indirectly) to the destination.  So make it
+        // so.  This doesn't affect the tests using the function because the
+        // ScriptProcessorNode is what verifies the test.
+        var sp = context.createScriptProcessor(expectedBuffers[0].length, gTest.numberOfChannels, 1);
+        nodeToInspect.connect(sp).connect(context.destination);
         sp.onaudioprocess = function(e) {
           var expectedBuffer = expectedBuffers.shift();
           testLength += expectedBuffer.length;

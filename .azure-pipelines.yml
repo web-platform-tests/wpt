@@ -157,15 +157,7 @@ jobs:
     inputs:
       artifactName: 'infrastructure'
     condition: succeededOrFailed()
-  - powershell: |
-      $hostFile = "$env:systemroot\System32\drivers\etc\hosts"
-      Copy-Item -Path "$hostFile.back" -Destination $hostFile -Force
-      taskkill /f /im MicrosoftEdge*
-      taskkill /f /im MicrosoftWebDriver.exe
-    displayName: 'Restore hosts file and cleanup test machine'
-    condition: always()
-    errorActionPreference: silentlyContinue
-    ignoreLASTEXITCODE: true
+  - template: tools/ci/azure/cleanup_win10.yml
 
 - job: all_macOS
   displayName: 'all tests (Safari Technology Preview)'

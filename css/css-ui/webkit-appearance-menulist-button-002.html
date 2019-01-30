@@ -4,13 +4,13 @@ Edit the appearance-* file instead and then run:
 -->
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Basic User Interface Test: -webkit-appearance: menulist-button</title>
+<title>CSS Basic User Interface Test: -webkit-appearance: menulist-button on drop-down select</title>
 <link rel="help" href="https://drafts.csswg.org/css-ui-4/#appearance-switching">
-<meta name="assert" content="menulist-button is an alias to auto except on drop-down select.">
-<link rel="match" href="appearance-auto-ref.html">
+<meta name="assert" content="menulist-button is NOT an alias to auto on drop-down select.">
+<link rel="mismatch" href="appearance-auto-ref.html">
 <style>
  #container { width: 500px; }
- #container > *:not(#drop-down-select) { -webkit-appearance: none; -webkit-appearance: menulist-button; }
+ #container > #drop-down-select { -webkit--webkit-appearance: none; -webkit--webkit-appearance: menulist-button; }
 </style>
 <div id="container">
 	<a>a</a>

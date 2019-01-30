@@ -8,6 +8,31 @@ test(() => {
   assert_equals(ReadableStream.prototype[Symbol.asyncIterator], ReadableStream.prototype.getIterator);
 }, '@@asyncIterator() method is === to getIterator() method');
 
+test(() => {
+  const s = new ReadableStream();
+  const it = s.getIterator();
+  const proto = Object.getPrototypeOf(it);
+
+  const AsyncIteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf(async function* () {}).prototype);
+  assert_equals(Object.getPrototypeOf(proto), AsyncIteratorPrototype, 'prototype should extend AsyncIteratorPrototype');
+
+  const methods = ['next', 'return'].sort();
+  assert_array_equals(Object.getOwnPropertyNames(proto).sort(), methods, 'should have all the correct methods');
+
+  for (const m of methods) {
+    const propDesc = Object.getOwnPropertyDescriptor(proto, m);
+    assert_false(propDesc.enumerable, 'method should be non-enumerable');
+    assert_true(propDesc.configurable, 'method should be configurable');
+    assert_true(propDesc.writable, 'method should be writable');
+    assert_equals(typeof it[m], 'function', 'method should be a function');
+    assert_equals(it[m].name, m, 'method should have the correct name');
+  }
+
+  assert_equals(it.next.length, 0, 'next should have no parameters');
+  assert_equals(it.return.length, 1, 'return should have 1 parameter');
+  assert_equals(typeof it.throw, 'undefined', 'throw should not exist');
+}, 'Async iterator instances should have the correct list of properties');
+
 promise_test(async () => {
   const s = new ReadableStream({
     start(c) {

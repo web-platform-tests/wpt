@@ -136,8 +136,8 @@ jobs:
 
 - job: infrastructure_win10
   displayName: 'infrastructure/ tests (Windows 10)'
-  #dependsOn: decision
-  #condition: dependencies.decision.outputs['test_jobs.wptrunner_infrastructure']
+  # This job is only triggered manually until it has been shown to be robust.
+  condition: eq(variables['Build.Reason'], 'Manual')
   pool:
     name: 'Hosted Windows Client'
   steps:

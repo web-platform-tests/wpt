@@ -70,6 +70,42 @@ promise_test(async () => {
 }, 'Async-iterating a pull source');
 
 promise_test(async () => {
+  let i = 1;
+  const s = recordingReadableStream({
+    pull(c) {
+      c.enqueue(i);
+      if (i >= 3) {
+        c.close();
+      }
+      i += 1;
+    },
+  }, new CountQueuingStrategy({ highWaterMark: 0 }));
+
+  const it = s.getIterator();
+  assert_array_equals(s.events, []);
+
+  const read1 = await it.next();
+  assert_equals(read1.done, false);
+  assert_equals(read1.value, 1);
+  assert_array_equals(s.events, ['pull']);
+
+  const read2 = await it.next();
+  assert_equals(read2.done, false);
+  assert_equals(read2.value, 2);
+  assert_array_equals(s.events, ['pull', 'pull']);
+
+  const read3 = await it.next();
+  assert_equals(read3.done, false);
+  assert_equals(read3.value, 3);
+  assert_array_equals(s.events, ['pull', 'pull', 'pull']);
+
+  const read4 = await it.next();
+  assert_equals(read4.done, true);
+  assert_equals(read4.value, undefined);
+  assert_array_equals(s.events, ['pull', 'pull', 'pull']);
+}, 'Async-iterating a pull source manually');
+
+promise_test(async () => {
   const s = new ReadableStream({
     start(c) {
       c.error('e');

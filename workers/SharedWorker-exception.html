@@ -4,6 +4,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/SharedWorker-create-common.js"></script>
 <script>
+// Ignore any error event fired on window in this test. This is tested
+// separately in SharedWorker-exception-propagation.html.
+setup({ allow_uncaught_exception: true });
+
 async_test(function(t) {
     var worker = createWorker();
     worker.postMessage("throw");

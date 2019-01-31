@@ -68,7 +68,7 @@ function test_resource_entries(entries, expected_entries)
                 }
             }
             if (!found) {
-                assert_unreached(entries[i].name + ' is not expected to be in the Resource Timing buffer');
+                assert_unreached(entries[i].name + ' was unexpectedly in the Resource Timing buffer');
             }
         }
 

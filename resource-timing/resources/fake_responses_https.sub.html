@@ -1,8 +1,10 @@
 <body>
+<script src="/common/get-host-info.sub.js"></script>
 <script>
 function request() {
+  const host = get_host_info();
   var client = new XMLHttpRequest,
-      baseurl = "https://{{hosts[][www]}}:{{ports[https][0]}}{{location[pathname]}}",
+      baseurl = host.HTTPS_REMOTE_ORIGIN + "{{location[pathname]}}",
       url = new URL("fake_responses.py", baseurl).href;
     client.open("GET", url, false)
     client.send(null)

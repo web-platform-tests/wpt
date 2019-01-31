@@ -19,6 +19,10 @@ test_namespace('getEntriesByType');
 
 function setup_iframe() {
     iframe = document.getElementById('frameContext');
+
+    // Removes any entries from helper files (get-host-info.sub.js).
+    iframe.contentWindow.performance.clearResourceTimings()
+
     d = iframe.contentWindow.document;
     iframe.addEventListener('load', onload_test, false);
 }

@@ -19,19 +19,20 @@
 <script>
 
 function testUrange(input, expected) {
-	test(()=>{
-		const rule = document.styleSheets[0].cssRules[0];
-		rule.style.unicodeRange = input;
-		assert_equals(rule.style.unicodeRange, expected);
-	}, `"${input}" => "${expected}"`)
+    test(()=>{
+        const rule = document.styleSheets[0].cssRules[0];
+        rule.style.unicodeRange = "U+1357";
+        rule.style.unicodeRange = input;
+        assert_equals(rule.style.unicodeRange, expected);
+    }, `"${input}" => "${expected}"`)
 }
 function testInvalidUrange(input) {
-	test(()=>{
-		const rule = document.styleSheets[0].cssRules[0];
-		rule.style.unicodeRange = "U+1357";
-		rule.style.unicodeRange = input;
-		assert_equals(rule.style.unicodeRange, "U+1357");
-	}, `"${input}" is invalid`);
+    test(()=>{
+        const rule = document.styleSheets[0].cssRules[0];
+        rule.style.unicodeRange = "U+1357";
+        rule.style.unicodeRange = input;
+        assert_equals(rule.style.unicodeRange, "U+1357");
+    }, `"${input}" is invalid`);
 }
 
 /* First exercise all the clauses individually */
@@ -159,14 +160,14 @@ testInvalidUrange("u+??????");
    as IDENT(u) DELIM(+) IDENT(a) in other contexts */
 
 test(()=>{
-	const rule = document.styleSheets[0].cssRules[1];
-	// Establish that it works with whitespace...
-	rule.selectorText = "u + a";
-	assert_equals(rule.selectorText, "u + a");
-	// And then again without...
-	rule.selectorText = ".error";
-	rule.selectorText = "u+a";
-	assert_equals(rule.selectorText, "u+a");
+    const rule = document.styleSheets[0].cssRules[1];
+    // Establish that it works with whitespace...
+    rule.selectorText = "u + a";
+    assert_equals(rule.selectorText, "u + a");
+    // And then again without...
+    rule.selectorText = ".error";
+    rule.selectorText = "u+a";
+    assert_equals(rule.selectorText, "u+a");
 }, "u+a is a valid selector");
 
 </script>

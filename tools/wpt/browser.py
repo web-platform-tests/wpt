@@ -582,7 +582,7 @@ class Edge(Browser):
         command = "(Get-AppxPackage Microsoft.MicrosoftEdge).Version"
         try:
             return call("powershell.exe", command).strip()
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, OSError):
             self.logger.warning("Failed to call %s in PowerShell", command)
             return None
 

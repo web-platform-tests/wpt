@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Grid items work inside a button</title>
+<meta name="assert" content="When a button is set to display: grid, its children should flow into its grid cells">
+<link rel="author" title="Bryan Robinson" href="bryanlrobinson@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#grid-containers">
+<style>
+  .grid { display: grid; grid-template-columns: 100px 200px; border: 2px solid red; box-sizing: border-box; /* for visual */}
+  span { border: 1px solid green; box-sizing: border-box; /* for visual */ }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button class="grid"><span class="item1">item 1</span> <span class="item2">item 2</span></button>
+
+<script>
+  test(function() {
+    let item1ExpectedWidth = "100px";
+    let item2ExpectedWidth = "200px";
+
+    let item1ComputedWidth = getComputedStyle(document.querySelector('.item1')).width;
+    let item2ComputedWidth = getComputedStyle(document.querySelector('.item2')).width;
+
+    assert_equals(item1ComputedWidth, item1ExpectedWidth, "Item 1 should be grid item in column 1 / 2 and get a 100px width: ");
+    assert_equals(item2ComputedWidth, item2ExpectedWidth, "Item 2 should be grid item in column 2 / 3 and get a 200px width: ");
+  }, "Testing that a grid defined on a button has its grid items flow into grid cells with correct sizes");
+</script>

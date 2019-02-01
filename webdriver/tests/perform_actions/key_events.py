@@ -2,7 +2,7 @@
 
 import pytest
 
-from tests.perform_actions.support.keys import ALL_EVENTS, Keys
+from tests.perform_actions.support.keys import ALL_EVENTS, Keys, ALTERNATIVE_KEY_NAMES
 from tests.perform_actions.support.refine import filter_dict, get_events, get_keys
 
 
@@ -189,6 +189,11 @@ def test_special_key_sends_keydown(session, key_reporter, key_chain, name, expec
 
     del expected["value"]
 
+    # make another copy for alternative key names
+    alt_expected = dict(expected)
+    if (name in ALTERNATIVE_KEY_NAMES):
+        alt_expected["key"] = ALTERNATIVE_KEY_NAMES[name]
+
     # check and remove keys that aren't in expected
     assert first_event["type"] == "keydown"
     assert first_event["repeat"] is False
@@ -196,7 +201,8 @@ def test_special_key_sends_keydown(session, key_reporter, key_chain, name, expec
     if first_event["code"] is None:
         del first_event["code"]
         del expected["code"]
-    assert first_event == expected
+        del alt_expected["code"]
+    assert first_event == expected or first_event == alt_expected
     # only printable characters should be recorded in input field
     entered_keys = get_keys(key_reporter)
     if len(expected["key"]) == 1:

@@ -85,7 +85,13 @@ class RunInfo(dict):
         if rev:
             self["revision"] = rev
 
-        self["product"] = product
+        # The _webdriver suffix is used in the transition from Selenium to
+        # WebDriver executors for various products. Remove this to not expose
+        # it reports, as that would require consumers of reports to handle it.
+        if product.endswith("_webdriver"):
+            self["product"] = product[:-10]
+        else:
+            self["product"] = product
         if debug is not None:
             self["debug"] = debug
         elif "debug" not in self:

@@ -5,7 +5,7 @@ import pytest
 from tests.perform_actions.support.keys import ALL_EVENTS, Keys, ALTERNATIVE_KEY_NAMES
 from tests.perform_actions.support.refine import filter_dict, get_events, get_keys
 
-'''
+
 def test_keyup_only_sends_no_events(session, key_reporter, key_chain):
     key_chain.key_up("a").perform()
 
@@ -50,7 +50,7 @@ def test_modifier_key_sends_correct_events(session, key_reporter, key_chain, key
     assert events == expected
 
     assert len(get_keys(key_reporter)) == 0
-'''
+
 
 @pytest.mark.parametrize("key,event", [
     (Keys.ESCAPE, "ESCAPE"),
@@ -92,7 +92,7 @@ def test_non_printable_key_sends_events(session, key_reporter, key_chain, key, e
 
     assert len(get_keys(key_reporter)) == 0
 
-'''
+
 @pytest.mark.parametrize("value,code", [
     (u"a", "KeyA",),
     ("a", "KeyA",),
@@ -216,4 +216,3 @@ def test_special_key_sends_keydown(session, key_reporter, key_chain, name, expec
         assert entered_keys == expected["key"]
     else:
         assert len(entered_keys) == 0
-'''

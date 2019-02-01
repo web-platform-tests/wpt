@@ -49,7 +49,7 @@ testUrange("u+AbC", "U+ABC");
 /* only hex */
 testInvalidUrange("u+efg");
 /* no spacing */
-testInvalidUrange("u +abc");
+testInvalidUrange("u+ abc");
 testInvalidUrange("u +abc");
 testInvalidUrange("u + abc");
 testInvalidUrange("U + a b c");

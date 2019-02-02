@@ -76,7 +76,7 @@ def test_non_printable_key_sends_events(session, key_reporter, key_chain, key, e
     # Make a copy for alternate key property values
     # Note: only keydown and keyup are affected by alternate key names
     alt_expected = copy.deepcopy(expected)
-    if (event in ALTERNATIVE_KEY_NAMES):
+    if event in ALTERNATIVE_KEY_NAMES:
         alt_expected[0]["key"] = ALTERNATIVE_KEY_NAMES[event]
         alt_expected[2]["key"] = ALTERNATIVE_KEY_NAMES[event]
 
@@ -199,7 +199,7 @@ def test_special_key_sends_keydown(session, key_reporter, key_chain, name, expec
 
     # make another copy for alternative key names
     alt_expected = copy.deepcopy(expected)
-    if (name in ALTERNATIVE_KEY_NAMES):
+    if name in ALTERNATIVE_KEY_NAMES:
         alt_expected["key"] = ALTERNATIVE_KEY_NAMES[name]
 
     # check and remove keys that aren't in expected

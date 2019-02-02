@@ -175,6 +175,7 @@ def test_sequence_of_keydown_printable_characters_sends_events(session, key_repo
 
     assert get_keys(key_reporter) == "ef"
 
+
 @pytest.mark.parametrize("name,expected", ALL_EVENTS.items())
 def test_special_key_sends_keydown(session, key_reporter, key_chain, name, expected):
     if name.startswith("F"):

@@ -9,18 +9,10 @@
 </style>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
 
-<button class="grid"><span class="item1">item 1</span> <span class="item2">item 2</span></button>
+<button class="grid" ><span class="item1" data-expected-width="100">item 1</span> <span class="item2" data-expected-width="200">item 2</span></button>
 
 <script>
-  test(function() {
-    let item1ExpectedWidth = "100px";
-    let item2ExpectedWidth = "200px";
-
-    let item1ComputedWidth = getComputedStyle(document.querySelector('.item1')).width;
-    let item2ComputedWidth = getComputedStyle(document.querySelector('.item2')).width;
-
-    assert_equals(item1ComputedWidth, item1ExpectedWidth, "Item 1 should be grid item in column 1 / 2 and get a 100px width: ");
-    assert_equals(item2ComputedWidth, item2ExpectedWidth, "Item 2 should be grid item in column 2 / 3 and get a 200px width: ");
-  }, "Testing that a grid defined on a button has its grid items flow into grid cells with correct sizes");
+  checkLayout("[data-expected-width]")
 </script>

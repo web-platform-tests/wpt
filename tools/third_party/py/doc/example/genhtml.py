@@ -1,4 +1,3 @@
-from __future__ import print_function
 from py.xml import html
 
 paras = "First Para", "Second para"
@@ -9,6 +8,6 @@ doc = html.html(
    html.body(
         [html.p(p) for p in paras]))
 
-print(unicode(doc).encode('latin1'))
+print unicode(doc).encode('latin1')
 
 

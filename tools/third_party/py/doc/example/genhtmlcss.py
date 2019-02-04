@@ -1,4 +1,3 @@
-from __future__ import print_function
 import py
 html = py.xml.html
 
@@ -21,4 +20,4 @@ doc = my.html(
     )
 )
 
-print(doc.unicode(indent=2))
+print doc.unicode(indent=2)

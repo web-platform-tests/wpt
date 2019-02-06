@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting two text nodes in an empty script</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body></body>
+<div id="log"></div>
+<script id="script"></script>
+<script>
+var script = document.getElementById("script");
+var scriptRan = false;
+
+var df = document.createDocumentFragment();
+df.appendChild(new Text(";"));
+df.appendChild(new Text("scriptRan = true;"));
+
+assert_false(scriptRan, "script ran");
+script.appendChild(df);
+assert_true(scriptRan, "script did not run completely");
+done();
+</script>

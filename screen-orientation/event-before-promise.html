@@ -13,27 +13,11 @@
       screen.orientation.addEventListener("change", resolve);
     });
 
-    function firstToComplete(response) {
-      if (response instanceof Event) {
-        return "event";
-      } else if (response === undefined) {
-        return "promise";
-      }
-      throw new Error("unexpected result!");
-    }
+    const result = await Promise.race([
+      screen.orientation.lock("landscape"),
+      promiseToChange
+    ]);
 
-    async function orderCheck() {
-      try {
-        const result = await Promise.race([
-          screen.orientation.lock("landscape"),
-          promiseToChange
-        ]);
-        return firstToComplete(result);
-      } catch (err) {
-        console.log(`error: ${err}`);
-      }
-    }
-    const orderResult = await orderCheck();
-    assert_equals(orderResult, "event");
+    assert_true(result instanceof Event);
   }, "Event is fired before promise is resolved");
 </script>

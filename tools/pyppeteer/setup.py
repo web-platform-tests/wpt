@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-deps = ["six>=1.8", "lomond==0.3.2"]
+deps = ["six>=1.8", "wspy==0.9.1"]
 
 setup(name="pyppeteer",
       version="0.1",

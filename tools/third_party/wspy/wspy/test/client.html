@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>wspy echo test client</title>
+    </head>
+    <body>
+        <textarea id="log" rows="20" cols="80" readonly="readonly"></textarea>
+        <script type="text/javascript">
+            function log(line) {
+                document.getElementById('log').innerHTML += line + '\n';
+            }
+
+            var URL = 'ws://localhost:8000';
+            log('Connecting to ' + URL);
+            var ws = new WebSocket(URL);
+
+            ws.onopen = function() {
+                log('Connection established, sending "foo"');
+                ws.send('foo');
+            };
+
+            ws.onmessage = function(msg) {
+                log('Received "' + msg.data + '", closing connection');
+                ws.close();
+            };
+
+            ws.onerror = function(e) {
+                log('Error', e);
+            };
+
+            ws.onclose = function() {
+                log('Connection closed');
+            };
+        </script>
+    </body>
+</html>

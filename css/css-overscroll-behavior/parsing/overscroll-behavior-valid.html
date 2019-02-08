@@ -12,6 +12,7 @@
 </head>
 <body>
 <script>
+'use strict';
 test_valid_value("overscroll-behavior", "contain");
 test_valid_value("overscroll-behavior", "none");
 test_valid_value("overscroll-behavior", "auto");
@@ -23,6 +24,13 @@ test_valid_value("overscroll-behavior", "auto contain");
 test_valid_value("overscroll-behavior", "contain contain", "contain");
 test_valid_value("overscroll-behavior", "none none", "none");
 test_valid_value("overscroll-behavior", "auto auto", "auto");
+
+
+for (let property of ["overscroll-behavior-x", "overscroll-behavior-y"]) {
+  test_valid_value(property, "contain");
+  test_valid_value(property, "none");
+  test_valid_value(property, "auto");
+}
 </script>
 </body>
 </html>

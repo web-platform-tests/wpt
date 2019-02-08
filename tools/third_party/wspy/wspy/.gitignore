@@ -1,0 +1,8 @@
+*.swp
+*.pyc
+*~
+cert.pem
+MANIFEST
+build/
+dist/
+*.egg-info/

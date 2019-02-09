@@ -80,6 +80,7 @@ tasks:
                     ${browser.name}
                     ${browser.channel};
                   cd ~/web-platform-tests;
+                  (for x in $(seq 120); do echo "---- $(ps -aux | grep chrom[e] | wc -l) chrome processes (#$x) ----"; sleep 10; done) &
                   ./tools/ci/taskcluster-run.py
                     ${browser.name}
                     --

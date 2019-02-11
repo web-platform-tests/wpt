@@ -31,13 +31,13 @@
       });
       function adjustPositionOfFraction()
       {
-          requestAnimationFrame(() => {
-            var container = document.getElementById("container");
-            var numeratorBox = document.getElementById("numerator").getBoundingClientRect();
-            container.style.left = (10 - numeratorBox.left) + "px";
-            container.style.top = (50 - numeratorBox.top) + "px";
-            takeScreenshot();
-          });
+        requestAnimationFrame(() => {
+          var container = document.getElementById("container");
+          var numeratorBox = document.getElementById("numerator").getBoundingClientRect();
+          container.style.left = (10 - numeratorBox.left) + "px";
+          container.style.top = (50 - numeratorBox.top) + "px";
+          requestAnimationFrame(takeScreenshot);
+        });
       }
     </script>
   </head>

@@ -21,6 +21,9 @@ from collections import defaultdict, OrderedDict
 from itertools import chain, product
 from multiprocessing import Process, Event
 
+import re
+from subprocess import Popen, PIPE, STDOUT
+
 from localpaths import repo_root
 from six.moves import reload_module
 
@@ -328,7 +331,9 @@ class RoutesBuilder(object):
 
         self.forbidden = [("*", "/_certs/*", handlers.ErrorHandler(404)),
                           ("*", "/tools/*", handlers.ErrorHandler(404)),
-                          ("*", "{spec}/tools/*", handlers.ErrorHandler(404))]
+                          ("*", "{spec}/tools/*", handlers.ErrorHandler(404)),
+                          ("*", "/serve.py", handlers.ErrorHandler(404)),
+                          ("*", "/results/", handlers.ErrorHandler(404))]
 
         self.extra = []
 
@@ -384,7 +389,7 @@ class RoutesBuilder(object):
         self.mountpoint_routes[file_url] = [("GET", file_url, handlers.FileHandler(base_path=base_path, url_base=url_base))]
 
 
-def build_routes(aliases):
+def build_routes(aliases, wave_cfg=None):
     builder = RoutesBuilder()
     for alias in aliases:
         url = alias["url-path"]
@@ -396,6 +401,27 @@ def build_routes(aliases):
             builder.add_mount_point(url, directory)
         else:
             builder.add_file_mount_point(url, directory)
+
+    # Add Wave specific Handler
+    if wave_cfg is not None and wave_cfg.get("is_wave") is True:
+        from wave.wave_server import WaveServer
+        wave_server = WaveServer()
+        wave_server.initialize(
+            configuration_file_path=os.path.abspath("./config.json"),
+            reports_enabled=wave_cfg.get("report"))
+
+        class WaveHandler(object):
+            def __call__(self, request, response):
+                wave_server.handle_request(request, response)
+
+        wave_handler = WaveHandler()
+        builder.add_handler("*", "/wave*", wave_handler)
+        # serving wave specifc testharnessreport.js
+        builder.add_static(
+            "tools/wave/resources/testharnessreport.js",
+            {},
+            "text/javascript;charset=utf8",
+            "/resources/testharnessreport.js")
     return builder.get_routes()
 
 
@@ -450,7 +476,8 @@ class ServerProc(object):
         return self.proc.is_alive()
 
 
-def check_subdomains(config):
+# NOTE: Added parameter for wave configuration
+def check_subdomains(config, wave_cfg):
     paths = config.paths
     bind_address = config.bind_address
     aliases = config.aliases
@@ -460,7 +487,7 @@ def check_subdomains(config):
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
-    wrapper.start(start_http_server, host, port, paths, build_routes(aliases),
+    wrapper.start(start_http_server, host, port, paths, build_routes(aliases, wave_cfg),
                   bind_address, config)
 
     url = "http://{}:{}/".format(host, port)
@@ -816,6 +843,24 @@ def build_config(override_path=None, **kwargs):
             raise ValueError("%s path %s does not exist" % (title, value))
         setattr(rv, key, value)
 
+    # Add Wave arguments to config to only use wave modules if necessary
+    # regarding the command serve-wave see: tools/serve/commands.json
+    if kwargs.get("report") or kwargs.get("is_wave"):
+        print("")
+        print("build_config: is_wave: {} report: {}".format(
+            kwargs.get("is_wave"),
+            kwargs.get("report")
+        ))
+        if not kwargs.get("is_wave"):
+            err_msg = (
+                "Argument --report can only be used with command "
+                "serve-wave, e.g. \"./wpt serve-wave --report\""
+            )
+            raise Exception(err_msg)
+        else:
+            setattr(rv, "is_wave", kwargs.get("is_wave"))
+            setattr(rv, "report", kwargs.get("report"))
+
     return rv
 
 
@@ -885,7 +930,17 @@ class ConfigBuilder(config.ConfigBuilder):
             },
             "none": {}
         },
-        "aliases": []
+        "aliases": [],
+        # wave specific configuration parameters
+        "results": "./results",
+        "timeouts": {
+            "automatic": 60000,
+            "manual": 300000
+        },
+        "enable_results_import": False,
+        "web_root": "/wave",
+        "persisting_interval": 20,
+        "api_titles": []
     }
 
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
@@ -942,6 +997,11 @@ def get_parser():
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
     parser.add_argument("--quic-transport", action="store_true", help="Enable QUIC server for WebTransport")
+    # Added wave specific arguments
+    parser.add_argument("--report", action="store_true", dest="report",
+                        help="Flag for enabling the WPTReporting server")
+    parser.set_defaults(report=False)
+    parser.set_defaults(is_wave=False)
     return parser
 
 
@@ -962,6 +1022,15 @@ def run(**kwargs):
 
         bind_address = config["bind_address"]
 
+        # Creating wave specific config if kwargs is_wave = true
+        wave_cfg = None
+        if kwargs.get("is_wave") is True:
+            wave_cfg = {
+                "is_wave": kwargs.get("is_wave"),
+                "report": kwargs.get("report")
+            }
+
+
         if kwargs.get("alias_file"):
             with open(kwargs["alias_file"], 'r') as alias_file:
                 for line in alias_file:
@@ -972,7 +1041,8 @@ def run(**kwargs):
                     })
 
         if config["check_subdomains"]:
-            check_subdomains(config)
+            # added wave_cfg to pass on to build_routes to init wave handler
+            check_subdomains(config, wave_cfg)
 
         stash_address = None
         if bind_address:
@@ -980,7 +1050,7 @@ def run(**kwargs):
             logger.debug("Going to use port %d for stash" % stash_address[1])
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, build_routes(config["aliases"]), **kwargs)
+            servers = start(config, build_routes(config["aliases"], wave_cfg), **kwargs)
             signal.signal(signal.SIGTERM, handle_signal)
             signal.signal(signal.SIGINT, handle_signal)
 
@@ -1001,6 +1071,46 @@ def run(**kwargs):
                         failed_subproc += 1
             return failed_subproc
 
+
+# Set command is_wave and start venv with necessary dependencies
+def run_wave(venv=None, **kwargs):
+    kwargs['is_wave'] = True
+    if venv is not None:
+        venv.start()
+    else:
+        raise Exception("Missing virtualenv for serve-wave.")
+
+    if kwargs['report'] is True:
+        if not is_wptreport_installed():
+            raise Exception("wptreport is not installed. Please install it from https://github.com/w3c/wptreport!!")
+
+    run(**kwargs)
+
+# used for semantic version comparison
+def is_semver(prefix, line):
+    idx = len(prefix)
+    # slice the prefix, because is not valid semantic versioning
+    line = line[idx:] if line.find(prefix, 0, idx) != -1 else line
+    line = line.strip()
+    # semantic versioning, see: https://semver.org/
+    # regex: https://regex101.com/r/vkijKf/1/
+    regex = re.match(('^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
+            '(?:-('
+            '(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)'
+            '(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))'
+            '*))'
+            '?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'), line)
+    return regex
+
+# execute wptreport version check
+def is_wptreport_installed():
+    report_p = Popen("wptreport --version", shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    for line in report_p.stdout:
+        if line and not line.isspace():
+            if not is_semver("wptreport", line):
+                return False
+            else:
+                return True
 
 def main():
     kwargs = vars(get_parser().parse_args())

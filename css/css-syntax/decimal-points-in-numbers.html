@@ -14,43 +14,43 @@
 <script>
 
 function roundTripNumber(input) {
-	const rule = document.styleSheets[0].cssRules[0].style;
-	const fallback = "0";
-	rule.setProperty("line-height", fallback);
-	rule.setProperty("line-height", input);
-	const value = rule.getPropertyValue("line-height");
-	if(value == fallback) return false;
-	return value;
+    const rule = document.styleSheets[0].cssRules[0].style;
+    const fallback = "0";
+    rule.setProperty("line-height", fallback);
+    rule.setProperty("line-height", input);
+    const value = rule.getPropertyValue("line-height");
+    if(value == fallback) return false;
+    return value;
 }
 
 test(()=>{
-	assert_equals(roundTripNumber("1.0"), "1");
+    assert_equals(roundTripNumber("1.0"), "1");
 }, "decimal point between digits is valid");
 test(()=>{
-	assert_equals(roundTripNumber(".1"), "0.1");
+    assert_equals(roundTripNumber(".1"), "0.1");
 }, "decimal point before digits is valid");
 test(()=>{
-	assert_not_equals(roundTripNumber("1."), "1");
+    assert_not_equals(roundTripNumber("1."), "1");
 }, "decimal point after digits is invalid");
 
 function roundTripDimension(input) {
-	const rule = document.styleSheets[0].cssRules[0].style;
-	const fallback = "0px";
-	rule.setProperty("width", fallback);
-	rule.setProperty("width", input);
-	const value = rule.getPropertyValue("width");
-	if(value == fallback) return false;
-	return value;
+    const rule = document.styleSheets[0].cssRules[0].style;
+    const fallback = "0px";
+    rule.setProperty("width", fallback);
+    rule.setProperty("width", input);
+    const value = rule.getPropertyValue("width");
+    if(value == fallback) return false;
+    return value;
 }
 
 test(()=>{
-	assert_equals(roundTripDimension("1.0px"), "1px");
+    assert_equals(roundTripDimension("1.0px"), "1px");
 }, "decimal point between digits is valid");
 test(()=>{
-	assert_equals(roundTripDimension(".1px"), "0.1px");
+    assert_equals(roundTripDimension(".1px"), "0.1px");
 }, "decimal point before digits is valid");
 test(()=>{
-	assert_not_equals(roundTripDimension("1.px"), "1px");
+    assert_not_equals(roundTripDimension("1.px"), "1px");
 }, "decimal point after digits is invalid");
 
 </script>

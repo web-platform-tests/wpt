@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import platform
-import signal
 import socket
 import sys
 import threading
@@ -17,8 +16,11 @@ import traceback
 from six.moves import urllib
 import uuid
 from collections import defaultdict, OrderedDict
-from itertools import chain, product
 from multiprocessing import Process, Event
+
+import re
+import functools
+from subprocess import Popen, PIPE, STDOUT
 
 from localpaths import repo_root
 from six.moves import reload_module
@@ -32,13 +34,6 @@ from wptserve.handlers import filesystem_path, wrap_pipeline
 from wptserve.utils import get_port, HTTPException, http2_compatible
 from mod_pywebsocket import standalone as pywebsocket
 
-
-EDIT_HOSTS_HELP = ("Please ensure all the necessary WPT subdomains "
-                   "are mapped to a loopback device in /etc/hosts. "
-                   "See https://github.com/web-platform-tests/wpt#running-the-tests "
-                   "for instructions.")
-
-
 def replace_end(s, old, new):
     """
     Given a string `s` that ends with `old`, replace that occurrence of `old`
@@ -46,15 +41,6 @@ def replace_end(s, old, new):
     """
     assert s.endswith(old)
     return s[:-len(old)] + new
-
-
-def domains_are_distinct(a, b):
-    a_parts = a.split(".")
-    b_parts = b.split(".")
-    min_length = min(len(a_parts), len(b_parts))
-    slice_index = -1 * min_length
-
-    return a_parts[slice_index:] != b_parts[slice_index:]
 
 
 class WrapperHandler(object):
@@ -318,16 +304,20 @@ done();
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
-
 class RoutesBuilder(object):
     def __init__(self):
-        self.forbidden_override = [("GET", "/tools/runner/*", handlers.file_handler),
-                                   ("POST", "/tools/runner/update_manifest.py",
-                                    handlers.python_script_handler)]
+        with build_config(os.path.join(repo_root, "config.json")) as config:
+            self.forbidden_override = [
+                ("GET", "/tools/runner/*",
+                handlers.file_handler),
+                ("POST", "/tools/runner/update_manifest.py",
+                handlers.python_script_handler)]
 
         self.forbidden = [("*", "/_certs/*", handlers.ErrorHandler(404)),
                           ("*", "/tools/*", handlers.ErrorHandler(404)),
-                          ("*", "{spec}/tools/*", handlers.ErrorHandler(404))]
+                          ("*", "{spec}/tools/*", handlers.ErrorHandler(404)),
+                          ("*", "/serve.py", handlers.ErrorHandler(404)),
+                          ("*", "/results/", handlers.ErrorHandler(404))]
 
         self.extra = []
 
@@ -351,7 +341,7 @@ class RoutesBuilder(object):
         if headers is None:
             headers = {}
         handler = handlers.StaticHandler(path, format_args, content_type, **headers)
-        self.add_handler("GET", str(route), handler)
+        self.add_handler(b"GET", str(route), handler)
 
     def add_mount_point(self, url_base, path):
         url_base = "/%s/" % url_base.strip("/") if url_base != "/" else "/"
@@ -381,8 +371,7 @@ class RoutesBuilder(object):
         url_base = file_url[0:file_url.rfind("/") + 1]
         self.mountpoint_routes[file_url] = [("GET", file_url, handlers.FileHandler(base_path=base_path, url_base=url_base))]
 
-
-def build_routes(aliases):
+def build_routes(aliases, wave_cfg=None):
     builder = RoutesBuilder()
     for alias in aliases:
         url = alias["url-path"]
@@ -394,6 +383,21 @@ def build_routes(aliases):
             builder.add_mount_point(url, directory)
         else:
             builder.add_file_mount_point(url, directory)
+
+    # Add Wave specific Handler
+    if wave_cfg is not None and wave_cfg.get("is_wave") is True:
+        from wptserve.wave.wave_server import WaveServer
+        wave_server = WaveServer()
+        wave_server.initialize(
+            configuration_file_path=os.path.abspath("./config.json"),
+            reports_enabled=wave_cfg.get("report"))
+
+        class WaveHandler(object):
+            def __call__(self, request, response):
+                wave_server.handle_request(request, response)
+
+        wave_handler = WaveHandler()
+        builder.add_handler("*", "/wave*", wave_handler)
     return builder.get_routes()
 
 
@@ -448,7 +452,7 @@ class ServerProc(object):
         return self.proc.is_alive()
 
 
-def check_subdomains(config):
+def check_subdomains(config, wave_cfg):
     paths = config.paths
     bind_address = config.bind_address
     aliases = config.aliases
@@ -458,22 +462,21 @@ def check_subdomains(config):
     logger.debug("Going to use port %d to check subdomains" % port)
 
     wrapper = ServerProc()
-    wrapper.start(start_http_server, host, port, paths, build_routes(aliases),
+    wrapper.start(start_http_server, host, port, paths, build_routes(aliases, wave_cfg),
                   bind_address, config)
 
-    url = "http://{}:{}/".format(host, port)
     connected = False
     for i in range(10):
         try:
-            urllib.request.urlopen(url)
+            urllib.request.urlopen("http://%s:%d/" % (host, port))
             connected = True
             break
         except urllib.error.URLError:
             time.sleep(1)
 
     if not connected:
-        logger.critical("Failed to connect to test server "
-                        "on {}. {}".format(url, EDIT_HOSTS_HELP))
+        logger.critical("Failed to connect to test server on http://%s:%s. "
+                        "You may need to edit /etc/hosts or similar, see README.md." % (host, port))
         sys.exit(1)
 
     for domain in config.domains_set:
@@ -483,7 +486,8 @@ def check_subdomains(config):
         try:
             urllib.request.urlopen("http://%s:%d/" % (domain, port))
         except Exception:
-            logger.critical("Failed probing domain {}. {}".format(domain, EDIT_HOSTS_HELP))
+            logger.critical("Failed probing domain %s. "
+                            "You may need to edit /etc/hosts or similar, see README.md." % domain)
             sys.exit(1)
 
     wrapper.wait()
@@ -512,7 +516,7 @@ def make_hosts_file(config, host):
 def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
     servers = defaultdict(list)
     for scheme, ports in ports.items():
-        assert len(ports) == {"http": 2}.get(scheme, 1)
+        assert len(ports) == {"http":2}.get(scheme, 1)
 
         # If trying to start HTTP/2.0 server, check compatibility
         if scheme == 'h2' and not http2_compatible():
@@ -581,14 +585,14 @@ def start_http2_server(host, port, paths, routes, bind_address, config, **kwargs
                                  encrypt_after_connect=config.ssl_config["encrypt_after_connect"],
                                  latency=kwargs.get("latency"),
                                  http2=True)
-
-
 class WebSocketDaemon(object):
-    def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config):
+    def __init__(self, host, port, doc_root, handlers_root, log_level, bind_address,
+                 ssl_config):
         self.host = host
         cmd_args = ["-p", port,
                     "-d", doc_root,
-                    "-w", handlers_root]
+                    "-w", handlers_root,
+                    "--log-level", log_level]
 
         if ssl_config is not None:
             # This is usually done through pywebsocket.main, however we're
@@ -666,8 +670,9 @@ def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
                            str(port),
                            repo_root,
                            config.paths["ws_doc_root"],
+                           "debug",
                            bind_address,
-                           ssl_config=None)
+                           ssl_config = None)
 
 
 def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
@@ -679,6 +684,7 @@ def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
                            str(port),
                            repo_root,
                            config.paths["ws_doc_root"],
+                           "debug",
                            bind_address,
                            config.ssl_config)
 
@@ -700,7 +706,6 @@ def iter_procs(servers):
     for servers in servers.values():
         for port, server in servers:
             yield server.proc
-
 
 def build_config(override_path=None, **kwargs):
     rv = ConfigBuilder()
@@ -736,12 +741,24 @@ def build_config(override_path=None, **kwargs):
             raise ValueError("%s path %s does not exist" % (title, value))
         setattr(rv, key, value)
 
+    # Add Wave arguments to config
+    if kwargs.get("report") or kwargs.get("is_wave"):
+        print("")
+        print("build_config: is_wave: {} report: {}".format(
+            kwargs.get("is_wave"),
+            kwargs.get("report")
+        ))
+        if not kwargs.get("is_wave"):
+            err_msg = (
+                "Argument --report can only be used with command "
+                "serve-wave, e.g. \"./wpt serve-wave --report\""
+            )
+            raise Exception(err_msg)
+        else:
+            setattr(rv, "is_wave", kwargs.get("is_wave"))
+            setattr(rv, "report", kwargs.get("report"))
+
     return rv
-
-
-def _make_subdomains_product(s, depth=2):
-    return {u".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
-
 
 _subdomains = {u"www",
                u"www1",
@@ -751,16 +768,11 @@ _subdomains = {u"www",
 
 _not_subdomains = {u"nonexistent"}
 
-_subdomains = _make_subdomains_product(_subdomains)
-
-_not_subdomains = _make_subdomains_product(_not_subdomains)
-
 
 class ConfigBuilder(config.ConfigBuilder):
     """serve config
 
-    This subclasses wptserve.config.ConfigBuilder to add serve config options.
-    """
+    this subclasses wptserve.config.ConfigBuilder to add serve config options"""
 
     _default = {
         "browser_host": "web-platform.test",
@@ -774,7 +786,7 @@ class ConfigBuilder(config.ConfigBuilder):
             "http": [8000, "auto"],
             "https": [8443],
             "ws": ["auto"],
-            "wss": ["auto"],
+            "wss": ["auto"]
         },
         "check_subdomains": True,
         "log_level": "debug",
@@ -785,9 +797,7 @@ class ConfigBuilder(config.ConfigBuilder):
             "openssl": {
                 "openssl_binary": "openssl",
                 "base_path": "_certs",
-                "password": "web-platform-tests",
                 "force_regenerate": False,
-                "duration": 30,
                 "base_conf_path": None
             },
             "pregenerated": {
@@ -796,7 +806,16 @@ class ConfigBuilder(config.ConfigBuilder):
             },
             "none": {}
         },
-        "aliases": []
+        "aliases": [],
+        "results": "./results",
+        "timeouts": {
+          "automatic": 60000,
+          "manual": 300000
+        },
+        "enable_results_import": False,
+        "web_root": "/wave",
+        "persisting_interval": 20,
+        "api_titles": []
     }
 
     computed_properties = ["ws_doc_root"] + config.ConfigBuilder.computed_properties
@@ -810,14 +829,6 @@ class ConfigBuilder(config.ConfigBuilder):
             *args,
             **kwargs
         )
-        with self as c:
-            browser_host = c.get("browser_host")
-            alternate_host = c.get("alternate_hosts", {}).get("alt")
-
-            if not domains_are_distinct(browser_host, alternate_host):
-                raise ValueError(
-                    "Alternate host must be distinct from browser host"
-                )
 
     def _get_ws_doc_root(self, data):
         if data["ws_doc_root"] is not None:
@@ -852,25 +863,31 @@ def get_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
+    parser.add_argument("--report", action="store_true", dest="report",
+                        help="Flag for enabling the WPTReporting server")
+    parser.set_defaults(report=False)
+    parser.set_defaults(is_wave=False)
     return parser
 
 
 def run(**kwargs):
-    received_signal = threading.Event()
-
     with build_config(os.path.join(repo_root, "config.json"),
                       **kwargs) as config:
         global logger
         logger = config.logger
         set_logger(logger)
-        # Configure the root logger to cover third-party libraries.
-        logging.getLogger().setLevel(config.log_level)
-
-        def handle_signal(signum, frame):
-            logger.debug("Received signal %s. Shutting down.", signum)
-            received_signal.set()
 
         bind_address = config["bind_address"]
+
+        wave_cfg = None
+        if kwargs.get("is_wave") is True:
+            wave_cfg = {
+                "is_wave": kwargs.get("is_wave"),
+                "report": kwargs.get("report")
+            }
+            # add wave ports to config
+            config["ports"]["wave"] = [8050]
+
 
         if kwargs.get("alias_file"):
             with open(kwargs["alias_file"], 'r') as alias_file:
@@ -882,7 +899,7 @@ def run(**kwargs):
                     })
 
         if config["check_subdomains"]:
-            check_subdomains(config)
+            check_subdomains(config, wave_cfg)
 
         stash_address = None
         if bind_address:
@@ -890,21 +907,76 @@ def run(**kwargs):
             logger.debug("Going to use port %d for stash" % stash_address[1])
 
         with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
-            servers = start(config, build_routes(config["aliases"]), **kwargs)
-            signal.signal(signal.SIGTERM, handle_signal)
-            signal.signal(signal.SIGINT, handle_signal)
+            servers = start(config, build_routes(config["aliases"], wave_cfg), **kwargs)
 
-            while all(item.is_alive() for item in iter_procs(servers)) and not received_signal.is_set():
+            try:
+                while all(item.is_alive() for item in iter_procs(servers)):
+                    for item in iter_procs(servers):
+                        item.join(1)
+                exited = [item for item in iter_procs(servers) if not item.is_alive()]
+                subject = "subprocess" if len(exited) == 1 else "subprocesses"
+
+                logger.info("%s %s exited:" % (len(exited), subject))
+
                 for item in iter_procs(servers):
-                    item.join(1)
-            exited = [item for item in iter_procs(servers) if not item.is_alive()]
-            subject = "subprocess" if len(exited) == 1 else "subprocesses"
+                    logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
+            except KeyboardInterrupt:
+                logger.info("Shutting down")
 
-            logger.info("%s %s exited:" % (len(exited), subject))
+# Set command is_wave and start venv wit necessary dependencies
+def run_wave(venv=None, **kwargs):
+    kwargs['is_wave'] = True
+    if venv is not None:
+        venv.start()
+    else:
+        raise Exception("Missing virtualenv for serve-wave.")
 
-            for item in iter_procs(servers):
-                logger.info("Status of %s:\t%s" % (item.name, "running" if item.is_alive() else "not running"))
+    if kwargs['report'] is True:
+        cmd = "wptreport --version"
+        if not is_tool_installed(cmd, "wptreport"):
+            raise Exception("wptreport is not installed. Please install it from https://github.com/w3c/wptreport!!")
 
+        #cmd = "node ./wptreport --version"
+        #if not is_tool_installed(cmd, "wptreport"):
+        #    print("WPTReport tool is not installed ")
+        #    print("Installing WPTReport tool .....")
+        #    install_wptreport()
+        #    if not is_tool_installed(cmd, "wptreport"):
+        #        raise Exception("[Error] During WPTReport installation")
+        #    else:
+        #        print("> WPTReport tool was successfully installed!")
+        #else:
+        #    print("WPTReport tool is already installed")
+
+    run(**kwargs)
+
+def is_semver(prefix, line):
+    idx = len(prefix)
+    # slice the prefix, because is not valid semantic versioning
+    line = line[idx:] if line.find(prefix, 0, idx) != -1 else line
+    line = line.strip()
+    # semantic versioning, see: https://semver.org/
+    # regex: https://regex101.com/r/vkijKf/1/
+    regex = re.match(('^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
+            '(?:-('
+            '(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)'
+            '(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))'
+            '*))'
+            '?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'), line)
+    return regex
+
+def is_tool_installed(cmd, prefix_semver):
+    report_p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)  
+    for line in report_p.stdout:
+        if line and not line.isspace():
+            if not is_semver(prefix_semver, line):
+                return False
+            else:
+                return True
+
+def install_wptreport():
+    cmd = "git clone https://github.com/darobin/wptreport.git && cd wptreport && npm install"
+    clone_p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 
 def main():
     kwargs = vars(get_parser().parse_args())

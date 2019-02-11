@@ -139,6 +139,7 @@ def main(prog=None, argv=None):
 
     command = main_args.command
     props = commands[command]
+
     venv = None
     if props["virtualenv"]:
         venv = setup_virtualenv(main_args.venv, main_args.skip_venv_setup, props)

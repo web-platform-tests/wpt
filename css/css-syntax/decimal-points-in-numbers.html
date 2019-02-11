@@ -25,13 +25,13 @@ function roundTripNumber(input) {
 
 test(()=>{
     assert_equals(roundTripNumber("1.0"), "1");
-}, "decimal point between digits is valid");
+}, "decimal point between digits is valid in a number");
 test(()=>{
     assert_equals(roundTripNumber(".1"), "0.1");
-}, "decimal point before digits is valid");
+}, "decimal point before digits is valid in a number");
 test(()=>{
     assert_not_equals(roundTripNumber("1."), "1");
-}, "decimal point after digits is invalid");
+}, "decimal point after digits is invalid in a number");
 
 function roundTripDimension(input) {
     const rule = document.styleSheets[0].cssRules[0].style;
@@ -45,12 +45,12 @@ function roundTripDimension(input) {
 
 test(()=>{
     assert_equals(roundTripDimension("1.0px"), "1px");
-}, "decimal point between digits is valid");
+}, "decimal point between digits is valid in a dimension");
 test(()=>{
     assert_equals(roundTripDimension(".1px"), "0.1px");
-}, "decimal point before digits is valid");
+}, "decimal point before digits is valid in a dimension");
 test(()=>{
     assert_not_equals(roundTripDimension("1.px"), "1px");
-}, "decimal point after digits is invalid");
+}, "decimal point after digits is invalid in a dimension");
 
 </script>

@@ -75,6 +75,9 @@ class Connection(object):
             except socket.error:
                 if self._exit_event.is_set():
                     return
+
+                self.close()
+
                 raise
 
             self.logger.debug('RECV %s' % (message,))

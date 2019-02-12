@@ -255,6 +255,8 @@ class WebDriverProtocol(Protocol):
             except IOError:
                 pass
 
+        self.logger.debug('identified browser port: %s' % port)
+
         targets_url = 'http://localhost:%s/json' % port
         candidates = json.loads(urllib2.urlopen(targets_url).read())
         for candidate in candidates:

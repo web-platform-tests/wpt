@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting a script and a style where the script modifies the style</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body></body>
+<div id="log"></div>
+<script>
+var style = document.createElement("style");
+var styleSheet = null;
+style.appendChild(new Text("body {}"));
+
+var script = document.createElement("script");
+var scriptRan = false;
+script.textContent = `
+    assert_equals(style.sheet, null, "style sheet is created");
+
+    style.appendChild(new Text("body {}"));
+    assert_not_equals(style.sheet, null, "style sheet is not created");
+    assert_equals(style.sheet.cssRules.length, 2, "style sheet does not have two rules");
+    styleSheet = style.sheet;
+
+    scriptRan = true;
+`;
+
+var div = document.createElement("div");
+div.appendChild(script);
+div.appendChild(style);
+
+assert_false(scriptRan, "script ran");
+document.body.appendChild(div);
+assert_true(scriptRan, "script did not run");
+assert_not_equals(style.sheet, styleSheet, "style sheet was created only once");
+done();
+</script>

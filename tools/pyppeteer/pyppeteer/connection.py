@@ -89,8 +89,11 @@ class Connection(object):
 
         self._open_event.clear()
 
+    def is_open(self):
+        return bool(self._reading_thread)
+
     def close(self):
-        if self._reading_thread is None:
+        if not self.is_open():
             raise ConnectionError('Connection is not open')
 
         self.logger.info('closing')
@@ -115,7 +118,7 @@ class Connection(object):
         self.logger.info('closed')
 
     def open(self):
-        if self._reading_thread:
+        if self.is_open():
             raise ConnectionError('Connection is already open')
 
         self.logger.info('opening')
@@ -151,7 +154,7 @@ class Connection(object):
         return self._sessions[target_id]
 
     def send(self, method, params={}):
-        if self._reading_thread is None:
+        if not self.is_open():
             raise ConnectionError('Connection is not open')
 
         self._message_id += 1

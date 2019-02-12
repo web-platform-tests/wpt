@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting a script and some code in an empty script</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body></body>
+<div id="log"></div>
+<script id="s1"></script>
+<script>
+var s1 = document.getElementById("s1");
+var s1Started = false;
+var s1Ran = false;
+
+var s2 = document.createElement("script");
+var s2Started = false;
+var s2Ran = false;
+s2.textContent = `
+    s2Started = true;
+    assert_false(s1Started, "s1 already started");
+    s1.appendChild(new Text("s1Ran = true;"));
+    assert_true(s1Started, "s1 did not start");
+    assert_true(s1Ran, "s1 did not run completely");
+    s2Ran = true;
+`;
+
+var df = document.createDocumentFragment();
+df.appendChild(new Text(`
+    s1Started = true;
+    assert_true(s2Started, "s2 did not start");
+    assert_false(s2Ran, "s2 already ran completely");
+`));
+df.appendChild(s2);
+
+assert_false(s1Ran, "s1 ran");
+s1.appendChild(df);
+assert_true(s2Ran, "s2 did not run");
+done();
+</script>

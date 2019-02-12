@@ -247,13 +247,15 @@ class WebDriverProtocol(Protocol):
         # https://chromedevtools.github.io/devtools-protocol/
         self.logger.debug('inferring browser port')
         port = None
-        while port is None and self.browser_process.returncode is None:
+        while port is None:
             try:
                 with open('%s/DevToolsActivePort' % self.profile_dir) as handle:
                     contents = handle.read().strip()
                     port = contents.split('\n')[0]
             except IOError:
-                pass
+                self.browser_process.poll()
+                if self.browser_process.returncode is not None:
+                    raise Exception('Browser closed unexpectedly.')
 
         self.logger.debug('identified browser port: %s' % port)
 

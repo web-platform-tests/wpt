@@ -72,8 +72,8 @@ class Connection(object):
         while True:
             try:
                 message = json.loads(self._websocket.recv().payload)
-            except socket.error:
-                if self._exit_event.is_set():
+            except Exception as e:
+                if isinstance(e, socket.error) and self._exit_event.is_set():
                     return
 
                 self.close()
@@ -86,8 +86,6 @@ class Connection(object):
                 self._handle_method_result(message)
             else:
                 self._handle_event(message)
-
-        self._open_event.clear()
 
     def is_open(self):
         return bool(self._reading_thread)
@@ -109,6 +107,7 @@ class Connection(object):
             session.close()
 
         self._sessions.clear()
+        self._open_event.clear()
         self._exit_event.set()
         self._websocket.shutdown(socket.SHUT_RDWR)
         self._websocket.close()

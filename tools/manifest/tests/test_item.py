@@ -11,13 +11,13 @@ def test_base_meta_flags():
 
 def test_url_meta_flags():
     s = SourceFile("/", "a.b.c", "/", contents="")
-    m = URLManifestItem(s, "/foo.bar/a.b.d.e")
+    m = URLManifestItem(s, "/", "/foo.bar/a.b.d.e")
 
     assert m.meta_flags == {"b", "d"}
 
 
 def test_url_empty_meta_flags():
     s = SourceFile("/", "a.b.c", "/", contents="")
-    m = URLManifestItem(s, "/foo.bar/abcde")
+    m = URLManifestItem(s, "/", "/foo.bar/abcde")
 
     assert m.meta_flags == set()

@@ -19,7 +19,7 @@ promise_test(async t => {
   });
   const value = await screen.orientation.lock('any');
   assert_equals(value, undefined);
-  document.exitFullscreen();
+  return document.exitFullscreen();
 }, "Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.");
 
 promise_test(async t => {
@@ -59,7 +59,7 @@ promise_test(async t => {
     }
   }
   screen.orientation.unlock();
-  document.exitFullscreen();
+  return document.exitFullscreen();
 }, "Test that screen.orientation.lock returns a pending promise.");
 
 promise_test(async t => {
@@ -73,6 +73,6 @@ promise_test(async t => {
   assert_equals(screen.orientation.type, preType, "Must not change orientation until next spin of event loop");
   await p;
   assert_equals(screen.orientation.type, newType);
-  document.exitFullscreen();
+  return document.exitFullscreen();
 }, "Test that screen.orientation.lock() is actually async");
 </script>

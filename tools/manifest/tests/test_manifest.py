@@ -12,13 +12,16 @@ from .. import manifest, item, utils
 
 def SourceFileWithTest(path, hash, cls, *args):
     s = mock.Mock(rel_path=path, hash=hash)
-    test = cls(s, utils.rel_path_to_url(path), *args)
+    if cls is item.SupportFile:
+        test = cls(s, *args)
+    else:
+        test = cls(s, "/", utils.rel_path_to_url(path), *args)
     s.manifest_items = mock.Mock(return_value=(cls.item_type, [test]))
     return s
 
 def SourceFileWithTests(path, hash, cls, variants):
     s = mock.Mock(rel_path=path, hash=hash)
-    tests = [cls(s, item[0], *item[1:]) for item in variants]
+    tests = [cls(s, "/", item[0], *item[1:]) for item in variants]
     s.manifest_items = mock.Mock(return_value=(cls.item_type, tests))
     return s
 
@@ -55,11 +58,11 @@ def sourcefile_strategy(draw):
         ref_path = draw(rel_dir_file_path())
         h.assume(path != ref_path)
         ref_eq = draw(hs.sampled_from(["==", "!="]))
-        test = cls(s, utils.rel_path_to_url(path), [(utils.rel_path_to_url(ref_path), ref_eq)])
+        test = cls(s, "/", utils.rel_path_to_url(path), [(utils.rel_path_to_url(ref_path), ref_eq)])
     elif cls is item.SupportFile:
         test = cls(s)
     else:
-        test = cls(s, utils.rel_path_to_url(path))
+        test = cls(s, "/", utils.rel_path_to_url(path))
 
     s.manifest_items = mock.Mock(return_value=(cls.item_type, [test]))
     return s

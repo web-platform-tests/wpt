@@ -95,10 +95,10 @@ class ManifestItem(object):
 
 
 class URLManifestItem(ManifestItem):
-    def __init__(self, source_file, url, url_base="/", manifest=None):
+    def __init__(self, source_file, url_base, url, manifest=None):
         ManifestItem.__init__(self, source_file, manifest=manifest)
-        self._url = url
         self.url_base = url_base
+        self._url = url
 
     @property
     def id(self):
@@ -121,16 +121,16 @@ class URLManifestItem(ManifestItem):
         source_file = cls.source_file_cache.get(tests_root, manifest, path)
         url, extras = obj
         return cls(source_file,
+                   manifest.url_base,
                    url,
-                   url_base=manifest.url_base,
                    manifest=manifest)
 
 
 class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
-    def __init__(self, source_file, url, url_base="/", timeout=None, testdriver=False, jsshell=False, manifest=None):
-        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
+    def __init__(self, source_file, url_base, url, timeout=None, testdriver=False, jsshell=False, manifest=None):
+        URLManifestItem.__init__(self, source_file, url_base, url, manifest=manifest)
         self.timeout = timeout
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -154,8 +154,8 @@ class TestharnessTest(URLManifestItem):
 
         url, extras = obj
         return cls(source_file,
+                   manifest.url_base,
                    url,
-                   url_base=manifest.url_base,
                    timeout=extras.get("timeout"),
                    testdriver=bool(extras.get("testdriver")),
                    jsshell=bool(extras.get("jsshell")),
@@ -165,9 +165,9 @@ class TestharnessTest(URLManifestItem):
 class RefTestNode(URLManifestItem):
     item_type = "reftest_node"
 
-    def __init__(self, source_file, url, references, url_base="/", timeout=None,
+    def __init__(self, source_file, url_base, url, references, timeout=None,
                  viewport_size=None, dpi=None, manifest=None):
-        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
+        URLManifestItem.__init__(self, source_file, url_base, url, manifest=manifest)
         for _, ref_type in references:
             if ref_type not in ["==", "!="]:
                 raise ValueError("Unrecognised ref_type %s" % ref_type)
@@ -195,9 +195,9 @@ class RefTestNode(URLManifestItem):
         source_file = cls.source_file_cache.get(tests_root, manifest, path)
         url, references, extras = obj
         return cls(source_file,
+                   manifest.url_base,
                    url,
                    references,
-                   url_base=manifest.url_base,
                    timeout=extras.get("timeout"),
                    viewport_size=extras.get("viewport_size"),
                    dpi=extras.get("dpi"),
@@ -241,8 +241,8 @@ class Stub(URLManifestItem):
 class WebDriverSpecTest(URLManifestItem):
     item_type = "wdspec"
 
-    def __init__(self, source_file, url, url_base="/", timeout=None, manifest=None):
-        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
+    def __init__(self, source_file, url_base, url, timeout=None, manifest=None):
+        URLManifestItem.__init__(self, source_file, url_base, url, manifest=manifest)
         self.timeout = timeout
 
     def to_json(self):
@@ -257,8 +257,8 @@ class WebDriverSpecTest(URLManifestItem):
 
         url, extras = obj
         return cls(source_file,
+                   manifest.url_base,
                    url,
-                   url_base=manifest.url_base,
                    timeout=extras.get("timeout"),
                    manifest=manifest)
 

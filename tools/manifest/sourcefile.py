@@ -13,7 +13,7 @@ import html5lib
 
 from . import XMLParser
 from .item import Stub, ManualTest, WebDriverSpecTest, RefTestNode, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
-from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
+from .utils import ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
 js_meta_re = re.compile(b"//\s*META:\s*(\w*)=(.*)$")
@@ -233,8 +233,13 @@ class SourceFile(object):
         return os.path.join(self.tests_root, self.rel_path)
 
     @cached_property
+    def rel_url(self):
+        assert not os.path.isabs(self.rel_path), self.rel_path
+        return self.rel_path.replace(os.sep, "/")
+
+    @cached_property
     def url(self):
-        return rel_path_to_url(self.rel_path, self.url_base)
+        return urljoin(self.url_base, self.rel_url)
 
     @cached_property
     def hash(self):
@@ -602,19 +607,19 @@ class SourceFile(object):
             rv = "support", [SupportFile(self)]
 
         elif self.name_is_stub:
-            rv = Stub.item_type, [Stub(self, self.url)]
+            rv = Stub.item_type, [Stub(self, self.url_base, self.url)]
 
         elif self.name_is_manual:
-            rv = ManualTest.item_type, [ManualTest(self, self.url)]
+            rv = ManualTest.item_type, [ManualTest(self, self.url_base, self.url)]
 
         elif self.name_is_conformance:
-            rv = ConformanceCheckerTest.item_type, [ConformanceCheckerTest(self, self.url)]
+            rv = ConformanceCheckerTest.item_type, [ConformanceCheckerTest(self, self.url_base, self.url)]
 
         elif self.name_is_conformance_support:
             rv = "support", [SupportFile(self)]
 
         elif self.name_is_visual:
-            rv = VisualTest.item_type, [VisualTest(self, self.url)]
+            rv = VisualTest.item_type, [VisualTest(self, self.url_base, self.url)]
 
         elif self.name_is_multi_global:
             globals = b""
@@ -624,7 +629,7 @@ class SourceFile(object):
                     break
 
             tests = [
-                TestharnessTest(self, global_variant_url(self.url, suffix) + variant, timeout=self.timeout,
+                TestharnessTest(self, self.url_base, global_variant_url(self.url, suffix) + variant, timeout=self.timeout,
                                 jsshell=jsshell)
                 for (suffix, jsshell) in sorted(global_suffixes(globals))
                 for variant in self.test_variants
@@ -632,42 +637,42 @@ class SourceFile(object):
             rv = TestharnessTest.item_type, tests
 
         elif self.name_is_worker:
-            test_url = replace_end(self.url, ".worker.js", ".worker.html")
+            test_url = replace_end(self.rel_url, ".worker.js", ".worker.html")
             tests = [
-                TestharnessTest(self, test_url + variant, timeout=self.timeout)
+                TestharnessTest(self, self.url_base, test_url + variant, timeout=self.timeout)
                 for variant in self.test_variants
             ]
             rv = TestharnessTest.item_type, tests
 
         elif self.name_is_window:
-            test_url = replace_end(self.url, ".window.js", ".window.html")
+            test_url = replace_end(self.rel_url, ".window.js", ".window.html")
             tests = [
-                TestharnessTest(self, test_url + variant, timeout=self.timeout)
+                TestharnessTest(self, self.url_base, test_url + variant, timeout=self.timeout)
                 for variant in self.test_variants
             ]
             rv = TestharnessTest.item_type, tests
 
         elif self.name_is_webdriver:
-            rv = WebDriverSpecTest.item_type, [WebDriverSpecTest(self, self.url,
+            rv = WebDriverSpecTest.item_type, [WebDriverSpecTest(self, self.url_base, self.url,
                                                                  timeout=self.timeout)]
 
         elif self.content_is_css_manual and not self.name_is_reference:
-            rv = ManualTest.item_type, [ManualTest(self, self.url)]
+            rv = ManualTest.item_type, [ManualTest(self, self.url_base, self.url)]
 
         elif self.content_is_testharness:
             rv = TestharnessTest.item_type, []
             testdriver = self.has_testdriver
             for variant in self.test_variants:
                 url = self.url + variant
-                rv[1].append(TestharnessTest(self, url, timeout=self.timeout, testdriver=testdriver))
+                rv[1].append(TestharnessTest(self, self.url_base, url, timeout=self.timeout, testdriver=testdriver))
 
         elif self.content_is_ref_node:
             rv = (RefTestNode.item_type,
-                  [RefTestNode(self, self.url, self.references, timeout=self.timeout,
+                  [RefTestNode(self, self.url_base, self.url, self.references, timeout=self.timeout,
                                viewport_size=self.viewport_size, dpi=self.dpi)])
 
         elif self.content_is_css_visual and not self.name_is_reference:
-            rv = VisualTest.item_type, [VisualTest(self, self.url)]
+            rv = VisualTest.item_type, [VisualTest(self, self.url_base, self.url)]
 
         else:
             rv = "support", [SupportFile(self)]

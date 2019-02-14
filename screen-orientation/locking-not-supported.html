@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+  promise_test(async t => {
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const currentOrientation = screen.orientation.type;
+    const isLandscape = currentOrientation.includes("landscape");
+    const newOrientation = `${isLandscape ? "portrait" : "landscape"}-primary`;
+    return promise_rejects(
+      t,
+      "NotSupportedError",
+      screen.orientation.lock(newOrientation)
+    );
+  }, "If not supported screen.orientation.lock() returns promise rejected with NotSupportedError");
+</script>

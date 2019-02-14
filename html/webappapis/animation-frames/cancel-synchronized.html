@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>cancelAnimationFrame removes only future calls</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="https://w3c.github.io/web-performance/specs/RequestAnimationFrame/Overview.html#dom-windowanimationtiming-cancelanimationframe"/>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var called = false;
+      async_test(function (t) {
+        var b;
+        requestAnimationFrame(function () {
+          cancelAnimationFrame(b);
+          requestAnimationFrame(function () {
+            t.step(function () {
+              assert_true(called);
+              t.done();
+            })
+          });
+        });
+        b = requestAnimationFrame(function () { called = true; });
+      }, "cancelAnimationFrame should not cancel callbacks already in progress");
+    </script>
+  </body>
+</html>

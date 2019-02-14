@@ -1,0 +1,4 @@
+<script>
+const ident = new URL(location).searchParams.get("ident");
+parent.postMessage({ ident }, "*");
+</script>

@@ -22,7 +22,7 @@ if you get it wrong, ident-token can swallow cdc-token.
 
 test(()=>{
     const rule = document.styleSheets[0].cssRules[0];
-    assert_equals(rule.selectorText, "--foo");	
+    assert_equals(rule.selectorText, "--foo");
 }, "CDC-token is properly emitted, and not parsed as an ident.");
 
 </script>

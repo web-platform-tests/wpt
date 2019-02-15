@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-text-3/#propdef-text-transform" />
+<link rel="match" href="text-transform-first-line-uppercase-capitalize-ref.html" />
+<meta name="assert" content="The uppercased texts with text-transform: uppercase should be capitalized with text-transform: capitalize" />
+<style>
+p { font-family: Ahem;
+    font-size: 14px;
+    text-transform: uppercase;}
+p.capitalize { text-transform: capitalize; }
+</style>
+<p class="capitalize">The capitalized sentence should be here.</p>
+<p>The uppercased sentence should be here.</p>

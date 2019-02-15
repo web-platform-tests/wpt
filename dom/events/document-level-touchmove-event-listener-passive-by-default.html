@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Default passive document level touchmove event listener test</title>
+<link rel="help" href="https://github.com/WICG/interventions/issues/35">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="touchDiv">
+</div>
+<style>
+#touchDiv {
+  width: 100px;
+  height: 100px;
+}
+</style>
+<script>
+var touchDiv = document.getElementById("touchDiv");
+function testTouchmoveNonCancelable(test) {
+  //  document.addEventListener("mousemove", test.step_func(event => {
+  document.addEventListener("touchmove", test.step_func(event => {
+
+  //  assert_false(event.cancelable, "Touchmove event must be non-cancelable.");
+    test.done();
+  }));
+}
+async_test(t => {
+  testTouchmoveNonCancelable(t);
+  // Inject the inputs to run this test.
+  let actions = new test_driver.Actions()
+    .addPointer("touch_pointer", "touch")
+    //.addPointer("touch_pointer", "mouse")
+    .pointerMove(0, 0, {origin: touchDiv})
+    .pointerDown()
+    .pointerMove(30, 30)
+    .pointerUp()
+    .send();
+}, "Touchmove events are non-cancelable since the event listener is treated " +
+    "as passive");
+</script>

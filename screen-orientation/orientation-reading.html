@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script>
 test(() => {
   assert_true('type' in screen.orientation);
@@ -19,6 +21,39 @@ test(() => {
 
   assert_true(angle == 0 || angle == 90 || angle == 180 || angle == 270);
 }, "Test screen.orientation default values.");
+
+promise_test(async t => {
+  await document.documentElement.requestFullscreen();
+  let primaryOrientation;
+  await screen.orientation.lock("portrait-primary");
+  if (screen.orientation.angle === 0) {
+    primaryOrientation = "portrait-primary";
+  } else {
+    primaryOrientation = "landscape-primary";
+  }
+  if (primaryOrientation === "portrait-primary") {
+    await screen.orientation.lock("portrait-secondary");
+    assert_true(screen.orientation.angle == 180);
+    await screen.orientation.lock("landscape-primary");
+    const primary2angle = screen.orientation.angle;
+    assert_true(primary2angle == 90 || primary2angle == 270);
+    const secondary2angle = primary2angle === 90 ? 270 : 90;
+    await screen.orientation.lock("landscape-secondary");
+    assert_true(screen.orientation.angle == secondary2angle);
+  }
+  if (primaryOrientation === "landscape-primary") {
+    await screen.orientation.lock("landscape-secondary");
+    assert_true(screen.orientation.angle == 180);
+    await screen.orientation.lock("portrait-primary");
+    const primary2angle = screen.orientation.angle;
+    assert_true(primary2angle == 90 || primary2angle == 270);
+    const secondary2angle = primary2angle === 90 ? 270 : 90;
+    await screen.orientation.lock("portrait-secondary");
+    assert_true(screen.orientation.angle == secondary2angle);
+  }
+  screen.orientation.unlock();
+  return document.exitFullscreen();
+}, "Test the orientation and associated angle");
 
 test(() => {
   const type = screen.orientation.type;

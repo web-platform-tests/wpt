@@ -23,7 +23,9 @@ test(() => {
 }, "Test screen.orientation default values.");
 
 promise_test(async t => {
-  await document.documentElement.requestFullscreen();
+  await test_driver.bless("request full screen", () => {
+    return document.documentElement.requestFullscreen();
+  });
   let primaryOrientation;
   await screen.orientation.lock("portrait-primary");
   if (screen.orientation.angle === 0) {

@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting script and iframe from a div</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id="log"></div>
+</head>
+<body>
+<script>
+var iframe = document.createElement("iframe");
+iframe.src = "data:text/html,"
+
+var script = document.createElement("script");
+var scriptRan = false;
+script.textContent = `
+    assert_not_equals(iframe.contentWindow, null, "iframe does not have a content window");
+    scriptRan = true;
+`;
+
+var df = document.createDocumentFragment();
+df.appendChild(script);
+df.appendChild(iframe);
+
+assert_false(scriptRan, "script ran");
+document.body.appendChild(df);
+assert_true(scriptRan, "script has not run");
+done();
+</script>

@@ -281,4 +281,4 @@ promise_test(t => {
   const writer = ws.getWriter();
   writer.releaseLock();
   return promise_rejects(t, new TypeError(), writer.write(), 'write should reject');
-}, 'writing to a released writer should rejected the returned promise');
+}, 'writing to a released writer should reject the returned promise');

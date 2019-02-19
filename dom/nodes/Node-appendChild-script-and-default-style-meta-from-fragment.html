@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting script and default-style meta from a fragment</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<link rel="stylesheet" href="data:text/css,">
+<link rel="alternate stylesheet" title="alternative" href="data:text/css,%23div{display:none}">
+</head>
+<body>
+<div id="log"></div>
+<div id="div">hello</div>
+<script>
+var div = document.getElementById("div");
+
+var meta = document.createElement("meta");
+meta.httpEquiv = "default-style";
+meta.content = "alternative";
+
+var script = document.createElement("script");
+var scriptRan = false;
+script.textContent = `
+    assert_equals(getComputedStyle(div).display, "none", "div is still visible");
+    scriptRan = true;
+`;
+
+var df = document.createDocumentFragment();
+df.appendChild(script);
+df.appendChild(meta);
+
+assert_equals(getComputedStyle(div).display, "block", "div is not a block");
+assert_false(scriptRan, "script ran");
+document.head.appendChild(df);
+assert_true(scriptRan, "script has not run");
+assert_equals(getComputedStyle(div).display, "none", "div is still visible after insertion");
+done();
+</script>

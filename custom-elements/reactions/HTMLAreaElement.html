@@ -27,7 +27,7 @@ function setAttributes(instance) {
 testReflectAttributeWithDependentAttributes(
   'alt', 'alt', 'yellow pic',
   'yellow pic2', 'alt on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 testReflectAttributeWithParentNode(
   'coords', 'coords', '1, 1, 5, 5',
@@ -37,33 +37,33 @@ testReflectAttributeWithParentNode(
 testReflectAttributeWithDependentAttributes(
   'shape', 'shape', 'rectangle',
   'default', 'shape on HTMLAreaElement', 'area',
-  getParentElement, (instance) => instance.setAttribute('coords', '1, 1, 5, 5'),
+  getParentElement, instance => instance.setAttribute('coords', '1, 1, 5, 5'),
   HTMLAreaElement
 );
 testReflectAttributeWithDependentAttributes(
   'target', 'target', '_blank',
   '_top', 'target on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 testReflectAttributeWithDependentAttributes(
   'download', 'download', 'pic1',
   'pic2', 'download on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 testReflectAttributeWithDependentAttributes(
   'ping', 'ping', 'location.href',
   `${location.protocol}\/\/${location.host}`, 'ping on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 testReflectAttributeWithDependentAttributes(
   'rel', 'rel', 'help',
   'noreferrer', 'rel on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 testReflectAttributeWithDependentAttributes(
   'referrerPolicy', 'referrerpolicy', 'same-origin',
   'origin', 'referrerPolicy on HTMLAreaElement', 'area',
-  getParentElement, (instance) => setAttributes(instance), HTMLAreaElement
+  getParentElement, instance => setAttributes(instance), HTMLAreaElement
 );
 
 </script>

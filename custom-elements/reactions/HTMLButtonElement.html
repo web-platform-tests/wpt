@@ -48,31 +48,31 @@ testReflectAttributeWithParentNode(
 testReflectAttributeWithDependentAttributes(
   'formAction', 'formaction', 'intel.asp',
   'intel1.asp', 'formAction on HTMLButtonElement', 'button',
-  () => getParentElement('form'), (instance) => setAttributes(instance),
+  () => getParentElement('form'), instance => setAttributes(instance),
   HTMLButtonElement
 );
 testReflectAttributeWithDependentAttributes(
   'formEnctype', 'formenctype', 'text/plain', 'multipart/form-data',
   'formEnctype on HTMLButtonElement', 'button', () => getParentElement('form'),
-  (instance) => setAttributes(instance),
+  instance => setAttributes(instance),
   HTMLButtonElement
 );
 testReflectAttributeWithDependentAttributes(
   'formMethod', 'formmethod', 'get',
   'post', 'formMethod on HTMLButtonElement', 'button',
-  () => getParentElement('form'), (instance) => setAttributes(instance),
+  () => getParentElement('form'), instance => setAttributes(instance),
   HTMLButtonElement
 );
 testReflectBooleanAttributeWithDependentAttributes(
   'formNoValidate', 'formnovalidate', 'formNoValidate on HTMLButtonElement',
   'button', () => getParentElement('form'),
-  (instance) => setAttributes(instance),
+  instance => setAttributes(instance),
   HTMLButtonElement
 );
 testReflectAttributeWithDependentAttributes(
   'formTarget', 'formtarget', '_blank',
   '_self', 'formTarget on HTMLButtonElement', 'button',
-  () => getParentElement('form'), (instance) => setAttributes(instance),
+  () => getParentElement('form'), instance => setAttributes(instance),
   HTMLButtonElement
 );
 

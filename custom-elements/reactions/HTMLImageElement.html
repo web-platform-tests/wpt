@@ -28,7 +28,7 @@ function setAttributes(instance) {
 testReflectAttributeWithDependentAttributes(
   'alt', 'alt', 'image1',
   'image2', 'alt on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithParentNode(
   'src', 'src', '/images/green-1x1.png',
@@ -38,12 +38,12 @@ testReflectAttributeWithParentNode(
 testReflectAttributeWithDependentAttributes(
   'srcset', 'srcset', '/images/green.png',
   '/images/green-2x2.png', 'srcset on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'sizes', 'sizes', '(max-width: 32px) 28px',
   '(max-width: 48px) 44px', 'sizes on HTMLImageElement', 'img',
-  getParentElement, (instance) => {
+  getParentElement, instance => {
     instance.setAttribute('src', '/images/green-1x1.png');
     instance.setAttribute('srcset', '/images/green-2x2.png 1x');
   }, HTMLImageElement
@@ -51,38 +51,38 @@ testReflectAttributeWithDependentAttributes(
 testReflectAttributeWithDependentAttributes(
   'crossOrigin', 'crossorigin', 'use-credentials',
   'anonymous', 'crossOrigin on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'useMap', 'usemap', '#yellow',
   '#green', 'useMap on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectBooleanAttributeWithDependentAttributes(
   'isMap', 'ismap', 'isMap on HTMLImageElement',
   'img', () => { return document.getElementById('a') },
-  (instance) => setAttributes(instance),
+  instance => setAttributes(instance),
   HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'width', 'width', '1',
   '2', 'width on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'height', 'height', '1',
   '2', 'height on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'referrerPolicy', 'referrerpolicy', 'same-origin',
   'origin', 'referrerPolicy on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 testReflectAttributeWithDependentAttributes(
   'decoding', 'decoding', 'async',
   'sync', 'decoding on HTMLImageElement', 'img',
-  getParentElement, (instance) => setAttributes(instance), HTMLImageElement
+  getParentElement, instance => setAttributes(instance), HTMLImageElement
 );
 
 </script>

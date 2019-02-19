@@ -7,6 +7,8 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
+  // Test that reports can be generated within a ReportingObserver
+  // callback. These reports should be received by the same observer.
   async_test(function(test) {
     var step = 0;
     var observer = new ReportingObserver(async function(reports, observer) {

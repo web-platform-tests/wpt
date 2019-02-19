@@ -52,6 +52,7 @@ matrix:
       if: type = pull_request
       os: linux
       dist: xenial
+      sudo: required
       python: "3.7"
       env: JOB=tools_unittest TOXENV=py37 HYPOTHESIS_PROFILE=ci SCRIPT=tools/ci/ci_tools_unittest.sh
     - name: "tools/wpt/ tests"

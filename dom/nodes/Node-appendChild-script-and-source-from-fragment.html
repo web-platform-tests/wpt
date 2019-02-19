@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Node.appendChild: inserting script and source from a fragment</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendChild">
+<link rel=help href="https://dom.spec.whatwg.org/#concept-node-insert">
+<link rel=help href="https://github.com/whatwg/dom/issues/575">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id="log"></div>
+</head>
+<body>
+<video id="media"></video>
+<script>
+var media = document.getElementById("media");
+
+var source = document.createElement("source");
+
+var script = document.createElement("script");
+var scriptRan = false;
+script.textContent = `
+    assert_equals(
+        media.networkState,
+        HTMLMediaElement.NETWORK_NO_SOURCE,
+        "resource selection did not start",
+    );
+    scriptRan = true;
+`;
+
+var df = document.createDocumentFragment();
+df.appendChild(script);
+df.appendChild(source);
+
+assert_false(scriptRan, "script ran");
+media.appendChild(df);
+assert_true(scriptRan, "script has not run");
+done();
+</script>

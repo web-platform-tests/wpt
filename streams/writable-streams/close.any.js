@@ -407,7 +407,7 @@ promise_test(() => {
     writer1.releaseLock();
     const writer2 = ws.getWriter();
     const ready = writer2.ready;
-    assert_true(ready instanceof Promise);
+    assert_equals(ready.constructor, Promise);
     return ready;
   });
-}, 'ready promise should be initialised as resolved for a writer on a closed stream');
+}, 'ready promise should be initialised as fulfilled for a writer on a closed stream');

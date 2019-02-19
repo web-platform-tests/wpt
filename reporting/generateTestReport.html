@@ -7,6 +7,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
+  // Test that the "generate_test_report" API works.
   async_test(function(test) {
     var observer = new ReportingObserver(function(reports) {
       test.step(function() {
@@ -20,6 +21,7 @@
     });
     observer.observe();
 
+    // This should result in a "test" type report being generated and observed.
     test_driver.generate_test_report("Test message.");
   }, "Generate Test Report");
 </script>

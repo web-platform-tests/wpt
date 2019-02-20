@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Realm for constructed objects</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+function object_realm(dp) {
+  var url = DOMParser.prototype.parseFromString.call(dp, "x", "text/html").documentURI;
+  var file = url.slice(url.lastIndexOf("/") + 1);
+  switch (file) {
+  case "constructors.html":
+    return "parent window";
+  case "constructors-support.html":
+    return "child window";
+  default:
+    return "???";
+  }
+}
+
+async_test(function() {
+  var iframe = document.createElement("iframe");
+  iframe.onload = this.step_func_done(function() {
+    var child = iframe.contentWindow;
+    test(function() {
+      var dp = new DOMParser();
+      assert_equals(Object.getPrototypeOf(dp), DOMParser.prototype);
+      assert_equals(object_realm(dp), "parent window");
+    }, "Normal constructor in parent window");
+
+    test(function() {
+      var dp = new child.DOMParser();
+      assert_equals(Object.getPrototypeOf(dp), child.DOMParser.prototype);
+      assert_equals(object_realm(dp), "child window");
+    }, "Normal constructor in child window");
+
+    test(function() {
+      var dp = Reflect.construct(child.DOMParser, [], DOMParser);
+      assert_equals(Object.getPrototypeOf(dp), DOMParser.prototype);
+      assert_equals(object_realm(dp), "child window");
+    }, "Constructor in child window with normal NewTarget from parent window");
+
+    test(function() {
+      var dp = Reflect.construct(DOMParser, [], child.DOMParser);
+      assert_equals(Object.getPrototypeOf(dp), child.DOMParser.prototype);
+      assert_equals(object_realm(dp), "parent window");
+    }, "Constructor in parent window with normal NewTarget from child window");
+
+    test(function() {
+      class MyDOMParser extends DOMParser {}
+      var dp = new MyDOMParser();
+      assert_equals(Object.getPrototypeOf(dp), MyDOMParser.prototype);
+      assert_equals(object_realm(dp), "parent window");
+    }, "Subclass constructor in parent window");
+
+    test(function() {
+      var dp = new child.MyDOMParser();
+      assert_equals(Object.getPrototypeOf(dp), child.MyDOMParser.prototype);
+      assert_equals(object_realm(dp), "child window");
+    }, "Subclass constructor in child window");
+
+    test(function() {
+      class ForeignDOMParser extends child.DOMParser {}
+      var dp = new ForeignDOMParser();
+      assert_equals(Object.getPrototypeOf(dp), ForeignDOMParser.prototype);
+      assert_equals(object_realm(dp), "child window");
+    }, "Subclass constructor in parent window with parent class in child window");
+
+    test(function() {
+      var dp = new child.ForeignDOMParser();
+      assert_equals(Object.getPrototypeOf(dp), child.ForeignDOMParser.prototype);
+      assert_equals(object_realm(dp), "parent window");
+    }, "Subclass constructor in child window with parent class in parent window");
+
+    test(function() {
+      var cons = function() {};
+      cons.prototype = 7;
+
+      var dp = Reflect.construct(child.DOMParser, [], cons);
+      assert_equals(Object.getPrototypeOf(dp), DOMParser.prototype);
+      assert_equals(object_realm(dp), "child window");
+    }, "Constructor in child window with bad NewTarget from parent window");
+
+    test(function() {
+      var dp = Reflect.construct(DOMParser, [], child.cons);
+      assert_equals(Object.getPrototypeOf(dp), child.DOMParser.prototype);
+      assert_equals(object_realm(dp), "parent window");
+    }, "Constructor in parent window with bad NewTarget from child window");
+  });
+  iframe.src = "constructors-support.html";
+  document.body.appendChild(iframe);
+});
+</script>

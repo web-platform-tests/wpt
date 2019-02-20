@@ -16,7 +16,7 @@ class ProtocolError(PyppeteerError):
 # https://chromedevtools.github.io/devtools-protocol/1-3/Runtime#type-ExceptionDetails
 class ScriptError(PyppeteerError):
     def __init__(self, exception_details):
-        message = '{lineNumber}:{columnNumber}'.format(**exception_details)
+        message = '{lineNumber}:{columnNumber}:{text}'.format(**exception_details)
         exception = exception_details.get('exception')
 
         if exception:

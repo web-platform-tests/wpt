@@ -29,7 +29,7 @@ class Browser(object):
         return NotImplemented
 
     @abstractmethod
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         """Install the WebDriver implementation for this browser."""
         return NotImplemented
 
@@ -315,7 +315,7 @@ class Firefox(Browser):
         assert latest_release != 0
         return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         """Install latest Geckodriver."""
         if dest is None:
             dest = os.getcwd()
@@ -392,7 +392,7 @@ class Fennec(Browser):
     def find_webdriver(self, channel=None):
         raise NotImplementedError
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -446,11 +446,27 @@ class Chrome(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:
             dest = os.pwd
-        latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
-        url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (latest,
+        latest = None
+        chrome_version = self.version(browser_binary)
+        if chrome_version is not None:
+            parts = chrome_version.split(".")
+            if len(parts) == 4:
+                latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % (
+                    parts[0], parts[1], parts[2])
+                try:
+                    latest = get(latest_url).text.strip()
+                except requests.RequestException:
+                    latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s" % parts[0]
+                    try:
+                        latest = get(latest_url).text.strip()
+                    except requests.RequestException:
+                        pass
+        if latest is None:
+            latest = get("https://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
+        url = "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (latest,
                                                                                      self.platform_string())
         unzip(get(url).raw, dest)
 
@@ -494,7 +510,7 @@ class ChromeAndroid(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         chrome = Chrome()
         return chrome.install_webdriver(dest, channel)
 
@@ -546,7 +562,7 @@ class Opera(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("operadriver")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:
             dest = os.pwd
         latest = get("https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest").json()["tag_name"]
@@ -591,7 +607,7 @@ class Edge(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("MicrosoftWebDriver")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -621,7 +637,7 @@ class InternetExplorer(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("IEDriverServer.exe")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -649,7 +665,7 @@ class Safari(Browser):
             path = "/Applications/Safari Technology Preview.app/Contents/MacOS"
         return find_executable("safaridriver", path)
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -721,7 +737,7 @@ class Servo(Browser):
     def find_webdriver(self, channel=None):
         return None
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -751,7 +767,7 @@ class Sauce(Browser):
     def find_webdriver(self, channel=None):
         raise NotImplementedError
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -773,7 +789,7 @@ class WebKit(Browser):
     def find_webdriver(self, channel=None):
         return None
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):
@@ -795,7 +811,7 @@ class Epiphany(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("WebKitWebDriver")
 
-    def install_webdriver(self, dest=None, channel=None):
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         raise NotImplementedError
 
     def version(self, binary=None, webdriver_binary=None):

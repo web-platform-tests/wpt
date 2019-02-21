@@ -6,7 +6,7 @@ parameters:
   artifactName: ''
 
 jobs:
-- job: fyi_hook-${{ parameters.artifactName }}
+- job: ${{ parameters.dependsOn }}_hook
   displayName: 'wpt.fyi hook: ${{ parameters.artifactName }}'
   dependsOn: ${{ parameters.dependsOn }}
   pool:

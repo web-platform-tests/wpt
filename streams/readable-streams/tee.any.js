@@ -1,6 +1,7 @@
 // META: global=worker,jsshell
 // META: script=../resources/rs-utils.js
 // META: script=../resources/test-utils.js
+// META: script=../resources/recording-streams.js
 'use strict';
 
 test(() => {
@@ -340,3 +341,32 @@ test(t => {
   assert_not_equals(getReader.call(rs2), undefined, 'getReader should work on rs2');
 
 }, 'ReadableStreamTee should not use a modified ReadableStream constructor from the global object');
+
+promise_test(t => {
+
+  const rs = recordingReadableStream({}, { highWaterMark: 0 });
+
+  // Create two branches, each with a HWM of 1. This should result in one
+  // chunk being pulled, not two.
+  rs.tee();
+  return flushAsyncEvents().then(() => {
+    assert_array_equals(rs.events, ['pull'], 'pull should only be called once');
+  });
+
+}, 'ReadableStreamTee should not pull more chunks than can fit in the branch queue');
+
+promise_test(t => {
+
+  const rs = recordingReadableStream({
+    pull(controller) {
+      controller.enqueue('a');
+    }
+  }, { highWaterMark: 0 });
+
+  const [reader1, reader2] = rs.tee().map(branch => branch.getReader());
+  return Promise.all([reader1.read(), reader2.read()])
+      .then(() => {
+    assert_array_equals(rs.events, ['pull', 'pull'], 'pull should be called twice');
+  });
+
+}, 'ReadableStreamTee should only pull enough to fill the emptiest queue');

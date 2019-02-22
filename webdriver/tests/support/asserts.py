@@ -79,6 +79,8 @@ def assert_response_headers(headers):
 
     :param headers: dict with header data
     """
+    assert 'cache-control' in headers
+    assert 'no-cache' == headers['cache-control']
     assert 'content-type' in headers
     assert 'application/json; charset=utf-8' == headers['content-type']
 

@@ -226,6 +226,23 @@ class Session(object):
         with self._navigations.start(frame_id):
             self._send('Page.navigate', {'url': url})  # API status: stable
 
+        # This class uses the `_navigations` object to ensure that each
+        # invocation of `Page.navigate` waits for a corresponding
+        # `Page.frameNavigated` event. That event has been observed to occur
+        # before the document has reached the "complete" ready state. In order
+        # to match the default semantics of the "Navigate To" WebDriver
+        # command, this method must explicitly pause until the document reaches
+        # the "complete" ready state.
+        self.execute_async_script('''
+          (function poll(done) {
+            if (document.readyState === 'complete') {
+              done();
+              return;
+            }
+            setTimeout(poll.bind(null, done), 100);
+          }(arguments[0]));
+        ''')
+
     def perform(self, actions):
         # Restructure the WebDriver actions object into a two-dimensional list.
         # Each element is a list of actions for a given device.

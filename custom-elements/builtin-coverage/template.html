@@ -8,20 +8,19 @@
 <script>
   let contentInConstructor = undefined;
   let numberOfContentChildNodesInConnectedCallback = 0;
-  let MyTemplate = class extends HTMLTemplateElement {
+  const MyTemplate = class extends HTMLTemplateElement {
     constructor(...args) {
       super(...args);
       contentInConstructor = this.content;
     }
     connectedCallback(...args) {
-      super.connectedCallback && super.connectedCallback();
       numberOfContentChildNodesInConnectedCallback = this.content.childNodes.length;
     }
   }
   customElements.define('my-template', MyTemplate, {extends: 'template'});
 </script>
 </head>
-<body is="my-body">
+<body>
 <div id="container"><template is="my-template">foo</template></div>
 <script>
 test(() => {

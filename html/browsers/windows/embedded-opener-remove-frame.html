@@ -1,10 +1,36 @@
 <!doctype html>
-<title>opener and "removed" embedded documents</title>
+<title>opener and discarded browsing contexts</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
 <iframe name=matchesastring></iframe>
 <script>
+function testOpener(otherW, thisW, discardOtherBC) {
+  assert_equals(otherW.opener, thisW, "opener before removal");
+
+  const openerDesc = Object.getOwnPropertyDescriptor(otherW, "opener"),
+        openerGet = openerDesc.get;
+
+  assert_equals(openerGet(), thisW, "opener before removal via directly invoking the getter");
+  discardOtherBC();
+  assert_equals(otherW.opener, null, "opener after removal");
+  assert_equals(openerGet(), null, "opener after removal via directly invoking the getter");
+
+  otherW.opener = null;
+  assert_equals(openerGet(), null, "opener after setting it null via directly invoking the getter");
+  const openerDescNull = Object.getOwnPropertyDescriptor(otherW, "opener");
+  assert_not_equals(openerDescNull, openerDesc);
+  assert_object_equals(openerDescNull, openerDesc);
+
+  otherW.opener = "immaterial";
+  assert_equals(openerGet(), null, "opener after setting it \"immaterial\" via directly invoking the getter");
+  const openerDescImmaterial = Object.getOwnPropertyDescriptor(otherW, "opener");
+  assert_equals(openerDescImmaterial.value, "immaterial");
+  assert_true(openerDescImmaterial.writable);
+  assert_true(openerDescImmaterial.enumerable);
+  assert_true(openerDescImmaterial.configurable);
+}
+
 async_test(t => {
   const frame = document.querySelector("iframe"),
         frameW = frame.contentWindow;
@@ -15,32 +41,17 @@ async_test(t => {
     }
 
     // Test bits
-    assert_equals(frameW.opener, window, "opener before removal");
-
-    const openerDesc = Object.getOwnPropertyDescriptor(frameW, "opener"),
-          openerGet = openerDesc.get;
-
-    assert_equals(openerGet(), window, "opener before removal via directly invoking the getter");
-    frame.remove();
-    assert_equals(frameW.opener, null, "opener after removal");
-    assert_equals(openerGet(), null, "opener after removal via directly invoking the getter");
-
-    frameW.opener = null;
-    assert_equals(openerGet(), null, "opener after setting it null via directly invoking the getter");
-    const openerDescNull = Object.getOwnPropertyDescriptor(frameW, "opener");
-    assert_not_equals(openerDescNull, openerDesc);
-    assert_object_equals(openerDescNull, openerDesc);
-
-    frameW.opener = "immaterial";
-    assert_equals(openerGet(), null, "opener after setting it \"immaterial\" via directly invoking the getter");
-    const openerDescImmaterial = Object.getOwnPropertyDescriptor(frameW, "opener");
-    assert_equals(openerDescImmaterial.value, "immaterial");
-    assert_true(openerDescImmaterial.writable);
-    assert_true(openerDescImmaterial.enumerable);
-    assert_true(openerDescImmaterial.configurable);
+    testOpener(frameW, window, () => frame.remove());
 
     t.done();
   });
   window.open("/common/blank.html", "matchesastring");
-});
+}, "opener of discarded nested browsing context");
+
+async_test(t => {
+  const popupW = window.open("/common/blank.html");
+  popupW.onload = t.step_func_done(t => {
+    testOpener(popupW, window, () => popupW.close());
+  });
+}, "opener of discarded auxiliary browsing context");
 </script>

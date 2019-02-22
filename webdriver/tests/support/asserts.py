@@ -73,14 +73,12 @@ def assert_success(response, value=None):
     return response.body.get("value")
 
 
-def assert_response_headers(self, headers):
+def assert_response_headers(headers):
     """
     Method to assert response headers for WebDriver requests
 
     :param headers: dict with header data
     """
-    assert 'cache-control' in headers
-    assert 'no-cache' == headers['cache-control']
     assert 'content-type' in headers
     assert 'application/json; charset=utf-8' == headers['content-type']
 

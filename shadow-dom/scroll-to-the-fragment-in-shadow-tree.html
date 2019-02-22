@@ -65,7 +65,7 @@ function tallElementMarkup()
 
 function targetMarkup(elementType)
 {
-    return elementType == 'div' ? ('<div id="fragid' + currentFragIdSuffix + '">hello</div>') : ('<a name="fragid' + currentFragIdSuffix + '">hello</a>');
+    return elementType == 'div' ? ('<div id="fragid' + currentFragIdSuffix + '" tabindex="0">hello</div>') : ('<a name="fragid' + currentFragIdSuffix + '" tabindex="0">hello</a>');
 }
 
 function clickFirstAnchorAndRunStep(test, step)
@@ -75,48 +75,63 @@ function clickFirstAnchorAndRunStep(test, step)
         setTimeout(function () {
             test.step(step);
             testContainer.innerHTML = '';
-            test.done();
-            executeNextTest();
         }, 0);
     }, 0);
 }
 
+function finish(test) {
+    test.done();
+    executeNextTest();
+    testContainer.innerHTML = '';
+}
+
 function testScrollingToElementInDocumentTree(elementType, test)
 {
+    document.body.focus();
     test.step(function () {
         testContainer.innerHTML = tallElementMarkup() + targetMarkup(elementType);
-        assert_equals(window.pageYOffset, 0);
+        assert_equals(document.activeElement, document.body);
     });
     clickFirstAnchorAndRunStep(test, function () {
-        assert_not_equals(window.pageYOffset, 0);
+        assert_not_equals(document.activeElement, document.body);
+        finish(test);
     });
 }
 
 function testScrollingToElementInShadowTree(elementType, mode, test)
 {
+    document.body.focus();
     test.step(function () {
         testContainer.innerHTML = tallElementMarkup() + '<div id="host"></div>';
         var host = document.querySelector('#host');
         var shadowRoot = host.attachShadow({mode: mode});
         shadowRoot.innerHTML = targetMarkup(elementType);
-        assert_equals(window.pageYOffset, 0);
+        assert_equals(document.activeElement, document.body);
     });
     clickFirstAnchorAndRunStep(test, function () {
-        assert_equals(window.pageYOffset, 0);
+        assert_equals(document.activeElement, document.body);
+        finish(test);
     });
 }
 
 function testScrollingToElementInDocumentTreeAfterElementInShadowTreeWithSameID(elementType, mode, test)
 {
+    document.body.focus();
     test.step(function () {
         testContainer.innerHTML = tallElementMarkup() + '<div id="host"></div>' + tallElementMarkup() + targetMarkup(elementType);
         var host = document.querySelector('#host');
         var shadowRoot = host.attachShadow({mode: mode});
         shadowRoot.innerHTML = targetMarkup(elementType);
-        assert_equals(window.pageYOffset, 0);
+        assert_equals(document.activeElement, document.body);
+    });
+    document.addEventListener('scroll', function () {
+        test.step(function () {
+            assert_true(window.pageYOffset > testContainer.querySelector('#host').offsetTop);
+            finish(test);
+        });
     });
     clickFirstAnchorAndRunStep(test, function () {
-        assert_true(window.pageYOffset > testContainer.querySelector('#host').offsetTop);
+        assert_not_equals(document.activeElement, document.body);
     });
 }
 

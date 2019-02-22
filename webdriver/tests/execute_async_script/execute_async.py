@@ -3,6 +3,7 @@ import pytest
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
+from tests.support.inline import inline
 
 
 def execute_async_script(session, script, args=None):
@@ -27,21 +28,25 @@ def test_no_browsing_context(session, closed_window):
 
 
 def test_script_abortion_due_navigation_change_via_location(session):
+    url = inline('<div></div>')
     response = execute_async_script(session, """
-        const resolve = arguments[0];
-        setTimeout(() => resolve('navigation change'), 5000);
-        window.location = "http://json.org";
-        """)
+        const url = arguments[0];
+        const resolve = arguments[1];
+        setTimeout(() => resolve('navigation change'), 1000);
+        window.location = url;
+        """, [url])
     assert_error(response, "javascript error")
 
 
-def test_script_abortion_due_context_change(session):
+def test_script_execution_on_context_change(session):
+    url = inline('<div></div>')
     response = execute_async_script(session, """
-        const resolve = arguments[0];
-        setTimeout(() => resolve('context change'), 5000);
-        window.open("http://json.org");
-        """)
-    assert_error(response, "javascript error")
+        const url = arguments[0];
+        const resolve = arguments[1];
+        setTimeout(() => resolve('context change'), 1000);
+        window.open(url);
+        """, [url])
+    assert_success(response, 'context change')
 
 
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])

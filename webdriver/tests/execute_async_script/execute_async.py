@@ -29,7 +29,7 @@ def test_no_browsing_context(session, closed_window):
 def test_script_abortion_due_navigation_change_via_location(session):
     response = execute_async_script(session, """
         const resolve = arguments[0];
-        setTimeout(() => resolve('foobar'), 2000);
+        setTimeout(() => resolve('navigation change'), 5000);
         window.location = "http://json.org";
         """)
     assert_error(response, "javascript error")
@@ -38,7 +38,7 @@ def test_script_abortion_due_navigation_change_via_location(session):
 def test_script_abortion_due_context_change(session):
     response = execute_async_script(session, """
         const resolve = arguments[0];
-        setTimeout(() => resolve('foobar'), 2000);
+        setTimeout(() => resolve('context change'), 5000);
         window.open("http://json.org");
         """)
     assert_error(response, "javascript error")

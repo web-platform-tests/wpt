@@ -148,6 +148,17 @@ class Connection(object):
             self._sessions[target_id] = Session(
                 self, result['sessionId'], target_id
             )
+
+            # A navigation may be in progress as a result of opening the
+            # browser. Cancel any such navigation prior to enabling page domain
+            # notifications. Version 1.3 of the Chrome DevTools Protocol
+            # implements a method named `Page.stopLoading`, but as of
+            # 2019-02-22, that version is labeled as a release candidate.
+            self._sessions[target_id].evaluate('''
+              try {
+                stop();
+              } catch (_) {}
+            ''')
             self._sessions[target_id]._send('Page.enable')  # API status: stable
 
         return self._sessions[target_id]

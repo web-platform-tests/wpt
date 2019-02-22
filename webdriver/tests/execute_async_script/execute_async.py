@@ -26,6 +26,24 @@ def test_no_browsing_context(session, closed_window):
     assert_error(response, "no such window")
 
 
+def test_script_abortion_due_navigation_change_via_location(session):
+    response = execute_async_script(session, """
+        const resolve = arguments[0];
+        setTimeout(() => resolve('foobar'), 2000);
+        window.location = "http://json.org";
+        """)
+    assert_error(response, "javascript error")
+
+
+def test_script_abortion_due_context_change(session):
+    response = execute_async_script(session, """
+        const resolve = arguments[0];
+        setTimeout(() => resolve('foobar'), 2000);
+        window.open("http://json.org");
+        """)
+    assert_error(response, "javascript error")
+
+
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
 def test_abort_by_user_prompt(session, dialog_type):
     response = execute_async_script(

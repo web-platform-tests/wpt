@@ -39,7 +39,7 @@ class MozLogHandler(logging.Handler):
         self.mozlog_logger = mozlog_logger
 
     def emit(self, record):
-        method = getattr(self.mozlog_logger, 'critical')
+        method = getattr(self.mozlog_logger, record.levelname.lower())
 
         method(self.format(record))
 

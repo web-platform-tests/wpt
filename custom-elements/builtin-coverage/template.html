@@ -7,14 +7,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   let contentInConstructor = undefined;
-  let numberOfContentChildNodesInConnectedCallback = 0;
   const MyTemplate = class extends HTMLTemplateElement {
     constructor(...args) {
       super(...args);
       contentInConstructor = this.content;
-    }
-    connectedCallback(...args) {
-      numberOfContentChildNodesInConnectedCallback = this.content.childNodes.length;
     }
   }
   customElements.define('my-template', MyTemplate, {extends: 'template'});
@@ -26,10 +22,6 @@
 test(() => {
   assert_true(contentInConstructor instanceof DocumentFragment);
 }, `Parsed customized template: Property '.content' should contain 'DocumentFragment' on constructor`);
-
-test(() => {
-  assert_equals(numberOfContentChildNodesInConnectedCallback, 1);
-}, `Parsed customized template: Property '.content' should contain child nodes on connectedCallback`);
 </script>
 </body>
 </html>

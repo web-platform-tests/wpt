@@ -198,7 +198,10 @@ class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
 
     def generate_test_report(self, message):
         json_message = {"message": message}
-        self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
+        #self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
+        # TODO: Re-implement using the experimental `Page.generateTestReport`
+        # method available in the tip-of-tree release of Chrome DevTools
+        # Protocol.
 
 
 class WebDriverProtocol(Protocol):
@@ -208,8 +211,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverClickProtocolPart,
                   WebDriverSendKeysProtocolPart,
                   WebDriverActionSequenceProtocolPart,
-                  WebDriverTestDriverProtocolPart,
-                  WebDriverGenerateTestReportProtocolPart]
+                  WebDriverTestDriverProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)

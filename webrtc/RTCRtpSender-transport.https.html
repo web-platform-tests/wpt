@@ -35,6 +35,7 @@
     const [transceiver] = caller.getTransceivers();
     assert_equals(transceiver.sender.transport,
                   transceiver.receiver.transport);
+    assert_not_equals(sender.transport.iceTransport, null);
   }, 'RTCRtpSender/receiver.transport has a value when connected');
 
   // Test with multiple tracks, and checking details of when things show up

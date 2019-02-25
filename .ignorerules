@@ -1,0 +1,3 @@
+# Rules are paths relative to the test root, with * before a separator or the end matching
+# anything other than a path separator and ** in that position matching anything
+resources/testharness*

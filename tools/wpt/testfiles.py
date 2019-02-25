@@ -293,11 +293,17 @@ def affected_testfiles(files_changed, skip_dirs=None,
 
     return tests_changed, affected_testfiles
 
+def read_ignore_rules(ingore_rule_files):
+    ignore_rules = []
+    with open(ingore_rule_files, "r") as fp:
+        for line in fp:
+            if not line.startswith("#"):
+                ignore_rules.append(line)
+    return set(ignore_rules)
+
 class IgnoreRulesAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        with open(values, "r") as fp:
-            ignore_rules = set([line.strip() for line in fp
-                                if not line.startswith("#")])
+        ignore_rules = read_ignore_rules(values)
         if not ignore_rules:
             ignore_rules = set(["resources/testharness*"])
         setattr(namespace, self.dest, values)
@@ -343,6 +349,9 @@ def get_revish(**kwargs):
 
 def run_changed_files(**kwargs):
     revish = get_revish(**kwargs)
+    if not hasattr(kwargs, "ignore_rules"):
+        # default ignore rules for ./wpt tests-affected
+        kwargs["ignore_rules"] = read_ignore_rules(kwargs["ignore_rules_file"])
     changed, _ = files_changed(revish, kwargs["ignore_rules"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
@@ -357,7 +366,7 @@ def run_tests_affected(**kwargs):
     revish = get_revish(**kwargs)
     if not hasattr(kwargs, "ignore_rules"):
         # default ignore rules for ./wpt tests-affected
-        kwargs["ignore_rules"] = set(["resources/testharness*"])
+        kwargs["ignore_rules"] = read_ignore_rules(kwargs["ignore_rules_file"])
     changed, _ = files_changed(revish, kwargs["ignore_rules"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])

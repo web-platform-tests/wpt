@@ -1,1 +1,1 @@
-wptserve
+wptserve==2.0

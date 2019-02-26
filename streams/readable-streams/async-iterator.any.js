@@ -342,3 +342,12 @@ promise_test(async t => {
   await it.return();
   return promise_rejects(t, new TypeError(), it.next(), 'next() should reject');
 }, 'calling next() after return() should reject');
+
+for (const preventCancel in [false, true]) {
+  test(t => {
+    const rs = new ReadableStream();
+    rs.getIterator({ preventCancel }).return();
+    // The test passes if this line doesn't throw.
+    rs.getReader();
+  }, `return() should unlock the stream synchronously when preventCancel = ${preventCancel}`);
+}

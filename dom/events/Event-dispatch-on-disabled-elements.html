@@ -101,119 +101,318 @@ test(() => {
 promise_test(async () => {
   // Based on GlobalEventHandlers and mixins
   // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
-  // https://drafts.csswg.org/css-transitions/#interface-globaleventhandlers-idl
-  const globalEventHandlers = new Map([
-    [
-      DragEvent,
-      [
-        "drag",
-        "dragend",
-        "dragenter",
-        "dragexit",
-        "dragleave",
-        "dragover",
-        "dragstart",
-        "drop",
-      ],
-    ],
-    [
-      Event,
-      [
-        "abort",
-        "cancel",
-        "canplay",
-        "canplaythrough",
-        "change",
-        "close",
-        "cuechange",
-        "durationchange",
-        "emptied",
-        "ended",
-        "input",
-        "invalid",
-        "loadeddata",
-        "loadedmetadata",
-        "loadend",
-        "pause",
-        "play",
-        "playing",
-        "progress",
-        "ratechange",
-        "reset",
-        "securitypolicyviolation",
-        "seeked",
-        "seeking",
-        "select",
-        "stalled",
-        "submit",
-        "suspend",
-        "timeupdate",
-        "toggle",
-        "volumechange",
-        "waiting",
-      ],
-    ],
-    [FormDataEvent, ["formdata"]],
-    [KeyboardEvent, ["keydown", "keypress", "keyup"]],
-    [
-      MouseEvent,
-      [
-        "auxclick",
-        "contextmenu",
-        "dblclick",
-        "mousedown",
-        "mouseenter",
-        "mouseleave",
-        "mousemove",
-        "mouseout",
-        "mouseover",
-        "mouseup",
-      ],
-    ],
-    [ProgressEvent, ["loadend", "loadstart"]],
-    [
-      TransitionEvent,
-      ["transitionstart", "transitionend", "transitionrun", "transitioncancel"],
-    ],
-    [WheelEvent, ["wheel"]],
-  ]);
-  // Using the appropriate interface, dispatch an event of each type.
+  const eventTypes = [
+    "drag",
+    "dragend",
+    "dragenter",
+    "dragexit",
+    "dragleave",
+    "dragover",
+    "dragstart",
+    "drop",
+  ]
   for (const localName of formElements) {
     const elem = document.createElement(localName);
     elem.disabled = true;
     document.body.appendChild(elem);
-    // Each interface.
-    for (const interfaceToTest of globalEventHandlers.keys()) {
-      // Each event type.
-      for (const type of globalEventHandlers.get(interfaceToTest)) {
-        let listenerFired = false;
-        elem.addEventListener(type, function f() {
-          listenerFired = true;
-          elem.removeEventListener(type, f);
-        });
-        let handlerFired = false;
-        const handlerAttrName = `on${type}`;
-        elem[handlerAttrName] = () => {
-          handlerFired = true;
-          elem[handlerAttrName] = undefined;
-        };
-        elem.dispatchEvent(new interfaceToTest(type));
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new DragEvent(type));
 
-        // Generate expectation message.
-        const { name: constructorName } = Object.getPrototypeOf(
-          elem
-        ).constructor;
-        const msg = `on disabled ${constructorName} to receive ${
-          interfaceToTest.name
-        } of type "${type}".`;
-        //See how it went...
-        assert_true(listenerFired, `Expected listener ${msg}`);
-        assert_true(handlerFired, `Expected handler ${msg}`);
-      }
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive ${
+        DragEvent.name
+      } of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
     }
     elem.remove();
   }
-}, "Events from GlobalEventHandlers must dispatch on disabled form elements.");
+}, "Events from DragEvent must dispatch on disabled form elements.");
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+      "abort",
+      "cancel",
+      "canplay",
+      "canplaythrough",
+      "change",
+      "close",
+      "cuechange",
+      "durationchange",
+      "emptied",
+      "ended",
+      "input",
+      "invalid",
+      "loadeddata",
+      "loadedmetadata",
+      "loadend",
+      "pause",
+      "play",
+      "playing",
+      "progress",
+      "ratechange",
+      "reset",
+      "securitypolicyviolation",
+      "seeked",
+      "seeking",
+      "select",
+      "stalled",
+      "submit",
+      "suspend",
+      "timeupdate",
+      "toggle",
+      "volumechange",
+      "waiting",
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new CustomEvent(type));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive Event of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from Event interface must dispatch on disabled form elements.");
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+    "formdata"
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new FormDataEvent(type, {formData: new FormData()}));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive FormDataEvent of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from FormDataEvent must dispatch on disabled form elements.");
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+   "keydown", "keypress", "keyup"
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new KeyboardEvent(type));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive KeyboardEvent of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from KeyboardEvent must dispatch on disabled form elements.");
+
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+    "loadend", "loadstart"
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new ProgressEvent(type));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive ProgressEvent of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from ProgressEvent must dispatch on disabled form elements.");
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+    "wheel",
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new WheelEvent(type));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive WheelEvent of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from WheelEvent must dispatch on disabled form elements.");
+
+promise_test(async () => {
+  // Based on GlobalEventHandlers and mixins
+  // https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers
+  const eventTypes = [
+    "auxclick",
+    "contextmenu",
+    "dblclick",
+    "mousedown",
+    "mouseenter",
+    "mouseleave",
+    "mousemove",
+    "mouseout",
+    "mouseover",
+    "mouseup",
+  ]
+  for (const localName of formElements) {
+    const elem = document.createElement(localName);
+    elem.disabled = true;
+    document.body.appendChild(elem);
+    // Each event type.
+    for (const type of eventTypes) {
+      let listenerFired = false;
+      elem.addEventListener(type, function f() {
+        listenerFired = true;
+        elem.removeEventListener(type, f);
+      });
+      let handlerFired = false;
+      const handlerAttrName = `on${type}`;
+      elem[handlerAttrName] = () => {
+        handlerFired = true;
+        elem[handlerAttrName] = undefined;
+      };
+      elem.dispatchEvent(new MouseEvent(type));
+
+      // Generate expectation message.
+      const { name: constructorName } = Object.getPrototypeOf(
+        elem
+      ).constructor;
+      const msg = `on disabled ${constructorName} to receive MouseEvent of type "${type}".`;
+      //See how it went...
+      assert_true(listenerFired, `Expected listener ${msg}`);
+      assert_true(handlerFired, `Expected handler ${msg}`);
+    }
+    elem.remove();
+  }
+}, "Events from MouseEvent must dispatch on disabled form elements.");
 
 promise_test(async () => {
   for (const localName of formElements) {

@@ -292,7 +292,7 @@ class Manifest(object):
                     reftest_nodes.extend((item, file_hash) for item in manifest_items)
                     if is_new or hash_changed:
                         reftest_changes = True
-                elif new_type:
+                else:
                     self._data[new_type][rel_path] = set(manifest_items)
 
                 self._path_hash[rel_path] = (file_hash, new_type)

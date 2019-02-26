@@ -280,10 +280,7 @@ class Manifest(object):
                         new_type, manifest_items = source_file.manifest_items()
                         hash_changed = True
                         if new_type != old_type:
-                            try:
-                                del self._data[old_type][rel_path]
-                            except KeyError:
-                                pass
+                            del self._data[old_type][rel_path]
                     else:
                         new_type, manifest_items = old_type, self._data[old_type][rel_path]
                     if old_type in reftest_types and new_type != old_type:

@@ -129,7 +129,10 @@ class TestharnessTest(URLManifestItem):
             return self._source_file.script_metadata
 
     def meta_key(self):
-        return (self.timeout, self.testdriver)
+        script_metadata = self.script_metadata
+        if script_metadata is not None:
+            script_metadata = tuple(tuple(x) for x in script_metadata)
+        return (self.timeout, self.testdriver, self.jsshell, script_metadata)
 
     def to_json(self):
         rv = URLManifestItem.to_json(self)

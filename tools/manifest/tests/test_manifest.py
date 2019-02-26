@@ -45,7 +45,7 @@ def rel_dir_file_path(draw):
 
 @hs.composite
 def sourcefile_strategy(draw):
-    item_classes = [item.TestharnessTest, item.RefTest, item.RefTestNode,
+    item_classes = [item.TestharnessTest, item.RefTestNode,
                     item.ManualTest, item.Stub, item.WebDriverSpecTest,
                     item.ConformanceCheckerTest, item.SupportFile]
     cls = draw(hs.sampled_from(item_classes))
@@ -54,7 +54,7 @@ def sourcefile_strategy(draw):
     hash = draw(hs.text(alphabet="0123456789abcdef", min_size=40, max_size=40))
     s = mock.Mock(rel_path=path, hash=hash)
 
-    if cls in (item.RefTest, item.RefTestNode):
+    if cls is item.RefTestNode:
         ref_path = draw(rel_dir_file_path())
         h.assume(path != ref_path)
         ref_eq = draw(hs.sampled_from(["==", "!="]))
@@ -87,7 +87,7 @@ def test_manifest_to_json(s):
 @h.given(hs.lists(sourcefile_strategy(),
                   min_size=1, unique_by=lambda x: x.rel_path))
 @h.example([SourceFileWithTest("a", "0"*40, item.TestharnessTest)])
-@h.example([SourceFileWithTest("a", "0"*40, item.RefTest, references=[("/aa", "==")])])
+@h.example([SourceFileWithTest("a", "0"*40, item.RefTestNode, references=[("/aa", "==")])])
 def test_manifest_idempotent(s):
     m = manifest.Manifest()
 
@@ -170,72 +170,68 @@ def test_manifest_from_json_backslash():
 def test_reftest_computation_chain():
     m = manifest.Manifest()
 
-    s1 = SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test2", "==")])
-    s2 = SourceFileWithTest("test2", "0"*40, item.RefTest, references=[("/test3", "==")])
+    s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
+    s2 = SourceFileWithTest("test2", "0"*40, item.RefTestNode, references=[("/test3", "==")])
 
     m.update([(s1, True), (s2, True)])
 
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
-    test2_node = test2.to_RefTestNode()
 
-    assert list(m) == [("reftest", test1.path, {test1}),
-                       ("reftest_node", test2.path, {test2_node})]
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
+                       ("reftest_node", test2.path, {test2})]
 
 
 def test_reftest_computation_chain_update_add():
     m = manifest.Manifest()
 
-    s2 = SourceFileWithTest("test2", "0"*40, item.RefTest, references=[("/test3", "==")])
+    s2 = SourceFileWithTest("test2", "0"*40, item.RefTestNode, references=[("/test3", "==")])
     test2 = s2.manifest_items()[1][0]
 
     assert m.update([(s2, True)]) is True
 
-    assert list(m) == [("reftest", test2.path, {test2})]
+    assert list(m) == [("reftest", test2.path, {test2.to_RefTest()})]
 
-    s1 = SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test2", "==")])
+    s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
     test1 = s1.manifest_items()[1][0]
 
     # s2's hash is unchanged, but it has gone from a test to a node
     assert m.update([(s1, True), (s2, True)]) is True
 
-    test2_node = test2.to_RefTestNode()
-
-    assert list(m) == [("reftest", test1.path, {test1}),
-                       ("reftest_node", test2.path, {test2_node})]
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
+                       ("reftest_node", test2.path, {test2})]
 
 
 def test_reftest_computation_chain_update_remove():
     m = manifest.Manifest()
 
-    s1 = SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test2", "==")])
-    s2 = SourceFileWithTest("test2", "0"*40, item.RefTest, references=[("/test3", "==")])
+    s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
+    s2 = SourceFileWithTest("test2", "0"*40, item.RefTestNode, references=[("/test3", "==")])
 
     assert m.update([(s1, True), (s2, True)]) is True
 
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
-    test2_node = test2.to_RefTestNode()
 
-    assert list(m) == [("reftest", test1.path, {test1}),
-                       ("reftest_node", test2.path, {test2_node})]
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
+                       ("reftest_node", test2.path, {test2})]
 
     # s2's hash is unchanged, but it has gone from a node to a test
     assert m.update([(s2, True)]) is True
 
-    assert list(m) == [("reftest", test2.path, {test2})]
+    assert list(m) == [("reftest", test2.path, {test2.to_RefTest()})]
 
 
 def test_reftest_computation_chain_update_test_type():
     m = manifest.Manifest()
 
-    s1 = SourceFileWithTest("test", "0"*40, item.RefTest, references=[("/test-ref", "==")])
+    s1 = SourceFileWithTest("test", "0"*40, item.RefTestNode, references=[("/test-ref", "==")])
 
     assert m.update([(s1, True)]) is True
 
     test1 = s1.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1})]
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()})]
 
     # test becomes a testharness test (hash change because that is determined
     # based on the file contents). The updated manifest should not includes the
@@ -251,7 +247,7 @@ def test_reftest_computation_chain_update_test_type():
 def test_reftest_computation_chain_update_node_change():
     m = manifest.Manifest()
 
-    s1 = SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test2", "==")])
+    s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
     s2 = SourceFileWithTest("test2", "0"*40, item.RefTestNode, references=[("/test3", "==")])
 
     assert m.update([(s1, True), (s2, True)]) is True
@@ -259,7 +255,7 @@ def test_reftest_computation_chain_update_node_change():
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1}),
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
                        ("reftest_node", test2.path, {test2})]
 
     #test2 changes to support type
@@ -268,14 +264,14 @@ def test_reftest_computation_chain_update_node_change():
     assert m.update([(s1, True), (s2, True)]) is True
     test3 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1}),
+    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
                        ("support", test3.path, {test3})]
 
 
 def test_iterpath():
     m = manifest.Manifest()
 
-    sources = [SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test1-ref", "==")]),
+    sources = [SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test1-ref", "==")]),
                SourceFileWithTests("test2", "1"*40, item.TestharnessTest, [("/test2-1.html",),
                                                                            ("/test2-2.html",)]),
                SourceFileWithTest("test3", "0"*40, item.TestharnessTest)]
@@ -289,7 +285,7 @@ def test_iterpath():
 def test_filter():
     m = manifest.Manifest()
 
-    sources = [SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test1-ref", "==")]),
+    sources = [SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test1-ref", "==")]),
                SourceFileWithTests("test2", "0"*40, item.TestharnessTest, [("/test2-1.html",),
                                                                            ("/test2-2.html",)]),
                SourceFileWithTest("test3", "0"*40, item.TestharnessTest)]
@@ -317,20 +313,19 @@ def test_filter():
 def test_reftest_node_by_url():
     m = manifest.Manifest()
 
-    s1 = SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test2", "==")])
-    s2 = SourceFileWithTest("test2", "0"*40, item.RefTest, references=[("/test3", "==")])
+    s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
+    s2 = SourceFileWithTest("test2", "0"*40, item.RefTestNode, references=[("/test3", "==")])
 
     m.update([(s1, True), (s2, True)])
 
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
-    test2_node = test2.to_RefTestNode()
 
-    assert m.reftest_nodes_by_url == {"/test1": test1,
-                                      "/test2": test2_node}
+    assert m.reftest_nodes_by_url == {"/test1": test1.to_RefTest(),
+                                      "/test2": test2}
     m._reftest_nodes_by_url = None
-    assert m.reftest_nodes_by_url == {"/test1": test1,
-                                      "/test2": test2_node}
+    assert m.reftest_nodes_by_url == {"/test1": test1.to_RefTest(),
+                                      "/test2": test2}
 
 
 def test_no_update():

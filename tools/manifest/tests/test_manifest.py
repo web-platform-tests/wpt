@@ -275,17 +275,13 @@ def test_reftest_computation_chain_update_node_change():
 def test_iterpath():
     m = manifest.Manifest()
 
-    # This has multiple test types from the same file, which isn't really supported,
-    # so pretend they have different hashes
     sources = [SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test1-ref", "==")]),
-               SourceFileWithTest("test2", "0"*40, item.RefTest, references=[("/test2-ref", "==")]),
                SourceFileWithTests("test2", "1"*40, item.TestharnessTest, [("/test2-1.html",),
                                                                            ("/test2-2.html",)]),
                SourceFileWithTest("test3", "0"*40, item.TestharnessTest)]
     m.update([(s, True) for s in sources])
 
-    assert set(item.url for item in m.iterpath("test2")) == set(["/test2",
-                                                                 "/test2-1.html",
+    assert set(item.url for item in m.iterpath("test2")) == set(["/test2-1.html",
                                                                  "/test2-2.html"])
     assert set(m.iterpath("missing")) == set()
 
@@ -293,10 +289,7 @@ def test_iterpath():
 def test_filter():
     m = manifest.Manifest()
 
-    # This has multiple test types from the same file, which isn't really supported,
-    # so pretend they have different hashes
     sources = [SourceFileWithTest("test1", "0"*40, item.RefTest, references=[("/test1-ref", "==")]),
-               SourceFileWithTest("test2", "1"*40, item.RefTest, references=[("/test2-ref", "==")]),
                SourceFileWithTests("test2", "0"*40, item.TestharnessTest, [("/test2-1.html",),
                                                                            ("/test2-2.html",)]),
                SourceFileWithTest("test3", "0"*40, item.TestharnessTest)]

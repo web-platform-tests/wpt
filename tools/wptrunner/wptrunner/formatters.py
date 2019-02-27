@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import json
 import re
 import sys
@@ -48,6 +50,17 @@ else:
 
 def replace_lone_surrogate(data):
     return LONE_SURROGATE_RE.subn(surrogate_replacement, data)[0]
+
+
+def convert_reftest_screenshots(log_data):
+    # log_data: [screenshot0, relation, screenshot1]
+    def _hash(data):
+        return hashlib.sha1(base64.b64decode(data)).hexdigest()
+
+    return {
+        log_data[0]["url"]: "sha1:" + _hash(log_data[0]["screenshot"]),
+        log_data[2]["url"]: "sha1:" + _hash(log_data[2]["screenshot"]),
+    }
 
 
 class WptreportFormatter(BaseFormatter):
@@ -115,6 +128,13 @@ class WptreportFormatter(BaseFormatter):
             test["expected"] = data["expected"]
         if "message" in data:
             test["message"] = replace_lone_surrogate(data["message"])
+        if "screenshots" in data.get("extra", {}):
+            test["screenshots"] = data["extra"]["screenshots"]
+        elif "reftest_screenshots" in data.get("extra", {}):
+            # Marionette internal reftest runner only produces
+            # the "reftest_screenshots" field.
+            test["screenshots"] = convert_reftest_screenshots(
+                data["extra"]["reftest_screenshots"])
 
     def assertion_count(self, data):
         test = self.find_or_create_test(data)

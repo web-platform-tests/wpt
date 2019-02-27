@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import httplib
 import os
@@ -261,7 +262,7 @@ class RefTestImplementation(object):
                 return False, data
 
             screenshot = data
-            hash_value = hashlib.sha1(screenshot).hexdigest()
+            hash_value = hashlib.sha1(base64.b64decode(screenshot)).hexdigest()
 
             self.screenshot_cache[key] = (hash_value, None)
 
@@ -318,12 +319,19 @@ class RefTestImplementation(object):
                 if success:
                     screenshots[i] = screenshot
 
+        # For Mozilla reftest analyzer (included in tbpl):
         log_data = [{"url": nodes[0].url, "screenshot": screenshots[0]}, relation,
                     {"url": nodes[1].url, "screenshot": screenshots[1]}]
+        # For wpt.fyi (included in wptreport.json):
+        new_log_data = {nodes[0].url: "sha1:" + hashes[0],
+                        nodes[1].url: "sha1:" + hashes[1]}
 
         return {"status": "FAIL",
                 "message": "\n".join(self.message),
-                "extra": {"reftest_screenshots": log_data}}
+                "extra": {
+                    "reftest_screenshots": log_data,
+                    "screenshots": new_log_data,
+                }}
 
     def retake_screenshot(self, node, viewport_size, dpi):
         success, data = self.executor.screenshot(node, viewport_size, dpi)

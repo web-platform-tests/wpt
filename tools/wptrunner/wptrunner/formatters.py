@@ -52,15 +52,21 @@ def replace_lone_surrogate(data):
     return LONE_SURROGATE_RE.subn(surrogate_replacement, data)[0]
 
 
-def convert_reftest_screenshots(log_data):
-    # log_data: [screenshot0, relation, screenshot1]
+def get_reftest_screenshots(extra):
     def _hash(data):
-        return hashlib.sha1(base64.b64decode(data)).hexdigest()
+        return hashlib.sha1(base64.b64decode(data)).hexdigest(), data
 
-    return {
-        log_data[0]["url"]: "sha1:" + _hash(log_data[0]["screenshot"]),
-        log_data[2]["url"]: "sha1:" + _hash(log_data[2]["screenshot"]),
-    }
+    if "screenshots" in extra:
+        return extra["screenshots"]
+    # Marionette internal reftest runner only produces "reftest_screenshots".
+    if "reftest_screenshots" in extra:
+        # reftest_screenshots: [screenshot0, relation, screenshot1]
+        log_data = extra["reftest_screenshots"]
+        return {
+            log_data[0]["url"]: _hash(log_data[0]["screenshot"]),
+            log_data[2]["url"]: _hash(log_data[2]["screenshot"]),
+        }
+    return None
 
 
 class WptreportFormatter(BaseFormatter):
@@ -128,13 +134,11 @@ class WptreportFormatter(BaseFormatter):
             test["expected"] = data["expected"]
         if "message" in data:
             test["message"] = replace_lone_surrogate(data["message"])
-        if "screenshots" in data.get("extra", {}):
-            test["screenshots"] = data["extra"]["screenshots"]
-        elif "reftest_screenshots" in data.get("extra", {}):
-            # Marionette internal reftest runner only produces
-            # the "reftest_screenshots" field.
-            test["screenshots"] = convert_reftest_screenshots(
-                data["extra"]["reftest_screenshots"])
+
+        screenshots = get_reftest_screenshots(data.get("extra", {}))
+        if screenshots:
+            test["screenshots"] = {key: "sha1:" + value[0]
+                                   for key, value in screenshots}
 
     def assertion_count(self, data):
         test = self.find_or_create_test(data)
@@ -172,3 +176,28 @@ class WptreportFormatter(BaseFormatter):
         scope_data["total"].append({"bytes": data["bytes"],
                                     "threshold": data.get("threshold", 0),
                                     "process": data["process"]})
+
+
+class WptscreenshotFormatter(BaseFormatter):
+    """Formatter that outputs screenshots in the format expected by wpt.fyi."""
+
+    def __init__(self):
+        self.cache = set()
+
+    def suite_start(self, data):
+        # TODO: ask wpt.fyi for known hashes.
+        pass
+
+    def test_end(self, data):
+        output = ""
+        screenshots = get_reftest_screenshots(data.get("extra", {}))
+        if screenshots is None:
+            for url, value in screenshots:
+                checksum = "sha1:" + value[0]
+                data = value[1]
+                if checksum in self.cache:
+                    continue
+                self.cache |= checksum
+                output += "data:image/png;base64,:{}\n".format(data)
+        if output:
+            return output

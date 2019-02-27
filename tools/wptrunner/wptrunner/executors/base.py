@@ -323,8 +323,8 @@ class RefTestImplementation(object):
         log_data = [{"url": nodes[0].url, "screenshot": screenshots[0]}, relation,
                     {"url": nodes[1].url, "screenshot": screenshots[1]}]
         # For wpt.fyi (included in wptreport.json):
-        new_log_data = {nodes[0].url: "sha1:" + hashes[0],
-                        nodes[1].url: "sha1:" + hashes[1]}
+        new_log_data = {nodes[0].url: (hashes[0], screenshots[0]),
+                        nodes[1].url: (hashes[1], screenshots[1])}
 
         return {"status": "FAIL",
                 "message": "\n".join(self.message),

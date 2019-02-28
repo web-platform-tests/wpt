@@ -213,9 +213,6 @@ class Session(object):
 
         return unpack_remote_object(result['result'])
 
-    def targets(self):
-        return self._send('Target.getTargets')['targetInfos']  # API status: stable
-
     def navigate(self, url):
         '''Transition to a given URL and wait for the operation to complete.
 

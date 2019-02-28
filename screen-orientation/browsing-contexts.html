@@ -16,6 +16,7 @@
     const isPortrait = currentOrientation.includes("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await screen.orientation.lock(newOrientation);
+    return document.exitFullscreen;
   }
   window.onload = lock;
 </script>

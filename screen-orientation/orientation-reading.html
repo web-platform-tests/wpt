@@ -41,7 +41,8 @@ promise_test(async t => {
         };
   await screen.orientation.lock(orientations.secondaryOrientation1);
   assert_equals(
-    screen.orientation.angle == 180,
+    screen.orientation.angle,
+    180,
     "Secondary orientation 1 angle must be 180"
   );
   await screen.orientation.lock(orientations.primaryOrientation2);
@@ -53,7 +54,8 @@ promise_test(async t => {
   const secondaryOrientation2Angle = primaryOrientation2Angle === 90 ? 270 : 90;
   await screen.orientation.lock(orientations.secondaryOrientation2);
   assert_equals(
-    screen.orientation.angle == secondaryOrientation2Angle,
+    screen.orientation.angle,
+    secondaryOrientation2Angle,
     "Secondary orientation 2 angle must be the one of 90 or 270 not set to primary orientation 2"
   );
   screen.orientation.unlock();

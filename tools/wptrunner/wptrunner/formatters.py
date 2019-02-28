@@ -1,10 +1,9 @@
-import base64
-import hashlib
 import json
 import re
 import sys
 
 from mozlog.structured.formatters.base import BaseFormatter
+from .executors.base import strip_server
 
 
 LONE_SURROGATE_RE = re.compile(u"[\uD800-\uDFFF]")
@@ -50,23 +49,6 @@ else:
 
 def replace_lone_surrogate(data):
     return LONE_SURROGATE_RE.subn(surrogate_replacement, data)[0]
-
-
-def get_reftest_screenshots(extra):
-    def _hash(data):
-        return hashlib.sha1(base64.b64decode(data)).hexdigest(), data
-
-    if "screenshots" in extra:
-        return extra["screenshots"]
-    # Marionette internal reftest runner only produces "reftest_screenshots".
-    if "reftest_screenshots" in extra:
-        # reftest_screenshots: [screenshot0, relation, screenshot1]
-        log_data = extra["reftest_screenshots"]
-        return {
-            log_data[0]["url"]: _hash(log_data[0]["screenshot"]),
-            log_data[2]["url"]: _hash(log_data[2]["screenshot"]),
-        }
-    return None
 
 
 class WptreportFormatter(BaseFormatter):
@@ -134,11 +116,12 @@ class WptreportFormatter(BaseFormatter):
             test["expected"] = data["expected"]
         if "message" in data:
             test["message"] = replace_lone_surrogate(data["message"])
-
-        screenshots = get_reftest_screenshots(data.get("extra", {}))
-        if screenshots:
-            test["screenshots"] = {key: "sha1:" + value[0]
-                                   for key, value in screenshots}
+        if "reftest_screenshots" in data.get("extra", {}):
+            test["screenshots"] = {
+                strip_server(item["url"]): "sha1:" + item["hash"]
+                for item in data["extra"]["reftest_screenshots"]
+                if type(item) == dict
+            }
 
     def assertion_count(self, data):
         test = self.find_or_create_test(data)
@@ -189,15 +172,12 @@ class WptscreenshotFormatter(BaseFormatter):
         pass
 
     def test_end(self, data):
+        if "reftest_screenshots" not in data.get("extra", {}):
+            return
         output = ""
-        screenshots = get_reftest_screenshots(data.get("extra", {}))
-        if screenshots is None:
-            for url, value in screenshots:
-                checksum = "sha1:" + value[0]
-                data = value[1]
-                if checksum in self.cache:
-                    continue
-                self.cache |= checksum
-                output += "data:image/png;base64,:{}\n".format(data)
-        if output:
-            return output
+        for item in data["extra"]["reftest_screenshots"]:
+            if type(item) != dict or item["hash"] in self.cache:
+                continue
+            self.cache.add(item["hash"])
+            output += "data:image/png;base64,{}\n".format(item["screenshot"])
+        return output if output else None

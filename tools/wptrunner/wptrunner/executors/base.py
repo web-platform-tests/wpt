@@ -77,11 +77,34 @@ class TestharnessResultConverter(object):
 testharness_result_converter = TestharnessResultConverter()
 
 
+def hash_screenshot(data):
+    """Computes the sha1 checksum of a base64-encoded screenshot."""
+    return hashlib.sha1(base64.b64decode(data)).hexdigest()
+
+
+def _ensure_hash_in_reftest_screenshots(extra):
+    """Make sure reftest_screenshots have hashes.
+
+    Marionette internal reftest runner does not produce hashes.
+    """
+    log_data = extra.get("reftest_screenshots")
+    if not log_data:
+        return
+    for item in log_data:
+        if type(item) != dict:
+            # Skip relation strings.
+            continue
+        if "hash" not in item:
+            item["hash"] = hash_screenshot(item["screenshot"])
+
+
 def reftest_result_converter(self, test, result):
+    extra = result.get("extra", {})
+    _ensure_hash_in_reftest_screenshots(extra)
     return (test.result_cls(
         result["status"],
         result["message"],
-        extra=result.get("extra", {}),
+        extra=extra,
         stack=result.get("stack")), [])
 
 
@@ -262,7 +285,7 @@ class RefTestImplementation(object):
                 return False, data
 
             screenshot = data
-            hash_value = hashlib.sha1(base64.b64decode(screenshot)).hexdigest()
+            hash_value = hash_screenshot(data)
 
             self.screenshot_cache[key] = (hash_value, None)
 
@@ -319,19 +342,15 @@ class RefTestImplementation(object):
                 if success:
                     screenshots[i] = screenshot
 
-        # For Mozilla reftest analyzer (included in tbpl):
-        log_data = [{"url": nodes[0].url, "screenshot": screenshots[0]}, relation,
-                    {"url": nodes[1].url, "screenshot": screenshots[1]}]
-        # For wpt.fyi (included in wptreport.json):
-        new_log_data = {nodes[0].url: (hashes[0], screenshots[0]),
-                        nodes[1].url: (hashes[1], screenshots[1])}
+        log_data = [
+            {"url": nodes[0].url, "screenshot": screenshots[0], "hash": hashes[0]},
+            relation,
+            {"url": nodes[1].url, "screenshot": screenshots[1], "hash": hashes[1]},
+        ]
 
         return {"status": "FAIL",
                 "message": "\n".join(self.message),
-                "extra": {
-                    "reftest_screenshots": log_data,
-                    "screenshots": new_log_data,
-                }}
+                "extra": {"reftest_screenshots": log_data}}
 
     def retake_screenshot(self, node, viewport_size, dpi):
         success, data = self.executor.screenshot(node, viewport_size, dpi)

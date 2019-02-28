@@ -167,17 +167,17 @@ tasks:
                       --
                       --channel=${browser.channel}
                       ${operation.extra_args};
-    - $if: tasks_for == "github-pull-request"
-      # PR tasks that aren't running the changed tests
-      then:
-        $if: event.action in ['opened', 'reopened', 'synchronize']
-        then:
-          $map:
-             - name: lint
-               description: >-
-                 Lint for wpt-specific requirements
-               script: tools/ci/ci_lint.sh
-          each(operation):
+    - $map:
+       - name: lint
+         description: >-
+           Lint for wpt-specific requirements
+         script: tools/ci/ci_lint.sh
+         conditions:
+           push
+           pull-request
+      each(operation):
+        - $if: ("push" in operation.conditions && tasks_for == "github-push") || ("pull-request" in operation.conditions && tasks_for == "github-pull-request" && event.action in ['opened', 'reopened', 'synchronize'])
+          then:
             taskId: {$eval: 'as_slugid(operation.name)'}
             taskGroupId: {$eval: 'as_slugid("task group")'}
             created: {$fromNow: ''}

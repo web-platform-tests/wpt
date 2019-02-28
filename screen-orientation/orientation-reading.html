@@ -56,7 +56,7 @@ promise_test(async t => {
   assert_equals(
     screen.orientation.angle,
     secondaryOrientation2Angle,
-    "Secondary orientation 2 angle must be the one of 90 or 270 not set to primary orientation 2"
+    "Secondary orientation 2 angle must be the opposite angle to primary orientation 2"
   );
   screen.orientation.unlock();
   return document.exitFullscreen();

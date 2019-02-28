@@ -1,24 +1,24 @@
 import json
 import socket
 import threading
+import time
 
 from six.moves import urllib
 import wspy
 
 from pyppeteer import logging, Session
-from pyppeteer.errors import ConnectionError, ProtocolError
+from pyppeteer.errors import ConnectionError, ProtocolError, PyppeteerError
+
+_CLOSE_TARGET_TIMEOUT = 20
+_CLOSE_TARGET_POLL_INTERVAL = 5./100
 
 class Connection(object):
-    def __init__(self, url):
-        url_parts = urllib.parse.urlparse(url)
+    def __init__(self, http_port, ws_url):
+        self._http_port = http_port
+        url_parts = urllib.parse.urlparse(ws_url)
         netloc = url_parts.netloc.split(':')
-        self._host = netloc[0]
-        if len(netloc) > 1:
-            self._port = int(netloc[1])
-        elif url_parts.scheme == 'https':
-            self._port = 443
-        else:
-            self._port = 80
+        self._ws_host = netloc[0]
+        self._ws_port = int(netloc[1])
 
         self._websocket = wspy.websocket(location=url_parts.path)
         self._message_id = 0
@@ -66,7 +66,7 @@ class Connection(object):
         self._locks.pop(message['id']).release()
 
     def _read_forever(self):
-        self._websocket.connect((self._host, self._port))
+        self._websocket.connect((self._ws_host, self._ws_port))
         self._open_event.set()
 
         while True:
@@ -154,11 +154,11 @@ class Connection(object):
             # notifications. Version 1.3 of the Chrome DevTools Protocol
             # implements a method named `Page.stopLoading`, but as of
             # 2019-02-22, that version is labeled as a release candidate.
-            self._sessions[target_id].evaluate('''
-              try {
-                stop();
-              } catch (_) {}
-            ''')
+            #self._sessions[target_id].evaluate('''
+            #  try {
+            #    stop();
+            #  } catch (_) {}
+            #''')
             self._sessions[target_id]._send('Page.enable')  # API status: stable
 
         return self._sessions[target_id]
@@ -193,3 +193,40 @@ class Connection(object):
             raise result
 
         return result['result']
+
+    def targets(self):
+        return self.send('Target.getTargets')['targetInfos']
+        return json.load(urllib.request.urlopen(
+            'http://localhost:{}/json'.format(self._http_port)
+        ))
+
+    def close_target(self, target_id):
+        response = urllib.request.urlopen(
+            'http://localhost:{}/json/close/{}'.format(
+                self._http_port, target_id
+            )
+        )
+
+        # > For valid targets, the response is 200: "Target is closing". If the
+        # > target is invalid, the response is 404: "No such target id:
+        # > {targetId}"
+        if response.getcode() != 200:
+            raise PyppeteerError(
+                'Unable to close target "{}"'.format(target_id)
+            )
+
+        start = time.time()
+
+        while time.time() - start < _CLOSE_TARGET_TIMEOUT:
+            ids = [target['targetId'] for target in self.targets()]
+
+            if target_id not in ids:
+                return
+
+            time.sleep(_CLOSE_TARGET_POLL_INTERVAL)
+
+        raise PyppeteerError(
+            'Unable to close target "{}" after {} seconds'.format(
+                target_id, _CLOSE_TARGET_TIMEOUT
+            )
+        )

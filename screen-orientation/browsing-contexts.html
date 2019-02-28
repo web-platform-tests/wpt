@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<iframe id="testIframe" src="resources/iframe-lock.html" allowfullscreen="true">
+</iframe>
+
+<script>
+  async function lock() {
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const currentOrientation = screen.orientation.type;
+    const isPortrait = currentOrientation.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    await screen.orientation.lock(newOrientation);
+  }
+  window.onload = lock;
+</script>

@@ -5,7 +5,7 @@ import six
 
 @pytest.fixture
 def session(chrome):
-    connection = Connection(chrome['webSocketDebuggerUrl'])
+    connection = Connection(chrome['port'], chrome['webSocketDebuggerUrl'])
     connection.open()
 
     yield connection.create_session(chrome['targetId'])

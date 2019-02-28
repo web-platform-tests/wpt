@@ -101,26 +101,18 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.session.execute_script(self.runner_script % format_map)
 
     def close_old_windows(self):
-        for target in self.session.targets():
+        for target in self.parent.connection.targets():
             if target['type'] != 'page':
                 continue
             if target['targetId'] == self.session.target_id:
                 continue
 
-            # The `Target.closeTarget` method appears to be the canonical way
-            # to close targets of all types. However, existing references to
-            # windows closed in this way exhibit behavior which interferes with
-            # the test scheduling.
-            # TODO(jugglinmike): determine exactly how the semantics of
-            # `Target.closeTarget` differ from WebDriver's "Close Window"
-            # command and HTML's `close` function.
-            page = self.session.connection.create_session(target['targetId'])
-            page.evaluate('close();')
+            self.parent.connection.close_target(target['targetId'])
 
         return self.session
 
     def get_test_window(self, window_id, parent, timeout=5):
-        for target in self.session.targets():
+        for target in self.session.connection.targets():
             if target['type'] != 'page':
                 continue
 
@@ -275,7 +267,9 @@ class WebDriverProtocol(Protocol):
         pyppeteer.logging.addHandler(handler)
         pyppeteer.logging.setLevel(logging.DEBUG)
 
-        self.connection = pyppeteer.Connection(target['webSocketDebuggerUrl'])
+        self.connection = pyppeteer.Connection(
+            port, target['webSocketDebuggerUrl']
+        )
         self.connection.open()
         self.session = self.connection.create_session(target['id'])
 

@@ -80,8 +80,9 @@ def chrome():
             raise Exception('Could not locate browser process')
 
         yield {
-            'webSocketDebuggerUrl': target['webSocketDebuggerUrl'],
-            'targetId': target['id']
+            'port': port,
+            'targetId': target['id'],
+            'webSocketDebuggerUrl': target['webSocketDebuggerUrl']
         }
     finally:
         browser_process.kill()

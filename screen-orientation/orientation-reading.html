@@ -40,21 +40,21 @@ promise_test(async t => {
           secondaryOrientation2: "portrait-secondary"
         };
   await screen.orientation.lock(orientations.secondaryOrientation1);
-  assert_true(
+  assert_equals(
     screen.orientation.angle == 180,
-    "Secondary orientation 1 angle should be 180"
+    "Secondary orientation 1 angle must be 180"
   );
   await screen.orientation.lock(orientations.primaryOrientation2);
   assert_true(
     screen.orientation.angle == 90 || screen.orientation.angle == 270,
-    "Primary orientation 2 angle should be either 90 or 270"
+    "Primary orientation 2 angle must be either 90 or 270"
   );
   const primaryOrientation2Angle = screen.orientation.angle;
   const secondaryOrientation2Angle = primaryOrientation2Angle === 90 ? 270 : 90;
   await screen.orientation.lock(orientations.secondaryOrientation2);
-  assert_true(
+  assert_equals(
     screen.orientation.angle == secondaryOrientation2Angle,
-    "Secondary orientation 2 angle should be the one of 90 or 270 not set to primary orientation 2"
+    "Secondary orientation 2 angle must be the one of 90 or 270 not set to primary orientation 2"
   );
   screen.orientation.unlock();
   return document.exitFullscreen();

@@ -894,6 +894,10 @@ class InternalRefTestImplementation(object):
         except Exception as e:
             # Ignore errors during teardown
             self.logger.warning(traceback.format_exc(e))
+        # the reftest runner opens/closes a window with focus, so as with after
+        # closing a window we need to give a new window focus
+        handles = self.executor.protocol.marionette.window_handles
+        self.executor.protocol.marionette.switch_to_window(handles[0])
 
 
 

@@ -140,7 +140,6 @@ class WebDriverClickProtocolPart(ClickProtocolPart):
         return self.parent.session
 
     def element(self, element):
-        self.logger.info("click " + repr(element))
         return element.click()
 
 

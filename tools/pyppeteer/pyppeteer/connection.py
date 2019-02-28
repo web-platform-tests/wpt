@@ -31,7 +31,6 @@ class Connection(object):
         self._sessions = {}
 
         self.logger = logging.getChild('connection')
-        self.logger.debug('Hello there')
 
         # In cases where a behavior can be achieved via either a deprecated API
         # or an experimental API (e.g. disabling TLS certificate security

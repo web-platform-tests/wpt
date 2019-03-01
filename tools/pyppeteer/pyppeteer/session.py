@@ -3,11 +3,12 @@ import threading
 import time
 
 from six.moves import queue, xrange
-from pyppeteer import action_handlers, Element, exclusive_ops, logging
+from pyppeteer import action_handlers, Element, exclusive_ops, logging, timeout_lock
 from pyppeteer.errors import ConnectionError, ProtocolError, ScriptError
 
 _DEFAULT_NAVIGATION_TIMEOUT = 3
 _DEFAULT_SCRIPT_TIMEOUT = 10 * 1000
+_MESSAGE_TIMEOUT = 60
 
 # https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 def unpack_remote_object(result):
@@ -72,9 +73,9 @@ class Session(object):
     def _send(self, method, params={}):
         self._message_id += 1
         message_id = self._message_id
-        lock = threading.Lock()
+        lock = timeout_lock.TimeoutLock()
         self._locks[message_id] = lock
-        lock.acquire()
+        lock.acquire(0)
 
         message = {
             'id': message_id,
@@ -87,7 +88,13 @@ class Session(object):
             {'sessionId': self._id, 'message': json.dumps(message)}
         )
 
-        lock.acquire()
+        try:
+            # A lock which respects a timeout is necessary to recover from
+            # browser process crashes.
+            lock.acquire(_MESSAGE_TIMEOUT)
+        except Exception:
+            self._locks.pop(message_id)
+            raise
         result = self._results.pop(message_id)
 
         if 'error' in result:

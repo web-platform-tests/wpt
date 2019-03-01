@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Web NFC Test: push and watch opaque records</title>
+<title>Web NFC Test: push and read opaque records</title>
 <link rel="author" title="Intel" href="http://www.intel.com"/>
 <link rel="help" href="https://w3c.github.io/web-nfc/"/>
 <meta name="timeout" content="long">
@@ -21,7 +21,7 @@
 
 setup({ explicit_timeout: true });
 
-let desc = "Test that nfc.push and nfc.watch succeed when recordType is set to 'opaque'."
+let desc = "Test that push and read data succeed when recordType is set to 'opaque'."
 let watchOptions = {
   recordType : "opaque",
   mediaType : "application/octet-stream",

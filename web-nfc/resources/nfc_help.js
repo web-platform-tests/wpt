@@ -68,14 +68,13 @@ function assertWebNDEFMessagesEqual(a, b) {
 }
 
 function testNDEFMessage(pushedMessage, watchOptions, desc) {
-  promise_test(t => {
-    return navigator.nfc.push(pushedMessage)
-      .then(() => {
-        return new Promise(resolve => {
-          navigator.nfc.watch((message) => resolve(message), watchOptions);
-        }).then((message) => {
-          assertWebNDEFMessagesEqual(message, pushedMessage);
-        });
-      });
+  promise_test(async t => {
+    let writer = new NFCWriter();
+    let reader = new NFCReader();
+    await writer.push(pushedMessage);
+    let readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
+    reader.start();
+    let event = await readerWatcher.wait_for("reading");
+    assertWebNDEFMessagesEqual(event.message, pushedMessage);
   }, desc);
 }

@@ -6,11 +6,12 @@ import time
 from six.moves import urllib
 import wspy
 
-from pyppeteer import logging, Session
+from pyppeteer import logging, Session, timeout_lock
 from pyppeteer.errors import ConnectionError, ProtocolError, PyppeteerError
 
 _CLOSE_TARGET_TIMEOUT = 20
 _CLOSE_TARGET_POLL_INTERVAL = 5./100
+_MESSAGE_TIMEOUT = 60
 
 class Connection(object):
     def __init__(self, http_port, ws_url):
@@ -168,9 +169,9 @@ class Connection(object):
 
         self._message_id += 1
         message_id = self._message_id
-        lock = threading.Lock()
+        lock = timeout_lock.TimeoutLock()
         self._locks[message_id] = lock
-        lock.acquire()
+        lock.acquire(0)
 
         message = {
             'id': message_id,
@@ -183,7 +184,13 @@ class Connection(object):
             wspy.OPCODE_TEXT, json.dumps(message), mask=True
         ))
 
-        lock.acquire()
+        try:
+            # A lock which respects a timeout is necessary to recover from
+            # browser process crashes.
+            lock.acquire(_MESSAGE_TIMEOUT)
+        except Exception:
+            self._locks.pop(message_id)
+            raise
         result = self._results.pop(message_id)
 
         if 'error' in result:

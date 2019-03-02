@@ -3,12 +3,11 @@ import threading
 import time
 
 from six.moves import queue, xrange
-from pyppeteer import action_handlers, Element, exclusive_ops, logging, timeout_lock
+from pyppeteer import action_handlers, Element, exclusive_ops, logging
 from pyppeteer.errors import ConnectionError, ProtocolError, ScriptError
 
 _DEFAULT_NAVIGATION_TIMEOUT = 3
 _DEFAULT_SCRIPT_TIMEOUT = 10 * 1000
-_MESSAGE_TIMEOUT = 60
 
 # https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 def unpack_remote_object(result):
@@ -73,9 +72,9 @@ class Session(object):
     def _send(self, method, params={}):
         self._message_id += 1
         message_id = self._message_id
-        lock = timeout_lock.TimeoutLock()
+        lock = threading.Lock()#timeout_lock.TimeoutLock()
         self._locks[message_id] = lock
-        lock.acquire(0)
+        lock.acquire()
 
         message = {
             'id': message_id,
@@ -88,16 +87,7 @@ class Session(object):
             {'sessionId': self._id, 'message': json.dumps(message)}
         )
 
-        try:
-            # If Chrome's "render" sub-process crashes, both the parent process
-            # and the DevTools WebSocket will remain alive, but no further
-            # messages will be sent. In the absence of a method to conclusively
-            # detect this event, assume it has occurred whenever no response is
-            # received after an extended duration.
-            lock.acquire(_MESSAGE_TIMEOUT)
-        except Exception:
-            self._locks.pop(message_id)
-            raise
+        lock.acquire()
         result = self._results.pop(message_id)
 
         if 'error' in result:

@@ -24,9 +24,3 @@ class TimeoutLock(object):
             self._queue.get(False)
         except queue.Empty:
             raise threading.ThreadError('release unlocked lock')
-
-    def __enter__(self):
-        self.acquire()
-
-    def __exit__(self, type, value, traceback):
-        self.release()

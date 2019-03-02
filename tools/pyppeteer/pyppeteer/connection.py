@@ -185,8 +185,11 @@ class Connection(object):
         ))
 
         try:
-            # A lock which respects a timeout is necessary to recover from
-            # browser process crashes.
+            # If Chrome's "render" sub-process crashes, both the parent process
+            # and the DevTools WebSocket will remain alive, but no further
+            # messages will be sent. In the absence of a method to conclusively
+            # detect this event, assume it has occurred whenever no response is
+            # received after an extended duration.
             lock.acquire(_MESSAGE_TIMEOUT)
         except Exception:
             self._locks.pop(message_id)

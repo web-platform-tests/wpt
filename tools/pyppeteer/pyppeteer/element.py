@@ -11,7 +11,7 @@ class Element(object):
         )
         quads = self._session._send('DOM.getBoxModel', {  # API status: stable
             'objectId': self._remote_object_id
-        })['model']['margin']
+        })['model']['border']
 
         left = max(0, min(quads[0], quads[2]))
         right = min(inner_width, max(quads[0], quads[2]))

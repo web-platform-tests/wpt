@@ -6,7 +6,7 @@ import time
 from six.moves import urllib
 import wspy
 
-from pyppeteer import logging, Session, timeout_lock
+from pyppeteer import logging, Session
 from pyppeteer.errors import ConnectionError, ProtocolError, PyppeteerError
 
 _CLOSE_TARGET_TIMEOUT = 20
@@ -22,6 +22,12 @@ class Connection(object):
         self._ws_port = int(netloc[1])
 
         self._websocket = wspy.websocket(location=url_parts.path)
+        # If Chrome's "render" sub-process crashes, both the parent process and
+        # the DevTools WebSocket will remain alive, but no further messages
+        # will be sent. In the absence of a method to conclusively detect this
+        # event, assume it has occurred whenever no response is received after
+        # an extended duration.
+        self._websocket.settimeout(_MESSAGE_TIMEOUT)
         self._message_id = 0
         self._locks = {}
         self._results = {}
@@ -169,9 +175,9 @@ class Connection(object):
 
         self._message_id += 1
         message_id = self._message_id
-        lock = timeout_lock.TimeoutLock()
+        lock = threading.Lock()#timeout_lock.TimeoutLock()
         self._locks[message_id] = lock
-        lock.acquire(0)
+        lock.acquire()
 
         message = {
             'id': message_id,
@@ -184,16 +190,7 @@ class Connection(object):
             wspy.OPCODE_TEXT, json.dumps(message), mask=True
         ))
 
-        try:
-            # If Chrome's "render" sub-process crashes, both the parent process
-            # and the DevTools WebSocket will remain alive, but no further
-            # messages will be sent. In the absence of a method to conclusively
-            # detect this event, assume it has occurred whenever no response is
-            # received after an extended duration.
-            lock.acquire(_MESSAGE_TIMEOUT)
-        except Exception:
-            self._locks.pop(message_id)
-            raise
+        lock.acquire()
         result = self._results.pop(message_id)
 
         if 'error' in result:

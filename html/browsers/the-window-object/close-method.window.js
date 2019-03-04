@@ -26,5 +26,5 @@ async_test(t => {
     assert_equals(openee.opener, null);
     assert_equals(openee2.opener, null);
     t.done();
-  }, 100);
+  }, 250);
 }, "window.close() affects name targeting immediately");

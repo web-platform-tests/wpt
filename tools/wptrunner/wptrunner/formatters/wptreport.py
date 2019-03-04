@@ -159,5 +159,3 @@ class WptreportFormatter(BaseFormatter):
         scope_data["total"].append({"bytes": data["bytes"],
                                     "threshold": data.get("threshold", 0),
                                     "process": data["process"]})
-
-

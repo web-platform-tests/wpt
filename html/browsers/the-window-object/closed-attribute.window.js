@@ -15,7 +15,7 @@ test(() => {
   const openee = window.open();
   closedTest(openee, () => openee.close());
 
-  // This should not matter
+  // close() is a no-op once "is closing" is set
   openee.close();
   assert_equals(openee.closed, true);
 }, "closed/close() and same-origin auxiliary browsing context");
@@ -33,7 +33,7 @@ const support = new URL("support/closed.html", location.href).pathname;
 ].forEach(val => {
   async_test(t => {
     const frame = document.createElement("iframe"),
-          ident = `${val.type}-nestedframe`;
+          ident = `${val.type}-nested-bc`;
     frame.src = `${val.url}?window=parent&ident=${ident}`;
     const listener = t.step_func(e => {
       if (e.data === ident) {
@@ -42,19 +42,20 @@ const support = new URL("support/closed.html", location.href).pathname;
         t.done();
       }
     });
+    // Use a message event rather than onload for consistency with auxiliary browsing contexts.
     self.addEventListener("message", listener);
     document.body.append(frame);
   }, `closed and ${val.type} nested browsing context`);
 
   async_test(t => {
-    const ident = `${val.type}-auxiliaryframe`,
+    const ident = `${val.type}-auxiliary-bc`,
           support = new URL("support/closed.html", location.href).pathname,
           openee = window.open(`${val.url}?window=opener&ident=${ident}`),
           listener = t.step_func(e => {
       if (e.data === ident) {
         closedTest(openee, () => openee.close());
 
-        // This should not matter
+        // close() is a no-op once "is closing" is set
         openee.close();
         assert_equals(openee.closed, true);
 
@@ -62,6 +63,7 @@ const support = new URL("support/closed.html", location.href).pathname;
         t.done();
       }
     });
+    // As there's no cross-origin onload, use a message event.
     self.addEventListener("message", listener);
   }, `closed/close() and ${val.type} auxiliary browsing context`);
 });

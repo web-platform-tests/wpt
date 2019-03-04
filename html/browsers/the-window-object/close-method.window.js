@@ -7,7 +7,7 @@ async_test(t => {
   t.step_timeout(() => {
     assert_equals(openee.opener, null);
     t.done();
-  }, 100);
+  }, 250);
 }, "window.close() queues a task to discard, but window.closed knows immediately");
 
 async_test(t => {

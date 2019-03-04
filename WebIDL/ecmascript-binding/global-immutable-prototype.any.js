@@ -3,7 +3,7 @@
 
 const objects = [];
 setup(() => {
-  for (let object = this; object; object = Object.getPrototypeOf(object)) {
+  for (let object = self; object; object = Object.getPrototypeOf(object)) {
     objects.push(object);
   }
 });

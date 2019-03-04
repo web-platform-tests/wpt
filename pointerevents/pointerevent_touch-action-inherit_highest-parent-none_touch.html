@@ -6,6 +6,9 @@
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <script src="pointerevent_support.js"></script>
         <style>
             #divParent {
@@ -118,6 +121,10 @@
                         updateDescriptionComplete();
                     }
                 });
+
+                // Inject touch inputs.
+                touchScrollInTarget(scrollTarget, 'down').then(function() {
+                    return touchScrollInTarget(scrollTarget, 'right'); });
             }
 
             function enableScrolling() {

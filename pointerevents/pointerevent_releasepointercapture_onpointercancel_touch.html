@@ -6,6 +6,9 @@
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+        <script src="/resources/testdriver.js"></script>
+        <script src="/resources/testdriver-actions.js"></script>
+        <script src="/resources/testdriver-vendor.js"></script>
         <script src="pointerevent_support.js"></script>
     </head>
     <body class="scrollable">
@@ -64,6 +67,9 @@
                     event_log.push('pointercancel@target0');
                     pointercancelGot = true;
                 });
+
+                // Inject touch inputs.
+                touchScrollInTarget(target0, 'down');
             }
         </script>
         <h1>Pointer Events Capture Test</h1>

@@ -23,13 +23,13 @@ setup({ explicit_timeout: true });
 
 const test_message_origin = window.location.href.origin;
 const desc = "Test that write and read data succeed when recordType is set to 'url'.";
-const watchOptions = {
+const readOptions = {
   recordType: "url",
   mediaType: "text/plain",
   url: test_message_origin
 }
 const message = createMessage([createUrlRecord(test_url_data)]);
 
-testNDEFMessage(message, watchOptions, desc);
+testNDEFMessage(message, readOptions, desc);
 
 </script>

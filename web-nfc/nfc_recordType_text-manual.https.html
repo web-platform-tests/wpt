@@ -22,13 +22,13 @@
 setup({ explicit_timeout: true });
 
 const desc = "Test that write and read data succeed when recordType is set to 'text'."
-const watchOptions = {
+const readOptions = {
   recordType : "text",
   mediaType : "text/plain",
   url : ""
 }
 const message = createMessage([createTextRecord(test_text_data)]);
 
-testNDEFMessage(message, watchOptions, desc);
+testNDEFMessage(message, readOptions, desc);
 
 </script>

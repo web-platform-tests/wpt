@@ -22,13 +22,13 @@
 setup({ explicit_timeout: true });
 
 const desc = "Test that write and read data succeed when recordType is set to 'empty'.";
-const watchOptions = {
+const readOptions = {
   recordType: "empty",
   mediaType: "",
   url: ""
 }
 const message = createMessage([createRecord('empty', '')]);
 
-testNDEFMessage(message, watchOptions, desc);
+testNDEFMessage(message, readOptions, desc);
 
 </script>

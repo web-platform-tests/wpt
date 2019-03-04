@@ -22,13 +22,13 @@
 setup({ explicit_timeout: true });
 
 const desc = "Test that write and read data succeed when recordType is set to 'opaque'."
-const watchOptions = {
+const readOptions = {
   recordType : "opaque",
   mediaType : "application/octet-stream",
   url : ""
 }
 const message = createMessage([createOpaqueRecord(test_buffer_data)]);
 
-testNDEFMessage(message, watchOptions, desc);
+testNDEFMessage(message, readOptions, desc);
 
 </script>

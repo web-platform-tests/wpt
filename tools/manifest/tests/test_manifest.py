@@ -178,8 +178,8 @@ def test_reftest_computation_chain():
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
-                       ("reftest_node", test2.path, {test2})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()]),
+                       ("reftest_node", test2.path, [test2])]
 
 
 def test_reftest_computation_chain_update_add():
@@ -190,7 +190,7 @@ def test_reftest_computation_chain_update_add():
 
     assert m.update([(s2, True)]) is True
 
-    assert list(m) == [("reftest", test2.path, {test2.to_RefTest()})]
+    assert list(m) == [("reftest", test2.path, [test2.to_RefTest()])]
 
     s1 = SourceFileWithTest("test1", "0"*40, item.RefTestNode, references=[("/test2", "==")])
     test1 = s1.manifest_items()[1][0]
@@ -198,8 +198,8 @@ def test_reftest_computation_chain_update_add():
     # s2's hash is unchanged, but it has gone from a test to a node
     assert m.update([(s1, True), (s2, True)]) is True
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
-                       ("reftest_node", test2.path, {test2})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()]),
+                       ("reftest_node", test2.path, [test2])]
 
 
 def test_reftest_computation_chain_update_remove():
@@ -213,13 +213,13 @@ def test_reftest_computation_chain_update_remove():
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
-                       ("reftest_node", test2.path, {test2})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()]),
+                       ("reftest_node", test2.path, [test2])]
 
     # s2's hash is unchanged, but it has gone from a node to a test
     assert m.update([(s2, True)]) is True
 
-    assert list(m) == [("reftest", test2.path, {test2.to_RefTest()})]
+    assert list(m) == [("reftest", test2.path, [test2.to_RefTest()])]
 
 
 def test_reftest_computation_chain_update_test_type():
@@ -231,7 +231,7 @@ def test_reftest_computation_chain_update_test_type():
 
     test1 = s1.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()])]
 
     # test becomes a testharness test (hash change because that is determined
     # based on the file contents). The updated manifest should not includes the
@@ -241,7 +241,7 @@ def test_reftest_computation_chain_update_test_type():
 
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("testharness", test2.path, {test2})]
+    assert list(m) == [("testharness", test2.path, [test2])]
 
 
 def test_reftest_computation_chain_update_node_change():
@@ -255,8 +255,8 @@ def test_reftest_computation_chain_update_node_change():
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
-                       ("reftest_node", test2.path, {test2})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()]),
+                       ("reftest_node", test2.path, [test2])]
 
     #test2 changes to support type
     s2 = SourceFileWithTest("test2", "1"*40, item.SupportFile)
@@ -264,8 +264,8 @@ def test_reftest_computation_chain_update_node_change():
     assert m.update([(s1, True), (s2, True)]) is True
     test3 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("reftest", test1.path, {test1.to_RefTest()}),
-                       ("support", test3.path, {test3})]
+    assert list(m) == [("reftest", test1.path, [test1.to_RefTest()]),
+                       ("support", test3.path, [test3])]
 
 
 def test_iterpath():
@@ -339,8 +339,8 @@ def test_no_update():
     test1 = s1.manifest_items()[1][0]
     test2 = s2.manifest_items()[1][0]
 
-    assert list(m) == [("testharness", test1.path, {test1}),
-                       ("testharness", test2.path, {test2})]
+    assert list(m) == [("testharness", test1.path, [test1]),
+                       ("testharness", test2.path, [test2])]
 
     s1_1 = SourceFileWithTest("test1", "1"*40, item.ManualTest)
 
@@ -348,8 +348,8 @@ def test_no_update():
 
     test1_1 = s1_1.manifest_items()[1][0]
 
-    assert list(m) == [("manual", test1_1.path, {test1_1}),
-                       ("testharness", test2.path, {test2})]
+    assert list(m) == [("manual", test1_1.path, [test1_1]),
+                       ("testharness", test2.path, [test2])]
 
 
 def test_no_update_delete():
@@ -366,7 +366,7 @@ def test_no_update_delete():
 
     m.update([(s1_1.rel_path, False)])
 
-    assert list(m) == [("testharness", test1.path, {test1})]
+    assert list(m) == [("testharness", test1.path, [test1])]
 
 
 def test_update_from_json():
@@ -384,4 +384,4 @@ def test_update_from_json():
 
     test1 = s1.manifest_items()[1][0]
 
-    assert list(m) == [("testharness", test1.path, {test1})]
+    assert list(m) == [("testharness", test1.path, [test1])]

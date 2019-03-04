@@ -129,11 +129,11 @@ class TypeData(object):
     def load(self, key):
         """Load a specific Item given a path"""
         if self.json_data is not None:
-            data = set()
+            data = []
             path = from_os_path(key)
             for test in iterfilter(self.meta_filters, self.json_data.get(path, [])):
                 manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                data.add(manifest_item)
+                data.append(manifest_item)
             try:
                 del self.json_data[path]
             except KeyError:
@@ -149,10 +149,10 @@ class TypeData(object):
                 key = to_os_path(path)
                 if key in self.data:
                     continue
-                data = set()
+                data = []
                 for test in iterfilter(self.meta_filters, self.json_data.get(path, [])):
                     manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                    data.add(manifest_item)
+                    data.append(manifest_item)
                 self.data[key] = data
             self.json_data = None
 
@@ -217,7 +217,7 @@ class Manifest(object):
 
     def iterpath(self, path):
         for type_tests in self._data.values():
-            for test in type_tests.get(path, set()):
+            for test in type_tests.get(path, []):
                 yield test
 
     def iterdir(self, dir_name):
@@ -295,7 +295,7 @@ class Manifest(object):
                     if is_new or hash_changed:
                         reftest_changes = True
                 elif is_new or hash_changed:
-                    self._data[new_type][rel_path] = set(manifest_items)
+                    self._data[new_type][rel_path] = list(manifest_items)
 
                 self._path_hash[rel_path] = (file_hash, new_type)
 
@@ -335,8 +335,8 @@ class Manifest(object):
             for ref_url, ref_type in item.references:
                 has_inbound.add(ref_url)
 
-        reftests = defaultdict(set)
-        references = defaultdict(set)
+        reftests = defaultdict(list)
+        references = defaultdict(list)
         changed_hashes = {}
 
         for item, file_hash in reftest_nodes:
@@ -346,13 +346,13 @@ class Manifest(object):
                     item = item.to_RefTestNode()
                     changed_hashes[item.path] = (file_hash,
                                                  item.item_type)
-                references[item.path].add(item)
+                references[item.path].append(item)
             else:
                 if isinstance(item, RefTestNode):
                     item = item.to_RefTest()
                     changed_hashes[item.path] = (file_hash,
                                                  item.item_type)
-                reftests[item.path].add(item)
+                reftests[item.path].append(item)
             self._reftest_nodes_by_url[item.url] = item
 
         return reftests, references, changed_hashes

@@ -130,9 +130,12 @@ function manualTest(button, { invalidMethod }) {
     </button>
   </li>
   <li>
-    <button onclick="manualTest(this, {invalidMethod: 'Basic-Card'}); done();">
+    <button onclick="manualTest(this, {invalidMethod: 'Basic-Card'});">
       Must throw if standardized PMI has uppercase characters.
     </button>
+  </li>
+  <li>
+    <button onclick="done();">Done!</button>
   </li>
 </ol>
 <small>

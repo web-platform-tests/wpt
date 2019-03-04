@@ -22,7 +22,12 @@ __wptrunner__ = {"product": "chrome",
 cli_arguments = [
     # https://cs.chromium.org/chromium/src/chrome/test/chromedriver/chrome_launcher.cc?l=70-75&rcl=50b9fd38ae9ca373dc8889637eb94a50eea7dc94
     "--disable-popup-blocking",
-    "--enable-automation",
+    # Although specified by the Chromedriver source code, the
+    # `--enable-automation` option was found to interfere with certain
+    # web-platform-tests, so it should not be specified here.
+    #
+    # https://github.com/web-platform-tests/wpt/pull/14922
+    #"--enable-automation",
     "--ignore-certificate-errors",
     "--metrics-recording-only",
 

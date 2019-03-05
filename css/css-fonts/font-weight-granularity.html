@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Testing font weight granularity in Windows</title>
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-weight-prop" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+        .test {
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="element-one" class="test">Font Sample Text</div>
+    <br style="clear: both">
+    <div id="element-two" class="test">Font Sample Text</div>
+    <br>
+    <script>
+
+        testFontFamily = [
+            { firstFont: "font-family: Segoe UI; font-weight: 400", secondFont: "font-family: Segoe UI; font-weight: 350", message: "font-weight of 350 should match a different version of Segoe UI than font-weight 400." },
+        ];
+
+        testFontFamily.forEach(function (testCase) {
+            test(() => {
+                var firstElement = document.getElementById("element-one");
+                var secondElement = document.getElementById("element-two");
+
+                firstElement.setAttribute("style", testCase.firstFont);
+                secondElement.setAttribute("style", testCase.secondFont);
+
+                assert_true(firstElement.offsetWidth != secondElement.offsetWidth, testCase.message);
+
+            }, "Family matching: " + testCase.message);
+
+        });
+
+    </script>
+</body>
+</html>

@@ -26,7 +26,7 @@ promise_test(async t => {
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
   reader.start();
   const event = await readerWatcher.wait_for("error");
-  assert_true(event.error.name === 'SyntaxError');
+  assert_equals(event.error.name, 'SyntaxError');
 }, 'Test that NFCReader.start fails if NFCReaderOptions.url is missing components.');
 
 promise_test(async t => {
@@ -34,7 +34,7 @@ promise_test(async t => {
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
   reader.start();
   const event = await readerWatcher.wait_for("error");
-  assert_true(event.error.name === 'SyntaxError');
+  assert_equals(event.error.name, 'SyntaxError');
 }, 'Test that NFCReader.start fails if NFCReaderOptions.url is invalid.');
 
 promise_test(async t => {
@@ -42,7 +42,7 @@ promise_test(async t => {
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
   reader.start();
   const event = await readerWatcher.wait_for("error");
-  assert_true(event.error.name === 'SyntaxError');
+  assert_equals(event.error.name, 'SyntaxError');
 }, 'Test that NFCReader.start fails if NFCReaderOptions.url has wrong protocol.');
 
 promise_test(async t => {

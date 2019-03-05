@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Cross-Origin header and nested navigable resource without such header</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+async_test(t => {
+  const frame = document.createElement("iframe");
+  t.step_timeout(() => { // Or does load fire for network errors?
+    assert_equals(frame.contentDocument, null); // Is this true for network errors? Ideally...
+  }, 250);
+  frame.src = "/common/blank.html";
+  document.body.append(frame);
+  assert_equals(frame.contentDocument.body.localName, "body");
+});
+</script>

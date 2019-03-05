@@ -279,6 +279,7 @@ class Chrome(BrowserSetup):
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
             # TODO(foolip): remove after unified plan is enabled on Chrome stable
             kwargs["binary_args"].append("--enable-features=RTCUnifiedPlanByDefault")
+            kwargs["binary_args"].append("--enable-blink-features=LayoutNG")
 
         # Allow audio autoplay without a user gesture.
         kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")

@@ -39,4 +39,18 @@
     await document.exitFullscreen();
     iframe.remove();
   }, "Browsing contexts test");
+
+  promise_test(async t => {
+    const iframe = await makeIFrame();
+    const currentOrientation = screen.orientation.type;
+    const isPortrait = currentOrientation.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    await iframe.contentWindow.screen.orientation.lock(newOrientation);
+    window.location.href = "https://not-web-platform.test:8443";
+    assert_equals(
+    screen.orientation.type,
+    newOrientation,
+    "Navigating from iframe to new top-level browsing context does not result in an orientation change"
+    );
+  }, "Iframe navigation test");
 </script>

@@ -124,7 +124,7 @@ promise_test(t => {
   controller.abort();
   assert_true(controller.signal.aborted);
   return promise_rejects(t, 'AbortError', writer.push(test_text_data, { signal: controller.signal }));
-}, "NFCWriter.push should fail if signal’s aborted flag is set.");
+}, "NFCWriter.push should fail if signal's aborted flag is set.");
 
 promise_test(t => {
   const writer = new NFCWriter();

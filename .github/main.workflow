@@ -4,13 +4,13 @@ workflow "Manifest" {
 }
 
 action "Update manifest" {
-  uses = "docker://python:2.7-slim"
+  uses = "./tools/ci/actions/upload_manifest"
   runs = "./wpt manifest"
 }
 
 action "Verify manifest" {
   needs = "Update manifest"
-  uses = "docker://python:2.7-slim"
+  uses = "./tools/ci/actions/upload_manifest"
   runs = "ls -l MANIFEST.json"
 }
 
@@ -22,7 +22,7 @@ action "Filter master" {
 
 action "Tag master" {
   needs = "Filter master"
-  uses = "docker://python:2.7-slim"
+  uses = "./tools/ci/actions/upload_manifest"
   runs = "python tools/ci/tag_master.py"
   secrets = ["GITHUB_TOKEN"]
 }

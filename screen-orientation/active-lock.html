@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+  promise_test(async t => {
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const fragment = document.createElement("p");
+    fragment.id = "fragment";
+    document.body.appendChild(fragment);
+    const preType = screen.orientation.type;
+    const isPortrait = preType.includes("portrait");
+    const newType = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    await screen.orientation.lock(newType);
+    window.location.href = "#fragment";
+    assert_equals(
+    screen.orientation.type,
+    newType,
+    "If locked, fragment navigation does not result in an orientation change"
+    );
+    window.location.href = "https://not-web-platform.test:8443";
+    assert_equals(
+    screen.orientation.type,
+    newType,
+    "Navigating to new top-level browsing context does not result in an orientation change"
+    );
+  }, "Active orientation lock tests");
+</script>

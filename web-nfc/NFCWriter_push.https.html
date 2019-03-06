@@ -82,7 +82,7 @@ promise_test(t => {
       promise_rejects(t, new TypeError(), writer.push(message)));
   });
   return Promise.all(promises);
-}, "Test that promise is rejected with TypeError if NDEFMessageSource is invalid.");
+}, "Test that promise is rejected with TypeError if NDEFMessage is invalid.");
 
 promise_test(t => {
   const writer = new NFCWriter();
@@ -97,10 +97,19 @@ promise_test(t => {
 promise_test(t => {
   const writer = new NFCWriter();
   const controller = new AbortController();
-  const p = writer.push(test_text_data, { signal: controller.signal })
+  const p = writer.push(test_text_data, { signal: controller.signal });
   controller.abort();
   return promise_rejects(t, 'NoModificationAllowedError', p);
 }, "NFCWriter.push should fail if the instance has already initiated NFC data transfer.");
+
+promise_test(t => {
+  const writer = new NFCWriter();
+  const controller = new AbortController();
+  assert_false(controller.signal.aborted);
+  controller.abort();
+  assert_true(controller.signal.aborted);
+  return promise_rejects(t, 'AbortError', writer.push(test_text_data, { signal: controller.signal }));
+}, "NFCWriter.push should fail if signal's aborted flag is set.");
 
 promise_test(t => {
   const writer = new NFCWriter();
@@ -116,15 +125,6 @@ promise_test(t => {
   const writer = new NFCWriter();
   return promise_rejects(t, 'TimeoutError', writer.push(test_text_data, { timeout: 1 }));
 }, "NFCWriter.push should fail with TimeoutError when timer expires.");
-
-promise_test(t => {
-  const writer = new NFCWriter();
-  const controller = new AbortController();
-  assert_false(controller.signal.aborted);
-  controller.abort();
-  assert_true(controller.signal.aborted);
-  return promise_rejects(t, 'AbortError', writer.push(test_text_data, { signal: controller.signal }));
-}, "NFCWriter.push should fail if signal's aborted flag is set.");
 
 promise_test(t => {
   const writer = new NFCWriter();

@@ -28,30 +28,6 @@ promise_test(async t => {
 }, 'Test that nfc watch success if NFC HW is enable.');
 
 promise_test(async t => {
-  const reader = new NFCReader({url: "www.a.com"});
-  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-  reader.start();
-  const event = await readerWatcher.wait_for("error");
-  assert_equals(event.error.name, 'SyntaxError');
-}, 'Test that NFCReader.start fails if NFCReaderOptions.url is missing components.');
-
-promise_test(async t => {
-  const reader = new NFCReader({url: "invalid"});
-  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-  reader.start();
-  const event = await readerWatcher.wait_for("error");
-  assert_equals(event.error.name, 'SyntaxError');
-}, 'Test that NFCReader.start fails if NFCReaderOptions.url is invalid.');
-
-promise_test(async t => {
-  const reader = new NFCReader({url: "http://a.com"});
-  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-  reader.start();
-  const event = await readerWatcher.wait_for("error");
-  assert_equals(event.error.name, 'SyntaxError');
-}, 'Test that NFCReader.start fails if NFCReaderOptions.url has wrong protocol.');
-
-promise_test(async t => {
   const reader = new NFCReader({url: "https://a.com"});
   const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
   reader.start();

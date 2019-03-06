@@ -1,6 +1,6 @@
 workflow "Manifest" {
   on = "push"
-  resolves = ["Verify manifest", "Upload manifest"]
+  resolves = "Upload manifest"
 }
 
 action "Update manifest" {
@@ -15,12 +15,13 @@ action "Verify manifest" {
 }
 
 action "Filter master" {
+  needs = "Verify manifest"
   uses = "actions/bin/filter@master"
   args = "branch master"
 }
 
 action "Tag master" {
-  needs = ["Update manifest", "Filter master"]
+  needs = "Filter master"
   uses = "docker://python:2.7-slim"
   runs = "python tools/ci/tag_master.py"
   secrets = ["GITHUB_TOKEN"]

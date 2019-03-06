@@ -4,37 +4,39 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<iframe id="testIframe" src="resources/iframe-lock.html" allowfullscreen="true">
-</iframe>
-
 <script>
+  async function makeIFrame(src = "about:blank") {
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    await new Promise(r => {
+      if (iframe.contentDocument.readyState === "complete") {
+        return r(); // it's loaded
+      }
+      iframe.onload = r;
+    });
+    return iframe;
+  }
+
   promise_test(async t => {
-    async function lock() {
-      await test_driver.bless("request full screen", () => {
-        return document.documentElement.requestFullscreen();
-      });
-      const currentOrientation = screen.orientation.type;
-      const isPortrait = currentOrientation.includes("portrait");
-      const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
-      await screen.orientation.lock(newOrientation);
-      return document.exitFullscreen;
-    }
-    const iframe = window.frames["testIframe"];
-    await iframe.requestFullscreen();
-    const iframeOrientation = iframe.contentWindow.screen.orientation.type;
-    const iframePortrait = iframeOrientation.includes("portrait");
-    const newFrameOrientation = `${
-      iframePortrait ? "landscape" : "portrait"
-    }-primary`;
-    window.onload = lock();
-    promise_rejects(
+    const iframe = await makeIFrame();
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const currentOrientation = screen.orientation.type;
+    const isPortrait = currentOrientation.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}`;
+    const promiseToLockIFrame = iframe.contentWindow.screen.orientation.lock(
+      `${newOrientation}-secondary`
+    );
+    await screen.orientation.lock(`${newOrientation}-primary`);
+    await promise_rejects(
       t,
       "AbortError",
-      iframe.contentWindow.screen.orientation.lock(newFrameOrientation),
+      promiseToLockIFrame,
       "Descendant browsing context's pending promise is rejected"
     );
     screen.orientation.unlock();
-    return document.exitFullscreen();
+    await document.exitFullscreen();
+    iframe.remove();
   }, "Browsing contexts test");
 </script>
-

@@ -82,7 +82,7 @@ promise_test(t => {
       promise_rejects(t, new TypeError(), writer.push(message)));
   });
   return Promise.all(promises);
-}, "Test that promise is rejected with TypeError if NDEFMessage is invalid.");
+}, "Test that promise is rejected with TypeError if NDEFMessageSource is invalid.");
 
 promise_test(t => {
   const writer = new NFCWriter();
@@ -92,7 +92,7 @@ promise_test(t => {
       promise_rejects(t, 'SyntaxError', writer.push(message)));
   });
   return Promise.all(promises);
-}, "'Test that promise is rejected with SyntaxError if NDEFMessage contains invalid records.");
+}, "'Test that promise is rejected with SyntaxError if NDEFMessageSource contains invalid records.");
 
 promise_test(t => {
   const writer = new NFCWriter();

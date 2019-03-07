@@ -440,6 +440,21 @@ class Chrome(Browser):
 
         return "%s%s" % (platform, bits)
 
+    def chromium_platform_string(self):
+        platform = {
+            "Linux": "Linux",
+            "Windows": "Win",
+            "Darwin": "Mac"
+        }.get(uname[0])
+
+        if platform is None:
+            raise ValueError("Unable to construct a valid Chromium package name for current platform")
+
+        if (platform == "Linux" or platform == "Win") and uname[4] == "x86_64":
+            platform += "_x64"
+
+        return platform
+
     def find_binary(self, venv_path=None, channel=None):
         raise NotImplementedError
 
@@ -465,15 +480,23 @@ class Chrome(Browser):
                     except requests.RequestException:
                         pass
         if latest is None:
-            latest = get("https://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
-        url = "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (latest,
-                                                                                     self.platform_string())
-        unzip(get(url).raw, dest)
+            # Fall back to the tip-of-tree *Chromium* build.
+            latest_url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/LAST_CHANGE" % (
+                self.chromium_platform_string())
+            latest = get(latest_url).text.strip()
+            url = "https://storage.googleapis.com/chromium-browser-snapshots/%s/%s/chromedriver_%s.zip" % (
+                self.chromium_platform_string(), latest, self.platform_string())
+        else:
+            url = "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
+                latest, self.platform_string())
 
-        path = find_executable("chromedriver", dest)
-        st = os.stat(path)
-        os.chmod(path, st.st_mode | stat.S_IEXEC)
-        return path
+        self.logger.info("Downloading ChromeDriver from %s" % url)
+        unzip(get(url).raw, dest)
+        chromedriver_dir = os.path.join(dest, 'chromedriver_%s' % self.platform_string())
+        if os.path.isfile(os.path.join(chromedriver_dir, "chromedriver")):
+            shutil.move(os.path.join(chromedriver_dir, "chromedriver"), dest)
+            shutil.rmtree(chromedriver_dir)
+        return find_executable("chromedriver", dest)
 
     def version(self, binary=None, webdriver_binary=None):
         binary = binary or self.binary
@@ -483,7 +506,7 @@ class Chrome(Browser):
             except subprocess.CalledProcessError:
                 self.logger.warning("Failed to call %s", binary)
                 return None
-            m = re.match(r"Google Chrome (.*)", version_string)
+            m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
             if not m:
                 self.logger.warning("Failed to extract version from: %s", version_string)
                 return None

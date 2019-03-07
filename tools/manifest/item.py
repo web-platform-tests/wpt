@@ -144,7 +144,7 @@ class TestharnessTest(URLManifestItem):
         return (self.timeout, self.testdriver, self.jsshell, script_metadata)
 
     def to_json(self):
-        rv = URLManifestItem.to_json(self)
+        rv = super(TestharnessTest, self).to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
         if self.testdriver:
@@ -262,7 +262,7 @@ class WebDriverSpecTest(URLManifestItem):
         return self._extras.get("timeout")
 
     def to_json(self):
-        rv = URLManifestItem.to_json(self)
+        rv = super(WebDriverSpecTest, self).to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
         return rv

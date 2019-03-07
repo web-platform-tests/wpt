@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+  promise_test(async t => {
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const pMustReject = screen.orientation.lock("landscape");
+    const pMustResolve = new Promise(r => {
+      screen.orientation.onchange = async () => {
+        await orientation.lock("any");
+        r();
+      };
+    });
+    await promise_rejects(t, new TypeError(), pMustReject);
+    await pMustResolve;
+  }, "Event must fire before orientationPendingPromise resolves");
+
+  promise_test(async t => {
+    await document.documentElement.requestFullscreen();
+    const pMustReject = screen.orientation.lock("landscape");
+    const pMustResolve = new Promise(r => {
+      screen.orientation.onchange = async () => {
+        screen.orientation.unlock();
+        r();
+      };
+    });
+    await promise_rejects(t, new TypeError(), pMustReject);
+    await pMustResolve;
+  }, "Event must fire before orientationPendingPromise resolves");
+</script>

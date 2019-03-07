@@ -12,20 +12,10 @@
     fragment.id = "fragment";
     document.body.appendChild(fragment);
     const preType = screen.orientation.type;
-    const isPortrait = preType.includes("portrait");
+    const isPortrait = preType.startsWith("portrait");
     const newType = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await screen.orientation.lock(newType);
+    screen.orientation.onchange = t.unreached_func("change event should not be fired"); 
     window.location.href = "#fragment";
-    assert_equals(
-    screen.orientation.type,
-    newType,
-    "If locked, fragment navigation does not result in an orientation change"
-    );
-    window.location.href = "https://not-web-platform.test:8443";
-    assert_equals(
-    screen.orientation.type,
-    newType,
-    "Navigating to new top-level browsing context does not result in an orientation change"
-    );
-  }, "Active orientation lock tests");
+  }, "Fragment navigation test: orientation should not change");
 </script>

@@ -1,16 +1,3 @@
-hosts_fixup() {
-    echo "travis_fold:start:hosts_fixup"
-    echo "Rewriting hosts file"
-    echo "## /etc/hosts ##"
-    cat /etc/hosts
-    sudo sed -i 's/^::1\s*localhost/::1/' /etc/hosts
-    ./wpt make-hosts-file | sudo tee -a /etc/hosts
-    echo "== /etc/hosts =="
-    cat /etc/hosts
-    echo "----------------"
-    echo "travis_fold:end:hosts_fixup"
-}
-
 install_chrome() {
     channel=$1
     deb_archive=google-chrome-${channel}_current_amd64.deb
@@ -29,7 +16,7 @@ install_chrome() {
     # When this occurs, attempt to use the system package manager to fetch the
     # required packages and retry.
     if ! sudo dpkg --install $deb_archive; then
-      sudo apt-get install --fix-broken
+      sudo apt-get install -qqy --fix-broken
       sudo dpkg --install $deb_archive
     fi
 }

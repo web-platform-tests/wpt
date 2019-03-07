@@ -21,6 +21,6 @@
       assert_equals(otherW.opener, null); // Ensure browsing context is discarded
       assert_equals(otherW[windowProxySelfReference], otherW);
       t.done();
-    }, 250);
+    }, 500);
   }, `popupWindow.${windowProxySelfReference} before, after closing, and after discarding`)
 });

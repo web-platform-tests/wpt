@@ -184,7 +184,7 @@ class RefTestBase(URLManifestItem):
         return (self.timeout, self.viewport_size, self.dpi)
 
     def to_json(self):
-        rv = [self.url, self.references, {}]
+        rv = [self._url, self.references, {}]
         extras = rv[-1]
         if self.timeout is not None:
             extras["timeout"] = self.timeout

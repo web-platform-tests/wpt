@@ -6,7 +6,6 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/nfc_help.js"></script>
 <meta name="flags" content="interact">
 
 <p>Tap an NFC tag to the test device with NFC support.</p>
@@ -25,7 +24,7 @@ promise_test(async t => {
   reader.start();
   const event = await readerWatcher.wait_for("reading");
   assert_true(event instanceof NFCReadingEvent);
-}, 'Test that nfc watch success if NFC HW is enable.');
+}, 'Test that nfc watch success if NFC HW is enabled.');
 
 promise_test(async t => {
   const reader = new NFCReader({url: "https://a.com"});

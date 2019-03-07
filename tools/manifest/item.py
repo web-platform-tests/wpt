@@ -70,7 +70,7 @@ class URLManifestItem(ManifestItem):
         super(URLManifestItem, self).__init__(tests_root, path)
         self.url_base = url_base
         self._url = url
-        self._extras = extras or {}
+        self._extras = extras
 
     @property
     def _source_file(self):

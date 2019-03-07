@@ -84,6 +84,14 @@ class URLManifestItem(ManifestItem):
 
     @property
     def url(self):
+        # we can outperform urljoin, because we know we just have path relative URLs
+        if self._url[0] == "/":
+            # TODO: MANIFEST6
+            # this is actually a bug in older generated manifests, _url shouldn't
+            # be an absolute path
+            return self._url
+        if self.url_base == "/":
+            return "/" + self._url
         return urljoin(self.url_base, self._url)
 
     @property
@@ -125,6 +133,7 @@ class TestharnessTest(URLManifestItem):
         if "script_metadata" in self._extras:
             return self._extras["script_metadata"]
         else:
+            # TODO: MANIFEST6
             # this branch should go when the manifest version is bumped
             return self._source_file.script_metadata
 

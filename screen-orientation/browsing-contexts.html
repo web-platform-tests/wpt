@@ -42,18 +42,22 @@
 
   promise_test(async t => {
     const iframe = await makeIFrame();
+    const promiseToChange = new Promise(resolve => {
+      screen.orientation.addEventListener("change", resolve);
+    });
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const currentOrientation = screen.orientation.type;
-    const isPortrait = currentOrientation.includes("portrait");
+    const originalOrientation = screen.orientation.type;
+    const isPortrait = originalOrientation.startsWith("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await iframe.contentWindow.screen.orientation.lock(newOrientation);
     window.location.href = "https://not-web-platform.test:8443";
+    await promiseToChange;
     assert_equals(
-    screen.orientation.type,
-    newOrientation,
-    "Navigating from iframe to new top-level browsing context does not result in an orientation change"
+      screen.orientation.type,
+      originalOrientation,
+      "Navigating from iframe to new top-level browsing context unlocks orientation"
     );
     screen.orientation.unlock();
     await document.exitFullscreen();

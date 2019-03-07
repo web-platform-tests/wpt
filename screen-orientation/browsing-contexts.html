@@ -10,7 +10,7 @@
     document.body.appendChild(iframe);
     await new Promise(r => {
       if (iframe.contentDocument.readyState === "complete") {
-        return r(); // it's loaded
+        return r(); 
       }
       iframe.onload = r;
     });
@@ -22,7 +22,7 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const currentOrientation = screen.orientation.type;
+    const { type: currentOrientation } = screen.orientation.type;
     const isPortrait = currentOrientation.includes("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}`;
     const promiseToLockIFrame = iframe.contentWindow.screen.orientation.lock(
@@ -48,7 +48,7 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const originalOrientation = screen.orientation.type;
+    const { type: originalOrientation } = screen.orientation.type;
     const isPortrait = originalOrientation.startsWith("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await iframe.contentWindow.screen.orientation.lock(newOrientation);

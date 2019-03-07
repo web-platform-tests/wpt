@@ -11,11 +11,13 @@
     const fragment = document.createElement("p");
     fragment.id = "fragment";
     document.body.appendChild(fragment);
-    const preType = screen.orientation.type;
+    const { type: preType } = screen.orientation;
     const isPortrait = preType.startsWith("portrait");
     const newType = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await screen.orientation.lock(newType);
-    screen.orientation.onchange = t.unreached_func("change event should not be fired"); 
+    screen.orientation.onchange = t.unreached_func(
+      "change event should not be fired"
+    );
     window.location.href = "#fragment";
   }, "Fragment navigation test: orientation should not change");
 </script>

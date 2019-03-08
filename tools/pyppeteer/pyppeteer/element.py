@@ -46,8 +46,23 @@ class Element(object):
         })
 
     def send_keys(self, text):
-        self._session._send('DOM.focus', {  # API status: stable
-            'objectId': self._remote_object_id
+        # Existing tests in WPT have been written to focus on the document
+        # body. Because this is not a focusable element, the `DOM.focus` method
+        # cannot be used. Instead, invoke the `focus` method, which has roughly
+        # the same semantics as the relevant step in the WebDriver "Element
+        # Send Keys" command.
+        #
+        # https://w3c.github.io/webdriver/#element-send-keys
+        self._session._send('Runtime.callFunctionOn', {  # API status: stable
+            'functionDeclaration': '''
+            function focus(target) {
+              if (target !== document.activeElement) {
+                target.focus();
+              }
+            }
+            ''',
+            'objectId': self._remote_object_id,
+            'arguments': [{'objectId': self._remote_object_id}]
         })
 
         for char in text:

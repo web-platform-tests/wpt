@@ -1,9 +1,3 @@
-import os
-
-_HERE = os.path.dirname(__file__)
-with open(os.path.join(_HERE, 'scripts', 'focus.js')) as handle:
-    _focus_script = handle.read()
-
 class Element(object):
     def __init__(self, session, remote_object_id):
         self._session = session
@@ -52,10 +46,8 @@ class Element(object):
         })
 
     def send_keys(self, text):
-        self._session._send('Runtime.callFunctionOn', {  # API status: stable
-            'functionDeclaration': _focus_script,
-            'objectId': self._remote_object_id,
-            'arguments': [{'objectId': self._remote_object_id}]
+        self._session._send('DOM.focus', {  # API status: stable
+            'objectId': self._remote_object_id
         })
 
         for char in text:

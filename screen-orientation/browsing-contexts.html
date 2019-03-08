@@ -63,4 +63,27 @@
     await document.exitFullscreen();
     iframe.remove();
   }, "Iframe navigation test");
+
+  promise_test(async t => {
+    const promiseToChange = new Promise(resolve => {
+      screen.orientation.addEventListener("change", resolve);
+    });
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const { type: originalOrientation } = screen.orientation.type;
+    const isPortrait = originalOrientation.startsWith("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    await screen.orientation.lock('newOrientation');
+    window.open("https://not-web-platform.test:8443","popup test","width=500,height=300");
+    await promiseToChange;
+    assert_equals(
+      screen.orientation.type,
+      originalOrientation,
+      "Opening pop-up screen unlocks orientation"
+    );
+    screen.orientation.unlock();
+    window.close();
+    await document.exitFullscreen();
+  }, "Opening pop-up window test");
 </script>

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+export RUN_JOB=1
+
 if [[ $RUN_JOB -eq 1 ]] || ./wpt test-jobs --includes $JOB; then
     export RUN_JOB=1
     git submodule update --init --recursive 1>&2

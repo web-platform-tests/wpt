@@ -15,7 +15,7 @@ try:
 except ImportError:
     fast_json = json
 
-CURRENT_VERSION = 5
+CURRENT_VERSION = 6
 
 
 class ManifestError(Exception):

@@ -16,7 +16,7 @@ except ImportError:
     import json
     JSON_LIBRARY = 'json'
 
-CURRENT_VERSION = 5
+CURRENT_VERSION = 6
 
 
 class ManifestError(Exception):

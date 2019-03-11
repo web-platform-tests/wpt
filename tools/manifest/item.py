@@ -73,12 +73,6 @@ class URLManifestItem(ManifestItem):
         self._extras = extras
 
     @property
-    def _source_file(self):
-        """create a SourceFile for the item"""
-        from .sourcefile import SourceFile
-        return SourceFile(self._tests_root, self.path, self.url_base)
-
-    @property
     def id(self):
         return self.url
 
@@ -130,12 +124,7 @@ class TestharnessTest(URLManifestItem):
 
     @property
     def script_metadata(self):
-        if "script_metadata" in self._extras:
-            return self._extras["script_metadata"]
-        else:
-            # TODO: MANIFEST6
-            # this branch should go when the manifest version is bumped
-            return self._source_file.script_metadata
+        return self._extras.get("script_metadata")
 
     def meta_key(self):
         script_metadata = self.script_metadata
@@ -151,8 +140,7 @@ class TestharnessTest(URLManifestItem):
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:
             rv[-1]["jsshell"] = True
-        if self.script_metadata is not None:
-            # we store this even if it is [] to avoid having to read the source file
+        if self.script_metadata:
             rv[-1]["script_metadata"] = self.script_metadata
         return rv
 

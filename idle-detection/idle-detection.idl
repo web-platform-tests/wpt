@@ -10,6 +10,7 @@ WorkerNavigator includes NavigatorIdle;
   SecureContext,
   Exposed=(Window,Worker)
 ] interface IdleManager {
+  [MeasureAs=kIdleDetectionQuery]
   Promise<IdleStatus> query(optional IdleOptions options);
 };
 

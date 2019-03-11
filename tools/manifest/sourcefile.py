@@ -13,7 +13,7 @@ except ImportError:
 import html5lib
 
 from . import XMLParser
-from .item import Stub, ManualTest, WebDriverSpecTest, RefTestNode, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
+from .item import Stub, ManualTest, WebDriverSpecTest, RefTest, RefTestNode, TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest
 from .utils import ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
@@ -812,6 +812,20 @@ class SourceFile(object):
                     testdriver=testdriver,
                     script_metadata=self.script_metadata
                 ))
+
+        elif self.content_is_ref_node and not self.name_is_reference:
+            rv = RefTest.item_type, [
+                RefTest(
+                    self.tests_root,
+                    self.rel_path,
+                    self.url_base,
+                    self.rel_url,
+                    references=self.references,
+                    timeout=self.timeout,
+                    viewport_size=self.viewport_size,
+                    dpi=self.dpi,
+                    fuzzy=self.fuzzy
+                )]
 
         elif self.content_is_ref_node:
             rv = RefTestNode.item_type, [

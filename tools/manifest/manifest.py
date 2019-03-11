@@ -251,25 +251,17 @@ class Manifest(object):
         unusual API is designed as an optimistaion meaning that SourceFile items need not be
         constructed in the case we are not updating a path, but the absence of an item from
         the iterator may be used to remove defunct entries from the manifest."""
-        reftest_nodes = []
         seen_files = set()
 
         changed = False
-        reftest_changes = False
 
         prev_files = self._data.paths()
-
-        reftest_types = ("reftest", "reftest_node")
 
         for source_file, update in tree:
             if not update:
                 rel_path = source_file
                 seen_files.add(rel_path)
                 assert rel_path in self._path_hash
-                old_hash, old_type = self._path_hash[rel_path]
-                if old_type in reftest_types:
-                    manifest_items = self._data[old_type][rel_path]
-                    reftest_nodes.extend((item, old_hash) for item in manifest_items)
             else:
                 rel_path = source_file.rel_path
                 seen_files.add(rel_path)
@@ -286,25 +278,12 @@ class Manifest(object):
                         hash_changed = True
                         if new_type != old_type:
                             del self._data[old_type][rel_path]
-                            if old_type in reftest_types:
-                                reftest_changes = True
-                    else:
-                        new_type = old_type
-                        if old_type in reftest_types:
-                            manifest_items = self._data[old_type][rel_path]
                 else:
                     new_type, manifest_items = source_file.manifest_items()
 
-                if new_type in reftest_types:
-                    reftest_nodes.extend((item, file_hash) for item in manifest_items)
-                    if is_new or hash_changed:
-                        reftest_changes = True
-                elif is_new or hash_changed:
-                    self._data[new_type][rel_path] = set(manifest_items)
-
-                self._path_hash[rel_path] = (file_hash, new_type)
-
                 if is_new or hash_changed:
+                    self._data[new_type][rel_path] = set(manifest_items)
+                    self._path_hash[rel_path] = (file_hash, new_type)
                     changed = True
 
         deleted = prev_files - seen_files
@@ -313,8 +292,6 @@ class Manifest(object):
             for rel_path in deleted:
                 if rel_path in self._path_hash:
                     _, old_type = self._path_hash[rel_path]
-                    if old_type in reftest_types:
-                        reftest_changes = True
                     del self._path_hash[rel_path]
                     try:
                         del self._data[old_type][rel_path]
@@ -325,42 +302,7 @@ class Manifest(object):
                         if rel_path in test_data:
                             del test_data[rel_path]
 
-        if reftest_changes:
-            reftests, reftest_nodes, changed_hashes = self._compute_reftests(reftest_nodes)
-            self._data["reftest"].data = reftests
-            self._data["reftest_node"].data = reftest_nodes
-            self._path_hash.update(changed_hashes)
-
         return changed
-
-    def _compute_reftests(self, reftest_nodes):
-        self._reftest_nodes_by_url = {}
-        has_inbound = set()
-        for item, _ in reftest_nodes:
-            for ref_url, ref_type in item.references:
-                has_inbound.add(ref_url)
-
-        reftests = defaultdict(set)
-        references = defaultdict(set)
-        changed_hashes = {}
-
-        for item, file_hash in reftest_nodes:
-            if item.url in has_inbound:
-                # This is a reference
-                if isinstance(item, RefTest):
-                    item = item.to_RefTestNode()
-                    changed_hashes[item.path] = (file_hash,
-                                                 item.item_type)
-                references[item.path].add(item)
-            else:
-                if isinstance(item, RefTestNode):
-                    item = item.to_RefTest()
-                    changed_hashes[item.path] = (file_hash,
-                                                 item.item_type)
-                reftests[item.path].add(item)
-            self._reftest_nodes_by_url[item.url] = item
-
-        return reftests, references, changed_hashes
 
     def to_json(self):
         out_items = {

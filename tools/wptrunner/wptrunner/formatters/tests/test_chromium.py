@@ -4,10 +4,10 @@ import time
 from os.path import dirname, join
 from StringIO import StringIO
 
-from formatters import chromium
 from mozlog import handlers, structuredlog
 
 sys.path.insert(0, join(dirname(__file__), "..", ".."))
+from formatters import chromium
 
 
 def test_chromium_required_fields(capfd):
@@ -21,7 +21,6 @@ def test_chromium_required_fields(capfd):
     # output a bunch of stuff
     logger.suite_start(["test-id-1"], run_info={}, time=123)
     logger.test_start("test-id-1")
-    time.sleep(0.125)
     logger.test_end("test-id-1", status="PASS", expected="PASS")
     logger.suite_end()
 

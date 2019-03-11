@@ -1,6 +1,5 @@
 import json
 import sys
-import time
 from os.path import dirname, join
 from StringIO import StringIO
 

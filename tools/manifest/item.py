@@ -68,7 +68,9 @@ class URLManifestItem(ManifestItem):
 
     def __init__(self, tests_root, path, url_base, url, **extras):
         super(URLManifestItem, self).__init__(tests_root, path)
+        assert url_base[0] == "/"
         self.url_base = url_base
+        assert url[0] != "/"
         self._url = url
         self._extras = extras
 
@@ -79,11 +81,6 @@ class URLManifestItem(ManifestItem):
     @property
     def url(self):
         # we can outperform urljoin, because we know we just have path relative URLs
-        if self._url[0] == "/":
-            # TODO: MANIFEST6
-            # this is actually a bug in older generated manifests, _url shouldn't
-            # be an absolute path
-            return self._url
         if self.url_base == "/":
             return "/" + self._url
         return urljoin(self.url_base, self._url)

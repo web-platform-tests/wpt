@@ -5,7 +5,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-  async function makeIFrame(src = "about:blank") {
+  async function makeIFrame(src = "./resources/blank.html") {
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
     await new Promise(r => {
@@ -22,19 +22,20 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const { type: currentOrientation } = screen.orientation.type;
+    const { type: currentOrientation } = screen.orientation;
     const isPortrait = currentOrientation.includes("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}`;
     const promiseToLockIFrame = iframe.contentWindow.screen.orientation.lock(
       `${newOrientation}-secondary`
     );
-    await screen.orientation.lock(`${newOrientation}-primary`);
+    const p = screen.orientation.lock(`${newOrientation}-primary`);
     await promise_rejects(
       t,
       "AbortError",
       promiseToLockIFrame,
       "Descendant browsing context's pending promise is rejected"
     );
+    await p;
     screen.orientation.unlock();
     await document.exitFullscreen();
     iframe.remove();
@@ -48,7 +49,7 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const { type: originalOrientation } = screen.orientation.type;
+    const { type: originalOrientation } = screen.orientation;
     const isPortrait = originalOrientation.startsWith("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
     await iframe.contentWindow.screen.orientation.lock(newOrientation);
@@ -62,7 +63,7 @@
     screen.orientation.unlock();
     await document.exitFullscreen();
     iframe.remove();
-  }, "Iframe navigation test");
+  }, "Navigating a nested browsing context causes the orientation to unlock()");
 
   promise_test(async t => {
     const promiseToChange = new Promise(resolve => {
@@ -71,11 +72,13 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const { type: originalOrientation } = screen.orientation.type;
+    const { type: originalOrientation } = screen.orientation;
     const isPortrait = originalOrientation.startsWith("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
-    await screen.orientation.lock('newOrientation');
-    window.open("https://not-web-platform.test:8443","popup test","width=500,height=300");
+    const popWindow = window.open("./resources/blank.html","popup test","width=500,height=300");
+    popWindow.onload = function navigation() {
+      popWindow.location.href = "https://not-web-platform.test:8443"
+    }
     await promiseToChange;
     assert_equals(
       screen.orientation.type,

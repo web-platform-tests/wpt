@@ -7,6 +7,7 @@
 <script>
   function loadIframe(src = "about:blank") {
     const iframe = document.createElement("iframe");
+    iframe.src = src;
     document.body.appendChild(iframe);
     return new Promise(r => {
       if (iframe.contentDocument.readyState === "complete") {

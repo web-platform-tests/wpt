@@ -3,13 +3,9 @@
 <body>
 <script>
     const url = '{{location[scheme]}}://{{host}}:{{ports[http][1]}}/resource-timing/resources/TAOResponse.py?tao=origin_port_{{ports[http][1]}}';
-    let observe = (list, observer) => {
-        let entry = list.getEntries()[0];
-        if (!entry) {
-            window.top.postMessage("FAIL - no entry", '*');
-            return;
-        }
-        let sum = entry.redirectStart +
+    const observe = (list, observer) => {
+        const entry = list.getEntries()[0];
+        const sum = entry.redirectStart +
                   entry.redirectEnd +
                   entry.domainLookupStart +
                   entry.domainLookupEnd +
@@ -22,7 +18,7 @@
                   entry.encodedBodySize +
                   entry.decodedBodySize;
 
-        let result = sum == 0 ? 'PASS' : 'FAIL';
+        const result = sum == 0 ? 'PASS' : 'FAIL';
         window.top.postMessage(result, '*');
     }
     let observer = new PerformanceObserver(observe);

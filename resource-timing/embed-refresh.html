@@ -5,27 +5,10 @@
 <title>Resource Timing embed refresh</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/nested-contexts.js"></script>
 <script>
     let t = async_test("Test that an HTML embed refreshes are not observable by the parent");
-    const pre_refresh_url = new URL("resources/document-that-refreshes.html", location).href;
-    const post_refresh_url = new URL("resources/document-refreshed.html", location).href;
-    function verify_embed_refresh_not_observable() {
-        let entries = performance.getEntriesByType("resource");
-        let found_first_embed = false;
-        for (entry of entries) {
-            if (entry.name == pre_refresh_url) {
-                found_first_embed = true;
-            }
-            assert_not_equals(entry.name, post_refresh_url, "Refreshed embed should not be observable");
-        }
-        assert_true(found_first_embed, "Initial embed should be observable");
-        t.done();
-    }
-    window.addEventListener("message", t.step_func(e=>{
-        if (e.data == "refreshed") {
-            verify_embed_refresh_not_observable();
-        }
-    }));
+    setup_refresh_test(t);
 </script>
 <embed type="text/html">
 <script>

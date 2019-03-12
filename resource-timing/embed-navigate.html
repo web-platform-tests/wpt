@@ -5,27 +5,10 @@
 <title>Resource Timing embed navigate</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/nested-contexts.js"></script>
 <script>
     let t = async_test("Test that HTML embed navigates are not observable by the parent");
-    const pre_navigate_url = new URL("resources/document-that-navigates.html", location).href;
-    const post_navigate_url = new URL("resources/document-navigated.html", location).href;
-    function verify_embed_navigate_not_observable() {
-        let entries = performance.getEntriesByType("resource");
-        let found_first_embed = false;
-        for (entry of entries) {
-            if (entry.name == pre_navigate_url) {
-                found_first_embed = true;
-            }
-            assert_not_equals(entry.name, post_navigate_url, "Navigated embed should not be observable");
-        }
-        assert_true(found_first_embed, "Initial embed should be observable");
-        t.done();
-    }
-    window.addEventListener("message", t.step_func(e=>{
-        if (e.data == "navigated") {
-            verify_embed_navigate_not_observable();
-        }
-    }));
+    setup_navigate_test(t);
 </script>
 <embed type="text/html">
 <script>

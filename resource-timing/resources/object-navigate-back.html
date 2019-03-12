@@ -3,41 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <title>Resource Timing object navigate - back button navigation</title>
+<script src="nested-contexts.js"></script>
 <script>
-    const pre_navigate_url = new URL("document-that-navigates.html", location).href;
-    const post_navigate_url = new URL("document-navigated.html", location).href;
-    function verify_iframe_navigate_not_observable() {
-        let entries = performance.getEntriesByType("resource");
-        let found_first_iframe = false;
-        for (entry of entries) {
-            if (entry.name == pre_navigate_url) {
-                found_first_iframe = true;
-            }
-            if (entry.name == post_navigate_url) {
-                opener.postMessage("FAIL - navigated iframe exposed", "*");
-                return;
-            }
-        }
-        if (found_first_iframe) {
-            opener.postMessage("FAIL - first iframe exposed", "*");
-            return;
-        }
-        opener.postMessage("PASS", "*");
-    }
-    window.addEventListener("message", e=>{
-        if (e.data == "navigated") {
-            if (sessionStorage.navigated) {
-                delete sessionStorage.navigated;
-                verify_iframe_navigate_not_observable();
-            } else {
-                sessionStorage.navigated = true;
-                setTimeout(() => {
-                    history.pushState({}, "", "object-navigate-back.html");
-                    location.href="navigate_back.html";
-                }, 0);
-            }
-        }
-    });
+setup_back_navigation("object-navigate-back.html");
 </script>
 <object></object>
 <script>

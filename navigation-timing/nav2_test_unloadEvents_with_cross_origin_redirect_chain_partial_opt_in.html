@@ -10,7 +10,7 @@
         <script src="/common/utils.js"></script>
         <script>
 
-            var reload_frame;
+            let reload_frame;
 
             function onload_test()
             {
@@ -21,12 +21,12 @@
 
             function reload_the_frame()
             {
-                var destUrl_first = make_absolute_url({subdomain: "www",
+                const destUrl_first = make_absolute_url({subdomain: "www",
                                                  path: "/common/redirect-opt-in.py",
                                                  query: "location=" + make_absolute_url(
                                                              {path: "/navigation-timing/resources/blank_page_yellow.html"})
                                                  });
-                var destUrl = make_absolute_url({subdomain: "www",
+                const destUrl = make_absolute_url({subdomain: "www",
                                                  path: "/common/redirect.py",
                                                  query: "location=" + destUrl_first
                                                  });
@@ -35,7 +35,7 @@
 
             function do_test()
             {
-                var newNavTiming = document.getElementById("frameContext").contentWindow.performance.getEntriesByType("navigation")[0];
+                const newNavTiming = document.getElementById("frameContext").contentWindow.performance.getEntriesByType("navigation")[0];
                 assert_equals(newNavTiming.type, "navigate", "Expected navigation type to be navigate.");
                 assert_equals(newNavTiming.unloadEventStart, 0, "Expected unloadEventStart to be 0.");
                 assert_equals(newNavTiming.unloadEventEnd, 0, "Expected unloadEventEnd to be 0.");

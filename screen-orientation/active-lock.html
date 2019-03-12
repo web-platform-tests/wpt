@@ -14,10 +14,11 @@
     const { type: preType } = screen.orientation;
     const isPortrait = preType.startsWith("portrait");
     const newType = `${isPortrait ? "landscape" : "portrait"}-primary`;
-    await screen.orientation.lock(newType);
+    const p = screen.orientation.lock(newType);
     screen.orientation.onchange = t.unreached_func(
-      "change event should not be fired"
+      "change event must not fire"
     );
     window.location.href = "#fragment";
-  }, "Fragment navigation test: orientation should not change");
+    await p;
+  }, "When performing a fragment navigation, the orientation must not change or unlock");
 </script>

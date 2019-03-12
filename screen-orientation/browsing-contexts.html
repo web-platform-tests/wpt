@@ -5,20 +5,19 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-  async function makeIFrame(src = "about:blank") {
+  function loadIframe(src = "about:blank") {
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
-    await new Promise(r => {
+    return new Promise(r => {
       if (iframe.contentDocument.readyState === "complete") {
-        return r(); 
+        return r(iframe);
       }
-      iframe.onload = r;
+      iframe.onload = () => r(iframe);
     });
-    return iframe;
   }
 
   promise_test(async t => {
-    const iframe = await makeIFrame();
+    const iframe = await loadIframe();
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
@@ -41,7 +40,7 @@
   }, "Browsing contexts test");
 
   promise_test(async t => {
-    const iframe = await makeIFrame();
+    const iframe = await loadIframe();
     const promiseToChange = new Promise(resolve => {
       screen.orientation.addEventListener("change", resolve);
     });
@@ -74,8 +73,12 @@
     const { type: originalOrientation } = screen.orientation.type;
     const isPortrait = originalOrientation.startsWith("portrait");
     const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
-    await screen.orientation.lock('newOrientation');
-    window.open("https://not-web-platform.test:8443","popup test","width=500,height=300");
+    await screen.orientation.lock("newOrientation");
+    window.open(
+      "https://not-web-platform.test:8443",
+      "popup test",
+      "width=500,height=300"
+    );
     await promiseToChange;
     assert_equals(
       screen.orientation.type,

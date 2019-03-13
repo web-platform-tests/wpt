@@ -33,13 +33,10 @@ def set_default_log_formatter(kwargs):
     """When --verify is set and no default log formatter was set,
     set a default log formatter to mach and its value is sys.stdout.
     This is useful for ./wpt run --verify."""
-    log_formatters = ("raw", "unittest", "xunit", "html", "mach", "tbpl",
-                      "grouped", "errorsummary")
     is_formatter_set = False
     if kwargs.get("verify"):
-        for log_formatter in log_formatters:
+        for log_formatter in commandline.log_formatters:
             if kwargs.get("log_" + log_formatter):
-                is_formatter_set = True
                 return
         if not is_formatter_set:
             kwargs["log_mach"] = "-"

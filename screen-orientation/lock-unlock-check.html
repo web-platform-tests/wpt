@@ -4,13 +4,12 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
+  import { getOppositeOrientation } from "/screen-orientation/resources/orientation-utils.js";
   promise_test(async t => {
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const currentOrientation = screen.orientation.type;
-    const isPortrait = preType.includes("portrait");
-    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    const newOrientation = getOppositeOrientation();
     const pMustReject = screen.orientation.lock(newOrientation);
     const pMustResolve = new Promise(r => {
       screen.orientation.onchange = async () => {
@@ -22,15 +21,13 @@
     await pMustResolve;
     screen.orientation.unlock();
     return document.exitFullscreen();
-  }, "Event must fire before orientationPendingPromise resolves");
+  }, "Event must fire, locking screen orientation before orientationPendingPromise resolves");
 
   promise_test(async t => {
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const currentOrientation = screen.orientation.type;
-    const isPortrait = preType.includes("portrait");
-    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    const newOrientation = getOppositeOrientation();
     const pMustReject = screen.orientation.lock(newOrientation);
     const pMustResolve = new Promise(r => {
       screen.orientation.onchange = async () => {
@@ -42,5 +39,5 @@
     await pMustResolve;
     screen.orientation.unlock();
     return document.exitFullscreen();
-  }, "Event must fire before orientationPendingPromise resolves");
+  }, "Event must fire, unlocking screen orientation before orientationPendingPromise resolves");
 </script>

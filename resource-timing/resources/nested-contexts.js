@@ -1,6 +1,6 @@
 let destination = location;
 if (location.search == "?crossorigin") {
-    host_info = get_host_info()
+    const host_info = get_host_info()
     destination = location.protocol + "//" + host_info["REMOTE_HOST"] + ":" + location.port;
 }
 

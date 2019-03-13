@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>IDBCursor.request</title>
+<link rel="author" href="mailto:jakearchibald@chromium.org" title="Jake Archibald">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+indexeddb_test(
+  (t, db) => {
+    const objStore = db.createObjectStore("my_objectstore");
+    objStore.add("data",  1);
+  },
+  (t, db) => {
+    const req = db.transaction("my_objectstore")
+      .objectStore("my_objectstore")
+      .openKeyCursor();
+
+    req.onsuccess = t.step_func(() => {
+      const cursor = req.result;
+      assert_equals(cursor.request, req, 'cursor.request');
+      assert_readonly(cursor, 'request');
+    });
+  },
+  document.title
+);
+</script>

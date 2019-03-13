@@ -1,7 +1,13 @@
-const pre_navigate_url = new URL("/resource-timing/resources/document-that-navigates.html", location).href;
-const post_navigate_url = new URL("/resource-timing/resources/document-navigated.html", location).href;
-const pre_refresh_url = new URL("/resource-timing/resources/document-that-refreshes.html", location).href;
-const post_refresh_url = new URL("/resource-timing/resources/document-refreshed.html", location).href;
+let destination = location;
+if (location.search == "?crossorigin") {
+    host_info = get_host_info()
+    destination = location.protocol + "//" + host_info["REMOTE_HOST"] + ":" + location.port;
+}
+
+const pre_navigate_url = new URL("/resource-timing/resources/document-that-navigates.html", destination).href;
+const post_navigate_url = new URL("/resource-timing/resources/document-navigated.html", destination).href;
+const pre_refresh_url = new URL("/resource-timing/resources/document-that-refreshes.html", destination).href;
+const post_refresh_url = new URL("/resource-timing/resources/document-refreshed.html", destination).href;
 
 function setup_navigate_or_refresh(t, type, pre, post) {
     function verify_document_navigate_not_observable() {
@@ -65,4 +71,20 @@ function setup_back_navigation(pushed_url) {
             }
         }
     });
+}
+
+function open_navigate_back_window(url, message) {
+    promise_test(() => {
+        return new Promise((resolve, reject) => {
+            let openee = window.open(url);
+            addEventListener("message", e => {
+                openee.close();
+                if (e.data == "PASS") {
+                    resolve();
+                } else {
+                    reject(e.data);
+                }
+            });
+        });
+    }, message);
 }

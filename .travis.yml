@@ -63,6 +63,7 @@ matrix:
             - fonts-liberation
             - libappindicator1
             - libnss3-tools
+            - pulseaudio
     - name: "resources/ tests"
       if: type = pull_request
       os: linux
@@ -74,6 +75,7 @@ matrix:
             - fonts-liberation
             - libappindicator1
             - libnss3-tools
+            - pulseaudio
     - name: "infrastructure/ tests"
       if: type = pull_request
       os: linux
@@ -85,6 +87,7 @@ matrix:
             - fonts-liberation
             - libappindicator1
             - libnss3-tools
+            - pulseaudio
   exclude:
     - env:  # exclude empty env from the top-level above
   allow_failures:

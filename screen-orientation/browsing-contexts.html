@@ -5,16 +5,15 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-
   import { loadIframe } from "./resources/utils.js";
   import { getOppositeOrientation } from "./resources/utils.js";
- 
+
   promise_test(async t => {
     const iframe = await loadIframe();
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-   const newOrientation = getOppositeOrientation();
+    const newOrientation = getOppositeOrientation();
     const promiseToLockIFrame = iframe.contentWindow.screen.orientation.lock(
       `${newOrientation}-secondary`
     );
@@ -63,18 +62,25 @@
       "popup test",
       "width=500,height=300"
     );
-    await test_driver.bless("request full screen", () => {
-      return document.documentElement.requestFullscreen();
+    const loadPromise = new Promise(r => {
+      if (popWindow.document.readyState === "complete") {
+        r();
+      }
+      popWindow.onload = () => r();
     });
+    await loadPromise;
     popWindow.onload = function navigation() {
       popWindow.location.href = "https://not-web-platform.test:8443";
     };
-    await popWindow.screen.orientation.lock(newOrientation)
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    await popWindow.screen.orientation.lock(newOrientation);
     await promiseToChange;
     assert_equals(
       screen.orientation.type,
-      originalOrientation,
-      "tbc"
+      newOrientation,
+      "The active orientation lock should be the latest focused document's orientation lock"
     );
     screen.orientation.unlock();
     window.close();

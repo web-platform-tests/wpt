@@ -9,33 +9,40 @@ const post_navigate_url = new URL("/resource-timing/resources/document-navigated
 const pre_refresh_url = new URL("/resource-timing/resources/document-that-refreshes.html", destination).href;
 const post_refresh_url = new URL("/resource-timing/resources/document-refreshed.html", destination).href;
 
-function setup_navigate_or_refresh(t, type, pre, post) {
+function setup_navigate_or_refresh(type, pre, post) {
     function verify_document_navigate_not_observable() {
+        console.log("verifying");
         let entries = performance.getEntriesByType("resource");
         let found_first_document = false;
         for (entry of entries) {
             if (entry.name == pre) {
                 found_first_document = true;
             }
-            assert_not_equals(entry.name, post, type + " document should not be observable");
+            if (entry.name == post) {
+                opener.postMessage("FAIL - " + type + " document should not be observable", "*");
+                return;
+            }
         }
-        assert_true(found_first_document, "Initial document should be observable");
-        t.done();
+        if (!found_first_document) {
+            opener.postMessage("FAIL - initial document should be observable", "*");
+            return;
+        }
+        console.log("pass");
+        opener.postMessage("PASS", "*");
     }
-    window.addEventListener("message", t.step_func(e=>{
+    window.addEventListener("message", e=>{
         if (e.data == type) {
             verify_document_navigate_not_observable();
         }
-    }));
-
+    });
 }
 
-function setup_navigate_test(t) {
-    setup_navigate_or_refresh(t, "navigated", pre_navigate_url, post_navigate_url);
+function setup_navigate_test() {
+    setup_navigate_or_refresh("navigated", pre_navigate_url, post_navigate_url);
 }
 
-function setup_refresh_test(t) {
-    setup_navigate_or_refresh(t, "refreshed", pre_refresh_url, post_refresh_url);
+function setup_refresh_test() {
+    setup_navigate_or_refresh("refreshed", pre_refresh_url, post_refresh_url);
 }
 
 function setup_back_navigation(pushed_url) {
@@ -73,7 +80,7 @@ function setup_back_navigation(pushed_url) {
     });
 }
 
-function open_navigate_back_window(url, message) {
+function open_test_window(url, message) {
     promise_test(() => {
         return new Promise((resolve, reject) => {
             let openee = window.open(url);

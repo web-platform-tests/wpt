@@ -8,7 +8,10 @@
     await test_driver.bless("request full screen", () => {
       return document.documentElement.requestFullscreen();
     });
-    const pMustReject = screen.orientation.lock("landscape");
+    const currentOrientation = screen.orientation.type;
+    const isPortrait = preType.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    const pMustReject = screen.orientation.lock(newOrientation);
     const pMustResolve = new Promise(r => {
       screen.orientation.onchange = async () => {
         await orientation.lock("any");
@@ -17,11 +20,18 @@
     });
     await promise_rejects(t, new TypeError(), pMustReject);
     await pMustResolve;
+    screen.orientation.unlock();
+    return document.exitFullscreen();
   }, "Event must fire before orientationPendingPromise resolves");
 
   promise_test(async t => {
-    await document.documentElement.requestFullscreen();
-    const pMustReject = screen.orientation.lock("landscape");
+    await test_driver.bless("request full screen", () => {
+      return document.documentElement.requestFullscreen();
+    });
+    const currentOrientation = screen.orientation.type;
+    const isPortrait = preType.includes("portrait");
+    const newOrientation = `${isPortrait ? "landscape" : "portrait"}-primary`;
+    const pMustReject = screen.orientation.lock(newOrientation);
     const pMustResolve = new Promise(r => {
       screen.orientation.onchange = async () => {
         screen.orientation.unlock();
@@ -30,5 +40,7 @@
     });
     await promise_rejects(t, new TypeError(), pMustReject);
     await pMustResolve;
+    screen.orientation.unlock();
+    return document.exitFullscreen();
   }, "Event must fire before orientationPendingPromise resolves");
 </script>

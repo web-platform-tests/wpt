@@ -63,7 +63,6 @@
       readBinaryString.onloadend = this.step_func(function(evt) {
         assert_equals(typeof readBinaryString.result, "string", "The result type is string");
         assert_equals(readBinaryString.result, "This test the result attribute", "The result is correct");
-        console.log(readBinaryString.result);
         this.done();
       });
 

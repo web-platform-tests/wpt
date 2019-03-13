@@ -11,7 +11,6 @@ const post_refresh_url = new URL("/resource-timing/resources/document-refreshed.
 
 function setup_navigate_or_refresh(type, pre, post) {
     function verify_document_navigate_not_observable() {
-        console.log("verifying");
         let entries = performance.getEntriesByType("resource");
         let found_first_document = false;
         for (entry of entries) {
@@ -27,7 +26,6 @@ function setup_navigate_or_refresh(type, pre, post) {
             opener.postMessage("FAIL - initial document should be observable", "*");
             return;
         }
-        console.log("pass");
         opener.postMessage("PASS", "*");
     }
     window.addEventListener("message", e=>{

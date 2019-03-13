@@ -76,7 +76,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {}
+  return {"server_host": "127.0.0.1"}
 
 
 class ChromeBrowser(Browser):

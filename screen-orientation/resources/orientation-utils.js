@@ -1,4 +1,4 @@
-export async function loadIframe(src = "./resources/blank.html") {
+export async function loadIframe(src = "/screen-orientation/resources/blank.html") {
   const iframe = document.createElement("iframe");
   iframe.src = src;
   document.body.appendChild(iframe);

@@ -71,45 +71,28 @@
     }, "readAsBinaryString");
 
 
-    function resultDuringLoadTest(readMethod, event) {
-      async_test(function() {
-        var reader = new FileReader();
-        assert_equals(reader.result, null);
+    for (let event of ['loadstart', 'progress']) {
+      for (let method of ['readAsText', 'readAsDataURL', 'readAsArrayBuffer', 'readAsBinaryString']) {
+        promise_test(async function(t) {
+          var reader = new FileReader();
+          assert_equals(reader.result, null, 'result is null before read');
 
-        reader.addEventListener(event, this.step_func_done(function(evt) {
-          assert_equals(reader.result, null);
-        }));
+          var eventWatcher = new EventWatcher(t, reader,
+              [event, 'loadend']);
 
-        reader[readMethod](blob);
-      }, 'result is null during "' + event + '" event for ' + readMethod);
-
-      async_test(function() {
-        var reader = new FileReader();
-        reader.onloadend = this.step_func(function(evt) {
+          reader[method](blob);
+          assert_equals(reader.result, null, 'result is null after first read call');
+          await eventWatcher.wait_for(event);
+          assert_equals(reader.result, null, 'result is null during event');
+          await eventWatcher.wait_for('loadend');
           assert_not_equals(reader.result, null);
-          var first_result = reader.result;
-
-          reader.addEventListener(event, this.step_func_done(function(evt) {
-            assert_equals(reader.result, first_result);
-          }));
-
-          reader[readMethod](blob2);
-        });
-
-        reader[readMethod](blob);
-      }, 'result keeps old value during "' + event + '" event for ' + readMethod);
+          reader[method](blob);
+          assert_equals(reader.result, null, 'result is null after second read call');
+          await eventWatcher.wait_for(event);
+          assert_equals(reader.result, null, 'result is null during second read event');
+        }, 'result is null during "' + event + '" event for ' + method);
+      }
     }
-
-    function resultDuringLoadTests(readMethod) {
-      resultDuringLoadTest(readMethod, 'loadstart');
-      resultDuringLoadTest(readMethod, 'progress');
-    }
-
-    resultDuringLoadTests('readAsText');
-    resultDuringLoadTests('readAsDataURL');
-    resultDuringLoadTests('readAsArrayBuffer');
-    resultDuringLoadTests('readAsBinaryString');
-
     </script>
   </body>
 </html>

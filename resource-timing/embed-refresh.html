@@ -10,6 +10,7 @@
     let t = async_test("Test that an HTML embed refreshes are not observable by the parent");
     setup_refresh_test(t);
 </script>
+<div id=log></div>
 <embed type="text/html">
 <script>
     document.getElementsByTagName("embed")[0].src = pre_refresh_url;

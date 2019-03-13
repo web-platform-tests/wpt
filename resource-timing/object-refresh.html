@@ -10,6 +10,7 @@
     let t = async_test("Test that object refreshes are not observable by the parent");
     setup_refresh_test(t);
 </script>
+<div id=log></div>
 <object></object>
 <script>
     document.getElementsByTagName("object")[0].data = pre_refresh_url;

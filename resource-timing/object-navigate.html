@@ -10,6 +10,7 @@
     let t = async_test("Test that object navigates are not observable by the parent");
     setup_navigate_test(t);
 </script>
+<div id=log></div>
 <object></object>
 <script>
     document.getElementsByTagName("object")[0].data = pre_navigate_url;

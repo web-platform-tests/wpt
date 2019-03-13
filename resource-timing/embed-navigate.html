@@ -10,6 +10,7 @@
     let t = async_test("Test that HTML embed navigates are not observable by the parent");
     setup_navigate_test(t);
 </script>
+<div id=log></div>
 <embed type="text/html">
 <script>
     document.getElementsByTagName("embed")[0].src = pre_navigate_url;

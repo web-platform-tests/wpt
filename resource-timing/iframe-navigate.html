@@ -10,6 +10,7 @@
     let t = async_test("Test that iframe navigates are not observable by the parent");
     setup_navigate_test(t);
 </script>
+<div id=log></div>
 <iframe></iframe>
 <script>
     document.getElementsByTagName("iframe")[0].src = pre_navigate_url;

@@ -7,10 +7,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
     async_test(t => {
-        window.open("resources/iframe-navigate-back.html");
+        const openee = window.open("resources/iframe-navigate-back.html");
         addEventListener("message", t.step_func_done(e => {
             assert_equals(e.data, "PASS");
         }));
+        t.add_cleanup(() => openee.close());
     }, "Test that iframe navigations are not observable by the parent, even after history navigations");
 </script>
 

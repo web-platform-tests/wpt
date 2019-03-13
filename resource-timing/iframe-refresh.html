@@ -10,6 +10,7 @@
     let t = async_test("Test that iframe refreshes are not observable by the parent");
     setup_refresh_test(t);
 </script>
+<div id=log></div>
 <iframe></iframe>
 <script>
     document.getElementsByTagName("iframe")[0].src = pre_refresh_url;

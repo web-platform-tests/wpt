@@ -71,7 +71,7 @@ class Virtualenv(object):
     def install(self, *requirements):
         try:
             self.working_set.require(*requirements)
-        except pkg_resources.DistributionNotFound:
+        except pkg_resources.ResolutionError:
             pass
         else:
             return
@@ -84,7 +84,7 @@ class Virtualenv(object):
         with open(requirements_path) as f:
             try:
                 self.working_set.require(f.read())
-            except pkg_resources.DistributionNotFound:
+            except pkg_resources.ResolutionError:
                 pass
             else:
                 return

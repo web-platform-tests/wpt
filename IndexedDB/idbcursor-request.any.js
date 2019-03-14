@@ -27,9 +27,7 @@ function cursorRequestTest({ useIndex, useKeyCursor }) {
         }), 0);
       });
 
-      req.transaction.onerror = t.step_func((event) => {
-        assert_unreached("Transaction got error. " + (event.target.error ? event.target.error.name : "unknown"));
-      });
+      req.transaction.onerror = t.unreached_func('Transaction error');
     },
     `cursor.request from ${useIndex ? 'IDBIndex' : 'IDBObjectStore'}.${useKeyCursor ? 'openKeyCursor' : 'openCursor'}`
   );

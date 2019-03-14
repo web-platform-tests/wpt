@@ -38,5 +38,5 @@
     await promise_rejects(t, new TypeError(), pMustReject);
     await pMustResolve;
     return document.exitFullscreen();
-  }, "Unlocking screen orientation duruing change event causes orientationPendingPromise to reject");
+  }, "Unlocking screen orientation during event dispatching must causes orientationPendingPromise to reject");
 </script>

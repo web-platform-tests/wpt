@@ -40,9 +40,9 @@ def branch_point():
         return git("rev-parse", "HEAD")
     elif os.environ.get("GITHUB_PULL_REQUEST", "false") != "false":
         # This is a PR, so the base branch is in GITHUB_BRANCH
-        travis_branch = os.environ.get("GITHUB_BRANCH")
-        assert travis_branch, "GITHUB_BRANCH environment variable is defined"
-        branch_point = git("merge-base", "HEAD", travis_branch)
+        base_branch = os.environ.get("GITHUB_BRANCH")
+        assert base_branch, "GITHUB_BRANCH environment variable is defined"
+        branch_point = git("merge-base", "HEAD", base_branch)
     else:
         # Otherwise we aren't on a PR, so we try to find commits that are only in the
         # current branch c.f.

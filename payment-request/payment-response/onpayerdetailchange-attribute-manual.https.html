@@ -22,7 +22,7 @@ function runTest(button, options, expected){
         // contain formatting, e.g. +180000000 instead of +1-800-000-0000.
         // Strip out the formatting in case the user agent implements E164.
         // https://w3c.github.io/payment-request/#addressinit-dictionary
-        value = value.replace(/-/g, '');
+        value = value.replace(/[-\(\) ]/g, '');
       }
       assert_equals(response[prop], value);
     }

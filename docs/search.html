@@ -1,0 +1,33 @@
+---
+layout: page
+title: Search results
+---
+<ul id="search-results"></ul>
+
+<noscript>
+  This site's search functionality requires JavaScript. Please visit with a
+  JavaScript-enabled browser to perform a search.
+</noscript>
+
+<script>
+  window.store = {
+    {% for page in site.pages %}
+    "{{ page.url | slugify }}": {
+      "title": "{{ page.title | xml_escape }}",
+      "content": {{ page.content | strip_html | jsonify }},
+      "url": "{{ page.url | xml_escape }}"
+    },
+    {% endfor %}
+    {% for collection in site.collections %}
+      {% for page in collection.docs %}
+      "{{ page.url | slugify }}": {
+        "title": "{{ page.title | xml_escape }}",
+        "content": {{ page.content | strip_html | jsonify }},
+        "url": "{{ page.url | xml_escape }}"
+      },
+      {% endfor %}
+    {% endfor %}
+  };
+</script>
+<script src="/assets/lunr.min.js"></script>
+<script src="/assets/search.js"></script>

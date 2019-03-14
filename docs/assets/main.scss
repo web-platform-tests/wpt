@@ -104,8 +104,6 @@ nav.home {
     border: 1px solid $grey-color-light;
     border-radius: 5px;
     text-align: right;
-    max-height: calc(100vh - 38px);
-    overflow: auto;
 
     ul {
         list-style: none;
@@ -140,10 +138,31 @@ nav.home {
         }
     }
 
+    form {
+      display: inline-block;
+
+      input {
+        margin: 10px;
+        border: none;
+        vertical-align: top;
+      }
+
+      svg {
+        margin: 10px 10px 10px 0;
+        cursor: pointer;
+      }
+
+      [type="submit"] {
+        display: none;
+      }
+    }
+
     .trigger {
+        max-height: calc(100vh - 84px);
         clear: both;
         display: none;
         padding-bottom: 5px;
+        overflow: auto;
     }
 
     &:hover .trigger,

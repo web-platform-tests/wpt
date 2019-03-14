@@ -22,21 +22,5 @@
     await pMustResolve;
     screen.orientation.unlock();
     return document.exitFullscreen();
-  }, "Re-locking orientation during event dipatch must reject exisiting orientationPendingPromise");
-
-  promise_test(async t => {
-    await test_driver.bless("request full screen", () => {
-      return document.documentElement.requestFullscreen();
-    });
-    const newOrientation = getOppositeOrientation();
-    const pMustReject = screen.orientation.lock(newOrientation);
-    const pMustResolve = new Promise(r => {
-      screen.orientation.onchange = () => {
-        r(screen.orientation.unlock());
-      };
-    });
-    await promise_rejects(t, new TypeError(), pMustReject);
-    await pMustResolve;
-    return document.exitFullscreen();
-  }, "Unlocking screen orientation during event dispatching must causes orientationPendingPromise to reject");
+  }, "Re-locking orientation during event dispatch must reject existing orientationPendingPromise");
 </script>

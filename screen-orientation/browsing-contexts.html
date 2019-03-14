@@ -5,8 +5,10 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-  import { loadIframe } from "/screen-orientation/resources/orientation-utils.js";
-  import { getOppositeOrientation } from "/screen-orientation/resources/orientation-utils.js";
+  import {
+    getOppositeOrientation,
+    loadIframe,
+  } from "/screen-orientation/resources/orientation-utils.js";
 
   promise_test(async t => {
     const iframe = await loadIframe();

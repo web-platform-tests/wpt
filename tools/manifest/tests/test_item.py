@@ -1,6 +1,6 @@
 import pytest
 
-from ..item import URLManifestItem, TestharnessTest
+from ..item import URLManifestItem
 
 
 @pytest.mark.parametrize("path", [

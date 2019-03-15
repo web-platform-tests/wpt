@@ -1,12 +1,12 @@
 @charset "utf-8";
 
-.test div.эди {
+.test div.ГЅГ¤ГЁ {
     width: 100px;
 }
 
 /* for debugging line */
-p.эди { color: white; }
-span#debug:after { content: 'эди'; }
+p.ГЅГ¤ГЁ { color: white; }
+span#debug:after { content: 'ГЅГ¤ГЁ'; }
 
 /* the second selector uses the following sequence of bytes 0xC3 0xBD 0xC3 0xA4 0xC3 0xA8, which is read as different characters by the application, depending on the encoding used, ie.
     iso 8859-1: Atilde, half, Atilde, box, Atilde, diaeresis

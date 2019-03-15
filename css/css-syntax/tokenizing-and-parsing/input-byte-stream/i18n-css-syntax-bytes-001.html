@@ -5,8 +5,8 @@
 <title>CSS3 Syntax, input byte stream: CSS with UTF-signature</title>
 <link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
 <link rel='help' href='http://www.w3.org/TR/css3-syntax/#input-byte-stream'>
-<script src="../../../resources/testharness.js"></script>
-<script src="../../../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <meta name='flags' content='http dom'>
 <meta name="assert" content="A UTF-8 signature at the beginning of a css style sheet sets the encoding for the style sheet to UTF-8.">
 <style type='text/css'>
@@ -20,13 +20,13 @@ p { color: gray; margin-top: 3em; font-size: 80%; }
 
 
 
-<div class="test"><div id="box" class="эди">&#xA0;</div></div>
+<div class="test"><div id="box" class="???">&#xA0;</div></div>
 
 
 <!--Notes:
-In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters эди.  Read as ISO 8850-15, this gives ГЅГ¤ГЁ.
+In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters ???.  Read as ISO 8850-15, this gives эди.
 
-This HTML page is served as ISO 8859-15 and uses a different byte sequence (fd e4 e8) for the class name that equates to the character sequence эди.
+This HTML page is served as ISO 8859-15 and uses a different byte sequence (fd e4 e8) for the class name that equates to the character sequence ???.
 
 The class ids will therefore only match if the CSS is read as UTF-8.  (ISO 8859-15 is used for this page to avoid false matching due to UTF-8 fallback.)
 
@@ -41,6 +41,6 @@ assert_equals(document.getElementById('box').offsetWidth, 100);
 
 <div id='log'></div>
 
-<p class="эди"><span><span id="debug">Text as read from the style sheet: </span><br />(If blank, the style sheet hasn't been read at all.)</span></p>
+<p class="???"><span><span id="debug">Text as read from the style sheet: </span><br />(If blank, the style sheet hasn't been read at all.)</span></p>
 </body>
 </html>

@@ -23,7 +23,7 @@ promise_test(async t => {
 
   await wakeLock.request({ signal });
   assert_true(wakeLock.active, "the active is true when wake lock is acquired");
-  const eventWatcher = new EventWatcher(t, document, "visibilitychange")
+  const eventWatcher = new EventWatcher(t, document, "visibilitychange");
 
   //lock screen to fire 'visibilitychange'
   await eventWatcher.wait_for("visibilitychange");
@@ -44,10 +44,10 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  
+
   await wakeLock.request({ signal });
   assert_true(wakeLock.active, "the active is true when wake lock is acquired");
-  const eventWatcher = new EventWatcher(t, document, "visibilitychange")
+  const eventWatcher = new EventWatcher(t, document, "visibilitychange");
 
   //lock screen to fire 'visibilitychange'
   await eventWatcher.wait_for("visibilitychange");

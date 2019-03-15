@@ -14,7 +14,7 @@ promise_test(async t => {
 
   const controller = new AbortController();
   const signal = controller.signal;
-  
+
   await wakeLock.request({ signal });
   let evt1 = await eventWatcher.wait_for("activechange");
   assert_true(evt1.isTrusted && !evt1.bubbles && !evt1.cancelable && evt1 instanceof Event, "a simple event is fired");

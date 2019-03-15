@@ -20,15 +20,15 @@ p { color: gray; margin-top: 3em; font-size: 80%; }
 
 
 
-<div class="test"><div id="box" class="???">&#xA0;</div></div>
+<div class="test"><div id="box" class="эди">&#xA0;</div></div>
 
 
 <!--Notes:
 This test is only valid if the user agent recognises the HTTP and BOM declarations.
 
-In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters ???.  Read as ISO 8859-1, this gives эди.
+In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters эди.  Read as ISO 8859-1, this gives ГЅГ¤ГЁ.
 
-This HTML page is served as ISO 8859-1 and uses a different byte sequence for the class name (fd e4 e8) that equates to the character sequence ???.
+This HTML page is served as ISO 8859-1 and uses a different byte sequence for the class name (fd e4 e8) that equates to the character sequence эди.
 
 The class ids will therefore only match if the CSS is read as UTF-8.
 
@@ -43,6 +43,6 @@ assert_equals(document.getElementById('box').offsetWidth, 100);
 
 <div id='log'></div>
 
-<p class="???"><span><span id="debug">Text as read from the style sheet: </span><br />(If blank, the style sheet hasn't been read at all.)</span></p>
+<p class="эди"><span><span id="debug">Text as read from the style sheet: </span><br />(If blank, the style sheet hasn't been read at all.)</span></p>
 </body>
 </html>

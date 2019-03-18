@@ -26,11 +26,11 @@ promise_test(async (test) => {
   assert_equals(response.headers.get('Unique-Id'), response2.headers.get('Unique-Id'));
 
   while(true) {
+    await wait25ms(test);
     const revalidation_check = await fetch(`stale-script.py?query&token=` + request_token);
     if (revalidation_check.headers.get('Count') == '2') {
       break;
     }
-    await wait25ms(test);
   }
 }, 'Second fetch returns same response');
 </script>

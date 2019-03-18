@@ -1,17 +1,16 @@
 from .base import Browser, ExecutorBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
-from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
-                                           WebDriverRefTestExecutor)  # noqa: F401
+from ..executors.executorcdp import (CDPTestharnessExecutor,  # noqa: F401
+                                     CDPRefTestExecutor)  # noqa: F401
 from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "chrome",
                  "check_args": "check_args",
                  "browser": "ChromeBrowser",
-                 "executor": {"testharness": "WebDriverTestharnessExecutor",
-                              "reftest": "WebDriverRefTestExecutor",
+                 "executor": {"testharness": "CDPTestharnessExecutor",
+                              "reftest": "CDPRefTestExecutor",
                               "wdspec": "ChromeDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
@@ -20,14 +19,42 @@ __wptrunner__ = {"product": "chrome",
                  "timeout_multiplier": "get_timeout_multiplier",}
 
 
+cli_arguments = [
+    # https://cs.chromium.org/chromium/src/chrome/test/chromedriver/chrome_launcher.cc?l=70-75&rcl=50b9fd38ae9ca373dc8889637eb94a50eea7dc94
+    "--disable-popup-blocking",
+    # Although specified by the Chromedriver source code, the
+    # `--enable-automation` option was found to interfere with certain
+    # web-platform-tests, so it should not be specified here.
+    #
+    # https://github.com/web-platform-tests/wpt/pull/14922
+    #"--enable-automation",
+    "--ignore-certificate-errors",
+    "--metrics-recording-only",
+
+    # https://cs.chromium.org/chromium/src/chrome/test/chromedriver/chrome_launcher.cc?l=77-92&rcl=50b9fd38ae9ca373dc8889637eb94a50eea7dc94
+    "--disable-hang-monitor",
+    "--disable-prompt-on-repost",
+    "--disable-sync",
+    "--no-first-run",
+    "--disable-background-networking",
+    "--disable-web-resources",
+    "--disable-client-side-phishing-detection",
+    "--disable-default-apps",
+    "--enable-logging",
+    "--log-level=0",
+    "--password-store=basic",
+    "--use-mock-keychain",
+    "--test-type=webdriver",
+    "--force-fieldtrials=SiteIsolationExtensions/Control",
+]
+
+
 def check_args(**kwargs):
-    require_arg(kwargs, "webdriver_binary")
+    pass
 
 
 def browser_kwargs(test_type, run_info_data, config, **kwargs):
-    return {"binary": kwargs["binary"],
-            "webdriver_binary": kwargs["webdriver_binary"],
-            "webdriver_args": kwargs.get("webdriver_args")}
+    return {"binary": kwargs["binary"]}
 
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
@@ -53,18 +80,18 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         }
     }
 
+
     if test_type == "testharness":
         capabilities["pageLoadStrategy"] = "none"
+
+    kwargs["binary_args"] += cli_arguments
 
     for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
         if kwargs[kwarg] is not None:
             capabilities["goog:chromeOptions"][capability] = kwargs[kwarg]
 
     if kwargs["headless"]:
-        if "args" not in capabilities["goog:chromeOptions"]:
-            capabilities["goog:chromeOptions"]["args"] = []
-        if "--headless" not in capabilities["goog:chromeOptions"]["args"]:
-            capabilities["goog:chromeOptions"]["args"].append("--headless")
+        kwargs["binary_args"].append("--headless")
 
     executor_kwargs["capabilities"] = capabilities
 
@@ -80,8 +107,8 @@ def env_options():
 
 
 class ChromeBrowser(Browser):
-    """Chrome is backed by chromedriver, which is supplied through
-    ``wptrunner.webdriver.ChromeDriverServer``.
+    """Chrome is backed by the Chrome Debugger Protocol, which is supplied
+    through ``wptrunner.webdriver.ChromeDriverServer``.
     """
 
     def __init__(self, logger, binary, webdriver_binary="chromedriver",
@@ -90,27 +117,22 @@ class ChromeBrowser(Browser):
         the browser binary to use for testing."""
         Browser.__init__(self, logger)
         self.binary = binary
-        self.server = ChromeDriverServer(self.logger,
-                                         binary=webdriver_binary,
-                                         args=webdriver_args)
+        self._expected_alive = False
 
     def start(self, **kwargs):
-        self.server.start(block=False)
+        self._expected_alive = True
 
     def stop(self, force=False):
-        self.server.stop(force=force)
+        self._expected_alive = False
 
     def pid(self):
-        return self.server.pid
+        return 0
 
     def is_alive(self):
-        # TODO(ato): This only indicates the driver is alive,
-        # and doesn't say anything about whether a browser session
-        # is active.
-        return self.server.is_alive()
+        return self._expected_alive
 
     def cleanup(self):
         self.stop()
 
     def executor_browser(self):
-        return ExecutorBrowser, {"webdriver_url": self.server.url}
+        return ExecutorBrowser, {"binary": self.binary}

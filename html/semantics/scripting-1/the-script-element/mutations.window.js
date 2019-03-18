@@ -1,19 +1,28 @@
-test(() => {
-  const script = document.createElement("script");
-  self.script2 = document.createElement("script");
-  self.order = [];
-  script.textContent = "order.push(1); script2.firstChild.data = 'order.push(2)'; order.push(3);";
-  script2.append("");
-  document.body.append(script, script2);
-  assert_array_equals(order, [1, 2, 3], `Gotten order: ${order}`);
+self.globalScripts = []
+self.globalLogs = []
+
+function createGlobals() {
+  self.globalScripts.push(document.createElement("script"));
+  self.globalLogs.push([]);
+  return self.globalScripts.length - 1;
+}
+
+["", " ", ";"].forEach(initialScriptValue => {
+  test(() => {
+    const script = document.createElement("script"),
+          globalsIndex = createGlobals();
+    script.textContent = `self.globalLogs[${globalsIndex}].push(1); self.globalScripts[${globalsIndex}].firstChild.data = 'self.globalLogs[${globalsIndex}].push(2)'; self.globalLogs[${globalsIndex}].push(3);`;
+    self.globalScripts[globalsIndex].append(initialScriptValue);
+    document.body.append(script, self.globalScripts[globalsIndex]);
+    assert_array_equals(self.globalLogs[globalsIndex], [1, 2, 3], `Gotten order: ${self.globalLogs[globalsIndex]}`);
+  }, `Modifying the Text node data (initially "${initialScriptValue}") of the 2nd inserted script from the 1st inserted script`);
 });
 
 test(() => {
-  const script = document.createElement("script");
-  self.script22 = document.createElement("script");
-  self.order2 = [];
-  script.textContent = "order2.push(1); script22.append(new Comment()); order2.push(3);";
-  script22.append("order2.push(2)");
-  document.body.append(script, script22);
-  assert_array_equals(order2, [1, 3, 2], `Gotten order: ${order2}`);
+  const script = document.createElement("script"),
+        globalsIndex = createGlobals();
+  script.textContent = `self.globalLogs[${globalsIndex}].push(1); self.globalScripts[${globalsIndex}].append(new Comment()); self.globalLogs[${globalsIndex}].push(3);`;
+  self.globalScripts[globalsIndex].append(`self.globalLogs[${globalsIndex}].push(2)`);
+  document.body.append(script, self.globalScripts[globalsIndex]);
+  assert_array_equals(self.globalLogs[globalsIndex], [1, 3, 2], `Gotten order: ${self.globalLogs[globalsIndex]}`);
 });

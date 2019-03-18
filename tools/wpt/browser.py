@@ -501,6 +501,26 @@ class ChromeAndroid(Browser):
     def version(self, binary=None, webdriver_binary=None):
         return None
 
+
+class ChromeCDP(Chrome):
+    """Chrome-specific interface tailored for use with Chrome DevTools protocol.
+
+    Includes wptrunner setup methods.
+    """
+
+    product = "chrome_cdp"
+    requirements = "requirements_chrome_cdp.txt"
+
+    def find_webdriver(self, channel=None):
+        raise NotImplementedError
+
+    def install_webdriver(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def version(self, binary=None, webdriver_binary=None):
+        return None
+
+
 class Opera(Browser):
     """Opera-specific interface.
 

@@ -1,5 +1,5 @@
 from copy import copy
-
+from six import iteritems
 from six.moves.urllib.parse import urljoin, urlparse
 from abc import ABCMeta, abstractproperty
 
@@ -39,18 +39,13 @@ class ManifestItem(object):
         """A unique identifier for the test"""
         return (self.item_type, self.id)
 
-    def meta_key(self):
-        """Extra metadata that doesn't form part of the test identity, but for
-        which changes mean regenerating the manifest (e.g. the test timeout)."""
-        return ()
-
     def __eq__(self, other):
         if not hasattr(other, "key"):
             return False
         return self.key() == other.key()
 
     def __hash__(self):
-        return hash(self.key() + self.meta_key())
+        return hash(self.key())
 
     def __repr__(self):
         return "<%s.%s id=%s, path=%s>" % (self.__module__, self.__class__.__name__, self.id, self.path)
@@ -70,7 +65,7 @@ class URLManifestItem(ManifestItem):
         super(URLManifestItem, self).__init__(tests_root, path)
         self.url_base = url_base
         self._url = url
-        self._extras = extras or {}
+        self._extras = extras
 
     @property
     def _source_file(self):
@@ -84,6 +79,14 @@ class URLManifestItem(ManifestItem):
 
     @property
     def url(self):
+        # we can outperform urljoin, because we know we just have path relative URLs
+        if self._url[0] == "/":
+            # TODO: MANIFEST6
+            # this is actually a bug in older generated manifests, _url shouldn't
+            # be an absolute path
+            return self._url
+        if self.url_base == "/":
+            return "/" + self._url
         return urljoin(self.url_base, self._url)
 
     @property
@@ -125,17 +128,12 @@ class TestharnessTest(URLManifestItem):
         if "script_metadata" in self._extras:
             return self._extras["script_metadata"]
         else:
+            # TODO: MANIFEST6
             # this branch should go when the manifest version is bumped
             return self._source_file.script_metadata
 
-    def meta_key(self):
-        script_metadata = self.script_metadata
-        if script_metadata is not None:
-            script_metadata = tuple(tuple(x) for x in script_metadata)
-        return (self.timeout, self.testdriver, self.jsshell, script_metadata)
-
     def to_json(self):
-        rv = URLManifestItem.to_json(self)
+        rv = super(TestharnessTest, self).to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
         if self.testdriver:
@@ -155,7 +153,10 @@ class RefTestBase(URLManifestItem):
 
     def __init__(self, tests_root, path, url_base, url, references=None, **extras):
         super(RefTestBase, self).__init__(tests_root, path, url_base, url, **extras)
-        self.references = references or []
+        if references is None:
+            self.references = []
+        else:
+            self.references = references
 
     @property
     def timeout(self):
@@ -169,11 +170,16 @@ class RefTestBase(URLManifestItem):
     def dpi(self):
         return self._extras.get("dpi")
 
-    def meta_key(self):
-        return (self.timeout, self.viewport_size, self.dpi)
+    @property
+    def fuzzy(self):
+        rv = self._extras.get("fuzzy", [])
+        if isinstance(rv, list):
+            return {tuple(item[0]): item[1]
+                    for item in self._extras.get("fuzzy", [])}
+        return rv
 
     def to_json(self):
-        rv = [self.url, self.references, {}]
+        rv = [self._url, self.references, {}]
         extras = rv[-1]
         if self.timeout is not None:
             extras["timeout"] = self.timeout
@@ -181,6 +187,8 @@ class RefTestBase(URLManifestItem):
             extras["viewport_size"] = self.viewport_size
         if self.dpi is not None:
             extras["dpi"] = self.dpi
+        if self.fuzzy:
+            extras["fuzzy"] = list(iteritems(self.fuzzy))
         return rv
 
     @classmethod
@@ -240,7 +248,7 @@ class WebDriverSpecTest(URLManifestItem):
         return self._extras.get("timeout")
 
     def to_json(self):
-        rv = URLManifestItem.to_json(self)
+        rv = super(WebDriverSpecTest, self).to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
         return rv

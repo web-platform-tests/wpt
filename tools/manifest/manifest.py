@@ -162,6 +162,21 @@ class TypeData(object):
         self.tests_root = tests_root
         self.json_data = data
 
+    def to_json(self):
+        data = {
+            from_os_path(path):
+            [t for t in sorted(test.to_json() for test in tests)]
+            for path, tests in iteritems(self.data)
+        }
+
+        if self.json_data is not None:
+            if not data:
+                # avoid copying if there's nothing here yet
+                return self.json_data
+            data.update(self.json_data)
+
+        return data
+
     def paths(self):
         """Get a list of all paths containing items of this type,
         without actually constructing all the items"""
@@ -265,6 +280,11 @@ class Manifest(object):
             if not update:
                 rel_path = source_file
                 seen_files.add(rel_path)
+                assert rel_path in self._path_hash
+                old_hash, old_type = self._path_hash[rel_path]
+                if old_type in reftest_types:
+                    manifest_items = self._data[old_type][rel_path]
+                    reftest_nodes.extend((item, old_hash) for item in manifest_items)
             else:
                 rel_path = source_file.rel_path
                 seen_files.add(rel_path)
@@ -281,23 +301,24 @@ class Manifest(object):
                         hash_changed = True
                         if new_type != old_type:
                             del self._data[old_type][rel_path]
+                            if old_type in reftest_types:
+                                reftest_changes = True
                     else:
-                        new_type, manifest_items = old_type, self._data[old_type][rel_path]
-                    if old_type in reftest_types and new_type != old_type:
-                        reftest_changes = True
+                        new_type = old_type
+                        if old_type in reftest_types:
+                            manifest_items = self._data[old_type][rel_path]
                 else:
                     new_type, manifest_items = source_file.manifest_items()
 
-                if new_type in ("reftest", "reftest_node"):
+                if new_type in reftest_types:
                     reftest_nodes.extend((item, file_hash) for item in manifest_items)
                     if is_new or hash_changed:
                         reftest_changes = True
-                else:
+                elif is_new or hash_changed:
                     self._data[new_type][rel_path] = set(manifest_items)
 
-                self._path_hash[rel_path] = (file_hash, new_type)
-
                 if is_new or hash_changed:
+                    self._path_hash[rel_path] = (file_hash, new_type)
                     changed = True
 
         deleted = prev_files - seen_files
@@ -357,11 +378,7 @@ class Manifest(object):
 
     def to_json(self):
         out_items = {
-            test_type: {
-                from_os_path(path):
-                [t for t in sorted(test.to_json() for test in tests)]
-                for path, tests in iteritems(type_paths)
-            }
+            test_type: type_paths.to_json()
             for test_type, type_paths in iteritems(self._data) if type_paths
         }
         rv = {"url_base": self.url_base,

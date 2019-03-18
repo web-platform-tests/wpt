@@ -257,6 +257,21 @@ class Chrome(BrowserSetup):
     name = "chrome"
     browser_cls = browser.Chrome
 
+    @staticmethod
+    def setup_binary_args(kwargs):
+        if kwargs["browser_channel"] == "dev":
+            logger.info("Automatically turning on experimental features for Chrome Dev")
+            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
+
+        # Allow audio autoplay without a user gesture.
+        kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")
+
+        # Allow WebRTC tests to call getUserMedia.
+        kwargs["binary_args"] += ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"]
+
+        # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
+        kwargs["binary_args"].append("--short-reporting-delay")
+
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
             webdriver_binary = self.browser.find_webdriver()
@@ -274,18 +289,8 @@ class Chrome(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
-        if kwargs["browser_channel"] == "dev":
-            logger.info("Automatically turning on experimental features for Chrome Dev")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
-        # Allow audio autoplay without a user gesture.
-        kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")
-
-        # Allow WebRTC tests to call getUserMedia.
-        kwargs["binary_args"] += ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"]
-
-        # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
-        kwargs["binary_args"].append("--short-reporting-delay")
+        Chrome.setup_binary_args(kwargs)
 
 
 class ChromeAndroid(BrowserSetup):
@@ -309,6 +314,17 @@ class ChromeAndroid(BrowserSetup):
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
                 raise WptrunError("Unable to locate or install chromedriver binary")
+
+
+class ChromeCDP(BrowserSetup):
+    name = "chrome_cdp"
+    browser_cls = browser.ChromeCDP
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["webdriver_binary"]:
+            raise WptrunError("chrome_cdp does not interface with a WebDriver server")
+
+        Chrome.setup_binary_args(kwargs)
 
 
 class Opera(BrowserSetup):
@@ -472,6 +488,7 @@ product_setup = {
     "firefox": Firefox,
     "chrome": Chrome,
     "chrome_android": ChromeAndroid,
+    "chrome_cdp": ChromeCDP,
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,
     "ie": InternetExplorer,

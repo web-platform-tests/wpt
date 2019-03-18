@@ -1,6 +1,7 @@
 import json
 import time
 
+from collections import defaultdict
 from mozlog.formatters import base
 
 
@@ -14,7 +15,7 @@ class ChromiumFormatter(base.BaseFormatter):
         self.interrupted = False
 
         # A map of test status to the number of tests that had that status.
-        self.num_failures_by_status = {}
+        self.num_failures_by_status = defaultdict(int)
 
         # Start time, expressed as offset since UNIX epoch in seconds.
         self.start_timestamp_seconds = None
@@ -30,12 +31,13 @@ class ChromiumFormatter(base.BaseFormatter):
         :param str actual: actual status of the test.
         :param str expected: expected status of the test.
         """
+        # The test name can contain a leading / which will produce an empty
+        # string in the first position of the list returned by split. We use
+        # filter(None) to remove such entries.
         name_parts = filter(None, name.split("/"))
         cur_dict = self.tests
         for name_part in name_parts:
-            if name_part not in cur_dict:
-                cur_dict[name_part] = {}
-            cur_dict = cur_dict[name_part]
+            cur_dict = cur_dict.setdefault(name_part, {})
         cur_dict["actual"] = actual
         cur_dict["expected"] = expected
 
@@ -67,21 +69,19 @@ class ChromiumFormatter(base.BaseFormatter):
             # CRASH in Chromium refers to an error in the test runner not the
             # browser.
             return "CRASH"
+        # Any other status just gets returned as-is.
+        return status
 
     def suite_start(self, data):
         self.start_timestamp_seconds = data["time"] if "time" in data else time.time()
 
     def test_end(self, data):
         actual_status = self._map_status_name(data["status"])
-        expected_status = data["expected"] if "expected" in data else "PASS"
+        expected_status = self._map_status_name(data["expected"]) if "expected" in data else "PASS"
         self._store_test_result(data["test"], actual_status, expected_status)
 
         # Update the count of how many tests ran with each status.
-        try:
-            self.num_failures_by_status[actual_status] += 1
-        except KeyError:
-            # The test type wasn't in the dict, initialize it with count 1
-            self.num_failures_by_status[actual_status] = 1
+        self.num_failures_by_status[actual_status] += 1
 
     def suite_end(self, data):
         # Create the final result dictionary

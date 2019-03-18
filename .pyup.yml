@@ -22,6 +22,9 @@ requirements:
  - tools/wptrunner/requirements_chrome_android.txt:
       update: all
       pin: True
+ - tools/wptrunner/requirements_chrome_cdp.txt:
+      update: all
+      pin: True
  - tools/wptrunner/requirements_edge.txt:
       update: all
       pin: True

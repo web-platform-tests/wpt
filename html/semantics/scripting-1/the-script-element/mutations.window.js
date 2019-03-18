@@ -30,8 +30,21 @@ function createGlobals() {
     document.body.append(script, self.globalScripts[globalsIndex]);
 
     // TODO: decide on correct behavior
-    assert_array_equals(self.globalLogs[globalsIndex], [1, 3, 2], `Gotten order: ${self.globalLogs[globalsIndex]}`);
+    assert_array_equals(self.globalLogs[globalsIndex], [1, 2, 3], `Gotten order: ${self.globalLogs[globalsIndex]}`);
   }, `Appending \`${toAppend}\` to the 2nd inserted script from the 1st inserted script`);
+});
+
+[new Text(), new Text('self;'), new Comment()].forEach(toAppend => {
+  test(() => {
+    const script = document.createElement("script"),
+          globalsIndex = createGlobals();
+    script.textContent = `self.globalLogs[${globalsIndex}].push(1); self.globalScripts[${globalsIndex}].lastChild.remove(); self.globalLogs[${globalsIndex}].push(3);`;
+    self.globalScripts[globalsIndex].append(`self.globalLogs[${globalsIndex}].push(2);`, toAppend);
+    document.body.append(script, self.globalScripts[globalsIndex]);
+
+    // TODO: decide on correct behavior
+    assert_array_equals(self.globalLogs[globalsIndex], [1, 2, 3], `Gotten order: ${self.globalLogs[globalsIndex]}`);
+  }, `Removing ${toAppend.nodeType} with contents \`${toAppend.data}\` from the 2nd inserted script from the 1st inserted script`);
 });
 
 test(() => {

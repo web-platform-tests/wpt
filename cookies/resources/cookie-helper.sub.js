@@ -20,10 +20,6 @@
 
   // Set the global cookie name.
   window.HTTP_COOKIE = "cookie_via_http";
-
-  // If we're not on |HOST|, move ourselves there:
-  if (window.location.hostname != HOST)
-    window.location.hostname = HOST;
 })();
 
 // A tiny helper which returns the result of fetching |url| with credentials.

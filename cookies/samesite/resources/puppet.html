@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
+<script>
+  window.onmessage = e => {
+    if (e.data === "set") {
+      let random = "" + Math.random();
+      credFetch(ORIGIN + "/cookies/resources/setSameSite.py?" + random)
+        .then(_ => {
+          e.source.postMessage({
+            type: "set-complete",
+            value: random
+          }, "*");
+        });
+    }
+  };
+
+  window.opener.postMessage({
+    type: "READY"
+  }, "*");
+</script>

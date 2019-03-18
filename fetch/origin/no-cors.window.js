@@ -1,9 +1,9 @@
 // META: script=/common/utils.js
 // META: script=/common/get-host-info.sub.js
+const origins = get_host_info();
 
 promise_test(async function () {
   const stash = token(),
-        origins = get_host_info(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   // Cross-origin -> same-origin will result in setting the tainted origin flag for the second
@@ -21,7 +21,6 @@ promise_test(async function () {
 
 promise_test(async function () {
   const stash = token(),
-        origins = get_host_info(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   let url = origins.HTTP_ORIGIN + redirectPath + "?stash=" + stash;
@@ -45,7 +44,6 @@ promise_test(async function () {
 
 promise_test(async function () {
   const stash = token(),
-        origins = get_host_info(),
         redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
   let url = origins.HTTP_ORIGIN + redirectPath + "?stash=" + stash;
@@ -77,20 +75,29 @@ promise_test(async function () {
   assert_equals(json[1], "null");
 }, "Origin header and POST navigation");
 
-function referrerPolicyFucnctor(referrerPolicy, isCors, expectedOrigin) {
+var NavigationDestination = {
+  SameOrigin: 1,
+  CrossOrigin: 2,
+  properties: {
+    1: {name: "Same-Origin", origin: origins.HTTP_ORIGIN},
+    2: {name: "Cross-Origin", origin: origins.HTTP_REMOTE_ORIGIN},
+  }
+}
+
+function referrerPolicyFunctor(referrerPolicy, navigationDestination, expectedOrigin) {
   return async function () {
     const stash = token(),
-          origins = get_host_info(),
+          referrerPolicyPath = "/fetch/origin/resources/referrer-policy.py";
           redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
-    let url = (isCors ? origins.HTTP_REMOTE_ORIGIN : origins.HTTP_ORIGIN) +
+
+    let url = NavigationDestination.properties[navigationDestination].origin +
               redirectPath + "?stash=" + stash;
 
     await new Promise(resolve => {
       const frame = document.createElement("iframe");
-      const rp = "no-referrer";
-      frame.src = origins.HTTP_ORIGIN + redirectPath +
-                  "?referrerPolicy=" + referrerPolicy + "&stash=" + stash;
+      frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
+                  "?referrerPolicy=" + referrerPolicy;
       self.addEventListener("message", e => {
         if (e.data === "loaded") {
           resolve();
@@ -105,36 +112,61 @@ function referrerPolicyFucnctor(referrerPolicy, isCors, expectedOrigin) {
         form.method = "POST";
         submit.type = "submit";
         submit.click();
+
+        frame.onload = null;
       }
       document.body.appendChild(frame);
     });
 
     const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-    assert_equals(json[0], "no Origin header");
-    assert_equals(json[1], expectedOrigin);
+    assert_equals(json[0], expectedOrigin);
   };
 }
 
-function referrerPolicyTestString(referrerPolicy, isCors) {
-  return "Origin header and POST" + (isCors ? "Cross-origin" : "same-origin") +
+function referrerPolicyTestString(referrerPolicy, navigationDestination) {
+  return "Origin header and POST " +
+         NavigationDestination.properties[navigationDestination].name +
          " navigation with Referrer-Policy " + referrerPolicy;
 }
 
-promise_test(referrerPolicyFucnctor("no-referrer", false, "null"),
-             referrerPolicyTestString("no-referrer", false));
+[
+  {
+    "policy": "no-referrer",
+    "expectedOriginForSameOrigin": "null",
+    "expectedOriginForCrossOrigin": "null"
+  },
+  {
+    "policy": "same-origin",
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
+    "expectedOriginForCrossOrigin": "null"
+  },
+  {
+    "policy": "origin-when-cross-origin",
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
+    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+  },
+  {
+    "policy": "no-referrer-when-downgrade",
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
+    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+  },
+  {
+    "policy": "unsafe-url",
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
+    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+  },
+].forEach(testObj => {
+  promise_test(referrerPolicyFunctor(testObj.policy,
+                                     NavigationDestination.SameOrigin,
+                                     testObj.expectedOriginForSameOrigin),
+               referrerPolicyTestString(testObj.policy,
+                                        NavigationDestination.SameOrigin));
 
-promise_test(referrerPolicyFucnctor("no-referrer", true, "null"),
-             referrerPolicyTestString("no-referrer", true));
+  promise_test(referrerPolicyFunctor(testObj.policy,
+                                     NavigationDestination.CrossOrigin,
+                                     testObj.expectedOriginForCrossOrigin),
+               referrerPolicyTestString(testObj.policy,
+                                        NavigationDestination.CrossOrigin));
+});
 
-promise_test(referrerPolicyFucnctor("same-origin", false, "http://web-platform.test:8000"),
-             referrerPolicyTestString("same-origin", false));
-
-promise_test(referrerPolicyFucnctor("same-origin", true, "null"),
-             referrerPolicyTestString("same-origin", true));
-
-promise_test(referrerPolicyFucnctor("no-referrer-when-downgrade", false, "http://web-platform.test:8000"),
-             referrerPolicyTestString("no-referrer-when-downgrade", false));
-
-promise_test(referrerPolicyFucnctor("no-referrer-when-downgrade", true, "http://web-platform.test:8000"),
-             referrerPolicyTestString("no-referrer-when-downgrade", true));

@@ -76,9 +76,6 @@ class ServoBaseProtocolPart(BaseProtocolPart):
     def wait(self):
         pass
 
-    def set_window(self, handle):
-        pass
-
 
 class ServoWebDriverProtocol(Protocol):
     implements = [ServoBaseProtocolPart]

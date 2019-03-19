@@ -132,14 +132,6 @@ class BaseProtocolPart(ProtocolPart):
         """Wait indefinitely for the browser to close"""
         pass
 
-    @abstractmethod
-    def set_window(self, handle):
-        """Set the top level browsing context to one specified by a given handle.
-
-        :param handle: A protocol-specific handle identifying a top level browsing
-                       context."""
-        pass
-
 
 class TestharnessProtocolPart(ProtocolPart):
     """Protocol part required to run testharness tests."""

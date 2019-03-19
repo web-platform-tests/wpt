@@ -71,6 +71,10 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
             self.timeout = timeout
 
     def set_window(self, handle):
+        """Set the top level browsing context to one specified by a given handle.
+
+        :param handle: A protocol-specific handle identifying a top level browsing
+                       context."""
         self.marionette.switch_to_window(handle)
 
     def wait(self):

@@ -30,7 +30,6 @@ from .protocol import (BaseProtocolPart,
 from ..testrunner import Stop
 
 import pyppeteer
-import webdriver as client
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -69,10 +68,7 @@ class CDPBaseProtocolPart(BaseProtocolPart):
                 self.session.execute_async_script("")
             except pyppeteer.ConnectionError:
                 break
-            except (client.TimeoutException, client.ScriptTimeoutException):
-                pass
-            except (socket.timeout, client.NoSuchWindowException,
-                    client.UnknownErrorException, IOError):
+            except (socket.timeout, IOError):
                 break
             except Exception as e:
                 self.logger.error(traceback.format_exc(e))
@@ -149,14 +145,7 @@ class CDPSendKeysProtocolPart(SendKeysProtocolPart):
         return self.parent.session
 
     def send_keys(self, element, keys):
-        try:
-            return element.send_keys(keys)
-        except client.UnknownErrorException as e:
-            # workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=1999
-            if (e.http_status != 500 or
-                e.status_code != "unknown error"):
-                raise
-            return element.send_element_command("POST", "value", {"value": list(keys)})
+        return element.send_keys(keys)
 
 
 class CDPActionSequenceProtocolPart(ActionSequenceProtocolPart):
@@ -319,11 +308,7 @@ class CDPRun(object):
     def run(self):
         timeout = self.timeout
 
-        try:
-            self.protocol.base.set_timeout((timeout + extra_timeout))
-        except client.UnknownErrorException:
-            self.logger.error("Lost CDP connection")
-            return Stop
+        self.protocol.base.set_timeout((timeout + extra_timeout))
 
         executor = threading.Thread(target=self._run)
         executor.start()
@@ -342,22 +327,12 @@ class CDPRun(object):
     def _run(self):
         try:
             self.result = True, self.func(self.protocol, self.url, self.timeout)
-        except (client.TimeoutException, client.ScriptTimeoutException):
-            self.result = False, ("EXTERNAL-TIMEOUT", None)
-        except (socket.timeout, client.UnknownErrorException):
-            self.result = False, ("CRASH", None)
         except Exception as e:
-            if (isinstance(e, client.CDPException) and
-                    e.http_status == 408 and
-                    e.status_code == "asynchronous script timeout"):
-                # workaround for https://bugs.chromium.org/p/chromedriver/issues/detail?id=2001
-                self.result = False, ("EXTERNAL-TIMEOUT", None)
-            else:
-                message = str(getattr(e, "message", ""))
-                if message:
-                    message += "\n"
-                message += traceback.format_exc(e)
-                self.result = False, ("INTERNAL-ERROR", message)
+            message = str(getattr(e, "message", ""))
+            if message:
+                message += "\n"
+            message += traceback.format_exc(e)
+            self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()
 
@@ -424,12 +399,10 @@ class CDPTestharnessExecutor(TestharnessExecutor):
         return rv
 
     def wait_for_load(self, protocol):
-        # pageLoadStrategy=eager doesn't work in Chrome so try to emulate in user script
         loaded = False
         seen_error = False
         while not loaded:
-            try:
-                loaded = protocol.base.execute_script("""
+            loaded = protocol.base.execute_script("""
 var callback = arguments[arguments.length - 1];
 if (location.href === "about:blank") {
   callback(false);
@@ -438,13 +411,6 @@ if (location.href === "about:blank") {
 } else {
   document.addEventListener("readystatechange", () => {if (document.readyState !== "loading") {callback(true)}});
 }""", async=True)
-            except client.JavascriptErrorException:
-                # We can get an error here if the script runs in the initial about:blank
-                # document before it has navigated, with the driver returning an error
-                # indicating that the document was unloaded
-                if seen_error:
-                    raise
-                seen_error = True
 
 
 class CDPRefTestExecutor(RefTestExecutor):

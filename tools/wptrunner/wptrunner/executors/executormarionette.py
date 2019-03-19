@@ -70,10 +70,6 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
             self.marionette.timeout.script = timeout
             self.timeout = timeout
 
-    @property
-    def current_window(self):
-        return self.marionette.current_window_handle
-
     def set_window(self, handle):
         self.marionette.switch_to_window(handle)
 

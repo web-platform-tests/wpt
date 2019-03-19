@@ -45,10 +45,6 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
             body = {"type": "script", "ms": timeout * 1000}
             self.webdriver.send_session_command("POST", "timeouts", body)
 
-    @property
-    def current_window(self):
-        return self.webdriver.window_handle
-
     def set_window(self, handle):
         self.webdriver.window_handle = handle
 

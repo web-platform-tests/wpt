@@ -24,7 +24,7 @@ class MyControl extends HTMLElement {
     for (let p of nameValues) {
       formData.append(p[0], p[1]);
     }
-    this.internals_.setFormValue(this.value_, formData);
+    this.internals_.setFormValue(formData);
   }
 }
 customElements.define('my-control', MyControl);
@@ -96,6 +96,7 @@ promise_test(t => {
       '</form>' +
       '<iframe name="if1"></iframe>';
   $('my-control').value = 'value-ce1';
+  $('my-control').setValues([]);
   $('my-control').setValues([['sub1', 'subvalue1'],
                              ['sub2', 'subvalue2'],
                              ['sub2', 'subvalue3']]);

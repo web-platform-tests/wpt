@@ -141,7 +141,7 @@ Example 1 (one token applies):
 Example 2 (multiple tokens apply):
 
 ``` html
-<meta name="flags" content="ahem image scroll" />
+<meta name="flags" content="asis HTMLonly may" />
 ```
 
 Example 3 (no tokens apply):

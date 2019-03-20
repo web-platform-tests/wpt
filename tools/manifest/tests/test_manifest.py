@@ -396,3 +396,81 @@ def test_update_from_json_modified():
         'url_base': '/',
         'version': 6
     }
+
+
+def test_skip_basic():
+    skip_trie = manifest.SkipNode(skip=True)
+    skip_trie["foo"] = manifest.SkipNode(skip=False)
+
+    # paths
+    assert skip_trie.is_skipped_path("foo") is False
+    assert skip_trie.is_skipped_path("foo/bar") is False
+    assert skip_trie.is_skipped_path("bar") is True
+    assert skip_trie.is_skipped_path("bar/foo") is True
+
+    # simple items
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo", "/", "foo")) is False
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo/bar", "/", "foo/bar")) is False
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar", "/", "bar")) is True
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar/foo", "/", "bar/foo")) is True
+
+    # items where the url_base is required to match
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar", "/foo/", "bar")) is False
+
+    # items where path and url differ
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar", "/", "foo")) is False
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo", "/", "bar")) is True
+
+
+def test_skip_wildcard():
+    skip_trie = manifest.SkipNode(skip=True)
+    skip_trie["foo"] = manifest.SkipNode(skip=True)
+    skip_trie["foo"]["bar-*"] = manifest.SkipNode(skip=False)
+
+    # paths
+    assert skip_trie.is_skipped_path("foo") is True
+    assert skip_trie.is_skipped_path("foo/bar") is True
+    assert skip_trie.is_skipped_path("foo/bar-0") is False
+    assert skip_trie.is_skipped_path("foo/bar-asd") is False
+
+    # directory paths (all skipped, as wildcards only apply to the final component)
+    assert skip_trie.is_skipped_path("foo") is True
+    assert skip_trie.is_skipped_path("foo/bar/x") is True
+    assert skip_trie.is_skipped_path("foo/bar-0/x") is True
+    assert skip_trie.is_skipped_path("foo/bar-asd/x") is True
+
+    # simple items
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo", "/", "foo")) is True
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo/bar", "/", "foo/bar")) is True
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo/bar-0", "/", "foo/bar-0")) is False
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "foo/bar-asd", "/", "foo/bar-asd")) is False
+
+    # items where the url_base is required to match
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar", "/foo/", "bar")) is True
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar-0", "/foo/", "bar-0")) is False
+    assert skip_trie.is_skipped_item(item.TestharnessTest("/", "bar-asd", "/foo/", "bar-asd")) is False
+
+
+def test_skip_build():
+    skip_trie = manifest.SkipNode.build(include=["a/b", "c", "c/d/e"], exclude=["", "c/d"])
+    assert skip_trie.skip is True
+    assert skip_trie["a"].skip is True
+    assert skip_trie["a"]["b"].skip is False
+
+    assert skip_trie["c"].skip is False
+    assert skip_trie["c"]["d"].skip is True
+    assert skip_trie["c"]["d"]["e"].skip is False
+
+
+def test_skip_entirely():
+    skip_trie = manifest.SkipNode.build(include=["a/b", "c", "c/d/e", "f"], exclude=["", "c/d", "f/g"])
+
+    assert skip_trie.is_entirely_skipped_path("") is False
+    assert skip_trie.is_entirely_skipped_path("a") is False
+    assert skip_trie.is_entirely_skipped_path("a/b") is False
+    assert skip_trie.is_entirely_skipped_path("b") is True
+    assert skip_trie.is_entirely_skipped_path("c") is False
+    assert skip_trie.is_entirely_skipped_path("c/d") is False
+    assert skip_trie.is_entirely_skipped_path("c/d/e") is False
+    assert skip_trie.is_entirely_skipped_path("f") is False
+    assert skip_trie.is_entirely_skipped_path("f/g") is True

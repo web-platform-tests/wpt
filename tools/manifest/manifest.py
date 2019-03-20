@@ -1,8 +1,12 @@
 import itertools
 import json
 import os
+
 from collections import defaultdict
+from fnmatch import fnmatchcase
+
 from six import iteritems, iterkeys, itervalues, string_types
+from six.moves import urllib
 
 from . import vcs
 from .item import (ManualTest, WebDriverSpecTest, Stub, RefTestNode, RefTest,
@@ -42,6 +46,133 @@ item_classes = {"testharness": TestharnessTest,
                 "conformancechecker": ConformanceCheckerTest,
                 "visual": VisualTest,
                 "support": SupportFile}
+
+
+class SkipNode(dict):
+    __slots__ = ("skip",)
+
+    def __init__(self, skip=False):
+        self.skip = skip
+
+    @classmethod
+    def build(cls, include=None, exclude=None):
+        if include is None:
+            include = []
+        if exclude is None:
+            exclude = []
+
+        items = [(x, False) for x in include] if include else []
+        if exclude:
+            items.extend((x, True) for x in exclude)
+
+        skip_trie = cls()
+
+        # we need to build in increasing depth
+        for path, skip in sorted(items, key=lambda x: x[0].count("/")):
+            if path == "":
+                skip_trie.skip = skip
+                continue
+
+            components = path.split("/")
+            node = skip_trie
+            for component in components:
+                node = node.setdefault(component, cls(node.skip))
+            node.skip = skip
+
+        return skip_trie
+
+    def is_skipped_path(self, path):
+        if len(self) == 0:
+            return self.skip
+
+        path_components = path.split("/")
+
+        node = self
+
+        for component in path_components[:-1]:
+            if component in node:
+                node = node[component]
+            else:
+                return node.skip
+
+        skipped = node.skip
+
+        basename = path_components[-1]
+        if basename in node:
+            return node[basename].skip
+
+        for child_path, child_node in iteritems(node):
+            if fnmatchcase(basename, child_path):
+                return child_node.skip
+
+        return skipped
+
+    def is_entirely_skipped_path(self, path):
+        node = self
+
+        if path != "":
+            path_components = path.split("/")
+
+            for component in path_components:
+                if component in node:
+                    node = node[component]
+                else:
+                    return node.skip
+
+        skipped = node.skip
+        if not skipped:
+            return False
+
+        # we now need to check all children are skip=True
+        to_check = list(itervalues(node))
+        while to_check:
+            node = to_check.pop()
+            if not node.skip:
+                return False
+            to_check.extend(itervalues(node))
+
+        return True
+
+    def is_skipped_item(self, item):
+        if len(self) == 0:
+            return self.skip
+
+        try:
+            url = item.url
+        except AttributeError:
+            return False
+
+        assert url[0] == "/"
+
+        url = urllib.parse.urlsplit(url)
+
+        path_components = url.path[1:].split("/")
+
+        node = self
+
+        for component in path_components[:-1]:
+            if component in node:
+                node = node[component]
+            else:
+                return node.skip
+
+        skipped = node.skip
+
+        basenames = [path_components[-1]]
+        if url.query:
+            basenames.append("?".join([basename[-1], url.query]))
+        if url.fragment:
+            basenames.append("#".join([basenames[-1], url.fragment]))
+
+        for basename in basenames:
+            if basename in node:
+                return node[basename].skip
+
+            for child_path, child_node in iteritems(node):
+                if fnmatchcase(basename, child_path):
+                    return child_node.skip
+
+        return skipped
 
 
 class TypeData(object):

@@ -1,0 +1,34 @@
+<!doctype html>
+<head>
+  <meta charset=utf-8>
+  <title>WheelEvent - basic wheel event</title>
+  <style>
+    .testarea{ margin: auto; width: 80%; height: 250px; border: 1px solid grey; position: relative; }
+    #deltatext { font-size: large; }
+  </style>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+    setup({explicit_timeout: true});
+  </script>
+  <script src="/uievents/resources/eventrecorder.js"></script>
+</head>
+
+<body>
+  <p><strong>Description</strong>: Verifies that wheel events report the correct deltas.</p>
+
+  <section class="testarea">
+    <div id="deltatext">None</div>
+  </section>
+
+  <script>
+    var deltatext = document.getElementById("deltatext");
+
+    deltatext.addEventListener('wheel', function (e) {
+      this.innerHTML = "DeltaX: " + e.deltaX + "\n" +
+                       "DeltaY: " + e.deltaY + "\n" +
+                       "DeltaZ: " + e.deltaZ + "\n";
+    });
+  </script>
+</body>
+</html>

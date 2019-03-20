@@ -19,7 +19,7 @@ function doTest(idl, dom) {
   idl_array.add_objects({
     Navigator: ['navigator'],
     Clipboard: ['navigator.clipboard'],
-    ClipboardEvent: [new ClipboardEvent('x')],
+    ClipboardEvent: ['new ClipboardEvent("x")'],
   });
   idl_array.test();
 };

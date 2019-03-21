@@ -1,0 +1,10 @@
+---
+version: 2
+
+sphinx:
+  configuration: docs/conf.py
+
+python:
+  version: 2.7
+  install:
+    - requirements: docs/requirements.txt

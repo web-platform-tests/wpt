@@ -53,7 +53,7 @@
       EventRecorder.stop();
       var results = EventRecorder.getRecords();
       // Check results:
-      assert_equals(results.length, 1, "Two mousemove events");
+      assert_equals(results.length, 1, "One mousemove event");
       assert_equals(results[0].event.type, 'wheel', "First event is a wheel event");
       assert_equals(results[0].event.target, 'div#wheelbox', "First event targetted wheelbox");
     }

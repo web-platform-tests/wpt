@@ -8,6 +8,7 @@ suites, test contributions must be reviewed by a peer.
    :maxdepth: 1
 
    checklist
+   email
 ```
 
 ## Test Review Policy

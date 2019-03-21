@@ -1,7 +1,5 @@
----
-layout: page
-title: Chrome
----
+# Chrome
+
 When running Chrome, there are some useful command line arguments.
 
 You can inform `wpt` of the release channel of Chrome using `--channel`.

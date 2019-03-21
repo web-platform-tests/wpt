@@ -5,6 +5,28 @@ the [introduction](../introduction) first, as it introduces the various test typ
 
 There's also a load of [general guidelines](general-guidelines) that apply to all tests.
 
+```eval_rst
+.. toctree::
+   :maxdepth: 1
+
+   general-guidelines
+   ahem
+   assumptions
+   css-metadata
+   css-user-styles
+   file-names
+   h2tests
+   lint-tool
+   manual
+   reftests
+   rendering
+   server-features
+   submission-process
+   testharness
+   visual
+   wdspec
+```
+
 ## Test Type
 
 Tests in this project use a few different approaches to verify expected

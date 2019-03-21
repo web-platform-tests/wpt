@@ -1,8 +1,4 @@
----
-layout: page
-title: General Test Guidelines
-order: 2
----
+# General Test Guidelines
 
 ### File Paths and Names
 
@@ -181,10 +177,10 @@ for CSS have some additional requirements for:
 * [User style sheets][css-user-styles].
 
 
-[server features]: {{ site.baseurl }}{% link _writing-tests/server-features.md %}
-[assumptions]: {{ site.baseurl }}{% link _writing-tests/assumptions.md %}
-[ahem]: {{ site.baseurl }}{% link _writing-tests/ahem.md %}
-[lint-tool]: {{ site.baseurl }}{% link _writing-tests/lint-tool.md %}
-[css-metadata]: {{ site.baseurl }}{% link _writing-tests/css-metadata.md %}
-[css-user-styles]: {{ site.baseurl }}{% link _writing-tests/css-user-styles.md %}
-[file-name-flags]: {{ site.baseurl }}{% link _writing-tests/file-names.md %}
+[server features]: server-features
+[assumptions]: assumptions
+[ahem]: ahem
+[lint-tool]: lint-tool
+[css-metadata]: css-metadata
+[css-user-styles]: css-user-styles
+[file-name-flags]: file-names

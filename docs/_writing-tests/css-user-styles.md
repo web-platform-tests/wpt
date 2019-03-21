@@ -1,8 +1,5 @@
----
-layout: page
-title: CSS User Stylesheets
-order: 15
----
+# CSS User Stylesheets
+
 Some test may require special user style sheets to be applied in order
 for the case to be verified. In order for proper indications and
 prerequisite to be displayed every user style sheet should contain the

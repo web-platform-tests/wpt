@@ -1,8 +1,4 @@
----
-layout: page
-title: Test Assumptions
-order: 13
----
+# Test Assumptions
 
 The tests make a number of assumptions of the user agent, and new
 tests can freely rely on these assumptions being true:

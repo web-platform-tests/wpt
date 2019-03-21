@@ -1,8 +1,5 @@
----
-layout: page
-title: Introduction to GitHub
-order: 1
----
+# Introduction to GitHub
+
 All the basics that you need to know are documented on this page, but for the
 full GitHub documentation, visit [help.github.com][help].
 
@@ -46,12 +43,12 @@ If you are a first-time GitHub user, read on for more details of the workflow.
 ## Fork the test repository
 
 Now that you have Git set up, you will need to fork the test repository. This
-will enable you to [submit][submit] your tests using a pull request (more on this
-[below][submit]).
+will enable you to [submit](#submit) your tests using a pull request (more on this
+[below](#submit)).
 
 1.  In the browser, go to [web-platform-tests on GitHub][main-repo].
 
-2.  Click the ![fork][forkbtn] button in the upper right.
+2.  Click the ![fork](/assets/forkbtn.png) button in the upper right.
 
 3.  The fork will take several seconds, then you will be redirected to your
     GitHub page for this forked repository.
@@ -107,9 +104,9 @@ repository.
 
 ## Configure your environment
 
-If all you intend to do is to load [manual tests][manual-tests] or [ref tests][ref-tests] from your local file system,
+If all you intend to do is to load [manual tests](../_writing-tests/manual) or [ref tests](../_writing-tests/reftests) from your local file system,
 the above setup should be sufficient.
-But many tests (and in particular, all [testharness.js tests][testharness-tests]) require a local web server.
+But many tests (and in particular, all [testharness.js tests](../_writing-tests/testharness)) require a local web server.
 
 See [Local Setup][local-setup] for more information.
 
@@ -120,7 +117,7 @@ Now that you have everything locally, create a branch for your tests.
 _Note: If you have already been through these steps and created a branch
 and now want to create another branch, you should always do so from the
 master branch. To do this follow the steps from the beginning of the [previous
-section][remote-upstream]. If you don't start with a clean master
+section](#configure-remote-upstream). If you don't start with a clean master
 branch you will end up with a big nested mess._
 
 At the command line:
@@ -136,7 +133,7 @@ For Example:_
     $ git checkout -b flexbox-flex-direction-prop
 
 You're ready to start writing tests! Come back to this page you're ready to
-[commit][commit] them or [submit][submit] them for review.
+[commit](#commit) them or [submit](#submit) them for review.
 
 
 ## Commit
@@ -196,7 +193,7 @@ of the repository is located.
 
 3. Fix any mistake it reports and [commit](#commit) again.
 
-For more details, see the [documentation about the lint tool][lint-tool]
+For more details, see the [documentation about the lint tool](../_writing-tests/lint-tool).
 
 ## Submit
 
@@ -224,7 +221,7 @@ them back up to the server:
 GitHub UI.  Below is one method and others can be found on
 [GitHub.com][github-createpr]
 
-    1. Click the ![new pull request][pullrequestbtn] button.
+    1. Click the ![new pull request](../assets/pullrequestbtn.png) button.
 
     2.  On the left, you should see the base repo is the
         web-platform-tests/wpt. On the right, you should see your fork of that
@@ -234,7 +231,7 @@ GitHub UI.  Below is one method and others can be found on
         make sure your fork and your `topic`
         branch is selected on the right side.
 
-    3. Select the ![create pull request][createpr] button at the top.
+    3. Select the ![create pull request](../assets/createpr.png) button at the top.
 
     4. Scroll down and review the diff
 
@@ -246,11 +243,11 @@ GitHub UI.  Below is one method and others can be found on
     6.  If you'd like to add more detailed comments, use the comment field
     below.
 
-    7.  Click ![the create pull request button][createpr]
+    7.  Click ![the create pull request button](../assets/createpr.png)
 
 
 4. Wait for feedback on your pull request and once your pull request is
-accepted, delete your branch (see '[When Pull Request is Accepted][cleanup]').
+accepted, delete your branch (see '[When Pull Request is Accepted](#cleanup)').
 
 That's it! Your pull request will go into a queue and will be reviewed soon.
 
@@ -289,7 +286,7 @@ on the test but you should delete your branch. This can easily be done in
 the GitHub UI by navigating to the pull requests and clicking the
 'Delete Branch' button.
 
-![pull request accepted delete branch][praccepteddelete]
+![pull request accepted delete branch](/assets/praccepteddelete.png)
 
 Alternatively, you can delete the branch on the command line.
 
@@ -307,7 +304,7 @@ The following workflow is recommended:
 6. After the PR has been accepted, delete the branch. (Every new PR should
 come from a new branch.)
 7. Synchronize your fork with the W3C repository by fetching your upstream and
- merging it. (See '[Configure Remote / Upstream][remote-upstream]')
+ merging it. (See '[Configure Remote / Upstream](#configure-remote-upstream)')
 
 You need to be able to set up remote upstream, etc. Please refer to [Pro Git
 Book][git-book] and enjoy reading.
@@ -332,17 +329,17 @@ but the reviewer still wants to make some simple tweaks to the tests before merg
 it is possible to do so via the Github web UI.
 
 1. Open the pull request. E.g. https://github.com/web-platform-tests/wpt/pull/1234
-2. Go to the ![Files changed][files-changed] view (e.g. https://github.com/web-platform-tests/wpt/pull/1234/files)
-3. Locate the files you wish to change, and click the ![pencil][pencil-icon] icon in the upper right corner
+2. Go to the ![Files changed](../assets/files-changed.png) view (e.g. https://github.com/web-platform-tests/wpt/pull/1234/files)
+3. Locate the files you wish to change, and click the ![pencil](../assets/pencil-icon.png) icon in the upper right corner
 4. Make the desired change
 5. Write a commit message (including a good title) at the bottom
-6. Make sure the ![Commit directly to the [name-of-the-PR-branch] branch.][commit-directly] radio button is selected.
+6. Make sure the ![Commit directly to the [name-of-the-PR-branch] branch.](../assets/commit-directly.png) radio button is selected.
 
    _Note: If the PR predates the introduction of this feature by Github,
    or if the author of the PR has disabled write-access by reviewers to the PR branch,
    this may not be available,
    and your only option would be to commit to a new branch, creating a new PR._
-7. Click the ![Commit Changes][commitbtn] button.
+7. Click the ![Commit Changes](../assets/commitbtn.png) button.
 
 
 ### The Normal Way
@@ -357,7 +354,7 @@ If you don't have one, go [fork](#fork), [clone](#clone), and [configure](#confi
 4. Checkout that branch: `git checkout <name-of-the-PR-branch>`
 
    _The relevant `<author-id>`, `<repo-name>`, and `<name-of-the-PR-branch>` can be found by looking for this sentence in on the Github page of the PR:
-   ![Add more commits by pushing to the name-of-the-PR-branch branch on author-id/repo-name.][more-commits]_
+   ![Add more commits by pushing to the name-of-the-PR-branch branch on author-id/repo-name.](../assets/more-commits.png)_
 
 If all you meant to do was reviewing files locally, you're all set.
 If you wish to make changes to the PR branch:
@@ -390,14 +387,7 @@ If you do not expect work with more PRs from the same author,
 you may also discard your connection to their repo:
 `git remote remove <author-id>`
 
-[local-setup]: {{ site.baseurl }}/introduction.html#local-setup
-[manual-tests]: {{ site.baseurl }}/writing-tests/manual.html
-[ref-tests]: {{ site.baseurl }}/writing-tests/reftests.html
-[testharness-tests]: {{ site.baseurl }}/writing-tests/testharness.html
-[branch]: #branch
-[commit]: #commit
-[clone]: #clone
-[forkbtn]: {{ site.baseurl }}{% link /assets/forkbtn.png %}
+[local-setup]: ../introduction#local-setup
 [git]: https://git-scm.com/downloads
 [git-book]: https://git-scm.com/book
 [github]: https://github.com/
@@ -407,16 +397,4 @@ you may also discard your connection to their repo:
 [help]: https://help.github.com/
 [main-repo]: https://github.com/web-platform-tests/wpt
 [password-caching]: https://help.github.com/articles/caching-your-github-password-in-git
-[pullrequestbtn]: {{ site.baseurl }}{% link /assets/pullrequestbtn.png %}
-[createpr]: {{ site.baseurl }}{% link /assets/createpr.png %}
-[praccepteddelete]: {{ site.baseurl }}{% link /assets/praccepteddelete.png %}
-[submit]: #submit
-[remote-upstream]: #configure-remote-upstream
-[cleanup]: #cleanup
-[pencil-icon]: {{ site.baseurl }}{% link /assets/pencil-icon.png %}
-[commitbtn]: {{ site.baseurl }}{% link /assets/commitbtn.png %}
-[commit-directly]: {{ site.baseurl }}{% link /assets/commit-directly.png %}
-[files-changed]: {{ site.baseurl }}{% link /assets/files-changed.png %}
-[more-commits]: {{ site.baseurl }}{% link /assets/more-commits.png %}
 [github flow]: https://guides.github.com/introduction/flow/
-[lint-tool]: {{ site.baseurl }}/writing-tests/lint-tool.html

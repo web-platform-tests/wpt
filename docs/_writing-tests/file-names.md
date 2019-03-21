@@ -1,8 +1,4 @@
----
-layout: page
-title: File Name Flags
-order: 2
----
+# File Name Flags
 
 The test filename is significant in determining the type of test it
 contains, and enabling specific optional features. This page documents
@@ -52,7 +48,7 @@ themselves precede any test type flag, but are otherwise unordered.
 
 `.any`
  : (js files only) Indicates that the file generates tests in which it
-    is [run in multiple scopes][multi-global-tests].
+    is [run in multiple scopes](testharness).
 
 `.optional`
  : Indicates that a test makes assertions about optional behavior in a
@@ -69,5 +65,4 @@ themselves precede any test type flag, but are otherwise unordered.
 
 
 [server-side substitution]: https://wptserve.readthedocs.io/en/latest/pipes.html#sub
-[multi-global-tests]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}#multi-global-tests
 [RFC 2119]: https://tools.ietf.org/html/rfc2119

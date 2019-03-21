@@ -166,11 +166,11 @@ class Firefox(Browser):
         os.remove(installer_path)
         return self.find_binary_path(dest)
 
-    def find_binary_path(self,path=None, channel="nightly"):
+    def find_binary_path(self, path=None, channel="nightly"):
         """Looks for the firefox binary in the virtual environment"""
 
         if path is None:
-            #os.getcwd() doesn't include the venv path
+            # os.getcwd() doesn't include the venv path
             path = os.path.join(os.getcwd(), "_venv", "browsers", channel)
 
         binary = None
@@ -461,9 +461,7 @@ class Chrome(Browser):
     def find_webdriver(self, channel=None):
         return find_executable("chromedriver")
 
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        if dest is None:
-            dest = os.pwd
+    def _latest_chromedriver_url(self, browser_binary=None):
         latest = None
         chrome_version = self.version(browser_binary)
         if chrome_version is not None:
@@ -489,7 +487,12 @@ class Chrome(Browser):
         else:
             url = "https://chromedriver.storage.googleapis.com/%s/chromedriver_%s.zip" % (
                 latest, self.platform_string())
+        return url
 
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        if dest is None:
+            dest = os.pwd
+        url = self._latest_chromedriver_url(browser_binary)
         self.logger.info("Downloading ChromeDriver from %s" % url)
         unzip(get(url).raw, dest)
         chromedriver_dir = os.path.join(dest, 'chromedriver_%s' % self.platform_string())
@@ -504,11 +507,11 @@ class Chrome(Browser):
             try:
                 version_string = call(binary, "--version").strip()
             except subprocess.CalledProcessError:
-                self.logger.warning("Failed to call %s", binary)
+                self.logger.warning("Failed to call %s" % binary)
                 return None
             m = re.match(r"(?:Google Chrome|Chromium) (.*)", version_string)
             if not m:
-                self.logger.warning("Failed to extract version from: %s", version_string)
+                self.logger.warning("Failed to extract version from: %s" % version_string)
                 return None
             return m.group(1)
         self.logger.warning("Unable to extract version from binary on Windows.")
@@ -539,6 +542,7 @@ class ChromeAndroid(Browser):
 
     def version(self, binary=None, webdriver_binary=None):
         return None
+
 
 class Opera(Browser):
     """Opera-specific interface.
@@ -608,7 +612,7 @@ class Opera(Browser):
         try:
             output = call(binary, "--version")
         except subprocess.CalledProcessError:
-            self.logger.warning("Failed to call %s", binary)
+            self.logger.warning("Failed to call %s" % binary)
             return None
         m = re.search(r"[0-9\.]+( [a-z]+)?$", output.strip())
         if m:
@@ -638,8 +642,9 @@ class Edge(Browser):
         try:
             return call("powershell.exe", command).strip()
         except (subprocess.CalledProcessError, OSError):
-            self.logger.warning("Failed to call %s in PowerShell", command)
+            self.logger.warning("Failed to call %s in PowerShell" % command)
             return None
+
 
 class EdgeWebDriver(Edge):
     product = "edge_webdriver"
@@ -702,11 +707,11 @@ class Safari(Browser):
         try:
             version_string = call(webdriver_binary, "--version").strip()
         except subprocess.CalledProcessError:
-            self.logger.warning("Failed to call %s --version", webdriver_binary)
+            self.logger.warning("Failed to call %s --version" % webdriver_binary)
             return None
         m = re.match(r"Included with Safari (.*)", version_string)
         if not m:
-            self.logger.warning("Failed to extract version from: %s", version_string)
+            self.logger.warning("Failed to extract version from: %s" % version_string)
             return None
         return m.group(1)
 

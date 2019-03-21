@@ -1,11 +1,7 @@
----
-layout: page
-title: Rendering Test Guidelines
-order: 10
----
+# Rendering Test Guidelines
 
 There are a number of techniques typically used when writing rendering tests;
-these are especially using for [visual][] tests which need to be manually
+these are especially using for [visual](visual) tests which need to be manually
 judged and following common patterns makes it easier to correctly tell if a
 given test passed or not.
 
@@ -87,9 +83,5 @@ ways:
 Obviously, none of this can be taken as absolute rules, as testing of
 color-related functionality will necessitate using some of these
 colors!
-
-
-[ahem]: {{ site.baseurl }}{% link _writing-tests/ahem.md %}
-[visual]: {{ site.baseurl }}{% link _writing-tests/visual.md %}
 
 [ref-filled-green-100px-square]: https://github.com/w3c/csswg-test/blob/master/reference/ref-filled-green-100px-square.xht

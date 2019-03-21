@@ -1,13 +1,9 @@
----
-layout: page
-title: Writing Tests
-order: -1
----
+# Writing Tests
 
 If you haven't already, it's strongly recommended to read
-the [introduction][] first, as it introduces the various test types.
+the [introduction](../introduction) first, as it introduces the various test types.
 
-There's also a load of [general guidelines][] that apply to all tests.
+There's also a load of [general guidelines](general-guidelines) that apply to all tests.
 
 ## Test Type
 
@@ -20,25 +16,25 @@ expectations:
   for tips on how to write great rendering tests. There are a few different
   ways to write rendering tests:
 
-  * [Reftests][] should be used to test rendering and layout. They consist of
-    two or more pages with assertions as to whether they render identically or
-    not.
+  * [Reftests](reftests) should be used to test rendering and layout. They
+    consist of two or more pages with assertions as to whether they render
+    identically or not.
 
-  * [Visual tests][visual] should be used for checking rendering where there is
+  * [Visual tests](visual) should be used for checking rendering where there is
     a large number of conforming renderings such that reftests are impractical.
     They consist of a page that renders to final state at which point a
     screenshot can be taken and compared to an expected rendering for that user
     agent on that platform.
 
-* [testharness.js][] tests should be used (where possible!) for testing
-  everything else. They are built with the testharness.js unit testing
+* [testharness.js](testharness) tests should be used (where possible!) for
+  testing everything else. They are built with the testharness.js unit testing
   framework, and consist of assertions written in JavaScript.
 
-* [wdspec][] tests are written in Python using
+* [wdspec](wdspec) tests are written in Python using
   [pytest](https://docs.pytest.org/en/latest/) and test [the WebDriver browser
   automation protocol](https://w3c.github.io/webdriver/)
 
-* [Manual tests][manual] are used as a last resort for anything that can't be
+* [Manual tests](manual) are used as a last resort for anything that can't be
   tested using any of the above. They consist of a page that needs manual
   interaction or verification of the final result.
 
@@ -50,24 +46,11 @@ two test types, and it is at times advisable to use testharness.js tests
 for things which would typically be tested using reftests but for
 which it would be overly cumbersome.
 
-See [file names][] for test types and features determined by the file names,
-and [server features][] for advanced testing features.
+See [file names](file-names) for test types and features determined by the file names,
+and [server features](server-features) for advanced testing features.
 
 ## Submitting Tests
 
 Once you've written tests, please submit them using
-the [typical GitHub Pull Request workflow][submission-process]; please
-make sure you run the [`lint` script][lint-tool] before opening a pull request!
-
-[introduction]: {{ site.baseurl }}{% link introduction.md %}
-[file names]: {{ site.baseurl }}{% link _writing-tests/file-names.md %}
-[general guidelines]: {{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}
-[reftests]: {{ site.baseurl }}{% link _writing-tests/reftests.md %}
-[rendering]: {{ site.baseurl }}{% link _writing-tests/rendering.md %}
-[server features]: {{ site.baseurl }}{% link _writing-tests/server-features.md %}
-[testharness.js]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}
-[visual]: {{ site.baseurl }}{% link _writing-tests/visual.md %}
-[manual]: {{ site.baseurl }}{% link _writing-tests/manual.md %}
-[submission-process]: {{ site.baseurl }}{% link _writing-tests/submission-process.md %}
-[lint-tool]: {{ site.baseurl }}{% link _writing-tests/lint-tool.md %}
-[wdspec]: {{ site.baseurl }}{% link _writing-tests/wdspec.md %}
+the [typical GitHub Pull Request workflow](submission-process); please
+make sure you run the [`lint` script](lint-tool) before opening a pull request!

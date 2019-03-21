@@ -1,10 +1,5 @@
----
-layout: page
-title: Appendices
-order: -1
----
+# Appendices
 
-{% assign appendix = site.appendix | sort: "order"  %}
-{% for page in appendix %}{% if page.title and page.order != -1 %}
-* [{{ page.title }}]({{ page.url | relative_url }}) {{ ""
-}}{% endif %}{% endfor %}
+- [Introduction to GitHub](github-intro)
+- [Reverting Changes](reverting)
+- [Test Templates](test-templates)

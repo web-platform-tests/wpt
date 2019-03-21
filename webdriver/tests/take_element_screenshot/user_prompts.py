@@ -107,7 +107,8 @@ def test_dismiss_and_notify(check_user_prompt_closed_with_exception, dialog_type
 def test_ignore(check_user_prompt_not_modified, dialog_type):
     check_user_prompt_not_modified(dialog_type)
 
-
+# When unhandledPromptBehavior is not specified, element screenshot should
+# fail with an exception.
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
-def test_default(check_user_prompt_not_modified, dialog_type):
-    check_user_prompt_not_modified(dialog_type)
+def test_default(check_user_prompt_closed_with_exception, dialog_type):
+    check_user_prompt_closed_with_exception(dialog_type)

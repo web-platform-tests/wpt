@@ -1,7 +1,3 @@
-```eval_rst
-:orphan:
-```
-
 # testdriver.js Tutorial
 
 Adding new commands to testdriver.js

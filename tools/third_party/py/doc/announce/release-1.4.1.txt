@@ -11,7 +11,7 @@ compatibility namespace ("py.builtin"), IO capturing, terminal colored printing
 (on windows and linux), ini-file parsing and a lazy import mechanism.
 It runs unmodified on all Python interpreters compatible to Python2.4 up
 until Python 3.2, PyPy and Jython.  The general goal with "py" is to
-provide stable APIs for some common tasks that are continously tested
+provide stable APIs for some common tasks that are continuously tested
 against many Python interpreters and thus also to help transition. Here
 are some docs:
 
@@ -21,7 +21,7 @@ NOTE: The prior py-1.3.X versions contained "py.test" which since py-1.4.0
 comes as its own separate "pytest" distribution, see:
 
     http://pytest.org
-   
+
 Also, the "py.cleanup|py.lookup|py.countloc" helpers are now part of
 the pycmd distribution, see http://pypi.python.org/pypi/pycmd
 

@@ -10,7 +10,7 @@ compatibility namespace ("py.builtin"), IO capturing, terminal colored printing
 (on windows and linux), ini-file parsing and a lazy import mechanism.
 It runs unmodified on all Python interpreters compatible to Python2.4 up
 until Python 3.2.  The general goal with "py" is to provide stable APIs
-for some common tasks that are continously tested against many Python
+for some common tasks that are continuously tested against many Python
 interpreters and thus also to help transition. Here are some docs:
 
     http://pylib.org
@@ -20,7 +20,7 @@ as its own separate "pytest" distribution and was just released
 as "pytest-2.0.0", see here for the revamped docs:
 
     http://pytest.org
-   
+
 And "py.cleanup|py.lookup|py.countloc" etc. helpers are now part of
 the pycmd distribution, see http://pypi.python.org/pypi/pycmd
 

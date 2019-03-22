@@ -1,6 +1,7 @@
 def main(request, response):
     if "referrerPolicy" in request.GET:
-        response.status = 200
-        response.headers.set("content-Type", "text/html")
         response.headers.set("Referrer-Policy",
                              request.GET.first("referrerPolicy"))
+    response.status = 200
+    response.headers.set("Content-Type", "text/html")
+    response.content = "<meta charset=utf-8>\n<script>parent.postMessage('action','*')</script>"

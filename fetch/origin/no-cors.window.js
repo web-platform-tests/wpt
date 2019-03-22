@@ -38,7 +38,7 @@ promise_test(async function () {
 
   const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-  assert_equals(json[0], "no Origin header");
+  assert_equals(json[0], origins.HTTP_ORIGIN);
   assert_equals(json[1], "no Origin header");
 }, "Origin header and GET navigation");
 
@@ -71,50 +71,42 @@ promise_test(async function () {
 
   const json = await (await fetch(redirectPath + "?dump&stash=" + stash)).json();
 
-  assert_equals(json[0], "null");
+  assert_equals(json[0], origins.HTTP_ORIGIN);
   assert_equals(json[1], "null");
 }, "Origin header and POST navigation");
 
-var NavigationDestination = {
-  SameOrigin: 1,
-  CrossOrigin: 2,
-  properties: {
-    1: {name: "Same-Origin", origin: origins.HTTP_ORIGIN},
-    2: {name: "Cross-Origin", origin: origins.HTTP_REMOTE_ORIGIN},
-  }
-}
-
-function referrerPolicyFunctor(referrerPolicy, navigationDestination, expectedOrigin) {
+function navigationReferrerPolicy(referrerPolicy, destination, expectedOrigin) {
   return async function () {
     const stash = token(),
           referrerPolicyPath = "/fetch/origin/resources/referrer-policy.py";
           redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
 
-
-    let url = NavigationDestination.properties[navigationDestination].origin +
-              redirectPath + "?stash=" + stash;
+    let postUrl =
+        (destination=== "same-origin" ? origins.HTTP_ORIGIN
+                                     : origins.HTTP_REMOTE_ORIGIN) +
+        redirectPath + "?stash=" + stash;
 
     await new Promise(resolve => {
       const frame = document.createElement("iframe");
       frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
                   "?referrerPolicy=" + referrerPolicy;
-      self.addEventListener("message", e => {
+      self.addEventListener("message", function listener(e) {
         if (e.data === "loaded") {
           resolve();
           frame.remove();
-        }
-      }, { once: true });
-      frame.onload = () => {
-        const doc = frame.contentDocument,
-              form = doc.body.appendChild(doc.createElement("form")),
-              submit = form.appendChild(doc.createElement("input"));
-        form.action = url;
-        form.method = "POST";
-        submit.type = "submit";
-        submit.click();
+          self.removeEventListener("message", listener);
+        } else if (e.data === "action") {
+          const doc = frame.contentDocument,
+                form = doc.body.appendChild(doc.createElement("form")),
+                submit = form.appendChild(doc.createElement("input"));
+          form.action = postUrl;
+          form.method = "POST";
+          submit.type = "submit";
+          submit.click();
 
-        frame.onload = null;
-      }
+          frame.onload = null;
+        }
+      });
       document.body.appendChild(frame);
     });
 
@@ -124,10 +116,44 @@ function referrerPolicyFunctor(referrerPolicy, navigationDestination, expectedOr
   };
 }
 
-function referrerPolicyTestString(referrerPolicy, navigationDestination) {
-  return "Origin header and POST " +
-         NavigationDestination.properties[navigationDestination].name +
-         " navigation with Referrer-Policy " + referrerPolicy;
+function fetchReferrerPolicy(referrerPolicy, destination, fetchMode, expectedOrigin) {
+  return async function () {
+    const stash = token(),
+          referrerPolicyPath = "/fetch/origin/resources/referrer-policy.py";
+          redirectPath = "/fetch/origin/resources/redirect-and-stash.py";
+
+    let fetchUrl =
+        (destination=== "same-origin" ? origins.HTTP_ORIGIN
+                                     : origins.HTTP_REMOTE_ORIGIN) +
+        redirectPath + "?stash=" + stash;
+    let json;
+
+    await new Promise(resolve => {
+      const frame = document.createElement("iframe");
+      frame.src = origins.HTTP_ORIGIN + referrerPolicyPath +
+                  "?referrerPolicy=" + referrerPolicy;
+      self.addEventListener("message", e => {
+        if (e.data === "action") {
+          fetch(fetchUrl, { mode: fetchMode, method: "POST" })
+            .then(() => fetch(redirectPath + "?dump&stash=" + stash))
+            .then(rsp => rsp.json())
+            .then(data=>{
+              json = data;
+              frame.remove();
+              resolve();
+            });
+        }
+      }, { once: true });
+      document.body.appendChild(frame);
+    });
+
+    assert_equals(json[0], expectedOrigin);
+  };
+}
+
+function referrerPolicyTestString(referrerPolicy, destination) {
+  return "Origin header and POST " + destination + " with Referrer-Policy " +
+         referrerPolicy;
 }
 
 [
@@ -157,16 +183,35 @@ function referrerPolicyTestString(referrerPolicy, navigationDestination) {
     "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
   },
 ].forEach(testObj => {
-  promise_test(referrerPolicyFunctor(testObj.policy,
-                                     NavigationDestination.SameOrigin,
-                                     testObj.expectedOriginForSameOrigin),
-               referrerPolicyTestString(testObj.policy,
-                                        NavigationDestination.SameOrigin));
+  [
+    {
+      "name": "same-origin",
+      "expectedOrigin": testObj.expectedOriginForSameOrigin
+    },
+    {
+      "name": "cross-origin",
+      "expectedOrigin": testObj.expectedOriginForCrossOrigin
+    }
+  ].forEach(destination => {
+    promise_test(navigationReferrerPolicy(testObj.policy,
+                                          destination.name,
+                                          destination.expectedOrigin),
+                 referrerPolicyTestString(testObj.policy,
+                                          destination.name + " navigation"));
 
-  promise_test(referrerPolicyFunctor(testObj.policy,
-                                     NavigationDestination.CrossOrigin,
-                                     testObj.expectedOriginForCrossOrigin),
-               referrerPolicyTestString(testObj.policy,
-                                        NavigationDestination.CrossOrigin));
+    promise_test(fetchReferrerPolicy(testObj.policy,
+                                     destination.name,
+                                     "cors",
+                                     destination.expectedOrigin),
+                 referrerPolicyTestString(testObj.policy,
+                                          destination.name + " fetch cors mode"));
+
+    promise_test(fetchReferrerPolicy(testObj.policy,
+                                     destination.name,
+                                     "no-cors",
+                                     destination.expectedOrigin),
+                 referrerPolicyTestString(testObj.policy,
+                                          destination.name + " fetch no-cors mode"));
+  });
 });
 

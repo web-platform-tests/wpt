@@ -195,6 +195,15 @@ test(function() {
 }, 'Check if "ns1" is generated even if the element already has xmlns:ns1.');
 
 test(function() {
+  const xml = '<root xmlns="ns_root"><p:child xmlns:p="ns_child" xmlns=""><grandchild/></p:child></root>';
+  const root = parse(xml);
+  // Check serialization via the XMLSerializer, which does not set the require-well-formed flag
+  assert_equals(serialize(root), xml);
+  // Also check serialization via outerHTML, which sets the require-well-formed flag but should not throw in this case
+  assert_equals(root.outerHTML, xml);
+}, 'Check if the default namespace can be correctly reset on a prefixed element');
+
+test(function() {
   const root = (new Document()).createElement('root');
   root.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'v');
   assert_equals(serialize(root), '<root xmlns:ns1="http://www.w3.org/1999/xlink" ns1:href="v"/>');

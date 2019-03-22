@@ -271,6 +271,8 @@ class Manifest(object):
         changed = False
         reftest_changes = False
 
+        # Create local variable references to these dicts so we avoid the
+        # attribute access in the hot loop below
         path_hash = self._path_hash
         data = self._data
 

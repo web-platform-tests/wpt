@@ -1,13 +1,11 @@
 from __future__ import print_function
+import subprocess
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import EdgeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: F401
                                           SeleniumRefTestExecutor)  # noqa: F401
 from ..executors.executoredge import EdgeDriverWdspecExecutor  # noqa: F401
-
-import subprocess
-from tools.wpt.utils import call
 
 __wptrunner__ = {"product": "edge",
                  "check_args": "check_args",
@@ -102,17 +100,16 @@ class EdgeBrowser(Browser):
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.server.url}
 
+
 def run_info_extras(**kwargs):
     osReleaseCommand = "(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').ReleaseId"
     osBuildCommand = "(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').BuildLabEx"
     try:
-        os_release = call("powershell.exe", osReleaseCommand).strip()
-        os_build = call("powershell.exe", osBuildCommand).strip()
+        os_release = subprocess.check_output(["powershell.exe", osReleaseCommand]).strip()
+        os_build = subprocess.check_output(["powershell.exe", osBuildCommand]).strip()
     except (subprocess.CalledProcessError, OSError):
         return {}
 
-    rv = {
-        "os_build": os_build,
-        "os_release": os_release}
-
+    rv = {"os_build": os_build,
+          "os_release": os_release}
     return rv

@@ -7,10 +7,15 @@ infrastructure which makes the project possible.
 
 Some aspects of the infrastructure are only accessible to administrators.
 
-Project                   | Secret                   | Owners
---------------------------|--------------------------|-------------
-[results-collection]      | root SSH keys            | boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
-[results-collection]      | Password for app secrets | boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
+```eval_rst
+=========================  =========================  =========================
+Project                    Secret                     Owners
+=========================  =========================  =========================
+[results-collection]       root SSH keys              boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
+[results-collection]       Password for app secrets   boaz@bocoup.com, mike@bocoup.com, rick@bocoup.com
+=========================  =========================  =========================
+
+```
 
 SSL certificates for all HTTPS-enabled domains are retrieved via [Let's
 Encrypt](https://letsencrypt.org/), so that data does not represent an

@@ -6,6 +6,9 @@ from ..executors.executorselenium import (SeleniumTestharnessExecutor,  # noqa: 
                                           SeleniumRefTestExecutor)  # noqa: F401
 from ..executors.executoredge import EdgeDriverWdspecExecutor  # noqa: F401
 
+import subprocess
+from tools.wpt.utils import call
+
 __wptrunner__ = {"product": "edge",
                  "check_args": "check_args",
                  "browser": "EdgeBrowser",
@@ -16,6 +19,7 @@ __wptrunner__ = {"product": "edge",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
                  "env_options": "env_options",
+                 "run_info_extras": "run_info_extras",
                  "timeout_multiplier": "get_timeout_multiplier"}
 
 
@@ -97,3 +101,18 @@ class EdgeBrowser(Browser):
 
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.server.url}
+
+def run_info_extras(**kwargs):
+    osReleaseCommand = "(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').ReleaseId"
+    osBuildCommand = "(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').BuildLabEx"
+    try:
+        os_release = call("powershell.exe", osReleaseCommand).strip()
+        os_build = call("powershell.exe", osBuildCommand).strip()
+    except (subprocess.CalledProcessError, OSError):
+        return {}
+
+    rv = {
+        "os_build": os_build,
+        "os_release": os_release}
+
+    return rv

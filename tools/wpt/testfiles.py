@@ -293,12 +293,14 @@ def affected_testfiles(files_changed, skip_dirs=None,
 
     return tests_changed, affected_testfiles
 
-def read_ignore_rules(ingore_rule_files):
+def read_ignore_rules(ingore_rules_file):
+    if wpt_root not in ingore_rules_file:
+        ingore_rules_file = os.path.join(wpt_root, ingore_rules_file)
     ignore_rules = []
-    with open(ingore_rule_files, "r") as fp:
+    with open(ingore_rules_file, "r") as fp:
         for line in fp:
             if not line.startswith("#"):
-                ignore_rules.append(line)
+                ignore_rules.append(line.strip())
     return set(ignore_rules)
 
 class IgnoreRulesAction(argparse.Action):

@@ -173,15 +173,8 @@ class CDPTestDriverProtocolPart(TestDriverProtocolPart):
 
 
 class CDPGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
-
     def generate_test_report(self, message):
-        json_message = {"message": message}
-        #self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
-        # TODO: Re-implement using the experimental `Page.generateTestReport`
-        # method available in the tip-of-tree release of Chrome DevTools
-        # Protocol.
+        self.parent.session.generate_test_report(message)
 
 
 class CDPProtocol(Protocol):
@@ -191,7 +184,8 @@ class CDPProtocol(Protocol):
                   CDPClickProtocolPart,
                   CDPSendKeysProtocolPart,
                   CDPActionSequenceProtocolPart,
-                  CDPTestDriverProtocolPart]
+                  CDPTestDriverProtocolPart,
+                  CDPGenerateTestReportProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(CDPProtocol, self).__init__(executor, browser)

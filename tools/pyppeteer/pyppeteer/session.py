@@ -352,3 +352,22 @@ class Session(object):
 
         :param value: duration in milliseconds'''
         self._script_timeout = value
+
+    def generate_test_report(self, message):
+        # The Chrome DevTools Protocol documentation describes two different
+        # "methods" for this functionality: `Page.generateTestReport` [1] and
+        # `Testing.generateTestReport` [2]. Chromium version 73.0.3683.75
+        # accepts invocations of the latter but does not appear to produce
+        # reports in response.
+        #
+        # [1] https://chromedevtools.github.io/devtools-protocol/tot/Page#method-generateTestReport
+        # [2] https://chromedevtools.github.io/devtools-protocol/tot/Testing#method-generateTestReport
+        self._send("Page.generateTestReport", {  # API status: experimental
+            "message": message,
+            # Mimic the behavior described by the Reporting API working draft,
+            # where the "group" property takes the string value "default" by
+            # default.
+            #
+            # https://w3c.github.io/reporting/#generate-test-report-command
+            "group": u"default"
+        })

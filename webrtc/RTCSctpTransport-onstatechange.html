@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RTCSctpTransport onstatechange</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+promise_test(async (t) => {
+  const resolver = new Resolver();
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+
+  // Negotiate SCTP transport
+  pc1.createDataChannel('test');
+  await doSignalingHandshake(pc1, pc2);
+
+  let onstatechangeEventCount = 0;
+  for (const pc of [pc1, pc2]) {
+    assert_equals(pc.sctp.state, 'connecting', 'RTCSctpTransport should be in the connecting state');
+
+    // Triggered after the peers connected
+    pc.sctp.onstatechange = () => {
+      assert_equals(pc.sctp.state, 'connected');
+      if (onstatechangeEventCount++)
+        resolver.resolve();
+    };
+  }
+
+  // Let the peers connect
+  exchangeIceCandidates(pc1, pc2);
+
+  return resolver;
+});
+</script>

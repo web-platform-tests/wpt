@@ -77,7 +77,6 @@ class CDPBaseProtocolPart(BaseProtocolPart):
 
 class CDPTestharnessProtocolPart(TestharnessProtocolPart):
     def setup(self):
-        self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
 
@@ -86,8 +85,6 @@ class CDPTestharnessProtocolPart(TestharnessProtocolPart):
         return self.parent.session
 
     def load_runner(self, url_protocol):
-        if self.runner_handle:
-            self.webdriver.window_handle = self.runner_handle
         url = urlparse.urljoin(self.parent.executor.server_url(url_protocol),
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)

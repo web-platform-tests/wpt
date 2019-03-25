@@ -32,18 +32,9 @@ class Session(object):
         self.logger = logging.getChild('session')
 
         self.connection = connection
-        self.mouse_position = {'x': 0, 'y': 0}
-
-    def _on_mouse_move(self, params):
-        '''The WebDriver Actions API allows mouse events to be issued relative
-        to the current position of the mouse. Neither the DOM nor the Chrome
-        Debugger protocol offer a method to retrieve the current mouse
-        position. This class observes all commands which alter the mouse
-        position and assumes that the mouse is located at the coordinates
-        defined by the most recent such command.'''
-
-        self.mouse_position['x'] = params['x']
-        self.mouse_position['y'] = params['y']
+        self.mouse_positions = {
+            None: {'x': 0, 'y': 0}
+        }
 
     def on_event(self, message_text):
         message = json.loads(message_text)
@@ -95,9 +86,6 @@ class Session(object):
 
         if isinstance(result, Exception):
             raise result
-
-        if method == 'Input.dispatchMouseEvent':
-            self._on_mouse_move(params)
 
         return result['result']
 
@@ -248,7 +236,8 @@ class Session(object):
                 {
                     'type': track['type'],
                     'parameters': track.get('parameters'),
-                    'action': action
+                    'action': action,
+                    'input_id': track.get('id')
                 } for action in track['actions']
             ] for track in actions['actions']
         ]
@@ -259,14 +248,14 @@ class Session(object):
 
         exceptions = queue.Queue()
 
-        def create_thread(action, exceptions):
+        def create_thread(input_id, action, exceptions):
             handler = getattr(action_handlers, action['type'])
             duration = action.get('duration', 0) / 1000
 
             def target():
                 start = time.time()
                 try:
-                    handler(self, action)
+                    handler(self, input_id, action)
 
                     time.sleep(max(0, duration - (time.time() - start)))
                 except Exception as e:
@@ -276,7 +265,9 @@ class Session(object):
 
         for tick in ticks:
             threads = [
-                create_thread(action['action'], exceptions) for action in tick
+                create_thread(
+                    action['input_id'], action['action'], exceptions
+                ) for action in tick
             ]
 
             for thread in threads:

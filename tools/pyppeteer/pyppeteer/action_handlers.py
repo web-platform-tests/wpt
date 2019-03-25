@@ -1,9 +1,9 @@
 from pyppeteer import element
 
-def pause(session, action):
+def pause(session, input_id, action):
     pass
 
-def keyDown(session, action):
+def keyDown(session, input_id, action):
     assert 'value' in action
 
     session._send('Input.dispatchKeyEvent', {  # API status: stable
@@ -11,7 +11,7 @@ def keyDown(session, action):
         'text': action['value']
     })
 
-def keyUp(session, action):
+def keyUp(session, input_id, action):
     assert 'value' in action
 
     session._send('Input.dispatchKeyEvent', {  # API status: stable
@@ -20,7 +20,7 @@ def keyUp(session, action):
     })
 
 # https://w3c.github.io/webdriver/#dfn-process-a-pointer-move-action
-def pointerMove(session, action):
+def pointerMove(session, input_id, action):
     assert 'x' in action
     assert 'y' in action
     assert 'type' in action
@@ -39,6 +39,8 @@ def pointerMove(session, action):
     else:
         raise Exception('Faulty origin: %s' % action['origin'])
 
+    session.mouse_positions[input_id] = destination
+
     session._send('Input.dispatchMouseEvent', {  # API status: stable
         'type': 'mouseMoved',
         'x': destination['x'],
@@ -46,7 +48,7 @@ def pointerMove(session, action):
     })
 
 # https://w3c.github.io/webdriver/#dfn-process-a-pointer-up-or-pointer-down-action
-def _pointer_vertical(session, action, event_type):
+def _pointer_vertical(session, input_id, action, event_type):
     assert 'button' in action
     assert type(action['button']) is int
     assert action['button'] >= 0
@@ -67,12 +69,12 @@ def _pointer_vertical(session, action, event_type):
         'type': event_type,
         'button': button,
         'clickCount': 1,
-        'x': session.mouse_position['x'],
-        'y': session.mouse_position['y']
+        'x': session.mouse_positions[input_id]['x'],
+        'y': session.mouse_positions[input_id]['y']
     })
 
-def pointerUp(session, action):
-    return _pointer_vertical(session, action, 'mouseReleased')
+def pointerUp(session, input_id, action):
+    return _pointer_vertical(session, input_id, action, 'mouseReleased')
 
-def pointerDown(session, action):
-    return _pointer_vertical(session, action, 'mousePressed')
+def pointerDown(session, input_id, action):
+    return _pointer_vertical(session, input_id, action, 'mousePressed')

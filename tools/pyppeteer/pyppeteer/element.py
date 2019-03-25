@@ -45,7 +45,27 @@ class Element(object):
             'y': center['y']
         })
 
+    def _set_file(self, files):
+        self._session._send('DOM.setFileInputFiles', {  # API status: stable
+            'files': files,
+            'objectId': self._remote_object_id,
+        })
+
     def send_keys(self, text):
+        is_file = self._session._send('Runtime.callFunctionOn', {  # API status: stable
+            'functionDeclaration': '''
+            function focus(target) {
+              return target.nodeName.toLowerCase() === 'input' &&
+                target.getAttribute('type').toLowerCase() === 'file';
+            }
+            ''',
+            'objectId': self._remote_object_id,
+            'arguments': [{'objectId': self._remote_object_id}]
+        })['result']['value']
+
+        if is_file:
+            return self._set_file(text.split('\n'))
+
         # Existing tests in WPT have been written to focus on the document
         # body. Because this is not a focusable element, the `DOM.focus` method
         # cannot be used. Instead, invoke the `focus` method, which has roughly

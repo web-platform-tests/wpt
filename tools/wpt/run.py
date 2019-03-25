@@ -287,6 +287,9 @@ class Chrome(BrowserSetup):
         # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
         kwargs["binary_args"].append("--short-reporting-delay")
 
+        # Point all .test domains to localhost for Chrome
+        kwargs["binary_args"] += ["--host-resolver-rules=MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1"]
+
 
 class ChromeAndroid(BrowserSetup):
     name = "chrome_android"

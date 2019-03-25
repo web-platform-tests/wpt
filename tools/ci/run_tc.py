@@ -113,11 +113,11 @@ def start_userspace_oom_killer():
 
 
 def make_hosts_file():
-    subprocess.check_call(["sudo", "sh", "-c", "./wpt make-hosts-file >> /etc/hosts"])
+    run(["sudo", "sh", "-c", "./wpt make-hosts-file >> /etc/hosts"])
 
 
 def checkout_revision(rev):
-    subprocess.check_call(["git", "checkout", "-q", rev])
+    run(["git", "checkout", "-q", rev])
 
 
 def install_chrome(channel):
@@ -135,8 +135,8 @@ def install_chrome(channel):
     with open(dest, "w") as f:
         f.write(resp.read())
 
-    subprocess.check_call(["sudo", "apt-get", "-qqy", "update"])
-    subprocess.check_call(["sudo", "gdebi", "-n", "/tmp/%s" % deb_archive])
+    run(["sudo", "apt-get", "-qqy", "update"])
+    run(["sudo", "gdebi", "-n", "/tmp/%s" % deb_archive])
 
 
 def start_xvfb():

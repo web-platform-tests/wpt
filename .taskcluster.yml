@@ -112,14 +112,14 @@ tasks:
               $map:
                 # This is the main place to define new stability checks
                 - name: wpt-${browser.name}-${browser.channel}-stability
-                  checkout: FETCH_HEAD
+                  checkout: HEAD
                   diff_range: HEAD^
                   description: >-
                     Verify that all tests affected by a pull request are stable
                     when executed in ${browser.name}.
                   extra_args: '--verify'
                 - name: wpt-${browser.name}-${browser.channel}-results
-                  checkout: FETCH_HEAD
+                  checkout: HEAD
                   diff_range: HEAD^
                   description: >-
                     Collect results for all tests affected by a pull request in
@@ -129,8 +129,8 @@ tasks:
                     --log-wptreport=../artifacts/wpt_report.json
                     --log-wptscreenshot=../artifacts/wpt_screenshot.txt
                 - name: wpt-${browser.name}-${browser.channel}-results-without-changes
-                  checkout: FETCH_HEAD^
-                  diff_range: FETCH_HEAD
+                  checkout: HEAD^
+                  diff_range: HEAD
                   description: >-
                     Collect results for all tests affected by a pull request in
                     ${browser.name} but without the changes in the PR.

@@ -57,10 +57,20 @@ class CDPBaseProtocolPart(BaseProtocolPart):
 
     @property
     def current_window(self):
-        return self.webdriver.window_handle
+        '''This method is unused, but it is defined to satisfy the
+        `BaseProtocolPart` interface.
+
+        https://github.com/web-platform-tests/wpt/pull/15931
+        '''
+        pass
 
     def set_window(self, handle):
-        self.webdriver.window_handle = handle
+        '''This method is unused, but it is defined to satisfy the
+        `BaseProtocolPart` interface.
+
+        https://github.com/web-platform-tests/wpt/pull/15931
+        '''
+        pass
 
     def wait(self):
         while True:

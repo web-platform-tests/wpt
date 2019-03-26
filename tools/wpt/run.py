@@ -302,17 +302,9 @@ class ChromeAndroid(BrowserSetup):
                 raise WptrunError("Unable to locate or install chromedriver binary")
 
 
-class ChromeCDP(BrowserSetup):
+class ChromeCDP(Chrome):
     name = "chrome_cdp"
     browser_cls = browser.ChromeCDP
-
-    def setup_kwargs(self, kwargs):
-        if kwargs["webdriver_binary"]:
-            raise WptrunError("chrome_cdp does not interface with a WebDriver server")
-
-        if kwargs["browser_channel"] == "dev":
-            logger.info("Automatically turning on experimental features for Chrome Dev")
-            kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
 
 class Opera(BrowserSetup):

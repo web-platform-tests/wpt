@@ -91,7 +91,6 @@ class EdgeBrowser(Browser):
         procs = subprocess.check_output(['tasklist', '/fi', 'ImageName eq ' + edge_proc_name])
         if edge_proc_name in procs:
             subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*']) # close all Edge browser instances
-        subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftwebdriver.exe']) # close all Edge driver instances
         self.logger.info("stopped")
 
     def pid(self):

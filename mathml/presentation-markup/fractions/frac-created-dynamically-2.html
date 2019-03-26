@@ -11,16 +11,16 @@
   var mfrac = document.createElementNS("http://www.w3.org/1998/Math/MathML","mfrac");
   var mspace1 = document.createElementNS("http://www.w3.org/1998/Math/MathML","mspace");
   mspace1.setAttribute("width", "50px");
-  mspace1.setAttribute("height", "150px");
-  mspace1.setAttribute("style", "background: green");
+  mspace1.setAttribute("height", "50px");
+  mspace1.setAttribute("style", "background: black");
   var mspace2 = document.createElementNS("http://www.w3.org/1998/Math/MathML","mspace");
   mspace2.setAttribute("width", "50px");
-  mspace2.setAttribute("height", "150px");
-  mspace2.setAttribute("style", "background: green");
+  mspace2.setAttribute("height", "50px");
+  mspace2.setAttribute("style", "background: black");
   var mspace3 = document.createElementNS("http://www.w3.org/1998/Math/MathML","mspace");
   mspace3.setAttribute("width", "50px");
-  mspace3.setAttribute("height", "150px");
-  mspace3.setAttribute("style", "background: green");
+  mspace3.setAttribute("height", "50px");
+  mspace3.setAttribute("style", "background: black");
   document.getElementsByTagName("math")[0].appendChild(mfrac);
   mfrac.appendChild(mspace1);
   mfrac.appendChild(mspace2);
@@ -29,7 +29,7 @@
 </script>
 </head>
 <body>
-  <p>This test passes if you see a green rectangle.</p>
+  <p>This test passes if it renders the same as an invalid fraction with 3 children.</p>
   <math>
 </body>
 </html>

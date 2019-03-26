@@ -1,4 +1,5 @@
 import itertools
+import json
 import os
 from collections import defaultdict
 from six import iteritems, iterkeys, itervalues, string_types
@@ -10,11 +11,9 @@ from .log import get_logger
 from .utils import from_os_path, to_os_path
 
 try:
-    import ujson as json
-    JSON_LIBRARY = 'ujson'
+    import ujson as fast_json
 except ImportError:
-    import json
-    JSON_LIBRARY = 'json'
+    fast_json = json
 
 CURRENT_VERSION = 5
 
@@ -162,6 +161,21 @@ class TypeData(object):
         self.tests_root = tests_root
         self.json_data = data
 
+    def to_json(self):
+        data = {
+            from_os_path(path):
+            [t for t in sorted(test.to_json() for test in tests)]
+            for path, tests in iteritems(self.data)
+        }
+
+        if self.json_data is not None:
+            if not data:
+                # avoid copying if there's nothing here yet
+                return self.json_data
+            data.update(self.json_data)
+
+        return data
+
     def paths(self):
         """Get a list of all paths containing items of this type,
         without actually constructing all the items"""
@@ -257,7 +271,12 @@ class Manifest(object):
         changed = False
         reftest_changes = False
 
-        prev_files = self._data.paths()
+        # Create local variable references to these dicts so we avoid the
+        # attribute access in the hot loop below
+        path_hash = self._path_hash
+        data = self._data
+
+        prev_files = data.paths()
 
         reftest_types = ("reftest", "reftest_node")
 
@@ -265,28 +284,33 @@ class Manifest(object):
             if not update:
                 rel_path = source_file
                 seen_files.add(rel_path)
+                assert rel_path in path_hash
+                old_hash, old_type = path_hash[rel_path]
+                if old_type in reftest_types:
+                    manifest_items = data[old_type][rel_path]
+                    reftest_nodes.extend((item, old_hash) for item in manifest_items)
             else:
                 rel_path = source_file.rel_path
                 seen_files.add(rel_path)
 
                 file_hash = source_file.hash
 
-                is_new = rel_path not in self._path_hash
+                is_new = rel_path not in path_hash
                 hash_changed = False
 
                 if not is_new:
-                    old_hash, old_type = self._path_hash[rel_path]
+                    old_hash, old_type = path_hash[rel_path]
                     if old_hash != file_hash:
                         new_type, manifest_items = source_file.manifest_items()
                         hash_changed = True
                         if new_type != old_type:
-                            del self._data[old_type][rel_path]
+                            del data[old_type][rel_path]
                             if old_type in reftest_types:
                                 reftest_changes = True
                     else:
                         new_type = old_type
                         if old_type in reftest_types:
-                            manifest_items = self._data[old_type][rel_path]
+                            manifest_items = data[old_type][rel_path]
                 else:
                     new_type, manifest_items = source_file.manifest_items()
 
@@ -295,36 +319,35 @@ class Manifest(object):
                     if is_new or hash_changed:
                         reftest_changes = True
                 elif is_new or hash_changed:
-                    self._data[new_type][rel_path] = set(manifest_items)
-
-                self._path_hash[rel_path] = (file_hash, new_type)
+                    data[new_type][rel_path] = set(manifest_items)
 
                 if is_new or hash_changed:
+                    path_hash[rel_path] = (file_hash, new_type)
                     changed = True
 
         deleted = prev_files - seen_files
         if deleted:
             changed = True
             for rel_path in deleted:
-                if rel_path in self._path_hash:
-                    _, old_type = self._path_hash[rel_path]
+                if rel_path in path_hash:
+                    _, old_type = path_hash[rel_path]
                     if old_type in reftest_types:
                         reftest_changes = True
-                    del self._path_hash[rel_path]
+                    del path_hash[rel_path]
                     try:
-                        del self._data[old_type][rel_path]
+                        del data[old_type][rel_path]
                     except KeyError:
                         pass
                 else:
-                    for test_data in itervalues(self._data):
+                    for test_data in itervalues(data):
                         if rel_path in test_data:
                             del test_data[rel_path]
 
         if reftest_changes:
             reftests, reftest_nodes, changed_hashes = self._compute_reftests(reftest_nodes)
-            self._data["reftest"].data = reftests
-            self._data["reftest_node"].data = reftest_nodes
-            self._path_hash.update(changed_hashes)
+            data["reftest"].data = reftests
+            data["reftest_node"].data = reftest_nodes
+            path_hash.update(changed_hashes)
 
         return changed
 
@@ -359,11 +382,7 @@ class Manifest(object):
 
     def to_json(self):
         out_items = {
-            test_type: {
-                from_os_path(path):
-                [t for t in sorted(test.to_json() for test in tests)]
-                for path, tests in iteritems(type_paths)
-            }
+            test_type: type_paths.to_json()
             for test_type, type_paths in iteritems(self._data) if type_paths
         }
         rv = {"url_base": self.url_base,
@@ -406,11 +425,11 @@ def load(tests_root, manifest, types=None, meta_filters=None):
 __load_cache = {}
 
 
-def _load(logger, tests_root, manifest, types=None, meta_filters=None):
+def _load(logger, tests_root, manifest, types=None, meta_filters=None, allow_cached=True):
     # "manifest" is a path or file-like object.
     manifest_path = (manifest if isinstance(manifest, string_types)
                      else manifest.name)
-    if manifest_path in __load_cache:
+    if allow_cached and manifest_path in __load_cache:
         return __load_cache[manifest_path]
 
     if isinstance(manifest, string_types):
@@ -421,7 +440,7 @@ def _load(logger, tests_root, manifest, types=None, meta_filters=None):
         try:
             with open(manifest) as f:
                 rv = Manifest.from_json(tests_root,
-                                        json.load(f),
+                                        fast_json.load(f),
                                         types=types,
                                         meta_filters=meta_filters)
         except IOError:
@@ -431,11 +450,12 @@ def _load(logger, tests_root, manifest, types=None, meta_filters=None):
             return None
     else:
         rv = Manifest.from_json(tests_root,
-                                json.load(manifest),
+                                fast_json.load(manifest),
                                 types=types,
                                 meta_filters=meta_filters)
 
-    __load_cache[manifest_path] = rv
+    if allow_cached:
+        __load_cache[manifest_path] = rv
     return rv
 
 
@@ -449,7 +469,8 @@ def load_and_update(tests_root,
                     working_copy=False,
                     types=None,
                     meta_filters=None,
-                    write_manifest=True):
+                    write_manifest=True,
+                    allow_cached=True):
     logger = get_logger()
 
     manifest = None
@@ -459,7 +480,8 @@ def load_and_update(tests_root,
                              tests_root,
                              manifest_path,
                              types=types,
-                             meta_filters=meta_filters)
+                             meta_filters=meta_filters,
+                             allow_cached=allow_cached)
         except ManifestVersionMismatch:
             logger.info("Manifest version changed, rebuilding")
 
@@ -486,12 +508,8 @@ def write(manifest, manifest_path):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     with open(manifest_path, "wb") as f:
-        if JSON_LIBRARY == 'ujson':
-            # ujson does not support the separators flag.
-            json.dump(manifest.to_json(), f, sort_keys=True, indent=1)
-        else:
-            # Use ',' instead of the default ', ' separator to prevent trailing
-            # spaces: https://docs.python.org/2/library/json.html#json.dump
-            json.dump(manifest.to_json(), f,
-                      sort_keys=True, indent=1, separators=(',', ': '))
+        # Use ',' instead of the default ', ' separator to prevent trailing
+        # spaces: https://docs.python.org/2/library/json.html#json.dump
+        json.dump(manifest.to_json(), f,
+                  sort_keys=True, indent=1, separators=(',', ': '))
         f.write("\n")

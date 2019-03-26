@@ -316,15 +316,9 @@ class ChromeAndroid(BrowserSetup):
                 raise WptrunError("Unable to locate or install chromedriver binary")
 
 
-class ChromeCDP(BrowserSetup):
+class ChromeCDP(Chrome):
     name = "chrome_cdp"
     browser_cls = browser.ChromeCDP
-
-    def setup_kwargs(self, kwargs):
-        if kwargs["webdriver_binary"]:
-            raise WptrunError("chrome_cdp does not interface with a WebDriver server")
-
-        Chrome.setup_binary_args(kwargs)
 
 
 class Opera(BrowserSetup):

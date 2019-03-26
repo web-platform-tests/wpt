@@ -553,15 +553,6 @@ class ChromeCDP(Chrome):
     product = "chrome_cdp"
     requirements = "requirements_chrome_cdp.txt"
 
-    def find_webdriver(self, channel=None):
-        raise NotImplementedError
-
-    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
-        raise NotImplementedError
-
-    def version(self, binary=None, webdriver_binary=None):
-        return None
-
 
 class Opera(Browser):
     """Opera-specific interface.

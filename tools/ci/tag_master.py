@@ -109,19 +109,21 @@ def create_release(owner, repo, sha, tag, summary, body):
     # Upload URL contains '{?name,label}' at the end which we want to remove
     upload_url = create_data["upload_url"].split("{", 1)[0]
 
-    upload_filename = "MANIFEST-%s.json.gz" % sha
-    params = {"name": upload_filename,
-              "label": "MANIFEST.json.gz"}
+    upload_exts = [".gz", ".bz2", ".zst"]
+    for upload_ext in upload_exts:
+        upload_filename = "MANIFEST-%s.json%s" % (sha, upload_ext)
+        params = {"name": upload_filename,
+                  "label": "MANIFEST.json%s" % upload_ext}
 
-    with open(os.path.expanduser("~/meta/MANIFEST.json.gz"), "rb") as f:
-        upload_data = f.read()
+        with open(os.path.expanduser("~/meta/MANIFEST.json%s" % upload_ext), "rb") as f:
+            upload_data = f.read()
 
-    logger.info("Uploading %s bytes" % len(upload_data))
+        logger.info("Uploading %s bytes" % len(upload_data))
 
-    upload_resp = request(upload_url, "Manifest upload", data=upload_data, params=params,
-                          headers={'Content-Type': 'application/octet-stream'})
-    if not upload_resp:
-        return False
+        upload_resp = request(upload_url, "Manifest upload", data=upload_data, params=params,
+                              headers={'Content-Type': 'application/octet-stream'})
+        if not upload_resp:
+            return False
 
     return True
 

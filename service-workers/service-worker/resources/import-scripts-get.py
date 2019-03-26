@@ -3,4 +3,4 @@ def main(req, res):
         ('Cache-Control', 'no-cache, must-revalidate'),
         ('Pragma', 'no-cache'),
         ('Content-Type', 'application/javascript')],
-      'echo_output = "%s";\n' % req.GET['msg'])
+        req.GET['output'] + ' = "%s";\n' % req.GET['msg'])

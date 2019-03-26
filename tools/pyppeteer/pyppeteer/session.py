@@ -272,7 +272,17 @@ class Session(object):
 
             for thread in threads:
                 thread.start()
-            for thread in threads:
+
+                # This implementation is a simplification of the algorithm
+                # specified by the WebDriver "actions" API.
+                #
+                # That specification allows for actions in the same "tick" to
+                # generate interspersed events. Currently, `pointerMove` is the
+                # only action that may generate multiple events. However, this
+                # implementation consistently dispatches s single event for
+                # `pointerMove`. The parallelism is therefore not observable,
+                # so this implementation performs the actions within a tick in
+                # series.
                 thread.join()
 
             try:

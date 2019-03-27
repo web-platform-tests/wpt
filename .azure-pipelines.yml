@@ -163,6 +163,8 @@ jobs:
     condition: always()
   - template: tools/ci/azure/cleanup_win10.yml
 
+# All `./wpt run` tests are run from epochs/* branches on a schedule. See
+# documentation at the top of this file for required setup.
 - job: results_edge
   displayName: 'all tests (Edge)'
   condition: |
@@ -196,8 +198,6 @@ jobs:
     dependsOn: results_edge
     artifactName: edge-results
 
-# All `./wpt run` tests are run from epochs/* branches on a schedule. See
-# documentation at the top of this file for required setup.
 - job: results_safari_preview
   displayName: 'all tests (Safari Technology Preview)'
   condition: |

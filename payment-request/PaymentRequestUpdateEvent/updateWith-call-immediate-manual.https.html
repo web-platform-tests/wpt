@@ -55,17 +55,17 @@ function testImmediateUpdate({ textContent: testName }) {
     const eventPromise = new Promise((resolve, reject) => {
       request.addEventListener(
         "shippingaddresschange",
-        async ev => {
-          // spin the event loop, sets [[waitForUpdate]] to true.
-          await new Promise((resolve, reject) => {
-            setTimeout(resolve, 0);
+        ev => {
+          // Forces updateWith() to be run in the next event loop tick so that
+          // [[waitForUpdate]] is already true when it runs.
+          t.step_timeout(() => {
+            try {
+              ev.updateWith(validDetails);
+              resolve(); // This is bad.
+            } catch (err) {
+              reject(err); // this is good.
+            }
           });
-          try {
-            ev.updateWith(validDetails);
-            resolve(); // This is bad.
-          } catch (err) {
-            reject(err); // this is good.
-          }
         },
         { once: true }
       );

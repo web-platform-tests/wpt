@@ -57,7 +57,9 @@ function testImmediateUpdate({ textContent: testName }) {
         "shippingaddresschange",
         async ev => {
           // spin the event loop, sets [[waitForUpdate]] to true.
-          await Promise.resolve();
+          await new Promise((resolve, reject) => {
+            setTimeout(resolve, 0);
+          });
           try {
             ev.updateWith(validDetails);
             resolve(); // This is bad.
@@ -68,13 +70,14 @@ function testImmediateUpdate({ textContent: testName }) {
         { once: true }
       );
     });
-    const response = await request.show();
+    const acceptPromise = request.show();
     await promise_rejects(
       t,
       "InvalidStateError",
       eventPromise,
       "The event loop already spun, so [[waitForUpdate]] is now true"
     );
+    const response = await acceptPromise;
     await response.complete();
   }, testName.trim());
 }

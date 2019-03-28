@@ -86,6 +86,10 @@ class TypeData(object):
             raise KeyError
 
     def __setitem__(self, key, value):
+        if self.json_data is not None:
+            path = from_os_path(key)
+            if path in self.json_data:
+                del self.json_data[path]
         self.data[key] = value
 
     def __contains__(self, key):

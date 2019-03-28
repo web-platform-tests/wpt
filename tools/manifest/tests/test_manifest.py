@@ -407,3 +407,26 @@ def test_update_from_json():
     test1 = s1.manifest_items()[1][0]
 
     assert list(m) == [("testharness", test1.path, {test1})]
+
+
+def test_update_from_json_modified():
+    # Create the original manifest
+    m = manifest.Manifest()
+    s1 = SourceFileWithTest("test1", "0"*40, item.TestharnessTest)
+    m.update([(s1, True)])
+    json_str = m.to_json()
+
+    # Reload it from JSON
+    m = manifest.Manifest.from_json("/", json_str)
+
+    # Update it with timeout="long"
+    s2 = SourceFileWithTest("test1", "1"*40, item.TestharnessTest, timeout="long")
+    m.update([(s2, True)])
+    json_str = m.to_json()
+    assert json_str == {
+        'items': {'testharness': {'test1': [['/test1', {"timeout": "long"}]]}},
+        'paths': {'test1': ('1111111111111111111111111111111111111111',
+                            'testharness')},
+        'url_base': '/',
+        'version': 5
+    }

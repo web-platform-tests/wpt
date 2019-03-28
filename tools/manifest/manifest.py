@@ -68,8 +68,8 @@ class TypeData(object):
             self.load(key)
         return self.data[key]
 
-    def __bool__(self):
-        return bool(self.data)
+    def __nonzero__(self):
+        return bool(self.data) or bool(self.json_data)
 
     def __len__(self):
         rv = len(self.data)

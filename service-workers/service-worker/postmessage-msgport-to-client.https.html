@@ -8,16 +8,17 @@ promise_test(async t => {
   const SCRIPT = 'resources/postmessage-msgport-to-client-worker.js';
   const SCOPE = 'resources/blank.html';
 
-  const registration =
-      await service_worker_unregister_and_register(t, SCRIPT, SCOPE);
+  const registration = await service_worker_unregister_and_register(
+    t,
+    SCRIPT,
+    SCOPE
+  );
   await wait_for_state(t, registration.installing, 'activated');
   const frame = await with_iframe(SCOPE);
 
-  t.add_cleanup(async() => {
-    if (frame)
-      frame.remove();
-    if (registration)
-      await registration.unregister();
+  t.add_cleanup(async () => {
+    if (frame) frame.remove();
+    if (registration) await registration.unregister();
   });
 
   let e = await new Promise(resolve => {
@@ -27,15 +28,20 @@ promise_test(async t => {
   });
 
   const port = e.ports[0];
-  port.postMessage({value: 1});
-  port.postMessage({value: 2});
-  port.postMessage({done: true});
-  e = await new Promise(resolve => { port.onmessage = resolve; });
+  port.postMessage({ value: 1 });
+  port.postMessage({ value: 2 });
+  port.postMessage({ done: true });
+  e = await new Promise(resolve => {
+    port.onmessage = resolve;
+  });
   assert_equals(e.data.ack, 'Acking value: 1');
-  e = await new Promise(resolve => { port.onmessage = resolve; });
+  e = await new Promise(resolve => {
+    port.onmessage = resolve;
+  });
   assert_equals(e.data.ack, 'Acking value: 2');
-  e = await new Promise(resolve => { port.onmessage = resolve; });
+  e = await new Promise(resolve => {
+    port.onmessage = resolve;
+  });
   assert_true(e.data.done, 'done');
-
-  }, 'postMessage MessagePorts from ServiceWorker to Client');
+}, 'postMessage MessagePorts from ServiceWorker to Client');
 </script>

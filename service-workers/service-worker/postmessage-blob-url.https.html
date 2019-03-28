@@ -5,26 +5,30 @@
 <script src="resources/test-helpers.sub.js"></script>
 <script>
 promise_test(async t => {
-  const script = 'resources/postmessage-blob-url.js';
-  const scope = 'resources/blank.html';
-  const blobText = 'Blob text';
+  const script = "resources/postmessage-blob-url.js";
+  const scope = "resources/blank.html";
+  const blobText = "Blob text";
 
-  const registration =
-      await service_worker_unregister_and_register(t, script, scope);
+  const registration = await service_worker_unregister_and_register(
+    t,
+    script,
+    scope
+  );
 
-  add_completion_callback(async() => {
-    if (registration)
-      await registration.unregister();
+  t.add_cleanup(async () => {
+    if (registration) await registration.unregister();
   });
 
   const worker = registration.installing;
   const blob = new Blob([blobText]);
   const blobUrl = URL.createObjectURL(blob);
   const response = await new Promise(resolve => {
-    navigator.serviceWorker.onmessage = e => { resolve(e.data); }
+    navigator.serviceWorker.onmessage = e => {
+      resolve(e.data);
+    }
     worker.postMessage(blobUrl);
   });
-  assert_equals(response, 'Worker reply:' + blobText);
+  assert_equals(response, "Worker reply:" + blobText);
   URL.revokeObjectURL(blobUrl);
-}, 'postMessage Blob URL to a ServiceWorker');
+}, "postMessage Blob URL to a ServiceWorker");
 </script>

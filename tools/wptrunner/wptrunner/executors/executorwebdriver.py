@@ -364,7 +364,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             if not isinstance(result, list) or len(result) != 2:
                 try:
                     is_alive = self.is_alive()
-                except:
+                except client.WebDriverException:
                     is_alive = False
 
                 if not is_alive:

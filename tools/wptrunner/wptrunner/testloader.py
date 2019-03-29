@@ -6,9 +6,9 @@ from six.moves.queue import Empty
 from collections import defaultdict, deque
 from multiprocessing import Queue
 
-import manifestinclude
-import manifestexpected
-import wpttest
+from . import manifestinclude
+from . import manifestexpected
+from . import wpttest
 from mozlog import structured
 
 manifest = None

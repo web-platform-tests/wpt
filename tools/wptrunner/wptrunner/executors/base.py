@@ -12,7 +12,7 @@ from abc import ABCMeta, abstractmethod
 from PIL import Image, ImageChops, ImageStat
 
 from ..testrunner import Stop
-from protocol import Protocol, BaseProtocolPart
+from .protocol import Protocol, BaseProtocolPart
 
 here = os.path.split(__file__)[0]
 

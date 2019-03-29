@@ -3,7 +3,7 @@ import subprocess
 from six.moves.urllib.parse import urljoin
 from collections import defaultdict
 
-from wptmanifest.parser import atoms
+from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
 enabled_tests = set(["testharness", "reftest", "wdspec"])

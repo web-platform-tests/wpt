@@ -32,7 +32,7 @@ class Session(object):
         self.logger = logging.getChild('session')
 
         self.connection = connection
-        self.mouse_positions = {
+        self.pointer_states = {
             None: {'x': 0, 'y': 0}
         }
 
@@ -234,10 +234,12 @@ class Session(object):
         two_dimensional = [
             [
                 {
-                    'type': track['type'],
-                    'parameters': track.get('parameters'),
-                    'action': action,
-                    'input_id': track.get('id')
+                    'input_device': {
+                        'id': track.get('id'),
+                        'type': track['type'],
+                        'parameters': track.get('parameters')
+                    },
+                    'action': action
                 } for action in track['actions']
             ] for track in actions['actions']
         ]
@@ -248,14 +250,14 @@ class Session(object):
 
         exceptions = queue.Queue()
 
-        def create_thread(input_id, action, exceptions):
+        def create_thread(input_device, action, exceptions):
             handler = getattr(action_handlers, action['type'])
             duration = action.get('duration', 0) / 1000
 
             def target():
                 start = time.time()
                 try:
-                    handler(self, input_id, action)
+                    handler(self, input_device, action)
 
                     time.sleep(max(0, duration - (time.time() - start)))
                 except Exception as e:
@@ -266,8 +268,8 @@ class Session(object):
         for tick in ticks:
             threads = [
                 create_thread(
-                    action['input_id'], action['action'], exceptions
-                ) for action in tick
+                    action_spec['input_device'], action_spec['action'], exceptions
+                ) for action_spec in tick
             ]
 
             for thread in threads:

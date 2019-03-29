@@ -2,7 +2,7 @@ import json
 import sys
 import time
 from os.path import dirname, join
-from StringIO import StringIO
+from six.moves import cStringIO as StringIO
 
 import mock
 

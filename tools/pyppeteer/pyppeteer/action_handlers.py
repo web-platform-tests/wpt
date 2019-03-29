@@ -1,9 +1,9 @@
 from pyppeteer import element
 
-def pause(session, input_id, action):
+def pause(session, input_device, action):
     pass
 
-def keyDown(session, input_id, action):
+def keyDown(session, input_device, action):
     assert 'value' in action
 
     session._send('Input.dispatchKeyEvent', {  # API status: stable
@@ -11,7 +11,7 @@ def keyDown(session, input_id, action):
         'text': action['value']
     })
 
-def keyUp(session, input_id, action):
+def keyUp(session, input_device, action):
     assert 'value' in action
 
     session._send('Input.dispatchKeyEvent', {  # API status: stable
@@ -20,7 +20,7 @@ def keyUp(session, input_id, action):
     })
 
 # https://w3c.github.io/webdriver/#dfn-process-a-pointer-move-action
-def pointerMove(session, input_id, action):
+def pointerMove(session, input_device, action):
     assert 'x' in action
     assert 'y' in action
     assert 'type' in action
@@ -39,16 +39,28 @@ def pointerMove(session, input_id, action):
     else:
         raise Exception('Faulty origin: %s' % action['origin'])
 
-    session.mouse_positions[input_id] = destination
+    device_id = input_device['id']
+    state = session.pointer_states.get(device_id)
+    if not state:
+        state = session.pointer_states[device_id] = {}
+    state['x'] = destination['x']
+    state['y'] = destination['y']
 
-    session._send('Input.dispatchMouseEvent', {  # API status: stable
-        'type': 'mouseMoved',
-        'x': destination['x'],
-        'y': destination['y']
-    })
+    if input_device['parameters']['pointerType'] == 'touch':
+        if state.get('vertical') == 'down':
+            session._send('Input.dispatchTouchEvent', {  # API status: stable
+                'type': 'touchMove',
+                'touchPoints': [destination]
+            })
+    else:
+        session._send('Input.dispatchMouseEvent', {  # API status: stable
+            'type': 'mouseMoved',
+            'x': destination['x'],
+            'y': destination['y']
+        })
 
 # https://w3c.github.io/webdriver/#dfn-process-a-pointer-up-or-pointer-down-action
-def _pointer_vertical(session, input_id, action, event_type):
+def _pointer_vertical(session, input_device, action, direction):
     assert 'button' in action
     assert type(action['button']) is int
     assert action['button'] >= 0
@@ -65,16 +77,41 @@ def _pointer_vertical(session, input_id, action, event_type):
             'Inaddressable button ID: %s' % action['button']
         )
 
-    session._send('Input.dispatchMouseEvent', {  # API status: stable
-        'type': event_type,
-        'button': button,
-        'clickCount': 1,
-        'x': session.mouse_positions[input_id]['x'],
-        'y': session.mouse_positions[input_id]['y']
-    })
 
-def pointerUp(session, input_id, action):
-    return _pointer_vertical(session, input_id, action, 'mouseReleased')
+    device_id = input_device['id']
+    if device_id not in session.pointer_states:
+        session.pointer_states[device_id] = {}
+    session.pointer_states[device_id]['vertical'] = direction
 
-def pointerDown(session, input_id, action):
-    return _pointer_vertical(session, input_id, action, 'mousePressed')
+    if input_device['parameters']['pointerType'] == 'touch':
+        if direction == 'up':
+            event_type = 'touchEnd'
+            touch_points = []
+        else:
+            event_type = 'touchStart'
+            touch_points = [
+                {
+                    'x': session.pointer_states[input_device['id']]['x'],
+                    'y': session.pointer_states[input_device['id']]['y']
+                }
+            ]
+
+        session._send('Input.dispatchTouchEvent', {  # API status: stable
+            'type': event_type,
+            'touchPoints': touch_points
+        })
+    else:
+        event_type = 'mouseReleased' if direction == 'up' else 'mousePressed'
+        session._send('Input.dispatchMouseEvent', {  # API status: stable
+            'type': event_type,
+            'button': button,
+            'clickCount': 1,
+            'x': session.pointer_states[input_device['id']]['x'],
+            'y': session.pointer_states[input_device['id']]['y']
+        })
+
+def pointerUp(session, input_device, action):
+    return _pointer_vertical(session, input_device, action, 'up')
+
+def pointerDown(session, input_device, action):
+    return _pointer_vertical(session, input_device, action, 'down')

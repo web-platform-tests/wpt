@@ -159,7 +159,7 @@ promise_test(() => {
     })
   ]);
 
-}, 'ReadableStream teeing: canceling branch2 should not impact branch2');
+}, 'ReadableStream teeing: canceling branch2 should not impact branch1');
 
 promise_test(() => {
 

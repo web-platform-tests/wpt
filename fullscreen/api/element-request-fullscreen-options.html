@@ -11,7 +11,7 @@
 test(() => {
   let invoked = false;
   document.body.requestFullscreen({
-    get navigationUI() { invoked = true; return "irrelevant-value"; }
+    get navigationUI() { invoked = true; }
   });
   assert_true(invoked, "navigationUI getter invoked");
 });

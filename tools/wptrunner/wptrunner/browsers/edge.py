@@ -83,17 +83,24 @@ class EdgeBrowser(Browser):
         self.server.start()
 
     def stop(self, force=False):
+        self.logger.info("1")
         # hope the server closes cleanly, having had its last session closed by the other process
         self.server._proc.wait(10)
+        self.logger.info("2")
         self.server.stop(force=force)
+        self.logger.info("3")
         self.server._proc.wait(10)
+        self.logger.info("4")
 
+        
+        self.logger.info("5")
         # then get rid of any browser processes
         try:
             subprocess.check_call(['taskkill.exe', '/f', '/t', '/im', 'microsoftedge*'])
         except subprocess.CalledProcessError as e:
             if e.returncode != 128:
                 raise e
+        self.logger.info("6")
 
     def pid(self):
         return self.server.pid

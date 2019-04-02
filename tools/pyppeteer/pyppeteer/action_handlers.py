@@ -69,7 +69,9 @@ def _pointer_vertical(session, input_device, action, direction):
     button = {
         0: 'left',
         1: 'middle',
-        2: 'right'
+        2: 'right',
+        3: 'back',
+        4: 'forward'
     }.get(action['button'], None)
 
     if button is None:

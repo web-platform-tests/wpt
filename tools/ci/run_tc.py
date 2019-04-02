@@ -233,6 +233,9 @@ def setup_repository():
         else:
             print("ERROR: Pull request HEAD wasn't a 2-parent merge commit; "
                   "expected to test the merge of PR into the base")
+            commit = run(["git", "show", "--no-patch", "--format=%H", "task_head"], return_stdout=True).strip()
+            print("HEAD: %s" % commit)
+            print("Parents: %s" % ", ".join(parents))
             sys.exit(1)
 
     branch = os.environ.get("GITHUB_BRANCH")

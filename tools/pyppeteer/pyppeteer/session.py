@@ -3,7 +3,7 @@ import threading
 import time
 
 from six.moves import queue, xrange
-from pyppeteer import action_handlers, Element, exclusive_ops, logging
+from pyppeteer import action_handlers, Element, exclusive_ops, key_codes, logging
 from pyppeteer.errors import ConnectionError, ProtocolError, ScriptError
 
 _DEFAULT_NAVIGATION_TIMEOUT = 3
@@ -374,3 +374,24 @@ class Session(object):
             # https://w3c.github.io/reporting/#generate-test-report-command
             "group": u"default"
         })
+
+    def _dispatch_key_event(self, event_type, char):
+        normalized = key_codes.BY_CODE_POINT.get(char, char)
+
+        if len(normalized) > 1:
+            params = {
+                'code': normalized,
+                'key': normalized,
+                'keyCode': 9,#ord(char),
+                'windowsVirtualKeyCode': 9#ord(char)
+            }
+        else:
+            params = {
+                'text': normalized,
+                'keyCode': ord(normalized),
+                'windowsVirtualKeyCode': ord(normalized)
+            }
+
+        params.update({'type': event_type})
+
+        self._send('Input.dispatchKeyEvent', params)  # API status: stable

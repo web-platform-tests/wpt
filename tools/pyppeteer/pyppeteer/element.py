@@ -86,10 +86,5 @@ class Element(object):
         })
 
         for char in text:
-            self._session._send('Input.dispatchKeyEvent', {  # API status: stable
-                'type': 'keyDown',
-                'text': char
-            })
-            self._session._send('Input.dispatchKeyEvent', {  # API status: stable
-                'type': 'keyUp'
-            })
+            self._session._dispatch_key_event('keyDown', char)
+            self._session._dispatch_key_event('keyUp', char)

@@ -102,15 +102,11 @@ Aria.Tree.prototype = {
 		}
 	},
 	handleKeyPress: function(inEvent){
-		switch(inEvent.keyCode){
-			// case Event.KEY_PAGEUP:   break;
-			// case Event.KEY_PAGEDOWN: break;
-			// case Event.KEY_END:      break;
-			// case Event.KEY_HOME:     break;
-			case Event.KEY_LEFT:     this.keyLeft();  break;
-			case Event.KEY_UP:       this.keyUp();    break;
-			case Event.KEY_RIGHT:    this.keyRight(); break;
-			case Event.KEY_DOWN:     this.keyDown();  break;
+		switch(inEvent.key){
+			case 'ArrowLeft':     this.keyLeft();  break;
+			case 'ArrowUp':       this.keyUp();    break;
+			case 'ArrowRight':    this.keyRight(); break;
+			case 'ArrowDown':     this.keyDown();  break;
 			default:
 				return;
 		}

@@ -101,6 +101,10 @@ below to fix all errors reported.
   either replace the `w3c-test.org` string with the expression
   `{{host}}:{{ports[http][0]}}` or a generic hostname like `example.org`.
 
+* **KEYCODE**: Test file includes a reference to the `keyCode` property of the
+  DOM KeyboardEvent object. This property is platform-specific and deprecated.
+  **fix**: use the `key` property instead.
+
 ## Updating the whitelist
 
 Normally you must [fix all lint errors](#fixing-lint-errors). But in the

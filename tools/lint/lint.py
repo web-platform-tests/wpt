@@ -423,6 +423,12 @@ class SpecialPowersRegexp(Regexp):
     file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
     description = "SpecialPowers used; this is gecko-specific and not supported in wpt"
 
+class KeyCodeRegexp(Regexp):
+    pattern = r"\.keyCode\b"
+    error = "KEYCODE"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "KeyboardEvent#keyCode used; this is deprecated and platform-specific"
+
 
 regexps = [item() for item in
            [TrailingWhitespaceRegexp,
@@ -436,7 +442,8 @@ regexps = [item() for item in
             GenerateTestsRegexp,
             PrintRegexp,
             LayoutTestsRegexp,
-            SpecialPowersRegexp]]
+            SpecialPowersRegexp,
+            KeyCodeRegexp]]
 
 def check_regexp_line(repo_root, path, f):
     errors = []

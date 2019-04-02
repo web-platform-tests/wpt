@@ -34,7 +34,7 @@ document.forms.fm.addEventListener("focus", function (evt) {
 
 document.addEventListener("keydown", function (evt) {
   t.step(function () {
-    assert_equals(evt.keyCode, 9, "Please press 'Tab' key.");
+    assert_equals(evt.key, 'Tab', "Please press 'Tab' key.");
   });
 }, true);
 

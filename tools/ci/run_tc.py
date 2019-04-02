@@ -223,7 +223,7 @@ def setup_environment(args):
 
 def setup_repository():
     if os.environ.get("GITHUB_PULL_REQUEST", "false") != "false":
-        parents = run(["git", "show", "--format=%P", "task_head"], return_stdout=True).strip().split()
+        parents = run(["git", "show", "--no-patch", "--format=%P", "task_head"], return_stdout=True).strip().split()
         if len(parents) == 2:
             base_head = parents[0]
             pr_head = parents[1]

@@ -548,6 +548,12 @@ def check_args(kwargs):
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected"
 
+    if kwargs["binary_args"] is not None:
+        updated_binary_args = []
+        for binary_arg in kwargs["binary_args"]:
+            updated_binary_args.append(binary_arg.replace("\\-","-"))
+        kwargs["binary_args"] = updated_binary_args
+
     return kwargs
 
 

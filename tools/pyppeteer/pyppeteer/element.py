@@ -56,7 +56,7 @@ class Element(object):
             'functionDeclaration': '''
             function focus(target) {
               return target.nodeName.toLowerCase() === 'input' &&
-                target.getAttribute('type').toLowerCase() === 'file';
+                /^file$/.test(target.getAttribute('type'));
             }
             ''',
             'objectId': self._remote_object_id,

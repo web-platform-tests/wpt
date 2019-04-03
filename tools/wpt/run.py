@@ -278,18 +278,6 @@ class Chrome(BrowserSetup):
             logger.info("Automatically turning on experimental features for Chrome Dev")
             kwargs["binary_args"].append("--enable-experimental-web-platform-features")
 
-        # Allow audio autoplay without a user gesture.
-        kwargs["binary_args"].append("--autoplay-policy=no-user-gesture-required")
-
-        # Allow WebRTC tests to call getUserMedia.
-        kwargs["binary_args"] += ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"]
-
-        # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
-        kwargs["binary_args"].append("--short-reporting-delay")
-
-        # Point all .test domains to localhost for Chrome
-        kwargs["binary_args"] += ["--host-resolver-rules=MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1"]
-
 
 class ChromeAndroid(BrowserSetup):
     name = "chrome_android"

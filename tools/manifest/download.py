@@ -10,6 +10,11 @@ from datetime import datetime, timedelta
 
 from six.moves.urllib.request import urlopen
 
+try:
+    import zstandard
+except ImportError:
+    zstandard = None
+
 from .vcs import Git
 
 from . import log
@@ -50,10 +55,12 @@ def score_name(name):
     # Accept both ways of naming the manfest asset, even though
     # there's no longer a reason to include the commit sha.
     if name.startswith("MANIFEST-") or name.startswith("MANIFEST."):
-        if name.endswith(".json.bz2"):
+        if zstandard and name.endswith("json.zst"):
             return 1
-        elif name.endswith(".json.gz"):
+        if name.endswith(".json.bz2"):
             return 2
+        if name.endswith(".json.gz"):
+            return 3
     return None
 
 
@@ -111,7 +118,16 @@ def download_manifest(manifest_path, tags_func, url_func, force=False):
                            resp.code)
             continue
 
-        if url.endswith(".bz2"):
+        if url.endswith(".zst"):
+            if not zstandard:
+                continue
+            try:
+                dctx = zstandard.ZstdDecompressor()
+                decompressed = dctx.decompress(resp.read())
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        elif url.endswith(".bz2"):
             try:
                 decompressed = bz2.decompress(resp.read())
             except IOError:

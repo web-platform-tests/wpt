@@ -82,9 +82,7 @@ def github_url(tags):
             if score is not None:
                 candidates.append((score, item["browser_download_url"]))
 
-        if candidates:
-            _, winner = sorted(candidates)[0]
-            return winner
+        return [item[1] for item in sorted(candidates)]
 
     return None
 
@@ -95,39 +93,43 @@ def download_manifest(manifest_path, tags_func, url_func, force=False):
 
     tags = tags_func()
 
-    url = url_func(tags)
-    if not url:
+    urls = url_func(tags)
+    if not urls:
         logger.warning("No generated manifest found")
         return False
 
-    logger.info("Downloading manifest from %s" % url)
-    try:
-        resp = urlopen(url)
-    except Exception:
-        logger.warning("Downloading pregenerated manifest failed")
-        return False
-
-    if resp.code != 200:
-        logger.warning("Downloading pregenerated manifest failed; got HTTP status %d" %
-                       resp.code)
-        return False
-
-    if url.endswith(".bz2"):
+    for url in urls:
+        logger.info("Downloading manifest from %s" % url)
         try:
-            decompressed = bz2.decompress(resp.read())
-        except IOError:
-            logger.warning("Failed to decompress downloaded file")
-            return False
-    elif url.endswith(".gz"):
-        fileobj = io.BytesIO(resp.read())
-        try:
-            with gzip.GzipFile(fileobj=fileobj) as gzf:
-                decompressed = gzf.read()
-        except IOError:
-            logger.warning("Failed to decompress downloaded file")
-            return False
+            resp = urlopen(url)
+        except Exception:
+            logger.warning("Downloading pregenerated manifest failed")
+            continue
+
+        if resp.code != 200:
+            logger.warning("Downloading pregenerated manifest failed; got HTTP status %d" %
+                           resp.code)
+            continue
+
+        if url.endswith(".bz2"):
+            try:
+                decompressed = bz2.decompress(resp.read())
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        elif url.endswith(".gz"):
+            fileobj = io.BytesIO(resp.read())
+            try:
+                with gzip.GzipFile(fileobj=fileobj) as gzf:
+                    decompressed = gzf.read()
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        else:
+            logger.warning("Unknown file extension: %s" % url)
+            continue
+        break
     else:
-        logger.warning("Unknown file extension: %s" % url)
         return False
 
     try:

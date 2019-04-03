@@ -22,18 +22,18 @@ setup({ explicit_timeout: true });
 
 promise_test(async t => {
   const writer = new NFCWriter();
-  const reader = new NFCReader({url: `${location.origin}/custom/path`});
+  const reader1 = new NFCReader({url: `${location.origin}/custom/invalid`});
+  const reader2 = new NFCReader({url: `${location.origin}/custom/path`});
   await writer.push({
     url: "/custom/path/update",
     records: [{ recordType: "text", data: "valid" }]
   });
-  await writer.push({
-    url: "/custom/invalid",
-    records: [{ recordType: "text", data: "invalid" }]
-  });
 
-  const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-  reader.start();
+  reader1.onreading = t.unreached_func("reading event should not be fired.");
+  reader1.start();
+
+  const readerWatcher = new EventWatcher(t, reader2, ["reading", "error"]);
+  reader2.start();
   const event = await readerWatcher.wait_for("reading");
   const message = event.message;
   assert_equals(message.records[0].recordType, "text");

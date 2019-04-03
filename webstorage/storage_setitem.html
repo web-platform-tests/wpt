@@ -198,6 +198,12 @@
 
     for (i = 0; i < interesting_strs.length; i++) {
         var str = interesting_strs[i];
+        var human_name = "";
+
+        for (var j = 0; j < str.length; j++) {
+            human_name += "U+" + str.charCodeAt(j).toString(16);
+        }
+
         test(function() {
             var storage = window[name];
             storage.clear();
@@ -207,7 +213,7 @@
             assert_equals(storage.length, 1, "storage.length")
             assert_equals(storage.getItem(str), "user1");
             assert_equals(storage[str], "user1");
-        }, name + "[" + format_value(str) + "]");
+        }, name + "[" + human_name + "]");
 
         test(function() {
             var storage = window[name];
@@ -217,7 +223,7 @@
             assert_equals(storage.length, 1, "storage.length")
             assert_equals(storage.getItem("name"), str);
             assert_equals(storage["name"], str);
-        }, name + "[] = " + format_value(str));
+        }, name + "[] = " + human_name);
     }
 });
 </script>

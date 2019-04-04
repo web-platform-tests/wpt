@@ -25,10 +25,12 @@ promise_test(async t => {
   const writer = new NFCWriter();
   const reader = new NFCReader();
   const controller = new AbortController();
-  controller.abort();
 
   const p1 = writer.push(test_text_data, { signal: controller.signal });
   const p2 = writer.push(test_text_data);
+
+  // Even though push request is grantable, this abort should be processed synchronously.
+  controller.abort();
   await promise_rejects(t, 'AbortError', p1);
   await p2;
 

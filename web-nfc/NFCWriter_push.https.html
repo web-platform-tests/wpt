@@ -108,7 +108,7 @@ promise_test(async t => {
   const writer = new NFCWriter();
   const controller = new AbortController();
   const p = writer.push(test_text_data, { signal: controller.signal });
-  const rejected = promise_rejects(t, 'NoModificationAllowedError', p);
+  const rejected = promise_rejects(t, 'AbortError', p);
   let callback_called = false;
   t.step_timeout(() => {
     callback_called = true;
@@ -116,7 +116,7 @@ promise_test(async t => {
   }, 10);
   await rejected;
   assert_true(callback_called, 'timeout should have caused the abort');
-}, "NFCWriter.push should fail if set signal's aborted flag when NFC data transfer.");
+}, "NFCWriter.push should fail if abort push request before push happends.");
 
 promise_test(t => {
   const writer = new NFCWriter();

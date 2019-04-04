@@ -83,7 +83,11 @@
                 "set": function(v) { calledSetter.push(v); },
                 configurable: true,
             });
-            this.add_cleanup(function() { delete Storage.prototype[key]; });
+            this.add_cleanup(function() {
+                delete Storage.prototype[key];
+                delete storage[key];
+                assert_false(key in storage);
+            });
 
             var value = "value for " + this.name;
 

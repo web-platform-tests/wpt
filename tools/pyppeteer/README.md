@@ -1,11 +1,12 @@
-# Chrome Debugger Protocol client for Python
+# Pyppeteer
 
-This is a work in progress. Please avert your eyes.
+A Python library for controlling a web browser using [the Chrome DevTools
+protocol (CDP)]().
 
 ## Concepts
 
 - browser - web browser process which runs a WebSocket server that implements
-  the Chrome Debugger Protocol; this process is managed by the user of
+  the Chrome DevTools Protocol; this process must be managed by the user of
   Pyppeteer
 - `pyppeteer.Connection` - abstraction around a WebSocket connection to a
   running browser process
@@ -19,13 +20,14 @@ This is a work in progress. Please avert your eyes.
 
 ## Stability
 
-The Chrome Debugger Protocol is under active development, and not all of its
+The Chrome DevTools Protocol is under active development, and not all of its
 current functionality is considered stable by the maintainers. The stability of
 each feature is clearly documented by that project, and this module avoids
 unstable features whenever possible.
 
-The stability of all features are annotated in the source code with an in-line
-code comment--one of `# API status: stable` or `# API status: experimental`.
+The stability of all CDP features is annotated in the source code with an
+in-line code comment--one of `# API status: stable` or `# API status:
+experimental`.
 
 ## WebSocket Clients in Python
 
@@ -65,7 +67,7 @@ The WPT project imposes a number of constraints which limit the options:
 - functional integration with the WebSocket protocol supported by
   Chromium/Chrome (e.g. version and protocol extensions)
 
-Four libraries satisfy those constraints:
+Five libraries satisfy those constraints:
 
 - [Lomond](https://pypi.org/project/lomond/)
 - [gevent-websocket](https://pypi.org/project/gevent-websocket/)

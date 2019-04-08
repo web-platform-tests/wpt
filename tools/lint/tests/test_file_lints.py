@@ -158,6 +158,20 @@ def test_setTimeout():
                                1)]
 
 
+def test_setTimeout_0():
+    error_map = check_with_files(b"""<script>setTimeout(() => 1,
+0)</script>""")
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
+        else:
+            assert errors == []
+
+
+
 def test_eventSender():
     error_map = check_with_files(b"<script>eventSender.mouseDown()</script>")
 

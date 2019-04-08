@@ -13,6 +13,7 @@ import tempfile
 from collections import defaultdict
 
 from . import fnmatch
+from . import jsfnargs
 from .. import localpaths
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
@@ -372,12 +373,6 @@ class CRRegexp(Regexp):
     error = "CR AT EOL"
     description = "CR character in line separator"
 
-class SetTimeoutRegexp(Regexp):
-    pattern = b"setTimeout\s*\("
-    error = "SET TIMEOUT"
-    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
-    description = "setTimeout used; step_timeout should typically be used instead"
-
 class W3CTestOrgRegexp(Regexp):
     pattern = b"w3c\-test\.org"
     error = "W3C-TEST.ORG"
@@ -428,7 +423,6 @@ regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
             CRRegexp,
-            SetTimeoutRegexp,
             W3CTestOrgRegexp,
             WebPlatformTestRegexp,
             Webidl2Regexp,
@@ -437,6 +431,7 @@ regexps = [item() for item in
             PrintRegexp,
             LayoutTestsRegexp,
             SpecialPowersRegexp]]
+
 
 def check_regexp_line(repo_root, path, f):
     errors = []
@@ -449,6 +444,38 @@ def check_regexp_line(repo_root, path, f):
                 errors.append((regexp.error, regexp.description, path, i+1))
 
     return errors
+
+
+def check_settimeout(repo_root, path, f):
+    ext = os.path.splitext(path)[1]
+    if ext not in [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]:
+        return []
+    data = f.read()
+    start_pattern = re.compile(rb"setTimeout\s*\(", re.MULTILINE)
+
+    errors = []
+
+    offset = 0
+    while True:
+        m = start_pattern.search(data, offset)
+        if not m:
+            break
+        start_pos = offset
+        offset = m.span()[1]
+        try:
+            args = jsfnargs.get_args(data, offset - 1)
+        except ValueError:
+            # Ignore errors and just assume this is a bad usage
+            args = []
+        if len(args) > 1 and args[1] == b"0":
+            continue
+        else:
+            errors.append(("SET TIMEOUT",
+                           "setTimeout used; step_timeout should typically be used instead",
+                           path,
+                           len(data[:start_pos].splitlines()) + 1))
+    return errors
+
 
 def check_parsed(repo_root, path, f):
     source_file = SourceFile(repo_root, path, "/", contents=f.read())
@@ -932,7 +959,7 @@ def lint(repo_root, paths, output_format):
 
 path_lints = [check_path_length, check_worker_collision, check_ahem_copy, check_gitignore_file]
 all_paths_lints = [check_css_globally_unique]
-file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
+file_lints = [check_regexp_line, check_settimeout, check_parsed, check_python_ast, check_script_metadata]
 
 # Don't break users of the lint that don't have git installed.
 try:

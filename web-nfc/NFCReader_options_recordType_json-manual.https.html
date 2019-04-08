@@ -22,13 +22,10 @@
 setup({ explicit_timeout: true });
 
 const desc = "Test that write and read data succeed when recordType is set to 'json'.";
-const readOptions = {
-  recordType : "json",
-  mediaType : "application/json",
-  url : ""
-}
+const readOptions = {recordType : "json"};
+const invalidReadOptions = {recordType: "url"};
 const message = createMessage([createJsonRecord(test_json_data)]);
 
-testNDEFMessage(message, readOptions, desc);
+testNDEFMessage(message, readOptions, invalidReadOptions, desc);
 
 </script>

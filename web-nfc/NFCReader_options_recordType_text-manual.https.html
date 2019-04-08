@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Web NFC Test: write and read url records</title>
+<title>Web NFC Test: write and read text records</title>
 <link rel="author" title="Intel" href="http://www.intel.com"/>
 <link rel="help" href="https://w3c.github.io/web-nfc/"/>
 <meta name="timeout" content="long">
@@ -21,15 +21,11 @@
 
 setup({ explicit_timeout: true });
 
-const test_message_origin = window.location.href.origin;
-const desc = "Test that write and read data succeed when recordType is set to 'url'.";
-const readOptions = {
-  recordType: "url",
-  mediaType: "text/plain",
-  url: test_message_origin
-}
-const message = createMessage([createUrlRecord(test_url_data)]);
+const desc = "Test that write and read data succeed when recordType is set to 'text'.";
+const readOptions = {recordType : "text"};
+const invalidReadOptions = {recordType: "json"};
+const message = createMessage([createTextRecord(test_text_data)]);
 
-testNDEFMessage(message, readOptions, desc);
+testNDEFMessage(message, readOptions, invalidReadOptions, desc);
 
 </script>

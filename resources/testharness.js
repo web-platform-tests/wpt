@@ -2393,9 +2393,9 @@ policies and contribution forms [3].
                            {
                                return code_unit_str(unpaired);
                            })
-                  // This replacement is intentionally implemented without a
-                  // negative lookbehind assertion in the interest of
-                  // portability.
+                  // This replacement is intentionally implemented without an
+                  // ES2018 negative lookbehind assertion to support runtimes
+                  // which do not yet implement that language feature.
                   .replace(/(^|[^\ud800-\udbff])([\udc00-\udfff])/g,
                            function(_, previous, unpaired) {
                               if (/[\udc00-\udfff]/.test(previous)) {

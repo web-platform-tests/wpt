@@ -21,11 +21,11 @@
 
 setup({ explicit_timeout: true });
 
-const desc = "Test that write and read data succeed when recordType is set to 'empty'.";
+const desc = "Test that write and read data succeed when NFCReaderOptions's recordType is set to 'empty'.";
 const readOptions = {recordType: "empty"};
-const invalidReadOptions = {recordType: "json"};
+const unacceptableReadOptions = {recordType: "json"};
 const message = createMessage([createRecord('empty', '')]);
 
-testNDEFMessage(message, readOptions, invalidReadOptions, desc);
+testNFCReaderOptions(message, readOptions, unacceptableReadOptions, desc);
 
 </script>

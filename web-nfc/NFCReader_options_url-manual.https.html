@@ -23,12 +23,12 @@ setup({ explicit_timeout: true });
 
 const desc = "Test that the url of NFCReaderOptions filters relevant data sources correctly.";
 const readOptions = {url: `${location.origin}/custom/path`};
-const invalidReadOptions = {url: `${location.origin}/custom/invalid`};
+const unacceptableReadOptions = {url: `${location.origin}/custom/invalid`};
 const message = {
   url: "/custom/path/update",
   records: [createTextRecord(test_text_data)]
 }
 
-testNDEFMessage(message, readOptions, invalidReadOptions, desc);
+testNFCReaderOptions(message, readOptions, unacceptableReadOptions, desc);
 
 </script>

@@ -21,11 +21,11 @@
 
 setup({ explicit_timeout: true });
 
-const desc = "Test that write and read data succeed when recordType is set to 'json'.";
+const desc = "Test that write and read data succeed when NFCReaderOptions's recordType is set to 'json'.";
 const readOptions = {recordType : "json"};
-const invalidReadOptions = {recordType: "url"};
+const unacceptableReadOptions = {recordType: "url"};
 const message = createMessage([createJsonRecord(test_json_data)]);
 
-testNDEFMessage(message, readOptions, invalidReadOptions, desc);
+testNFCReaderOptions(message, readOptions, unacceptableReadOptions, desc);
 
 </script>

@@ -159,28 +159,23 @@ function referrerPolicyTestString(referrerPolicy, destination) {
 [
   {
     "policy": "no-referrer",
-    "expectedOriginForSameOrigin": "null",
-    "expectedOriginForCrossOrigin": "null"
+    "expectedOriginForSameOrigin": "null"
   },
   {
     "policy": "same-origin",
-    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
-    "expectedOriginForCrossOrigin": "null"
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN
   },
   {
     "policy": "origin-when-cross-origin",
-    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
-    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN
   },
   {
     "policy": "no-referrer-when-downgrade",
-    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
-    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN
   },
   {
     "policy": "unsafe-url",
-    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN,
-    "expectedOriginForCrossOrigin": origins.HTTP_ORIGIN
+    "expectedOriginForSameOrigin": origins.HTTP_ORIGIN
   },
 ].forEach(testObj => {
   [
@@ -188,9 +183,10 @@ function referrerPolicyTestString(referrerPolicy, destination) {
       "name": "same-origin",
       "expectedOrigin": testObj.expectedOriginForSameOrigin
     },
+    // not honor Referrer-Policy for cross-origin navigation/fetch
     {
       "name": "cross-origin",
-      "expectedOrigin": testObj.expectedOriginForCrossOrigin
+      "expectedOrigin": origins.HTTP_ORIGIN
     }
   ].forEach(destination => {
     promise_test(navigationReferrerPolicy(testObj.policy,
@@ -199,10 +195,12 @@ function referrerPolicyTestString(referrerPolicy, destination) {
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " navigation"));
 
+    // When we're dealing with CORS (mode is "cors"), we shouldn't take the
+    // Referrer-Policy into account
     promise_test(fetchReferrerPolicy(testObj.policy,
                                      destination.name,
                                      "cors",
-                                     destination.expectedOrigin),
+                                     origins.HTTP_ORIGIN),
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " fetch cors mode"));
 

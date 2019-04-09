@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test for order of Type(evalInput) and host callout</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-test'">
+<div id="log"></div>
+
+<script nonce="test">
+test(function() {
+  assert_throws(new EvalError, function() {
+    eval("0");
+  }, "eval of a string should reach host callout");
+}, "eval of a string should be checked by CSP");
+
+test(function() {
+  let array = ["0"];
+  assert_equals(
+    eval(array),
+    array,
+    "eval is identity when applied to non-strings");
+}, "eval of a non-string should not be checked by CSP");
+</script>

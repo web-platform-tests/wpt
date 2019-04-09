@@ -28,7 +28,7 @@ test(() => {
   const lockList = lock1.query();
   assert_equals(lockList.size, 4, "Size of WakeLock instance list");
   for (let lock of lockList) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
   }
 }, "Filter all constructed WakeLock instances");
 
@@ -42,7 +42,7 @@ test(() => {
   const lockList1 = lock1.query({ type: "screen" });
   assert_equals(lockList1.size, 2, "Size of WakeLock instance list with 'screen' type");
   for (let lock of lockList1) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
     assert_equals(lock.type, "screen", "WakeLock type");
   }
 
@@ -50,7 +50,7 @@ test(() => {
   const lockList2 = lock1.query({ type: "system" });
   assert_equals(lockList2.size, 2, "Size of WakeLock instance list with 'system' type");
   for (let lock of lockList2) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
     assert_equals(lock.type, "system", "WakeLock type");
   }
 }, "Filter constructed WakeLock instances with 'type' option");
@@ -61,14 +61,14 @@ promise_test(async t => {
 
   const controller = new AbortController();
   await lock1.request({ signal: controller.signal });
-  assert_true(lock1.active, "lock1 is activated");
-  assert_true(lock2.active, "lock2 is activated");
+  assert_true(lock1.active, "lock1 must have been activated");
+  assert_true(lock2.active, "lock2 must have been activated");
 
   // query activated WakeLock
   const lockList1 = lock1.query({ active: true });
   assert_equals(lockList1.size, 2, "Size of WakeLock instance list with activated state");
   for (let lock of lockList1) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
     assert_equals(lock.type, "screen", "WakeLock type");
   }
 
@@ -87,16 +87,16 @@ promise_test(async t => {
 
   const controller = new AbortController();
   await lock1.request({ signal: controller.signal });
-  assert_true(lock1.active, "lock1 is activated");
-  assert_true(lock2.active, "lock2 is activated");
-  assert_false(lock3.active, "lock3 is activated");
-  assert_false(lock4.active, "lock4 is activated");
+  assert_true(lock1.active, "lock1 must have been activated");
+  assert_true(lock2.active, "lock2 must have been activated");
+  assert_false(lock3.active, "lock3 must have been activated");
+  assert_false(lock4.active, "lock4 must have been activated");
 
   // query activated screen WakeLock
   const lockList1 = lock1.query({ type: "screen", active: true });
   assert_equals(lockList1.size, 2, "Size of activated screen WakeLock instance list");
   for (let lock of lockList1) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
     assert_equals(lock.type, "screen", "WakeLock type");
   }
 
@@ -112,7 +112,7 @@ promise_test(async t => {
   const lockList4 = lock1.query({ type: "system", active: false });
   assert_equals(lockList4.size, 2, "Size of inactivated system WakeLock instance list");
   for (let lock of lockList4) {
-    assert_true(lock instanceof WakeLock, "query() returns WakeLock instance");
+    assert_true(lock instanceof WakeLock, "query() must have returned WakeLock instance");
     assert_equals(lock.type, "system", "WakeLock type");
   }
 
@@ -130,9 +130,9 @@ test(() => {
   const lockList3 = lock3.query();
   const lockList4 = lock4.query();
 
-  assert_true(setEquals(lockList1, lockList2), "lockList1 equals to lockList2");
-  assert_true(setEquals(lockList2, lockList3), "lockList2 equals to lockList3");
-  assert_true(setEquals(lockList3, lockList4), "lockList3 equals to lockList4");
+  assert_true(setEquals(lockList1, lockList2), "lockList1 must equal to lockList2");
+  assert_true(setEquals(lockList2, lockList3), "lockList2 must equal to lockList3");
+  assert_true(setEquals(lockList3, lockList4), "lockList3 must equal to lockList4");
 }, "Each WakeLock instance's query() method should return the same WakeLock list");
 
 function setEquals(set1, set2) {

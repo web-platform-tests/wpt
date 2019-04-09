@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>disabledStateChangedCallback, and :disabled :enabled pseudo classes</title>
+<title>formDisabledCallback, and :disabled :enabled pseudo classes</title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -14,7 +14,7 @@ class MyControl extends HTMLElement {
     this.disabledHistory_ = [];
   }
 
-  disabledStateChangedCallback(isDisabled) {
+  formDisabledCallback(isDisabled) {
     this.disabledHistory_.push(isDisabled);
   }
   disabledHistory() {

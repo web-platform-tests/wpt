@@ -484,8 +484,8 @@ test(function () {
         prototypeCalls,
         ['connectedCallback', 'disconnectedCallback', 'adoptedCallback',
          'attributeChangedCallback', 'formAssociatedCallback',
-         'formResetCallback', 'disabledStateChangedCallback',
-         'restoreStateCallback'],
+         'formResetCallback', 'formDisabledCallback',
+         'formStaterestoreCallback'],
         'customElements.define must get 8 callbacks on the prototype');
 }, 'customElements.define must get four additional callbacks on the prototype' +
    ' if formAssociated is converted to true');
@@ -503,7 +503,7 @@ test(function () {
     constructor.prototype = new Proxy(constructor.prototype, {
         get: function (target, name) {
             calls.push(name);
-            if (name == 'disabledStateChangedCallback')
+            if (name == 'formDisabledCallback')
                 throw {name: 'expectedError'};
             return target[name];
         }
@@ -513,7 +513,7 @@ test(function () {
     assert_array_equals(calls, ['connectedCallback', 'disconnectedCallback',
                                 'adoptedCallback', 'attributeChangedCallback',
                                 'formAssociatedCallback', 'formResetCallback',
-                                'disabledStateChangedCallback'],
+                                'formDisabledCallback'],
         'customElements.define must not get callbacks after one of the get throws');
 
     var calls2 = [];

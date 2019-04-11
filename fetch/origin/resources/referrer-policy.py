@@ -4,4 +4,4 @@ def main(request, response):
                              request.GET.first("referrerPolicy"))
     response.status = 200
     response.headers.set("Content-Type", "text/html")
-    response.content = "<meta charset=utf-8>\n<script>parent.postMessage('action','*')</script>"
+    response.content = "<meta charset=utf-8>\n<body><script>parent.postMessage('action','*')</script></body>"

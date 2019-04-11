@@ -27,4 +27,4 @@ def main(request, response):
 
     response.headers.set("Content-Type", "text/html")
     response.headers.set("Access-Control-Allow-Origin", "*")
-    response.content = "<meta charset=utf-8>\n<script>parent.postMessage('loaded','*')</script>"
+    response.content = "<meta charset=utf-8>\n<body><script>parent.postMessage('loaded','*')</script></body>"

@@ -197,15 +197,12 @@ function referrerPolicyTestString(referrerPolicy, destination) {
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " navigation"));
 
-    // When we're dealing with CORS (mode is "cors") and it's a cross-origin
-    // fetch, we shouldn't take the Referrer-Policy into account
-    let expectedOrigin =
-        destination.name === "same-origin" ? destination.expectedOrigin
-                                           : origins.HTTP_ORIGIN;
+    // When we're dealing with CORS (mode is "cors"), we shouldn't take the
+    // Referrer-Policy into account
     promise_test(fetchReferrerPolicy(testObj.policy,
                                      destination.name,
                                      "cors",
-                                     expectedOrigin),
+                                     origins.HTTP_ORIGIN),
                  referrerPolicyTestString(testObj.policy,
                                           destination.name + " fetch cors mode"));
 

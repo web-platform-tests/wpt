@@ -26,6 +26,8 @@ policies and contribution forms [3].
         test_timeout:null,
         message_events: ["start", "test_state", "result", "completion"]
     };
+    var unpaired_surrogates =
+        /(^|[^\ud800-\udfff])([\ud800-\udfff])([^\ud800-\udfff]|$)/;
 
     var xhtml_ns = "http://www.w3.org/1999/xhtml";
 
@@ -2383,6 +2385,39 @@ policies and contribution forms [3].
         return duplicates;
     };
 
+    Tests.prototype.has_unpaired_surrogates = function() {
+        return filter (this.tests,
+                       function(test)
+                       {
+                           return unpaired_surrogates.test(test.name);
+                       }).length > 0;
+    };
+
+    Tests.prototype.sanitize_unpaired_surrogates = function(str) {
+        return str.replace(unpaired_surrogates,
+                           function(_, before, unpaired, after)
+                           {
+                               return before +
+                                   'U+' + unpaired.charCodeAt(0).toString(16) +
+                                   after;
+                           });
+    };
+
+    Tests.prototype.sanitize_all_unpaired_surrogates = function() {
+        forEach (this.tests,
+                 function (test)
+                 {
+                     var sanitized =
+                         this.sanitize_unpaired_surrogates(test.name);
+
+                     if (test.name !== sanitized) {
+                         test.name = sanitized;
+                         delete test._structured_clone;
+                     }
+                 },
+                 this);
+    };
+
     Tests.prototype.notify_complete = function() {
         var this_obj = this;
         var duplicates;
@@ -2390,11 +2425,20 @@ policies and contribution forms [3].
         if (this.status.status === null) {
             duplicates = this.find_duplicates();
 
+            // Some transports adhere to UTF-8's restriction on unpaired
+            // surrogates. Trigger a harness error to discourage their use in
+            // test titles. Sanitize the titles so that the results can be
+            // consistently sent via all transports.
+            if (this.has_unpaired_surrogates()) {
+                this.sanitize_all_unpaired_surrogates();
+                this.status.status = this.status.ERROR;
+                this.status.message = 'Unpaired surrogate found in test ' +
+                    'title. Titles have been modified to satisfy UTF-8.';
             // Test names are presumed to be unique within test files--this
             // allows consumers to use them for identification purposes.
             // Duplicated names violate this expectation and should therefore
             // be reported as an error.
-            if (duplicates.length) {
+            } else if (duplicates.length) {
                 this.status.status = this.status.ERROR;
                 this.status.message =
                    duplicates.length + ' duplicate test name' +

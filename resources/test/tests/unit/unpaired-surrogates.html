@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="/resources/testharness.js"></script>
+  <title>Restrictions on return value from `test`</title>
+</head>
+<body>
+<script>
+function makeTest(...bodies) {
+  const closeScript = '<' + '/script>';
+  let src = `
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Document title</title>
+<script src="/resources/testharness.js?${Math.random()}">${closeScript}
+</head>
+
+<body>
+<div id="log"></div>`;
+  bodies.forEach((body) => {
+    src += '<script>(' + body + ')();' + closeScript;
+  });
+
+  const iframe = document.createElement('iframe');
+
+  document.body.appendChild(iframe);
+  iframe.contentDocument.write(src);
+
+  return new Promise((resolve) => {
+    window.addEventListener('message', function onMessage(e) {
+      if (e.source !== iframe.contentWindow) {
+        return;
+      }
+      if (!e.data || e.data.type !=='complete') {
+        return;
+      }
+      window.removeEventListener('message', onMessage);
+      resolve(e.data);
+    });
+
+    iframe.contentDocument.close();
+  }).then(({ tests, status }) => {
+    const summary = {
+      harness: {
+        status: getEnumProp(status, status.status),
+        message: status.message
+      },
+      tests: {}
+    };
+
+    tests.forEach((test) => {
+      summary.tests[test.name] = getEnumProp(test, test.status);
+    });
+
+    return summary;
+  });
+}
+
+function getEnumProp(object, value) {
+  for (let property in object) {
+    if (!/^[A-Z]+$/.test(property)) {
+      continue;
+    }
+
+    if (object[property] === value) {
+      return property;
+    }
+  }
+}
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        test(() => {}, 'before');
+        test(() => {}, 'U+d7ff is fine \ud7ff on its own');
+        test(() => {}, 'U+e000 is fine \ue000 too');
+        test(() => {}, 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness.status, 'OK');
+      assert_equals(harness.message, null);
+      assert_equals(tests.before, 'PASS');
+      assert_equals(tests['U+d7ff is fine \ud7ff on its own'], 'PASS');
+      assert_equals(tests['U+e000 is fine \ue000 too'], 'PASS');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'test using valid "lone" code points');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        test(() => {}, 'before');
+        test(() => {}, 'U+d800U+d801 is \ud800\ud801 okay');
+        test(() => {}, 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness.status, 'OK');
+      assert_equals(harness.message, null);
+      assert_equals(tests.before, 'PASS');
+      assert_equals(tests['U+d800U+d801 is \ud800\ud801 okay'], 'PASS');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'test using paired surrogates');
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        test(() => {}, 'before');
+        test(() => {}, 'U+d800 is \ud800 not okay');
+        test(() => {}, 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness.status, 'ERROR');
+      assert_equals(
+        harness.message,
+        'Unpaired surrogate found in test title. Titles have been modified to satisfy UTF-8.'
+      );
+      assert_equals(tests.before, 'PASS');
+      assert_equals(tests['U+d800 is U+d800 not okay'], 'PASS');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'test using unpaired U+d800 (title is sanitized)');
+
+
+promise_test(() => {
+  return makeTest(
+      () => {
+        test(() => {}, 'before');
+        test(() => {}, 'U+dfff is \udfff not okay');
+        test(() => {}, 'after');
+      }
+    ).then(({harness, tests}) => {
+      assert_equals(harness.status, 'ERROR');
+      assert_equals(
+        harness.message,
+        'Unpaired surrogate found in test title. Titles have been modified to satisfy UTF-8.'
+      );
+      assert_equals(tests.before, 'PASS');
+      assert_equals(tests['U+dfff is U+dfff not okay'], 'PASS');
+      assert_equals(tests.after, 'PASS');
+    });
+}, 'test using unpaired U+dfff (title is sanitized)');
+</script>
+</body>
+</html>

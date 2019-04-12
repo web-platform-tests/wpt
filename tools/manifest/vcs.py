@@ -1,13 +1,10 @@
 import json
 import os
-import platform
 import stat
-import subprocess
 from collections import deque
 
-from six import iteritems
-
 from .sourcefile import SourceFile
+from .utils import git
 
 MYPY = False
 if MYPY:
@@ -38,33 +35,8 @@ def get_tree(tests_root, manifest, manifest_path, cache_root,
 
 
 class GitHasher(object):
-    def __init__(self, git):
-        self.git = git
-    
-    @staticmethod
-    def get_func(repo_path):
-        def git(cmd, *args):
-            full_cmd = ["git", cmd] + list(args)
-            try:
-                return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
-            except Exception as e:
-                if platform.uname()[0] == "Windows" and isinstance(e, WindowsError):
-                    full_cmd[0] = "git.bat"
-                    return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
-                else:
-                    raise
-        return git
-
-    @classmethod
-    def for_path(cls, path):
-        git = cls.get_func(path)
-        try:
-            # this needs to be a command that fails if we aren't in a git repo
-            git("rev-parse", "--show-toplevel")
-        except (subprocess.CalledProcessError, OSError):
-            return None
-        else:
-            return cls(git)
+    def __init__(self, path):
+        self.git = git(path)
 
     def _local_changes(self):
         """get a set of files which have changed between HEAD and working copy"""
@@ -118,7 +90,7 @@ class FileSystem(object):
         self.path_filter = gitignore.PathFilter(self.root,
                                                 extras=[".git/"],
                                                 cache=self.ignore_cache)
-        git = GitHasher.for_path(root)
+        git = GitHasher(root)
         if git is not None:
             self.hash_cache = git.hash_cache()
         else:

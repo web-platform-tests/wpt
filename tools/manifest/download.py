@@ -15,7 +15,7 @@ try:
 except ImportError:
     zstandard = None
 
-from .vcs import Git
+from .vcs import GitHasher as Git
 
 from . import log
 

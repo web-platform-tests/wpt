@@ -5,9 +5,11 @@ import stat
 import subprocess
 from collections import deque
 
-from six import itervalues, iteritems
-
 from .sourcefile import SourceFile
+
+MYPY = False
+if MYPY:
+    from typing import Dict, Optional
 
 
 def get_tree(tests_root, manifest, manifest_path, cache_root,
@@ -94,7 +96,11 @@ class Git(object):
         path = os.path.relpath(os.path.abspath(path), self.root)
         return self.git("show", "HEAD:%s" % path)
 
-    def _hash_cache(self):
+    def hash_cache(self):
+        # type: () -> Dict[str, Optional[str]]
+        """
+        A dict of rel_path -> current git object id if the working tree matches HEAD else None
+        """
         hash_cache = {}
 
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
@@ -104,10 +110,6 @@ class Git(object):
             hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
 
         return hash_cache
-
-    def hash_cache(self):
-        hash_cache = self._hash_cache()
-        return {k: v for (k, v) in iteritems(hash_cache) if v is not None}
 
     def __iter__(self):
         for rel_path, hash in self._hash_cache():

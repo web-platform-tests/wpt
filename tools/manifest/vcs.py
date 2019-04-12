@@ -114,7 +114,7 @@ class Git(object):
         return hash_cache
 
     def __iter__(self):
-        for rel_path, hash in iteritems(self._hash_cache()):
+        for rel_path, hash in iteritems(self.hash_cache()):
             if hash is None:
                 contents = self._show_file(rel_path)
             else:

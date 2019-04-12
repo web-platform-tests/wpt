@@ -9,6 +9,8 @@ from six import iteritems
 
 from .sourcefile import SourceFile
 
+# This variable is interpreted as `True` when the source code is being
+# type-checked by Mypy.
 MYPY = False
 if MYPY:
     from typing import Dict, Optional

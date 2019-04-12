@@ -5,6 +5,8 @@ import stat
 import subprocess
 from collections import deque
 
+from six import itervalues, iteritems
+
 from .sourcefile import SourceFile
 
 
@@ -92,13 +94,24 @@ class Git(object):
         path = os.path.relpath(os.path.abspath(path), self.root)
         return self.git("show", "HEAD:%s" % path)
 
-    def __iter__(self):
+    def _hash_cache(self):
+        hash_cache = {}
+
         cmd = ["ls-tree", "-r", "-z", "HEAD"]
         local_changes = self._local_changes()
         for result in self.git(*cmd).split("\0")[:-1]:
             data, rel_path = result.rsplit("\t", 1)
-            hash = data.split(" ", 3)[2]
-            if rel_path in local_changes:
+            hash_cache[rel_path] = None if rel_path in local_changes else data.split(" ", 3)[2]
+
+        return hash_cache
+
+    def hash_cache(self):
+        hash_cache = self._hash_cache()
+        return {k: v for (k, v) in iteritems(hash_cache) if v is not None}
+
+    def __iter__(self):
+        for rel_path, hash in self._hash_cache():
+            if hash is None:
                 contents = self._show_file(rel_path)
             else:
                 contents = None
@@ -127,6 +140,11 @@ class FileSystem(object):
         self.path_filter = gitignore.PathFilter(self.root,
                                                 extras=[".git/"],
                                                 cache=self.ignore_cache)
+        git = Git.for_path(root, url_base, cache_path)
+        if git is not None:
+            self.hash_cache = git.hash_cache()
+        else:
+            self.hash_cache = {}
 
     def __iter__(self):
         mtime_cache = self.mtime_cache
@@ -134,7 +152,8 @@ class FileSystem(object):
             for filename, path_stat in filenames:
                 path = os.path.join(dirpath, filename)
                 if mtime_cache is None or mtime_cache.updated(path, path_stat):
-                    yield SourceFile(self.root, path, self.url_base), True
+                    hash = self.hash_cache.get(path, None)
+                    yield SourceFile(self.root, path, self.url_base, hash), True
                 else:
                     yield path, False
 

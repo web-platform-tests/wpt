@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <title>This test validates resource timing information for a same-origin=>cross-origin=>same-origin redirect chain with Timing-Allow-Origin.</title>
-<link rel="author" title="Intel" href="http://www.intel.com/" />
 <link rel="help" href="http://www.w3.org/TR/resource-timing/#performanceresourcetiming"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -19,8 +18,7 @@
 
     function onload_test()
     {
-        const context = new PerformanceContext(performance);
-        const entries = context.getEntriesByName(document.getElementById('frameContext').src, 'resource');
+        const entries = performance.getEntriesByName(document.getElementById('frameContext').src, 'resource');
         test_equals(entries.length, 1, 'There should be one entry.');
         const entry = entries[0];
 

@@ -115,7 +115,7 @@ class FileSystem(object):
 
 
 class CacheFile(object):
-    file_name = None
+    file_name = None  # type: Optional[str]
 
     def __init__(self, cache_root, tests_root, rebuild=False):
         self.tests_root = tests_root

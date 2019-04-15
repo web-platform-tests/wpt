@@ -806,3 +806,8 @@ CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/cont
 WEB-PLATFORM.TEST:signed-exchange/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/appcache/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
+
+# Tests for legacy feature
+KEYCODE: uievents/keyboard/key.js
+# Third-party dependency
+KEYCODE: css/css-regions/elements/support/Three.js

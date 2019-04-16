@@ -21,7 +21,7 @@ def main(request, response):
         timing_allow = request.GET.first("timing_allow")
 
     redirect_url_path = "/resource-timing/resources/multi_redirect.py?"
-    redirect_url_path+= "page_origin=" + page_origin
+    redirect_url_path += "page_origin=" + page_origin
     redirect_url_path += "&cross_origin=" + cross_origin
     redirect_url_path += "&timing_allow=" + timing_allow
     redirect_url_path += "&step="

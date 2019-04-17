@@ -3,6 +3,8 @@
 <title>TestDriver freeze method</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <script>
 var test = async_test('Test freeze callback.');
@@ -44,6 +46,10 @@ test.step_timeout(() => {
       test.step(() => assert_unreached('During onfreeze: ' + step + ' never finshed.'));
   }
 }, 1000);
+
+function freeze_child(child_window) {
+  test_driver.freeze(child_window);
+}
 
 </script>
 

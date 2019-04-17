@@ -21,7 +21,8 @@ from .protocol import (BaseProtocolPart,
                        SendKeysProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart,
-                       GenerateTestReportProtocolPart)
+                       GenerateTestReportProtocolPart,
+                       FreezeProtocolPart)
 from ..testrunner import Stop
 
 import webdriver as client
@@ -174,6 +175,25 @@ class WebDriverActionSequenceProtocolPart(ActionSequenceProtocolPart):
     def send_actions(self, actions):
         self.webdriver.actions.perform(actions['actions'])
 
+class WebDriverFreezeProtocolPart(FreezeProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def switch_to_window(self, document_title):
+        handles = self.webdriver.handles;
+        for handle in handles:
+            self.webdriver.window_handle = handle
+            if self.webdriver.send_session_command("GET", "title") == document_title:
+                return True
+        return False
+
+    def freeze(self, document_title):
+        cur_window = self.webdriver.window_handle
+        if not self.switch_to_window(document_title):
+            raise Exception("Could not find window with top-level document named %s" % document_title)
+        res = self.webdriver.send_session_command("POST", "goog/page/freeze")
+        self.webdriver.window_handle = cur_window
+        return res
 
 class WebDriverTestDriverProtocolPart(TestDriverProtocolPart):
     def setup(self):
@@ -206,7 +226,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverSendKeysProtocolPart,
                   WebDriverActionSequenceProtocolPart,
                   WebDriverTestDriverProtocolPart,
-                  WebDriverGenerateTestReportProtocolPart]
+                  WebDriverGenerateTestReportProtocolPart,
+                  WebDriverFreezeProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)

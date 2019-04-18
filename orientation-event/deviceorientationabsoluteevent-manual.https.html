@@ -8,23 +8,27 @@
   </head>
   <body>
     <p>If an implementation can never provide absolute orientation information, the event should be fired with the alpha, beta and gamma attributes set to null.</p>
+    <button onclick="prepareAndRun(this)">Start tests</button>
     <div id="log"></div>
     <script>
-      var t = async_test("deviceorientationabsolute event fires");
-      var run = false;
-      window.addEventListener("deviceorientationabsolute", function(e) {
-        if (!run) {
-          run = true;
-          t.step(function () {
+      function prepareAndRun(button) {
+        button.disabled = true;
+
+        async_test(async t => {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          t.step(() => {
+            assert_equals(permission, 'granted', 'You must grant permission to run this test.');
+          });
+
+          window.addEventListener("deviceorientationabsolute", t.step_func_done((e) => {
             assert_equals(e.type, "deviceorientationabsolute", "type is set to \"deviceorientationabsolute\"");
             assert_equals(e.alpha, null, "alpha is set to null");
             assert_equals(e.beta, null, "beta is set to null");
             assert_equals(e.gamma, null, "gamma is set to null");
             assert_true(e.absolute, "absolute is set to true");
-          });
-          t.done();
-        }
-      }, false);
+          }), false);
+        }, 'deviceorientationabsolute event fires');
+      }
     </script>
   </body>
 </html>

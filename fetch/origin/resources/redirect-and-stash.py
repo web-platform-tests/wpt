@@ -9,7 +9,7 @@ def main(request, response):
     origin_list = request.server.stash.take(key)
 
     if "dump" in request.GET:
-        response.headers.set("content-Type", "application/json")
+        response.headers.set("Content-Type", "application/json")
         response.content = json.dumps(origin_list)
         return
 
@@ -25,5 +25,6 @@ def main(request, response):
         response.headers.set("Location", request.GET.first("location"))
         return
 
-    response.headers.set("content-Type", "text/html")
-    response.content = "<script>parent.postMessage('loaded','*')</script>"
+    response.headers.set("Content-Type", "text/html")
+    response.headers.set("Access-Control-Allow-Origin", "*")
+    response.content = "<meta charset=utf-8>\n<body><script>parent.postMessage('loaded','*')</script></body>"

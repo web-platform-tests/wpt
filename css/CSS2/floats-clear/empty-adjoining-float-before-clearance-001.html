@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel="help" href="https://www.w3.org/TR/CSS22/visuren.html#flow-control">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="position: absolute; width: 100px; height: 100px; background: red;"></div>
+<div style="position: absolute; width: 100px;">
+  <div style="margin-top: -20px;">
+    <div style="float: left;"></div>
+    <div style="clear: both;">
+      <div style="float: left;"></div>
+      <div style="margin-top: 20px;">
+        <div style="border-top: solid green 100px;"></div>
+      </div>
+    </div>
+  </div>
+</div>

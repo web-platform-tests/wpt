@@ -6,7 +6,6 @@
 # associated test.
 
 def main(request, response):
-    headers = [("Content-type", "text/plain")]
     content = request.method
 
     response.add_required_headers = False

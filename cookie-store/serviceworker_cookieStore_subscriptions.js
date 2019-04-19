@@ -17,9 +17,9 @@ self.addEventListener('install', (event) => {
         { name: 'cookie-prefix', matchType: 'starts-with' },
       ]);
 
-    // If the worker enters the "redundant" state, the UA may terminate it
-    // before all tests have been reported to the client. Stifle errors in
-    // order to avoid this and ensure all tests are consistently reported.
+      // If the worker enters the "redundant" state, the UA may terminate it
+      // before all tests have been reported to the client. Stifle errors in
+      // order to avoid this and ensure all tests are consistently reported.
     } catch (err) {}
   })());
 });

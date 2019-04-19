@@ -34,7 +34,8 @@ expectations:
   everything else. They are built with the testharness.js unit testing
   framework, and consist of assertions written in JavaScript.
 
-* WebDriver tests are written in Python and test [the WebDriver browser
+* WebDriver tests are written in Python using
+  [pytest](https://docs.pytest.org/en/latest/) and test [the WebDriver browser
   automation protocol](https://w3c.github.io/webdriver/)
 
 * [Manual tests][manual] are used as a last resort for anything that can't be

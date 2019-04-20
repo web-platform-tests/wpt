@@ -21,4 +21,6 @@ def main(request, response):
             headers.append(("Access-Control-Allow-Headers", ", ".join(request.headers)))
 
     headers.append(("content-type", "text/plain"))
+    headers.append(("Cache-Control", "no-cache"))
+    headers.append(("Vary", "*"))
     return headers, ""

@@ -5,9 +5,9 @@ function cookies(desc, credentials1, credentials2 ,cookies) {
   var urlParameters = "";
   var urlCleanParameters = "";
   if (cookies) {
-    urlParameters +="?pipe=header(Set-Cookie,";
+    urlParameters +="?pipe=header(Vary,*)|header(Set-Cookie,";
     urlParameters += cookies.join(",True)|header(Set-Cookie,") +  ",True)";
-    urlCleanParameters +="?pipe=header(Set-Cookie,";
+    urlCleanParameters +="?pipe=header(Vary,*)|header(Set-Cookie,";
     urlCleanParameters +=  cookies.join("%3B%20max-age=0,True)|header(Set-Cookie,") +  "%3B%20max-age=0,True)";
   }
 

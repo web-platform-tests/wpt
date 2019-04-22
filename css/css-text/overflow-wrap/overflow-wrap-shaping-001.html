@@ -7,7 +7,12 @@
 <link rel="match" href="reference/overflow-wrap-shaping-001-ref.html">
 <meta name="assert" content="Shaping characters are still shaped as if the word were not broken when a line is broken by overflow-wrap:break-word">
 <style>
+  @font-face {
+    font-family: 'csstest_noto';
+    src: url('/fonts/noto/NotoNaskhArabic-regular.woff2') format('woff2');
+  }
   div {
+    font-family: 'csstest_noto';
     font-size: 4em;
   }
   section {

@@ -36,8 +36,8 @@ The spec backs up the expected behavior in the test.
 </label>
 
 <label><input type="checkbox">
-The test is automated as either [reftest](../_writing-tests/reftests) or
-a [script test](../_writing-tests/testharness) unless there's a very good reason for it not to be.
+The test is automated as either [reftest](../writing-tests/reftests) or
+a [script test](../writing-tests/testharness) unless there's a very good reason for it not to be.
 </label>
 
 <label><input type="checkbox">

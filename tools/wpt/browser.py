@@ -470,8 +470,7 @@ class Chrome(Browser):
         chrome_version = chrome_version.split(' ')[0]
         parts = chrome_version.split(".")
         if len(parts) == 4:
-            latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % (
-                parts[0], parts[1], parts[2])
+            latest_url = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_%s.%s.%s" % tuple(parts[:-1])
             try:
                 latest = get(latest_url).text.strip()
             except requests.RequestException:

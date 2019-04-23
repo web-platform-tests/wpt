@@ -85,12 +85,20 @@ class EdgeBrowser(Browser):
 
     def stop(self, force=False):
         self.server.stop(force=force)
-        time.sleep(3)
-        # close Edge process if it is still running
+        # Wait for Edge browser process to exit if driver process is found
         edge_proc_name = 'MicrosoftEdge.exe'
-        procs = subprocess.check_output(['tasklist', '/fi', 'ImageName eq ' + edge_proc_name])
+        for i in range(0,5):
+            procs = subprocess.check_output(['tasklist', '/fi', 'ImageName eq ' + edge_proc_name])
+            if 'MicrosoftWebDriver.exe' not in procs:
+                # Edge driver process already exited, don't wait for browser process to exit
+                break
+            elif edge_proc_name in procs:
+                time.sleep(0.5)
+            else: break
+
         if edge_proc_name in procs:
-            subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*']) # close all Edge browser instances
+            # close Edge process if it is still running
+            subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 
     def pid(self):
         return self.server.pid

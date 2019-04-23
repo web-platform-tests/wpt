@@ -807,3 +807,6 @@ CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/cont
 WEB-PLATFORM.TEST:signed-exchange/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/appcache/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
+
+# .wast files copied from https://github.com/WebAssembly/spec/test/core
+TRAILING WHITESPACE, INDENT TABS: wasm/core/wast/*.wast

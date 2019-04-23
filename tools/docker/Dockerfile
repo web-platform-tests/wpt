@@ -15,6 +15,7 @@ RUN apt-get -qqy update \
     gdebi \
     git \
     locales \
+    ocaml \
     pulseaudio \
     python \
     python-pip \

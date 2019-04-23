@@ -232,7 +232,7 @@ tasks:
           description: >-
             Unit tests for tools running under Python 3, excluding wptrunner
           script: >-
-            export TOXENV=py36;
+            export TOXENV=py37;
             export HYPOTHESIS_PROFILE=ci;
             sudo apt install -qqy python3-pip;
             ./tools/ci/run_tc.py \

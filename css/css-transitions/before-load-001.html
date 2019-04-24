@@ -31,7 +31,7 @@ async_test(t => {
   getComputedStyle(div).height;
   div.style.height = '100px';
 
-  div.addEventListener('transitionend', t.step_func_done(() => {
+  div.addEventListener('transitionrun', t.step_func_done(() => {
     assert_false(
       loadEventFired,
       'load event should not have fired yet'

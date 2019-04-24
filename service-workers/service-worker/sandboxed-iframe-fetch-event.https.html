@@ -4,484 +4,412 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
 <body>
-  <script>
-    let lastCallbackId = 0;
-    let callbacks = {};
-    function doTest(frame, type) {
-      return new Promise(function(resolve) {
-        let id = ++lastCallbackId;
-        callbacks[id] = resolve;
-        frame.contentWindow.postMessage({ id: id, type: type }, "*");
-      });
-    }
+<script>
+let lastCallbackId = 0;
+let callbacks = {};
+function doTest(frame, type) {
+  return new Promise(function(resolve) {
+    let id = ++lastCallbackId;
+    callbacks[id] = resolve;
+    frame.contentWindow.postMessage({ id: id, type: type }, '*');
+  });
+}
 
-    // Asks the service worker for data about requests and clients seen. The
-    // worker posts a message back with |data| where:
-    // |data.requests|: the requests the worker received FetchEvents for
-    // |data.clients|: the URLs of all the worker's clients
-    // The worker clears its data after responding.
-    function getResultsFromWorker(worker) {
-      return new Promise(resolve => {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = msg => {
-          resolve(msg.data);
-        };
-        worker.postMessage({ port: channel.port2 }, [channel.port2]);
-      });
-    }
-
-    window.onmessage = function(e) {
-      message = e.data;
-      const id = message["id"];
-      const callback = callbacks[id];
-      delete callbacks[id];
-      callback(message["result"]);
+// Asks the service worker for data about requests and clients seen. The
+// worker posts a message back with |data| where:
+// |data.requests|: the requests the worker received FetchEvents for
+// |data.clients|: the URLs of all the worker's clients
+// The worker clears its data after responding.
+function getResultsFromWorker(worker) {
+  return new Promise(resolve => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = msg => {
+      resolve(msg.data);
     };
+    worker.postMessage({ port: channel.port2 }, [channel.port2]);
+  });
+}
 
-    const SCOPE = "resources/sandboxed-iframe-fetch-event-iframe.py";
-    const SCRIPT = "resources/sandboxed-iframe-fetch-event-worker.js";
-    const expected_base_url = new URL(SCOPE, location.href);
-    // Service worker controlling |SCOPE|.
-    let worker;
-    // A normal iframe.
-    // This should be controlled by a service worker.
-    let normal_frame;
-    // An iframe created by <iframe sandbox='allow-scripts'>.
-    // This should NOT be controlled by a service worker.
-    let sandboxed_frame;
-    // An iframe created by <iframe sandbox='allow-scripts allow-same-origin'>.
-    // This should be controlled by a service worker.
-    let sandboxed_same_origin_frame;
-    // An iframe whose response header has
-    // 'Content-Security-Policy: allow-scripts'.
-    // This should NOT be controlled by a service worker.
-    let sandboxed_frame_by_header;
-    // An iframe whose response header has
-    // 'Content-Security-Policy: allow-scripts allow-same-origin'.
-    // This should be controlled by a service worker.
-    let sandboxed_same_origin_frame_by_header;
+window.onmessage = function(e) {
+  message = e.data;
+  const id = message['id'];
+  const callback = callbacks[id];
+  delete callbacks[id];
+  callback(message['result']);
+};
 
-    promise_test(async t => {
-      const registration = await service_worker_unregister_and_register(
-        t,
-        SCRIPT,
-        SCOPE
-      );
+const SCOPE = 'resources/sandboxed-iframe-fetch-event-iframe.py';
+const SCRIPT = 'resources/sandboxed-iframe-fetch-event-worker.js';
+const expected_base_url = new URL(SCOPE, location.href);
+// Service worker controlling |SCOPE|.
+let worker;
+// A normal iframe.
+// This should be controlled by a service worker.
+let normal_frame;
+// An iframe created by <iframe sandbox='allow-scripts'>.
+// This should NOT be controlled by a service worker.
+let sandboxed_frame;
+// An iframe created by <iframe sandbox='allow-scripts allow-same-origin'>.
+// This should be controlled by a service worker.
+let sandboxed_same_origin_frame;
+// An iframe whose response header has
+// 'Content-Security-Policy: allow-scripts'.
+// This should NOT be controlled by a service worker.
+let sandboxed_frame_by_header;
+// An iframe whose response header has
+// 'Content-Security-Policy: allow-scripts allow-same-origin'.
+// This should be controlled by a service worker.
+let sandboxed_same_origin_frame_by_header;
 
-      add_completion_callback(async () => {
-        if (registration) await registration.unregister();
-      });
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+    t,
+    SCRIPT,
+    SCOPE
+  );
 
-      worker = registration.installing;
-      await wait_for_state(t, registration.installing, "activated");
-    }, "Prepare a service worker.");
+  add_completion_callback(async () => {
+    if (registration) await registration.unregister();
+  });
 
-    promise_test(async t => {
-      normal_frame = await with_iframe(SCOPE + "?iframe");
-      add_completion_callback(() => normal_frame.remove());
-      const data = await getResultsFromWorker(worker);
-      const requests = data.requests;
-      assert_equals(requests.length, 1);
-      assert_equals(requests[0], expected_base_url + "?iframe");
-      assert_true(data.clients.includes(expected_base_url + "?iframe"));
-    }, "Prepare a normal iframe.");
+  worker = registration.installing;
+  await wait_for_state(t, registration.installing, 'activated');
+}, 'Prepare a service worker.');
 
-    promise_test(async t => {
-      sandboxed_frame = await with_sandboxed_iframe(
-        SCOPE + "?sandboxed-iframe",
-        "allow-scripts"
-      );
-      add_completion_callback(() => sandboxed_frame.remove());
-      const data = await getResultsFromWorker(worker);
-      assert_equals(data.requests.length, 0);
-      assert_false(
-        data.clients.includes(expected_base_url + "?sandboxed-iframe")
-      );
-    }, 'Prepare an iframe sandboxed by <iframe sandbox="allow-scripts">.');
+promise_test(async t => {
+  normal_frame = await with_iframe(SCOPE + '?iframe');
+  add_completion_callback(() => normal_frame.remove());
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1);
+  assert_equals(requests[0], expected_base_url + '?iframe');
+  assert_true(data.clients.includes(expected_base_url + '?iframe'));
+}, 'Prepare a normal iframe.');
 
-    promise_test(async t => {
-      sandboxed_same_origin_frame = await with_sandboxed_iframe(
-        SCOPE + "?sandboxed-iframe-same-origin",
-        "allow-scripts allow-same-origin"
-      );
-      add_completion_callback(() => sandboxed_same_origin_frame.remove());
-      const data = await getResultsFromWorker(worker);
-      const requests = data.requests;
-      assert_equals(requests.length, 1);
-      assert_equals(
-        requests[0],
-        expected_base_url + "?sandboxed-iframe-same-origin"
-      );
-      assert_true(
-        data.clients.includes(
-          expected_base_url + "?sandboxed-iframe-same-origin"
-        )
-      );
-    }, "Prepare an iframe sandboxed by '<iframe sandbox=\"allow-scripts allow-same-origin\">'");
+promise_test(async t => {
+  sandboxed_frame = await with_sandboxed_iframe(
+    SCOPE + '?sandboxed-iframe',
+    'allow-scripts'
+  );
+  add_completion_callback(() => sandboxed_frame.remove());
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0);
+  assert_false(
+    data.clients.includes(expected_base_url + '?sandboxed-iframe')
+  );
+}, 'Prepare an iframe sandboxed by <iframe sandbox="allow-scripts">.');
 
-    promise_test(async t => {
-      const iframe_full_url =
-        expected_base_url +
-        "?sandbox=allow-scripts&" +
-        "sandboxed-frame-by-header";
-      sandboxed_frame_by_header = await with_iframe(iframe_full_url);
-      add_completion_callback(() => sandboxed_frame_by_header.remove());
-      const data = await getResultsFromWorker(worker);
-      const requests = data.requests;
-      assert_equals(
-        requests.length,
-        1,
-        "Service worker should provide the response"
-      );
-      assert_equals(requests[0], iframe_full_url);
-      assert_false(
-        data.clients.includes(iframe_full_url),
-        "Service worker should NOT control the sandboxed page"
-      );
-    }, "Prepare an iframe sandboxed by CSP HTTP header with allow-scripts.");
+promise_test(async t => {
+  sandboxed_same_origin_frame = await with_sandboxed_iframe(
+    SCOPE + '?sandboxed-iframe-same-origin',
+    'allow-scripts allow-same-origin'
+  );
+  add_completion_callback(() => sandboxed_same_origin_frame.remove());
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1);
+  assert_equals(
+    requests[0],
+    expected_base_url + '?sandboxed-iframe-same-origin'
+  );
+  assert_true(
+    data.clients.includes(
+      expected_base_url + '?sandboxed-iframe-same-origin'
+    )
+  );
+}, 'Prepare an iframe sandboxed by <iframe sandbox="allow-scripts allow-same-origin">');
 
-    promise_test(async t => {
-      const iframe_full_url =
-        expected_base_url +
-        "?sandbox=allow-scripts%20allow-same-origin&" +
-        "sandboxed-iframe-same-origin-by-header";
-      sandboxed_same_origin_frame_by_header = await with_iframe(
-        iframe_full_url
-      );
-      add_completion_callback(() =>
-        sandboxed_same_origin_frame_by_header.remove()
-      );
-      const data = await getResultsFromWorker(worker);
-      const requests = data.requests;
-      assert_equals(requests.length, 1);
-      assert_equals(requests[0], iframe_full_url);
-      assert_true(data.clients.includes(iframe_full_url));
-    }, "Prepare an iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin.");
+promise_test(async t => {
+  const iframe_full_url = expected_base_url + '?sandbox=allow-scripts&' +
+                          'sandboxed-frame-by-header';
+  sandboxed_frame_by_header = await with_iframe(iframe_full_url);
+  add_completion_callback(() => sandboxed_frame_by_header.remove());
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1,
+                'Service worker should provide the response');
+  assert_equals(requests[0], iframe_full_url);
+  assert_false(data.clients.includes(iframe_full_url),
+              'Service worker should NOT control the sandboxed page');
+}, 'Prepare an iframe sandboxed by CSP HTTP header with allow-scripts.');
 
-    promise_test(async t => {
-      const result = await doTest(normal_frame, "fetch");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The fetch request should be handled by SW."
-      );
-      assert_equals(data.requests[0], normal_frame.src + "&test=fetch");
-    }, "Fetch request from a normal iframe");
+promise_test(async t => {
+  const iframe_full_url =
+    expected_base_url + '?sandbox=allow-scripts%20allow-same-origin&' +
+    'sandboxed-iframe-same-origin-by-header';
+  sandboxed_same_origin_frame_by_header = await with_iframe(iframe_full_url);
+  add_completion_callback(() =>
+    sandboxed_same_origin_frame_by_header.remove()
+  );
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1);
+  assert_equals(requests[0], iframe_full_url);
+  assert_true(data.clients.includes(iframe_full_url));
+}, 'Prepare an iframe sandboxed by CSP HTTP header with allow-scripts ' +
+   'and allow-same-origin.');
 
-    promise_test(async t => {
-      const result = await doTest(normal_frame, "fetch-from-worker");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The fetch request should be handled by SW."
-      );
-      assert_equals(
-        data.requests[0],
-        normal_frame.src + "&test=fetch-from-worker"
-      );
-    }, "Fetch request from a worker in a normal iframe");
+promise_test(async t => {
+  const result = await doTest(normal_frame, 'fetch');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+    'The fetch request should be handled by SW.');
+  assert_equals(data.requests[0], normal_frame.src + '&test=fetch');
+}, 'Fetch request from a normal iframe');
 
-    promise_test(async t => {
-      const result = await doTest(normal_frame, "iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(data.requests[0], normal_frame.src + "&test=iframe");
-      assert_true(data.clients.includes(normal_frame.src + "&test=iframe"));
-    }, "Request for an iframe in the normal iframe");
+promise_test(async t => {
+  const result = await doTest(normal_frame, 'fetch-from-worker');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1,
+                'The fetch request should be handled by SW.');
+  assert_equals(requests[0], normal_frame.src + '&test=fetch-from-worker');
+}, 'Fetch request from a worker in a normal iframe');
 
-    promise_test(async t => {
-      const result = await doTest(normal_frame, "sandboxed-iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(
-        data.clients.includes(normal_frame.src + "&test=sandboxed-iframe")
-      );
-    }, "Request for an sandboxed iframe with allow-scripts flag in the normal iframe");
+promise_test(async t => {
+  const result = await doTest(normal_frame, 'iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0], normal_frame.src + '&test=iframe');
+  assert_true(data.clients.includes(normal_frame.src + '&test=iframe'));
+}, 'Request for an iframe in the normal iframe');
 
-    promise_test(async t => {
-      const result = await doTest(normal_frame, "sandboxed-iframe-same-origin");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(
-        data.requests[0],
-        normal_frame.src + "&test=sandboxed-iframe-same-origin"
-      );
-      assert_true(
-        data.clients.includes(
-          normal_frame.src + "&test=sandboxed-iframe-same-origin"
-        )
-      );
-    }, "Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the normal iframe");
+promise_test(async t => {
+  const result = await doTest(normal_frame, 'sandboxed-iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(
+    normal_frame.src + '&test=sandboxed-iframe'));
+}, 'Request for an sandboxed iframe with allow-scripts flag in the normal ' +
+   'iframe');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_frame, "fetch");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The fetch request should NOT be handled by SW."
-      );
-    }, "Fetch request from iframe sandboxed by an attribute with allow-scripts flag");
+promise_test(async t => {
+  const frame = normal_frame;
+  const result = await doTest(frame, 'sandboxed-iframe-same-origin');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  const requests = data.requests;
+  assert_equals(requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(requests[0],
+                frame.src + '&test=sandboxed-iframe-same-origin');
+  assert_true(data.clients.includes(
+              frame.src + '&test=sandboxed-iframe-same-origin'));
+}, 'Request for an sandboxed iframe with allow-scripts and ' +
+   'allow-same-origin flag in the normal iframe');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_frame, "fetch-from-worker");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The fetch request should NOT be handled by SW."
-      );
-    }, "Fetch request from a worker in iframe sandboxed by an attribute with allow-scripts flag");
+promise_test(async t => {
+  const result = await doTest(sandboxed_frame, 'fetch');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The fetch request should NOT be handled by SW.');
+}, 'Fetch request from iframe sandboxed by an attribute with allow-scripts ' +
+   'flag');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_frame, "iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(data.clients.includes(sandboxed_frame.src + "&test=iframe"));
-    }, "Request for an iframe in the iframe sandboxed by an attribute with allow-scripts flag");
+promise_test(async t => {
+  const result = await doTest(sandboxed_frame, 'fetch-from-worker');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The fetch request should NOT be handled by SW.');
+}, 'Fetch request from a worker in iframe sandboxed by an attribute with ' +
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_frame, "sandboxed-iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(
-        data.clients.includes(sandboxed_frame.src + "&test=sandboxed-iframe")
-      );
-    }, "Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by an attribute with allow-scripts flag");
+promise_test(async t => {
+  const result = await doTest(sandboxed_frame, 'iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(sandboxed_frame.src + '&test=iframe'));
+}, 'Request for an iframe in the iframe sandboxed by an attribute with ' +
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const result = await doTest(
-        sandboxed_frame,
-        "sandboxed-iframe-same-origin"
-      );
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(
-        data.clients.includes(
-          sandboxed_frame.src + "&test=sandboxed-iframe-same-origin"
-        )
-      );
-    }, "Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by an attribute with allow-scripts flag");
+promise_test(async t => {
+  const result = await doTest(sandboxed_frame, 'sandboxed-iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(
+    sandboxed_frame.src + '&test=sandboxed-iframe'));
+}, 'Request for an sandboxed iframe with allow-scripts flag in the iframe ' +
+   'sandboxed by an attribute with allow-scripts flag');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_same_origin_frame, "fetch");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The fetch request should be handled by SW."
-      );
-      assert_equals(
-        data.requests[0],
-        sandboxed_same_origin_frame.src + "&test=fetch"
-      );
-    }, "Fetch request from iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const result = await doTest(
+    sandboxed_frame,
+    'sandboxed-iframe-same-origin'
+  );
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(
+    sandboxed_frame.src + '&test=sandboxed-iframe-same-origin'));
+}, 'Request for an sandboxed iframe with allow-scripts and ' +
+   'allow-same-origin flag in the iframe sandboxed by an attribute with ' +
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame;
-      const result = await doTest(frame, "fetch-from-worker");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The fetch request should be handled by SW."
-      );
-      assert_equals(data.requests[0], frame.src + "&test=fetch-from-worker");
-    }, "Fetch request from a worker in iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame;
+  const result = await doTest(frame, 'fetch');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The fetch request should be handled by SW.');
+  assert_equals(data.requests[0], frame.src + '&test=fetch');
+}, 'Fetch request from iframe sandboxed by an attribute with allow-scripts '+
+   'and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame;
-      const result = await doTest(frame, "iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(data.requests[0], frame.src + "&test=iframe");
-      assert_true(data.clients.includes(frame.src + "&test=iframe"));
-    }, "Request for an iframe in the iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame;
+  const result = await doTest(frame, 'fetch-from-worker');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The fetch request should be handled by SW.');
+  assert_equals(data.requests[0], frame.src + '&test=fetch-from-worker');
+}, 'Fetch request from a worker in iframe sandboxed by an attribute with '+
+   'allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame;
-      const result = await doTest(frame, "sandboxed-iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(data.clients.includes(frame.src + "&test=sandboxed-iframe"));
-    }, "Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by attribute with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame;
+  const result = await doTest(frame, 'iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0], frame.src + '&test=iframe');
+  assert_true(data.clients.includes(frame.src + '&test=iframe'));
+}, 'Request for an iframe in the iframe sandboxed by an attribute with '+
+   'allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame;
-      const result = await doTest(frame, "sandboxed-iframe-same-origin");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(
-        data.requests[0],
-        frame.src + "&test=sandboxed-iframe-same-origin"
-      );
-      assert_true(
-        data.clients.includes(frame.src + "&test=sandboxed-iframe-same-origin")
-      );
-    }, "Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by attribute with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame;
+  const result = await doTest(frame, 'sandboxed-iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(frame.src + '&test=sandboxed-iframe'));
+}, 'Request for an sandboxed iframe with allow-scripts flag in the iframe '+
+   'sandboxed by attribute with allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const result = await doTest(sandboxed_frame_by_header, "fetch");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-    }, "Fetch request from iframe sandboxed by CSP HTTP header with allow-scripts flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame;
+  const result = await doTest(frame, 'sandboxed-iframe-same-origin');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0],
+                frame.src + '&test=sandboxed-iframe-same-origin');
+  assert_true(data.clients.includes(
+    frame.src + '&test=sandboxed-iframe-same-origin'));
+}, 'Request for an sandboxed iframe with allow-scripts and '+
+   'allow-same-origin flag in the iframe sandboxed by attribute with '+
+   'allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_frame_by_header;
-      const result = await doTest(frame, "iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(data.clients.includes(frame.src + "&test=iframe"));
-    }, "Request for an iframe in the iframe sandboxed by CSP HTTP header with allow-scripts flag");
+promise_test(async t => {
+  const result = await doTest(sandboxed_frame_by_header, 'fetch');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+}, 'Fetch request from iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_frame_by_header;
-      const result = await doTest(frame, "sandboxed-iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(data.clients.includes(frame.src + "&test=sandboxed-iframe"));
-    }, "Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by CSP HTTP header with allow-scripts flag");
+promise_test(async t => {
+  const frame = sandboxed_frame_by_header;
+  const result = await doTest(frame, 'iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+    'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(frame.src + '&test=iframe'));
+}, 'Request for an iframe in the iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_frame_by_header;
-      const result = await doTest(frame, "sandboxed-iframe-same-origin");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(
-        data.clients.includes(frame.src + "&test=sandboxed-iframe-same-origin")
-      );
-    }, "Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by CSP HTTP header with allow-scripts flag");
+promise_test(async t => {
+  const frame = sandboxed_frame_by_header;
+  const result = await doTest(frame, 'sandboxed-iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(frame.src + '&test=sandboxed-iframe'));
+}, 'Request for an sandboxed iframe with allow-scripts flag in the iframe '+
+   'sandboxed by CSP HTTP header with allow-scripts flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame_by_header;
-      const result = await doTest(frame, "fetch");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(data.requests[0], frame.src + "&test=fetch");
-    }, "Fetch request from iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_frame_by_header;
+  const result = await doTest(frame, 'sandboxed-iframe-same-origin');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(
+    frame.src + '&test=sandboxed-iframe-same-origin'));
+}, 'Request for an sandboxed iframe with allow-scripts and '+
+   'allow-same-origin flag in the iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame_by_header;
-      const result = await doTest(frame, "iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(data.requests[0], frame.src + "&test=iframe");
-      assert_true(data.clients.includes(frame.src + "&test=iframe"));
-    }, "Request for an iframe in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame_by_header;
+  const result = await doTest(frame, 'fetch');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0], frame.src + '&test=fetch');
+}, 'Fetch request from iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame_by_header;
-      const result = await doTest(frame, "sandboxed-iframe");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        0,
-        "The request should NOT be handled by SW."
-      );
-      assert_false(data.clients.includes(frame.src + "&test=sandboxed-iframe"));
-    }, "Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag");
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame_by_header;
+  const result = await doTest(frame, 'iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0], frame.src + '&test=iframe');
+  assert_true(data.clients.includes(frame.src + '&test=iframe'));
+}, 'Request for an iframe in the iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts and allow-same-origin flag');
 
-    promise_test(async t => {
-      const frame = sandboxed_same_origin_frame_by_header;
-      const result = await doTest(frame, "sandboxed-iframe-same-origin");
-      assert_equals(result, "done");
-      const data = await getResultsFromWorker(worker);
-      assert_equals(
-        data.requests.length,
-        1,
-        "The request should be handled by SW."
-      );
-      assert_equals(
-        data.requests[0],
-        frame.src + "&test=sandboxed-iframe-same-origin"
-      );
-      assert_true(
-        data.clients.includes(frame.src + "&test=sandboxed-iframe-same-origin")
-      );
-    }, "Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag");
-  </script>
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame_by_header;
+  const result = await doTest(frame, 'sandboxed-iframe');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 0,
+                'The request should NOT be handled by SW.');
+  assert_false(data.clients.includes(frame.src + '&test=sandboxed-iframe'));
+}, 'Request for an sandboxed iframe with allow-scripts flag in the ' +
+   'iframe sandboxed by CSP HTTP header with allow-scripts and '+
+   'allow-same-origin flag');
+
+promise_test(async t => {
+  const frame = sandboxed_same_origin_frame_by_header;
+  const result = await doTest(frame, 'sandboxed-iframe-same-origin');
+  assert_equals(result, 'done');
+  const data = await getResultsFromWorker(worker);
+  assert_equals(data.requests.length, 1,
+                'The request should be handled by SW.');
+  assert_equals(data.requests[0],
+                frame.src + '&test=sandboxed-iframe-same-origin');
+  assert_true(data.clients.includes(
+    frame.src + '&test=sandboxed-iframe-same-origin'));
+}, 'Request for an sandboxed iframe with allow-scripts and '+
+   'allow-same-origin flag in the iframe sandboxed by CSP HTTP header with '+
+   'allow-scripts and allow-same-origin flag');
+</script>
 </body>

@@ -1,31 +1,31 @@
 <!DOCTYPE html>
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <title>respondWith with a response built from a ReadableStream</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.sub.js"></script>
 <script>
-  "use strict";
+'use strict';
 
-  const WORKER =
-    "resources/fetch-event-respond-with-readable-stream-chunk-worker.js";
-  const SCOPE =
-    "resources/fetch-event-respond-with-readable-stream-chunk-iframe.html";
+const WORKER =
+  'resources/fetch-event-respond-with-readable-stream-chunk-worker.js';
+const SCOPE =
+  'resources/fetch-event-respond-with-readable-stream-chunk-iframe.html';
 
-  promise_test(async t => {
-    const registration = await service_worker_unregister_and_register(
-      t,
-      WORKER,
-      SCOPE
-    );
-    await wait_for_state(t, registration.installing, "activated");
-    const iframe = await with_iframe(SCOPE);
-    t.add_cleanup(async () => {
-      if (iframe) iframe.remove();
-      if (registration) await registration.unregister();
-    });
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+    t,
+    WORKER,
+    SCOPE
+  );
+  await wait_for_state(t, registration.installing, 'activated');
+  const iframe = await with_iframe(SCOPE);
+  t.add_cleanup(async () => {
+    if (iframe) iframe.remove();
+    if (registration) await registration.unregister();
+  });
 
-    const response = await iframe.contentWindow.fetch("body-stream");
-    assert_equals(await response.text(), "chunk #1 chunk #2 chunk #3 chunk #4");
-  }, "Respond by chunks with a Response built from a ReadableStream");
+  const response = await iframe.contentWindow.fetch('body-stream');
+  assert_equals(await response.text(), 'chunk #1 chunk #2 chunk #3 chunk #4');
+}, 'Respond by chunks with a Response built from a ReadableStream');
 </script>

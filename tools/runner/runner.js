@@ -647,8 +647,9 @@ Results.prototype = {
     },
 
     to_json: function() {
+        var test_results = this.test_results || [];
         var data = {
-            "results": this.test_results.map(function(result) {
+            "results": test_results.map(function(result) {
                 var rv = {"test":(result.test.hasOwnProperty("ref_url") ?
                                   [result.test.url, result.test.ref_type, result.test.ref_url] :
                                   result.test.url),

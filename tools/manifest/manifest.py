@@ -12,6 +12,7 @@ from . import vcs
 from .item import (ManualTest, WebDriverSpecTest, Stub, RefTestNode, RefTest,
                    TestharnessTest, SupportFile, ConformanceCheckerTest, VisualTest)
 from .log import get_logger
+from .typedata import TypeData as New_TypeData
 from .utils import from_os_path, to_os_path
 
 MYPY = False
@@ -26,7 +27,7 @@ try:
 except ImportError:
     fast_json = json
 
-CURRENT_VERSION = 6
+CURRENT_VERSION = 7
 
 
 class ManifestError(Exception):
@@ -187,71 +188,49 @@ class TypeData(object):
         API-compatible with consumers that depend on getting an Item
         from iteration, we do egerly load all items when iterating
         over the class."""
-        self.manifest = manifest
-        self.type_cls = type_cls
-        self.json_data = {}
-        self.tests_root = None
-        self.data = {}
+        self.new_data = New_TypeData(manifest, type_cls)
 
     def __getitem__(self, key):
-        if key not in self.data:
-            self.load(key)
-        return self.data[key]
+        k = from_os_path(key).split(u"/")
+        return self.new_data[k]
 
     def __nonzero__(self):
-        return bool(self.data) or bool(self.json_data)
+        return bool(self.new_data)
 
     def __len__(self):
-        rv = len(self.data)
-        if self.json_data is not None:
-            rv += len(self.json_data)
-        return rv
+        return len(self.new_data)
 
     def __delitem__(self, key):
-        if key in self.data:
-            del self.data[key]
-        elif self.json_data is not None:
-            del self.json_data[from_os_path(key)]
-        else:
-            raise KeyError
+        k = from_os_path(key).split(u"/")
+        del self.new_data[k]
 
     def __setitem__(self, key, value):
-        if self.json_data is not None:
-            path = from_os_path(key)
-            if path in self.json_data:
-                del self.json_data[path]
-        self.data[key] = value
+        k = from_os_path(key).split(u"/")
+        self.new_data[k] = value
 
     def __contains__(self, key):
-        self.load_all()
-        return key in self.data
+        k = from_os_path(key).split(u"/")
+        return k in self.new_data
 
     def __iter__(self):
-        self.load_all()
-        return self.data.__iter__()
-
-    def pop(self, key, default=None):
-        try:
-            value = self[key]
-        except ValueError:
-            value = default
-        else:
-            del self.data[key]
-        return value
+        for k in self.new_data:
+            yield to_os_path(u"/".join(k))
 
     def get(self, key, default=None):
         try:
             return self[key]
-        except ValueError:
+        except KeyError:
             return default
 
+    def clear(self):
+        self.new_data.clear()
+
     def itervalues(self):
-        self.load_all()
-        return itervalues(self.data)
+        return self.new_data.values()
 
     def iteritems(self):
-        self.load_all()
-        return iteritems(self.data)
+        for k, v in self.new_data.items():
+            yield (to_os_path(u"/".join(k)), v)
 
     def values(self):
         return self.itervalues()
@@ -261,61 +240,24 @@ class TypeData(object):
 
     def load(self, key):
         """Load a specific Item given a path"""
-        if self.json_data is not None:
-            data = set()
-            path = from_os_path(key)
-            for test in self.json_data.get(path, []):
-                manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                data.add(manifest_item)
-            try:
-                del self.json_data[path]
-            except KeyError:
-                pass
-            self.data[key] = data
-        else:
-            raise ValueError
+        pass
 
     def load_all(self):
         """Load all test items in this class"""
-        if self.json_data is not None:
-            for path, value in iteritems(self.json_data):
-                key = to_os_path(path)
-                if key in self.data:
-                    continue
-                data = set()
-                for test in self.json_data.get(path, []):
-                    manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                    data.add(manifest_item)
-                self.data[key] = data
-            self.json_data = None
+        pass
 
     def set_json(self, tests_root, data):
-        if not isinstance(data, dict):
-            raise ValueError("Got a %s expected a dict" % (type(data)))
-        self.tests_root = tests_root
-        self.json_data = data
+        self.new_data._json_data = data
 
     def to_json(self):
-        data = {
-            from_os_path(path):
-            [t for t in sorted(test.to_json() for test in tests)]
-            for path, tests in iteritems(self.data)
-        }
-
-        if self.json_data is not None:
-            if not data:
-                # avoid copying if there's nothing here yet
-                return self.json_data
-            data.update(self.json_data)
-
-        return data
+        return self.new_data.to_json()
 
     def paths(self):
         """Get a list of all paths containing items of this type,
         without actually constructing all the items"""
-        rv = set(iterkeys(self.data))
-        if self.json_data:
-            rv |= {to_os_path(item) for item in iterkeys(self.json_data)}
+        rv = set()
+        for k in self.new_data:
+            rv.add(to_os_path(u"/".join(k)))
         return rv
 
 
@@ -479,8 +421,16 @@ class Manifest(object):
 
         if reftest_changes:
             reftests, reftest_nodes, changed_hashes = self._compute_reftests(reftest_nodes)
-            data["reftest"].data = reftests
-            data["reftest_node"].data = reftest_nodes
+            reftest_data = data["reftest"]
+            reftest_data.clear()
+            for path, items in iteritems(reftests):
+                reftest_data[path] = items
+
+            reftest_node_data = data["reftest_node"]
+            reftest_node_data.clear()
+            for path, items in iteritems(reftest_nodes):
+                reftest_node_data[path] = items
+
             path_hash.update(changed_hashes)
 
         return changed

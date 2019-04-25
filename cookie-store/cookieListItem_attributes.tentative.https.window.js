@@ -189,7 +189,7 @@ promise_test(async testCase => {
   await async_cleanup(() => cookieStore.delete('cookie-name'));
 }, 'CookieListItem - cookieStore.set with secure set to false');
 
-['strict', 'lax', 'unrestricted'].forEach(sameSiteValue => {
+['strict', 'lax', 'unrestricted', 'unspecified'].forEach(sameSiteValue => {
   promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
 

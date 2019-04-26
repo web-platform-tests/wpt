@@ -1,11 +1,11 @@
-self.addEventListener('canmakepayment', event => {
+self.addEventListener('canmakepayment', (event) => {
   event.respondWith(true);
 });
 
-self.addEventListener('paymentrequest', event => {
+self.addEventListener('paymentrequest', (event) => {
   const methodName = event.methodData[0].supportedMethods;
   event.respondWith(
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const result = {
         methodName,
         details: {changePaymentMethodReturned: 'Nothing'},
@@ -17,15 +17,15 @@ self.addEventListener('paymentrequest', event => {
       } else {
         event
           .changePaymentMethod(methodName, {country: 'US'})
-          .then(response => {
+          .then((response) => {
             result.details.changePaymentMethodReturned = response;
             resolve(result);
           })
-          .catch(error => {
+          .catch((error) => {
             result.details.changePaymentMethodReturned = error.message;
             resolve(result);
           });
       }
-    }),
+    })
   );
 });

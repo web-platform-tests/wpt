@@ -120,62 +120,26 @@
         request.show()
       );
       const complete_promise = response.complete('success');
+      const changePaymentMethodReturned =
+        response.details.changePaymentMethodReturned;
 
+      assert_equals(changePaymentMethodReturned.total.currency, 'GBP');
+      assert_equals(changePaymentMethodReturned.total.value, '0.02');
+      assert_equals(changePaymentMethodReturned.error, 'Error for test');
+      assert_equals(changePaymentMethodReturned.modifiers.length, 1);
+
+      const modifier = changePaymentMethodReturned.modifiers[0];
+
+      assert_equals(modifier.supportedMethods, methodName);
+      assert_equals(modifier.data.soup, 'potato');
+      assert_equals(modifier.total.label, '');
+      assert_equals(modifier.total.amount.currency, 'EUR');
+      assert_equals(modifier.total.amount.value, '0.03');
+      assert_equals(modifier.additionalDisplayItems, undefined);
+      assert_equals(changePaymentMethodReturned.displayItems, undefined);
+      assert_equals(changePaymentMethodReturned.shippingOptions, undefined);
       assert_equals(
-        response.details.changePaymentMethodReturned.total.currency,
-        'GBP'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.total.value,
-        '0.02'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.error,
-        'Error for test'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers.length,
-        1
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0]
-          .supportedMethods,
-        methodName
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0].data.soup,
-        'potato'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0].total.label,
-        ''
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0].total.amount
-          .currency,
-        'EUR'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0].total.amount
-          .value,
-        '0.03'
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.modifiers[0]
-          .additionalDisplayItems,
-        undefined
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.displayItems,
-        undefined
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.shippingOptions,
-        undefined
-      );
-      assert_equals(
-        response.details.changePaymentMethodReturned.paymentMethodErrors
-          .country,
+        changePaymentMethodReturned.paymentMethodErrors.country,
         'Unsupported country'
       );
 

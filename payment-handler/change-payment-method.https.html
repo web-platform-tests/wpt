@@ -125,8 +125,15 @@
 
       assert_equals(changePaymentMethodReturned.total.currency, 'GBP');
       assert_equals(changePaymentMethodReturned.total.value, '0.02');
+      assert_equals(changePaymentMethodReturned.total.label, undefined);
       assert_equals(changePaymentMethodReturned.error, 'Error for test');
       assert_equals(changePaymentMethodReturned.modifiers.length, 1);
+      assert_equals(changePaymentMethodReturned.displayItems, undefined);
+      assert_equals(changePaymentMethodReturned.shippingOptions, undefined);
+      assert_equals(
+        changePaymentMethodReturned.paymentMethodErrors.country,
+        'Unsupported country'
+      );
 
       const modifier = changePaymentMethodReturned.modifiers[0];
 
@@ -136,12 +143,6 @@
       assert_equals(modifier.total.amount.currency, 'EUR');
       assert_equals(modifier.total.amount.value, '0.03');
       assert_equals(modifier.additionalDisplayItems, undefined);
-      assert_equals(changePaymentMethodReturned.displayItems, undefined);
-      assert_equals(changePaymentMethodReturned.shippingOptions, undefined);
-      assert_equals(
-        changePaymentMethodReturned.paymentMethodErrors.country,
-        'Unsupported country'
-      );
 
       return complete_promise;
     }, 'The changePaymentMethod() returns some details from the "paymentmethodchange" event\'s updateWith(details) call.');

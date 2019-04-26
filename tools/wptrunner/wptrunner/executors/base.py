@@ -589,7 +589,8 @@ class CallbackHandler(object):
             "click": ClickAction(self.logger, self.protocol),
             "send_keys": SendKeysAction(self.logger, self.protocol),
             "action_sequence": ActionSequenceAction(self.logger, self.protocol),
-            "generate_test_report": GenerateTestReportAction(self.logger, self.protocol)
+            "generate_test_report": GenerateTestReportAction(self.logger, self.protocol),
+            "freeze": FreezeAction(self.logger, self.protocol, test_window)
         }
 
     def __call__(self, result):
@@ -683,3 +684,14 @@ class GenerateTestReportAction(object):
         message = payload["message"]
         self.logger.debug("Generating test report: %s" % message)
         self.protocol.generate_test_report.generate_test_report(message)
+
+class FreezeAction(object):
+    def __init__(self, logger, protocol, test_window):
+        self.logger = logger
+        self.protocol = protocol
+        self.test_window = test_window
+
+    def __call__(self, payload):
+        if "title" not in payload:
+          raise ValueError("Freeze requires a document title")
+        self.protocol.freeze.freeze(payload["title"], self.test_window)

@@ -159,18 +159,20 @@
         },
 
         /**
-         * Freeze the current page
+         * Freeze a page
          *
          * The freeze function transitions the page from the HIDDEN state to
          * the FROZEN state as described in {@link
          * https://github.com/WICG/page-lifecycle/blob/master/README.md|Lifecycle API
          * for Web Pages}
          *
+         * @param {Window} - the window corresponding to the page to freeze.
+         *
          * @returns {Promise} fulfilled after the freeze request is sent, or rejected
          *                    in case the WebDriver command errors
          */
-        freeze: function() {
-            return window.test_driver_internal.freeze();
+        freeze: function(window_to_freeze) {
+            return window.test_driver_internal.freeze(window_to_freeze);
         },
 
         /**
@@ -278,12 +280,14 @@
         },
 
         /**
-         * Freeze the current page
+         * Freeze a page
+         *
+         * @param {Window} - the window corresponding to the page to freeze.
          *
          * @returns {Promise} fulfilled after freeze request is sent, otherwise
          * it gets rejected
          */
-        freeze: function() {
+        freeze: function(window_to_freeze) {
             return Promise.reject(new Error("unimplemented"));
         },
 

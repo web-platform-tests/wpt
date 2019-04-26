@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Frozen Window</title>
+<h1>This window will be frozen</h1>
+<script>
+
+window.document.addEventListener("freeze", () => {
+  window.opener.set_child_frozen(true);
+});
+
+window.document.addEventListener("resume", () => {
+  window.opener.set_child_frozen(false);
+});
+
+onload = function() {
+  window.opener.freeze_child(window);
+};
+
+</script>

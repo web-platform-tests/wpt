@@ -36,7 +36,7 @@ def assert_value_from(obj, field, items):
 
 
 def assert_atom_or_list_items_from(obj, field, items):
-    if isinstance(obj[field], basestring) or isinstance(obj[field], int):
+    if isinstance(obj[field], basestring) or isinstance(obj[field], int) or obj[field] is None:
         assert_value_from(obj, field, items)
         return
 
@@ -76,16 +76,14 @@ def validate(spec_json, details):
 
     details['object'] = spec_json
     assert_contains_only_fields(spec_json, ["specification",
-                                            "referrer_policy_schema",
+                                            "source_context_schema",
                                             "test_expansion_schema",
                                             "excluded_tests"])
     assert_non_empty_list(spec_json, "specification")
-    assert_non_empty_list(spec_json, "referrer_policy_schema")
     assert_non_empty_dict(spec_json, "test_expansion_schema")
     assert_non_empty_list(spec_json, "excluded_tests")
 
     specification = spec_json['specification']
-    referrer_policy_schema = spec_json['referrer_policy_schema']
     test_expansion_schema = spec_json['test_expansion_schema']
     excluded_tests = spec_json['excluded_tests']
 
@@ -99,14 +97,12 @@ def validate(spec_json, details):
         assert_contains_only_fields(spec, ['name',
                                            'title',
                                            'description',
-                                           'referrer_policy',
                                            'specification_url',
                                            'test_expansion'])
         assert_non_empty_string(spec, 'name')
         assert_non_empty_string(spec, 'title')
         assert_non_empty_string(spec, 'description')
         assert_non_empty_string(spec, 'specification_url')
-        assert_value_from(spec, 'referrer_policy', referrer_policy_schema)
         assert_non_empty_list(spec, 'test_expansion')
 
         # Validate spec's test expansion.
@@ -130,10 +126,11 @@ def validate(spec_json, details):
     details['object'] = test_expansion_schema
     assert_contains_only_fields(test_expansion_schema, ['expansion',
                                                         'delivery_method',
+                                                        'delivery_value',
                                                         'redirection',
                                                         'origin',
                                                         'source_protocol',
-                                                        'target_protocol',
+                                                        'source_context',
                                                         'subresource',
                                                         'referrer_url'])
     # Validate excluded tests.

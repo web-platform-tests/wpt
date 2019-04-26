@@ -5,7 +5,10 @@ import os, sys, json
 import spec_validator
 import argparse
 import util
+import traceback
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scope'))
+import policy_deliveries
 
 def expand_pattern(expansion_pattern, test_expansion_schema):
     expansion = {}
@@ -46,11 +49,55 @@ def permute_expansion(expansion, artifact_order, selection = {}, artifact_index 
             yield next_selection
 
 
-def generate_selection(config, selection, spec, test_html_template_basename):
-    # TODO: Refactor out this referrer-policy-specific part.
-    if 'referrer_policy' in spec:
-      # Oddball: it can be None, so in JS it's null.
-      selection['referrer_policy'] = spec['referrer_policy']
+def apply_delivery(source_context_type, delivery_method, delivery_key, delivery_value, x):
+  ret = []
+  for policy_delivery in x:
+    if type(policy_delivery) == unicode and policy_delivery == "policy":
+      if source_context_type == 'subresource':
+        if delivery_method not in ['attr', 'rel-noref']:
+          return None
+      elif source_context_type == 'srcdoc':
+        if delivery_method not in ['meta']:
+          return None
+      else:
+        if delivery_method not in ['http-rp', 'meta']:
+          return None
+      y = {"deliveryType": delivery_method, "key": delivery_key, "value": delivery_value}
+    elif type(policy_delivery) == unicode and policy_delivery == "anotherPolicy":
+      another_delivery_value = "unsafe-url" if delivery_value == "no-referrer" else "no-referrer"
+      y = {"deliveryType": "meta", "key": delivery_key, "value": another_delivery_value}
+    else:
+      y = policy_delivery
+    assert "deliveryType" in y, json.dumps(y)
+    assert "key" in y, json.dumps(y)
+    assert "value" in y, json.dumps(y)
+    ret.append(y)
+  return ret
+
+def generate_selection(source_context_schema, config, selection, spec, test_html_template_basename):
+    source_context = source_context_schema[selection['source_context']]
+    delivery_method = selection['delivery_method']
+    source_context_list = []
+    subresource_delivery_policy = []
+    if 'delivery_value' in selection:
+      for x in source_context["sourceContextList"]:
+        if "policyDeliveries" in x:
+          x = copy.deepcopy(x)
+          source_context_type = None
+          if 'sourceContextType' in x:
+            source_context_type = x['sourceContextType']
+          x["policyDeliveries"] = apply_delivery(source_context_type, delivery_method, 'referrerPolicy', selection['delivery_value'], x["policyDeliveries"])
+          if x["policyDeliveries"] is None:
+            return
+        source_context_list.append(x)
+      subresource_delivery_policy = apply_delivery('subresource', delivery_method, 'referrerPolicy', selection['delivery_value'], source_context["subresourcePolicyDeliveries"])
+      if subresource_delivery_policy is None:
+        return
+
+    top_source_context = source_context_list.pop(0)
+
+    selection['source_context_list'] = source_context_list
+    selection['subresource_policy_deliveries'] = subresource_delivery_policy
 
     test_parameters = json.dumps(selection, indent=2, separators=(',', ':'))
     # Adjust the template for the test invoking JS. Indent it to look nice.
@@ -72,6 +119,9 @@ def generate_selection(config, selection, spec, test_html_template_basename):
     selection['helper_js'] = config.helper_js
     selection['sanity_checker_js'] = config.sanity_checker_js
     selection['spec_json_js'] = config.spec_json_js
+
+    if selection['delivery_value'] is None:
+      selection['delivery_value'] = 'unset'
 
     test_filename = os.path.join(config.spec_directory, config.test_file_path_pattern % selection)
     test_headers_filename = test_filename + ".headers"
@@ -100,15 +150,22 @@ def generate_selection(config, selection, spec, test_html_template_basename):
     except:
         pass
 
-    delivery = config.handleDelivery(selection, spec)
+    top_policy_deliveries = []
+    if 'policyDeliveries' in top_source_context:
+      top_policy_deliveries = top_source_context['policyDeliveries']
+    top_deliveries = policy_deliveries.handle_deliveries(top_policy_deliveries)
 
-    if len(delivery['headers']) > 0:
+    # Errors in handle_deliveries() indicates e.g. deliveryType is not
+    # supported in given context, e.g. http-rp in srcdoc iframe.
+    if top_deliveries['error'] != '':
+      return
+
+    if len(top_deliveries['headers']) > 0:
         with open(test_headers_filename, "w") as f:
-            for header in delivery['headers']:
-                f.write(header)
-                f.write('\n')
+            for header in top_deliveries['headers']:
+                f.write('%s: %s\n' % (header, top_deliveries['headers'][header]))
 
-    selection['meta_delivery_method'] = delivery['meta']
+    selection['meta_delivery_method'] = top_deliveries['meta']
     # Obey the lint and pretty format.
     if len(selection['meta_delivery_method']) > 0:
         selection['meta_delivery_method'] = "\n    " + \
@@ -121,6 +178,7 @@ def generate_selection(config, selection, spec, test_html_template_basename):
 def generate_test_source_files(config, spec_json, target):
     test_expansion_schema = spec_json['test_expansion_schema']
     specification = spec_json['specification']
+    source_context_schema = spec_json['source_context_schema']
 
     spec_json_js_template = util.get_template('spec_json.js.template')
     generated_spec_json_filename = os.path.join(config.spec_directory, "spec_json.js")
@@ -163,7 +221,8 @@ def generate_test_source_files(config, spec_json, target):
 
         for selection_path in output_dict:
             selection = output_dict[selection_path]
-            generate_selection(config,
+            generate_selection(source_context_schema,
+                               config,
                                selection,
                                spec,
                                html_template)

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLObjectElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="assert" content="data, type, typeMustMatch, name, useMap, width,
+  height of HTMLObjectElement interface must have CEReactions">
+<meta name="help" content="https://html.spec.whatwg.org/#the-object-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<map name="yellow"></map>
+<map name="green"></map>
+<body>
+<script>
+
+function getParentElement() {
+  return document.body;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('src', '/media/movie_5.mp4');
+}
+
+function setTwoAttributes(instance) {
+  instance.setAttribute('src', '/media/movie_5.mp4');
+  instance.setAttribute('type', 'application/ogg');
+}
+
+testReflectAttribute('data', 'data', '/media/green-at-15.ogv',
+  '/media/movie_5.mp4', 'data on HTMLObjectElement', 'object',
+  HTMLObjectElement
+);
+testReflectAttribute('type', 'type', 'application/pdf',
+  'application/ogg', 'type on HTMLObjectElement', 'object',
+  HTMLObjectElement
+);
+testReflectBooleanAttributeWithDependentAttributes(
+  'typeMustMatch', 'typemustmatch', 'typeMustMatch on HTMLObjectElement',
+  'object', getParentElement, instance => setTwoAttributes(instance),
+  HTMLObjectElement
+);
+testReflectAttributeWithDependentAttributes(
+  'name', 'name', 'obj1',
+  'obj2', 'name on HTMLObjectElement', 'object',
+  getParentElement, instance => setAttributes(instance), HTMLObjectElement
+);
+testReflectAttributeWithDependentAttributes(
+  'useMap', 'usemap', '#yellow',
+  '#green', 'useMap on HTMLObjectElement', 'object',
+  getParentElement, instance => setAttributes(instance), HTMLObjectElement
+);
+testReflectAttributeWithDependentAttributes(
+  'width', 'width', '25',
+  '26', 'width on HTMLObjectElement', 'object',
+  getParentElement, instance => setAttributes(instance), HTMLObjectElement
+);
+testReflectAttributeWithDependentAttributes(
+  'height', 'height', '25',
+  '26', 'height on HTMLObjectElement', 'object',
+  getParentElement, instance => setAttributes(instance), HTMLObjectElement
+);
+
+</script>
+</body>

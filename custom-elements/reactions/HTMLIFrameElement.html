@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLIFrameElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="assert" content="src, srcdoc, name, allow, allowFullscreen,
+  allowPaymentRequest, width, height, referrerPolicy of HTMLIFrameElement
+  interface must have CEReactions">
+<meta name="help" content="https://html.spec.whatwg.org/#the-iframe-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<script>
+
+testReflectAttribute(
+  'src', 'src', 'http://www.intel1.com',
+  'http://www.intel.com', 'src on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectAttribute(
+  'srcdoc', 'srcdoc', '<p>Hello1</p>',
+  '<p>Hello2</p>', 'srcdoc on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectAttribute(
+  'name', 'name', 'iframe_a',
+  'iframe_b', 'name on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectAttribute(
+  'allow', 'allow', 'geolocation',
+  'accelerometer', 'allow on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectBooleanAttribute(
+  'allowFullscreen', 'allowfullscreen', 'allowFullscreen on HTMLIFrameElement',
+  'iframe', HTMLIFrameElement
+);
+testReflectBooleanAttribute(
+  'allowPaymentRequest', 'allowpaymentrequest',
+  'allowPaymentRequest on HTMLIFrameElement',
+  'iframe', HTMLIFrameElement
+);
+testReflectAttribute(
+  'width', 'width', '10',
+  '12', 'width on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectAttribute(
+  'height', 'height', '10',
+  '12', 'height on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+testReflectAttribute(
+  'referrerPolicy', 'referrerpolicy', 'same-origin',
+  'origin', 'referrerPolicy on HTMLIFrameElement', 'iframe',
+  HTMLIFrameElement
+);
+
+</script>

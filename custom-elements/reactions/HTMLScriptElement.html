@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<title>Custom Elements: CEReactions on HTMLScriptElement interface</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="assert" content="src, type, noModule, async, defer, crossOrigin,
+  text, integrity, referrerPolicy of HTMLScriptElement interface must have
+  CEReactions">
+<meta name="help" content="https://html.spec.whatwg.org/#the-script-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/custom-elements-helpers.js"></script>
+<script src="./resources/reactions.js"></script>
+
+<script>
+
+function getParentElement() {
+  return document.head;
+}
+
+function setAttributes(instance) {
+  instance.setAttribute('src', '/resources/testharnessreport.js');
+}
+
+testReflectAttribute(
+  'src', 'src', '/resources/testharnessreport.js',
+  '/resources/testharness.js', 'src on HTMLScriptElement', 'script',
+  HTMLScriptElement
+);
+testReflectAttribute(
+  'type', 'type', 'application/ecmascript',
+  'application/javascript', 'type on HTMLScriptElement', 'script',
+  HTMLScriptElement
+);
+testReflectBooleanAttributeWithDependentAttributes(
+  'noModule', 'nomodule', 'noModule on HTMLScriptElement',
+  'script', getParentElement, instance => setAttributes(instance),
+  HTMLScriptElement
+);
+testReflectBooleanAttributeWithDependentAttributes(
+  'async', 'async', 'async on HTMLScriptElement',
+  'script', getParentElement, instance => setAttributes(instance),
+  HTMLScriptElement
+);
+testReflectBooleanAttributeWithDependentAttributes(
+  'defer', 'defer', 'defer on HTMLScriptElement',
+  'script', getParentElement, instance => setAttributes(instance),
+  HTMLScriptElement
+);
+testReflectAttributeWithDependentAttributes(
+  'crossOrigin', 'crossorigin', 'use-credentials',
+  'anonymous', 'crossOrigin on HTMLScriptElement', 'script',
+  getParentElement, instance => setAttributes(instance), HTMLScriptElement
+);
+testReflectAttribute(
+  'text', 'text', 'let a;',
+  'let b;', 'text on HTMLScriptElement', 'script',
+  HTMLScriptElement
+);
+testReflectAttributeWithDependentAttributes(
+  'integrity', 'integrity',
+  'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC',
+  'sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f',
+  'integrity on HTMLScriptElement', 'script',
+  getParentElement, instance => setAttributes(instance), HTMLScriptElement
+);
+testReflectAttributeWithDependentAttributes(
+  'referrerPolicy', 'referrerpolicy', 'unsafe-url',
+  'same-origin', 'referrerPolicy on HTMLScriptElement', 'script',
+  getParentElement, instance => setAttributes(instance), HTMLScriptElement
+);
+
+</script>

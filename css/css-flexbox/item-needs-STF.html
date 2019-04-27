@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<link rel="author" title="David Grogan" href="mailto:dgrogan@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/css-flexbox-1/#flex-base-size">
+<link rel="help" href="https://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="flags" content="" />
+<meta name="assert" content="A flex container shrink wraps items when determining their flex base sizes and when laying them out after their flexed size has been determined." />
+
+<style>
+
+#flexbox {
+  display: flex;
+  flex-direction: column;
+}
+
+#item {
+  background: red;
+  /* Override default alignment of "stretch" because items don't STF when
+     they are stretched. */
+  align-self: start;
+}
+
+#descendant {
+  padding-bottom: 50%;
+  background: green;
+}
+
+x-word {
+  display: inline-block;
+  width: 100px;
+  height: 50px;
+  background: green;
+}
+
+div {
+  /* This just makes the test easier to write by killing the gap under the
+     inline-block. It's not needed for the behavior under test. */
+  line-height: 0px;
+}
+
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+
+<div id=flexbox>
+  <div id=item>
+    <x-word></x-word>
+    <div id=descendant></div>
+  </div>
+</div>

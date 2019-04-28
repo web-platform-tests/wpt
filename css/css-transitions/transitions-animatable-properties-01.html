@@ -5,6 +5,7 @@
     <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
     <title> CSS Transitions: Animatable CSS properties </title>
     <meta name="assert" content="Check that all animatable CSS properties are animatable and then accepted by the 'transition-property' property">
+    <meta name="timeout" content="long">
     <link rel="author" title="Daniel Glazman" href="mailto:daniel.glazman@disruptive-innovations.com">
     <link rel="help" href="http://www.w3.org/TR/css3-transitions/#transitions">
     <link rel="help" href="http://www.w3.org/TR/css3-transitions/#animatable-properties">
@@ -99,10 +100,8 @@
 
       // create all the tests we need
       for (var i = 0; i < kANIMATABLE_CSS_PROPERTIES.length; i++) {
-        testsIntermediate.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " intermediate",
-                                          { timeout: 2000, assert: "property " + kANIMATABLE_CSS_PROPERTIES[i][0] + " is animatable" }));
-        testsEnd.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " end",
-                                          { timeout: 2000, assert: "property " + kANIMATABLE_CSS_PROPERTIES[i][0] + " has correct value after transition's end" }));
+        testsIntermediate.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " intermediate"));
+        testsEnd.push(async_test(kANIMATABLE_CSS_PROPERTIES[i][0] + " end"));
       }
 
       // getComputedStyle helper

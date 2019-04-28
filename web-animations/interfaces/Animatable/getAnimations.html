@@ -65,7 +65,50 @@ test(t => {
     delay: 100 * MS_PER_SEC,
   });
   assert_array_equals(div.getAnimations(), [animation]);
-}, 'Returns animations in their delay phase');
+}, 'Returns animations yet to reach their active phase');
+
+test(t => {
+  const div = createDiv(t);
+  const animation = div.animate(null, 100 * MS_PER_SEC);
+  animation.playbackRate = -1;
+  assert_array_equals(div.getAnimations(), []);
+}, 'Does not return reversed finished animations that do not fill backwards');
+
+test(t => {
+  const div = createDiv(t);
+  const animation = div.animate(null, {
+    duration: 100 * MS_PER_SEC,
+    fill: 'backwards',
+  });
+  animation.playbackRate = -1;
+  assert_array_equals(div.getAnimations(), [animation]);
+}, 'Returns reversed finished animations that fill backwards');
+
+test(t => {
+  const div = createDiv(t);
+  const animation = div.animate(null, 100 * MS_PER_SEC);
+  animation.playbackRate = -1;
+  animation.currentTime = 200 * MS_PER_SEC;
+  assert_array_equals(div.getAnimations(), [animation]);
+}, 'Returns reversed animations yet to reach their active phase');
+
+test(t => {
+  const div = createDiv(t);
+  const animation = div.animate(null, {
+    duration: 100 * MS_PER_SEC,
+    delay: 100 * MS_PER_SEC,
+  });
+  animation.playbackRate = 0;
+  assert_array_equals(div.getAnimations(), []);
+}, 'Does not return animations with zero playback rate in before phase');
+
+test(t => {
+  const div = createDiv(t);
+  const animation = div.animate(null, 100 * MS_PER_SEC);
+  animation.finish();
+  animation.playbackRate = 0;
+  animation.currentTime = 200 * MS_PER_SEC;
+}, 'Does not return animations with zero playback rate in after phase');
 
 test(t => {
   const div = createDiv(t);
@@ -75,12 +118,14 @@ test(t => {
   assert_array_equals(div.getAnimations(), [],
                       'Animation should not be returned when it is finished');
 
-  animation.effect.timing.duration += 100 * MS_PER_SEC;
+  animation.effect.updateTiming({
+    duration: animation.effect.getTiming().duration + 100 * MS_PER_SEC,
+  });
   assert_array_equals(div.getAnimations(), [animation],
                       'Animation should be returned after extending the'
                       + ' duration');
 
-  animation.effect.timing.duration = 0;
+  animation.effect.updateTiming({ duration: 0 });
   assert_array_equals(div.getAnimations(), [],
                       'Animation should not be returned after setting the'
                       + ' duration to zero');
@@ -91,13 +136,13 @@ test(t => {
   const div = createDiv(t);
   const animation = div.animate(null, 100 * MS_PER_SEC);
 
-  animation.effect.timing.endDelay = -200 * MS_PER_SEC;
+  animation.effect.updateTiming({ endDelay: -200 * MS_PER_SEC });
   assert_array_equals(div.getAnimations(), [],
                       'Animation should not be returned after setting a'
                       + ' negative end delay such that the end time is less'
                       + ' than the current time');
 
-  animation.effect.timing.endDelay = 100 * MS_PER_SEC;
+  animation.effect.updateTiming({ endDelay: 100 * MS_PER_SEC });
   assert_array_equals(div.getAnimations(), [animation],
                       'Animation should be returned after setting a positive'
                       + ' end delay such that the end time is more than the'
@@ -113,17 +158,17 @@ test(t => {
   assert_array_equals(div.getAnimations(), [],
                       'Animation should not be returned when it is finished');
 
-  animation.effect.timing.iterations = 10;
+  animation.effect.updateTiming({ iterations: 10 });
   assert_array_equals(div.getAnimations(), [animation],
                       'Animation should be returned after inreasing the'
                       + ' number of iterations');
 
-  animation.effect.timing.iterations = 0;
+  animation.effect.updateTiming({ iterations: 0 });
   assert_array_equals(div.getAnimations(), [],
                       'Animations should not be returned after setting the'
                       + ' iteration count to zero');
 
-  animation.effect.timing.iterations = Infinity;
+  animation.effect.updateTiming({ iterations: Infinity });
   assert_array_equals(div.getAnimations(), [animation],
                       'Animation should be returned after inreasing the'
                       + ' number of iterations to infinity');
@@ -151,6 +196,34 @@ test(t => {
                       + ' clipped end of the active interval');
 }, 'Returns animations based on dynamic changes to individual'
    + ' animations\' current time');
+
+promise_test(async t => {
+  const div = createDiv(t);
+  const watcher = EventWatcher(t, div, 'transitionrun');
+
+  // Create a covering animation to prevent transitions from firing after
+  // calling getAnimations().
+  const coveringAnimation = new Animation(
+    new KeyframeEffect(div, { opacity: [0, 1] }, 100 * MS_PER_SEC)
+  );
+
+  // Setup transition start point.
+  div.style.transition = 'opacity 100s';
+  getComputedStyle(div).opacity;
+
+  // Update specified style but don't flush style.
+  div.style.opacity = '0.5';
+
+  // Fetch animations
+  div.getAnimations();
+
+  // Play the covering animation to ensure that only the call to
+  // getAnimations() has a chance to trigger transitions.
+  coveringAnimation.play();
+
+  // If getAnimations() flushed style, we should get a transitionrun event.
+  await watcher.wait_for('transitionrun');
+}, 'Triggers a style change event');
 
 </script>
 </body>

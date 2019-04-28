@@ -12,26 +12,31 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "any"
+                    "idlType": "any",
+                    "extAttrs": []
                 },
                 "name": "lookupEntry",
+                "escapedName": "lookupEntry",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": false,
+                        "default": null,
                         "extAttrs": [],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "unsigned long"
+                            "idlType": "unsigned long",
+                            "extAttrs": []
                         },
-                        "name": "key"
+                        "name": "key",
+                        "escapedName": "key"
                     }
                 ],
                 "extAttrs": []

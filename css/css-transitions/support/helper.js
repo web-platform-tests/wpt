@@ -94,6 +94,8 @@ root.domFixture = function(selector) {
     }
 };
 
+root.MS_PER_SEC = 1000;
+
 /*
  * The recommended minimum precision to use for time values.
  *
@@ -108,7 +110,14 @@ const TIME_PRECISION = 0.0005; // ms
  */
 root.assert_times_equal = function(actual, expected, description) {
   assert_approx_equals(actual, expected, TIME_PRECISION, description);
-}
+};
+
+/*
+ * Compare a time value based on its precision requirements with a fixed value.
+ */
+root.assert_time_equals_literal = (actual, expected, description) => {
+  assert_approx_equals(actual, expected, TIME_PRECISION, description);
+};
 
 /**
  * Assert that CSSTransition event, |evt|, has the expected property values
@@ -119,7 +128,7 @@ root.assert_end_events_equal = function(evt, propertyName, elapsedTime,
   assert_equals(evt.propertyName, propertyName);
   assert_times_equal(evt.elapsedTime, elapsedTime);
   assert_equals(evt.pseudoElement, pseudoElement);
-}
+};
 
 /**
  * Assert that array of simultaneous CSSTransition events, |evts|, have the
@@ -194,6 +203,118 @@ root.addDiv = function(t, attrs) {
     });
   }
   return div;
-}
+};
+
+/**
+ * Appends a style div to the document head.
+ *
+ * @param t  The testharness.js Test object. If provided, this will be used
+ *           to register a cleanup callback to remove the style element
+ *           when the test finishes.
+ *
+ * @param rules  A dictionary object with selector names and rules to set on
+ *               the style sheet.
+ */
+root.addStyle = (t, rules) => {
+  const extraStyle = document.createElement('style');
+  document.head.appendChild(extraStyle);
+  if (rules) {
+    const sheet = extraStyle.sheet;
+    for (const selector in rules) {
+      sheet.insertRule(selector + '{' + rules[selector] + '}',
+                       sheet.cssRules.length);
+    }
+  }
+
+  if (t && typeof t.add_cleanup === 'function') {
+    t.add_cleanup(() => {
+      extraStyle.remove();
+    });
+  }
+  return extraStyle;
+};
+
+/**
+ * Promise wrapper for requestAnimationFrame.
+ */
+root.waitForFrame = () => {
+  return new Promise(resolve => {
+    window.requestAnimationFrame(resolve);
+  });
+};
+
+/**
+ * Returns a Promise that is resolved after the given number of consecutive
+ * animation frames have occured (using requestAnimationFrame callbacks).
+ *
+ * @param frameCount  The number of animation frames.
+ * @param onFrame  An optional function to be processed in each animation frame.
+ */
+root.waitForAnimationFrames = (frameCount, onFrame) => {
+  const timeAtStart = document.timeline.currentTime;
+  return new Promise(resolve => {
+    function handleFrame() {
+      if (onFrame && typeof onFrame === 'function') {
+        onFrame();
+      }
+      if (timeAtStart != document.timeline.currentTime &&
+          --frameCount <= 0) {
+        resolve();
+      } else {
+        window.requestAnimationFrame(handleFrame); // wait another frame
+      }
+    }
+    window.requestAnimationFrame(handleFrame);
+  });
+};
+
+/**
+ * Wrapper that takes a sequence of N animations and returns:
+ *
+ *   Promise.all([animations[0].ready, animations[1].ready, ... animations[N-1].ready]);
+ */
+root.waitForAllAnimations = animations =>
+  Promise.all(animations.map(animation => animation.ready));
+
+/**
+ * Utility that takes a Promise and a maximum number of frames to wait and
+ * returns a new Promise that behaves as follows:
+ *
+ * - If the provided Promise resolves _before_ the specified number of frames
+ *   have passed, resolves with the result of the provided Promise.
+ * - If the provided Promise rejects _before_ the specified number of frames
+ *   have passed, rejects with the error result of the provided Promise.
+ * - Otherwise, rejects with a 'Timed out' error message. If |message| is
+ *   provided, it will be appended to the error message.
+ */
+root.frameTimeout = (promiseToWaitOn, framesToWait, message) => {
+  let framesRemaining = framesToWait;
+  let aborted = false;
+
+  const timeoutPromise = new Promise(function waitAFrame(resolve, reject) {
+    if (aborted) {
+      resolve();
+      return;
+    }
+    if (framesRemaining-- > 0) {
+      requestAnimationFrame(() => {
+        waitAFrame(resolve, reject);
+      });
+      return;
+    }
+    let errorMessage = 'Timed out waiting for Promise to resolve';
+    if (message) {
+      errorMessage += `: ${message}`;
+    }
+    reject(new Error(errorMessage));
+  });
+
+  const wrappedPromiseToWaitOn = promiseToWaitOn.then(result => {
+    aborted = true;
+    return result;
+  });
+
+  return Promise.race([timeoutPromise, wrappedPromiseToWaitOn]);
+};
 
 })(window);

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import json, sys
 from common_paths import *
 
@@ -28,17 +30,17 @@ def assert_contains(obj, field):
     assert field in obj, 'Must contain field "%s"' % field
 
 
-def assert_string_from(obj, field, items):
+def assert_value_from(obj, field, items):
    assert obj[field] in items, \
         'Field "%s" must be from: %s' % (field, str(items))
 
 
-def assert_string_or_list_items_from(obj, field, items):
-    if isinstance(obj[field], basestring):
-        assert_string_from(obj, field, items)
+def assert_atom_or_list_items_from(obj, field, items):
+    if isinstance(obj[field], basestring) or isinstance(obj[field], int):
+        assert_value_from(obj, field, items)
         return
 
-    assert isinstance(obj[field], list), "%s must be a list!" % field
+    assert isinstance(obj[field], list), '%s must be a list' % field
     for allowed_value in obj[field]:
         assert allowed_value != '*', "Wildcard is not supported for lists!"
         assert allowed_value in items, \
@@ -61,8 +63,8 @@ def assert_value_unique_in(value, used_values):
 
 def assert_valid_artifact(exp_pattern, artifact_key, schema):
     if isinstance(schema, list):
-        assert_string_or_list_items_from(exp_pattern, artifact_key,
-                                         ["*"] + schema)
+        assert_atom_or_list_items_from(exp_pattern, artifact_key,
+                                       ["*"] + schema)
         return
 
     for sub_artifact_key, sub_schema in schema.iteritems():
@@ -108,7 +110,7 @@ def validate(spec_json, details):
         for spec_exp in spec['test_expansion']:
             details['object'] = spec_exp
             assert_non_empty_string(spec_exp, 'name')
-             # The name is unique in same expansion group.
+            # The name is unique in same expansion group.
             assert_value_unique_in((spec_exp['expansion'], spec_exp['name']),
                                    used_spec_names)
             assert_contains_only_fields(spec_exp, valid_test_expansion_fields)
@@ -134,7 +136,14 @@ def validate(spec_json, details):
     for excluded_test_expansion in excluded_tests:
         assert_contains_only_fields(excluded_test_expansion,
                                     valid_test_expansion_fields)
-
+        details['object'] = excluded_test_expansion
+        for artifact in test_expansion_schema:
+            details['test_expansion_field'] = artifact
+            assert_valid_artifact(
+                excluded_test_expansion,
+                artifact,
+                test_expansion_schema[artifact])
+            del details['test_expansion_field']
 
     del details['object']
 
@@ -143,16 +152,16 @@ def assert_valid_spec_json(spec_json):
     error_details = {}
     try:
         validate(spec_json, error_details)
-    except AssertionError, err:
-        print 'ERROR:', err.message
-        print json.dumps(error_details, indent=4)
+    except AssertionError as err:
+        print('ERROR:', err.message)
+        print(json.dumps(error_details, indent=4))
         sys.exit(1)
 
 
 def main():
     spec_json = load_spec_json();
     assert_valid_spec_json(spec_json)
-    print "Spec JSON is valid."
+    print("Spec JSON is valid.")
 
 
 if __name__ == '__main__':

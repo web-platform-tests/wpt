@@ -52,7 +52,13 @@ themselves precede any test type flag, but are otherwise unordered.
 
 `.any`
  : (js files only) Indicates that the file generates tests in which it
-    is run in Window and dedicated worker environments.
+    is [run in multiple scopes][multi-global-tests].
+
+`.optional`
+ : Indicates that a test makes assertions about optional behavior in a
+   specification, typically marked by the [RFC 2119] "MAY" or "OPTIONAL"
+   keywords. This flag should not be used for "SHOULD"; such requirements
+   can be tested with regular tests, like "MUST".
 
 `.tentative`
  : Indicates that a test makes assertions not yet required by any specification,
@@ -63,3 +69,5 @@ themselves precede any test type flag, but are otherwise unordered.
 
 
 [server-side substitution]: https://wptserve.readthedocs.io/en/latest/pipes.html#sub
+[multi-global-tests]: {{ site.baseurl }}{% link _writing-tests/testharness.md %}#multi-global-tests
+[RFC 2119]: https://tools.ietf.org/html/rfc2119

@@ -1,6 +1,9 @@
-marionette_driver >= 2.4
-mozprofile >= 0.21
-mozprocess >= 0.19
-mozcrash >= 0.13
-mozrunner >= 6.7
-mozleak >= 0.1
+marionette_driver==2.8.0
+mozprofile==2.2.0
+mozprocess==1.0.0
+mozcrash==1.1.0
+mozrunner==7.4.0
+mozleak==0.2
+mozinstall==2.0.0
+mozdownload==1.25
+mozversion==2.1.0

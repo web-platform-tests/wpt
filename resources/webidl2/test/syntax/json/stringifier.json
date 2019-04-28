@@ -12,13 +12,15 @@
                 "static": false,
                 "stringifier": true,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": null,
+                "escapedName": null,
                 "arguments": [],
                 "extAttrs": []
             }

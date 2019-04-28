@@ -3,7 +3,7 @@
 <!-- WARNING: These tests are preliminary and probably partly incorrect.  -->
 <title>CSSOM View automated IDL tests</title>
 <link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
-<link rel="help" href="https://drafts.csswg.org/cssom-1/#idl-index">
+<link rel="help" href="https://drafts.csswg.org/cssom-view-1/#idl-index">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/WebIDLParser.js></script>
@@ -15,53 +15,31 @@
 <div id=log></div>
 
 <script>
-"use strict";
+'use strict';
 
-function doTest([html, dom, cssom, geometry, cssom_view]) {
+const waitForLoad = new Promise(resolve => { addEventListener('load', resolve); });
 
-  var idlArray = new IdlArray();
-  var svg = "interface SVGElement : Element {};";
-  idlArray.add_untested_idls(html + dom + svg + cssom + geometry);
-  idlArray.add_idls(cssom_view);
+idl_test(
+  ['cssom-view'],
+  ['css-pseudo', 'cssom', 'uievents', 'SVG', 'html', 'dom'],
+  async idlArray => {
+    idlArray.add_objects({
+      Window: ['window'],
+      MediaQueryList: ['matchMedia("all")'],
+      MediaQueryListEvent: ['new MediaQueryListEvent("change")'],
+      Screen: ['screen'],
+      Document: ['document'],
+      CaretPosition: ['document.caretPositionFromPoint(5, 5)'],
+      Element: ['document.createElementNS("x", "y")'],
+      HTMLElement: ['document.createElement("div")'],
+      HTMLImageElement: ['document.createElement("img")'],
+      Range: ['new Range()'],
+      // MouseEvent: ['new MouseEvent("foo")'],
+      Text: ['document.createTextNode("x")'],
+      // CSSPseudoElement: [],
+    });
 
-  idlArray.add_objects({
-    "Window": ["window"],
-    "MediaQueryList": ["matchMedia('all')"],
-    "MediaQueryListEvent": ["new MediaQueryListEvent('change')"],
-    "Screen": ["screen"],
-    "Document": ["document"],
-    "CaretPosition": ["document.caretPositionFromPoint(5, 5)"],
-    "Element": ["document.createElementNS('x', 'y')"],
-    "HTMLElement": ["document.createElement('div')"],
-    "HTMLImageElement": ["document.createElement('img')"],
-    "Range": ["new Range()"],
-    // "MouseEvent": ["new MouseEvent('foo')"],
-    "Text": ["document.createTextNode('x')"],
-    // "CSSPseudoElement": [],
-    "Document": ["document"],
-  });
-  idlArray.test();
-};
-
-function fetchData(url) {
-  return fetch(url).then((response) => response.text());
-}
-
-function waitForLoad() {
-  return new Promise(function(resolve) {
-    addEventListener("load", resolve);
-  });
-}
-
-promise_test(function() {
-  // Have to wait for onload
-  return Promise.all([fetchData("/interfaces/html.idl"),
-                      fetchData("/interfaces/dom.idl"),
-                      fetchData("/interfaces/cssom.idl"),
-                      fetchData("/interfaces/geometry.idl"),
-                      fetchData("/interfaces/cssom-view.idl"),
-                      waitForLoad()])
-                .then(doTest);
-}, "Test driver");
-
+    await waitForLoad;
+  }
+);
 </script>

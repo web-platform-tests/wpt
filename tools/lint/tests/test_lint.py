@@ -4,7 +4,6 @@ import os
 import sys
 
 import mock
-import pytest
 import six
 
 from ...localpaths import repo_root
@@ -213,6 +212,15 @@ def test_ref_absolute_url(caplog):
     assert "ref/absolute.html" in caplog.text
 
 
+def test_about_blank_as_ref(caplog):
+    with _mock_lint("check_path"):
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["about_blank.html"], "normal")
+            assert rv == 0
+            assert mocked_check_file_contents.call_count == 1
+    assert caplog.text == ""
+
+
 def test_ref_same_file_empty(caplog):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -233,6 +241,29 @@ def test_ref_same_file_path(caplog):
             assert mocked_check_file_contents.call_count == 1
     assert "SAME-FILE-REF" in caplog.text
     assert "same_file_path.html" in caplog.text
+
+
+def test_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["tests/relative-testharness-manual.html"], "normal")
+    assert rv == 2
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
+def test_css_visual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["css/css-unique/relative-testharness.html"], "normal")
+    assert rv == 3
+    assert "CONTENT-VISUAL" in caplog.text
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
+
+
+def test_css_manual_path_testharness(caplog):
+    rv = lint(_dummy_repo, ["css/css-unique/relative-testharness-interact.html"], "normal")
+    assert rv == 3
+    assert "CONTENT-MANUAL" in caplog.text
+    assert "TESTHARNESS-PATH" in caplog.text
+    assert "TESTHARNESSREPORT-PATH" in caplog.text
 
 
 def test_lint_passing_and_failing(caplog):
@@ -369,14 +400,14 @@ def test_check_css_globally_unique_ignored_dir(caplog):
 
 def test_all_filesystem_paths():
     with mock.patch(
-            'os.walk',
-            return_value=[('.',
-                           ['dir_a', 'dir_b'],
-                           ['file_a', 'file_b']),
-                          (os.path.join('.', 'dir_a'),
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
                            [],
-                           ['file_c', 'file_d'])]
-    ) as m:
+                           [('file_c', None), ('file_d', None)])]
+    ):
         got = list(lint_mod.all_filesystem_paths('.'))
         assert got == ['file_a',
                        'file_b',
@@ -384,16 +415,35 @@ def test_all_filesystem_paths():
                        os.path.join('dir_a', 'file_d')]
 
 
+def test_filesystem_paths_subdir():
+    with mock.patch(
+            'tools.lint.lint.walk',
+            return_value=[('',
+                           [('dir_a', None), ('dir_b', None)],
+                           [('file_a', None), ('file_b', None)]),
+                          ('dir_a',
+                           [],
+                           [('file_c', None), ('file_d', None)])]
+    ):
+        got = list(lint_mod.all_filesystem_paths('.', 'dir'))
+        assert got == [os.path.join('dir', 'file_a'),
+                       os.path.join('dir', 'file_b'),
+                       os.path.join('dir', 'dir_a', 'file_c'),
+                       os.path.join('dir', 'dir_a', 'file_d')]
+
+
 def test_main_with_args():
     orig_argv = sys.argv
     try:
         sys.argv = ['./lint', 'a', 'b', 'c']
-        with _mock_lint('lint', return_value=True) as m:
-            lint_mod.main(**vars(create_parser().parse_args()))
-            m.assert_called_once_with(repo_root,
-                                      [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
-                                       for x in ['a', 'b', 'c']],
-                                      "normal")
+        with mock.patch(lint_mod.__name__ + ".os.path.isfile") as mock_isfile:
+            mock_isfile.return_value = True
+            with _mock_lint('lint', return_value=True) as m:
+                lint_mod.main(**vars(create_parser().parse_args()))
+                m.assert_called_once_with(repo_root,
+                                          [os.path.relpath(os.path.join(os.getcwd(), x), repo_root)
+                                           for x in ['a', 'b', 'c']],
+                                          "normal")
     finally:
         sys.argv = orig_argv
 
@@ -403,7 +453,7 @@ def test_main_no_args():
     try:
         sys.argv = ['./lint']
         with _mock_lint('lint', return_value=True) as m:
-            with _mock_lint('changed_files', return_value=['foo', 'bar']) as m2:
+            with _mock_lint('changed_files', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
     finally:
@@ -415,7 +465,7 @@ def test_main_all():
     try:
         sys.argv = ['./lint', '--all']
         with _mock_lint('lint', return_value=True) as m:
-            with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']) as m2:
+            with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']):
                 lint_mod.main(**vars(create_parser().parse_args()))
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], "normal")
     finally:

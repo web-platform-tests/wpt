@@ -39,7 +39,8 @@ function check_PointerEvent(event, testNamePrefix) {
         "long": function (v) { return typeof v === "number" && Math.round(v) === v; },
         "float": function (v) { return typeof v === "number"; },
         "string": function (v) { return typeof v === "string"; },
-        "boolean": function (v) { return typeof v === "boolean" }
+        "boolean": function (v) { return typeof v === "boolean" },
+        "object": function (v) { return typeof v === "object" }
     };
     [
         ["readonly", "long", "pointerId"],
@@ -50,7 +51,9 @@ function check_PointerEvent(event, testNamePrefix) {
         ["readonly", "long", "tiltY"],
         ["readonly", "string", "pointerType"],
         ["readonly", "boolean", "isPrimary"],
-        ["readonly", "long", "detail", 0]
+        ["readonly", "long", "detail", 0],
+        ["readonly", "object", "fromElement", null],
+        ["readonly", "object", "toElement", null]
     ].forEach(function (attr) {
         var readonly = attr[0];
         var type = attr[1];
@@ -75,7 +78,7 @@ function check_PointerEvent(event, testNamePrefix) {
         }, pointerTestName + "." + name + " IDL type " + type + " (JS type was " + typeof event[name] + ")");
 
         // value check if defined
-        if (value != undefined) {
+        if (value !== undefined) {
             test(function () {
                 assert_equals(event[name], value, name + " attribute value");
             }, pointerTestName + "." + name + " value is " + value + ".");
@@ -133,15 +136,7 @@ function showLoggedEvents() {
     complete_notice.style.display = "block";
 }
 
-function log(msg, el) {
-    if (++count > 10){
-      count = 0;
-      el.innerHTML = ' ';
-    }
-    el.innerHTML = msg + '; ' + el.innerHTML;
-}
-
- function failOnScroll() {
+function failOnScroll() {
     assert_true(false,
     "scroll received while shouldn't");
 }
@@ -256,4 +251,37 @@ function setup_pointerevent_test(testName, supportedPointerTypes) {
 
 function checkPointerEventType(event) {
     assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
+}
+
+function touchScrollInTarget(target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "right") {
+        x_delta = -10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = 10;
+        y_delta = 0;
+    } else {
+        throw("scroll direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    return new test_driver.Actions()
+                   .addPointer("pointer1", "touch")
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .pointerMove(4 * x_delta, 4 * y_delta, {origin: target})
+                   .pointerMove(5 * x_delta, 5 * y_delta, {origin: target})
+                   .pointerMove(6 * x_delta, 6 * y_delta, {origin: target})
+                   .pause(100)
+                   .pointerUp()
+                   .send();
 }

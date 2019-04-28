@@ -5,17 +5,15 @@ def get_response(raw_headers, filter_value, filter_name):
             return "Syntax error: missing CRLF: " + line
         line = line[:-2]
 
-        if ':' not in line:
-            return "Syntax error: no colon found: " + line
-        name, value = line.split(':', 1)
-        if len(value) > 1 and value[0] == ' ':
-            value = value[1:]
+        if ': ' not in line:
+            return "Syntax error: no colon and space found: " + line
+        name, value = line.split(': ', 1)
 
         if filter_value:
             if value == filter_value:
                 result += name + ","
         elif name.lower() == filter_name:
-            result += name + ": " + value + "\n";
+            result += name + ": " + value + "\n"
     return result
 
 def main(request, response):

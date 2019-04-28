@@ -7,7 +7,9 @@
 <script>
 
 async_test((t) => {
-  t.add_cleanup(() => document.exitFullscreen());
+  t.add_cleanup(() => {
+    Promise.resolve(document.exitFullscreen()).catch(() => {});
+  });
 
   // When a message is received from a child frame, ensure that the report
   // matches the expectations.
@@ -24,7 +26,9 @@ async_test((t) => {
   elem.addEventListener('load', () => {
     trusted_click(t, () => {
       elem.contentWindow.postMessage({"action": "report"}, "*");
-    }, document.body);
+    }, elem.contentDocument.body);
+    // TODO(mustaq): The click above should activate the subframe.  But
+    // elem.contentDocument is inaccessible (null) from a cross origin parent!
   });
 });
 </script>

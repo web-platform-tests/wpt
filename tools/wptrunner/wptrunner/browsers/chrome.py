@@ -1,28 +1,30 @@
 from .base import Browser, ExecutorBrowser, require_arg
+from .base import get_timeout_multiplier   # noqa: F401
 from ..webdriver_server import ChromeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor)
-from ..executors.executorchrome import ChromeDriverWdspecExecutor
+from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
+                                           WebDriverRefTestExecutor)  # noqa: F401
+from ..executors.executorchrome import ChromeDriverWdspecExecutor  # noqa: F401
 
 
 __wptrunner__ = {"product": "chrome",
                  "check_args": "check_args",
                  "browser": "ChromeBrowser",
-                 "executor": {"testharness": "SeleniumTestharnessExecutor",
-                              "reftest": "SeleniumRefTestExecutor",
+                 "executor": {"testharness": "WebDriverTestharnessExecutor",
+                              "reftest": "WebDriverRefTestExecutor",
                               "wdspec": "ChromeDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
-                 "env_options": "env_options"}
+                 "env_options": "env_options",
+                 "timeout_multiplier": "get_timeout_multiplier",}
 
 
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
 
 
-def browser_kwargs(test_type, run_info_data, **kwargs):
+def browser_kwargs(test_type, run_info_data, config, **kwargs):
     return {"binary": kwargs["binary"],
             "webdriver_binary": kwargs["webdriver_binary"],
             "webdriver_args": kwargs.get("webdriver_args")}
@@ -30,28 +32,56 @@ def browser_kwargs(test_type, run_info_data, **kwargs):
 
 def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
                     **kwargs):
-    from selenium.webdriver import DesiredCapabilities
-
     executor_kwargs = base_executor_kwargs(test_type, server_config,
-                                           cache_manager, **kwargs)
+                                           cache_manager, run_info_data,
+                                           **kwargs)
     executor_kwargs["close_after_done"] = True
-    capabilities = dict(DesiredCapabilities.CHROME.items())
-    capabilities.setdefault("chromeOptions", {})["prefs"] = {
-        "profile": {
-            "default_content_setting_values": {
-                "popups": 1
-            }
+    executor_kwargs["supports_eager_pageload"] = False
+
+    capabilities = {
+        "goog:chromeOptions": {
+            "prefs": {
+                "profile": {
+                    "default_content_setting_values": {
+                        "popups": 1
+                    }
+                }
+            },
+            "useAutomationExtension": False,
+            "excludeSwitches": ["enable-automation"],
+            "w3c": True
         }
     }
-    for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
-        if kwargs[kwarg] is not None:
-            capabilities["chromeOptions"][capability] = kwargs[kwarg]
+
     if test_type == "testharness":
-        capabilities["chromeOptions"]["useAutomationExtension"] = False
-        capabilities["chromeOptions"]["excludeSwitches"] = ["enable-automation"]
-    if test_type == "wdspec":
-        capabilities["chromeOptions"]["w3c"] = True
+        capabilities["pageLoadStrategy"] = "none"
+
+    chrome_options = capabilities["goog:chromeOptions"]
+    if kwargs["binary"] is not None:
+        chrome_options["binary"] = kwargs["binary"]
+
+    # Here we set a few Chrome flags that are always passed.
+    chrome_options["args"] = []
+    # Allow audio autoplay without a user gesture.
+    chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
+    # Allow WebRTC tests to call getUserMedia.
+    chrome_options["args"].append("--use-fake-ui-for-media-stream")
+    chrome_options["args"].append("--use-fake-device-for-media-stream")
+    # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
+    chrome_options["args"].append("--short-reporting-delay")
+    # Point all .test domains to localhost for Chrome
+    chrome_options["args"].append("--host-resolver-rules=MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1")
+
+    # Copy over any other flags that were passed in via --binary_args
+    if kwargs["binary_args"] is not None:
+        chrome_options["args"].extend(kwargs["binary_args"])
+
+    # Pass the --headless flag to Chrome if WPT's own --headless flag was set
+    if kwargs["headless"] and "--headless" not in chrome_options["args"]:
+        chrome_options["args"].append("--headless")
+
     executor_kwargs["capabilities"] = capabilities
+
     return executor_kwargs
 
 
@@ -60,8 +90,7 @@ def env_extras(**kwargs):
 
 
 def env_options():
-    return {"host": "web-platform.test",
-            "bind_hostname": "true"}
+    return {"server_host": "127.0.0.1"}
 
 
 class ChromeBrowser(Browser):

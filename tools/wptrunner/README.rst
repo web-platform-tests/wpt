@@ -179,7 +179,7 @@ Simple key-value pairs are of the form::
 
   key: value
 
-Note that unlike ini files, only `:` is a valid seperator; `=` will
+Note that unlike ini files, only `:` is a valid separator; `=` will
 not work as expected. Key-value pairs may also have conditional
 values of the form::
 
@@ -233,4 +233,4 @@ The web-platform-test harness knows about several keys:
 `refurl`
   The reference url for reftests.
 
-.. _`web-platform-tests testsuite`: https://github.com/w3c/web-platform-tests
+.. _`web-platform-tests testsuite`: https://github.com/web-platform-tests/wpt

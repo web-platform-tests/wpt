@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test k-rate AudioParam of ConstantSourceNode</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webaudio/resources/audit-util.js"></script>
+    <script src="/webaudio/resources/audit.js"></script>
+    <script src="automation-rate-testing.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let audit = Audit.createTaskRunner();
+
+      audit.define('ConstantSource k-rate offset', (task, should) => {
+        // Arbitrary sample rate and duration.
+        let sampleRate = 8000;
+
+        // Only new a few render quanta to verify things are working.
+        let testDuration = 4 * 128 / sampleRate;
+
+        let context = new OfflineAudioContext({
+          numberOfChannels: 3,
+          sampleRate: sampleRate,
+          length: testDuration * sampleRate
+        });
+
+        doTest(context, should, {
+          sourceNodeName: 'none',
+          verifyPieceWiseConstant: true,
+          nodeName: 'ConstantSourceNode',
+          prefix: 'k-rate offset',
+          rateSettings: [{name: 'offset', value: 'k-rate'}],
+          automations: [{
+            name: 'offset',
+            methods: [
+              {name: 'setValueAtTime', options: [0, 0]}, {
+                name: 'linearRampToValueAtTime',
+                options: [10, testDuration]
+              }
+            ]
+          }]
+        }).then(() => task.done());
+      });
+
+      audit.run();
+    </script>
+  </body>
+</html>

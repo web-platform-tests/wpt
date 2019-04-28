@@ -9,6 +9,12 @@ the [web platform][web-platform]; it excludes only ECMAScript (whose
 testsuite lives in [test262][test262]) and WebGL (whose testsuite
 lives in [WebGL][WebGL]).
 
+## Watch a Talk
+
+If you prefer watching a video, here is a talk introducing web-platform-tests:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/XnfE3MfH5hQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 ## Help!
 
 If you get stuck or want clarification about anything, feel free to
@@ -76,95 +82,19 @@ The testsuite has a few types of tests, outlined below:
 
 ## GitHub
 
-[GitHub](https://github.com/w3c/web-platform-tests/) is used both for [issue tracking](https://github.com/w3c/web-platform-tests/issues) and [test submissions](https://github.com/w3c/web-platform-tests/pulls); we
+[GitHub](https://github.com/web-platform-tests/wpt/) is used both for [issue tracking](https://github.com/web-platform-tests/wpt/issues) and [test submissions](https://github.com/web-platform-tests/wpt/pulls); we
 provide [a limited introduction][github-intro] to both git and
 GitHub.
 
 Pull Requests are automatically labeled based on the directory the
 files they change are in; there are also comments added automatically
-to notify a number of people: this list of people comes from OWNERS
+to notify a number of people: this list of people comes from META.yml
 files in those same directories and their parents (i.e., they work
-recursively: `a/OWNERS` will get notified for `a/foo.html` and
+recursively: `a/META.yml` will get notified for `a/foo.html` and
 `a/b/bar.html`).
 
 If you want to be notified about changes to tests in a directory, feel
-free to add yourself to the OWNERS file: there's no requirement to own
-anything as a result!
-
-
-## Local Setup
-
-The tests are designed to be run from your local computer. The test
-environment requires [Python 2.7+](http://www.python.org/downloads) (but not Python 3.x).
-
-On Windows, be sure to add the Python directory (`c:\python2x`, by default) to
-your `%Path%` [Environment Variable](http://www.computerhope.com/issues/ch000549.htm),
-and read the [Windows Notes](#windows-notes) section below.
-
-To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The
-following entries are required:
-
-```
-127.0.0.1   web-platform.test
-127.0.0.1   www.web-platform.test
-127.0.0.1   www1.web-platform.test
-127.0.0.1   www2.web-platform.test
-127.0.0.1   xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1   xn--lve-6lad.web-platform.test
-0.0.0.0     nonexistent-origin.web-platform.test
-```
-
-If you are behind a proxy, you also need to make sure the domains above are
-excluded from your proxy lookups.
-
-The test environment can then be started using
-
-    ./wpt serve
-
-This will start HTTP servers on two ports and a websockets server on
-one port. By default one web server starts on port 8000 and the other
-ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, copy the
-`config.default.json` file to `config.json` and edit the new file,
-replacing the part that reads:
-
-```
-"http": [8000, "auto"]
-```
-
-to some port of your choice e.g.
-
-```
-"http": [1234, "auto"]
-```
-
-## Running tests automatically
-
-The `wpt run` command provides a frontend for running tests automatically
-in various browsers. The general syntax is:
-
-```
-wpt run [options] <product> [test paths]
-```
-
-e.g. to run `dom/historical.html` in Firefox, the required command is:
-
-```
-wpt run firefox dom/historical.html
-```
-
-### Windows Notes
-
-Generally Windows Subsystem for Linux will provide the smoothest user
-experience for running web-platform-tests on Windows.
-
-The standard Windows shell requires that all `wpt` commands are prefixed
-by the Python binary i.e. assuming `python` is on your path the server is
-started using:
-
-`python wpt serve`
-
+free to add yourself to the META.yml file!
 
 [web-platform]: https://platform.html5.org
 [test262]: https://github.com/tc39/test262

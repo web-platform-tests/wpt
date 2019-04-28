@@ -11,13 +11,15 @@
                 "inherit": false,
                 "readonly": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "attribute-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "bar",
+                "escapedName": "bar",
                 "extAttrs": []
             }
         ],
@@ -36,13 +38,15 @@
                 "inherit": false,
                 "readonly": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "attribute-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "name": "quux",
+                "escapedName": "quux",
                 "extAttrs": []
             }
         ],

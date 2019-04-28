@@ -3,25 +3,29 @@
         "type": "callback",
         "name": "AsyncOperationCallback",
         "idlType": {
-            "sequence": false,
+            "type": "return-type",
             "generic": null,
             "nullable": false,
             "union": false,
-            "idlType": "void"
+            "idlType": "void",
+            "extAttrs": []
         },
         "arguments": [
             {
                 "optional": false,
                 "variadic": false,
+                "default": null,
                 "extAttrs": [],
                 "idlType": {
-                    "sequence": false,
+                    "type": "argument-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
-                "name": "status"
+                "name": "status",
+                "escapedName": "status"
             }
         ],
         "extAttrs": []
@@ -39,26 +43,31 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "eventOccurred",
+                "escapedName": "eventOccurred",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": false,
+                        "default": null,
                         "extAttrs": [],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "details"
+                        "name": "details",
+                        "escapedName": "details"
                     }
                 ],
                 "extAttrs": []
@@ -71,38 +80,45 @@
         "type": "callback",
         "name": "SortCallback",
         "idlType": {
-            "sequence": false,
+            "type": "return-type",
             "generic": null,
             "nullable": false,
             "union": false,
-            "idlType": "boolean"
+            "idlType": "boolean",
+            "extAttrs": []
         },
         "arguments": [
             {
                 "optional": false,
                 "variadic": false,
+                "default": null,
                 "extAttrs": [],
                 "idlType": {
-                    "sequence": false,
+                    "type": "argument-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "any"
+                    "idlType": "any",
+                    "extAttrs": []
                 },
-                "name": "a"
+                "name": "a",
+                "escapedName": "a"
             },
             {
                 "optional": false,
                 "variadic": false,
+                "default": null,
                 "extAttrs": [],
                 "idlType": {
-                    "sequence": false,
+                    "type": "argument-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "any"
+                    "idlType": "any",
+                    "extAttrs": []
                 },
-                "name": "b"
+                "name": "b",
+                "escapedName": "b"
             }
         ],
         "extAttrs": []

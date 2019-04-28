@@ -15,7 +15,7 @@ link_support_table['link'] = {
                  'noreferrer', 'noopener']
 };
 link_support_table['a'] =  {
-  supported : ['noreferrer', 'noopener'],
+  supported : ['noreferrer', 'noopener', 'opener'],
   unsupported : ['author', 'bookmark', 'external', 'help', 'license',
                  'nofollow', 'pingback', 'prev', 'search', 'tag',
                  'modulepreload', 'preload', 'preconnect', 'dns-prefetch',
@@ -24,6 +24,7 @@ link_support_table['a'] =  {
                  'apple-touch-icon-precomposed', 'canonical']
 };
 link_support_table['area'] = link_support_table['a'];
+link_support_table['form'] = link_support_table['form'];
 
 function test_rellist(tag_name, rel_table) {
   let element = document.createElement(tag_name);
@@ -65,6 +66,7 @@ function test_rellist(tag_name, rel_table) {
   let supported = rel_table['supported'];
   for (let link_type in supported) {
     assert_true(element.relList.supports(supported[link_type]), 'tag = ' + tag + ', link type = ' + supported[link_type] + ' must be supported');
+    assert_true(element.relList.supports(supported[link_type].toUpperCase()), 'tag = ' + tag + ', link type = ' + supported[link_type].toUpperCase() + ' must be supported');
   }
   let unsupported = rel_table['unsupported'];
   for (let link_type in unsupported) {
@@ -76,5 +78,6 @@ test(function() {
   test_rellist('LINK', link_support_table['link']);
   test_rellist('A', link_support_table['a']);
   test_rellist('AREA', link_support_table['area']);
+  test_rellist('FORM', link_support_table['form']);
 }, 'Make sure that relList based feature detection is working');
 </script>

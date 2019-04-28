@@ -8,18 +8,20 @@
                 "type": "maplike",
                 "idlType": [
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     },
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "float"
+                        "idlType": "float",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": false,
@@ -38,18 +40,20 @@
                 "type": "maplike",
                 "idlType": [
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
+                        "idlType": "long",
+                        "extAttrs": []
                     },
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "float"
+                        "idlType": "float",
+                        "extAttrs": []
                     }
                 ],
                 "readonly": true,
@@ -68,7 +72,7 @@
                 "type": "maplike",
                 "idlType": [
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
@@ -83,7 +87,7 @@
                         ]
                     },
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
@@ -106,4 +110,3 @@
         "extAttrs": []
     }
 ]
-

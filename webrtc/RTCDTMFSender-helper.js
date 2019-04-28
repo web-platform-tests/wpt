@@ -8,17 +8,50 @@
 
 // The following helper functions are called from RTCPeerConnection-helper.js:
 //   getTrackFromUserMedia
+//   doSignalingHandshake
 
 // Create a RTCDTMFSender using getUserMedia()
+// Connect the PeerConnection to another PC and wait until it is
+// properly connected, so that DTMF can be sent.
 function createDtmfSender(pc = new RTCPeerConnection()) {
+  let dtmfSender;
   return getTrackFromUserMedia('audio')
   .then(([track, mediaStream]) => {
     const sender = pc.addTrack(track, mediaStream);
-    const dtmfSender = sender.dtmf;
-
+    dtmfSender = sender.dtmf;
     assert_true(dtmfSender instanceof RTCDTMFSender,
-      'Expect audio sender.dtmf to be set to a RTCDTMFSender');
-
+                'Expect audio sender.dtmf to be set to a RTCDTMFSender');
+    // Note: spec bug open - https://github.com/w3c/webrtc-pc/issues/1774
+    // on whether sending should be possible before negotiation.
+    const pc2 = new RTCPeerConnection();
+    Object.defineProperty(pc, 'otherPc', { value: pc2 });
+    exchangeIceCandidates(pc, pc2);
+    return doSignalingHandshake(pc, pc2);
+  }).then(() => {
+    if (!('canInsertDTMF' in dtmfSender)) {
+      return Promise.resolve();
+    }
+    // Wait until dtmfSender.canInsertDTMF becomes true.
+    // Up to 150 ms has been observed in test. Wait 1 second
+    // in steps of 10 ms.
+    // Note: Using a short timeout and rejected promise in order to
+    // make test return a clear error message on failure.
+    return new Promise((resolve, reject) => {
+      let counter = 0;
+      step_timeout(function checkCanInsertDTMF() {
+        if (dtmfSender.canInsertDTMF) {
+          resolve();
+        } else {
+          if (counter >= 100) {
+            reject('Waited too long for canInsertDTMF');
+            return;
+          }
+          ++counter;
+          step_timeout(checkCanInsertDTMF, 10);
+        }
+      }, 0);
+    });
+  }).then(() => {
     return dtmfSender;
   });
 }
@@ -76,12 +109,16 @@ function test_tone_change_events(testFunc, toneChanges, desc) {
         const now = Date.now();
         const duration = now - lastEventTime;
 
-        assert_approx_equals(duration, expectedDuration, 250,
+        // We check that the delay is at least the expected one, but
+        // system load may cause random delay, so we do not put any
+        // realistic upper bound on the timing of the event.
+        assert_between_inclusive(duration, expectedDuration,
+                                 expectedDuration + 4000,
           `Expect tonechange event for "${tone}" to be fired approximately after ${expectedDuration} milliseconds`);
 
         lastEventTime = now;
 
-        if(toneChanges.length === 0) {
+        if (toneChanges.length === 0) {
           // Wait for same duration as last expected duration + 100ms
           // before passing test in case there are new tone events fired,
           // in which case the test should fail.
@@ -89,12 +126,12 @@ function test_tone_change_events(testFunc, toneChanges, desc) {
             t.step_func(() => {
               t.done();
               pc.close();
+              pc.otherPc.close();
             }), expectedDuration + 100);
         }
       });
 
       dtmfSender.addEventListener('tonechange', onToneChange);
-
       testFunc(t, dtmfSender, pc);
     })
     .catch(t.step_func(err => {

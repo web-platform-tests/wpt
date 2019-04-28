@@ -13,6 +13,23 @@ function toMojoCentralState(state) {
   }
 }
 
+// Canonicalizes UUIDs and converts them to Mojo UUIDs.
+function canonicalizeAndConvertToMojoUUID(uuids) {
+  let canonicalUUIDs = uuids.map(val => ({uuid: BluetoothUUID.getService(val)}));
+  return canonicalUUIDs;
+}
+
+// Converts WebIDL a record<DOMString, BufferSource> to a map<K, array<uint8>> to
+// use for Mojo, where the value for K is calculated using keyFn.
+function convertToMojoMap(record, keyFn) {
+  let map = new Map();
+  for (const [key, value] of Object.entries(record)) {
+    let buffer = ArrayBuffer.isView(value) ? value.buffer : value;
+    map.set(keyFn(key), Array.from(new Uint8Array(buffer)));
+  }
+  return map;
+}
+
 // Mapping of the property names of
 // BluetoothCharacteristicProperties defined in
 // https://webbluetoothcg.github.io/web-bluetooth/#characteristicproperties
@@ -44,12 +61,11 @@ function ArrayToMojoCharacteristicProperties(arr) {
   return struct;
 }
 
-
 class FakeBluetooth {
   constructor() {
     this.fake_bluetooth_ptr_ = new bluetooth.mojom.FakeBluetoothPtr();
     Mojo.bindInterface(bluetooth.mojom.FakeBluetooth.name,
-        mojo.makeRequest(this.fake_bluetooth_ptr_).handle, "process");
+        mojo.makeRequest(this.fake_bluetooth_ptr_).handle, 'process');
   }
 
   // Set it to indicate whether the platform supports BLE. For example,
@@ -86,6 +102,15 @@ class FakeBluetooth {
     let {consumed} = await this.fake_bluetooth_ptr_.allResponsesConsumed();
     return consumed;
   }
+
+  // Returns a promise that resolves with a FakeChooser that clients can use to
+  // simulate chooser events.
+  async getManualChooser() {
+    if (typeof this.fake_chooser_ === 'undefined') {
+      this.fake_chooser_ = new FakeChooser();
+    }
+    return this.fake_chooser_;
+  }
 }
 
 // FakeCentral allows clients to simulate events that a device in the
@@ -110,20 +135,64 @@ class FakeCentral {
   async simulatePreconnectedPeripheral({
     address, name, knownServiceUUIDs = []}) {
 
-    // Canonicalize and convert to mojo UUIDs.
-    knownServiceUUIDs.forEach((val, i, arr) => {
-      knownServiceUUIDs[i] = {uuid: BluetoothUUID.getService(val)};
-    });
-
     await this.fake_central_ptr_.simulatePreconnectedPeripheral(
-      address, name, knownServiceUUIDs);
+      address, name, canonicalizeAndConvertToMojoUUID(knownServiceUUIDs));
 
+    return this.fetchOrCreatePeripheral_(address);
+  }
+
+  // Simulates an advertisement packet described by |scanResult| being received
+  // from a device. If central is currently scanning, the device will appear on
+  // the list of discovered devices.
+  async simulateAdvertisementReceived(scanResult) {
+    if ('uuids' in scanResult.scanRecord) {
+      scanResult.scanRecord.uuids =
+          canonicalizeAndConvertToMojoUUID(scanResult.scanRecord.uuids);
+    }
+
+    // Convert the optional appearance and txPower fields to the corresponding
+    // Mojo structures, since Mojo does not support optional interger values. If
+    // the fields are undefined, set the hasValue field as false and value as 0.
+    // Otherwise, set the hasValue field as true and value with the field value.
+    const has_appearance = 'appearance' in scanResult.scanRecord;
+    scanResult.scanRecord.appearance = {
+      hasValue: has_appearance,
+      value: (has_appearance ? scanResult.scanRecord.appearance : 0)
+    }
+
+    const has_tx_power = 'txPower' in scanResult.scanRecord;
+    scanResult.scanRecord.txPower = {
+      hasValue: has_tx_power,
+      value: (has_tx_power ? scanResult.scanRecord.txPower : 0)
+    }
+
+    // Convert manufacturerData from a record<DOMString, BufferSource> into a
+    // map<uint8, array<uint8>> for Mojo.
+    if ('manufacturerData' in scanResult.scanRecord) {
+      scanResult.scanRecord.manufacturerData = convertToMojoMap(
+          scanResult.scanRecord.manufacturerData, Number);
+    }
+
+    // Convert serviceData from a record<DOMString, BufferSource> into a
+    // map<string, array<uint8>> for Mojo.
+    if ('serviceData' in scanResult.scanRecord) {
+      scanResult.scanRecord.serviceData.serviceData = convertToMojoMap(
+          scanResult.scanRecord.serviceData, BluetoothUUID.getService);
+    }
+
+    await this.fake_central_ptr_.simulateAdvertisementReceived(
+        new bluetooth.mojom.ScanResult(scanResult));
+
+    return this.fetchOrCreatePeripheral_(scanResult.deviceAddress);
+  }
+
+  // Create a fake_peripheral object from the given address.
+  fetchOrCreatePeripheral_(address) {
     let peripheral = this.peripherals_.get(address);
     if (peripheral === undefined) {
       peripheral = new FakePeripheral(address, this.fake_central_ptr_);
       this.peripherals_.set(address, peripheral);
     }
-
     return peripheral;
   }
 }
@@ -308,7 +377,7 @@ class FakeRemoteGATTCharacteristic {
       await this.fake_central_ptr_.setNextWriteCharacteristicResponse(
         gatt_code, ...this.ids_);
 
-    if (!success) throw 'setNextWriteResponse failed';
+    if (!success) throw 'setNextWriteCharacteristicResponse failed';
   }
 
   // Sets the next subscribe to notifications response for characteristic with
@@ -324,13 +393,38 @@ class FakeRemoteGATTCharacteristic {
     if (!success) throw 'setNextSubscribeToNotificationsResponse failed';
   }
 
+  // Sets the next unsubscribe to notifications response for characteristic with
+  // |characteristic_id| in |service_id| and in |peripheral_address| to
+  // |code|. |code| could be a GATT Error Response from BT 4.2 Vol 3 Part F
+  // 3.4.1.1 Error Response or a number outside that range returned by
+  // specific platforms e.g. Android returns 0x101 to signal a GATT failure.
+  async setNextUnsubscribeFromNotificationsResponse(gatt_code) {
+    let {success} =
+      await this.fake_central_ptr_.setNextUnsubscribeFromNotificationsResponse(
+        gatt_code, ...this.ids_);
+
+    if (!success) throw 'setNextUnsubscribeToNotificationsResponse failed';
+  }
+
+  // Returns true if notifications from the characteristic have been subscribed
+  // to.
+  async isNotifying() {
+    let {success, isNotifying} =
+        await this.fake_central_ptr_.isNotifying(...this.ids_);
+
+    if (!success) throw 'isNotifying failed';
+
+    return isNotifying;
+  }
+
   // Gets the last successfully written value to the characteristic.
   // Returns null if no value has yet been written to the characteristic.
   async getLastWrittenValue() {
     let {success, value} =
-      await this.fake_central_ptr_.getLastWrittenValue(...this.ids_);
+      await this.fake_central_ptr_.getLastWrittenCharacteristicValue(
+          ...this.ids_);
 
-    if (!success) throw 'getLastWrittenValue failed';
+    if (!success) throw 'getLastWrittenCharacteristicValue failed';
 
     return value;
   }
@@ -375,6 +469,50 @@ class FakeRemoteGATTDescriptor {
 
     if (!success) throw 'setNextReadDescriptorResponse failed';
   }
+
+  // Sets the next write response for this descriptor to |code|.
+  // |code| could be a GATT Error Response from
+  // BT 4.2 Vol 3 Part F 3.4.1.1 Error Response or a number outside that range
+  // returned by specific platforms e.g. Android returns 0x101 to signal a GATT
+  // failure.
+  async setNextWriteResponse(gatt_code) {
+    let {success} =
+      await this.fake_central_ptr_.setNextWriteDescriptorResponse(
+        gatt_code, ...this.ids_);
+
+    if (!success) throw 'setNextWriteDescriptorResponse failed';
+  }
+
+  // Gets the last successfully written value to the descriptor.
+  // Returns null if no value has yet been written to the descriptor.
+  async getLastWrittenValue() {
+    let {success, value} =
+      await this.fake_central_ptr_.getLastWrittenDescriptorValue(
+          ...this.ids_);
+
+    if (!success) throw 'getLastWrittenDescriptorValue failed';
+
+    return value;
+  }
+
+  // Removes the fake GATT Descriptor from its fake characteristic.
+  async remove() {
+    let {success} =
+        await this.fake_central_ptr_.removeFakeDescriptor(...this.ids_);
+
+    if (!success) throw 'remove failed';
+  }
+}
+
+// FakeChooser allows clients to simulate events that a user would trigger when
+// using the Bluetooth chooser, and monitor the events that are produced.
+class FakeChooser {
+  constructor() {
+    this.fake_bluetooth_chooser_ptr_ =
+        new content.mojom.FakeBluetoothChooserPtr();
+    Mojo.bindInterface(content.mojom.FakeBluetoothChooser.name,
+        mojo.makeRequest(this.fake_bluetooth_chooser_ptr_).handle, 'process');
+  }
 }
 
 // If this line fails, it means that current environment does not support the
@@ -384,5 +522,5 @@ try {
 } catch {
     throw 'Web Bluetooth Test API is not implemented on this ' +
         'environment. See the bluetooth README at ' +
-        'https://github.com/w3c/web-platform-tests/blob/master/bluetooth/README.md#web-bluetooth-testing';
+        'https://github.com/web-platform-tests/wpt/blob/master/bluetooth/README.md#web-bluetooth-testing';
 }

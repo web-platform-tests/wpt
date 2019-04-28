@@ -1,47 +1,35 @@
+from __future__ import print_function
 import base64
-import hashlib
-import httplib
 import json
 import os
 import subprocess
 import tempfile
 import threading
-import traceback
-import urlparse
 import uuid
-from collections import defaultdict
 
 from mozprocess import ProcessHandler
 
-from .base import (ExecutorException,
-                   Protocol,
+from tools.serve.serve import make_hosts_file
+
+from .base import (ConnectionlessProtocol,
                    RefTestImplementation,
                    testharness_result_converter,
                    reftest_result_converter,
-                   WdspecExecutor, WebDriverProtocol)
+                   WdspecExecutor,
+                   WebDriverProtocol)
 from .process import ProcessTestExecutor
 from ..browsers.base import browser_command
-from ..wpttest import WdspecResult, WdspecSubtestResult
 from ..webdriver_server import ServoDriverServer
-from .executormarionette import WdspecRun
 
 pytestrunner = None
 webdriver = None
 
 extra_timeout = 5  # seconds
 
-hosts_text = """127.0.0.1 web-platform.test
-127.0.0.1 www.web-platform.test
-127.0.0.1 www1.web-platform.test
-127.0.0.1 www2.web-platform.test
-127.0.0.1 xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1 xn--lve-6lad.web-platform.test
-"""
-
-def make_hosts_file():
+def write_hosts_file(config):
     hosts_fd, hosts_path = tempfile.mkstemp()
     with os.fdopen(hosts_fd, "w") as f:
-        f.write(hosts_text)
+        f.write(make_hosts_file(config, "127.0.0.1"))
     return hosts_path
 
 
@@ -56,8 +44,8 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.pause_after_test = pause_after_test
         self.result_data = None
         self.result_flag = None
-        self.protocol = Protocol(self, browser)
-        self.hosts_path = make_hosts_file()
+        self.protocol = ConnectionlessProtocol(self, browser)
+        self.hosts_path = write_hosts_file(server_config)
 
     def teardown(self):
         try:
@@ -135,7 +123,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                     self.proc.wait()
                 else:
                     self.proc.kill()
-        except KeyboardInterrupt:
+        except:  # noqa
             self.proc.kill()
             raise
 
@@ -149,7 +137,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.result_flag.set()
         else:
             if self.interactive:
-                print line
+                print(line)
             else:
                 self.logger.process_output(self.proc.pid,
                                            line,
@@ -187,11 +175,14 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                                      timeout_multiplier=timeout_multiplier,
                                      debug_info=debug_info)
 
-        self.protocol = Protocol(self, browser)
+        self.protocol = ConnectionlessProtocol(self, browser)
         self.screenshot_cache = screenshot_cache
         self.implementation = RefTestImplementation(self)
         self.tempdir = tempfile.mkdtemp()
-        self.hosts_path = make_hosts_file()
+        self.hosts_path = write_hosts_file(server_config)
+
+    def reset(self):
+        self.implementation.reset()
 
     def teardown(self):
         try:
@@ -280,7 +271,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
     def on_output(self, line):
         line = line.decode("utf8", "replace")
         if self.interactive:
-            print line
+            print(line)
         else:
             self.logger.process_output(self.proc.pid,
                                        line,
@@ -289,6 +280,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
 class ServoDriverProtocol(WebDriverProtocol):
     server_cls = ServoDriverServer
+
 
 class ServoWdspecExecutor(WdspecExecutor):
     protocol_cls = ServoDriverProtocol

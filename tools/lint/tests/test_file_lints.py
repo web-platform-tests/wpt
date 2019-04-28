@@ -296,6 +296,79 @@ def test_multiple_testharnessreport():
             ]
 
 
+def test_multiple_testdriver():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("MULTIPLE-TESTDRIVER", "More than one <script src='/resources/testdriver.js'>", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_multiple_testdriver_vendor():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("MULTIPLE-TESTDRIVER-VENDOR", "More than one <script src='/resources/testdriver-vendor.js'>", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
+def test_missing_testdriver_vendor():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("MISSING-TESTDRIVER-VENDOR", "Missing <script src='/resources/testdriver-vendor.js'>", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 def test_present_testharnesscss():
     code = b"""
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -373,12 +446,81 @@ def test_testharnessreport_path():
         assert errors == expected
 
 
+def test_testdriver_path():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="testdriver.js"></script>
+<script src="/elsewhere/testdriver.js"></script>
+<script src="/elsewhere/resources/testdriver.js"></script>
+<script src="/resources/elsewhere/testdriver.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        expected = []
+        if kind == "python":
+            expected.append(("PARSE-FAILED", "Unable to parse file", filename, 1))
+        elif kind in ["web-lax", "web-strict"]:
+            expected.extend([
+                ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-PATH", "testdriver.js script seen with incorrect path", filename, None)
+            ])
+        assert errors == expected
+
+
+def test_testdriver_vendor_path():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="testdriver-vendor.js"></script>
+<script src="/elsewhere/testdriver-vendor.js"></script>
+<script src="/elsewhere/resources/testdriver-vendor.js"></script>
+<script src="/resources/elsewhere/testdriver-vendor.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            expected = set([("PARSE-FAILED", "Unable to parse file", filename, 1)])
+        elif kind in ["web-lax", "web-strict"]:
+            expected = set([
+                ("MISSING-TESTDRIVER-VENDOR", "Missing <script src='/resources/testdriver-vendor.js'>", filename, None),
+                ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None),
+                ("TESTDRIVER-VENDOR-PATH", "testdriver-vendor.js script seen with incorrect path", filename, None)
+            ])
+        else:
+            expected = set()
+
+        assert set(errors) == expected
+
+
 def test_not_testharness_path():
     code = b"""\
 <html xmlns="http://www.w3.org/1999/xhtml">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webperftestharness.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 </html>
 """
     error_map = check_with_files(code)
@@ -392,6 +534,79 @@ def test_not_testharness_path():
             ]
         else:
             assert errors == []
+
+
+def test_variant_missing():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="variant">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 1),
+            ]
+        elif kind == "web-lax":
+            assert errors == [
+                ("VARIANT-MISSING", "<meta name=variant> missing 'content' attribute", filename, None)
+            ]
+
+
+# A corresponding "positive" test cannot be written because the manifest
+# SourceFile implementation raises a runtime exception for the condition this
+# linting rule describes
+@pytest.mark.parametrize("content", ["",
+                                     "?"
+                                     "#"])
+def test_variant_malformed_negative(content):
+    code = """\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="variant" content="{}">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</html>
+""".format(content).encode("utf-8")
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 1),
+            ]
+        elif kind == "web-lax":
+            assert errors == []
+
+
+def test_late_timeout():
+    code = b"""\
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharness.js"></script>
+<meta name="timeout" content="long">
+<script src="/resources/testharnessreport.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        check_errors(errors)
+
+        if kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 1),
+            ]
+        elif kind == "web-lax":
+            assert errors == [
+                ("LATE-TIMEOUT", "<meta name=timeout> seen after testharness.js script", filename, None)
+            ]
 
 
 @pytest.mark.skipif(six.PY3, reason="Cannot parse print statements from python 3")
@@ -521,10 +736,13 @@ def test_css_missing_file_manual():
     "foo.any.js",
 ])
 @pytest.mark.parametrize("input,error", [
+    (b"""//META: title=foo\n""", None),
     (b"""//META: timeout=long\n""", None),
     (b"""// META: timeout=long\n""", None),
     (b"""//  META: timeout=long\n""", None),
     (b"""// META: script=foo.js\n""", None),
+    (b"""// META: variant=\n""", None),
+    (b"""// META: variant=?wss\n""", None),
     (b"""# META:\n""", None),
     (b"""\n// META: timeout=long\n""", (2, "STRAY-METADATA")),
     (b""" // META: timeout=long\n""", (1, "INDENTED-METADATA")),
@@ -554,6 +772,39 @@ def test_script_metadata(filename, input, error):
              messages[kind],
              filename,
              line),
+        ]
+    else:
+        assert errors == []
+
+
+@pytest.mark.parametrize("globals,error", [
+    (b"", None),
+    (b"default", None),
+    (b"!default", None),
+    (b"window", None),
+    (b"!window", None),
+    (b"!dedicatedworker", None),
+    (b"window, !window", "BROKEN-GLOBAL-METADATA"),
+    (b"!serviceworker", "BROKEN-GLOBAL-METADATA"),
+    (b"serviceworker, !serviceworker", "BROKEN-GLOBAL-METADATA"),
+    (b"worker, !dedicatedworker", None),
+    (b"worker, !serviceworker", None),
+    (b"!worker", None),
+    (b"foo", "UNKNOWN-GLOBAL-METADATA"),
+    (b"!foo", "UNKNOWN-GLOBAL-METADATA"),
+])
+def test_script_globals_metadata(globals, error):
+    filename = "foo.any.js"
+    input = b"""// META: global=%s\n""" % globals
+    errors = check_file_contents("", filename, six.BytesIO(input))
+    check_errors(errors)
+
+    if error is not None:
+        errors = [(k, f, l) for (k, _, f, l) in errors]
+        assert errors == [
+            (error,
+             filename,
+             1),
         ]
     else:
         assert errors == []

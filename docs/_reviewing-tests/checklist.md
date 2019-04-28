@@ -7,7 +7,7 @@ order: 2
 The following checklist is provided as a guideline to assist in reviewing
 tests; in case of any contradiction with requirements stated elsewhere in the
 documentation it should be ignored
-(please [file a bug](https://github.com/w3c/web-platform-tests/issues/new)!).
+(please [file a bug](https://github.com/web-platform-tests/wpt/issues/new)!).
 
 As noted on the [reviewing tests][review index] page, nits need not block PRs
 from landing.
@@ -110,7 +110,7 @@ the same way as the test.
 
 <label>
 <input type="checkbox">
-The test and reference render within a 600x600 viewport, only displaying
+The test and reference render within a 800x600 viewport, only displaying
 scrollbars if their presence is being tested.
 </label>
 
@@ -180,7 +180,7 @@ several minutes thinking or asking questions.
 
 <label>
 <input type="checkbox">
-The test renders within a 600x600 viewport, only displaying scrollbars if their
+The test renders within a 800x600 viewport, only displaying scrollbars if their
 presence is being tested.
 </label>
 

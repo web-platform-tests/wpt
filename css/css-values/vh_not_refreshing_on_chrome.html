@@ -3,9 +3,11 @@
 <html class="reftest-wait">
 <head>
 	<title>CSS Values and Units Test: vh-based dimension doesn't change when the element's other dimension doesn't change.</title>
+	<meta name="timeout" content="long">
 	<link rel="author" title="Marc Bourlon" href="mailto:marc@bourlon.com">
 	<link rel="help" href="http://www.w3.org/TR/css3-values/#viewport-relative-lengths">
 	<link rel="match" href="reference/vh_not_refreshing_on_chrome-ref.html">
+	<meta charset="UTF-8">
 	<meta name="assert" content="vh-based dimension doesn't change when the element's other dimension doesn't change.">
 	<!-- This test exhibits a bug for Chrome 19.0.1084.56 / Mac OS X 10.6.8 -->
 	<script src="/common/reftest-wait.js"></script>
@@ -39,10 +41,10 @@
 			var frameTest = document.getElementById('frameTest');
 
 			// let's resize the iframe vertically only, showing that the vh sizes is not updated.
-			if (height <= 300) {
+			if (height < 300) {
 
 				//frameTest.style.width = height++ + "px";
-				frameTest.style.height = height++ + "px";
+				frameTest.style.height = ++height + "px";
 
 				setTimeout(resizeReference, 10);
 

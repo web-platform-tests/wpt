@@ -2,23 +2,21 @@ import os
 
 from .. import metadata, products
 
-from base import Step, StepRunner
+from .base import Step, StepRunner
+
 
 class GetUpdatePropertyList(Step):
     provides = ["property_order", "boolean_properties"]
 
-
     def create(self, state):
         property_order, boolean_properties = products.load_product_update(
             state.config, state.product)
-        state.property_order = property_order
+        state.property_order = (property_order or []) + state.extra_properties
         state.boolean_properties = boolean_properties
 
 
 class UpdateExpected(Step):
     """Do the metadata update on the local checkout"""
-
-    provides = ["needs_human"]
 
     def create(self, state):
         if state.sync_tree is not None:
@@ -26,15 +24,15 @@ class UpdateExpected(Step):
         else:
             sync_root = None
 
-        state.needs_human = metadata.update_expected(state.paths,
-                                                     state.serve_root,
-                                                     state.run_log,
-                                                     rev_old=None,
-                                                     ignore_existing=state.ignore_existing,
-                                                     sync_root=sync_root,
-                                                     property_order=state.property_order,
-                                                     boolean_properties=state.boolean_properties,
-                                                     stability=state.stability)
+        metadata.update_expected(state.paths,
+                                 state.serve_root,
+                                 state.run_log,
+                                 rev_old=None,
+                                 ignore_existing=state.ignore_existing,
+                                 sync_root=sync_root,
+                                 property_order=state.property_order,
+                                 boolean_properties=state.boolean_properties,
+                                 stability=state.stability)
 
 
 class CreateMetadataPatch(Step):

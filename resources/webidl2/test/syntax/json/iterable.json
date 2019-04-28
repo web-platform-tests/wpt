@@ -6,13 +6,16 @@
         "members": [
             {
                 "type": "iterable",
-                "idlType": {
-                    "sequence": false,
-                    "generic": null,
-                    "nullable": false,
-                    "union": false,
-                    "idlType": "long"
-                },
+                "idlType": [
+                    {
+                        "type": null,
+                        "generic": null,
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long",
+                        "extAttrs": []
+                    }
+                ],
                 "extAttrs": []
             }
         ],
@@ -28,18 +31,20 @@
                 "type": "iterable",
                 "idlType": [
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "short"
+                        "idlType": "short",
+                        "extAttrs": []
                     },
                     {
-                        "sequence": false,
+                        "type": null,
                         "generic": null,
                         "nullable": true,
                         "union": false,
-                        "idlType": "double"
+                        "idlType": "double",
+                        "extAttrs": []
                     }
                 ],
                 "extAttrs": []
@@ -55,21 +60,23 @@
         "members": [
             {
                 "type": "iterable",
-                "idlType": {
-                    "sequence": false,
-                    "generic": null,
-                    "nullable": false,
-                    "union": false,
-                    "idlType": "long",
-                    "extAttrs": [
-                        {
-                            "name": "XAttr",
-                            "arguments": null,
-                            "type": "extended-attribute",
-                            "rhs": null
-                        }
-                    ]
-                },
+                "idlType": [
+                    {
+                        "type": null,
+                        "generic": null,
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long",
+                        "extAttrs": [
+                            {
+                                "name": "XAttr",
+                                "arguments": null,
+                                "type": "extended-attribute",
+                                "rhs": null
+                            }
+                        ]
+                    }
+                ],
                 "extAttrs": []
             }
         ],
@@ -77,4 +84,3 @@
         "extAttrs": []
     }
 ]
-

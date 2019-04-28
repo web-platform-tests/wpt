@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from ..lint import check_path
 from .base import check_errors
 import pytest
-import six
 
 def test_allowed_path_length():
     basename = 29 * "test/"
@@ -39,3 +38,61 @@ def test_forbidden_path_endings(path_ending, generated):
     errors = check_path("/foo/", path)
     check_errors(errors)
     assert errors == [("WORKER COLLISION", message, path, None)]
+
+
+@pytest.mark.parametrize("path", ["ahem.ttf",
+                                  "Ahem.ttf",
+                                  "ahem.tTf",
+                                  "not-ahem.ttf",
+                                  "support/ahem.ttf",
+                                  "ahem/other.ttf"])
+def test_ahem_copy(path):
+    expected_error = ("AHEM COPY",
+                      "Don't add extra copies of Ahem, use /fonts/Ahem.ttf",
+                      path,
+                      None)
+
+    errors = check_path("/foo/", path)
+
+    assert errors == [expected_error]
+
+@pytest.mark.parametrize("path", ["ahem.woff",
+                                  "ahem.ttff",
+                                  "support/ahem.woff",
+                                  "ahem/other.woff"])
+def test_ahem_copy_negative(path):
+    errors = check_path("/foo/", path)
+
+    assert errors == []
+
+@pytest.mark.parametrize("path", ["elsewhere/.gitignore",
+                                  "else/where/.gitignore"
+                                  "elsewhere/tools/.gitignore",
+                                  "elsewhere/docs/.gitignore",
+                                  "elsewhere/resources/webidl2/.gitignore",
+                                  "elsewhere/css/tools/apiclient/.gitignore"])
+def test_gitignore_file(path):
+    expected_error = ("GITIGNORE",
+                      ".gitignore found outside the root",
+                      path,
+                      None)
+
+    errors = check_path("/foo/", path)
+
+    assert errors == [expected_error]
+
+@pytest.mark.parametrize("path", [".gitignore",
+                                  "elsewhere/.gitignores",
+                                  "elsewhere/name.gitignore",
+                                  "tools/.gitignore",
+                                  "tools/elsewhere/.gitignore",
+                                  "docs/.gitignore"
+                                  "docs/elsewhere/.gitignore",
+                                  "resources/webidl2/.gitignore",
+                                  "resources/webidl2/elsewhere/.gitignore",
+                                  "css/tools/apiclient/.gitignore",
+                                  "css/tools/apiclient/elsewhere/.gitignore"])
+def test_gitignore_negative(path):
+    errors = check_path("/foo/", path)
+
+    assert errors == []

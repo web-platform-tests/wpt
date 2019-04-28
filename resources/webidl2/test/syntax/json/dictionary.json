@@ -7,13 +7,15 @@
             {
                 "type": "field",
                 "name": "fillPattern",
+                "escapedName": "fillPattern",
                 "required": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -24,13 +26,15 @@
             {
                 "type": "field",
                 "name": "strokePattern",
+                "escapedName": "strokePattern",
                 "required": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": true,
                     "union": false,
-                    "idlType": "DOMString"
+                    "idlType": "DOMString",
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -40,32 +44,38 @@
             {
                 "type": "field",
                 "name": "position",
+                "escapedName": "position",
                 "required": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "Point"
+                    "idlType": "Point",
+                    "extAttrs": []
                 },
-                "extAttrs": []
+                "extAttrs": [],
+                "default": null
             },
             {
                 "type": "field",
                 "name": "seq",
+                "escapedName": "seq",
                 "required": false,
                 "idlType": {
-                    "sequence": true,
+                    "type": "dictionary-type",
                     "generic": "sequence",
                     "nullable": false,
                     "union": false,
                     "idlType": {
-                        "sequence": false,
+                        "type": "dictionary-type",
                         "generic": null,
                         "nullable": false,
                         "union": false,
-                        "idlType": "long"
-                    }
+                        "idlType": "long",
+                        "extAttrs": []
+                    },
+                    "extAttrs": []
                 },
                 "extAttrs": [],
                 "default": {
@@ -76,15 +86,18 @@
             {
                 "type": "field",
                 "name": "reqSeq",
+                "escapedName": "reqSeq",
                 "required": true,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
-                "extAttrs": []
+                "extAttrs": [],
+                "default": null
             }
         ],
         "inheritance": null,
@@ -98,28 +111,34 @@
             {
                 "type": "field",
                 "name": "h",
+                "escapedName": "h",
                 "required": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
-                "extAttrs": []
+                "extAttrs": [],
+                "default": null
             },
             {
                 "type": "field",
                 "name": "d",
+                "escapedName": "d",
                 "required": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "dictionary-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "long"
+                    "idlType": "long",
+                    "extAttrs": []
                 },
-                "extAttrs": []
+                "extAttrs": [],
+                "default": null
             }
         ],
         "extAttrs": []

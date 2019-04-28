@@ -1,12 +1,12 @@
 import argparse
-import itertools
 import logging
 import os
 import re
 import subprocess
 import sys
 
-from ..manifest import manifest, update
+from collections import OrderedDict
+from six import iteritems
 
 here = os.path.dirname(__file__)
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
@@ -34,33 +34,53 @@ def display_branch_point():
 
 def branch_point():
     git = get_git_cmd(wpt_root)
-    if (os.environ.get("TRAVIS_PULL_REQUEST", "false") == "false" and
-        os.environ.get("TRAVIS_BRANCH") == "master"):
+    if (os.environ.get("GITHUB_PULL_REQUEST", "false") == "false" and
+        os.environ.get("GITHUB_BRANCH") == "master"):
         # For builds on the master branch just return the HEAD commit
         return git("rev-parse", "HEAD")
-    elif os.environ.get("TRAVIS_PULL_REQUEST", "false") != "false":
-        # This is a PR, so the base branch is in TRAVIS_BRANCH
-        travis_branch = os.environ.get("TRAVIS_BRANCH")
-        assert travis_branch, "TRAVIS_BRANCH environment variable is defined"
-        branch_point = git("rev-parse", travis_branch)
+    elif os.environ.get("GITHUB_PULL_REQUEST", "false") != "false":
+        # This is a PR, so the base branch is in GITHUB_BRANCH
+        base_branch = os.environ.get("GITHUB_BRANCH")
+        assert base_branch, "GITHUB_BRANCH environment variable is defined"
+        branch_point = git("merge-base", "HEAD", base_branch)
     else:
         # Otherwise we aren't on a PR, so we try to find commits that are only in the
         # current branch c.f.
         # http://stackoverflow.com/questions/13460152/find-first-ancestor-commit-in-another-branch
+
+        # parse HEAD into an object ref
         head = git("rev-parse", "HEAD")
-        not_heads = [item for item in git("rev-parse", "--not", "--all").split("\n")
-                     if item.strip() and head not in item]
-        commits = git("rev-list", "HEAD", *not_heads).split("\n")
+
+        # get everything in refs/heads and refs/remotes that doesn't include HEAD
+        not_heads = [item for item in git("rev-parse", "--not", "--branches", "--remotes").split("\n")
+                     if item != "^%s" % head]
+
+        # get all commits on HEAD but not reachable from anything in not_heads
+        commits = git("rev-list", "--topo-order", "--parents", "HEAD", *not_heads)
+        commit_parents = OrderedDict()
+        if commits:
+            for line in commits.split("\n"):
+                line_commits = line.split(" ")
+                commit_parents[line_commits[0]] = line_commits[1:]
+
         branch_point = None
-        if len(commits):
-            first_commit = commits[-1]
-            if first_commit:
-                branch_point = git("rev-parse", first_commit + "^")
+
+        # if there are any commits, take the first parent that is not in commits
+        for commit, parents in iteritems(commit_parents):
+            for parent in parents:
+                if parent not in commit_parents:
+                    branch_point = parent
+                    break
+
+            if branch_point:
+                break
+
+        # if we had any commits, we should now have a branch point
+        assert branch_point or not commit_parents
 
         # The above heuristic will fail in the following cases:
         #
-        # - The current branch has fallen behind the version retrieved via the above
-        #   `fetch` invocation
+        # - The current branch has fallen behind the remote version
         # - Changes on the current branch were rebased and therefore do not exist on any
         #   other branch. This will result in the selection of a commit that is earlier
         #   in the history than desired (as determined by calculating the later of the
@@ -140,9 +160,12 @@ def exclude_ignored(files, ignore_rules):
 
 
 def files_changed(revish, ignore_rules=None, include_uncommitted=False, include_new=False):
-    """Get and return files changed since current branch diverged from master,
-    excluding those that are located within any path matched by
-    `ignore_rules`."""
+    """Find files changed in certain revisions.
+
+    The function passes `revish` directly to `git diff`, so `revish` can have a
+    variety of forms; see `git diff --help` for details. Files in the diff that
+    are matched by `ignore_rules` are excluded.
+    """
     files = repo_files_changed(revish,
                                include_uncommitted=include_uncommitted,
                                include_new=include_new)
@@ -158,36 +181,28 @@ def _in_repo_root(full_path):
     return len(path_components) < 2
 
 
-def _init_manifest_cache():
-    c = {}
-
-    def load(manifest_path=None):
-        if manifest_path is None:
-            manifest_path = os.path.join(wpt_root, "MANIFEST.json")
-        if c.get(manifest_path):
-            return c[manifest_path]
-        # cache at most one path:manifest
-        c.clear()
-        wpt_manifest = manifest.load(wpt_root, manifest_path)
-        if wpt_manifest is None:
-            wpt_manifest = manifest.Manifest()
-        update.update(wpt_root, wpt_manifest)
-        c[manifest_path] = wpt_manifest
-        return c[manifest_path]
-    return load
+def load_manifest(manifest_path=None, manifest_update=True):
+    # Delay import after localpaths sets up sys.path, because otherwise the
+    # import path will be "..manifest" and Python will treat it as a different
+    # manifest module.
+    from manifest import manifest  # type: ignore
+    if manifest_path is None:
+        manifest_path = os.path.join(wpt_root, "MANIFEST.json")
+    return manifest.load_and_update(wpt_root, manifest_path, "/",
+                                    update=manifest_update)
 
 
-load_manifest = _init_manifest_cache()
-
-
-def affected_testfiles(files_changed, skip_tests, manifest_path=None):
+def affected_testfiles(files_changed, skip_dirs=None,
+                       manifest_path=None, manifest_update=True):
     """Determine and return list of test files that reference changed files."""
+    if skip_dirs is None:
+        skip_dirs = {"conformance-checkers", "docs", "tools"}
     affected_testfiles = set()
     # Exclude files that are in the repo root, because
     # they are not part of any test.
     files_changed = [f for f in files_changed if not _in_repo_root(f)]
     nontests_changed = set(files_changed)
-    wpt_manifest = load_manifest(manifest_path)
+    wpt_manifest = load_manifest(manifest_path, manifest_update)
 
     test_types = ["testharness", "reftest", "wdspec"]
     support_files = {os.path.join(wpt_root, path)
@@ -197,9 +212,14 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
     test_files = {os.path.join(wpt_root, path)
                   for _, path, _ in wpt_manifest.itertypes(*test_types)}
 
+    interface_dir = os.path.join(wpt_root, 'interfaces')
+    interfaces_files = {os.path.join(wpt_root, 'interfaces', filename)
+                        for filename in os.listdir(interface_dir)}
+
+    interfaces_changed = interfaces_files.intersection(nontests_changed)
     nontests_changed = nontests_changed.intersection(support_files)
 
-    tests_changed = set(item for item in files_changed if item in test_files)
+    tests_changed = {item for item in files_changed if item in test_files}
 
     nontest_changed_paths = set()
     rewrites = {"/resources/webidl2/lib/webidl2.js": "/resources/WebIDLParser.js"}
@@ -207,13 +227,16 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
         rel_path = os.path.relpath(full_path, wpt_root)
         path_components = rel_path.split(os.sep)
         top_level_subdir = path_components[0]
-        if top_level_subdir in skip_tests:
+        if top_level_subdir in skip_dirs:
             continue
         repo_path = "/" + os.path.relpath(full_path, wpt_root).replace(os.path.sep, "/")
         if repo_path in rewrites:
             repo_path = rewrites[repo_path]
             full_path = os.path.join(wpt_root, repo_path[1:].replace("/", os.path.sep))
         nontest_changed_paths.add((full_path, repo_path))
+
+    interface_name = lambda x: os.path.splitext(os.path.basename(x))[0]
+    interfaces_changed_names = map(interface_name, interfaces_changed)
 
     def affected_by_wdspec(test):
         affected = False
@@ -230,11 +253,20 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
                     break
         return affected
 
+    def affected_by_interfaces(file_contents):
+        if len(interfaces_changed_names) > 0:
+            if 'idlharness.js' in file_contents:
+                for interface in interfaces_changed_names:
+                    regex = '[\'"]' + interface + '(\\.idl)?[\'"]'
+                    if re.search(regex, file_contents):
+                        return True
+        return False
+
     for root, dirs, fnames in os.walk(wpt_root):
         # Walk top_level_subdir looking for test files containing either the
         # relative filepath or absolute filepath to the changed files.
         if root == wpt_root:
-            for dir_name in skip_tests:
+            for dir_name in skip_dirs:
                 dirs.remove(dir_name)
         for fname in fnames:
             test_full_path = os.path.join(root, fname)
@@ -255,7 +287,7 @@ def affected_testfiles(files_changed, skip_tests, manifest_path=None):
                     file_contents = file_contents.decode("utf8", "replace")
                 for full_path, repo_path in nontest_changed_paths:
                     rel_path = os.path.relpath(full_path, root).replace(os.path.sep, "/")
-                    if rel_path in file_contents or repo_path in file_contents:
+                    if rel_path in file_contents or repo_path in file_contents or affected_by_interfaces(file_contents):
                         affected_testfiles.add(test_full_path)
                         continue
 
@@ -266,8 +298,10 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("revish", default=None, help="Commits to consider. Defaults to the "
                         "commits on the current branch", nargs="?")
+    # TODO: Consolidate with `./wpt run --affected`:
+    # https://github.com/web-platform-tests/wpt/issues/14560
     parser.add_argument("--ignore-rules", nargs="*", type=set,
-                        default=set(["resources/testharness*"]),
+                        default={"resources/testharness*"},
                         help="Rules for paths to exclude from lists of changes. Rules are paths "
                         "relative to the test root, with * before a separator or the end matching "
                         "anything other than a path separator and ** in that position matching "
@@ -279,6 +313,8 @@ def get_parser():
                         help="Include files in the worktree that are not in version control")
     parser.add_argument("--show-type", action="store_true",
                         help="Print the test type along with each affected test")
+    parser.add_argument("--null", action="store_true",
+                        help="Separate items with a null byte")
     return parser
 
 
@@ -304,8 +340,11 @@ def run_changed_files(**kwargs):
     changed, _ = files_changed(revish, kwargs["ignore_rules"],
                                include_uncommitted=kwargs["modified"],
                                include_new=kwargs["new"])
+
+    separator = "\0" if kwargs["null"] else "\n"
+
     for item in sorted(changed):
-        print(os.path.relpath(item, wpt_root))
+        sys.stdout.write(os.path.relpath(item, wpt_root) + separator)
 
 
 def run_tests_affected(**kwargs):
@@ -316,7 +355,7 @@ def run_tests_affected(**kwargs):
     manifest_path = os.path.join(kwargs["metadata_root"], "MANIFEST.json")
     tests_changed, dependents = affected_testfiles(
         changed,
-        set(["conformance-checkers", "docs", "tools"]),
+        {"conformance-checkers", "docs", "tools"},
         manifest_path=manifest_path
     )
 
@@ -324,6 +363,9 @@ def run_tests_affected(**kwargs):
     if kwargs["show_type"]:
         wpt_manifest = load_manifest(manifest_path)
         message = "{path}\t{item_type}"
+
+    message += "\0" if kwargs["null"] else "\n"
+
     for item in sorted(tests_changed | dependents):
         results = {
             "path": os.path.relpath(item, wpt_root)
@@ -333,4 +375,4 @@ def run_tests_affected(**kwargs):
             if len(item_types) != 1:
                 item_types = [" ".join(item_types)]
             results["item_type"] = item_types.pop()
-        print(message.format(**results))
+        sys.stdout.write(message.format(**results))

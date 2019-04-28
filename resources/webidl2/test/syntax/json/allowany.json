@@ -12,13 +12,15 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [],
                 "extAttrs": []
             },
@@ -30,26 +32,31 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": false,
+                        "default": null,
                         "extAttrs": [],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "B"
+                            "idlType": "B",
+                            "extAttrs": []
                         },
-                        "name": "b"
+                        "name": "b",
+                        "escapedName": "b"
                     }
                 ],
                 "extAttrs": []
@@ -62,17 +69,20 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "g",
+                "escapedName": "g",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": false,
+                        "default": null,
                         "extAttrs": [
                             {
                                 "name": "AllowAny",
@@ -82,13 +92,15 @@
                             }
                         ],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "DOMString"
+                            "idlType": "DOMString",
+                            "extAttrs": []
                         },
-                        "name": "s"
+                        "name": "s",
+                        "escapedName": "s"
                     }
                 ],
                 "extAttrs": []

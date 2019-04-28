@@ -24,22 +24,30 @@
     reportCookieName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
   }
 
-  var reportID = "";
+  var reportID = "{{GET[reportID]}}";
 
-  var cookies = document.cookie.split(';');
-  for (var i = 0; i < cookies.length; i++) {
-    var cookieName = cookies[i].split('=')[0].trim();
-    var cookieValue = cookies[i].split('=')[1].trim();
+  if (reportID == "") {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookieName = cookies[i].split('=')[0].trim();
+      var cookieValue = cookies[i].split('=')[1].trim();
 
-    if (cookieName == reportCookieName) {
-      reportID = cookieValue;
-      var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
-      document.cookie = cookieToDelete;
-      break;
+      if (cookieName == reportCookieName) {
+        reportID = cookieValue;
+        var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
+        document.cookie = cookieToDelete;
+        break;
+      }
     }
   }
 
-  var timeout = document.querySelector("meta[name=timeout][content=long]") ? 50 : 5;
+  // There is no real way to test (in this particular layer) that a CSP report
+  // has *not* been sent, at least not without some major reworks and
+  // involvement from all the platform participants. So the current "solution"
+  // is to wait for some reasonable amount of time and if no report has been
+  // received to conclude that no report has been generated. These timeouts must
+  // not exceed the test timeouts set by vendors otherwise the test would fail.
+  var timeout = document.querySelector("meta[name=timeout][content=long]") ? 25 : 5;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_report&timeout=" + timeout + "&reportID=" + reportID;
 
   if (testName == "") testName = "Violation report status OK.";
@@ -71,8 +79,8 @@
 
           if(data["csp-report"] != undefined && data["csp-report"][reportField] != undefined) {
             assert_field_value(data["csp-report"][reportField], reportValue, reportField);
-          } else if (data[0] != undefined && data[0]["report"] != undefined && data[0]["report"][reportField] != undefined) {
-            assert_field_value(data[0]["report"][reportField], reportValue, reportField);
+          } else if (data[0] != undefined && data[0]["body"] != undefined && data[0]["body"][reportField] != undefined) {
+            assert_field_value(data[0]["body"][reportField], reportValue, reportField);
           } else {
             assert_equals("", reportField, "Expected report field could not be found in report");
           }

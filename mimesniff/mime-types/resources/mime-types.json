@@ -32,6 +32,12 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "text/html;charset=();charset=GBK",
+    "output": "text/html;charset=\"()\"",
+    "navigable": true,
+    "encoding": null
+  },
   "Spaces",
   {
     "input": "text/html;charset =gbk",
@@ -57,6 +63,37 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "text/html;charset= \"gbk\"",
+    "output": "text/html;charset=\" \\\"gbk\\\"\"",
+    "navigable": true,
+    "encoding": null
+  },
+  "0x0B and 0x0C",
+  {
+    "input": "text/html;charset=\u000Bgbk",
+    "output": "text/html",
+    "navigable": true,
+    "encoding": null
+  },
+  {
+    "input": "text/html;charset=\u000Cgbk",
+    "output": "text/html",
+    "navigable": true,
+    "encoding": null
+  },
+  {
+    "input": "text/html;\u000Bcharset=gbk",
+    "output": "text/html",
+    "navigable": true,
+    "encoding": null
+  },
+  {
+    "input": "text/html;\u000Ccharset=gbk",
+    "output": "text/html",
+    "navigable": true,
+    "encoding": null
+  },
   "Single quotes are a token, not a delimiter",
   {
     "input": "text/html;charset='gbk'",
@@ -73,6 +110,12 @@
   {
     "input": "text/html;charset=gbk'",
     "output": "text/html;charset=gbk'",
+    "navigable": true,
+    "encoding": null
+  },
+  {
+    "input": "text/html;charset=';charset=GBK",
+    "output": "text/html;charset='",
     "navigable": true,
     "encoding": null
   },
@@ -113,6 +156,18 @@
     "navigable": true,
     "encoding": "GBK"
   },
+  {
+    "input": "text/html;charset= \"\u007F;charset=GBK",
+    "output": "text/html;charset=GBK",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"\u007F;charset=foo\";charset=GBK",
+    "output": "text/html;charset=GBK",
+    "navigable": true,
+    "encoding": "GBK"
+  },
   "Double quotes",
   {
     "input": "text/html;charset=\"gbk\"",
@@ -139,6 +194,12 @@
     "encoding": "GBK"
   },
   {
+    "input": "text/html;charset=\"gbk \"",
+    "output": "text/html;charset=\"gbk \"",
+    "navigable": true,
+    "encoding": "GBK"
+  },
+  {
     "input": "text/html;charset=\"\\ gbk\"",
     "output": "text/html;charset=\" gbk\"",
     "navigable": true,
@@ -155,6 +216,18 @@
     "output": "text/html;charset=gbk",
     "navigable": true,
     "encoding": "GBK"
+  },
+  {
+    "input": "text/html;charset=\"\";charset=GBK",
+    "output": "text/html;charset=\"\"",
+    "navigable": true,
+    "encoding": null
+  },
+  {
+    "input": "text/html;charset=\";charset=GBK",
+    "output": "text/html;charset=\";charset=GBK\"",
+    "navigable": true,
+    "encoding": null
   },
   "Unexpected code points",
   {
@@ -202,6 +275,18 @@
     "input": "x/x;x=\t",
     "output": "x/x"
   },
+  {
+    "input": "x/x\n\r\t ;x=x",
+    "output": "x/x;x=x"
+  },
+  {
+    "input": "\n\r\t x/x;x=x\n\r\t ",
+    "output": "x/x;x=x"
+  },
+  {
+    "input": "x/x;\n\r\t x=x\n\r\t ;x=y",
+    "output": "x/x;x=x"
+  },
   "Latin1",
   {
     "input": "text/html;test=\u00FF;charset=gbk",
@@ -216,11 +301,31 @@
   },
   "Failure",
   {
+    "input": "\u000Bx/x",
+    "output": null
+  },
+  {
+    "input": "\u000Cx/x",
+    "output": null
+  },
+  {
+    "input": "x/x\u000B",
+    "output": null
+  },
+  {
+    "input": "x/x\u000C",
+    "output": null
+  },
+  {
     "input": "",
     "output": null
   },
   {
     "input": "\t",
+    "output": null
+  },
+  {
+    "input": "/",
     "output": null
   },
   {
@@ -248,6 +353,10 @@
     "output": null
   },
   {
+    "input": "ÿ/ÿ",
+    "output": null
+  },
+  {
     "input": "text/html(;doesnot=matter",
     "output": null
   },
@@ -257,6 +366,18 @@
   },
   {
     "input": "\u0100/\u0100",
+    "output": null
+  },
+  {
+    "input": "text /html",
+    "output": null
+  },
+  {
+    "input": "text/ html",
+    "output": null
+  },
+  {
+    "input": "\"text/html\"",
     "output": null
   }
 ]

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>CSS Writing Modes Test: Test orientation of characters where vo=U (#6/6, 51 code points in U+2F9EB-2FA1D).</title>
+<meta name="timeout" content="long">
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
 <meta name="assert" content="Test orientation of characters where vo=U (#6/6, 51 code points in U+2F9EB-2FA1D)">
 <meta name="flags" content="dom">
@@ -10,7 +11,7 @@
 <style>
 @font-face {
     font-family: "orientation";
-    src: url("support/adobe-fonts/CSSHWOrientationTest.otf");
+    src: url("/fonts/adobe-fonts/CSSHWOrientationTest.otf");
 }
 .test {
     font: 16px/1 "orientation";

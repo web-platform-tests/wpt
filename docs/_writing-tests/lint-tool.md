@@ -21,7 +21,7 @@ you must either [fix all lint errors](#fixing-lint-errors), or you must
 You must fix any errors the lint tool reports, unless an error is for
 something essential to a certain test or that for some other
 exceptional reason shouldn't prevent the test from being merged; in
-those cases you can [whitelist test files](#updating-the-whiteslist)
+those cases you can [whitelist test files](#updating-the-whitelist)
 to suppress the errors. In all other cases, follow the instructions
 below to fix all errors reported.
 
@@ -57,6 +57,9 @@ below to fix all errors reported.
 * **MALFORMED-VARIANT**: Test file with a `<meta name='variant'...>`
   element whose `content` attribute has a malformed value; **fix**: ensure
   the value of the `content` attribute starts with `?` or `#` or is empty.
+
+* **MISSING-LINK**: CSS test file is missing a link to a spec. **fix**: Ensure that there is a `<link rel="help" href="[url]">` for the spec.
+  * Note: `MISSING-LINK` is designed to ensure that the CSS build tool can find the tests. Note that the CSS build system is primarily used by [test.csswg.org/](http://test.csswg.org/), which doesn't use `wptserve`, so `*.any.js` and similar tests won't work there; stick with the `.html` equivalent.
 
 * **MISSING-TESTHARNESSREPORT**: Test file is missing an instance of
   `<script src='/resources/testharnessreport.js'>`; **fix**: ensure each

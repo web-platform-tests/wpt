@@ -11,13 +11,15 @@
                 "inherit": false,
                 "readonly": true,
                 "idlType": {
-                    "sequence": false,
+                    "type": "attribute-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "unsigned long"
+                    "idlType": "unsigned long",
+                    "extAttrs": []
                 },
                 "name": "cardinality",
+                "escapedName": "cardinality",
                 "extAttrs": []
             },
             {
@@ -28,26 +30,31 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "union",
+                "escapedName": "union",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": true,
+                        "default": null,
                         "extAttrs": [],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "long"
+                            "idlType": "long",
+                            "extAttrs": []
                         },
-                        "name": "ints"
+                        "name": "ints",
+                        "escapedName": "ints"
                     }
                 ],
                 "extAttrs": []
@@ -60,26 +67,31 @@
                 "static": false,
                 "stringifier": false,
                 "idlType": {
-                    "sequence": false,
+                    "type": "return-type",
                     "generic": null,
                     "nullable": false,
                     "union": false,
-                    "idlType": "void"
+                    "idlType": "void",
+                    "extAttrs": []
                 },
                 "name": "intersection",
+                "escapedName": "intersection",
                 "arguments": [
                     {
                         "optional": false,
                         "variadic": true,
+                        "default": null,
                         "extAttrs": [],
                         "idlType": {
-                            "sequence": false,
+                            "type": "argument-type",
                             "generic": null,
                             "nullable": false,
                             "union": false,
-                            "idlType": "long"
+                            "idlType": "long",
+                            "extAttrs": []
                         },
-                        "name": "ints"
+                        "name": "ints",
+                        "escapedName": "ints"
                     }
                 ],
                 "extAttrs": []

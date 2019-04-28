@@ -22,8 +22,8 @@
 
         test(function() {
             assert_equals(cs.getPropertyValue("background-image"),
-                "url(support/60x60-green.png)", "background specified value for background-image");
-        }, "background_specified_image");
+                'url("' + new URL("support/60x60-green.png", window.location.href).href + '")');
+        }, "Computed value for background-image after setting background shorthand");
 
         test(function() {
             assert_equals(cs.getPropertyValue("background-position"),
@@ -57,7 +57,7 @@
 
         test(function() {
             assert_equals(cs.getPropertyValue("background-color"),
-                "gray", "background specified value for background-color");
+                "rgb(128, 128, 128)", "background specified value for background-color");
         }, "background_specified_color");
     </script>
   </body>

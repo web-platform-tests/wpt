@@ -56,8 +56,7 @@ def test_reftest_fuzzy(fuzzy):
                 '/',
                 'foo/test.html',
                 [('/foo/ref.html', '==')],
-                fuzzy=fuzzy
-    )
+                fuzzy=fuzzy)
     assert fuzzy == t.fuzzy
 
     json_obj = t.to_json()
@@ -82,8 +81,7 @@ def test_reftest_fuzzy_multi(fuzzy):
                 '/',
                 'foo/test.html',
                 [('/foo/ref-1.html', '=='), ('/foo/ref-2.html', '==')],
-                fuzzy=fuzzy
-    )
+                fuzzy=fuzzy)
     assert fuzzy == t.fuzzy
 
     json_obj = t.to_json()

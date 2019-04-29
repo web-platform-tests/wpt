@@ -167,7 +167,7 @@ class MtimeCache(CacheFile):
         return False
 
     def check_valid(self, data):
-        if self.rebuild or data.get("/tests_root") != self.tests_root:
+        if data.get("/tests_root") != self.tests_root:
             self.modified = True
         else:
             if self.manifest_path is not None and os.path.exists(self.manifest_path):

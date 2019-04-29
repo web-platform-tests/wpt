@@ -12,10 +12,6 @@ const WORKER = 'resources/fetch-event-respond-with-body-loaded-in-chunk-worker.j
 const SCOPE = 'resources/fetch-event-respond-with-body-loaded-in-chunk-iframe.html';
 
 promise_test(async t => {
-  const registration =
-      await service_worker_unregister_and_register(t, WORKER, SCOPE);
-  await wait_for_state(t, registration.installing, 'activated');
-  const iframe = await with_iframe(SCOPE);
   t.add_cleanup(async() => {
     if (iframe)
       iframe.remove();
@@ -23,6 +19,13 @@ promise_test(async t => {
       await registration.unregister();
   });
 
+  const registration = await service_worker_unregister_and_register(
+    t,
+    WORKER,
+    SCOPE
+  );
+  await wait_for_state(t, registration.installing, 'activated');
+  const iframe = await with_iframe(SCOPE);
   const response = await iframe.contentWindow.fetch('body-in-chunk');
   const result = await response.text()
   assert_equals(result, 'TEST_TRICKLE\nTEST_TRICKLE\nTEST_TRICKLE\n' +

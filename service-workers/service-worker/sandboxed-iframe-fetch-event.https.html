@@ -62,23 +62,23 @@ let sandboxed_frame_by_header;
 let sandboxed_same_origin_frame_by_header;
 
 promise_test(async t => {
+  add_completion_callback(async () => {
+    if (registration) await registration.unregister();
+  });
+
   const registration = await service_worker_unregister_and_register(
     t,
     SCRIPT,
     SCOPE
   );
 
-  add_completion_callback(async () => {
-    if (registration) await registration.unregister();
-  });
-
   worker = registration.installing;
   await wait_for_state(t, registration.installing, 'activated');
 }, 'Prepare a service worker.');
 
 promise_test(async t => {
-  normal_frame = await with_iframe(SCOPE + '?iframe');
   add_completion_callback(() => normal_frame.remove());
+  normal_frame = await with_iframe(SCOPE + '?iframe');
   const data = await getResultsFromWorker(worker);
   const requests = data.requests;
   assert_equals(requests.length, 1);
@@ -87,11 +87,11 @@ promise_test(async t => {
 }, 'Prepare a normal iframe.');
 
 promise_test(async t => {
+  add_completion_callback(() => sandboxed_frame.remove());
   sandboxed_frame = await with_sandboxed_iframe(
     SCOPE + '?sandboxed-iframe',
     'allow-scripts'
   );
-  add_completion_callback(() => sandboxed_frame.remove());
   const data = await getResultsFromWorker(worker);
   assert_equals(data.requests.length, 0);
   assert_false(
@@ -100,11 +100,11 @@ promise_test(async t => {
 }, 'Prepare an iframe sandboxed by <iframe sandbox="allow-scripts">.');
 
 promise_test(async t => {
+  add_completion_callback(() => sandboxed_same_origin_frame.remove());
   sandboxed_same_origin_frame = await with_sandboxed_iframe(
     SCOPE + '?sandboxed-iframe-same-origin',
     'allow-scripts allow-same-origin'
   );
-  add_completion_callback(() => sandboxed_same_origin_frame.remove());
   const data = await getResultsFromWorker(worker);
   const requests = data.requests;
   assert_equals(requests.length, 1);
@@ -120,10 +120,10 @@ promise_test(async t => {
 }, 'Prepare an iframe sandboxed by <iframe sandbox="allow-scripts allow-same-origin">');
 
 promise_test(async t => {
+  add_completion_callback(() => sandboxed_frame_by_header.remove());
   const iframe_full_url = expected_base_url + '?sandbox=allow-scripts&' +
                           'sandboxed-frame-by-header';
   sandboxed_frame_by_header = await with_iframe(iframe_full_url);
-  add_completion_callback(() => sandboxed_frame_by_header.remove());
   const data = await getResultsFromWorker(worker);
   const requests = data.requests;
   assert_equals(requests.length, 1,
@@ -134,13 +134,13 @@ promise_test(async t => {
 }, 'Prepare an iframe sandboxed by CSP HTTP header with allow-scripts.');
 
 promise_test(async t => {
+  add_completion_callback(() =>
+    sandboxed_same_origin_frame_by_header.remove()
+  );
   const iframe_full_url =
     expected_base_url + '?sandbox=allow-scripts%20allow-same-origin&' +
     'sandboxed-iframe-same-origin-by-header';
   sandboxed_same_origin_frame_by_header = await with_iframe(iframe_full_url);
-  add_completion_callback(() =>
-    sandboxed_same_origin_frame_by_header.remove()
-  );
   const data = await getResultsFromWorker(worker);
   const requests = data.requests;
   assert_equals(requests.length, 1);

@@ -18,6 +18,12 @@ const other_origin_iframe =
 // foreign origin which connects to a server worker in the current origin.
 
 promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (frame1) frame1.remove();
+    if (frame2) frame2.remove();
+    if (registration) await registration.unregister();
+  });
+
   const registration = await service_worker_unregister_and_register(
     t,
     SCRIPT,
@@ -44,13 +50,6 @@ promise_test(async t => {
       }
     });
   });
-
-  t.add_cleanup(async () => {
-    if (frame1) frame1.remove();
-    if (frame2) frame2.remove();
-    if (registration) await registration.unregister();
-  });
-
   assert_equals(client_id, undefined, 'iframe client ID');
 }, 'Test Clients.get() cross origin');
 </script>

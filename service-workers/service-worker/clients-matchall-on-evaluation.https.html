@@ -5,6 +5,10 @@
 <script src="resources/test-helpers.sub.js"></script>
 <script>
 promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (registration) await registration.unregister();
+  });
+
   const SCRIPT = 'resources/clients-matchall-on-evaluation-worker.js';
   const SCOPE = 'resources/blank.html?clients-matchAll-on-evaluation';
 
@@ -13,11 +17,6 @@ promise_test(async t => {
     SCRIPT,
     SCOPE
   );
-
-  t.add_cleanup(async () => {
-    if (registration) await registration.unregister();
-  });
-
   await new Promise(function(resolve) {
     navigator.serviceWorker.onmessage = function(e) {
       assert_equals(e.data, 'matched');

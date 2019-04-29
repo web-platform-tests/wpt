@@ -7,6 +7,11 @@
 'use strict';
 
 promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (frame) await frame.remove();
+    if (registration) await registration.unregister();
+  });
+
   const url = 'resources/request-end-to-end-worker.js';
   const scope = 'resources/blank.html';
 
@@ -18,12 +23,6 @@ promise_test(async t => {
   await wait_for_state(t, registration.installing, 'activated');
   const frame = await with_iframe(scope);
   const result = JSON.parse(frame.contentDocument.body.textContent);
-
-  t.add_cleanup(async () => {
-    if (frame) await frame.remove();
-    if (registration) await registration.unregister();
-  });
-
   assert_equals(result.url, frame.src, 'request.url');
   assert_equals(result.method, 'GET', 'request.method');
   assert_equals(result.referrer, location.href, 'request.referrer');

@@ -7,6 +7,11 @@
 'use strict';
 
 promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (frame) frame.remove();
+    if (registration) await registration.unregister();
+  });
+
   const SCRIPT = 'resources/fetch-request-xhr-sync-on-worker-worker.js';
   const SCOPE = 'resources/fetch-request-xhr-sync-on-worker-scope/';
   const NON_EXISTENT_FILE = 'non-existent-file.txt';
@@ -25,11 +30,6 @@ promise_test(async t => {
   const result = await frame.contentWindow.performSyncXHROnWorker(
     NON_EXISTENT_FILE
   );
-
-  t.add_cleanup(async () => {
-    if (frame) frame.remove();
-    if (registration) await registration.unregister();
-  });
 
   assert_equals(
     result.status,

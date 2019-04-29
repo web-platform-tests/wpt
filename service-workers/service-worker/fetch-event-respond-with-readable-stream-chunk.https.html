@@ -7,12 +7,15 @@
 <script>
 'use strict';
 
-const WORKER =
-  'resources/fetch-event-respond-with-readable-stream-chunk-worker.js';
-const SCOPE =
-  'resources/fetch-event-respond-with-readable-stream-chunk-iframe.html';
+const WORKER = 'resources/fetch-event-respond-with-readable-stream-chunk-worker.js';
+const SCOPE = 'resources/fetch-event-respond-with-readable-stream-chunk-iframe.html';
 
 promise_test(async t => {
+  t.add_cleanup(async () => {
+    if (iframe) iframe.remove();
+    if (registration) await registration.unregister();
+  });
+
   const registration = await service_worker_unregister_and_register(
     t,
     WORKER,
@@ -20,11 +23,6 @@ promise_test(async t => {
   );
   await wait_for_state(t, registration.installing, 'activated');
   const iframe = await with_iframe(SCOPE);
-  t.add_cleanup(async () => {
-    if (iframe) iframe.remove();
-    if (registration) await registration.unregister();
-  });
-
   const response = await iframe.contentWindow.fetch('body-stream');
   assert_equals(await response.text(), 'chunk #1 chunk #2 chunk #3 chunk #4');
 }, 'Respond by chunks with a Response built from a ReadableStream');

@@ -13,6 +13,10 @@ const SCOPE = 'resources/blank.html';
 // Register a service worker, then create an iframe at url.
 function iframeTest(url, callback, name) {
   return promise_test(async t => {
+    t.add_cleanup(async () => {
+      if (iframe) iframe.remove();
+      if (registration) await registration.unregister();
+    });
     const registration = await service_worker_unregister_and_register(
       t,
       WORKER,
@@ -21,10 +25,6 @@ function iframeTest(url, callback, name) {
     await wait_for_state(t, registration.installing, 'activated');
     const iframe = await with_iframe(url);
     const iwin = iframe.contentWindow;
-    t.add_cleanup(async () => {
-      if (iframe) iframe.remove();
-      if (registration) await registration.unregister();
-    });
     await callback(t, iwin);
   }, name);
 }

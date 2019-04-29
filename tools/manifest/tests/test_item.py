@@ -58,17 +58,18 @@ def test_reftest_fuzzy(fuzzy):
                 [('/foo/ref.html', '==')],
                 fuzzy=fuzzy
     )
+    assert fuzzy == t.fuzzy
 
     json_obj = t.to_json()
 
     m = Manifest("/", "/")
     t2 = RefTest.from_json(m, t.path, json_obj)
-    assert t.fuzzy == t2.fuzzy
+    assert fuzzy == t2.fuzzy
 
     # test the roundtrip case, given tuples become lists
     roundtrip = json.loads(json.dumps(json_obj))
     t3 = RefTest.from_json(m, t.path, roundtrip)
-    assert t.fuzzy == t3.fuzzy
+    assert fuzzy == t3.fuzzy
 
 
 @pytest.mark.parametrize("fuzzy", [
@@ -83,14 +84,15 @@ def test_reftest_fuzzy_multi(fuzzy):
                 [('/foo/ref-1.html', '=='), ('/foo/ref-2.html', '==')],
                 fuzzy=fuzzy
     )
+    assert fuzzy == t.fuzzy
 
     json_obj = t.to_json()
 
     m = Manifest("/", "/")
     t2 = RefTest.from_json(m, t.path, json_obj)
-    assert t.fuzzy == t2.fuzzy
+    assert fuzzy == t2.fuzzy
 
     # test the roundtrip case, given tuples become lists
     roundtrip = json.loads(json.dumps(json_obj))
     t3 = RefTest.from_json(m, t.path, roundtrip)
-    assert t.fuzzy == t3.fuzzy
+    assert fuzzy == t3.fuzzy

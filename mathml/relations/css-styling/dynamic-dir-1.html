@@ -8,10 +8,14 @@
   <meta name="assert" content="The dir attribute should update direction map to css properties dynamically">
   <link rel="match" href="dynamic-dir-1-ref.html">
   <script>
-      window.addEventListener("DOMContentLoaded", () => {
+      window.addEventListener("load", () => {
+
+        // force initial layout so we're sure what we're testing against
+        document.documentElement.getBoundingClientRect();
+
         ["math", "mstyle", "mrow"].forEach((tag) => {
-          let elements = document.getElementsByTagName(tag)
-          
+          let elements = document.getElementsByTagName(tag);
+
           // set an explcit rtl where there was none
           elements[0].setAttribute("dir", "rtl");
 
@@ -23,9 +27,7 @@
 
         })
 
-        window.addEventListener('load', () => {
-          document.documentElement.classList.remove('reftest-wait');
-        })
+        document.documentElement.classList.remove('reftest-wait');
       })
     </script>
 </head>

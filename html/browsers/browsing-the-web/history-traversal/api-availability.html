@@ -11,7 +11,7 @@ var hasNavigated = false;
 var child;
 t.step(function() {
   child = window.open("resources/api-availability-1.html");
-  add_result_callback(function() {
+  t.add_cleanup(function() {
     child.close();
   });
 });

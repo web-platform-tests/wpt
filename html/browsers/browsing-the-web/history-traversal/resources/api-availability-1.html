@@ -1,7 +1,7 @@
 <!doctype html>
 <title>API availability following history traversal - 1</title>
 <script>
-var controller = opener || parent;
+var controller = opener;
 var t = controller.t;
 var assert_not_equals = controller.assert_not_equals;
 
@@ -16,7 +16,7 @@ t.step(function() {
   }
 
   t.step_timeout(function() {
-    assert_not_equals(navigator, null);
+    assert_not_equals(window.navigator, null);
     t.done();
   }, 1000);
 

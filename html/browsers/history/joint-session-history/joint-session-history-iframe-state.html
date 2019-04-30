@@ -14,6 +14,9 @@ async_test(function(t) {
         var newStateFromChild = {foo: 'baz'};
         var child = document.getElementById("frame");
 
+        // Child's initial state should be a default empty state.
+        assert_equals(child.contentWindow.history.state, null);
+
         // Perform navigation in the top-level container to set the state.
         window.history.pushState(initialState, 'title');
 

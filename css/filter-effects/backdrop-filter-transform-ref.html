@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>backdrop-filter: Basic operation of filter</title>
+<link rel="author" title="Mason Freed" href="mailto:masonfreed@chromium.org">
+
+
+
+<p>Expected: A green box with an overlapping rotated box that inverts content behind it.</p>
+<div class="colorbox"></div>
+<div class="clipper">
+    <div class="pinkbox"></div>
+</div>
+
+<style>
+div {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 100px;
+    top: 100px;
+}
+.colorbox {
+    background: green;
+}
+.clipper {
+    top: 140px;
+    transform-origin: 50px 50px;
+    transform: rotate(30deg);
+    border-radius: 10px;
+    overflow: hidden;
+    background: black;
+}
+.pinkbox {
+    top:0;
+    left:0;
+    transform-origin: 50px 50px;
+    transform: rotate(-30deg) translate(0,-40px);
+    background: #ff7fff;
+}
+</style>
+

@@ -15,9 +15,9 @@ command under test. For example, tests for [the Close Window
 command](https://w3c.github.io/webdriver/#close-window) are located in then
 `close_window` directory.
 
-Similar to [testharness.js][], wdspec tests contain within them any number of
-"sub-tests." Sub-tests are defined as Python functions whose name begins with
-`test_`, e.g. `test_state_element`.
+Similar to [testharness.js][] tests, wdspec tests contain within them any
+number of "sub-tests." Sub-tests are defined as Python functions whose name
+begins with `test_`, e.g. `test_stale_element`.
 
 ## The `webdriver` client library
 

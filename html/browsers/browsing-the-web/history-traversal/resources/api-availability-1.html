@@ -16,7 +16,13 @@ t.step(function() {
   }
 
   t.step_timeout(function() {
-    assert_not_equals(window.navigator, null);
+    assert_not_equals(window.history, null, 'history');
+    assert_not_equals(window.localStorage, null, 'localStorage');
+    assert_not_equals(window.location, null, 'location');
+    assert_not_equals(window.navigator, null, 'navigator');
+    assert_not_equals(window.opener, null, 'opener');
+    assert_not_equals(window.sessionStorage, null, 'sessionStorage');
+
     t.done();
   }, 1000);
 

@@ -151,6 +151,8 @@ jobs:
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
     vmImage: 'windows-2019'
+  variables:
+    HYPOTHESIS_PROFILE: ci
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -167,6 +169,8 @@ jobs:
   condition: dependencies.decision.outputs['test_jobs.tools_unittest']
   pool:
     vmImage: 'windows-2019'
+  variables:
+    HYPOTHESIS_PROFILE: ci
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -183,6 +187,8 @@ jobs:
   condition: dependencies.decision.outputs['test_jobs.wptrunner_unittest']
   pool:
     vmImage: 'windows-2019'
+  variables:
+    HYPOTHESIS_PROFILE: ci
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -198,6 +204,8 @@ jobs:
   condition: dependencies.decision.outputs['test_jobs.wpt_integration']
   pool:
     vmImage: 'windows-2019'
+  variables:
+    HYPOTHESIS_PROFILE: ci
   steps:
   # full checkout required
   - task: UsePythonVersion@0

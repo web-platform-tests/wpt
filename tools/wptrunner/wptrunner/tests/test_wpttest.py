@@ -2,7 +2,7 @@ from io import BytesIO
 from mock import Mock
 
 from manifest import manifest as wptmanifest
-from manifest.item import TestharnessTest
+from manifest.item import TestharnessTest, RefTestNode
 from .. import manifestexpected, wpttest
 
 dir_ini_0 = b"""\
@@ -199,15 +199,18 @@ def test_expect_any_subtest_status():
 
 
 def test_metadata_fuzzy():
-    manifest_data = {
-        "items": {"reftest": {"a/fuzzy.html": [["a/fuzzy.html",
-                                                [["/a/fuzzy-ref.html", "=="]],
-                                                {"fuzzy": [[["/a/fuzzy.html", '/a/fuzzy-ref.html', '=='],
-                                                            [[2, 3], [10, 15]]]]}]]}},
-        "paths": {"a/fuzzy.html": ["0"*40, "reftest"]},
-        "version": 7,
-        "url_base": "/"}
-    manifest = wptmanifest.Manifest.from_json(".", manifest_data)
+    item = RefTestNode(".", "a/fuzzy.html", "/", "a/fuzzy.html",
+                       references=[["/a/fuzzy-ref.html", "=="]],
+                       fuzzy=[[["/a/fuzzy.html", '/a/fuzzy-ref.html', '=='],
+                               [[2, 3], [10, 15]]]])
+    s = Mock(rel_path="a/fuzzy.html", rel_path_parts=("a", "fuzzy.html"), hash="0"*40)
+    s.manifest_items = Mock(return_value=(item.item_type, [item]))
+
+
+    manifest = wptmanifest.Manifest()
+
+    assert manifest.update([(s, True)]) is True
+
     test_metadata = manifestexpected.static.compile(BytesIO(test_fuzzy),
                                                     {},
                                                     data_cls_getter=manifestexpected.data_cls_getter,

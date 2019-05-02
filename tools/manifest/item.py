@@ -1,3 +1,4 @@
+import os
 from inspect import isabstract
 from six import iteritems, with_metaclass
 from six.moves.urllib.parse import urljoin, urlparse
@@ -59,6 +60,11 @@ class ManifestItem(with_metaclass(ManifestItemMeta)):
         # type: () -> str
         """The item's type"""
         pass
+
+    @property
+    def path_parts(self):
+        # type: () -> Tuple[Text, ...]
+        return tuple(self.path.split(os.path.sep))
 
     def key(self):
         # type: () -> Hashable

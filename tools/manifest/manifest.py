@@ -1,13 +1,13 @@
 import json
 import os
-from collections import MutableMapping
-from six import iteritems, iterkeys, itervalues, string_types, binary_type, text_type
+from six import iteritems, itervalues, string_types, binary_type, text_type
 
 from . import vcs
 from .item import (ConformanceCheckerTest, ManifestItem, ManualTest, RefTest, SupportFile,
                    TestharnessTest, VisualTest, WebDriverSpecTest, CrashTest)
 from .log import get_logger
 from .sourcefile import SourceFile
+from .typedata import TypeData
 from .utils import from_os_path, to_os_path
 
 MYPY = False
@@ -18,9 +18,8 @@ if MYPY:
     from typing import Container
     from typing import Dict
     from typing import IO
-    from typing import Iterable
     from typing import Iterator
-    from typing import List
+    from typing import Iterable
     from typing import Optional
     from typing import Set
     from typing import Text
@@ -34,7 +33,7 @@ try:
 except ImportError:
     fast_json = json  # type: ignore
 
-CURRENT_VERSION = 7
+CURRENT_VERSION = 8  # type: int
 
 
 class ManifestError(Exception):
@@ -53,157 +52,6 @@ item_classes = {"testharness": TestharnessTest,
                 "conformancechecker": ConformanceCheckerTest,
                 "visual": VisualTest,
                 "support": SupportFile}  # type: Dict[str, Type[ManifestItem]]
-
-
-if MYPY:
-    TypeDataType = MutableMapping[Text, Set[ManifestItem]]
-else:
-    TypeDataType = MutableMapping
-
-class TypeData(TypeDataType):
-    def __init__(self, manifest, type_cls):
-        # type: (Manifest, Type[ManifestItem]) -> None
-        """Dict-like object containing the TestItems for each test type.
-
-        Loading an actual Item class for each test is unnecessarily
-        slow, so this class allows lazy-loading of the test
-        items. When the manifest is loaded we store the raw json
-        corresponding to the test type, and only create an Item
-        subclass when the test is accessed. In order to remain
-        API-compatible with consumers that depend on getting an Item
-        from iteration, we do egerly load all items when iterating
-        over the class."""
-        self.manifest = manifest
-        self.type_cls = type_cls
-        self.json_data = {}  # type: Optional[Dict[Text, List[Any]]]
-        self.tests_root = None  # type: Optional[str]
-        self.data = {}  # type: Dict[Text, Set[ManifestItem]]
-
-    def __getitem__(self, key):
-        # type: (Text) -> Set[ManifestItem]
-        if key not in self.data and self.json_data is not None:
-            self.load(key)
-        return self.data[key]
-
-    def __nonzero__(self):
-        # type: () -> bool
-        return bool(self.data) or bool(self.json_data)
-
-    def __len__(self):
-        # type: () -> int
-        rv = len(self.data)
-        if self.json_data is not None:
-            rv += len(self.json_data)
-        return rv
-
-    def __delitem__(self, key):
-        # type: (Text) -> None
-        if key in self.data:
-            del self.data[key]
-        elif self.json_data is not None:
-            del self.json_data[from_os_path(key)]
-        else:
-            raise KeyError
-
-    def __setitem__(self, key, value):
-        # type: (Text, Set[ManifestItem]) -> None
-        if self.json_data is not None:
-            path = from_os_path(key)
-            if path in self.json_data:
-                del self.json_data[path]
-        self.data[key] = value
-
-    def __contains__(self, key):
-        # type: (Any) -> bool
-        self.load_all()
-        return key in self.data
-
-    def __iter__(self):
-        # type: () -> Iterator[Text]
-        self.load_all()
-        return self.data.__iter__()
-
-    def itervalues(self):
-        # type: () -> Iterator[Set[ManifestItem]]
-        self.load_all()
-        return itervalues(self.data)
-
-    def iteritems(self):
-        # type: () -> Iterator[Tuple[Text, Set[ManifestItem]]]
-        self.load_all()
-        return iteritems(self.data)
-
-    def values(self):
-        # type: () -> List[Set[ManifestItem]]
-        return list(self.itervalues())
-
-    def items(self):
-        # type: () -> List[Tuple[Text, Set[ManifestItem]]]
-        return list(self.iteritems())
-
-    def load(self, key):
-        # type: (Text) -> None
-        """Load a specific Item given a path"""
-        if self.json_data is not None:
-            data = set()
-            path = from_os_path(key)
-            for test in self.json_data.get(path, []):
-                manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                data.add(manifest_item)
-            try:
-                del self.json_data[path]
-            except KeyError:
-                pass
-            self.data[key] = data
-        else:
-            raise ValueError
-
-    def load_all(self):
-        # type: () -> None
-        """Load all test items in this class"""
-        if self.json_data is not None:
-            for path, value in iteritems(self.json_data):
-                key = to_os_path(path)
-                if key in self.data:
-                    continue
-                data = set()
-                for test in self.json_data.get(path, []):
-                    manifest_item = self.type_cls.from_json(self.manifest, path, test)
-                    data.add(manifest_item)
-                self.data[key] = data
-            self.json_data = None
-
-    def set_json(self, tests_root, data):
-        # type: (str, Dict[Text, Any]) -> None
-        if not isinstance(data, dict):
-            raise ValueError("Got a %s expected a dict" % (type(data)))
-        self.tests_root = tests_root
-        self.json_data = data
-
-    def to_json(self):
-        # type: () -> Dict[Text, Any]
-        data = {
-            from_os_path(path):
-            [t for t in sorted(test.to_json() for test in tests)]
-            for path, tests in iteritems(self.data)
-        }
-
-        if self.json_data is not None:
-            if not data:
-                # avoid copying if there's nothing here yet
-                return self.json_data
-            data.update(self.json_data)
-
-        return data
-
-    def paths(self):
-        # type: () -> Set[Text]
-        """Get a list of all paths containing items of this type,
-        without actually constructing all the items"""
-        rv = set(iterkeys(self.data))
-        if self.json_data:
-            rv |= {to_os_path(item) for item in iterkeys(self.json_data)}
-        return rv
 
 
 if MYPY:
@@ -234,7 +82,8 @@ class ManifestData(ManifestDataType):
         without actually constructing all the items"""
         rv = set()  # type: Set[Text]
         for item_data in itervalues(self):
-            rv |= set(item_data.paths())
+            for item in item_data:
+                rv.add(os.path.sep.join(item))
         return rv
 
 
@@ -255,24 +104,28 @@ class Manifest(object):
         # type: (*str) -> Iterator[Tuple[str, Text, Set[ManifestItem]]]
         for item_type in (types or sorted(self._data.keys())):
             for path in sorted(self._data[item_type]):
+                str_path = os.sep.join(path)
                 tests = self._data[item_type][path]
-                yield item_type, path, tests
+                yield item_type, str_path, tests
 
     def iterpath(self, path):
-        # type: (Text) -> Iterator[ManifestItem]
+        # type: (Text) -> Iterable[ManifestItem]
+        tpath = tuple(path.split(os.path.sep))
+
         for type_tests in self._data.values():
-            i = type_tests.get(path, set())
+            i = type_tests.get(tpath, set())
             assert i is not None
             for test in i:
                 yield test
 
     def iterdir(self, dir_name):
-        # type: (Text) -> Iterator[ManifestItem]
-        if not dir_name.endswith(os.path.sep):
-            dir_name = dir_name + os.path.sep
+        # type: (Text) -> Iterable[ManifestItem]
+        tpath = dir_name.split(os.path.sep)
+        tpath_len = len(tpath)
+
         for type_tests in self._data.values():
             for path, tests in type_tests.iteritems():
-                if path.startswith(dir_name):
+                if path[:tpath_len] == tpath:
                     for test in tests:
                         yield test
 
@@ -307,6 +160,8 @@ class Manifest(object):
                 assert not isinstance(source_file, bytes)
                 rel_path = source_file.rel_path
                 seen_files.add(rel_path)
+                rel_path_parts = source_file.rel_path_parts
+                assert isinstance(rel_path_parts, tuple)
 
                 file_hash = source_file.hash  # type: Text
 
@@ -320,10 +175,10 @@ class Manifest(object):
 
                 if is_new or hash_changed:
                     new_type, manifest_items = source_file.manifest_items()
-                    data[new_type][rel_path] = set(manifest_items)
+                    data[new_type][rel_path_parts] = set(manifest_items)
                     path_hash[rel_path] = (file_hash, new_type)
                     if hash_changed and new_type != old_type:
-                        del data[old_type][rel_path]
+                        del data[old_type][rel_path_parts]
                     changed = True
 
         deleted = prev_files - seen_files
@@ -333,14 +188,12 @@ class Manifest(object):
                 if rel_path in path_hash:
                     _, old_type = path_hash[rel_path]
                     del path_hash[rel_path]
-                    try:
-                        del data[old_type][rel_path]
-                    except KeyError:
-                        pass
+                    del data[old_type][tuple(rel_path.split(u"/"))]
                 else:
+                    assert False, "unreachable"
                     for test_data in itervalues(data):
-                        if rel_path in test_data:
-                            del test_data[rel_path]
+                        if rel_path_parts in test_data:
+                            del test_data[rel_path_parts]
 
         return changed
 
@@ -369,35 +222,14 @@ class Manifest(object):
 
         self._path_hash = {to_os_path(k): v for k, v in iteritems(obj["paths"])}
 
-        # merge reftest_node and reftest
-        # TODO(MANIFESTv8): remove this condition
-        if "reftest_node" in obj["items"]:
-            for path in obj["items"]["reftest_node"]:
-                os_path = to_os_path(path)
-                old_hash, old_type = self._path_hash[os_path]
-                self._path_hash[os_path] = (old_hash, "reftest")
-
         for test_type, type_paths in iteritems(obj["items"]):
-            # merge reftest_node and reftest
-            # TODO(MANIFESTv8): remove this condition
-            if test_type in ("reftest", "reftest_node"):
-                if types and "reftest" not in types:
-                    continue
-
-                if self._data["reftest"].json_data:
-                    self._data["reftest"].json_data.update(type_paths)
-                else:
-                    self._data["reftest"].set_json(tests_root, type_paths)
-
-                continue
-
             if test_type not in item_classes:
                 raise ManifestError
 
             if types and test_type not in types:
                 continue
 
-            self._data[test_type].set_json(tests_root, type_paths)
+            self._data[test_type].set_json(type_paths)
 
         return self
 

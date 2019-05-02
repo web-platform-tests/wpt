@@ -280,6 +280,11 @@ class SourceFile(object):
         return file_obj
 
     @cached_property
+    def rel_path_parts(self):
+        # type: () -> Tuple[Text, ...]
+        return tuple(self.rel_path.split(os.path.sep))
+
+    @cached_property
     def path(self):
         # type: () -> Union[bytes, Text]
         return os.path.join(self.tests_root, self.rel_path)
@@ -316,18 +321,17 @@ class SourceFile(object):
         if self.dir_path == "":
             return True
 
-        parts = self.dir_path.split(os.path.sep)
+        parts = self.rel_path_parts
 
         if (parts[0] in self.root_dir_non_test or
             any(item in self.dir_non_test for item in parts) or
-            any(parts[:len(path)] == list(path) for path in self.dir_path_non_test)):
+            any(parts[:len(path)] == path for path in self.dir_path_non_test)):
             return True
         return False
 
     def in_conformance_checker_dir(self):
         # type: () -> bool
-        return (self.dir_path == "conformance-checkers" or
-                self.dir_path.startswith("conformance-checkers" + os.path.sep))
+        return self.rel_path_parts[0] == "conformance-checkers"
 
     @property
     def name_is_non_test(self):
@@ -395,7 +399,7 @@ class SourceFile(object):
         be a webdriver spec test file"""
         # wdspec tests are in subdirectories of /webdriver excluding __init__.py
         # files.
-        rel_dir_tree = self.rel_path.split(os.path.sep)
+        rel_dir_tree = self.rel_path_parts
         return (((rel_dir_tree[0] == "webdriver" and len(rel_dir_tree) > 1) or
                  (rel_dir_tree[:2] == ["infrastructure", "webdriver"] and
                   len(rel_dir_tree) > 2)) and

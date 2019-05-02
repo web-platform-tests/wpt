@@ -84,7 +84,7 @@ class TypeData(TypeDataType):
 
     def __getitem__(self, key):
         # type: (Text) -> Set[ManifestItem]
-        if key not in self.data:
+        if key not in self.data and self.json_data is not None:
             self.load(key)
         return self.data[key]
 

@@ -9,8 +9,9 @@ MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Dict
-    from typing import Optional
     from typing import List
+    from typing import Optional
+    from typing import Text
     from typing import Union
 
 _catalog = join(dirname(__file__), "catalog")
@@ -77,7 +78,7 @@ class XMLParser(object):
         # type: (str, List[str]) -> etree.Element
         self._fed_data = None
         tag = _fixname(tag)
-        attrib = OrderedDict()  # type: Dict[Union[str, unicode], Union[str, unicode]]
+        attrib = OrderedDict()  # type: Dict[Union[str, Text], Union[str, Text]]
         if attrib_in:
             for i in range(0, len(attrib_in), 2):
                 attrib[_fixname(attrib_in[i])] = attrib_in[i+1]

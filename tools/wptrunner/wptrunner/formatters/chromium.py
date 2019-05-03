@@ -61,7 +61,7 @@ class ChromiumFormatter(base.BaseFormatter):
         cur_dict["actual"] = actual
         cur_dict["expected"] = expected
         if message != "":
-            cur_dict["artifacts"] = { "log": message }
+            cur_dict["artifacts"] = {"log": message}
 
         # Figure out if there was a regression or unexpected status. This only
         # happens for tests that were run
@@ -103,7 +103,8 @@ class ChromiumFormatter(base.BaseFormatter):
         return status
 
     def suite_start(self, data):
-        self.start_timestamp_seconds = data["time"] if "time" in data else time.time()
+        self.start_timestamp_seconds = (data["time"] if "time" in data
+                                        else time.time())
 
     def test_status(self, data):
         if "message" in data:
@@ -112,15 +113,17 @@ class ChromiumFormatter(base.BaseFormatter):
 
     def test_end(self, data):
         actual_status = self._map_status_name(data["status"])
-        expected_status = self._map_status_name(data["expected"]) if "expected" in data else "PASS"
+        expected_status = (self._map_status_name(data["expected"])
+                           if "expected" in data else "PASS")
         test_name = data["test"]
         if "message" in data:
-            self._append_test_message(test_name, None, actual_status, data["message"])
+            self._append_test_message(test_name, None, actual_status,
+                                      data["message"])
         self._store_test_result(test_name, actual_status, expected_status,
                                 self.messages[test_name])
 
-        # Remove the test from messages dict to avoid accumulating lots of tests
-        self.messages.keys().remove(test_name)
+        # Remove the test from messages dict to avoid accumulating too many.
+        self.messages.pop(test_name)
 
         # Update the count of how many tests ran with each status.
         self.num_failures_by_status[actual_status] += 1

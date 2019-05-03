@@ -285,3 +285,12 @@ function touchScrollInTarget(target, direction) {
                    .pointerUp()
                    .send();
 }
+
+function touchTapInTarget(target) {
+    return new test_driver.Actions()
+                   .addPointer("pointer1", "touch")
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+}

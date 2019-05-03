@@ -107,7 +107,8 @@ class ChromiumFormatter(base.BaseFormatter):
 
     def test_status(self, data):
         if "message" in data:
-            self._append_test_message(data["test"], data["subtest"], data["status"], data["message"])
+            self._append_test_message(data["test"], data["subtest"],
+                                      data["status"], data["message"])
 
     def test_end(self, data):
         actual_status = self._map_status_name(data["status"])
@@ -115,7 +116,8 @@ class ChromiumFormatter(base.BaseFormatter):
         test_name = data["test"]
         if "message" in data:
             self._append_test_message(test_name, None, actual_status, data["message"])
-        self._store_test_result(test_name, actual_status, expected_status, self.messages[test_name])
+        self._store_test_result(test_name, actual_status, expected_status,
+                                self.messages[test_name])
 
         # Remove the test from messages dict to avoid accumulating lots of tests
         self.messages.keys().remove(test_name)

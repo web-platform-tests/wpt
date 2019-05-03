@@ -29,16 +29,17 @@ MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Any
-    from typing import Type
-    from typing import List
-    from typing import Set
-    from typing import Text
-    from typing import Sequence
     from typing import Dict
     from typing import IO
-    from typing import Tuple
     from typing import Iterable
+    from typing import List
     from typing import Optional
+    from typing import Sequence
+    from typing import Set
+    from typing import Text
+    from typing import Tuple
+    from typing import Type
+    from typing import Union
 
     Whitelist = Dict[Text, Dict[Text, Set[Optional[int]]]]
 
@@ -230,9 +231,9 @@ def check_css_globally_unique(repo_root, paths):
     :returns: a list of errors found in ``paths``
 
     """
-    test_files = defaultdict(set)  # type: Dict[str, Set[str]]
-    ref_files = defaultdict(set)  # type: Dict[str, Set[str]]
-    support_files = defaultdict(set)  # type: Dict[str, Set[str]]
+    test_files = defaultdict(set)  # type: Dict[Union[bytes, Text], Set[str]]
+    ref_files = defaultdict(set)  # type: Dict[Union[bytes, Text], Set[str]]
+    support_files = defaultdict(set)  # type: Dict[Union[bytes, Text], Set[str]]
 
     for path in paths:
         if os.name == "nt":
@@ -256,13 +257,17 @@ def check_css_globally_unique(repo_root, paths):
                 any(parts[:len(non_test_path)] == list(non_test_path) for non_test_path in source_file.dir_path_non_test)):
                 continue
 
-            name = path[offset+1:]
-            support_files[name].add(path)
+            support_name = path[offset+1:]
+            support_files[support_name].add(path)
         elif source_file.name_is_reference:
             ref_files[source_file.name].add(path)
         else:
-            name = source_file.name.replace(b'-manual', b'')
-            test_files[name].add(path)
+            test_name = source_file.name  # type: Union[bytes, Text]
+            if isinstance(test_name, bytes):
+                test_name = test_name.replace(b'-manual', b'')
+            else:
+                test_name = test_name.replace(u'-manual', u'')
+            test_files[test_name].add(path)
 
     errors = []
 

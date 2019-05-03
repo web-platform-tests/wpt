@@ -45,7 +45,7 @@ class ManifestItem(with_metaclass(ManifestItemMeta)):
     __slots__ = ("_tests_root", "path")
 
     def __init__(self, tests_root, path):
-        # type: (str, Text) -> None
+        # type: (Text, Text) -> None
         self._tests_root = tests_root
         self.path = path
 
@@ -102,7 +102,7 @@ class URLManifestItem(ManifestItem):
     __slots__ = ("url_base", "_url", "_extras")
 
     def __init__(self,
-                 tests_root,  # type: str
+                 tests_root,  # type: Text
                  path,  # type: Text
                  url_base,  # type: Text
                  url,  # type: Text
@@ -201,7 +201,7 @@ class RefTestBase(URLManifestItem):
     __slots__ = ("references",)
 
     def __init__(self,
-                 tests_root,  # type: str
+                 tests_root,  # type: Text
                  path,  # type: Text
                  url_base,  # type: Text
                  url,  # type: Text

@@ -10,6 +10,7 @@ MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Any
+    from typing import AnyStr
     from typing import BinaryIO
     from typing import Callable
     from typing import Deque
@@ -189,7 +190,7 @@ class SourceFile(object):
                          ("css", "common")}  # type: Set[Tuple[bytes, ...]]
 
     def __init__(self, tests_root, rel_path, url_base, hash=None, contents=None):
-        # type: (bytes, bytes, Text, Optional[bytes], Optional[bytes]) -> None
+        # type: (AnyStr, AnyStr, Text, Optional[bytes], Optional[bytes]) -> None
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -200,27 +201,32 @@ class SourceFile(object):
 
         assert not os.path.isabs(rel_path), rel_path
 
-        self.tests_root = tests_root
         if os.name == "nt":
             # do slash normalization on Windows
             if isinstance(rel_path, binary_type):
-                self.rel_path = rel_path.replace(b"/", b"\\")
+                rel_path = rel_path.replace(b"/", b"\\")
             else:
-                self.rel_path = rel_path.replace(u"/", u"\\")
-        else:
-            self.rel_path = rel_path
+                rel_path = rel_path.replace(u"/", u"\\")
+
+        dir_path, filename = os.path.split(rel_path)
+        name, ext = os.path.splitext(filename)
+
+        type_flag = None
+        if "-" in name:
+            type_flag = name.rsplit("-", 1)[1].split(".")[0]
+
+        meta_flags = name.split(".")[1:]
+
+        self.tests_root = tests_root  # type: Union[bytes, Text]
+        self.rel_path = rel_path  # type: Union[bytes, Text]
+        self.dir_path = dir_path  # type: Union[bytes, Text]
+        self.filename = filename  # type: Union[bytes, Text]
+        self.name = name  # type: Union[bytes, Text]
+        self.ext = ext  # type: Union[bytes, Text]
+        self.type_flag = type_flag  # type: Optional[Union[bytes, Text]]
+        self.meta_flags = meta_flags  # type: Union[List[bytes], List[Text]]
         self.url_base = url_base
         self.contents = contents
-
-        self.dir_path, self.filename = os.path.split(self.rel_path)
-        self.name, self.ext = os.path.splitext(self.filename)
-
-        self.type_flag = None
-        if b"-" in self.name:
-            self.type_flag = self.name.rsplit(b"-", 1)[1].split(b".")[0]
-
-        self.meta_flags = self.name.split(b".")[1:]
-
         self.items_cache = None  # type: Optional[Tuple[Text, List[ManifestItem]]]
         self._hash = hash
 
@@ -268,7 +274,7 @@ class SourceFile(object):
 
     @cached_property
     def path(self):
-        # type: () -> bytes
+        # type: () -> Union[bytes, Text]
         return os.path.join(self.tests_root, self.rel_path)
 
     @cached_property

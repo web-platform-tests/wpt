@@ -1,4 +1,5 @@
 from copy import copy
+from inspect import isabstract
 from six import iteritems, with_metaclass
 from six.moves.urllib.parse import urljoin, urlparse
 from abc import ABCMeta, abstractproperty
@@ -32,8 +33,9 @@ class ManifestItemMeta(ABCMeta):
     def __new__(cls, name, bases, attrs):
         # type: (Type[ManifestItemMeta], str, Tuple[ManifestItemMeta, ...], Dict[str, Any]) -> type
         rv = ABCMeta.__new__(cls, name, bases, attrs)
-        if hasattr(rv, "item_type"):
-            item_types[rv.item_type] = rv  # type: ignore
+        if not isabstract(rv):
+            assert isinstance(rv.item_type, str)
+            item_types[rv.item_type] = rv
 
         return rv
 
@@ -196,8 +198,6 @@ class TestharnessTest(URLManifestItem):
 
 class RefTestBase(URLManifestItem):
     __slots__ = ("references",)
-
-    item_type = "reftest_base"
 
     def __init__(self,
                  tests_root,  # type: str

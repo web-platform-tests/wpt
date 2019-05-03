@@ -1,9 +1,10 @@
+import inspect
 import json
 
 import pytest
 
 from ..manifest import Manifest
-from ..item import TestharnessTest, RefTest
+from ..item import TestharnessTest, RefTest, item_types
 
 
 @pytest.mark.parametrize("path", [
@@ -94,3 +95,9 @@ def test_reftest_fuzzy_multi(fuzzy):
     roundtrip = json.loads(json.dumps(json_obj))
     t3 = RefTest.from_json(m, t.path, roundtrip)
     assert fuzzy == t3.fuzzy
+
+
+def test_item_types():
+    for key, value in item_types.items():
+        assert isinstance(key, str)
+        assert not inspect.isabstract(value)

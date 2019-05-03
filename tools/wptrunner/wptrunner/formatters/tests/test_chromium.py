@@ -116,3 +116,42 @@ def test_num_failures_by_type(capfd):
     assert sorted(num_failures_by_type.keys()) == ["PASS", "TIMEOUT"]
     assert num_failures_by_type["PASS"] == 3
     assert num_failures_by_type["TIMEOUT"] == 1
+
+def test_subtest_messages(capfd):
+    # Tests accumulation of test output
+
+    #Set up the handler.
+    output = StringIO()
+    logger = structuredlog.StructuredLogger("test_a")
+    logger.add_handler(handlers.StreamHandler(output, chromium.ChromiumFormatter()))
+
+    # Run two tests with subtest messages. The subtest name should be included
+    # in the output. We should also tolerate missing messages.
+    logger.suite_start(["t1", "t2"], run_info={}, time=123)
+    logger.test_start("t1")
+    logger.test_status("t1", status="FAIL", subtest="t1_a", message="t1_a_message")
+    logger.test_status("t1", status = "PASS", subtest="t1_b", message="t1_b_message")
+    logger.test_end("t1", status="PASS", expected="PASS")
+    logger.test_start("t2")
+    # Currently, subtests with empty messages will be ignored
+    logger.test_status("t2", status="PASS", subtest="t2_a")
+    # A test-level message will also be appended
+    logger.test_end("t2", status="TIMEOUT", expected="PASS", message="t2_message")
+    logger.suite_end()
+
+    # check nothing got output to stdout/stderr
+    # (note that mozlog outputs exceptions during handling to stderr!)
+    captured = capfd.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+    # check the actual output of the formatter
+    output.seek(0)
+    output_json = json.load(output)
+
+    t1_log = output_json["tests"]["t1"]["artifacts"]["log"]
+    assert t1_log == "[FAIL] t1_a: t1_a_message\n" \
+                     "[PASS] t1_b: t1_b_message\n"
+
+    t2_log = output_json["tests"]["t2"]["artifacts"]["log"]
+    assert t2_log == "[TIMEOUT] t2_message\n"

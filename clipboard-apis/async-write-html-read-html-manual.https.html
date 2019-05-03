@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Async Clipboard write ([text/html ClipboardItem]) ->
+        read ([text/html ClipboardItem]) tests
+</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async function readWriteTest(htmlInput) {
+  promise_test(async t => {
+    const blobInput = new Blob([htmlInput], {type: 'text/html'});
+    const clipboardItemInput = new ClipboardItem({'text/html': blobInput});
+
+    await navigator.clipboard.write([clipboardItemInput]);
+    const clipboardItems = await navigator.clipboard.read();
+    assert_equals(clipboardItems.length, 1);
+    const clipboardItemOutput = clipboardItems[0];
+    assert_true(clipboardItemOutput instanceof ClipboardItem);
+    assert_equals(clipboardItemOutput.types.length, 1);
+    const blobOutput = await clipboardItemOutput.getType('text/html');
+    assert_equals(blobOutput.type, 'text/html');
+
+    const htmlOutput = await (new Response(blobOutput)).text();
+    assert_equals(htmlOutput, htmlInput);
+  }, 'Verify write and read clipboard given text: ' + htmlInput);
+}
+
+async function readWriteTests(testCases) {
+  for(testCase of testCases) {
+    await readWriteTest(testCase);
+  }
+}
+
+const testCases = [
+`This html is just text.`,
+`<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>Sample document with text and table</title>
+<link rel='help' href='https://www.example.com'>
+`,
+`<p>
+  This is <b> bold </b> and <i> italic </i> text.
+</p>
+`,
+`<div>This is a table</div>
+<table style="width:95%">
+  <tr>
+    <th>Column1</th>
+    <th>Column2</th>
+  </tr>
+  <tr>
+    <td>a</td>
+    <td>b</td>
+  </tr>
+  <tr>
+    <td>c</td>
+    <td>d</td>
+  </tr>
+</table>
+`];
+
+readWriteTests(testCases);
+
+</script>
+<p>
+  Note: This is a manual test because it writes/reads to the shared system
+  clipboard and thus cannot be run async with other tests that might interact
+  with the clipboard.
+</p>

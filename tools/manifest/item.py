@@ -34,6 +34,7 @@ class ManifestItemMeta(ABCMeta):
         # type: (Type[ManifestItemMeta], str, Tuple[ManifestItemMeta, ...], Dict[str, Any]) -> type
         rv = ABCMeta.__new__(cls, name, bases, attrs)
         if not isabstract(rv):
+            assert issubclass(rv, ManifestItem)
             assert isinstance(rv.item_type, str)
             item_types[rv.item_type] = rv
 

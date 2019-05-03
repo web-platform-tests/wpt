@@ -323,7 +323,7 @@ class Manifest(object):
 
         for source_file, update in tree:
             if not update:
-                assert isinstance(source_file, bytes)
+                assert isinstance(source_file, (bytes, str))
                 rel_path = source_file  # type: Text
                 seen_files.add(rel_path)
                 assert rel_path in path_hash

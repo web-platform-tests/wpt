@@ -61,7 +61,7 @@ def setup_logging(prefix=False):
     if prefix:
         format = logging.BASIC_FORMAT
     else:
-        format = b"%(message)s"
+        format = str("%(message)s")
     formatter = logging.Formatter(format)
     for handler in logger.handlers:
         handler.setFormatter(formatter)
@@ -86,7 +86,7 @@ you could add the following line to the lint.whitelist file.
 
 def all_filesystem_paths(repo_root, subdir=None):
     # type: (str, Optional[str]) -> Iterable[str]
-    path_filter = PathFilter(repo_root, extras=[b".git/"])
+    path_filter = PathFilter(repo_root, extras=[str(".git/")])
     if subdir:
         expanded_path = subdir
     else:
@@ -525,20 +525,20 @@ def check_parsed(repo_root, path, f):
         src = element.attrib["src"]
 
         def incorrect_path(script, src):
-            # type: (str, str) -> bool
+            # type: (Text, Text) -> bool
             return (script == src or
                 ("/%s" % script in src and src != "/resources/%s" % script))
 
-        if incorrect_path(b"testharness.js", src):
+        if incorrect_path("testharness.js", src):
             errors.append(rules.TestharnessPath.error(path))
 
-        if incorrect_path(b"testharnessreport.js", src):
+        if incorrect_path("testharnessreport.js", src):
             errors.append(rules.TestharnessReportPath.error(path))
 
-        if incorrect_path(b"testdriver.js", src):
+        if incorrect_path("testdriver.js", src):
             errors.append(rules.TestdriverPath.error(path))
 
-        if incorrect_path(b"testdriver-vendor.js", src):
+        if incorrect_path("testdriver-vendor.js", src):
             errors.append(rules.TestdriverVendorPath.error(path))
 
     return errors
@@ -778,9 +778,9 @@ def changed_files(wpt_root):
 
 def lint_paths(kwargs, wpt_root):
     # type: (Dict[str, Any], str) -> List[str]
-    if kwargs.get(b"paths"):
+    if kwargs.get(str("paths")):
         paths = []
-        for path in kwargs.get(b"paths", []):
+        for path in kwargs.get(str("paths"), []):
             if os.path.isdir(path):
                 path_dir = list(all_filesystem_paths(wpt_root, path))
                 paths.extend(path_dir)
@@ -788,7 +788,7 @@ def lint_paths(kwargs, wpt_root):
                 paths.append(os.path.relpath(os.path.abspath(path), wpt_root))
 
 
-    elif kwargs[b"all"]:
+    elif kwargs[str("all")]:
         paths = list(all_filesystem_paths(wpt_root))
     else:
         changed_paths = changed_files(wpt_root)
@@ -823,15 +823,15 @@ def create_parser():
 def main(**kwargs):
     # type: (**Any) -> int
     assert logger is not None
-    if kwargs.get(b"json") and kwargs.get(b"markdown"):
+    if kwargs.get(str("json")) and kwargs.get(str("markdown")):
         logger.critical("Cannot specify --json and --markdown")
         sys.exit(2)
 
-    repo_root = kwargs.get(b'repo_root') or localpaths.repo_root
-    output_format = {(True, False): b"json",
-                     (False, True): b"markdown",
-                     (False, False): b"normal"}[(kwargs.get(b"json", False),
-                                                kwargs.get(b"markdown", False))]
+    repo_root = kwargs.get(str('repo_root')) or localpaths.repo_root
+    output_format = {(True, False): str("json"),
+                     (False, True): str("markdown"),
+                     (False, False): str("normal")}[(kwargs.get(str("json"), False),
+                                                     kwargs.get(str("markdown"), False))]
 
     if output_format == "markdown":
         setup_logging(True)

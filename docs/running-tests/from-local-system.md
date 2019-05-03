@@ -7,9 +7,25 @@ The tests are designed to be run from your local computer.
 The test environment requires [Python 2.7+](http://www.python.org/downloads)
 (but not Python 3.x).
 
-On Windows, be sure to add the Python directory (`c:\python2x`, by default) to
-your `%Path%` [Environment Variable](http://www.computerhope.com/issues/ch000549.htm),
-and read the [Windows Notes](#windows-notes) section below.
+<section class="platform">
+
+**Windows**
+
+Generally Windows Subsystem for Linux will provide the smoothest user
+experience for running web-platform-tests on Windows.
+
+Be sure to add the Python directory (`c:\python2x`, by default) to your
+`%Path%` [Environment
+Variable](http://www.computerhope.com/issues/ch000549.htm).
+
+The standard Windows shell requires that all `wpt` commands are prefixed
+by the Python binary. For example, the server is started using:
+
+```
+python wpt serve
+```
+
+</section>
 
 <!--
   There does not appear to be a cross-platform means of installing `pip`.
@@ -27,23 +43,32 @@ pip install virtualenv
 ```
 
 To get the tests running, you need to set up the test domains in your
-[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system).
+[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The necessary content can be generated with `./wpt make-hosts-file`.
 
-The necessary content can be generated with `./wpt make-hosts-file`; on
-Windows, you will need to preceed the prior command with `python` or
-the path to the Python binary (`python wpt make-hosts-file`).
+<section class="platform">
 
-For example, on most UNIX-like systems, you can setup the hosts file with:
+**GNU/Linux & macOS**
+
+On most UNIX-like systems, you can setup the hosts file with:
 
 ```bash
 ./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
 
-And on Windows (this must be run in a PowerShell session with Administrator privileges):
+</section>
+
+<section class="platform">
+
+**Windows**
+
+On Windows (this must be run in a PowerShell session with Administrator
+privileges):
 
 ```bash
 python wpt make-hosts-file | Out-File %SystemRoot%\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
+
+</section>
 
 If you are behind a proxy, you also need to make sure the domains above are
 excluded from your proxy lookups.
@@ -57,17 +82,6 @@ appropriate steps for your platform:
 - On macOS, open the downloaded file in Font Book (the default application for
   font files) and then click install.
 - On Linux, copy the file to `~/.local/share/fonts` and then run `fc-cache`.
-
-### Windows Notes
-
-Generally Windows Subsystem for Linux will provide the smoothest user
-experience for running web-platform-tests on Windows.
-
-The standard Windows shell requires that all `wpt` commands are prefixed
-by the Python binary i.e. assuming `python` is on your path the server is
-started using:
-
-`python wpt serve`
 
 ## Via the browser
 

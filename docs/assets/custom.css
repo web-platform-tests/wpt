@@ -1,0 +1,13 @@
+section.platform {
+  padding: 1em;
+  margin-bottom: 1em;
+
+  border: solid 1px #ccc;
+}
+
+section.platform p:first-child {
+  margin-top: 0;
+}
+section.platform p:last-child {
+  margin-bottom: 0;
+}

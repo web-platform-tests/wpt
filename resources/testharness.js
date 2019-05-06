@@ -1553,7 +1553,8 @@ policies and contribution forms [3].
         PASS:0,
         FAIL:1,
         TIMEOUT:2,
-        NOTRUN:3
+        NOTRUN:3,
+        SKIP:3
     };
 
     Test.prototype = merge({}, Test.statuses);
@@ -1718,6 +1719,13 @@ policies and contribution forms [3].
     };
 
     Test.prototype.force_timeout = Test.prototype.timeout;
+
+    Test.prototype.skip = function(message)
+    {
+        this.set_status(this.SKIP, message || 'Test skipped');
+        this.phase = this.phases.HAS_RESULT;
+        this.done();
+    }
 
     /**
      * Update the test status, initiate "cleanup" functions, and signal test
@@ -2754,6 +2762,7 @@ policies and contribution forms [3].
         status_text[Test.prototype.FAIL] = "Fail";
         status_text[Test.prototype.TIMEOUT] = "Timeout";
         status_text[Test.prototype.NOTRUN] = "Not Run";
+        status_text[Test.prototype.SKIP] = "Skip";
 
         var status_number = {};
         forEach(tests,

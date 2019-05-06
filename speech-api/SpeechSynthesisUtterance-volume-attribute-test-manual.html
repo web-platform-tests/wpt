@@ -1,33 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>5.2.3 SpeechSynthesisUtterance volume attribute test - manual</title>
+  <title>5.2.3 SpeechSynthesisUtterance volume attribute test - Manual</title>
+  <style>
+    div,
+    #test {
+      display: block;
+      width: 640px;
+      word-break: break-all;
+      padding: 4px;
+    }
+    #test,
+    #volume {
+      background: skyblue;
+      font-weight: bold;
+    }
+  </style>
   <script>
-var text = "hello universe";
-var volumes = [0, 0.16666666666666666, 0.3333333333333333, 0.5, 0.6666666666666666, 0.8333333333333333, 0.9999999999999999];
+    const text = "hello universe";
+    const volumes = [0, 0.16666666666666666, 0.3333333333333333, 0.5, 0.6666666666666666, 0.8333333333333333, 0.9999999999999999];
 
-window.speechSynthesis.cancel();
-
-function handleVoicesChanged() {
-  volumes.forEach(function(volume) {
-    var utterance = new SpeechSynthesisUtterance();
-    utterance.text = "hello universe";
-  /* https://w3c.github.io/speech-api/speechapi.html#utterance-attributes
-     volume attribute
-     This attribute specifies the speaking volume for the utterance. 
-     It ranges between 0 and 1 inclusive, with 0 being the lowest volume and 1 the highest volume, with a default of 1. 
-     If SSML is used, this value will be overridden by prosody tags in the markup.
-  */
-    utterance.volume = volume;
-    // does the volume of audio output change?
-    // https://github.com/w3c/web-platform-tests/issues/8795
-    window.speechSynthesis.speak(utterance);
-  });
-};
-window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
-window.speechSynthesis.getVoices();
-</script>
+    handleVoicesChanged = async e => {
+      for (const volume of volumes) {
+        await new Promise(resolve => {
+          document.getElementById("volume").value = volume;
+          const utterance = new SpeechSynthesisUtterance();
+          utterance.text = "hello universe";
+          utterance.volume = volume;
+          utterance.onend = resolve;
+          window.speechSynthesis.speak(utterance);
+        });
+      };
+    };
+    onload = e => {
+      document.getElementById("test").onclick = e => {
+        if (window.speechSynthesis.getVoices().length === 0) {
+          window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+        } else {
+          handleVoicesChanged()
+        }
+      };
+    };
+  </script>
 </head>
 <body>
+  <div>
+    <h3>Specification:</h3>
+    <a href="https://w3c.github.io/speech-api/speechapi.html#utterance-attributes"><b><code><i><u>volume</u></i></code> attribute</b></a>
+    <blockquote>
+      This attribute specifies the speaking volume for the utterance. It ranges between 0 and 1 inclusive, with 0 being the lowest volume and 1 the highest volume, with a default of 1. If SSML is used, this value will be overridden by prosody tags in the markup.
+    </blockquote>
+  </div>
+  <div id="test">
+    Click to execute <code>window.speechSynthesis.speak()</code> with <code>volume attribute</code> set to <code>0, 0.16666666666666666, 0.3333333333333333, 0.5, 0.6666666666666666, 0.8333333333333333, 0.9999999999999999.</code>
+  </div>
+  <br>
+  <div>
+    <label for="volume">Current volume: </label>
+    <input id="volume" readonly>
+    <h3>Manaul Test:</h3>Does the volume of audio output change?
+  </div>
 </body>
-</html>
+</html>l>

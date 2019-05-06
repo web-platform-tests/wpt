@@ -122,7 +122,7 @@ class TestEnvironment(object):
         config = serve.ConfigBuilder()
 
         config.ports = {
-            "http": [8000, 8002],
+            "http": [8000, 8001],
             "https": [8443],
             "ws": [8888],
             "wss": [8889],

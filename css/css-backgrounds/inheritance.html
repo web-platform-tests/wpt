@@ -12,24 +12,25 @@
 </head>
 <body>
 <div id="reference"></div>
+<!-- container and target are used by the functions in inheritance-testcommon.js -->
 <div id="container">
   <div id="target"></div>
 </div>
 <style>
   #reference {
-    column-rule-style: dotted; /* Avoid column-rule-width computed style 0 */
+    column-rule-style: dotted; /* Avoid column-rule-width computed style 0px */
     column-rule-width: medium;
   }
   #container {
-    border-style: solid;
+    border-style: solid; /* Avoid border-*-width computed style 0px */
   }
   #target {
-    border-style: solid;
+    border-style: solid; /* Avoid border-*-width computed style 0px */
   }
 </style>
 <script>
 const transparentColor = 'rgba(0, 0, 0, 0)'; // https://www.w3.org/TR/css-color-3/#transparent
-const mediumWidth = getComputedStyle(reference).columnRuleWidth; // e.g. 3px
+const mediumWidth = getComputedStyle(document.getElementById('reference')).columnRuleWidth; // e.g. 3px
 const currentColor = 'rgb(2, 3, 4)';
 container.style.color = currentColor;
 

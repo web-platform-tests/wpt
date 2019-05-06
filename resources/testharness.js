@@ -1554,7 +1554,7 @@ policies and contribution forms [3].
         FAIL:1,
         TIMEOUT:2,
         NOTRUN:3,
-        SKIP:3
+        SKIP:4
     };
 
     Test.prototype = merge({}, Test.statuses);

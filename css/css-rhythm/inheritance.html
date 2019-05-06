@@ -15,10 +15,9 @@
   <div id="target"></div>
 </div>
 <script>
-assert_not_inherited('block-step-align', 'auto', 'center');
-assert_not_inherited('block-step-insert', 'margin', 'padding');
-assert_not_inherited('block-step-round', 'up', 'nearest');
-assert_not_inherited('block-step-size', 'none', '10px');
+// Omitting block-step-align block-step-insert block-step-round block-step-size
+// as they lack implementations.
+
 assert_inherited('line-height-step', '0px', '10px');
 </script>
 </body>

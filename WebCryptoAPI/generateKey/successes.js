@@ -65,7 +65,11 @@ function run_test(algorithmNames, slowTest) {
                     assert_goodCryptoKey(result, algorithm, extractable, usages, "secret");
                 }
             }, function(err) {
-                assert_unreached("Threw an unexpected error: " + err.toString());
+                if (err.toString().includes('not supported')) {
+                    test.skip(algorithm.name + ' not implemented');
+                } else {
+                    assert_unreached("Threw an unexpected error: " + err.toString());
+                }
             });
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }

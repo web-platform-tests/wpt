@@ -14,28 +14,28 @@
 var testData = [
   { testDescription: "window.open() with 'noopener' should reuse existing target",
     secondWindowFeatureString: "noopener",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "noopener=1 means the same as noopener",
     secondWindowFeatureString: "noopener=1",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "noopener=0 means lack of noopener",
     secondWindowFeatureString: "noopener=0",
-    shouldHaveOpener: true },
+    shouldReturnWindow: true },
   { testDescription: "noopener separated only by spaces should work",
     secondWindowFeatureString: "make me noopener",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "Trailing noopener should work",
     secondWindowFeatureString: "abc def,  \n\r noopener",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "Leading noopener should work",
     secondWindowFeatureString: "noopener \f\t , hey, there",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "Interior noopener should work",
     secondWindowFeatureString: "and now, noopener   , hey, there",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
   { testDescription: "noreferrer should also suppress opener when reusing existing target",
     secondWindowFeatureString: "noreferrer",
-    shouldHaveOpener: false },
+    shouldReturnWindow: false },
 ];
 
 /**
@@ -57,7 +57,7 @@ function indexedTests() {
     t.secondWindowFeatureString = test.secondWindowFeatureString;
     t.windowName = "someuniquename" + i;
 
-    if (test.shouldHaveOpener) {
+    if (test.shouldReturnWindow) {
       t.step(function() {
         var windowName = this.windowName;
 

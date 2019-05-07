@@ -327,9 +327,9 @@ class Opera(BrowserSetup):
                 raise WptrunError("Unable to locate or install operadriver binary")
 
 
-class ChromiumEdge(BrowserSetup):
+class EdgeChromium(BrowserSetup):
     name = "MicrosoftEdge"
-    browser_cls = browser.ChromiumEdge
+    browser_cls = browser.EdgeChromium
 
     def setup_kwargs(self, kwargs):
         if kwargs["webdriver_binary"] is None:
@@ -488,7 +488,7 @@ product_setup = {
     "firefox": Firefox,
     "chrome": Chrome,
     "chrome_android": ChromeAndroid,
-    "chromiumedge": ChromiumEdge,
+    "edgechromium": EdgeChromium,
     "edge": Edge,
     "edge_webdriver": EdgeWebDriver,
     "ie": InternetExplorer,

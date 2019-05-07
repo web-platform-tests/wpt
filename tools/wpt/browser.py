@@ -633,11 +633,11 @@ class Opera(Browser):
         if m:
             return m.group(0)
 
-class ChromiumEdge(Browser):
+class EdgeChromium(Browser):
     """MicrosoftEdge-specific interface."""
 
-    product = "chromiumedge"
-    requirements = "requirements_chromium_edge.txt"
+    product = "edgechromium"
+    requirements = "requirements_edge_chromium.txt"
 
     def install(self, dest=None, channel=None):
         raise NotImplementedError

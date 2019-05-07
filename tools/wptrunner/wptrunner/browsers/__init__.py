@@ -24,7 +24,7 @@ module global scope.
 
 product_list = ["chrome",
                 "chrome_android",
-                "chromiumedge",
+                "edgechromium",
                 "edge",
                 "edge_webdriver",
                 "fennec",

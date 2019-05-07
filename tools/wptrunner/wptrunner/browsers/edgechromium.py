@@ -1,18 +1,18 @@
 from .base import Browser, ExecutorBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
-from ..webdriver_server import ChromiumEdgeDriverServer
+from ..webdriver_server import EdgeChromiumDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorwebdriver import (WebDriverTestharnessExecutor,  # noqa: F401
                                            WebDriverRefTestExecutor)  # noqa: F401
-from ..executors.executorchromiumedge import ChromiumEdgeDriverWdspecExecutor  # noqa: F401
+from ..executors.executoredgechromium import EdgeChromiumDriverWdspecExecutor  # noqa: F401
 
 
-__wptrunner__ = {"product": "chromiumedge",
+__wptrunner__ = {"product": "edgechromium",
                  "check_args": "check_args",
-                 "browser": "ChromiumEdgeBrowser",
+                 "browser": "EdgeChromiumBrowser",
                  "executor": {"testharness": "WebDriverTestharnessExecutor",
                               "reftest": "WebDriverRefTestExecutor",
-                              "wdspec": "ChromiumEdgeDriverWdspecExecutor"},
+                              "wdspec": "EdgeChromiumDriverWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -79,9 +79,9 @@ def env_options():
     return {}
 
 
-class ChromiumEdgeBrowser(Browser):
+class EdgeChromiumBrowser(Browser):
     """MicrosoftEdge is backed by MSEdgeDriver, which is supplied through
-    ``wptrunner.webdriver.ChromiumEdgeDriverServer``.
+    ``wptrunner.webdriver.EdgeChromiumDriverServer``.
     """
 
     def __init__(self, logger, binary, webdriver_binary="msedgedriver",
@@ -90,7 +90,7 @@ class ChromiumEdgeBrowser(Browser):
         the browser binary to use for testing."""
         Browser.__init__(self, logger)
         self.binary = binary
-        self.server = ChromiumEdgeDriverServer(self.logger,
+        self.server = EdgeChromiumDriverServer(self.logger,
                                          binary=webdriver_binary,
                                          args=webdriver_args)
 

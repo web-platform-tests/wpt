@@ -12,6 +12,7 @@
 <img src="resources/slow-image.py">
 <script>
   async_test(function (t) {
+    var start_time = performance.now();
     // Modify the position of the div.
     document.getElementById('myDiv').style = "top: 60px";
     function testBufferedEntry() {
@@ -19,14 +20,15 @@
         t.step_timeout(testBufferedEntry, 0);
         return;
       }
+      var end_time = performance.now();
       assert_equals(performance.getEntriesByType('layoutJank').length, 1);
       assert_equals(performance.getEntries().filter(
         entry => entry.entryType === 'layoutJank').length, 1);
       const entry = performance.getEntriesByType('layoutJank')[0];
       assert_equals(entry.entryType, "layoutJank");
       assert_equals(entry.name, "");
-      assert_equals(entry.startTime, 0.0);
-      assert_equals(entry.duration, 0.0);
+      assert_true(entry.startTime >= start_time && entry.startTime <= end_time);
+      assert_equals(entry.duration, -entry.startTime);
       // The layout jank fraction should be: 300 * (100 + 60) / viewport size.
       assert_equals(entry.fraction, 300 * (100 + 60) /
         (document.documentElement.clientWidth * document.documentElement.clientHeight));

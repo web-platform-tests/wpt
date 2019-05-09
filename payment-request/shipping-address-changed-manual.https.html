@@ -69,7 +69,7 @@ function testShippingAddressChange() {
       assert_equals(obj.organization, "", "organization should be redacted");
       assert_equals(obj.phone, "", "phone should be redacted");
       assert_equals(obj.recipient, "", "recipient should be redacted");
-      assert_equals(obj.addressLine, [], "addressLine should be redacted");
+      assert_equals(obj.addressLine.length, 0, "addressLine should be redacted");
     });
     await request.abort();
   });

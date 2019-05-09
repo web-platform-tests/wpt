@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Test recording media fragments using MediaSource and MediaRecorder</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <!-- `harness_timeout` `"long"` set to `60*60000` -->
+  <meta name="timeout" content="long">
+</head>
+<body>
+  <p id="test">click</p>
+  <script>
+    function testMediaSourceMediaRecorder() {
+      return new Promise((resolve, reject) => {
+        const test = document.getElementById("test");
+        const captureStream = mediaElement =>
+          !!mediaElement.mozCaptureStream ? mediaElement.mozCaptureStream() : mediaElement.captureStream();
+        class MediaFragmentRecorder {
+          constructor({
+            urls = [],
+              video = document.createElement("video"),
+              width = 320,
+              height = 280
+          } = {}) {
+            if (urls.length === 0) {
+              throw new TypeError("no urls passed to MediaFragmentRecorder");
+            }
+            return (async() => {
+              video.height = height;
+              video.width = width;
+              video.autoplay = true;
+              video.preload = "auto";
+              video.controls = true;
+              const chunks = [];
+              let duration = 0;
+              let media = await Promise.all(
+                urls.map(async({
+                  from,
+                  to,
+                  src
+                }, index) => {
+                  const url = new URL(src);
+                  // get media fragment hash from `src`
+                  if (url.hash.length) {
+                    [from, to] = url.hash.match(/\d+/g);
+                  }
+                  return {
+                    blob: await fetch(src).then(response => response.blob()),
+                    from,
+                    to
+                  }
+                }));
+              for (let {
+                  from,
+                  to,
+                  blob
+                }
+                of media) {
+                await new Promise(async(resolve) => {
+                  let recorder;
+                  const blobURL = URL.createObjectURL(blob);
+                  video.addEventListener("playing", e => {
+                    const mediaStream = captureStream(video);
+                    recorder = new MediaRecorder(mediaStream, {
+                      mimeType: "video/webm;codecs=vp8,opus"
+                    });
+                    recorder.start();
+                    recorder.addEventListener("stop", e => {
+                      resolve();
+                      console.log(e);
+                    }, {
+                      once: true
+                    });
+                    recorder.addEventListener("dataavailable", async(e) => {
+                      console.log(e);
+                      chunks.push(await new Response(e.data).arrayBuffer());
+                      URL.revokeObjectURL(blobURL);
+                    });
+                    video.addEventListener("pause", e => {
+                      if (recorder.state === "recording") {
+                        recorder.stop();
+                      } else {
+                        recorder.requestData();
+                      }
+                      console.log(video.played.end(0) - video.played.start(0), video.currentTime - from, video.currentTime);
+                      duration += video.currentTime - from;
+                    }, {
+                      once: true
+                    });
+                  }, {
+                    once: true
+                  });
+                  video.addEventListener("canplay", e => video.play(), {
+                    once: true
+                  });
+                  video.src = `${blobURL}#t=${from},${to}`;
+                })
+              };
+              video.load();
+              return {
+                chunks,
+                duration,
+                width,
+                height,
+                video
+              }
+            })()
+          }
+        }
+        let urls = [{
+          src: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Xacti-AC8EX-Sample_video-001.ogv",
+          from: 0,
+          to: 4
+        }, {
+          src: "https://mirrors.creativecommons.org/movingimages/webm/ScienceCommonsJesseDylan_240p.webm#t=10,20"
+        }, {
+          from: 55,
+          to: 60,
+          src: "https://nickdesaulniers.github.io/netfix/demo/frag_bunny.mp4"
+        }
+        ];
+        test.addEventListener("click", _ => 
+        new MediaFragmentRecorder({
+            urls
+          })
+          .then(({
+              chunks,
+              duration,
+              width,
+              height,
+              video
+            }) => {
+                let recorder, mediaStream;
+                document.body.appendChild(video);
+                const mediaSource = new MediaSource();
+                const mimeCodec = "video/webm;codecs=vp8,opus";
+                const sourceOpen = e => {
+                  const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+                  sourceBuffer.addEventListener("updateend", e => {
+                    console.log(e);
+                    // mediaSource.sourceBuffers[0].timestampOffset = video.currentTime;
+                  });
+                  if (chunks.length) {
+                    sourceBuffer.appendBuffer(chunks.shift());
+                  }
+                }
+                const handleWaiting = e => {
+                  console.log(e, video.currentTime, recorder && recorder.state);
+                  // mediaSource.sourceBuffers[0].abort();
+                  // mediaSource.sourceBuffers[0].timestampOffset = video.currentTime;
+                  if (chunks.length) {
+                    mediaSource.sourceBuffers[0].appendBuffer(chunks.shift());
+                  }
+                }
+                mediaSource.sourceBuffers.addEventListener("addsourcebuffer", e => console.log(e));
+                video.addEventListener("canplay", e => {
+                  if (video.paused) {
+                    video.play();
+                  }
+                  console.log(e, duration, video.buffered.end(0), video.seekable.end(0), video.duration, mediaSource.duration);
+                }, {once: true});
+                video.addEventListener("playing", e => {
+                  // not sure what causes the tab to crash at Chromium/Chrome
+                  console.log("playing");
+                  mediaStream = captureStream(video);
+                  console.log(mediaStream);                
+                  resolve(1);             
+                }, {
+                  once: true
+                });
+                video.addEventListener("waiting", handleWaiting);
+                mediaSource.addEventListener("sourceopen", sourceOpen);
+                video.src = URL.createObjectURL(mediaSource);
+              })
+            )
+      })
+    }
+    promise_test(function(t) {
+      return testMediaSourceMediaRecorder().then(function(result) {
+        assert_equals(result, 1, "Result should be 1, resolved in MediaRecorder dataavailable event at MediaSource endOfStream")
+      });
+    }, "Test recording media fragments using MediaSource and MediaRecorder");
+  </script>
+</body>
+</html>

@@ -28,11 +28,12 @@ promise_test(async t => {
 
   document.querySelector("[contenteditable]").focus();
 
-  const button = document.createElement("button");
-  button.autofocus = true;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.autofocus = true;
 
-  // This should queue a task on the user interaction task source to focus button.
-  document.body.appendChild(button);
+  // This should queue a task on the user interaction task source to focus input.
+  document.body.appendChild(input);
 
   // If waitForUserInteractionTaskSource doesn't work (which appears to be the case with Safari
   // 12.2/Safari Tech Preview 81), then do the test anyway after a bit. The prerequisite test
@@ -42,8 +43,8 @@ promise_test(async t => {
     new Promise(resolve => t.step_timeout(resolve, 100))
   ]);
 
-  assert_equals(document.activeElement, button);
-}, "The activeElement changes correctly after inserting an autofocused button");
+  assert_equals(document.activeElement, input);
+}, "The activeElement changes correctly after inserting an autofocused input");
 
 function waitForUserInteractionTaskSource() {
   return new Promise(resolve => {

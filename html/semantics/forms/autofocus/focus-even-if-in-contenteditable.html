@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>autofocus focuses the element, even if a contenteditable is currently focused</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div contenteditable></div>
+
+<script>
+"use strict";
+
+promise_test(async () => {
+  document.querySelector("[contenteditable]").focus();
+
+  const button = document.createElement("button");
+  button.autofocus = true;
+
+  // This should queue a task on the user interaction task source to focus button.
+  document.body.appendChild(button);
+
+  await waitForUserInteractionTaskSource();
+
+  assert_equals(document.activeElement, button);
+});
+
+function waitForUserInteractionTaskSource() {
+  return new Promise(resolve => {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = "string";
+    input.onselect = () => resolve();
+
+    // This queues a task on the user interaction task source to fire a select event.
+    input.setSelectionRange(0, 1);
+  });
+}
+</script>

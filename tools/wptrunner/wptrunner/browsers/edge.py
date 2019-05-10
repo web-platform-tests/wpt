@@ -94,7 +94,8 @@ class EdgeBrowser(Browser):
                 break
             elif edge_proc_name in procs:
                 time.sleep(0.5)
-            else: break
+            else:
+                break
 
         if edge_proc_name in procs:
             # close Edge process if it is still running

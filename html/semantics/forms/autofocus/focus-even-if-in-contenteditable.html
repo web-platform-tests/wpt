@@ -10,7 +10,19 @@
 <script>
 "use strict";
 
-promise_test(async () => {
+promise_test(
+  t => {
+    return Promise.race([
+      waitForUserInteractionTaskSource(),
+      new Promise((resolve, reject) => {
+        t.step_timeout(() => reject(new Error("select event wasn't fired after 100 ms")), 100);
+      })
+    ]);
+  },
+  "prerequisite: setSelectionRange fires a select event, so we can test the user interaction task source accurately"
+);
+
+promise_test(async t => {
   document.querySelector("[contenteditable]").focus();
 
   const button = document.createElement("button");
@@ -19,10 +31,16 @@ promise_test(async () => {
   // This should queue a task on the user interaction task source to focus button.
   document.body.appendChild(button);
 
-  await waitForUserInteractionTaskSource();
+  // If waitForUserInteractionTaskSource doesn't work (which appears to be the case with Safari
+  // 12.2/Safari Tech Preview 81), then do the test anyway after a bit. The prerequisite test
+  // will fail, so folks will know something's up.
+  await Promise.race([
+    waitForUserInteractionTaskSource(),
+    new Promise(resolve => t.step_timeout(resolve, 100))
+  ]);
 
   assert_equals(document.activeElement, button);
-});
+}, "The activeElement changes correctly after inserting an autofocused button");
 
 function waitForUserInteractionTaskSource() {
   return new Promise(resolve => {

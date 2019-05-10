@@ -23,6 +23,9 @@ promise_test(
 );
 
 promise_test(async t => {
+  // https://github.com/whatwg/html/issues/3551
+  await waitForFirstFrame();
+
   document.querySelector("[contenteditable]").focus();
 
   const button = document.createElement("button");
@@ -52,5 +55,9 @@ function waitForUserInteractionTaskSource() {
     // This queues a task on the user interaction task source to fire a select event.
     input.setSelectionRange(0, 1);
   });
+}
+
+function waitForFirstFrame() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
 }
 </script>

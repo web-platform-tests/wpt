@@ -17,5 +17,5 @@ workflow "Build & Publish Documentation Website" {
 action "website-build-and-publish" {
   uses = "./tools/docker/documentation"
   runs = ["/bin/bash", "tools/ci/website_build.sh"]
-  secrets = ["GITHUB_TOKEN"]
+  secrets = ["DEPLOY_TOKEN"]
 }

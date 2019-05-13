@@ -5,7 +5,6 @@ import shutil
 import stat
 import subprocess
 import tempfile
-import urllib
 import urlparse
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta

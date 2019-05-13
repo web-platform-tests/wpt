@@ -224,9 +224,6 @@ def _in_repo_root(full_path):
 
 def load_manifest(manifest_path=None, manifest_update=True):
     # type: (Optional[str], bool) -> manifest.Manifest
-    # Delay import after localpaths sets up sys.path, because otherwise the
-    # import path will be "..manifest" and Python will treat it as a different
-    # manifest module.
     if manifest_path is None:
         manifest_path = os.path.join(wpt_root, "MANIFEST.json")
     return manifest.load_and_update(wpt_root, manifest_path, "/",

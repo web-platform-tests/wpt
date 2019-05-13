@@ -1,4 +1,8 @@
-# The Ahem Font
+---
+layout: page
+title: The Ahem Font
+order: 11
+---
 
 A font called [Ahem][ahem-readme] has been developed which consists of
 some very well defined glyphs of precise sizes and shapes; it is

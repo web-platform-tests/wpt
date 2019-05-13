@@ -1,4 +1,8 @@
-# Project Administration
+---
+layout: page
+title: Project Administration
+order: -1
+---
 
 This section documents all the information necessary to administer the
 infrastructure which makes the project possible.

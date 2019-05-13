@@ -1,4 +1,7 @@
-# Running Tests from the Web
+---
+layout: page
+title: Running Tests from the Web
+---
 
 Tests that have been merged on GitHub are mirrored at [http://w3c-test.org/][w3c-test].
 [On properly-configured systems](from-local-system), local files may also be
@@ -20,3 +23,4 @@ Because it runs entirely in-browser, this runner cannot deal with
 edge-cases like tests that cause the browser to crash or hang.
 
 [w3c-test]: http://w3c-test.org
+[from-local-system]: {{ site.baseurl }}{% link _running-tests/from-local-system.md %}

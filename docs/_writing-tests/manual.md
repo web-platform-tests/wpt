@@ -1,5 +1,8 @@
-# Manual Tests
-
+---
+layout: page
+title: Manual Tests
+order: 8
+---
 Some testing scenarios are intrinsically difficult to automate and
 require a human to run the test and check the pass condition.
 
@@ -39,7 +42,7 @@ after the main filename but before the extension).
 
 Manual tests must be
 fully
-[self-describing](general-guidelines).
+[self-describing]({{ site.baseurl }}{% link _writing-tests/general-guidelines.md %}#be-self-describing).
 It is particularly important for these tests that it is easy to
 determine the result from the information provided in the page to the
 tester, because a tester may have hundreds of tests to get through and

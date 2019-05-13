@@ -1,5 +1,8 @@
-# Lint Tool
-
+---
+layout: page
+title: Lint Tool
+order: 9
+---
 We have a lint tool for catching common mistakes in test files. You can run
 it manually by running the `wpt lint` command from the root of your local
 web-platform-tests working directory like this:

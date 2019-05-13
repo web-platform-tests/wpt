@@ -99,10 +99,8 @@ customising the test run:
 
 Additional browser-specific documentation:
 
-```eval_rst
-.. toctree::
+  * [Chrome](chrome)
 
-  chrome
-  chrome_android
-  safari
-```
+  * [Chrome for Android](chrome_android)
+
+  * [Safari](safari)

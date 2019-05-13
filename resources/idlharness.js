@@ -480,6 +480,10 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls, options)
             this.members[parsed_idl.name] = new IdlNamespace(parsed_idl);
             break;
 
+        case "eof":
+            // do nothing at EOF
+            break;
+
         default:
             throw parsed_idl.name + ": " + parsed_idl.type + " not yet supported";
         }

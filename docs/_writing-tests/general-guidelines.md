@@ -127,7 +127,7 @@ typically configured with access to external resources disabled, so
 tests that try to access them will fail. Where tests want to use
 multiple hosts this is possible through a known set of subdomains and
 the
-[text substitution features of wptserve]({{ site.baseurl }}{% link writing-tests/server-features.md %}#tests-involving-multiple-origins).
+[text substitution features of wptserve]({{ site.baseurl }}{% link _writing-tests/server-features.md %}#tests-involving-multiple-origins).
 
 
 ### Be Self-Describing

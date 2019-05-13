@@ -1,221 +1,302 @@
 "use strict";
 
-(() => {
-  function write(ast, opt = {}) {
-    const noop = str => str;
-    const optNames = "type".split(" ");
-    const context = [];
-    for (const o of optNames) {
-      if (!opt[o]) opt[o] = noop;
-    }
+function noop(arg) {
+  return arg;
+}
 
-    function literal(it) {
-      return it.value;
-    };
-    function type(it) {
-      if (typeof it === "string") return opt.type(it); // XXX should maintain some context
-      let ret = extended_attributes(it.extAttrs);
-      if (it.union) ret += `(${it.idlType.map(type).join(" or ")})`;
-      else {
-        if (it.generic) ret += `${it.generic}<`;
-        if (Array.isArray(it.idlType)) ret += it.idlType.map(type).join(", ");
-        else ret += type(it.idlType);
-        if (it.generic) ret += ">";
-      }
-      if (it.nullable) ret += "?";
+const templates = {
+  wrap: items => items.join(""),
+  trivia: noop,
+  name: noop,
+  reference: noop,
+  type: noop,
+  generic: noop,
+  inheritance: noop,
+  definition: noop,
+  extendedAttribute: noop,
+  extendedAttributeReference: noop
+};
 
-      return ret;
-    };
-    function const_value(it) {
-      const tp = it.type;
-      if (tp === "boolean") return it.value ? "true" : "false";
-      else if (tp === "null") return "null";
-      else if (tp === "Infinity") return (it.negative ? "-" : "") + "Infinity";
-      else if (tp === "NaN") return "NaN";
-      else if (tp === "number") return it.value;
-      else if (tp === "sequence") return "[]";
-      else return `"${it.value}"`;
-    };
-    function argument(arg) {
-      let ret = extended_attributes(arg.extAttrs);
-      if (arg.optional) ret += "optional ";
-      ret += type(arg.idlType);
-      if (arg.variadic) ret += "...";
-      ret += ` ${arg.escapedName}`;
-      if (arg.default) ret += ` = ${const_value(arg.default)}`;
-      return ret;
-    };
-    function make_ext_at(it) {
-      context.unshift(it);
-      let ret = it.name;
-      if (it.rhs) {
-        if (it.rhs.type === "identifier-list") ret += `=(${it.rhs.value.join(",")})`;
-        else ret += `=${it.rhs.value}`;
-      }
-      if (it.arguments) ret += `(${it.arguments.length ? it.arguments.map(argument).join(",") : ""})`;
-      context.shift(); // XXX need to add more contexts, but not more than needed for ReSpec
-      return ret;
-    };
-    function extended_attributes(eats) {
-      if (!eats || !eats.length) return "";
-      return `[${eats.map(make_ext_at).join(", ")}]`;
-    };
+export function write(ast, { templates: ts = templates } = {}) {
+  ts = Object.assign({}, templates, ts);
 
-    const modifiers = "getter setter deleter stringifier static".split(" ");
-    function operation(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.stringifier && !it.idlType) return "stringifier;";
-      for (const mod of modifiers) {
-        if (it[mod]) ret += mod + " ";
-      }
-      ret += type(it.idlType) + " ";
-      if (it.name) ret += it.escapedName;
-      ret += `(${it.arguments.map(argument).join(",")});`;
-      return ret;
-    };
-
-    function attribute(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.static) ret += "static ";
-      if (it.stringifier) ret += "stringifier ";
-      if (it.inherit) ret += "inherit ";
-      if (it.readonly) ret += "readonly ";
-      ret += `attribute ${type(it.idlType)} ${it.escapedName};`;
-      return ret;
-    };
-
-    function interface_(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.partial) ret += "partial ";
-      ret += `interface ${it.name} `;
-      if (it.inheritance) ret += `: ${it.inheritance} `;
-      ret += `{${iterate(it.members)}};`;
-      return ret;
-    };
-
-    function interface_mixin(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.partial) ret += "partial ";
-      ret += `interface mixin ${it.name} `;
-      ret += `{${iterate(it.members)}};`;
-      return ret;
-    }
-
-    function namespace(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.partial) ret += "partial ";
-      ret += `namespace ${it.name} `;
-      ret += `{${iterate(it.members)}};`;
-      return ret;
-    }
-
-    function dictionary(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.partial) ret += "partial ";
-      ret += `dictionary ${it.name} `;
-      if (it.inheritance) ret += `: ${it.inheritance} `;
-      ret += `{${iterate(it.members)}};`;
-      return ret;
-    };
-    function field(it) {
-      let ret = extended_attributes(it.extAttrs);
-      if (it.required) ret += "required ";
-      ret += `${type(it.idlType)} ${it.escapedName}`;
-      if (it.default) ret += ` = ${const_value(it.default)}`;
-      ret += ";";
-      return ret;
-    };
-    function const_(it) {
-      const ret = extended_attributes(it.extAttrs);
-      return `${ret}const ${type(it.idlType)}${it.nullable ? "?" : ""} ${it.name} = ${const_value(it.value)};`;
-    };
-    function typedef(it) {
-      let ret = extended_attributes(it.extAttrs);
-      ret += `typedef ${extended_attributes(it.typeExtAttrs)}`;
-      return `${ret}${type(it.idlType)} ${it.name};`;
-    };
-    function implements_(it) {
-      const ret = extended_attributes(it.extAttrs);
-      return `${ret}${it.target} implements ${it.implements};`;
-    };
-    function includes(it) {
-      const ret = extended_attributes(it.extAttrs);
-      return `${ret}${it.target} includes ${it.includes};`;
-    };
-    function callback(it) {
-      const ret = extended_attributes(it.extAttrs);
-      return `${ret}callback ${it.name} = ${type(it.idlType)}(${it.arguments.map(argument).join(",")});`;
-    };
-    function enum_(it) {
-      let ret = extended_attributes(it.extAttrs);
-      ret += `enum ${it.name} {`;
-      for (const v of it.values) {
-        ret += `"${v.value}",`;
-      }
-      return ret + "};";
-    };
-    function iterable(it) {
-      return `iterable<${Array.isArray(it.idlType) ? it.idlType.map(type).join(", ") : type(it.idlType)}>;`;
-    };
-    function legacyiterable(it) {
-      return `legacyiterable<${Array.isArray(it.idlType) ? it.idlType.map(type).join(", ") : type(it.idlType)}>;`;
-    };
-    function maplike(it) {
-      return `${it.readonly ? "readonly " : ""}maplike<${it.idlType.map(type).join(", ")}>;`;
-    };
-    function setlike(it) {
-      return `${it.readonly ? "readonly " : ""}setlike<${type(it.idlType[0])}>;`;
-    };
-    function callbackInterface(it) {
-      return `callback ${interface_(it)}`;
-    };
-
-    const table = {
-      interface: interface_,
-      "interface mixin": interface_mixin,
-      namespace,
-      operation,
-      attribute,
-      dictionary,
-      field,
-      const: const_,
-      typedef,
-      implements: implements_,
-      includes,
-      callback,
-      enum: enum_,
-      iterable,
-      legacyiterable,
-      maplike,
-      setlike,
-      "callback interface": callbackInterface
-    };
-    function dispatch(it) {
-      const dispatcher = table[it.type];
-      if (!dispatcher) {
-        throw new Error(`Type "${it.type}" is unsupported`)
-      }
-      return table[it.type](it);
-    };
-    function iterate(things) {
-      if (!things) return;
-      let ret = "";
-      for (const thing of things) ret += dispatch(thing);
-      return ret;
-    };
-    return iterate(ast);
-  };
-
-
-  const obj = {
-    write
-  };
-
-  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = obj;
-  } else if (typeof define === 'function' && define.amd) {
-    define([], () => obj);
-  } else {
-    (self || window).WebIDL2Writer = obj;
+  function reference(raw, unescaped) {
+    return ts.reference(raw, unescaped || raw);
   }
-})();
+
+  function token(t, wrapper = noop, ...args) {
+    if (!t) {
+      return "";
+    }
+    const value = wrapper(t.value, ...args);
+    return ts.wrap([ts.trivia(t.trivia), value]);
+  }
+
+  function reference_token(t, unescaped) {
+    return token(t, reference, unescaped);
+  }
+
+  function name_token(t, arg) {
+    return token(t, ts.name, arg);
+  }
+
+  function type_body(it) {
+    if (it.union || it.generic) {
+      return ts.wrap([
+        token(it.tokens.base, ts.generic),
+        token(it.tokens.open),
+        ...it.subtype.map(type),
+        token(it.tokens.close)
+      ]);
+    }
+    const firstToken = it.tokens.prefix || it.tokens.base;
+    const prefix = it.tokens.prefix ? [
+      it.tokens.prefix.value,
+      ts.trivia(it.tokens.base.trivia)
+    ] : [];
+    const ref = reference(ts.wrap([
+      ...prefix,
+      it.tokens.base.value,
+      token(it.tokens.postfix)
+    ]), it.idlType);
+    return ts.wrap([ts.trivia(firstToken.trivia), ref]);
+  }
+  function type(it) {
+    return ts.wrap([
+      extended_attributes(it.extAttrs),
+      type_body(it),
+      token(it.tokens.nullable),
+      token(it.tokens.separator)
+    ]);
+  }
+  function default_(def) {
+    if (!def) {
+      return "";
+    }
+    return ts.wrap([
+      token(def.tokens.assign),
+      ...def.expression.map(t => token(t))
+    ]);
+  }
+  function argument(arg) {
+    return ts.wrap([
+      extended_attributes(arg.extAttrs),
+      token(arg.tokens.optional),
+      ts.type(type(arg.idlType)),
+      token(arg.tokens.variadic),
+      name_token(arg.tokens.name, { data: arg }),
+      default_(arg.default),
+      token(arg.tokens.separator)
+    ]);
+  }
+  function identifier(id) {
+    return ts.wrap([
+      reference_token(id.tokens.value),
+      token(id.tokens.separator)
+    ]);
+  }
+  function make_ext_at(it) {
+    const { rhsType } = it.params;
+    return ts.wrap([
+      ts.trivia(it.tokens.name.trivia),
+      ts.extendedAttribute(ts.wrap([
+        ts.extendedAttributeReference(it.name),
+        token(it.params.tokens.assign),
+        reference_token(it.params.tokens.secondaryName),
+        token(it.params.tokens.open),
+        ...!it.params.list ? [] :
+          it.params.list.map(
+            rhsType === "identifier-list" ? identifier : argument
+          ),
+        token(it.params.tokens.close)
+      ])),
+      token(it.tokens.separator)
+    ]);
+  }
+  function extended_attributes(eats) {
+    if (!eats) return "";
+    return ts.wrap([
+      token(eats.tokens.open),
+      ...eats.items.map(make_ext_at),
+      token(eats.tokens.close)
+    ]);
+  }
+
+  function operation(it, parent) {
+    const body = it.body ? [
+      ts.type(type(it.body.idlType)),
+      name_token(it.body.tokens.name, { data: it, parent }),
+      token(it.body.tokens.open),
+      ts.wrap(it.body.arguments.map(argument)),
+      token(it.body.tokens.close),
+    ] : [];
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.special),
+      ...body,
+      token(it.tokens.termination)
+    ]), { data: it, parent });
+  }
+
+  function attribute(it, parent) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.special),
+      token(it.tokens.readonly),
+      token(it.tokens.base),
+      ts.type(type(it.idlType)),
+      name_token(it.tokens.name, { data: it, parent }),
+      token(it.tokens.termination)
+    ]), { data: it, parent });
+  }
+
+  function inheritance(inh) {
+    if (!inh) {
+      return "";
+    }
+    return ts.wrap([
+      token(inh.tokens.colon),
+      ts.trivia(inh.tokens.name.trivia),
+      ts.inheritance(reference(inh.tokens.name.value, inh.name))
+    ]);
+  }
+
+  function container(it) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.callback),
+      token(it.tokens.partial),
+      token(it.tokens.base),
+      token(it.tokens.mixin),
+      name_token(it.tokens.name, { data: it }),
+      inheritance(it.inheritance),
+      token(it.tokens.open),
+      iterate(it.members, it),
+      token(it.tokens.close),
+      token(it.tokens.termination)
+    ]), { data: it });
+  }
+
+  function field(it, parent) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.required),
+      ts.type(type(it.idlType)),
+      name_token(it.tokens.name, { data: it, parent }),
+      default_(it.default),
+      token(it.tokens.termination)
+    ]), { data: it, parent });
+  }
+  function const_(it, parent) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.base),
+      ts.type(type(it.idlType)),
+      name_token(it.tokens.name, { data: it, parent }),
+      token(it.tokens.assign),
+      token(it.tokens.value),
+      token(it.tokens.termination)
+    ]), { data: it, parent });
+  }
+  function typedef(it) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.base),
+      ts.type(type(it.idlType)),
+      name_token(it.tokens.name, { data: it }),
+      token(it.tokens.termination)
+    ]), { data: it });
+  }
+  function includes(it) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      reference_token(it.tokens.target, it.target),
+      token(it.tokens.includes),
+      reference_token(it.tokens.mixin, it.includes),
+      token(it.tokens.termination)
+    ]), { data: it });
+  }
+  function callback(it) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.base),
+      name_token(it.tokens.name, { data: it }),
+      token(it.tokens.assign),
+      ts.type(type(it.idlType)),
+      token(it.tokens.open),
+      ...it.arguments.map(argument),
+      token(it.tokens.close),
+      token(it.tokens.termination),
+    ]), { data: it });
+  }
+  function enum_(it) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.base),
+      name_token(it.tokens.name, { data: it }),
+      token(it.tokens.open),
+      iterate(it.values, it),
+      token(it.tokens.close),
+      token(it.tokens.termination)
+    ]), { data: it });
+  }
+  function enum_value(v, parent) {
+    return ts.wrap([
+      ts.trivia(v.tokens.value.trivia),
+      ts.definition(
+        ts.wrap(['"', ts.name(v.value, { data: v, parent }), '"']),
+        { data: v, parent }
+      ),
+      token(v.tokens.separator)
+    ]);
+  }
+  function iterable_like(it, parent) {
+    return ts.definition(ts.wrap([
+      extended_attributes(it.extAttrs),
+      token(it.tokens.readonly),
+      token(it.tokens.base, ts.generic),
+      token(it.tokens.open),
+      ts.wrap(it.idlType.map(type)),
+      token(it.tokens.close),
+      token(it.tokens.termination)
+    ]), { data: it, parent });
+  }
+  function eof(it) {
+    return ts.trivia(it.trivia);
+  }
+
+  const table = {
+    interface: container,
+    "interface mixin": container,
+    namespace: container,
+    operation,
+    attribute,
+    dictionary: container,
+    field,
+    const: const_,
+    typedef,
+    includes,
+    callback,
+    enum: enum_,
+    "enum-value": enum_value,
+    iterable: iterable_like,
+    legacyiterable: iterable_like,
+    maplike: iterable_like,
+    setlike: iterable_like,
+    "callback interface": container,
+    eof
+  };
+  function dispatch(it, parent) {
+    const dispatcher = table[it.type];
+    if (!dispatcher) {
+      throw new Error(`Type "${it.type}" is unsupported`);
+    }
+    return table[it.type](it, parent);
+  }
+  function iterate(things, parent) {
+    if (!things) return;
+    const results = things.map(thing => dispatch(thing, parent));
+    return ts.wrap(results);
+  }
+  return iterate(ast);
+}

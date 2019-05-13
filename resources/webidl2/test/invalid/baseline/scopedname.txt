@@ -1,0 +1,3 @@
+Syntax error at line 2:
+  typedef gfx::geom::
+             ^ No name in typedef

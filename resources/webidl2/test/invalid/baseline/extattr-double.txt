@@ -1,0 +1,3 @@
+Syntax error at line 1:
+[Constructor([Clamp] [Clamp
+             ^ Unexpected token in extended attribute argument list

@@ -1,0 +1,97 @@
+[
+    {
+        "type": "interface",
+        "name": "IntegerSet",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "cardinality",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned long"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "operation",
+                "name": "union",
+                "body": {
+                    "name": "union",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "ints",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "long"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": true
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "intersection",
+                "body": {
+                    "name": "intersection",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "ints",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "long"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": true
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

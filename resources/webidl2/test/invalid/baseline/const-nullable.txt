@@ -1,0 +1,3 @@
+Syntax error at line 3, since `interface MyConstants`:
+  const boolean? ARE_WE_THERE_YET = false;
+               ^ Unexpected nullable constant type

@@ -1,0 +1,3 @@
+Syntax error at line 1:
+ (One or Two or) UnionOr;
+               ^ No type after open parenthesis or 'or' in union type

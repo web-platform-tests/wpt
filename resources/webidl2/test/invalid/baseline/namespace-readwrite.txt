@@ -1,0 +1,3 @@
+Syntax error at line 2, since `namespace CSS`:
+  attribute object readwrite;
+  ^ Attributes must be readonly in this context

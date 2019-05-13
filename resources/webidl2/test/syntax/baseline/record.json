@@ -1,0 +1,221 @@
+[
+    {
+        "type": "interface",
+        "name": "Foo",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "foo",
+                "body": {
+                    "name": "foo",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "param",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "sequence",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": [
+                                    {
+                                        "type": "argument-type",
+                                        "extAttrs": null,
+                                        "generic": "record",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": [
+                                            {
+                                                "type": "argument-type",
+                                                "extAttrs": null,
+                                                "generic": "",
+                                                "nullable": false,
+                                                "union": false,
+                                                "idlType": "ByteString"
+                                            },
+                                            {
+                                                "type": "argument-type",
+                                                "extAttrs": null,
+                                                "generic": "",
+                                                "nullable": false,
+                                                "union": false,
+                                                "idlType": "any"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "bar",
+                "body": {
+                    "name": "bar",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "record",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "union": true,
+                                "generic": "",
+                                "nullable": true,
+                                "idlType": [
+                                    {
+                                        "type": null,
+                                        "extAttrs": null,
+                                        "generic": "",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": "float"
+                                    },
+                                    {
+                                        "type": null,
+                                        "extAttrs": null,
+                                        "generic": "",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": "DOMString"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "Constructor",
+                    "rhs": null,
+                    "arguments": [
+                        {
+                            "name": "init",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "record",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": [
+                                    {
+                                        "type": "argument-type",
+                                        "extAttrs": null,
+                                        "generic": "",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": "USVString"
+                                    },
+                                    {
+                                        "type": "argument-type",
+                                        "extAttrs": null,
+                                        "generic": "",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": "USVString"
+                                    }
+                                ]
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "Bar",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "bar",
+                "body": {
+                    "name": "bar",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "record",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "DOMString"
+                            },
+                            {
+                                "type": "return-type",
+                                "extAttrs": {
+                                    "items": [
+                                        {
+                                            "type": "extended-attribute",
+                                            "name": "XAttr",
+                                            "rhs": null,
+                                            "arguments": []
+                                        }
+                                    ]
+                                },
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

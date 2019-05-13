@@ -1,0 +1,46 @@
+[
+    {
+        "type": "interface",
+        "name": "Person",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "age",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned short"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "required",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "any"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

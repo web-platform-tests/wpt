@@ -18,31 +18,123 @@ Just the usual. For Node:
 npm install webidl2
 ```
 
-In the browser:
+In the browser without module support:
 
 ```HTML
-<script src='webidl2.js'></script>
+<script src='./webidl2/dist/webidl2.js'></script>
 ```
 
 ## Documentation
 
-The API to WebIDL2 is trivial: you parse a string of WebIDL and it returns a syntax tree.
+WebIDL2 provides two functions: `parse` and `write`.
 
-### Parsing
+* `parse`: Converts a WebIDL string into a syntax tree.
+* `write`: Converts a syntax tree into a WebIDL string. Useful for programmatic code
+  modification.
 
 In Node, that happens with:
 
 ```JS
-var WebIDL2 = require("webidl2");
-var tree = WebIDL2.parse("string of WebIDL");
+const { parse, write, validate } = require("webidl2");
+const tree = parse("string of WebIDL");
+const text = write(tree);
+const validation = validate(tree);
 ```
 
 In the browser:
 ```HTML
-<script src='webidl2.js'></script>
 <script>
-  var tree = WebIDL2.parse("string of WebIDL");
+  const tree = WebIDL2.parse("string of WebIDL");
+  const text = WebIDL2.write(tree);
+  const validation = WebIDL2.validate(tree);
 </script>
+
+<!-- Or when module is supported -->
+<script type="module">
+  import { parse, write, validate } from "./webidl2/index.js";
+  const tree = parse("string of WebIDL");
+  const text = write(tree);
+  const validation = validate(tree);
+</script>
+```
+
+`write()` optionally takes a "templates" object, whose properties are functions that process input in different ways (depending on what is needed for output). Every property is optional. Each property is documented below:
+
+```js
+var result = WebIDL2.write(tree, {
+  templates: {
+    /**
+     * A function that receives syntax strings plus anything the templates returned.
+     * The items are guaranteed to be ordered.
+     * The returned value may be again passed to any template functions,
+     * or it may also be the final return value of `write()`.
+     * @param {any[]} items
+     */
+    wrap: items => items.join(""),
+    /**
+     * @param {string} t A trivia string, which includes whitespaces and comments.
+     */
+    trivia: t => t,
+    /**
+     * The identifier for a container type. For example, the `Foo` part of `interface Foo {};`.
+     * @param {string} escaped The escaped raw name of the definition.
+     * @param data The definition with the name
+     * @param parent The parent of the definition, undefined if absent
+     */
+    name: (escaped, { data, parent }) => escaped,
+    /**
+     * Called for each type referece, e.g. `Window`, `DOMString`, or `unsigned long`.
+     * @param escaped The referenced name. Typically string, but may also be the return
+     *            value of `wrap()` if the name contains whitespace.
+     * @param unescaped Unescaped reference.
+     */
+    reference: (escaped, unescaped) => escaped,
+    /**
+     * Called for each generic-form syntax, e.g. `sequence`, `Promise`, or `maplike`.
+     * @param {string} name The keyword for syntax
+     */
+    generic: name => name,
+    /**
+     * Called only once for each types, e.g. `Document`, `Promise<DOMString>`, or `sequence<long>`.
+     * @param type The `wrap()`ed result of references and syntatic bracket strings.
+     */
+    type: type => type,
+    /**
+     * Receives the return value of `reference()`. String if it's absent.
+     */
+    inheritance: inh => inh,
+    /**
+     * Called for each IDL type definition, e.g. an interface, an operation, or a typedef.
+     * @param content The wrapped value of everything the definition contains.
+     * @param data The original definition object
+     * @param parent The parent of the definition, undefined if absent
+     */
+    definition: (content, { data, parent }) => content,
+    /**
+     * Called for each extended attribute annotation.
+     * @param content The wrapped value of everything the annotation contains.
+     */
+    extendedAttribute: content => content,
+    /**
+     * The `Foo` part of `[Foo=Whatever]`.
+     * @param ref The name of the referenced extended attribute name.
+     */
+    extendedAttributeReference: ref => ref
+  }
+});
+```
+
+"Wrapped value" here will all be raw strings when the `wrap()` callback is absent.
+
+`validate()` returns semantic errors in a string array form:
+
+```js
+const validations = validate(tree);
+for (const validation of validations) {
+  console.log(validation);
+}
+// Validation error on line X: ...
+// Validation error on line Y: ...
 ```
 
 ### Errors
@@ -77,27 +169,41 @@ attached to a field called `idlType`:
 ```JS
 {
   "type": "attribute-type",
-  "generic": null,
+  "generic": "",
   "idlType": "unsigned short",
   "nullable": false,
   "union": false,
-  "extAttrs": [...]
+  "extAttrs": {
+    "items": [...]
+  }
 }
 ```
 
 Where the fields are as follows:
 
 * `type`: String indicating where this type is used. Can be `null` if not applicable.
-* `generic`: String indicating the generic type (e.g. "Promise", "sequence"). `null`
-  otherwise.
-* `idlType`: Can be different things depending on context. In most cases, this will just
-  be a string with the type name. But the reason this field isn't called "typeName" is
-  because it can take more complex values. If the type is a union, then this contains an
-  array of the types it unites. If it is a generic type, it contains the IDL type
-  description for the type in the sequence, the eventual value of the promise, etc.
-* `nullable`: Boolean indicating whether this is nullable or not.
+* `generic`: String indicating the generic type (e.g. "Promise", "sequence").
+* `idlType`: String indicating the type name, or array of subtypes if the type is
+  generic or a union.
+* `nullable`: `true` if the type is nullable.
 * `union`: Boolean indicating whether this is a union type or not.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
+
+### Trivia
+
+Structures often have `trivia` field that represents whitespaces and comments before tokens. It gives a string if the syntatic component is made of a single token or an object with multiple string type fields.
+
+A trivia object looks like the following example:
+
+```JS
+{
+  "base": "\n",
+  "name": " ",
+  "...": "..."
+}
+```
+
+Frequently, `base` is for type keywords, `name` is for identifiers, `open`/`close` are for brackets, and `termination` for semicolons.
 
 ### Interface
 
@@ -116,8 +222,12 @@ Interfaces look like this:
   "name": "Human",
   "partial": false,
   "members": [...],
-  "inheritance": "Animal",
-  "extAttrs": [...]
+  "inheritance": {
+    "name": "Animal"
+  },
+  "extAttrs": {
+    "items": [...]
+  }
 }
 ```
 
@@ -125,12 +235,10 @@ The fields are as follows:
 
 * `type`: Always "interface".
 * `name`: The name of the interface.
-* `partial`: A boolean indicating whether it's a partial interface.
+* `partial`: `true` if the type is a partial interface.
 * `members`: An array of interface members (attributes, operations, etc.). Empty if there are none.
-* `inheritance`: A string giving the name of an interface this one inherits from, `null` otherwise.
-  **NOTE**: In v1 this was an array, but multiple inheritance is no longer supported so this didn't make
-  sense.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `inheritance`: An object giving the name of an interface this one inherits from, `null` otherwise.
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Interface mixins
 
@@ -148,7 +256,9 @@ Interfaces mixins look like this:
   "name": "Human",
   "partial": false,
   "members": [...],
-  "extAttrs": [...]
+  "extAttrs": {
+    "items": [...]
+  }
 }
 ```
 
@@ -156,9 +266,9 @@ The fields are as follows:
 
 * `type`: Always "interface mixin".
 * `name`: The name of the interface mixin.
-* `partial`: A boolean indicating whether it's a partial interface mixin.
+* `partial`: `true if the type is a partial interface mixin.
 * `members`: An array of interface members (attributes, operations, etc.). Empty if there are none.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Namespace
 
@@ -167,10 +277,12 @@ Namespaces look like this:
 ```JS
 {
   "type": "namespace",
-  "name": "Console",
+  "name": "console",
   "partial": false,
   "members": [...],
-  "extAttrs": [...]
+  "extAttrs": {
+    "items": [...]
+  }
 }
 ```
 
@@ -178,14 +290,15 @@ The fields are as follows:
 
 * `type`: Always "namespace".
 * `name`: The name of the namespace.
-* `partial`: A boolean indicating whether it's a partial namespace.
+* `partial`: `true if the type is a partial namespace.
 * `members`: An array of namespace members (attributes and operations). Empty if there are none.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Callback Interfaces
 
 These are captured by the same structure as [Interfaces](#interface) except that
-their `type` field is "callback interface".
+their `type` field is "callback interface". Its trivia object additionally
+includes a new field `callback`.
 
 ### Callback
 
@@ -197,15 +310,14 @@ A callback looks like this:
   "name": "AsyncOperationCallback",
   "idlType": {
     "type": "return-type",
-    "sequence": false,
-    "generic": null,
+    "generic": "",
     "nullable": false,
     "union": false,
     "idlType": "void",
-    "extAttrs": []
+    "extAttrs": null
   },
   "arguments": [...],
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
@@ -215,7 +327,7 @@ The fields are as follows:
 * `name`: The name of the callback.
 * `idlType`: An [IDL Type](#idl-type) describing what the callback returns.
 * `arguments`: A list of [arguments](#arguments), as in function paramters.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Dictionary
 
@@ -232,21 +344,20 @@ A dictionary looks like this:
     "required": false,
     "idlType": {
       "type": "dictionary-type",
-      "sequence": false,
-      "generic": null,
-      "nullable": true,
+      "generic": "",
+      "nullable": true
       "union": false,
       "idlType": "DOMString",
       "extAttrs": [...]
     },
-    "extAttrs": [],
+    "extAttrs": null,
     "default": {
       "type": "string",
       "value": "black"
     }
   }],
   "inheritance": null,
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
@@ -254,18 +365,18 @@ The fields are as follows:
 
 * `type`: Always "dictionary".
 * `name`: The dictionary name.
-* `partial`: Boolean indicating whether it's a partial dictionary.
+* `partial`: `true` if the type is a partial dictionary.
 * `members`: An array of members (see below).
-* `inheritance`: A string indicating which dictionary is being inherited from, `null` otherwise.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `inheritance`: An object indicating which dictionary is being inherited from, `null` otherwise.
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 All the members are fields as follows:
 
 * `type`: Always "field".
 * `name`: The name of the field.
-* `required`: Boolean indicating whether this is a [required](https://heycam.github.io/webidl/#required-dictionary-member) field.
+* `required`: `true` if the field is required.
 * `idlType`: An [IDL Type](#idl-type) describing what field's type.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 * `default`: A [default value](#default-and-const-values), absent if there is none.
 
 ### Enum
@@ -277,11 +388,20 @@ An enum looks like this:
   "type": "enum",
   "name": "MealType",
   "values": [
-    { "type": "string", "value": "rice" },
-    { "type": "string", "value": "noodles" },
-    { "type": "string", "value": "other" }
-  ],
-  "extAttrs": []
+    {
+      "type": "enum-value",
+      "value": "rice"
+    },
+    {
+      "type": "enum-value",
+      "value": "noodles"
+    },
+    {
+      "type": "enum-value",
+      "value": "other"
+    }
+  ]
+  "extAttrs": null
 }
 ```
 
@@ -289,8 +409,8 @@ The fields are as follows:
 
 * `type`: Always "enum".
 * `name`: The enum's name.
-* `values`: An array of values.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `values`: An array of values. The type of value is "enum-value".
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Typedef
 
@@ -301,23 +421,23 @@ A typedef looks like this:
   "type": "typedef",
   "idlType": {
     "type": "typedef-type",
-    "sequence": true,
     "generic": "sequence",
     "nullable": false,
     "union": false,
-    "idlType": {
-      "type": "typedef-type",
-      "sequence": false,
-      "generic": null,
-      "nullable": false,
-      "union": false,
-      "idlType": "Point",
-      "extAttrs": [...]
-    },
+    "idlType": [
+      {
+        "type": "typedef-type",
+        "generic": "",
+        "nullable": false,
+        "union": false,
+        "idlType": "Point",
+        "extAttrs": [...]
+      }
+    ],
     "extAttrs": [...]
   },
   "name": "PointSequence",
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
@@ -327,27 +447,7 @@ The fields are as follows:
 * `type`: Always "typedef".
 * `name`: The typedef's name.
 * `idlType`: An [IDL Type](#idl-type) describing what typedef's type.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
-
-### Implements
-
-An implements definition looks like this:
-
-```JS
-{
-  "type": "implements",
-  "target": "Node",
-  "implements": "EventTarget",
-  "extAttrs": []
-}
-```
-
-The fields are as follows:
-
-* `type`: Always "implements".
-* `target`: The interface that implements another.
-* `implements`: The interface that is being implemented by the target.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Includes
 
@@ -358,7 +458,7 @@ An includes definition looks like this:
   "type": "includes",
   "target": "Node",
   "includes": "EventTarget",
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
@@ -367,7 +467,7 @@ The fields are as follows:
 * `type`: Always "includes".
 * `target`: The interface that includes an interface mixin.
 * `includes`: The interface mixin that is being included by the target.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Operation Member
 
@@ -375,52 +475,48 @@ An operation looks like this:
 ```JS
 {
   "type": "operation",
-  "getter": false,
-  "setter": false,
-  "deleter": false,
-  "static": false,
-  "stringifier": false,
-  "idlType": {
-    "type": "return-type",
-    "sequence": false,
-    "generic": null,
-    "nullable": false,
-    "union": false,
-    "idlType": "void",
-    "extAttrs": []
-  },
-  "name": "intersection",
-  "arguments": [{
-    "optional": false,
-    "variadic": true,
-    "extAttrs": [],
+  "special": "",
+  "body": {
     "idlType": {
-      "type": "argument-type",
-      "sequence": false,
-      "generic": null,
+      "type": "return-type",
+      "generic": "",
       "nullable": false,
       "union": false,
-      "idlType": "long",
-      "extAttrs": [...]
+      "idlType": "void",
+      "extAttrs": null
     },
-    "name": "ints"
-  }],
-  "extAttrs": []
+    "name": "intersection",
+    "arguments": [{
+      "optional": false,
+      "variadic": true,
+      "extAttrs": null,
+      "idlType": {
+        "type": "argument-type",
+        "generic": "",
+        "nullable": false,
+        "union": false,
+        "idlType": "long",
+        "extAttrs": [...]
+      },
+      "name": "ints"
+    }],
+  },
+  "extAttrs": null
 }
 ```
 
 The fields are as follows:
 
 * `type`: Always "operation".
-* `getter`: True if a getter operation.
-* `setter`: True if a setter operation.
-* `deleter`: True if a deleter operation.
-* `static`: True if a static operation.
-* `stringifier`: True if a stringifier operation.
-* `idlType`: An [IDL Type](#idl-type) of what the operation returns. If a stringifier, may be absent.
-* `name`: The name of the operation. If a stringifier, may be `null`.
+* `special`: One of `"getter"`, `"setter"`, `"deleter"`, `"static"`, `"stringifier"`, or `null`.
+* `body`: The operation body. Can be null if bodyless `stringifier`.
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
+
+The operation body fields are as follows:
+
+* `idlType`: An [IDL Type](#idl-type) of what the operation returns.
+* `name`: The name of the operation if exists.
 * `arguments`: An array of [arguments](#arguments) for the operation.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
 
 ### Attribute Member
 
@@ -429,21 +525,20 @@ An attribute member looks like this:
 ```JS
 {
   "type": "attribute",
-  "static": false,
-  "stringifier": false,
-  "inherit": false,
+  "static": null,
+  "stringifier": null,
+  "inherit": null,
   "readonly": false,
   "idlType": {
     "type": "attribute-type",
-    "sequence": false,
-    "generic": null,
+    "generic": "",
     "nullable": false,
     "union": false,
-    "idlType": "RegExp",
+    "idlType": "any",
     "extAttrs": [...]
   },
   "name": "regexp",
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
@@ -451,12 +546,10 @@ The fields are as follows:
 
 * `type`: Always "attribute".
 * `name`: The attribute's name.
-* `static`: True if it's a static attribute.
-* `stringifier`: True if it's a stringifier attribute.
-* `inherit`: True if it's an inherit attribute.
-* `readonly`: True if it's a read-only attribute.
+* `special`: One of `"static"`, `"stringifier"`, `"inherit"`, or `null`.
+* `readonly`: `true` if the attribute is read-only.
 * `idlType`: An [IDL Type](#idl-type) for the attribute.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Constant Member
 
@@ -465,33 +558,30 @@ A constant member looks like this:
 ```JS
 {
   "type": "const",
-  "nullable": false,
   "idlType": {
     "type": "const-type",
-    "sequence": false,
-    "generic": null,
+    "generic": "",
     "nullable": false,
     "union": false,
-    "idlType": "boolean"
-    "extAttrs": []
+    "idlType": "boolean",
+    "extAttrs": null
   },
   "name": "DEBUG",
   "value": {
     "type": "boolean",
     "value": false
   },
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
 The fields are as follows:
 
 * `type`: Always "const".
-* `nullable`: Whether its type is nullable.
 * `idlType`: An [IDL Type](#idl-type) of the constant that represents a simple type, the type name.
 * `name`: The name of the constant.
 * `value`: The constant value as described by [Const Values](#default-and-const-values)
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Arguments
 
@@ -501,60 +591,62 @@ The arguments (e.g. for an operation) look like this:
 {
   "arguments": [{
     "optional": false,
-    "variadic": true,
-    "extAttrs": [],
+    "variadic": true
+    "extAttrs": null
     "idlType": {
       "type": "argument-type",
-      "sequence": false,
-      "generic": null,
+      "generic": "",
       "nullable": false,
       "union": false,
-      "idlType": "long",
+      "idlType": "float",
       "extAttrs": [...]
     },
-    "name": "ints"
+    "name": "ints",
   }]
 }
 ```
 
 The fields are as follows:
 
-* `optional`: True if the argument is optional.
-* `variadic`: True if the argument is variadic.
+* `optional`: `true` if the argument is optional.
+* `variadic`: `true` if the argument is variadic.
 * `idlType`: An [IDL Type](#idl-type) describing the type of the argument.
 * `name`: The argument's name.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ### Extended Attributes
 
-Extended attributes are arrays of items that look like this:
+Extended attribute container look like this:
 
 ```JS
 {
-  "extAttrs": [{
-    "name": "TreatNullAs",
-    "arguments": null,
-    "type": "extended-attribute",
-    "rhs": {
-      "type": "identifier",
-      "value": "EmptyString"
-    }
-  }]
+  "extAttrs": {
+    "items": [{
+      "name": "TreatNullAs",
+      "arguments": [...],
+      "type": "extended-attribute",
+      "rhs": {
+        "type": "identifier",
+        "value": "EmptyString"
+      }
+    }]
+  }
 }
 ```
 
 The fields are as follows:
 
+* `items`: An array of extended attributes.
+
+Extended attributes look like this:
+
 * `name`: The extended attribute's name.
-* `arguments`: If the extended attribute takes arguments (e.g. `[Foo()]`) or if
-  its right-hand side does (e.g. `[NamedConstructor=Name(DOMString blah)]`) they
-  are listed here. Note that an empty arguments list will produce an empty array,
-  whereas the lack thereof will yield a `null`. If there is an `rhs` field then
-  they are the right-hand side's arguments, otherwise they apply to the extended
-  attribute directly.
+* `arguments`: An array of [arguments](#arguments), if the extended
+  attribute has a signature (e.g. `[Foo()]`) or if its right-hand side does (e.g.
+  `[NamedConstructor=Name(DOMString blah)]`).
 * `type`: Always `"extended-attribute"`.
 * `rhs`: If there is a right-hand side, this will capture its `type` (which can be
-  "identifier" or "identifier-list") and its `value`.
+  "identifier" or "identifier-list"), its `value`, and its preceding trivia.
 
 ### Default and Const Values
 
@@ -571,56 +663,33 @@ For Infinity:
 
 * `negative`: Boolean indicating whether this is negative Infinity or not.
 
-### `iterable<>`, `legacyiterable<>`, `maplike<>`, `setlike<>` declarations
+### `iterable<>`, `maplike<>`, `setlike<>` declarations
 
 These appear as members of interfaces that look like this:
 
 ```JS
 {
-  "type": "maplike", // or "legacyiterable" / "iterable" / "setlike"
+  "type": "maplike", // or "iterable" / "setlike"
   "idlType": /* One or two types */ ,
   "readonly": false, // only for maplike and setlike
-  "extAttrs": []
+  "extAttrs": null
 }
 ```
 
 The fields are as follows:
 
-* `type`: Always one of "iterable", "legacyiterable", "maplike" or "setlike".
+* `type`: Always one of "iterable", "maplike" or "setlike".
 * `idlType`: An array with one or more [IDL Types](#idl-type) representing the declared type arguments.
-* `readonly`: Whether the maplike or setlike is declared as read only.
-* `extAttrs`: A list of [extended attributes](#extended-attributes).
-
+* `readonly`: `true` if the maplike or setlike is declared as read only.
+* `extAttrs`: An [extended attributes](#extended-attributes) container.
 
 ## Testing
 
 ### Running
 
-The test runs with mocha and expect.js. Normally, running mocha in the root directory
+The test runs with mocha and expect.js. Normally, running `npm test` in the root directory
 should be enough once you're set up.
 
-### Coverage
-
-Current test coverage, as documented in `coverage.html`, is 95%. You can run your own
-coverage analysis with:
-
-```Bash
-jscoverage lib lib-cov
-```
-
-That will create the lib-cov directory with instrumented code; the test suite knows
-to use that if needed. You can then run the tests with:
-
-```Bash
-JSCOV=1 mocha --reporter html-cov > coverage.html
-```
-
-Note that I've been getting weirdly overescaped results from the html-cov reporter,
-so you might wish to try this instead:
-
-```Bash
-JSCOV=1 mocha  --reporter html-cov | sed "s/&lt;/</g" | sed "s/&gt;/>/g" | sed "s/&quot;/\"/g" > coverage.html
-```
 ### Browser tests
 
 In order to test in the browser, get inside `test/web` and run `make-web-tests.js`. This

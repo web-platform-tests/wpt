@@ -1,0 +1,53 @@
+[
+    {
+        "type": "typedef",
+        "name": "TexImageSource",
+        "idlType": {
+            "type": "typedef-type",
+            "extAttrs": null,
+            "union": true,
+            "generic": "",
+            "nullable": false,
+            "idlType": [
+                {
+                    "type": null,
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "ImageData"
+                },
+                {
+                    "type": null,
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "HTMLImageElement"
+                },
+                {
+                    "type": null,
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "HTMLCanvasElement"
+                },
+                {
+                    "type": null,
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "HTMLVideoElement"
+                }
+            ]
+        },
+        "extAttrs": null
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

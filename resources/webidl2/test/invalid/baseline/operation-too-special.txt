@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface Ako`:
+    getter setter void maki()
+           ^ Missing return type

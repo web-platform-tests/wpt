@@ -1,0 +1,58 @@
+[
+    {
+        "type": "interface",
+        "name": "Suffixes",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "test",
+                "body": {
+                    "name": "test",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "foo",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "sequence",
+                                "nullable": true,
+                                "union": false,
+                                "idlType": [
+                                    {
+                                        "type": "argument-type",
+                                        "extAttrs": null,
+                                        "generic": "",
+                                        "nullable": true,
+                                        "union": false,
+                                        "idlType": "DOMString"
+                                    }
+                                ]
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface X`:
+    void operation(object . . . args
+                   ^ Unterminated operation

@@ -1,0 +1,50 @@
+[
+    {
+        "type": "interface",
+        "name": "A",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "",
+                "body": {
+                    "name": "",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "DOMString"
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": "stringifier"
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "B",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "",
+                "body": null,
+                "extAttrs": null,
+                "special": "stringifier"
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

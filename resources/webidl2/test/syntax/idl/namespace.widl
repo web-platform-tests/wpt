@@ -8,3 +8,5 @@ namespace VectorUtils {
 partial namespace SomeNamespace {
   /* namespace_members... */
 };
+
+namespace _ScalarUtils {};

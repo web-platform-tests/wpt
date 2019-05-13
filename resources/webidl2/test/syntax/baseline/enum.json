@@ -1,0 +1,131 @@
+[
+    {
+        "type": "enum",
+        "name": "MealType",
+        "values": [
+            {
+                "type": "enum-value",
+                "value": "rice"
+            },
+            {
+                "type": "enum-value",
+                "value": "noodles"
+            },
+            {
+                "type": "enum-value",
+                "value": "other"
+            }
+        ],
+        "extAttrs": null
+    },
+    {
+        "type": "interface",
+        "name": "Meal",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "type",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "MealType"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "attribute",
+                "name": "size",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "float"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            },
+            {
+                "type": "operation",
+                "name": "initialize",
+                "body": {
+                    "name": "initialize",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "void"
+                    },
+                    "arguments": [
+                        {
+                            "name": "type",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "MealType"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        },
+                        {
+                            "name": "size",
+                            "idlType": {
+                                "type": "argument-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "float"
+                            },
+                            "default": null,
+                            "optional": false,
+                            "variadic": false
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "enum",
+        "name": "AltMealType",
+        "values": [
+            {
+                "type": "enum-value",
+                "value": "rice"
+            },
+            {
+                "type": "enum-value",
+                "value": "noodles"
+            },
+            {
+                "type": "enum-value",
+                "value": "other"
+            }
+        ],
+        "extAttrs": null
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

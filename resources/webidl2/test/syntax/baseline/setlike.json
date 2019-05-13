@@ -1,0 +1,88 @@
+[
+    {
+        "type": "interface",
+        "name": "SetLike",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "setlike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "ReadOnlySetLike",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "setlike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": null,
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "SetLikeExt",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "setlike",
+                "idlType": [
+                    {
+                        "type": null,
+                        "extAttrs": {
+                            "items": [
+                                {
+                                    "type": "extended-attribute",
+                                    "name": "XAttr",
+                                    "rhs": null,
+                                    "arguments": []
+                                }
+                            ]
+                        },
+                        "generic": "",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": "long"
+                    }
+                ],
+                "extAttrs": null,
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

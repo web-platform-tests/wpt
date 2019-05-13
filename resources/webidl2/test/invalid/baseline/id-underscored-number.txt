@@ -1,0 +1,3 @@
+Syntax error at line 1:
+interface _0 {};
+          ^ No name for interface

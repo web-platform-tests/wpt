@@ -1,0 +1,3 @@
+Syntax error at line 5, since `callback interface NoSemicolon`:
+enum YouNeedOne {
+^ Missing semicolon after interface

@@ -1,0 +1,3 @@
+Syntax error at line 6, since `interface Dictionary`:
+  omittable getter float getProperty(DOMString
+            ^ Invalid operation

@@ -1,0 +1,3 @@
+Syntax error at line 6, since `interface NumberQuadrupler`:
+  legacycaller float compute(float x
+               ^ Invalid operation

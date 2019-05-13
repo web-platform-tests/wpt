@@ -1,0 +1,58 @@
+[
+    {
+        "type": "interface",
+        "name": "Person",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "name",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "Name"
+                },
+                "extAttrs": {
+                    "items": [
+                        {
+                            "type": "extended-attribute",
+                            "name": "PutForwards",
+                            "rhs": {
+                                "type": "identifier",
+                                "value": "full"
+                            },
+                            "arguments": []
+                        }
+                    ]
+                },
+                "special": "",
+                "readonly": true
+            },
+            {
+                "type": "attribute",
+                "name": "age",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned short"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": false
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

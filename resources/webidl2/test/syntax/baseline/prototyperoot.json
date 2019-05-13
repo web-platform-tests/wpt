@@ -1,0 +1,40 @@
+[
+    {
+        "type": "interface",
+        "name": "Node",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "attribute",
+                "name": "nodeType",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": "unsigned short"
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": {
+            "items": [
+                {
+                    "type": "extended-attribute",
+                    "name": "PrototypeRoot",
+                    "rhs": null,
+                    "arguments": []
+                }
+            ]
+        },
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": ""
+    }
+]

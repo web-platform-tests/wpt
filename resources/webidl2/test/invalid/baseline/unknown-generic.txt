@@ -1,0 +1,3 @@
+Syntax error at line 2, since `interface FetchEvent`:
+  ResponsePromise<any> default(
+                 ^ Unsupported generic type ResponsePromise

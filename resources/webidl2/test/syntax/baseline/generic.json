@@ -1,0 +1,186 @@
+[
+    {
+        "type": "interface",
+        "name": "Foo",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "bar",
+                "body": {
+                    "name": "bar",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "Promise",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "Promise",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": [
+                                    {
+                                        "type": "return-type",
+                                        "extAttrs": null,
+                                        "generic": "sequence",
+                                        "nullable": false,
+                                        "union": false,
+                                        "idlType": [
+                                            {
+                                                "type": "return-type",
+                                                "extAttrs": null,
+                                                "generic": "",
+                                                "nullable": true,
+                                                "union": false,
+                                                "idlType": "DOMString"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "attribute",
+                "name": "baz",
+                "idlType": {
+                    "type": "attribute-type",
+                    "extAttrs": null,
+                    "generic": "Promise",
+                    "nullable": false,
+                    "union": false,
+                    "idlType": [
+                        {
+                            "type": "attribute-type",
+                            "extAttrs": null,
+                            "generic": "",
+                            "nullable": false,
+                            "union": false,
+                            "idlType": "DOMString"
+                        }
+                    ]
+                },
+                "extAttrs": null,
+                "special": "",
+                "readonly": true
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "ServiceWorkerClients",
+        "inheritance": null,
+        "members": [
+            {
+                "type": "operation",
+                "name": "getServiced",
+                "body": {
+                    "name": "getServiced",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "Promise",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": true,
+                                "union": false,
+                                "idlType": "Client"
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            },
+            {
+                "type": "operation",
+                "name": "reloadAll",
+                "body": {
+                    "name": "reloadAll",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "Promise",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "any"
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "interface",
+        "name": "FetchEvent",
+        "inheritance": {
+            "name": "Event"
+        },
+        "members": [
+            {
+                "type": "operation",
+                "name": "default",
+                "body": {
+                    "name": "default",
+                    "idlType": {
+                        "type": "return-type",
+                        "extAttrs": null,
+                        "generic": "Promise",
+                        "nullable": false,
+                        "union": false,
+                        "idlType": [
+                            {
+                                "type": "return-type",
+                                "extAttrs": null,
+                                "generic": "",
+                                "nullable": false,
+                                "union": false,
+                                "idlType": "any"
+                            }
+                        ]
+                    },
+                    "arguments": []
+                },
+                "extAttrs": null,
+                "special": ""
+            }
+        ],
+        "extAttrs": null,
+        "partial": false
+    },
+    {
+        "type": "eof",
+        "value": "",
+        "trivia": "\n"
+    }
+]

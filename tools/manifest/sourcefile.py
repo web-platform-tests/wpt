@@ -23,6 +23,7 @@ if MYPY:
     from typing import Text
     from typing import Tuple
     from typing import Union
+    from typing import cast
 
 try:
     from xml.etree import cElementTree as ElementTree
@@ -161,7 +162,9 @@ def global_variant_url(url, suffix):
 def _parse_html(f):
     # type: (BinaryIO) -> ElementTree.ElementTree
     doc = html5lib.parse(f, treebuilder="etree", useChardet=False)
-    return doc  # type: ignore
+    if MYPY:
+        return cast(ElementTree.ElementTree, doc)
+    return doc
 
 def _parse_xml(f):
     # type: (BinaryIO) -> ElementTree.ElementTree
@@ -267,10 +270,14 @@ class SourceFile(object):
         """
 
         if self.contents is not None:
-            file_obj = ContextManagerBytesIO(self.contents)
+            wrapped = ContextManagerBytesIO(self.contents)
+            if MYPY:
+                file_obj = cast(BinaryIO, ContextManagerBytesIO)
+            else:
+                file_obj = wrapped
         else:
-            file_obj = open(self.path, 'rb')  # type: ignore
-        return file_obj  # type: ignore
+            file_obj = open(self.path, 'rb')
+        return file_obj
 
     @cached_property
     def path(self):
@@ -479,7 +486,7 @@ class SourceFile(object):
             return None
 
         if self.timeout_nodes:
-            timeout_str = self.timeout_nodes[0].attrib.get("content", None)
+            timeout_str = self.timeout_nodes[0].attrib.get("content", None)  # type: Optional[Text]
             if timeout_str and timeout_str.lower() == "long":
                 return "long"
 
@@ -535,51 +542,50 @@ class SourceFile(object):
 
     @cached_property
     def fuzzy(self):
-        # type: () -> Dict[Optional[Tuple[Text, Text, Text]], List[int]]
-        rv = {}  # type: Dict[Optional[Tuple[Text, Text, Text]], List[int]]
+        # type: () -> Dict[Optional[Tuple[Text, Text, Text]], List[List[int]]]
+        rv = {}  # type: Dict[Optional[Tuple[Text, Text, Text]], List[List[int]]]
         if self.root is None:
             return rv
 
         if not self.fuzzy_nodes:
             return rv
 
-        args = ["maxDifference", "totalPixels"]
+        args = [u"maxDifference", u"totalPixels"]
 
         for node in self.fuzzy_nodes:
-            item = node.attrib.get("content", "")
+            item = node.attrib.get(u"content", u"")  # type: Text
 
-            parts = item.rsplit(":", 1)
+            parts = item.rsplit(u":", 1)
             if len(parts) == 1:
                 key = None  # type: Optional[Tuple[Text, Text, Text]]
                 value = parts[0]
             else:
                 key_part = urljoin(self.url, parts[0])
                 reftype = None
-                for ref in self.references:
+                for ref in self.references:  # type: Tuple[Text, Text]
                     if ref[0] == key_part:
                         reftype = ref[1]
                         break
-                if reftype not in ("==", "!="):
+                if reftype not in (u"==", u"!="):
                     raise ValueError("Fuzzy key %s doesn't correspond to a references" % key_part)
                 key = (self.url, key_part, reftype)
                 value = parts[1]
-            ranges = value.split(";")
+            ranges = value.split(u";")
             if len(ranges) != 2:
                 raise ValueError("Malformed fuzzy value %s" % item)
             arg_values = {}  # type: Dict[Text, List[int]]
             positional_args = deque()  # type: Deque[List[int]]
-            for range_str_value in ranges:
-                if "=" in range_str_value:
+            for range_str_value in ranges:  # type: Text
+                name = None  # type: Optional[Text]
+                if u"=" in range_str_value:
                     name, range_str_value = [part.strip()
-                                             for part in range_str_value.split("=", 1)]
+                                             for part in range_str_value.split(u"=", 1)]
                     if name not in args:
                         raise ValueError("%s is not a valid fuzzy property" % name)
                     if arg_values.get(name):
                         raise ValueError("Got multiple values for argument %s" % name)
-                else:
-                    name = None
-                if "-" in range_str_value:
-                    range_min, range_max = range_str_value.split("-")
+                if u"-" in range_str_value:
+                    range_min, range_max = range_str_value.split(u"-")
                 else:
                     range_min = range_str_value
                     range_max = range_str_value
@@ -595,10 +601,10 @@ class SourceFile(object):
             rv[key] = []
             for arg_name in args:
                 if arg_values.get(arg_name):
-                    value = arg_values.pop(arg_name)
+                    arg_value = arg_values.pop(arg_name)
                 else:
-                    value = positional_args.popleft()
-                rv[key].append(value)
+                    arg_value = positional_args.popleft()
+                rv[key].append(arg_value)
             assert len(arg_values) == 0 and len(positional_args) == 0
         return rv
 
@@ -630,7 +636,7 @@ class SourceFile(object):
     @cached_property
     def test_variants(self):
         # type: () -> List[Text]
-        rv = []
+        rv = []  # type: List[Text]
         if self.ext == ".js":
             script_metadata = self.script_metadata
             assert script_metadata is not None
@@ -640,7 +646,7 @@ class SourceFile(object):
         else:
             for element in self.variant_nodes:
                 if "content" in element.attrib:
-                    variant = element.attrib["content"]
+                    variant = element.attrib["content"]  # type: Text
                     rv.append(variant)
 
         for variant in rv:
